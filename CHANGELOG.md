@@ -61,6 +61,11 @@ All notable changes to OINK are documented here. The project follows
   icon — feeds belong to the blog root and its sections. Fix the blank seam
   between the sidebar's lower edge and the footer while scrolling.
 
+- Blog sections in the generic sidebar tree now start expanded, so with the
+  default `sidebar_menu_foldable: true` their collapse chevrons appear and
+  every section is open until the reader folds it; an explicit
+  `sidebar_expanded: false` in a section's front matter starts it collapsed
+  (an `isset` check keeps that explicit false from being swallowed).
 - Redesign the Fields component as a Mintlify-style stacked list: each entry
   puts the field name on its own header row followed by inline `type`,
   `required`, and `default` pills, with the description below and hairline

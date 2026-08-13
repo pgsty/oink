@@ -43,7 +43,12 @@
   {{ $iconPolicy := .iconPolicy -}}
   {{ $active := and (not $shouldDelayActive) (eq $s $p) -}}
   {{ $activePath := and (not $shouldDelayActive) (or (eq $p $s) ($p.IsDescendant $s)) -}}
-  {{ $forceExpanded := $s.Params.sidebar_expanded | default false -}}
+  {{/* Blog sections start expanded; sidebar_expanded: false collapses one.
+       isset keeps an explicit false distinct from the type default. */ -}}
+  {{ $forceExpanded := eq $s.Type "blog" -}}
+  {{ if isset $s.Params "sidebar_expanded" -}}
+    {{ $forceExpanded = $s.Params.sidebar_expanded -}}
+  {{ end -}}
   {{ $shouldExpand := or $activePath $forceExpanded -}}
   {{ $show := cond
         (or

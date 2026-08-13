@@ -27,6 +27,15 @@
             {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "desktop" "index" $index) -}}
           {{- end -}}
         {{- end }}
+        {{- /* Search sits between the content-driven menu entries and the
+             fixed controls; version and language stay adjacent. */ -}}
+        {{- if $localSearch }}
+        <button type="button" class="nav-util nav-search" data-td-shell-search-open
+          title="{{ T "ui_search" }}" aria-label="{{ T "ui_search" }}"
+          aria-controls="td-shell-search" aria-expanded="false">
+          {{- partialCached "shell/icon.html" "search" "navbar-search" -}}
+        </button>
+        {{- end }}
         {{- with .Site.Params.versions }}
         {{- $menuName := $.Site.Params.version_menu | default "Version" }}
         <div class="nav-hover-menu nav-version-menu" data-td-nav-hover>
@@ -52,13 +61,6 @@
             {{- end }}
           </div>
         </div>
-        {{- end }}
-        {{- if $localSearch }}
-        <button type="button" class="nav-util nav-search" data-td-shell-search-open
-          title="{{ T "ui_search" }}" aria-label="{{ T "ui_search" }}"
-          aria-controls="td-shell-search" aria-expanded="false">
-          {{- partialCached "shell/icon.html" "search" "navbar-search" -}}
-        </button>
         {{- end }}
         {{- if gt (len $targets) 1 }}
           {{ partial "language-selector.html" (dict "page" . "class" "nav-util landing-language-selector") }}

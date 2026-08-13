@@ -61,6 +61,14 @@ All notable changes to OINK are documented here. The project follows
   icon — feeds belong to the blog root and its sections. Fix the blank seam
   between the sidebar's lower edge and the footer while scrolling.
 
+- Pin the navbar to the viewport edges on shell pages: the brand logo sits in
+  the top-left corner above the sidebar (matching its 16px content inset) and
+  the utility controls sit in the top-right above the TOC rail, instead of
+  drifting with the centered 1280px landing container. The landing page and
+  other non-shell layouts keep the centered container. In the control row the
+  search icon moves before the version selector, separating the site's own
+  menu entries from the fixed controls and keeping version and language
+  adjacent.
 - Blog sections in the generic sidebar tree now start expanded, so with the
   default `sidebar_menu_foldable: true` their collapse chevrons appear and
   every section is open until the reader folds it; an explicit

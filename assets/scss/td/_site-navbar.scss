@@ -4,6 +4,15 @@
   padding: 0 28px;
 }
 
+// Shell pages are full-bleed, so the centered landing container would let the
+// brand drift with the viewport. Pin the navbar to the viewport edges instead:
+// the logo anchors the top-left corner above the sidebar (matching its 16px
+// content inset) and the controls anchor the top-right above the TOC rail.
+.td-shell-chrome .landing-header .landing-container {
+  max-width: none;
+  padding-inline: 16px;
+}
+
 .landing-header {
   position: sticky;
   top: 0;

@@ -1,0 +1,44 @@
+// PRD 6 keyboard navigation: the selection highlight for programmatic tree
+// focus and the chrome-free reading mode. Both stay inert until
+// keyboard-nav.js runs.
+
+// Keyboard focus reads as selection, not a box: the row (link plus chevron)
+// takes a tint one step stronger than the active pill so the reader can tell
+// "where I am" (active, 0.1) from "where the cursor is" (focus, 0.16).
+// Programmatic focus() does not reliably trigger :focus-visible, which is
+// why the class exists at all.
+.td-shell-tree__row.td-kbd-focus {
+  background: rgba(var(--bs-link-color-rgb), 0.16);
+  transition: none;
+
+  > .td-shell-tree__link {
+    color: var(--td-shell-primary);
+    outline: none;
+  }
+}
+
+// The H key toggles a chrome-free reading mode: both rails, the footer, and
+// the floating restore pill disappear; the flex layout lets the article
+// column take the freed width on its own.
+html[data-td-kbd-zen] {
+  #td-shell-sidebar,
+  .td-shell-toc,
+  .td-shell-float,
+  [data-td-shell-footer] {
+    display: none;
+  }
+}
+
+// The navbar-off shell uses the compact subnav instead of .landing-header.
+// Hide that surface too so H always means the same chrome-free mode.
+html[data-td-kbd-zen] .td-shell-subnav {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  // Background tints vanish under forced colors; fall back to an outline.
+  .td-shell-tree__row.td-kbd-focus {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

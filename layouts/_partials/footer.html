@@ -11,7 +11,7 @@
 {{- if or $data.brand $data.columns -}}
 <footer class="d-print-none" data-td-shell-footer>
   {{- with $data }}
-  <div class="td-site-footer">
+  <div class="td-site-footer" id="td-site-footer">
     <div class="td-site-footer__container">
       {{/* The brand sits outside the column grid. Spanning every track, its
            long tagline set the tracks' max-content size, which stopped the
@@ -50,7 +50,7 @@
     </div>
   </div>
   {{- end }}
-  {{ partial "shell/footer-line.html" (dict "page" . "nested" true) }}
+  {{ partial "shell/footer-line.html" (dict "page" . "nested" true "collapsible" true) }}
 </footer>
 {{- else -}}
 {{ partial "shell/footer-line.html" . }}

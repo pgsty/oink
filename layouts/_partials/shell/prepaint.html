@@ -1,4 +1,5 @@
 {{- if partial "shell/chrome-enabled.html" . -}}
+{{- $keyboardNav := ne (.Param "ui.keyboard_nav.enable") false -}}
 <script>
   (function () {
     var html = document.documentElement;
@@ -14,6 +15,11 @@
           && window.matchMedia('(min-width: 1200px)').matches) {
         html.setAttribute('data-td-shell-toc', 'collapsed');
       }
+      {{ if $keyboardNav -}}
+      if (sessionStorage.getItem('td-kbd-zen') === '1') {
+        html.setAttribute('data-td-kbd-zen', '');
+      }
+      {{- end }}
     } catch (_) {}
   })();
 </script>

@@ -88,6 +88,8 @@ ui_all: all
 # Footer text
 footer_all_rights_reserved: All Rights Reserved
 footer_privacy_policy: Privacy Policy
+ui_footer_collapse: Hide footer links
+ui_footer_expand: Show footer links
 
 # Post (blog, article, etc.)
 post_byline_by: By

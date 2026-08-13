@@ -36,6 +36,7 @@
       var surfaceName = 'navbar-menu-' + index;
       if (!parent || !panel) return;
       var closeTimer = 0;
+      var suppressFocusOpen = false;
 
       function isOpen() {
         return !panel.hidden;
@@ -44,7 +45,13 @@
         window.clearTimeout(closeTimer);
         if (!isOpen()) return;
         setDisclosure(parent, panel, menu, false);
-        if (restoreFocus === true) parent.focus();
+        if (restoreFocus === true) {
+          // focus() emits synchronously; do not let the focus-to-open handler
+          // undo an Escape close while returning the reader to its trigger.
+          suppressFocusOpen = true;
+          parent.focus();
+          suppressFocusOpen = false;
+        }
       }
       function open(focusFirst) {
         window.clearTimeout(closeTimer);
@@ -67,6 +74,9 @@
       if (window.OinkSurfaceCoordinator)
         window.OinkSurfaceCoordinator.register(surfaceName, close);
 
+      parent.addEventListener('focus', function () {
+        if (!suppressFocusOpen) open(false);
+      });
       menu.addEventListener('pointerenter', function (event) {
         if (event.pointerType !== 'touch') open(false);
       });

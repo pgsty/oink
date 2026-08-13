@@ -7,8 +7,6 @@
 {{- $hasChildren := $entry.HasChildren -}}
 {{- $key := $entry.Identifier | default $entry.Name | urlize -}}
 {{- $panelID := printf "td-navbar-%s-%s-%d" $mode $key $index -}}
-{{- $expandLabel := printf "%s: %s" (T "ui_sidebar_expand_section") ($entry.Name | plainify) -}}
-{{- $collapseLabel := printf "%s: %s" (T "ui_sidebar_collapse_section") ($entry.Name | plainify) -}}
 
 {{- if not $hasChildren -}}
   {{- if eq $mode "desktop" -}}
@@ -21,7 +19,7 @@
      the panel opens on hover or keyboard focus (see navbar-menu.js). Touch
      users navigate directly; the target page carries its own navigation. */ -}}
 <div class="nav-menu" data-td-navbar-menu>
-  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link") }}
+  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link" "controls" $panelID) }}
   <div class="nav-menu__panel" id="{{ $panelID }}" data-td-navbar-panel hidden>
     {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" "desktop" "top" $entry "depth" 1) }}
   </div>

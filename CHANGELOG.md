@@ -7,6 +7,29 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Single-key keyboard navigation (PRD 6), on by default on docs, blog, and
+  swagger shells and configurable via `params.ui.keyboard_nav.enable` (site,
+  section cascade, or page front matter; a non-boolean value fails the
+  build). `w`/`s` move the sidebar focus in one step from the current page's
+  item (inside the tree `↑`/`↓` continue); `a`/`d` (and `←`/`→`, RTL-aware)
+  collapse and expand groups through the existing chevrons, acting on the
+  current page's item straight away; `Enter`, `Space`, or `g` opens the
+  focused page; `Escape` returns to the content. The keyboard focus is a
+  row-level tint one step stronger than the active pill, not an outline box.
+  `j`/`k` jump to the next or previous section of the page outline with an
+  eased glide (heading-less pages fall back to eased scrolling, reduced
+  motion gets instant steps); `q`/`e` go to the previous or next page
+  following the sidebar tree order, `rel=prev/next` head links, or the blog
+  pager. `h` toggles a chrome-free reading mode that hides both rails and
+  the footer (remembered per session across page flips); `l` cycles through
+  the available languages; `t` flips light and dark; `f` and `c` open the
+  Command Palette in search and command mode. All bindings yield to inputs,
+  IME composition, held modifiers, and open dialogs, and the `?` key stays
+  reserved for a future shortcut help overlay.
+- A collapse arrow at the right edge of the fat footer's copyright line
+  hides or restores the link grid above it. The choice persists in
+  localStorage, defaults to expanded, and localizes its labels through the
+  new `ui_footer_collapse` / `ui_footer_expand` keys.
 - Render the site navbar on every layout, including docs, blog, swagger, and
   taxonomy pages. The new `navbar_enabled` switch (default `true`) can turn it
   off globally via `params.ui.navbar_enabled`, per section via a front-matter
@@ -32,6 +55,13 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- **`/` now opens the Command Palette in full search mode** (it previously
+  opened the command-only mode); the new `\` shortcut opens command-only
+  mode, and the `>` prefix keeps working inside the palette. Palette command
+  listings now mirror the navbar control order — version, language, theme,
+  then GitHub — with configured site commands after the built-ins, and the
+  empty command-only listing keeps this order instead of sorting
+  alphabetically.
 - Move the page actions from the collapsible TOC-rail group to a Fumadocs-style
   split button in the breadcrumb row: an icon-only primary copies the page's
   Markdown (flipping to a green check), and the caret disclosure lists ten

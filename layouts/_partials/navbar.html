@@ -21,19 +21,26 @@
         {{- end }}
       </a>
 
-      <div class="nav-links">
+      {{- /* Center zone: the site's own content-driven menu entries, true-
+           centered in the row by the grid. */ -}}
+      <div class="nav-links nav-menu-zone">
         {{- range $index, $entry := .Site.Menus.main -}}
           {{- if ne .Identifier "github" -}}
             {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "desktop" "index" $index) -}}
           {{- end -}}
         {{- end }}
-        {{- /* Search sits between the content-driven menu entries and the
-             fixed controls; version and language stay adjacent. */ -}}
+      </div>
+
+      {{- /* Right zone: the search box leads as the elastic boundary before
+           the fixed controls — version, language, theme, GitHub. */ -}}
+      <div class="nav-links nav-util-zone">
         {{- if $localSearch }}
-        <button type="button" class="nav-util nav-search" data-td-shell-search-open
+        <button type="button" class="nav-search-box" data-td-shell-search-open
           title="{{ T "ui_search" }}" aria-label="{{ T "ui_search" }}"
           aria-controls="td-shell-search" aria-expanded="false">
           {{- partialCached "shell/icon.html" "search" "navbar-search" -}}
+          <span class="nav-search-box__hint">{{ T "ui_search" }}</span>
+          <kbd class="nav-search-box__kbd" aria-hidden="true">/</kbd>
         </button>
         {{- end }}
         {{- with .Site.Params.versions }}
@@ -92,18 +99,17 @@
           {{- partialCached "shell/icon.html" "github" "github" -}}
         </a>
         {{- end }}
+        {{- if $drawerMode }}
+        {{- /* The one width-gated control: below md the sidebar becomes a
+             drawer, and this opens it. Non-shell pages need no equivalent —
+             the compact navbar keeps every item visible as an icon. */ -}}
+        <button class="nav-util mobile-menu-toggle" type="button" data-td-shell-drawer-open
+          title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
+          aria-controls="td-shell-sidebar" aria-expanded="false">
+          {{- partialCached "shell/icon.html" "menu" "menu" -}}
+        </button>
+        {{- end }}
       </div>
-
-      {{- if $drawerMode }}
-      {{- /* The one width-gated control: below md the sidebar becomes a
-           drawer, and this opens it. Non-shell pages need no equivalent —
-           the compact navbar keeps every item visible as an icon. */ -}}
-      <button class="nav-util mobile-menu-toggle" type="button" data-td-shell-drawer-open
-        title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
-        aria-controls="td-shell-sidebar" aria-expanded="false">
-        {{- partialCached "shell/icon.html" "menu" "menu" -}}
-      </button>
-      {{- end }}
     </nav>
   </div>
 </header>

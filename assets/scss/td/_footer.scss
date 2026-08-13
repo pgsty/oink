@@ -219,3 +219,41 @@
     }
   }
 }
+
+// The collapse arrow at the right edge of the copyright line. It hides the
+// column grid above; when collapsed the chevron flips to point back up.
+.td-shell-footline__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 150ms ease;
+  }
+
+  &.is-collapsed .td-shell-icon {
+    transform: rotate(180deg);
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--td-shell-accent);
+    color: var(--bs-body-color);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-shell-footline__toggle .td-shell-icon {
+    transition: none;
+  }
+}

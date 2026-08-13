@@ -97,6 +97,8 @@
 {{- $languageTitle := T "ui_language_switch" -}}
 {{- $versionTitle := $p.Site.Params.version_menu | default "Version" -}}
 {{- $githubTitle := "GitHub" -}}
+{{- /* The choice trio mirrors the navbar control order: version, language,
+     theme. Palette listings keep this order (PRD 6). */ -}}
 {{- $actions := slice
   (dict "id" "copy_markdown" "title" $copyTitle "description" $copyTitle
     "icon" "fa-regular fa-copy" "keywords" (slice $copyTitle "markdown" "copy")
@@ -144,6 +146,15 @@
     "icon" "fa-solid fa-print" "keywords" (slice (T "ui_print_page") "print")
     "kind" "invoke" "available" true "disabledReason" "" "url" ""
     "target" "self" "placements" $noPlacement "options" (slice))
+  (dict "id" "switch_version" "title" $versionTitle
+    "description" $versionTitle "icon" "fa-solid fa-code-branch"
+    "keywords" (slice $versionTitle "version") "kind" "choice"
+    "available" (gt (len $versionOptions) 0) "disabledReason" (cond (gt (len $versionOptions) 0) "" (printf "%s: %s" $versionTitle $unavailable)) "url" ""
+    "target" "self" "placements" $paletteOnly "options" $versionOptions)
+  (dict "id" "switch_language" "title" $languageTitle "description" $languageTitle
+    "icon" "fa-solid fa-language" "keywords" (slice $languageTitle "language")
+    "kind" "choice" "available" (gt (len $languageOptions) 1) "disabledReason" (cond (gt (len $languageOptions) 1) "" (printf "%s: %s" $languageTitle $unavailable)) "url" ""
+    "target" "self" "placements" $paletteOnly "options" $languageOptions)
   (dict "id" "switch_theme" "title" $themeTitle "description" $themeTitle
     "icon" "fa-solid fa-circle-half-stroke" "keywords" (slice $themeTitle (T "ui_theme_light") (T "ui_theme_dark"))
     "kind" "choice" "available" $darkMode.enable "disabledReason" (cond $darkMode.enable "" (printf "%s: %s" $themeTitle $unavailable)) "url" ""
@@ -151,15 +162,6 @@
       (dict "id" "auto" "title" (T "ui_theme_auto") "value" "auto" "available" true "disabledReason" "")
       (dict "id" "light" "title" (T "ui_theme_light") "value" "light" "available" true "disabledReason" "")
       (dict "id" "dark" "title" (T "ui_theme_dark") "value" "dark" "available" true "disabledReason" "")))
-  (dict "id" "switch_language" "title" $languageTitle "description" $languageTitle
-    "icon" "fa-solid fa-language" "keywords" (slice $languageTitle "language")
-    "kind" "choice" "available" (gt (len $languageOptions) 1) "disabledReason" (cond (gt (len $languageOptions) 1) "" (printf "%s: %s" $languageTitle $unavailable)) "url" ""
-    "target" "self" "placements" $paletteOnly "options" $languageOptions)
-  (dict "id" "switch_version" "title" $versionTitle
-    "description" $versionTitle "icon" "fa-solid fa-code-branch"
-    "keywords" (slice $versionTitle "version") "kind" "choice"
-    "available" (gt (len $versionOptions) 0) "disabledReason" (cond (gt (len $versionOptions) 0) "" (printf "%s: %s" $versionTitle $unavailable)) "url" ""
-    "target" "self" "placements" $paletteOnly "options" $versionOptions)
   (dict "id" "open_github" "title" $githubTitle "description" $githubTitle
     "icon" "fa-brands fa-github" "keywords" (slice "GitHub" "repository" "source")
     "kind" "url" "available" (ne $projectRepo "") "disabledReason" (cond (ne $projectRepo "") "" (printf "%s: %s" $githubTitle $unavailable)) "url" $projectRepo

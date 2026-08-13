@@ -67,6 +67,8 @@ ui_all: 所有
 footer_all_rights_reserved: 保留所有權利
 
 footer_privacy_policy: 隱私政策
+ui_footer_collapse: 收起頁腳連結
+ui_footer_expand: 展開頁腳連結
 
 # Post (blog, article, etc.)
 post_byline_by: 作者：

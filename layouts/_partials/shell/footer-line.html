@@ -3,9 +3,11 @@
        and the landing page already wraps this row in its own <footer>. */ -}}
 {{- $p := . -}}
 {{- $nested := false -}}
+{{- $collapsible := false -}}
 {{- if reflect.IsMap . -}}
   {{- $p = .page -}}
   {{- $nested = .nested | default false -}}
+  {{- $collapsible = .collapsible | default false -}}
 {{- end -}}
 {{- with $p -}}
 {{- $copyright := .Site.Params.copyright | default dict -}}
@@ -34,5 +36,16 @@
   <div class="td-shell-footline__lang">
     {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
   </div>
+  {{- if $collapsible }}
+  {{- /* Collapses the fat footer above this line; footer-collapse.js owns the
+       behavior and persists the choice in localStorage. */}}
+  <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
+    aria-expanded="true" aria-controls="td-site-footer"
+    title="{{ T "ui_footer_collapse" }}" aria-label="{{ T "ui_footer_collapse" }}"
+    data-label-collapse="{{ T "ui_footer_collapse" }}"
+    data-label-expand="{{ T "ui_footer_expand" }}">
+    {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+  </button>
+  {{- end }}
 {{ printf "</%s>" $tag | safeHTML }}
 {{- end -}}

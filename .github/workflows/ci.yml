@@ -76,6 +76,9 @@ jobs:
       - name: Check PRD 4 bilingual migration and starter guidance
         run: python3 scripts/check-prd4-docs.py
 
+      - name: Check PRD 6 keyboard navigation
+        run: python3 scripts/check-prd6-keyboard.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

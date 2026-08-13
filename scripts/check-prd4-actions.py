@@ -20,7 +20,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_SCRIPT = ROOT / "scripts" / "check-prd4-contract.py"
 # Order is part of the contract: the title menu renders these in sequence, so
-# this list is also the reading order a visitor sees.
+# this list is also the reading order a visitor sees. The choice trio mirrors
+# the navbar control order — version, language, theme (PRD 6).
 BUILTINS = [
     "copy_markdown",
     "open_chatgpt",
@@ -33,9 +34,9 @@ BUILTINS = [
     "create_project_issue",
     "print_section",
     "print",
-    "switch_theme",
-    "switch_language",
     "switch_version",
+    "switch_language",
+    "switch_theme",
     "open_github",
 ]
 ACTION_FIELDS = {

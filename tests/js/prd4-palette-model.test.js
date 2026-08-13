@@ -46,6 +46,17 @@ function registry() {
       icon: 'fa-brands fa-claude',
       placements: { page: true, palette: true },
     }),
+    action('switch_version', {
+      title: 'Switch version',
+      kind: 'choice',
+      options: [{ id: 'v1', title: 'v1', url: '/v1/', available: true }],
+    }),
+    action('switch_language', {
+      title: '切换语言',
+      kind: 'choice',
+      available: false,
+      disabledReason: '只有一种语言',
+    }),
     action('switch_theme', {
       title: 'Switch theme',
       kind: 'choice',
@@ -54,12 +65,6 @@ function registry() {
         { id: 'dark', title: 'Dark', value: 'dark', available: true },
         { id: 'future', title: 'Future', available: false, disabledReason: 'Soon' },
       ],
-    }),
-    action('switch_language', {
-      title: '切换语言',
-      kind: 'choice',
-      available: false,
-      disabledReason: '只有一种语言',
     }),
     action('open_github', { title: 'GitHub' }),
   ];
@@ -115,10 +120,30 @@ function registry() {
   assert.ok(empty[1].rows.some((row) => row.sourceId === 'copy_markdown'));
   assert.ok(empty[1].rows.some((row) => row.sourceId === 'edit_page'));
   assert.ok(empty[2].rows.some((row) => row.sourceId === 'switch_language'));
+  assert.deepEqual(
+    empty[2].rows.map((row) => row.sourceId),
+    ['switch_version', 'switch_language', 'switch_theme'],
+    'preferences must mirror the navbar order',
+  );
+
+  assert.deepEqual(
+    empty[3].rows.map((row) => row.sourceId),
+    ['open_github', 'status', 'theme_now', 'language_now'],
+    'commands group must mirror navbar order with configured commands last',
+  );
 
   const commands = model.commandGroups(registry(), '', labels)[0].rows;
   assert.ok(commands.some((row) => row.sourceId === 'status'));
   assert.ok(commands.some((row) => row.sourceId === 'copy_markdown'));
+  assert.deepEqual(
+    commands.map((row) => row.sourceId),
+    [
+      'copy_markdown', 'edit_page', 'print', 'open_chatgpt', 'open_claude',
+      'switch_version', 'switch_language', 'switch_theme', 'open_github',
+      'status', 'theme_now', 'language_now',
+    ],
+    'empty command mode must keep manifest order, configured commands last',
+  );
   assert.equal(
     commands.find((row) => row.sourceId === 'open_chatgpt').icon,
     'fa-brands fa-openai',

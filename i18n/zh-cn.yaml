@@ -89,6 +89,8 @@ ui_all: 全部
 footer_all_rights_reserved: 保留所有权利
 
 footer_privacy_policy: 隐私政策
+ui_footer_collapse: 收起页脚链接
+ui_footer_expand: 展开页脚链接
 
 # Post (blog, article, etc.)
 post_byline_by: 撰文：

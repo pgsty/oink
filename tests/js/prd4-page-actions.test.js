@@ -225,9 +225,14 @@ async function testTitleMenu() {
 
   // Escape closes and returns focus to the toggle.
   menuListeners.get('toggle:click')();
-  docListeners.get('keydown')({ key: 'Escape' });
+  let escapePrevented = false;
+  docListeners.get('keydown')({
+    key: 'Escape',
+    preventDefault() { escapePrevented = true; },
+  });
   assert.equal(rootClasses.has('is-open'), false);
   assert.equal(toggle.focused, 1);
+  assert.equal(escapePrevented, true);
 
   // Activating any menu row closes the disclosure.
   menuListeners.get('toggle:click')();

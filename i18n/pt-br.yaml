@@ -174,3 +174,10 @@ comments_noscript_link: View discussions on GitHub.
 # Replace these values with reviewed translations when available.
 ui_open_in_prompt_label: Ask about this page
 ui_view_history: View edit history
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_footer_collapse: Hide footer links
+ui_footer_expand: Show footer links
+
+# Post (blog, article, etc.)

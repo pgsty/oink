@@ -443,13 +443,14 @@ function setup({ controlledAnimationFrame = false } = {}) {
   assert.equal(external.opened.length, 1, 'external result opened more than once');
   assert.equal(external.controller.isOpen(), false, 'successful external result left Palette open');
 
-  // Slash opens straight into command mode. It is a bare single-character
-  // shortcut, so it must yield to any field the reader may be typing in.
+  // Slash opens the full search surface; backslash opens straight into
+  // command mode. Both are bare single-character shortcuts, so they must
+  // yield to any field the reader may be typing in.
   const slash = setup();
   function pressKey(harness, values) {
     const event = Object.assign(
       {
-        key: '', metaKey: false, ctrlKey: false, altKey: false,
+        key: '', metaKey: false, ctrlKey: false, altKey: false, shiftKey: false,
         isComposing: false, keyCode: 0, target: harness.root,
         currentTarget: global.document,
         preventDefault() { this.defaultPrevented = true; },
@@ -462,13 +463,12 @@ function setup({ controlledAnimationFrame = false } = {}) {
 
   const opened = pressKey(slash, { key: '/' });
   assert.equal(slash.controller.isOpen(), true, 'slash did not open the Palette');
-  assert.equal(slash.input.value, '>', 'slash did not seed command mode');
+  assert.equal(slash.input.value, '', 'slash seeded a query instead of the full surface');
   assert.equal(opened.defaultPrevented, true, 'slash did not prevent the literal character');
   assert.ok(
-    slash.controller.rows().every((row) => row.type === 'command' || row.type === 'action'),
-    'slash showed page results instead of commands',
+    slash.controller.rows().some((row) => row.type === 'quick'),
+    'slash did not land on the full empty-state surface',
   );
-  assert.equal(slash.input.selectionStart, 1, 'caret was not placed after the prefix');
 
   slash.controller.close();
   assert.equal(
@@ -476,21 +476,59 @@ function setup({ controlledAnimationFrame = false } = {}) {
     slash.opener,
     'slash close did not restore focus to the pre-shortcut element',
   );
-  const field = new Element('input');
-  const ignoredField = pressKey(slash, { key: '/', target: field });
-  assert.equal(slash.controller.isOpen(), false, 'slash opened while typing in a field');
-  assert.notEqual(ignoredField.defaultPrevented, true, 'slash stole a literal character');
 
-  const ignoredModifier = pressKey(slash, { key: '/', ctrlKey: true });
-  assert.equal(slash.controller.isOpen(), false, 'ctrl+slash opened the Palette');
-  assert.notEqual(ignoredModifier.defaultPrevented, true, 'ctrl+slash was swallowed');
+  const backslashOpened = pressKey(slash, { key: '\\' });
+  assert.equal(slash.controller.isOpen(), true, 'backslash did not open the Palette');
+  assert.equal(slash.input.value, '>', 'backslash did not seed command mode');
+  assert.equal(
+    backslashOpened.defaultPrevented, true,
+    'backslash did not prevent the literal character',
+  );
+  assert.ok(
+    slash.controller.rows().every((row) => row.type === 'command' || row.type === 'action'),
+    'backslash showed page results instead of commands',
+  );
+  assert.equal(slash.input.selectionStart, 1, 'caret was not placed after the prefix');
+  slash.controller.close();
+
+  const field = new Element('input');
+  for (const key of ['/', '\\']) {
+    const ignoredField = pressKey(slash, { key, target: field });
+    assert.equal(slash.controller.isOpen(), false, `${key} opened while typing in a field`);
+    assert.notEqual(ignoredField.defaultPrevented, true, `${key} stole a literal character`);
+
+    const ignoredModifier = pressKey(slash, { key, ctrlKey: true });
+    assert.equal(slash.controller.isOpen(), false, `ctrl+${key} opened the Palette`);
+    assert.notEqual(ignoredModifier.defaultPrevented, true, `ctrl+${key} was swallowed`);
+
+    const ignoredShift = pressKey(slash, { key, shiftKey: true });
+    assert.equal(slash.controller.isOpen(), false, `shift+${key} opened the Palette`);
+    assert.notEqual(ignoredShift.defaultPrevented, true, `shift+${key} was swallowed`);
+
+    const alreadyHandled = pressKey(slash, { key, defaultPrevented: true });
+    assert.equal(slash.controller.isOpen(), false, `handled ${key} opened the Palette`);
+    assert.equal(alreadyHandled.defaultPrevented, true);
+  }
+
+  const roleDialog = new Element('div');
+  roleDialog.setAttribute('role', 'dialog');
+  const originalQuerySelectorAll = global.document.querySelectorAll;
+  global.document.querySelectorAll = (selector) =>
+    selector === '[role="dialog"]'
+      ? [roleDialog]
+      : originalQuerySelectorAll.call(global.document, selector);
+  const blockedByDialog = pressKey(slash, { key: '/' });
+  assert.equal(slash.controller.isOpen(), false, 'slash opened over an ARIA dialog');
+  assert.notEqual(blockedByDialog.defaultPrevented, true);
+  global.document.querySelectorAll = originalQuerySelectorAll;
 
   slash.controller.open({ currentTarget: slash.opener });
   slash.input.value = 'already typing';
   pressKey(slash, { key: '/' });
+  pressKey(slash, { key: '\\' });
   assert.equal(
     slash.input.value, 'already typing',
-    'slash reset a query while the Palette was already open',
+    'shortcut reset a query while the Palette was already open',
   );
 
   console.log('PRD 4 Command Palette controller checks passed');

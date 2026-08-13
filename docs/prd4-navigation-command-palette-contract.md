@@ -2,7 +2,9 @@
 
 Version: included in OINK 0.3.0
 
-Contract version: 1
+Contract version: 1 (amended 2026-08-13 by PRD 6: slash opens the full search
+surface, backslash opens command-only mode, and palette command listings
+mirror the navbar control order)
 
 Tracking issue: [pgsty/oink#11](https://github.com/pgsty/oink/issues/11)
 
@@ -33,9 +35,9 @@ this contract.
 
 ## Navigation contract
 
-Only one child level is interactive. A parent with children renders a
-navigable label and a separate disclosure button on desktop and mobile. No
-operation depends on hover.
+Only one child level is interactive. A parent with children remains a
+navigable link and owns the associated hover/focus panel. No operation depends
+on hover.
 
 Parent labels are ordinary links: click navigates to the section landing, while
 hover or keyboard focus opens the panel. ArrowDown opens the dropdown and
@@ -104,8 +106,10 @@ but cannot remove the measured budget gate.
 ## Command registry contract
 
 The built-in action IDs are copy_markdown, open_chatgpt, open_claude,
-view_markdown, view_history, edit_page, create_issue, print, switch_theme,
-switch_language, switch_version, and open_github.
+view_markdown, view_history, edit_page, create_issue, print, switch_version,
+switch_language, switch_theme, and open_github. The choice trio keeps the
+navbar control order — version, language, theme — so palette listings and the
+navbar stay consistent.
 
 Corresponding PRD 4 page and Palette actions share internal descriptors and URL
 resolution. Copy text and Print also share their registry executors; assistant
@@ -127,19 +131,25 @@ normal language fallback.
 The current local-search dialog becomes the Command Palette; PRD 4 does not add
 a second modal.
 
-- Empty query: quick links, context-aware page actions, theme, language,
-  version, and configured commands.
+- Empty query: quick links, context-aware page actions, preferences, and
+  commands. Preference and command entries mirror the navbar control order —
+  version, language, theme, then GitHub — with configured site commands after
+  the built-ins, in their configured order.
 - Text query: page fields, page keywords, and commands, grouped by content root
-  and Actions.
-- A greater-than prefix: commands only.
+  and Actions. Ranking is query-driven; the navbar-mirror order applies to
+  browsing (empty-query) listings only.
+- A greater-than prefix: commands only, listed in the same navbar-mirror order
+  when the query after the prefix is empty.
 
 The first version does not add @docs or @blog scopes.
 
-Cmd/Ctrl-K, `/` outside editable controls, keyboard result navigation, Escape,
-focus restoration, live-region announcements, reduced motion, and mobile
-interaction remain part of the existing dialog's accessibility contract. The
-slash shortcut opens directly in command-only mode and yields to inputs,
-textareas, selects, and contenteditable regions.
+Cmd/Ctrl-K, `/` and `\` outside editable controls, keyboard result navigation,
+Escape, focus restoration, live-region announcements, reduced motion, and
+mobile interaction remain part of the existing dialog's accessibility
+contract. The slash shortcut opens the full search surface (amended for PRD 6;
+it opened command-only before). The backslash shortcut opens directly in
+command-only mode. Both yield to inputs, textareas, selects, and
+contenteditable regions.
 
 ## Runtime contract
 
@@ -173,7 +183,7 @@ actions, not search or autonomous AI behavior.
 
 scripts/check-prd4-contract.py builds temporary bilingual sites with local
 search off and on. It covers both root deployment and a /preview/ subpath. It
-normalizes the desktop and mobile menu into link records and records runtime
+normalizes the single responsive navbar into link records and records runtime
 markers for these surfaces:
 
 | Surface | Representative output |
@@ -185,6 +195,6 @@ markers for these surfaces:
 | Print | localized docs print output |
 
 The flat menu snapshot is a compatibility guard. Nested fixtures verify the
-split parent link/disclosure behavior on desktop and mobile. The deep fixture
+parent link/panel relationship used at both responsive widths. The deep fixture
 verifies the warning and static-group degradation contract without creating a
 third-level flyout.

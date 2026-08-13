@@ -63,8 +63,25 @@
       .map(function (item) { return item.record; });
   }
 
-  function actionRows(registry, query, commandOnly) {
+  function actionRows(registry, query) {
+    // Built-in actions lead in manifest order, which mirrors the navbar
+    // (version, language, theme, GitHub); configured site commands trail in
+    // their configured order (PRD 6).
     var rows = [];
+    registry.list({ placement: 'palette' }).forEach(function (action) {
+      rows.push({
+        id: 'action:' + action.id,
+        sourceId: action.id,
+        type: 'action',
+        title: action.title || action.id,
+        description: action.description || '',
+        icon: action.icon || 'fa-solid fa-bolt',
+        keywords: action.keywords || [],
+        available: action.available !== false,
+        disabledReason: action.disabledReason || '',
+        action: action,
+      });
+    });
     registry.commands().forEach(function (command) {
       var target = command.action ? registry.get(command.action) : null;
       var available = command.available !== false && (!target || target.available !== false);
@@ -83,23 +100,11 @@
         target: command.target || 'self',
       });
     });
-    registry.list({ placement: 'palette' }).forEach(function (action) {
-      rows.push({
-        id: 'action:' + action.id,
-        sourceId: action.id,
-        type: 'action',
-        title: action.title || action.id,
-        description: action.description || '',
-        icon: action.icon || 'fa-solid fa-bolt',
-        keywords: action.keywords || [],
-        available: action.available !== false,
-        disabledReason: action.disabledReason || '',
-        action: action,
-      });
-    });
-    if (!query && !commandOnly) {
-      // Empty mode is intentionally useful but concise: unavailable entries
-      // appear only when they can explain why they cannot run.
+    if (!query) {
+      // Browsing modes (empty search and empty command-only) keep manifest
+      // order so listings mirror the navbar; ranking is query-driven only.
+      // Unavailable entries appear only when they can explain why they
+      // cannot run.
       return rows.filter(function (row) {
         return row.available || row.disabledReason;
       });
@@ -125,7 +130,7 @@
         target: link.target || 'self',
       };
     });
-    var actions = actionRows(registry, '', false);
+    var actions = actionRows(registry, '');
     // Derived from the descriptor's own placement rather than a hardcoded id
     // list: an action that appears in the page rail belongs to this group, so
     // adding a rail action does not silently land it under "commands".
@@ -151,7 +156,7 @@
   }
 
   function commandGroups(registry, query, labels) {
-    var rows = actionRows(registry, query, true);
+    var rows = actionRows(registry, query);
     return rows.length ? [{ key: 'actions', label: labels.actions, rows: rows }] : [];
   }
 

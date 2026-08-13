@@ -99,7 +99,7 @@ def main() -> int:
                         f"{deployment}/{lang} referenced bundle omitted the result model",
                     )
                     require(
-                        any("OinkCommandPalette" in bundle for bundle in bundles),
+                        any("OinkCommandPalette =" in bundle for bundle in bundles),
                         f"{deployment}/{lang} referenced bundle omitted the controller",
                     )
 
@@ -115,8 +115,13 @@ def main() -> int:
             require('id="td-shell-search"' not in html, "search-off page emitted Palette markup")
             require("lunr.min.js" not in html, "search-off page emitted Lunr")
             for bundle in referenced_bundles(output, html):
-                require("OinkPaletteModel" not in bundle, "search-off page loaded Palette model")
-                require("OinkCommandPalette" not in bundle, "search-off page loaded Palette controller")
+                require("OinkPaletteModel =" not in bundle, "search-off page loaded Palette model")
+                # keyboard-nav.js may *reference* the palette global as a
+                # consumer; only the controller's own definition is barred.
+                require(
+                    "OinkCommandPalette =" not in bundle,
+                    "search-off page loaded Palette controller",
+                )
 
         for script in (
             "prd4-palette-model.test.js",

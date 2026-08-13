@@ -594,6 +594,14 @@ def normalize_navigation(html: str) -> dict[str, Any]:
                 "target": attrs.get("target", ""),
                 "rel": sorted(attrs.get("rel", "").split()),
                 "text": text,
+                **(
+                    {
+                        "controls": attrs["aria-controls"],
+                        "expanded": attrs.get("aria-expanded", ""),
+                    }
+                    if attrs.get("aria-controls")
+                    else {}
+                ),
             }
         )
     for attrs in parser.controls:
@@ -932,9 +940,8 @@ def validate_observation(
                         )
                     controls = navigation["controls"]
                     panels = navigation["panels"]
-                    # Hover panels have no disclosure buttons; the parent link
-                    # carries aria-expanded instead, so the parser sees only
-                    # the panel element per nested menu.
+                    # Hover panels have no disclosure buttons. Their parent
+                    # link owns the rendered accessibility relationship.
                     expected_panel_count = 0 if variant == "flat" else 1
                     require(
                         len(controls) == 0
@@ -942,6 +949,21 @@ def validate_observation(
                         and len(panels) == len(set(panels)),
                         f"{deployment}/{variant}/{state}/{lang} disclosure "
                         "ARIA relationship changed",
+                    )
+                    parent_disclosures = [
+                        link
+                        for link in navigation["desktop"]
+                        if link.get("controls")
+                    ]
+                    require(
+                        len(parent_disclosures) == expected_panel_count
+                        and all(
+                            link["controls"] in panels
+                            and link["expanded"] == "false"
+                            for link in parent_disclosures
+                        ),
+                        f"{deployment}/{variant}/{state}/{lang} parent link "
+                        "does not own its panel accessibility state",
                     )
                     require(
                         navigation["current_roots"]

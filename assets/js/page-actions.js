@@ -116,6 +116,7 @@
 
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && isOpen()) {
+        event.preventDefault();
         close(true);
         return;
       }

@@ -6,8 +6,8 @@
   'use strict';
 
   var html = document.documentElement;
-  // Typing this prefix, or pressing "/" outside a field, restricts the palette
-  // to commands.
+  // Typing this prefix, or pressing "\\" outside a field, restricts the
+  // palette to commands. "/" opens the full search surface.
   var COMMAND_PREFIX = '>';
   var TYPING_TAGS = { INPUT: true, TEXTAREA: true, SELECT: true };
 
@@ -19,6 +19,25 @@
     return typeof target.closest === 'function'
       ? target.closest('[contenteditable]:not([contenteditable="false"])') !== null
       : false;
+  }
+
+  function isRendered(element) {
+    if (!element) return false;
+    if (typeof element.closest === 'function' && element.closest('[hidden]'))
+      return false;
+    if (global.getComputedStyle) {
+      var style = global.getComputedStyle(element);
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
+    }
+    return element.offsetParent !== null;
+  }
+
+  function hasOpenDialog() {
+    if (document.querySelector('dialog[open]')) return true;
+    return Array.prototype.some.call(
+      document.querySelectorAll('[role="dialog"]'),
+      isRendered,
+    );
   }
 
   var FOCUSABLE =
@@ -340,7 +359,7 @@
       if (engine) {
         try { groups = pageGroups(engine.query(raw)); } catch (_) { groups = []; }
       }
-      var actions = model.actionRows(registry, raw, false);
+      var actions = model.actionRows(registry, raw);
       if (actions.length)
         groups.push({ key: 'actions', label: labels.actions, rows: actions });
       return groups;
@@ -579,14 +598,16 @@
         if (isOpen()) close();
         else open();
       } else if (
-        event.key === '/' &&
-        !event.metaKey && !event.ctrlKey && !event.altKey &&
-        !isOpen() && !isTypingTarget(event.target)
+        (event.key === '/' || event.key === '\\') &&
+        !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey &&
+        !event.defaultPrevented && !isOpen() && !hasOpenDialog() &&
+        !isTypingTarget(event.target)
       ) {
-        // Slash is a bare shortcut, so it must never steal a literal slash
-        // from a field the reader is typing in.
+        // Slash and backslash are bare shortcuts, so they never steal a
+        // character from a field. Slash is full search; backslash is commands.
         event.preventDefault();
-        open(event, COMMAND_PREFIX);
+        if (event.key === '\\') open(event, COMMAND_PREFIX);
+        else open(event);
       } else if (event.key === 'Escape' && isOpen()) {
         event.preventDefault();
         close();
@@ -617,8 +638,13 @@
     });
   }
 
-  global.OinkCommandPalette = { init: initSearch };
+  // Let keyboard-nav.js reuse this instance without duplicating dialog logic.
+  global.OinkCommandPalette = {
+    init: initSearch,
+    commandPrefix: COMMAND_PREFIX,
+  };
   if (typeof module === 'object' && module.exports)
     module.exports = global.OinkCommandPalette;
-  if (!global.__OINK_PALETTE_MANUAL_INIT__) initSearch();
+  if (!global.__OINK_PALETTE_MANUAL_INIT__)
+    global.OinkCommandPalette.instance = initSearch();
 })(typeof window === 'object' ? window : globalThis);

@@ -6,6 +6,16 @@
 {{ $hasPlantuml := and .Site.Params.plantuml.enable (.Page.Store.Get "hasPlantuml") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{ $keyboardNavParam := .Param "ui.keyboard_nav.enable" -}}
+{{ if and (ne $keyboardNavParam nil) (ne (printf "%T" $keyboardNavParam) "bool") -}}
+  {{ errorf "params.ui.keyboard_nav.enable must be a boolean" -}}
+{{ end -}}
+{{ $hasKeyboardNav := and $shell $interactiveOutput (ne $keyboardNavParam false) -}}
+{{ $footerData := dict -}}
+{{ if eq (partial "footer-style.html" .) "fat" -}}
+  {{ $footerData = partial "footer-data.html" . -}}
+{{ end -}}
+{{ $hasFooterCollapse := and $interactiveOutput (or $footerData.brand $footerData.columns) -}}
 {{ $imageZoomConfig := partial "content/image-zoom-config.html" . -}}
 {{ $hasImageZoom := and $interactiveOutput $imageZoomConfig.enable (.Page.Store.Get "hasImageZoom" | default false) -}}
 {{ $hasCodeRuntime := and $interactiveOutput (.Page.Store.Get "hasCodeRuntime" | default false) -}}
@@ -154,6 +164,12 @@ window.markmap = {
 {{ else if $hasGoogleSearch -}}
   {{ $jsArray = $jsArray | append $jsSearch -}}
 {{ end -}}
+{{ if $hasKeyboardNav -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/keyboard-nav.js") -}}
+{{ end -}}
+{{ if $hasFooterCollapse -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/footer-collapse.js") -}}
+{{ end -}}
 {{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPaletteModel $jsPalette }}{{ end -}}
 
 {{ if .Page.Store.Get "hasmermaid" -}}
@@ -219,11 +235,12 @@ window.markmap = {
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch $hasGoogleSearch .Site.Language.Lang $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
   $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus $hasFeedback
-  $hasCodeRuntime $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable")) | md5 -}}
+  $hasCodeRuntime $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable"))
+  $hasKeyboardNav $hasFooterCollapse | md5 -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
 {{ if hugo.IsProduction -}}

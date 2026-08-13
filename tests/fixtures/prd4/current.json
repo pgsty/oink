@@ -152,7 +152,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/preview/en/docs/",
             "kind": "link",
@@ -236,7 +238,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/preview/en/docs/",
               "kind": "link",
@@ -348,7 +352,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/preview/en/docs/",
             "kind": "link",
@@ -443,7 +449,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/preview/en/docs/",
               "kind": "link",
@@ -567,7 +575,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/preview/en/docs/",
             "kind": "link",
@@ -662,7 +672,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/preview/en/docs/",
               "kind": "link",
@@ -914,7 +926,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/en/docs/",
             "kind": "link",
@@ -998,7 +1012,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/en/docs/",
               "kind": "link",
@@ -1111,7 +1127,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/en/docs/",
             "kind": "link",
@@ -1195,7 +1213,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/en/docs/",
               "kind": "link",
@@ -1307,7 +1327,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/en/docs/",
             "kind": "link",
@@ -1402,7 +1424,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/en/docs/",
               "kind": "link",
@@ -1526,7 +1550,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/en/docs/",
             "kind": "link",
@@ -1621,7 +1647,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/en/docs/",
               "kind": "link",
@@ -1997,7 +2025,9 @@
         "desktop": [
           {
             "active": false,
+            "controls": "td-navbar-desktop-docs-0",
             "current": "",
+            "expanded": "false",
             "external": false,
             "href": "/preview/en/docs/",
             "kind": "link",
@@ -2081,7 +2111,9 @@
           "desktop": [
             {
               "active": true,
+              "controls": "td-navbar-desktop-docs-0",
               "current": "",
+              "expanded": "false",
               "external": false,
               "href": "/preview/en/docs/",
               "kind": "link",

@@ -27,11 +27,28 @@
     box-shadow: var(--td-brand-shadow-sm);
   }
 
+  // Three zones on one grid row: brand at the start, the site's own menu
+  // entries true-centered, and the utility cluster at the end with the
+  // search box as its elastic leading edge.
   .landing-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
+    column-gap: 16px;
     height: 56px;
+  }
+
+  .nav-brand {
+    justify-self: start;
+  }
+
+  .nav-menu-zone {
+    justify-self: center;
+    min-width: 0;
+  }
+
+  .nav-util-zone {
+    justify-self: end;
   }
 
   .nav-brand {
@@ -235,6 +252,66 @@
     height: 18px;
   }
 
+  // Boxed search trigger: reads as a short input advertising the "/" shortcut,
+  // opens the Command Palette like the icon it replaces. Collapses back to an
+  // icon in the compact state.
+  .nav-search-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 190px;
+    height: 34px;
+    margin-inline-end: 4px;
+    padding: 0 8px 0 10px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--bs-tertiary-color);
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      background-color 100ms ease,
+      border-color 100ms ease,
+      color 100ms ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--bs-secondary-color);
+      background: var(--td-brand-elev);
+      color: var(--bs-body-color);
+    }
+
+    .td-shell-icon {
+      flex: none;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .nav-search-box__hint {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nav-search-box__kbd {
+    flex: none;
+    min-width: 18px;
+    padding: 0 5px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 5px;
+    background: var(--bs-body-bg);
+    box-shadow: none;
+    color: var(--bs-tertiary-color);
+    font-family: var(--td-code-font-family);
+    font-size: 11px;
+    line-height: 17px;
+    text-align: center;
+  }
+
   .nav-github {
     display: inline-flex;
     align-items: center;
@@ -387,12 +464,55 @@
   }
 }
 
+// Between lg and the widest layouts the centered menu leaves less room for
+// the side zones; the search box gives up some of its width first.
+@media (max-width: 1199.98px) {
+  .landing-header .nav-search-box {
+    width: 150px;
+  }
+}
+
 // Compact state: below lg every fixed-count control drops its text so the row
 // always fits, right-aligned — logo only, icon-only menu items, and icon
 // triggers for search, language, theme, version, and GitHub. This is the only
 // other navbar state; phones use it too.
 @media (max-width: 991.98px) {
   .landing-header {
+    // The grid's centered zone folds back into one right-aligned icon row.
+    .landing-nav {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .nav-menu-zone {
+      margin-inline-start: auto;
+    }
+
+    // The search box collapses to the plain icon trigger it replaced.
+    .nav-search-box {
+      width: auto;
+      min-width: 34px;
+      justify-content: center;
+      margin-inline-end: 0;
+      padding: 0 8px;
+      border-color: transparent;
+
+      &:hover,
+      &:focus-visible {
+        border-color: transparent;
+      }
+
+      .td-shell-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .nav-search-box__hint,
+    .nav-search-box__kbd {
+      display: none;
+    }
+
     .nav-title,
     .nav-wordmark {
       display: none;
@@ -410,8 +530,41 @@
     }
 
     .nav-link {
+      min-width: 34px;
+      min-height: 34px;
+      justify-content: center;
       padding: 6px 8px;
       font-size: 1rem;
+    }
+  }
+}
+
+// The smallest shell navbar can contain three site roots plus six utility
+// controls. Keep every target above the WCAG 2.2 minimum without letting flex
+// shrink turn the final menu/search pair into undersized hit areas.
+@media (max-width: 479.98px) {
+  .td-shell-chrome .landing-header .landing-container {
+    padding-inline: 10px;
+  }
+
+  .landing-header {
+    .nav-links {
+      gap: 2px;
+    }
+
+    .nav-link,
+    .nav-util,
+    .nav-github,
+    .nav-search-box,
+    .landing-language-selector.td-language-selector--menu
+      > .td-language-selector__trigger {
+      flex: 0 0 28px;
+      width: 28px;
+      min-width: 28px;
+      height: 34px;
+      min-height: 34px;
+      justify-content: center;
+      padding: 0;
     }
   }
 }
@@ -442,6 +595,17 @@
   .landing-container {
     padding: 0 14px;
   }
+}
+
+// The PRD 6 chrome-free reading mode (H key) hides the navbar with the rest
+// of the chrome; fixed elements and anchor jumps stop reserving its height.
+html[data-td-kbd-zen] .landing-header {
+  display: none;
+}
+
+html[data-td-kbd-zen]:has(body.td-shell-chrome--navbar) {
+  --td-shell-nav-h: 0px;
+  scroll-padding-top: 1.5rem;
 }
 
 @media (forced-colors: active) {

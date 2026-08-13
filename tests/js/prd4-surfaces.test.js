@@ -189,6 +189,12 @@ function testNavbarHoverPanel() {
   menu.dispatch('pointerenter', { pointerType: 'touch' });
   assert.equal(panel.hidden, true);
 
+  parent.dispatch('focus');
+  assert.equal(panel.hidden, false);
+  assert.equal(parent.getAttribute('aria-expanded'), 'true');
+  registered.get('navbar-menu-0')(false);
+  coordinated.length = 0;
+
   menu.dispatch('pointerenter', { pointerType: 'mouse' });
   assert.equal(panel.hidden, false);
   assert.equal(parent.getAttribute('aria-expanded'), 'true');

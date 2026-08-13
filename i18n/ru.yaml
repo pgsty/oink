@@ -145,7 +145,6 @@ ui_code_group_label: Code examples
 ui_kbd_with: with
 ui_field_required: required
 ui_action_unavailable: unavailable
-ui_field_default: default
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.

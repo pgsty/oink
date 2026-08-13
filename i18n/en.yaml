@@ -68,7 +68,6 @@ ui_code_group_label: Code examples
 ui_kbd_with: with
 ui_field_required: required
 ui_action_unavailable: unavailable
-ui_field_default: default
 ui_image_zoom_dialog: Image preview
 ui_image_zoom_open: Open image preview
 ui_image_zoom_close: Close image preview

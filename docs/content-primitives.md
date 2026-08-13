@@ -207,7 +207,9 @@ provided and are not looked up through i18n.
 
 Every theme-owned visible or assistive string is an i18n key submitted to all
 locale files in the same change. Initial examples include the Kbd spoken
-separator, Fields metadata labels, and Image Zoom dialog controls.
+separator and Image Zoom dialog controls. The Fields `required` and `default`
+metadata labels are a deliberate exception: they are API vocabulary rendered
+untranslated in every locale.
 
 An intentional historical alias:
 
@@ -308,8 +310,12 @@ retaining the source Markdown in Markdown output. An explicit empty-string
 default is displayed as `""`; an absent default emits no default metadata.
 
 HTML is one `<dl>` with HTML-valid wrappers containing paired `<dt>` and
-`<dd>` elements. It must not use `display: contents`. An optional label is
-visible and associated with the list without inventing a fixed heading level.
+`<dd>` elements. It must not use `display: contents`. Each entry stacks two
+rows: the `<dt>` header row carries the field name followed by the inline
+`type`, `required`, and `default` metadata in that order, and the `<dd>` below
+it carries the description. Entries are separated by hairline dividers, not
+boxed cells or columns. An optional label is visible and associated with the
+list without inventing a fixed heading level.
 
 Markdown fallback is an ordered author-preserving bullet list:
 
@@ -324,9 +330,11 @@ Markdown fallback is an ordered author-preserving bullet list:
 When supplied, the author-provided label precedes the list as emphasized plain
 text so it remains visible outside HTML.
 
-The labels for `required` and `default` are theme-owned i18n strings. The
-deferred parameters are `kind`, `location`, `since`, `deprecated`, and `link`,
-along with nested schemas and compiler-driven type extraction.
+The `required` and `default` metadata labels are untranslated API vocabulary:
+every locale renders the literal words `required` and `default` in HTML,
+print, Markdown, and RSS output alike. They are not i18n keys. The deferred
+parameters are `kind`, `location`, `since`, `deprecated`, and `link`, along
+with nested schemas and compiler-driven type extraction.
 
 ### 3.4 FileTree
 

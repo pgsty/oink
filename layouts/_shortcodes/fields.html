@@ -42,13 +42,12 @@
       {{- $metadata = $metadata | append (partial "content/markdown-code-span.html" .) -}}
     {{- end -}}
     {{- if .required -}}
-      {{- $requiredLabel := partial "content/markdown-escape.html" (T "ui_field_required") -}}
-      {{- $metadata = $metadata | append $requiredLabel -}}
+      {{- /* Deliberately untranslated API vocabulary; see the contract. */ -}}
+      {{- $metadata = $metadata | append "required" -}}
     {{- end -}}
     {{- if .hasDefault -}}
-      {{- $defaultLabel := partial "content/markdown-escape.html" (T "ui_field_default") -}}
       {{- $defaultValue := partial "content/markdown-code-span.html" .default -}}
-      {{- $metadata = $metadata | append (printf "%s: %s" $defaultLabel $defaultValue) -}}
+      {{- $metadata = $metadata | append (printf "default: %s" $defaultValue) -}}
     {{- end -}}
     {{- $heading := printf "- %s" $fieldName -}}
     {{- if gt (len $metadata) 0 -}}
@@ -72,29 +71,20 @@
   <dl class="td-fields__list"{{ if $label }} aria-labelledby="{{ $labelID }}"{{ end }}>
     {{- range $entries }}
     <div class="td-field">
-      <dt class="td-field__name"><code>{{ .name }}</code></dt>
-      <dd class="td-field__value">
-        {{- if or .type .required .hasDefault }}
-        <div class="td-field__meta">
-          {{- $hasPrevious := false -}}
-          {{- with .type -}}
-            {{- if $hasPrevious }}<span class="td-field__separator" aria-hidden="true">·</span><span class="visually-hidden">, </span>{{ end -}}
-          <span class="td-field__type"><code>{{ . }}</code></span>
-            {{- $hasPrevious = true -}}
-          {{- end -}}
-          {{- if .required -}}
-            {{- if $hasPrevious }}<span class="td-field__separator" aria-hidden="true">·</span><span class="visually-hidden">, </span>{{ end -}}
-          <span class="td-field__required">{{ T "ui_field_required" }}</span>
-            {{- $hasPrevious = true -}}
-          {{- end -}}
-          {{- if .hasDefault -}}
-            {{- if $hasPrevious }}<span class="td-field__separator" aria-hidden="true">·</span><span class="visually-hidden">, </span>{{ end -}}
-          <span class="td-field__default"><span>{{ T "ui_field_default" }}:</span> <code>{{ .default }}</code></span>
-          {{- end }}
-        </div>
+      {{- /* required/default are untranslated API vocabulary; see the contract. */}}
+      <dt class="td-field__term">
+        <code class="td-field__name">{{ .name }}</code>
+        {{- with .type }}
+        <span class="visually-hidden">, </span><span class="td-field__type"><code>{{ . }}</code></span>
         {{- end }}
-        <div class="td-field__description">{{ $.Page.RenderString (dict "display" "block") .description }}</div>
-      </dd>
+        {{- if .required }}
+        <span class="visually-hidden">, </span><span class="td-field__required">required</span>
+        {{- end }}
+        {{- if .hasDefault }}
+        <span class="visually-hidden">, </span><span class="td-field__default">default: <code>{{ .default }}</code></span>
+        {{- end }}
+      </dt>
+      <dd class="td-field__description">{{ $.Page.RenderString (dict "display" "block") .description }}</dd>
     </div>
     {{- end }}
   </dl>

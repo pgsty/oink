@@ -61,6 +61,15 @@ All notable changes to OINK are documented here. The project follows
   icon — feeds belong to the blog root and its sections. Fix the blank seam
   between the sidebar's lower edge and the footer while scrolling.
 
+- Redesign the Fields component as a Mintlify-style stacked list: each entry
+  puts the field name on its own header row followed by inline `type`,
+  `required`, and `default` pills, with the description below and hairline
+  dividers between entries, replacing the boxed name/value columns. The
+  `required` and `default` metadata labels are now untranslated API vocabulary
+  in every locale and output format (the `ui_field_default` i18n key is
+  removed; `ui_field_required` remains for the action registry), and the
+  Markdown fallback writes the literal `required` / `default:` words. An
+  absent default still emits nothing while an explicit `""` stays visible.
 - Upgrade the vendored Font Awesome Free assets from 6.7.2 to 7.3.1, use its
   official OpenAI and Claude icons for the assistant actions, and follow the
   upstream WOFF2-only web-font distribution instead of retaining legacy TTFs.

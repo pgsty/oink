@@ -69,7 +69,6 @@ ui_code_group_label: 代码示例
 ui_kbd_with: 加
 ui_field_required: 必填
 ui_action_unavailable: 暂不可用
-ui_field_default: 默认值
 ui_image_zoom_dialog: 图片预览
 ui_image_zoom_open: 打开图片预览
 ui_image_zoom_close: 关闭图片预览

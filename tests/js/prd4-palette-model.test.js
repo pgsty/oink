@@ -36,6 +36,16 @@ function registry() {
       title: 'Print',
       placements: { page: true, palette: true },
     }),
+    action('open_chatgpt', {
+      title: 'Open in ChatGPT',
+      icon: 'fa-brands fa-openai',
+      placements: { page: true, palette: true },
+    }),
+    action('open_claude', {
+      title: 'Open in Claude',
+      icon: 'fa-brands fa-claude',
+      placements: { page: true, palette: true },
+    }),
     action('switch_theme', {
       title: 'Switch theme',
       kind: 'choice',
@@ -109,6 +119,14 @@ function registry() {
   const commands = model.commandGroups(registry(), '', labels)[0].rows;
   assert.ok(commands.some((row) => row.sourceId === 'status'));
   assert.ok(commands.some((row) => row.sourceId === 'copy_markdown'));
+  assert.equal(
+    commands.find((row) => row.sourceId === 'open_chatgpt').icon,
+    'fa-brands fa-openai',
+  );
+  assert.equal(
+    commands.find((row) => row.sourceId === 'open_claude').icon,
+    'fa-brands fa-claude',
+  );
   const language = commands.find((row) => row.sourceId === 'language_now');
   assert.equal(language.available, false, 'alias did not inherit target availability');
   assert.equal(language.disabledReason, '只有一种语言');

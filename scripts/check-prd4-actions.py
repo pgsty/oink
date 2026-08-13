@@ -234,6 +234,15 @@ def validate_manifest(
             require(action["disabledReason"], f"{lang}/{action['id']} lacks an unavailable reason")
 
     by_id = map_by_id(actions)
+    expected_assistant_icons = {
+        "open_chatgpt": "fa-brands fa-openai",
+        "open_claude": "fa-brands fa-claude",
+    }
+    for action_id, expected_icon in expected_assistant_icons.items():
+        require(
+            by_id[action_id]["icon"] == expected_icon,
+            f"{lang}/{action_id} does not use the Font Awesome icon",
+        )
     markdown = f"{prefix}{lang}/docs/guides/tutorial/index.md"
     require(by_id["copy_markdown"]["url"] == markdown, f"{lang} copy URL is not subpath safe")
     require(by_id["view_markdown"]["url"] == markdown, f"{lang} view URL diverges from copy")
@@ -373,6 +382,15 @@ def main() -> int:
                     all("invalid search_boost" in line for line in log.splitlines() if "WARN" in line),
                     f"{deployment} action fixture emitted an unrelated warning",
                 )
+                stylesheets = sorted((output / "scss").glob("*.css"))
+                require(stylesheets, f"{deployment} emitted no compiled stylesheet")
+                compiled_css = "\n".join(
+                    path.read_text(encoding="utf-8") for path in stylesheets
+                )
+                require(
+                    ".fa-openai" in compiled_css and ".fa-claude" in compiled_css,
+                    f"{deployment} stylesheet omitted Font Awesome assistant icons",
+                )
                 for lang in helper.LANGUAGES:
                     path = output / lang / "docs" / "guides" / "tutorial" / "index.html"
                     html = path.read_text(encoding="utf-8")
@@ -396,6 +414,14 @@ def main() -> int:
                     require("data-td-page-print" not in html, "legacy print controller remains")
                     require("</script><script>alert(1)</script>" not in html, "command title escaped inert JSON")
                     by_id = map_by_id(manifest["actions"])
+                    for action_id in ("open_chatgpt", "open_claude"):
+                        require(
+                            html.count(
+                                f'<i class="{by_id[action_id]["icon"]}" aria-hidden="true"></i>'
+                            )
+                            == 1,
+                            f"{deployment}/{lang} {action_id} icon is missing or duplicated",
+                        )
                     for action_id in (
                         "open_chatgpt",
                         "open_claude",

@@ -16,6 +16,10 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "VENDOR.json"
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
+PREMINIFIED_STANDALONE_ASSETS = {
+    "third_party/asciinema/asciinema-player.min.js": "asciinemaJS",
+    "third_party/infographic/infographic.min.js": "infographicJS",
+}
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -318,6 +322,22 @@ def main() -> int:
                 errors,
             )
             checked_artifacts.add(value)
+
+    scripts_template = (ROOT / "layouts/_partials/scripts.html").read_text(
+        encoding="utf-8"
+    )
+    for asset, resource_variable in PREMINIFIED_STANDALONE_ASSETS.items():
+        require(
+            f'<script src="{{{{ ${resource_variable}.RelPermalink }}}}"'
+            in scripts_template,
+            f"pre-minified runtime must be published as a standalone script: {asset}",
+            errors,
+        )
+        require(
+            f'append (resources.Get "{asset}")' not in scripts_template,
+            f"pre-minified runtime must not enter Hugo's minified JS concat: {asset}",
+            errors,
+        )
 
     if errors:
         print("Vendor inventory check failed:", file=sys.stderr)

@@ -1,6 +1,16 @@
 {{ $scssMain := "scss/main.scss" -}}
-{{ $css := resources.Get $scssMain
+{{ $scss := resources.Get $scssMain
       | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
+{{/* Font Awesome 7's source SCSS requires Dart Sass, while Hugo Extended
+     uses LibSass. Concatenate the official compiled CSS so the dependency
+     stays local and remains part of the theme's single stylesheet. */ -}}
+{{ $fontAwesome := slice
+      (resources.Get "third_party/Font-Awesome/css/fontawesome.css")
+      (resources.Get "third_party/Font-Awesome/css/solid.css")
+      (resources.Get "third_party/Font-Awesome/css/regular.css")
+      (resources.Get "third_party/Font-Awesome/css/brands.css")
+-}}
+{{ $css := $fontAwesome | append $scss | resources.Concat "scss/main.css" -}}
 
 {{ if hugo.IsProduction -}}
   {{ $css = $css | minify | fingerprint -}}

@@ -20,8 +20,9 @@
     pointer-events: none;
 
     &::before {
-      @extend .fa;
-      content: fa-content($fa-var-search);
+      content: '\f002';
+      font: var(--fa-font-solid);
+      line-height: 1;
     }
 
     // Styling adjustments for the navbar

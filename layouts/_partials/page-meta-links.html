@@ -36,10 +36,10 @@
   {{- end }}
   {{- if $assistantLinks }}
   <a class="td-page-meta__action" data-oink-action="open_chatgpt" href="{{ $chatgptURL | safeURL }}" data-td-page-open-in="chatgpt" target="_blank" rel="noopener noreferrer">
-    {{ partialCached "shell/icon.html" "chatgpt" "chatgpt" }}<span>{{ T "ui_open_in_chatgpt" }}</span>
+    <i class="{{ $byID.open_chatgpt.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_chatgpt" }}</span>
   </a>
   <a class="td-page-meta__action" data-oink-action="open_claude" href="{{ $claudeURL | safeURL }}" data-td-page-open-in="claude" target="_blank" rel="noopener noreferrer">
-    {{ partialCached "shell/icon.html" "claude" "claude" }}<span>{{ T "ui_open_in_claude" }}</span>
+    <i class="{{ $byID.open_claude.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_claude" }}</span>
   </a>
   {{- end }}
   {{- with $markdownURL }}

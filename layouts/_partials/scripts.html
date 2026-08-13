@@ -64,6 +64,8 @@ window.markmap = {
     ],
     provider(path) {
       const assets = {
+        {{/* Markmap 0.18.12 requests its pinned asset IDs; serve the
+             compatible refreshed files from those local aliases. */ -}}
         '@highlightjs/cdn-assets@11.11.1/highlight.min.js': {{ $highlightJS.RelPermalink | jsonify | safeJS }},
         '@highlightjs/cdn-assets@11.11.1/styles/default.min.css': {{ $highlightCSS.RelPermalink | jsonify | safeJS }},
         'katex@0.16.18/dist/katex.min.js': {{ $katexJS.RelPermalink | jsonify | safeJS }},
@@ -125,13 +127,23 @@ window.markmap = {
   {{ if hugo.IsProduction }}{{ $asciinemaCSS = $asciinemaCSS | minify | fingerprint }}{{ end -}}
   <link rel="stylesheet" href="{{ $asciinemaCSS.RelPermalink }}"
     {{- with $asciinemaCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
-  {{ $jsArray = $jsArray | append (resources.Get "third_party/asciinema/asciinema-player.min.js") -}}
+  {{/* Asciinema ships a pre-minified bundle with a WASM runtime shim. Keep it
+       separate so Hugo's production minifier cannot rewrite that shim. */ -}}
+  {{ $asciinemaJS := resources.Get "third_party/asciinema/asciinema-player.min.js" -}}
+  {{ if hugo.IsProduction }}{{ $asciinemaJS = $asciinemaJS | fingerprint }}{{ end -}}
+  <script src="{{ $asciinemaJS.RelPermalink }}"
+    {{- with $asciinemaJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 {{ if $hasEcharts -}}
   {{ $jsArray = $jsArray | append (resources.Get "third_party/echarts/echarts.min.js") -}}
 {{ end -}}
 {{ if $hasInfographic -}}
-  {{ $jsArray = $jsArray | append (resources.Get "third_party/infographic/infographic.min.js") -}}
+  {{/* AntV ships a pre-minified UMD bundle. Keep it separate so Hugo's
+       production minifier does not transform the runtime a second time. */ -}}
+  {{ $infographicJS := resources.Get "third_party/infographic/infographic.min.js" -}}
+  {{ if hugo.IsProduction }}{{ $infographicJS = $infographicJS | fingerprint }}{{ end -}}
+  <script src="{{ $infographicJS.RelPermalink }}"
+    {{- with $infographicJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 {{ if or $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/content-components.js") -}}

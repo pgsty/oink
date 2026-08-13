@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "generated": "2026-08-12",
+  "generated": "2026-08-13",
   "hash": "sha256",
   "trees": [
-    {"path": "assets/third_party", "files": 228, "sha256": "794a5f82ea3a650bba7341a8ef0def0c408fc47d0701ad4fc3c04f714853e5a4"},
+    {"path": "assets/third_party", "files": 237, "sha256": "4e1837c6ab0fcd4b3b357a9f505a60cc81a620e9cec8fda4edab49dbcca52639"},
     {"path": "assets/js/third_party", "files": 1, "sha256": "ac21e64c5c17db79d37d0a3149cdc4489879e730e3cb360180eb8cf7b0041d27"},
-    {"path": "static/webfonts", "files": 30, "sha256": "41e4fc358e77d4d6e542c97db9a71cfe475911c5a63ade9998f6c7f7db3e2738"}
+    {"path": "static/webfonts", "files": 27, "sha256": "3074a82e01185685b726fb4d6e9222d179adcaa15772dd6dab93889945faa692"}
   ],
   "dependencies": [
     {
@@ -32,16 +32,19 @@
     },
     {
       "name": "@fortawesome/fontawesome-free",
-      "version": "6.7.2",
-      "source": "https://registry.npmjs.org/@fortawesome/fontawesome-free/-/fontawesome-free-6.7.2.tgz",
+      "version": "7.3.1",
+      "source": "https://registry.npmjs.org/@fortawesome/fontawesome-free/-/fontawesome-free-7.3.1.tgz",
       "license": "CC-BY-4.0 AND OFL-1.1 AND MIT",
       "licenseFiles": ["assets/third_party/Font-Awesome/LICENSE.txt"],
       "artifacts": [
-        {"path": "assets/third_party/Font-Awesome/scss/fontawesome.scss", "sha256": "3e751a5d7f3cb0bac9f5efc5b03072fc915632fc8ed1d3cf7a9e1a749ee8df72"},
-        {"path": "assets/third_party/Font-Awesome/scss/regular.scss", "sha256": "97b0d92dbdaf5a3883f86124250ac308a28e91355f63ccefd9b07c6a25cae663"},
-        {"path": "static/webfonts/fa-solid-900.woff2", "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e"},
-        {"path": "static/webfonts/fa-regular-400.woff2", "sha256": "e3456d1283b9d75337a773dfd147bf908fd02c01b4bf48576d8603a69b13cbe5"},
-        {"path": "static/webfonts/fa-regular-400.ttf", "sha256": "54cf6086f7bb21f9d072ad494a19b4681fa516dd0a14cee52da01d3651a913a3"}
+        {"path": "assets/third_party/Font-Awesome/css/fontawesome.css", "sha256": "f84ea100b8bf5267f160dc5dcc6bc7563fe790e8bb98329342fdb747b63e0824"},
+        {"path": "assets/third_party/Font-Awesome/css/solid.css", "sha256": "f9fb16c11d615f05a810deb12090ee8c7acd828e88edddb1286dacccc9760a65"},
+        {"path": "assets/third_party/Font-Awesome/css/regular.css", "sha256": "1dce7e3c97c033e7e8ee6f7721f6812a273d4d57a8639744d51f9f079759ad4a"},
+        {"path": "assets/third_party/Font-Awesome/css/brands.css", "sha256": "af2e900661ff931a30d0577eab72817cc175c7b6ca37e846c7e1dd54303f361e"},
+        {"path": "assets/third_party/Font-Awesome/scss/fontawesome.scss", "sha256": "3c785994eb5204237d158dad42ddae46a95dc817637de6cb183bce33b18ad7af"},
+        {"path": "static/webfonts/fa-solid-900.woff2", "sha256": "24e5fae26b41c08b2df81c91669f5aaae71d81a84a4713fc56b5c621b78dd456"},
+        {"path": "static/webfonts/fa-regular-400.woff2", "sha256": "f4722d10b9e1b41eefe3b51a026312ee1970edb7782f94b0080d3d475945734c"},
+        {"path": "static/webfonts/fa-brands-400.woff2", "sha256": "ff66d1cfb67dbe3da432bbe36572cabfa4eef0e591303c2cba111474ba1d15bc"}
       ]
     },
     {
@@ -90,34 +93,43 @@
     },
     {
       "name": "@docsearch/js",
-      "version": "3.8.2",
-      "source": "https://registry.npmjs.org/@docsearch/js/-/js-3.8.2.tgz",
+      "version": "5.0.1",
+      "source": "https://registry.npmjs.org/@docsearch/js/-/js-5.0.1.tgz",
       "license": "MIT",
       "licenseFiles": ["assets/third_party/docsearch/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/docsearch/docsearch.js", "sha256": "ed71fadbc0429b95af9495b7122202cb9f799d1ed18a07ff0f00894b67be2870"},
-        {"path": "assets/third_party/docsearch/docsearch.css", "sha256": "98c7a047cfb0182b3dacada083966530f8928a98da4b60b325d1a8297be641fd"}
+        {"path": "assets/third_party/docsearch/docsearch.js", "sha256": "e4f292470137bbf4a9af9e839520544e8a9d5a9928a1e49f6fa1393799dbf6c6"}
+      ]
+    },
+    {
+      "name": "@docsearch/css",
+      "version": "5.0.1",
+      "source": "https://registry.npmjs.org/@docsearch/css/-/css-5.0.1.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/docsearch/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/docsearch/docsearch.css", "sha256": "356800c2201002f20b956906031560b2e3c4fe14f66ca70062a04d5c519b4484"}
       ]
     },
     {
       "name": "mermaid",
-      "version": "11.14.0",
-      "source": "https://registry.npmjs.org/mermaid/-/mermaid-11.14.0.tgz",
+      "version": "11.16.1",
+      "source": "https://registry.npmjs.org/mermaid/-/mermaid-11.16.1.tgz",
       "license": "MIT",
       "licenseFiles": ["assets/third_party/mermaid/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/mermaid/mermaid.min.js", "sha256": "217b66ef4279c33c141b4afe22effad10a91c02558dc70917be2c0981e78ed87"}
+        {"path": "assets/third_party/mermaid/mermaid.min.js", "sha256": "18327bef70d96fb505fe7287d9f6a7362ebf07ff6576ddfaffb1a06f3e1a2954"}
       ]
     },
     {
       "name": "katex",
-      "version": "0.16.21",
-      "source": "https://registry.npmjs.org/katex/-/katex-0.16.21.tgz",
+      "version": "0.18.4",
+      "source": "https://registry.npmjs.org/katex/-/katex-0.18.4.tgz",
       "license": "MIT",
       "licenseFiles": ["assets/third_party/katex/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/katex/katex.min.js", "sha256": "863811e2baa0849c77bc92d26d44f4d0a4843c2a8ab52c462017dea57316e4d8"},
-        {"path": "assets/third_party/katex/katex.min.css", "sha256": "f787891b550d554c214aa8902f39ac46df2dbd48fdec500a2040a5dce1e8ab58"}
+        {"path": "assets/third_party/katex/katex.min.js", "sha256": "2ec5916941ef4383e0314eaabcc712301b06001d9fb68e08d751d2bae5a27a1a"},
+        {"path": "assets/third_party/katex/katex.min.css", "sha256": "180c2d77d434d7da51d6625c50a964d4fd6fdbdb9bc8796a0a016c30c49931fb"}
       ]
     },
     {
@@ -172,13 +184,14 @@
       ]
     },
     {
-      "name": "highlight.js",
-      "version": "11.11.1",
-      "source": "https://registry.npmjs.org/highlight.js/-/highlight.js-11.11.1.tgz",
+      "name": "@highlightjs/cdn-assets",
+      "version": "11.12.0",
+      "source": "https://registry.npmjs.org/@highlightjs/cdn-assets/-/cdn-assets-11.12.0.tgz",
       "license": "BSD-3-Clause",
       "licenseFiles": ["assets/third_party/markmap/LICENSE.highlightjs"],
       "artifacts": [
-        {"path": "assets/third_party/markmap/highlightjs/highlight.min.js", "sha256": "c4a399dd6f488bc97a3546e3476747b3e714c99c57b9473154c6fb8d259b9381"}
+        {"path": "assets/third_party/markmap/highlightjs/highlight.min.js", "sha256": "8ab71eb09c51f501e5e25157d9cff100e46cc29bcbfc744d0b746d451fca7f53"},
+        {"path": "assets/third_party/markmap/highlightjs/default.min.css", "sha256": "fbde0ac0921d86c356c41532e7319c887a23bd1b8ff00060cab447249f03c7cf"}
       ]
     },
     {
@@ -193,14 +206,14 @@
     },
     {
       "name": "swagger-ui-dist",
-      "version": "5.21.0",
-      "source": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.21.0.tgz",
+      "version": "5.32.13",
+      "source": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.32.13.tgz",
       "license": "Apache-2.0",
-      "licenseFiles": ["assets/third_party/swagger-ui/LICENSE", "assets/third_party/swagger-ui/NOTICE"],
+      "licenseFiles": ["assets/third_party/swagger-ui/LICENSE", "assets/third_party/swagger-ui/NOTICE", "assets/third_party/swagger-ui/LICENSE.bundle.txt", "assets/third_party/swagger-ui/LICENSE.standalone-preset.txt"],
       "artifacts": [
-        {"path": "assets/third_party/swagger-ui/swagger-ui-bundle.js", "sha256": "f557db538d8969dc0f35d6b441b3c7cc0be845d9dc0fcfbf66ea67053ae8933b"},
-        {"path": "assets/third_party/swagger-ui/swagger-ui-standalone-preset.js", "sha256": "8710b6d90ece7113dd467500fa14ed33b5848b68b8695ad075f8d5c6c9af3b01"},
-        {"path": "assets/third_party/swagger-ui/swagger-ui.css", "sha256": "29e7a850fea3b1a1e641bff2ff9b3302f8c0063d435971246b592e189b808989"}
+        {"path": "assets/third_party/swagger-ui/swagger-ui-bundle.js", "sha256": "5f3be5d9cf40cdd60dca0dafeaf8743fd858d1b3bb717bbdaebf7201303f63d7"},
+        {"path": "assets/third_party/swagger-ui/swagger-ui-standalone-preset.js", "sha256": "e47158d71c0f499f51febd52f74a6c4970b2a7e6703fd3d79618bf588574647d"},
+        {"path": "assets/third_party/swagger-ui/swagger-ui.css", "sha256": "9e617d9ac0afb0e430c11a17366de8624db7ce34c99ebd297443f0048ce30899"}
       ]
     },
     {
@@ -215,74 +228,74 @@
     },
     {
       "name": "asciinema-player",
-      "version": "3.13.5",
-      "source": "https://registry.npmjs.org/asciinema-player/-/asciinema-player-3.13.5.tgz",
+      "version": "3.17.0",
+      "source": "https://registry.npmjs.org/asciinema-player/-/asciinema-player-3.17.0.tgz",
       "license": "Apache-2.0",
       "licenseFiles": ["assets/third_party/asciinema/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/asciinema/asciinema-player.min.js", "sha256": "d420c6099cb59d17057f2ef338d9ef93947dff3e2172074dd1c10f36ce487860"},
-        {"path": "assets/third_party/asciinema/asciinema-player.css", "sha256": "1cf72b3e854f91ad64ff9ea7cfb5041ba87381c578b3681be174a5f04bab1d08"}
+        {"path": "assets/third_party/asciinema/asciinema-player.min.js", "sha256": "a13c37632e1b5c49fe9128417b9319a9b5bc64cb457dd5ae52cbba8a3aceb880"},
+        {"path": "assets/third_party/asciinema/asciinema-player.css", "sha256": "f619fe17597043564f03b2c6918b3daf890ee8b912fb408542fba11afade4fdb"}
       ]
     },
     {
       "name": "echarts",
-      "version": "6.0.0",
-      "source": "https://registry.npmjs.org/echarts/-/echarts-6.0.0.tgz",
+      "version": "6.1.0",
+      "source": "https://registry.npmjs.org/echarts/-/echarts-6.1.0.tgz",
       "license": "Apache-2.0",
-      "licenseFiles": ["assets/third_party/echarts/LICENSE"],
+      "licenseFiles": ["assets/third_party/echarts/LICENSE", "assets/third_party/echarts/NOTICE", "assets/third_party/echarts/LICENSE.d3"],
       "artifacts": [
-        {"path": "assets/third_party/echarts/echarts.min.js", "sha256": "baa8dfe7e1d9336b98e8986ba7e20ea15e7cdbea1ef42a59d59478632fa45a1d"}
+        {"path": "assets/third_party/echarts/echarts.min.js", "sha256": "b66b25aeb4df84e33199dc21694014d336d222cbd9deb0e5a7c14bd6aa0d0fd0"}
       ]
     },
     {
       "name": "@antv/infographic",
-      "version": "0.2.7",
-      "source": "https://registry.npmjs.org/@antv/infographic/-/infographic-0.2.7.tgz",
+      "version": "0.2.19",
+      "source": "https://registry.npmjs.org/@antv/infographic/-/infographic-0.2.19.tgz",
       "license": "MIT",
       "licenseFiles": ["assets/third_party/infographic/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/infographic/infographic.min.js", "sha256": "a57e22512fdfb116b781341dbc1c6460211dafe8b9be542594813d90a140de9f"}
+        {"path": "assets/third_party/infographic/infographic.min.js", "sha256": "9c559178d6505c8a9765c6df137f35c8662916979816fc6f5cca67999f29d1fc"}
       ]
     },
     {
       "name": "pako",
-      "version": "2.1.0",
-      "source": "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz",
+      "version": "3.0.1",
+      "source": "https://registry.npmjs.org/pako/-/pako-3.0.1.tgz",
       "license": "MIT AND Zlib",
       "licenseFiles": ["assets/third_party/pako/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/pako/pako_deflate.min.js", "sha256": "9429785d1e7f805d46640c4155957fd0f286144dec05cea09f6f2eaa646adb21"}
+        {"path": "assets/third_party/pako/pako_deflate.min.js", "sha256": "752e151ad555db9349af401e8045771c0b237374bf6db1aa3eaa9a8a3924cea2"}
       ]
     },
     {
       "name": "external-svg-loader",
-      "version": "1.3.4",
-      "source": "https://registry.npmjs.org/external-svg-loader/-/external-svg-loader-1.3.4.tgz",
+      "version": "1.7.1",
+      "source": "https://registry.npmjs.org/external-svg-loader/-/external-svg-loader-1.7.1.tgz",
       "license": "MIT",
       "licenseFiles": ["assets/third_party/external-svg-loader/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a4e778a36e725d5549bf31467bb80d7cf5ff13db213629211c3bbd2327f31ed5"}
+        {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a3301df36135fff595018610d75e8c54cf024d90a7f0bd39bc0ae5211ea8440d"}
       ]
     },
     {
       "name": "idb-keyval",
-      "version": "3.2.0",
-      "source": "https://registry.npmjs.org/idb-keyval/-/idb-keyval-3.2.0.tgz",
+      "version": "6.2.0",
+      "source": "https://registry.npmjs.org/idb-keyval/-/idb-keyval-6.2.0.tgz",
       "license": "Apache-2.0",
       "licenseFiles": ["assets/third_party/external-svg-loader/LICENSE.idb-keyval"],
       "artifacts": [
-        {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a4e778a36e725d5549bf31467bb80d7cf5ff13db213629211c3bbd2327f31ed5"}
+        {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a3301df36135fff595018610d75e8c54cf024d90a7f0bd39bc0ae5211ea8440d"}
       ]
     },
     {
       "name": "prismjs",
-      "version": "1.28.0",
-      "source": "https://registry.npmjs.org/prismjs/-/prismjs-1.28.0.tgz",
+      "version": "1.30.0",
+      "source": "https://registry.npmjs.org/prismjs/-/prismjs-1.30.0.tgz",
       "license": "MIT",
       "licenseFiles": ["assets/third_party/prism/LICENSE"],
       "artifacts": [
-        {"path": "static/js/prism.js", "sha256": "1a3d9aa675c7fa71d43340f94c445d0f602c15b1af23c2b1709bb9e686bb4578"},
-        {"path": "static/css/prism.css", "sha256": "2614cb234c8d8f03c4bd863f78314ffb7a8e535efaa166a240a08b88d0a7109f"}
+        {"path": "static/js/prism.js", "sha256": "fb3fd240cc40a7514b9e4f74f29763680d2f44b84eb5231a20d06ed9a8d0e6ce"},
+        {"path": "static/css/prism.css", "sha256": "469b0da1607c631886c006196d73145880e62a2abdedd787b913e7c2ef3bb793"}
       ]
     }
   ]

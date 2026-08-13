@@ -146,6 +146,16 @@ function setup({ controlledAnimationFrame = false } = {}) {
       kind: 'url', available: false, disabledReason: 'No repository', placements: { page: true, palette: true }, options: [],
     },
     {
+      id: 'open_chatgpt', title: 'Open in ChatGPT', description: '',
+      icon: 'fa-brands fa-openai', keywords: ['gpt'], kind: 'url', available: true,
+      disabledReason: '', placements: { page: true, palette: true }, options: [],
+    },
+    {
+      id: 'open_claude', title: 'Open in Claude', description: '',
+      icon: 'fa-brands fa-claude', keywords: ['anthropic'], kind: 'url', available: true,
+      disabledReason: '', placements: { page: true, palette: true }, options: [],
+    },
+    {
       id: 'switch_theme', title: 'Theme', description: '', icon: 'fa-theme', keywords: ['dark'],
       kind: 'choice', available: true, disabledReason: '', placements: { page: false, palette: true },
       options: [{ id: 'dark', title: 'Dark', value: 'dark', available: true }],
@@ -249,6 +259,16 @@ function setup({ controlledAnimationFrame = false } = {}) {
   assert.ok(h.controller.rows().some((row) => row.type === 'quick'));
   assert.ok(h.controller.rows().some((row) => row.sourceId === 'print'));
   assert.equal(document.activeElement, h.input);
+  const emptyOptions = h.list.querySelectorAll('[role="option"]');
+  for (const [sourceId, icon] of [
+    ['open_chatgpt', 'fa-openai'],
+    ['open_claude', 'fa-claude'],
+  ]) {
+    const index = h.controller.rows().findIndex((row) => row.sourceId === sourceId);
+    assert.ok(index >= 0, `${sourceId} is missing from the Palette`);
+    assert.ok(emptyOptions[index].children[0].classList.contains('fa-brands'));
+    assert.ok(emptyOptions[index].children[0].classList.contains(icon));
+  }
 
   h.input.value = '> dark';
   h.input.dispatch('input');

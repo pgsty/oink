@@ -5,6 +5,27 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- Upgrade the vendored Font Awesome Free assets from 6.7.2 to 7.3.1, use its
+  official OpenAI and Claude icons for the assistant actions, and follow the
+  upstream WOFF2-only web-font distribution instead of retaining legacy TTFs.
+- Refresh the remaining outdated browser runtimes: DocSearch 5.0.1, Mermaid
+  11.16.1, KaTeX 0.18.4, Highlight.js 11.12.0, Swagger UI 5.32.13,
+  Asciinema Player 3.17.0, ECharts 6.1.0, AntV Infographic 0.2.19, Pako
+  3.0.1, External SVG Loader 1.7.1, and the existing custom Prism
+  language/plugin bundle on Prism 1.30.0. The SVG Loader artifact continues to
+  embed the exact idb-keyval 6.2.0 code shipped by that upstream bundle.
+- Publish the pre-minified Asciinema and AntV Infographic runtimes separately
+  with fingerprinting and SRI so Hugo does not transform their runtime shims a
+  second time during a production build.
+
+### Fixed
+
+- Render the shared OpenAI and Claude icon descriptors in both the page-action
+  rail and Command Palette instead of keeping custom inline SVGs on only one
+  surface.
+
 ## [0.3.0] - 2026-08-12
 
 ### Breaking changes

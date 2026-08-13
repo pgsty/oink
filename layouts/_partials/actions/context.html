@@ -94,12 +94,12 @@
     "kind" "copy" "available" (ne $markdownURL "") "disabledReason" (cond (ne $markdownURL "") "" (printf "%s: %s" $copyTitle $unavailable)) "url" $markdownURL
     "target" "self" "placements" $pageOnly "options" (slice))
   (dict "id" "open_chatgpt" "title" $chatgptTitle "description" $chatgptTitle
-    "icon" "chatgpt" "keywords" (slice $chatgptTitle $askKeyword "chatgpt" "gpt" "ai" "llm")
+    "icon" "fa-brands fa-openai" "keywords" (slice $chatgptTitle $askKeyword "chatgpt" "gpt" "ai" "llm")
     "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $chatgptTitle $unavailable))
     "url" (cond $assistantLinks $chatgptURL "") "promptTemplate" (T "ui_open_in_prompt")
     "target" "blank" "placements" $assistantPlacements "options" (slice))
   (dict "id" "open_claude" "title" $claudeTitle "description" $claudeTitle
-    "icon" "claude" "keywords" (slice $claudeTitle $askKeyword "claude" "anthropic" "ai" "llm")
+    "icon" "fa-brands fa-claude" "keywords" (slice $claudeTitle $askKeyword "claude" "anthropic" "ai" "llm")
     "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $claudeTitle $unavailable))
     "url" (cond $assistantLinks $claudeURL "") "promptTemplate" (T "ui_open_in_prompt")
     "target" "blank" "placements" $assistantPlacements "options" (slice))

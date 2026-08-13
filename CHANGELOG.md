@@ -88,6 +88,8 @@ All notable changes to OINK are documented here. The project follows
 - Render the shared OpenAI and Claude icon descriptors in both the page-action
   rail and Command Palette instead of keeping custom inline SVGs on only one
   surface.
+- Replace the deprecated `.Page.IsNode` call in the blog shell with
+  `not .IsPage`, keeping builds free of Hugo 0.163+ deprecation notices.
 
 ## [0.3.0] - 2026-08-12
 

@@ -19,7 +19,7 @@
   {{ $rssURL := "" -}}
   {{- /* Feeds cover the whole blog or one of its sections; a single article is
        not a subscribable unit, so leaf pages carry no RSS affordance. */ -}}
-  {{ if .IsNode -}}
+  {{ if not .IsPage -}}
     {{ with .CurrentSection.OutputFormats.Get "rss" -}}
       {{ $rssURL = .RelPermalink -}}
     {{ end -}}

@@ -16,9 +16,10 @@ All notable changes to OINK are documented here. The project follows
   current page's item straight away; `Enter`, `Space`, or `g` opens the
   focused page; `Escape` returns to the content. The keyboard focus is a
   row-level tint one step stronger than the active pill, not an outline box.
-  `j`/`k` jump to the next or previous section of the page outline with an
-  eased glide (heading-less pages fall back to eased scrolling, reduced
-  motion gets instant steps); `q`/`e` go to the previous or next page
+  `j`/`k` jump to the next or previous section of the page outline with a
+  fast, fixed 100ms ease-out glide (rapid repeats advance the queued outline
+  cursor; heading-less pages fall back to the same short animation, and
+  reduced motion gets instant steps); `q`/`e` go to the previous or next page
   following the sidebar tree order, `rel=prev/next` head links, or the blog
   pager. `h` toggles a chrome-free reading mode that hides both rails and
   the footer (remembered per session across page flips); `l` cycles through

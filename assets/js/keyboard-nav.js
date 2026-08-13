@@ -11,7 +11,7 @@
   'use strict';
 
   var SCROLL_STEP = 300; // px per fallback scroll press
-  var SCROLL_EASE = 0.28; // fraction of the remaining distance per frame
+  var SCROLL_DURATION = 100; // ms: a short cue, not a leisurely page scroll
   var NAV_MARGIN = 24; // breathing room under the sticky navbar
   var ZEN_KEY = 'td-kbd-zen';
 
@@ -125,6 +125,9 @@
 
     var scrollTarget = null;
     var scrollAnimating = false;
+    var scrollStart = 0;
+    var scrollStartedAt = null;
+    var outlineCursor = null;
 
     function prefersReducedMotion() {
       return win.matchMedia
@@ -137,38 +140,75 @@
       return Math.max(0, (el.scrollHeight || 0) - (win.innerHeight || 0));
     }
 
-    function animateScroll() {
+    function frameTime(timestamp) {
+      if (typeof timestamp === 'number') return timestamp;
+      if (win.performance && typeof win.performance.now === 'function')
+        return win.performance.now();
+      return Date.now();
+    }
+
+    // Bootstrap enables root-level smooth scrolling. Disable it only for the
+    // synchronous write so the browser does not add a second, slower animation
+    // behind our fixed 100ms timeline.
+    function setScroll(position) {
+      var style = html.style;
+      var previous = style ? style.scrollBehavior : '';
+      if (style) style.scrollBehavior = 'auto';
+      win.scrollTo(0, position);
+      if (style) style.scrollBehavior = previous;
+    }
+
+    // A fixed-duration cubic ease-out makes a heading jump feel immediate at
+    // any distance while preserving just enough motion to show direction.
+    function animateScroll(timestamp) {
       if (scrollTarget === null) {
         scrollAnimating = false;
         return;
       }
-      var remaining = scrollTarget - win.scrollY;
-      if (remaining > -1 && remaining < 1) {
-        win.scrollTo(0, scrollTarget);
+      var now = frameTime(timestamp);
+      if (scrollStartedAt === null || now < scrollStartedAt)
+        scrollStartedAt = now;
+      var progress = Math.min(
+        Math.max((now - scrollStartedAt) / SCROLL_DURATION, 0),
+        1,
+      );
+      var eased = 1 - Math.pow(1 - progress, 3);
+      setScroll(scrollStart + (scrollTarget - scrollStart) * eased);
+      if (progress >= 1) {
+        setScroll(scrollTarget);
         scrollTarget = null;
         scrollAnimating = false;
+        scrollStartedAt = null;
+        outlineCursor = null;
         return;
       }
-      win.scrollBy(0, remaining * SCROLL_EASE);
       win.requestAnimationFrame(animateScroll);
     }
 
     function glideTo(position) {
       var clamped = Math.min(Math.max(position, 0), maxScroll());
       if (prefersReducedMotion()) {
-        win.scrollTo(0, clamped);
+        scrollTarget = null;
+        scrollAnimating = false;
+        scrollStartedAt = null;
+        outlineCursor = null;
+        setScroll(clamped);
         return;
       }
+      scrollStart = typeof win.scrollY === 'number' ? win.scrollY : 0;
       scrollTarget = clamped;
+      scrollStartedAt = win.performance && typeof win.performance.now === 'function'
+        ? win.performance.now()
+        : null;
       if (!scrollAnimating) {
         scrollAnimating = true;
         win.requestAnimationFrame(animateScroll);
       }
     }
 
-    // Key repeat accumulates into one target; each frame closes a fixed
-    // fraction of the remaining distance, so held keys glide instead of
-    // queueing discrete jumps. Reduced motion gets instant steps.
+    // Key repeat accumulates into one target, so held keys retarget the same
+    // short animation instead of queueing discrete jumps. Reduced motion gets
+    // instant steps.
     function scrollByStep(delta) {
       if (prefersReducedMotion()) {
         win.scrollBy(0, delta);
@@ -359,18 +399,22 @@
       var targets = headingTargets();
       if (!targets.length) return scrollByStep(delta * SCROLL_STEP);
       var offset = navOffset();
-      var current = -1;
-      for (var i = 0; i < targets.length; i += 1) {
-        if (targets[i].getBoundingClientRect().top <= offset + 8) current = i;
-        else break;
+      var queued = scrollAnimating && outlineCursor !== null;
+      var current = queued ? outlineCursor : -1;
+      if (!queued) {
+        for (var i = 0; i < targets.length; i += 1) {
+          if (targets[i].getBoundingClientRect().top <= offset + 8) current = i;
+          else break;
+        }
       }
       var next = current + delta;
       // Deep inside a section, k first re-anchors at the section's own start.
       if (
-        delta < 0 && current >= 0 &&
+        !queued && delta < 0 && current >= 0 &&
         targets[current].getBoundingClientRect().top < offset - 40
       ) next = current;
       if (next < 0) {
+        outlineCursor = -1;
         glideTo(0);
         if (win.history && win.history.replaceState)
           win.history.replaceState(null, '', win.location.pathname + win.location.search);
@@ -378,6 +422,7 @@
       }
       if (next >= targets.length) return;
       var target = targets[next];
+      outlineCursor = next;
       glideTo((win.scrollY || 0) + target.getBoundingClientRect().top - offset);
       if (target.id && win.history && win.history.replaceState)
         win.history.replaceState(null, '', '#' + target.id);

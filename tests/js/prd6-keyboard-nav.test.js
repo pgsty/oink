@@ -28,6 +28,7 @@ class Element {
     this.id = '';
     this.nodeType = 1;
     this.offsetParent = {};
+    this.style = { scrollBehavior: '' };
     this.clicks = 0;
     this.textContent = '';
     this.ownerDocument = null;
@@ -139,6 +140,7 @@ function setup({
   sidebarToggle = false,
   registry = null,
   palette = null,
+  reducedMotion = true,
   session = {},
 } = {}) {
   const html = new Element('html');
@@ -182,6 +184,7 @@ function setup({
     scrollTo(x, y) { this.scrolledTo.push(y); this.scrollY = y; },
     scrollY: 0,
     requestAnimationFrame(callback) { frames.push(callback); },
+    matchMedia() { return { matches: reducedMotion }; },
     setTimeout() { return 0; },
     clearTimeout() {},
     sessionStorage: memoryStorage(session),
@@ -371,6 +374,58 @@ function press(harness, values) {
     '/docs/b/one/',
     'the top jump clears the hash',
   );
+
+  // A normal-motion jump finishes in 100ms regardless of distance. Repeated
+  // keys advance the queued outline cursor before the first frame runs.
+  const fastOutline = setup({ withTree: false, reducedMotion: false });
+  fastOutline.html.scrollHeight = 4000;
+  fastOutline.win.innerHeight = 800;
+  const fastToc = new Element('nav');
+  fastToc.id = 'TableOfContents';
+  for (const id of ['fast-first', 'fast-second']) {
+    const anchor = new Element('a');
+    anchor.setAttribute('href', '#' + id);
+    fastToc.appendChild(anchor);
+  }
+  for (const [id, top] of [['fast-first', 500], ['fast-second', 1600]]) {
+    const heading = new Element('h2');
+    heading.id = id;
+    heading.getBoundingClientRect = () => ({
+      top: top - fastOutline.win.scrollY,
+    });
+    fastOutline.root.appendChild(heading);
+  }
+  fastOutline.root.appendChild(fastToc);
+  fastOutline.root.children.forEach((node) => {
+    node.ownerDocument = fastOutline.doc;
+  });
+
+  press(fastOutline, { key: 'j' });
+  press(fastOutline, { key: 'j' });
+  assert.deepEqual(
+    fastOutline.win.hashes,
+    ['#fast-first', '#fast-second'],
+    'rapid j presses advance the queued outline cursor',
+  );
+  fastOutline.frames.shift()(0);
+  fastOutline.html.style.scrollBehavior = 'smooth';
+  fastOutline.frames.shift()(50);
+  assert.ok(
+    fastOutline.win.scrollY > 1300,
+    'the cubic ease-out covers most of a long jump in its first 50ms',
+  );
+  fastOutline.frames.shift()(100);
+  assert.equal(
+    fastOutline.win.scrollY,
+    1576,
+    'the queued second-heading jump lands exactly within 100ms',
+  );
+  assert.equal(
+    fastOutline.html.style.scrollBehavior,
+    'smooth',
+    'the fast glide restores the site scroll behavior after each frame',
+  );
+  assert.equal(fastOutline.frames.length, 0, 'the fast jump queues no tail frames');
 
   // ------------------------------------------------- one-step tree focus
   const ws = setup();

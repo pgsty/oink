@@ -116,6 +116,16 @@ def check_sources() -> None:
         "#TableOfContents" in source,
         "keyboard-nav lost the outline source for j/k",
     )
+    require(
+        "SCROLL_DURATION = 100" in source
+        and "Math.pow(1 - progress, 3)" in source
+        and "outlineCursor" in source,
+        "j/k lost the fast fixed-duration glide or queued outline cursor",
+    )
+    require(
+        "style.scrollBehavior = 'auto'" in source,
+        "j/k no longer bypasses the root smooth-scroll rule during animation",
+    )
 
     footer = (ROOT / "assets" / "js" / "footer-collapse.js").read_text(encoding="utf-8")
     require(

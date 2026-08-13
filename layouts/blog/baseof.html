@@ -17,15 +17,20 @@
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
   {{ $pageWidth := .Param "page_width" | default "normal" -}}
   {{ $rssURL := "" -}}
-  {{ with .CurrentSection.OutputFormats.Get "rss" -}}
-    {{ $rssURL = .RelPermalink -}}
+  {{- /* Feeds cover the whole blog or one of its sections; a single article is
+       not a subscribable unit, so leaf pages carry no RSS affordance. */ -}}
+  {{ if .IsNode -}}
+    {{ with .CurrentSection.OutputFormats.Get "rss" -}}
+      {{ $rssURL = .RelPermalink -}}
+    {{ end -}}
   {{ end -}}
+  {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ if not (in (slice "normal" "wide" "full") $pageWidth) -}}
     {{ errorf "invalid page_width %q in %s (allowed: normal | wide | full)" $pageWidth .Path -}}
   {{ end -}}
-  <body class="td-{{ .Kind }} td-blog td-shell-chrome{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+  <body class="td-{{ .Kind }} td-blog td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
-    {{ partial "shell/subnav.html" . }}
+    {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
     <div class="container-fluid td-outer">
       <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if not $hasToc }} td-shell-layout--no-toc{{ end }}{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
            style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
@@ -39,20 +44,28 @@
         {{- end }}
         <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
           <article class="td-shell-article">
-            {{ with $rssURL -}}
-            <a class="td-rss-button td-rss-button--content" title="RSS" aria-label="RSS" href="{{ . | safeURL }}" target="_blank" rel="noopener">
-              <i class="fa-solid fa-rss" aria-hidden="true"></i>
-            </a>
+            {{ $crumbs := not (.Param "ui.breadcrumb_disable") -}}
+            {{- /* On the blog root and its first-level sections the split
+                 button leads with RSS instead of copy: those are the pages a
+                 reader subscribes to. */ -}}
+            {{ $feedURL := "" -}}
+            {{ if and $rssURL (or (eq . .FirstSection) (eq .Parent .FirstSection)) -}}
+              {{ $feedURL = $rssURL -}}
             {{ end -}}
-            {{ if not (.Param "ui.breadcrumb_disable") -}}
-              {{ partial "breadcrumb.html" . -}}
+            {{ $actionsHTML := partial "actions/title-menu.html" (dict "page" . "feedURL" $feedURL) -}}
+            {{ if or $crumbs (strings.ContainsNonSpace $actionsHTML) -}}
+            <div class="td-shell-topline">
+              {{ if $crumbs }}{{ partial "breadcrumb.html" . }}{{ end }}
+              <span class="td-shell-topline__spacer"></span>
+              {{ $actionsHTML }}
+            </div>
             {{ end -}}
             {{ block "main" . }}{{ end }}
           </article>
         </main>
-        {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" $hasToc "rssURL" $rssURL) }}
+        {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" $hasToc) }}
       </div>
-      {{ partial "shell/footer-line.html" . }}
+      {{ partial "footer.html" . }}
     </div>
     {{ partial "scripts.html" . }}
   </body>

@@ -75,7 +75,8 @@
     gap: 7px;
     padding: 6px 10px;
     border-radius: 8px;
-    color: var(--bs-secondary-color);
+    // One tone for every navbar control; hover and the active item darken.
+    color: var(--bs-tertiary-color);
     font-size: 14px;
     font-weight: 500;
     transition:
@@ -96,47 +97,12 @@
 
   .nav-menu {
     position: relative;
-  }
-
-  .nav-menu__parent {
-    display: flex;
-    align-items: center;
-  }
-
-  .nav-menu__parent-link {
-    padding-inline-end: 4px;
-    border-start-end-radius: 3px;
-    border-end-end-radius: 3px;
-  }
-
-  .nav-menu__toggle {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 32px;
-    padding: 0;
-    border: 0;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--bs-tertiary-color);
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      background: var(--td-brand-elev);
-      color: var(--bs-body-color);
-    }
-
-    .td-shell-icon {
-      width: 14px;
-      height: 14px;
-      transition: transform 140ms ease;
-    }
   }
 
-  .nav-menu.is-open .nav-menu__toggle .td-shell-icon {
-    transform: rotate(180deg);
+  .nav-menu.is-open .nav-menu__parent-link {
+    background: var(--td-brand-elev);
+    color: var(--bs-body-color);
   }
 
   .nav-menu__panel {
@@ -144,13 +110,23 @@
     top: calc(100% + 8px);
     inset-inline-start: 0;
     z-index: 110;
-    min-width: 260px;
+    min-width: 300px;
     max-width: unquote('min(360px, calc(100vw - 32px))');
     padding: 7px;
     border: 1px solid var(--bs-border-color);
     border-radius: 10px;
     background: var(--bs-body-bg);
     box-shadow: var(--td-brand-shadow-md);
+
+    // Invisible bridge over the gap below the label, so the pointer can
+    // travel from the trigger into the panel without a dead zone.
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      top: -9px;
+      height: 9px;
+    }
 
     &[hidden] {
       display: none;
@@ -287,13 +263,18 @@
     }
   }
 
-  .landing-version-selector .td-version-menu__title {
-    min-height: 34px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    color: var(--bs-secondary-color);
-    font-size: 14px;
-    font-weight: 500;
+}
+
+// Wordmark sites keep a plain logo in reserve for the compact state.
+.landing-header .nav-logo--fallback {
+  display: none;
+}
+
+// One popover look everywhere: the language selector ships its own pop
+// styles for the sidebar, so realign the navbar copy with .nav-hover-menu.
+.landing-header .landing-language-selector {
+  .td-language-selector__trigger {
+    color: var(--bs-tertiary-color);
 
     &:hover,
     &:focus-visible {
@@ -301,214 +282,68 @@
       color: var(--bs-body-color);
     }
   }
+
+  > ul {
+    min-width: 10rem;
+    padding: 7px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 10px;
+    background: var(--bs-body-bg);
+    box-shadow: var(--td-brand-shadow-md);
+  }
 }
 
-// Mobile menu -----------------------------------------------------------
-// The toggle is the same ghost icon button as the rest of the header; the
-// glyph swaps between menu and close.
+// Shared hover popover for the utility controls (theme, version): the trigger
+// keeps its own click action, hovering or focusing reveals the options. One
+// look for every navbar popover — same border, radius, shadow, and padding as
+// .nav-menu__panel.
+.nav-hover-menu {
+  position: relative;
+  display: inline-flex;
 
-// The toggle borrows .nav-util for its looks, so every rule below is compound
-// with it: `.landing-header .nav-util` would otherwise win on specificity and
-// the button would show at full width with both glyphs stacked.
-.landing-header .mobile-menu-toggle.nav-util {
-  display: none;
-
-  .td-shell-icon--x {
+  &__pop {
+    position: absolute;
+    top: calc(100% + 8px);
+    inset-inline-end: 0;
+    z-index: 110;
     display: none;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 10rem;
+    padding: 7px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 10px;
+    background: var(--bs-body-bg);
+    box-shadow: var(--td-brand-shadow-md);
+
+    // Same dead-zone bridge as the nav menus.
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      top: -9px;
+      height: 9px;
+    }
   }
 
-  &.active {
-    .td-shell-icon--menu {
-      display: none;
-    }
-
-    .td-shell-icon--x {
-      display: block;
-    }
-  }
-}
-
-.mobile-menu {
-  position: fixed;
-  top: 62px;
-  right: 0;
-  left: 0;
-  z-index: 99;
-  display: none;
-  flex-direction: column;
-  padding: 6px 18px 14px;
-  border-bottom: 1px solid var(--bs-border-color);
-  background: var(--td-brand-header-bg);
-  box-shadow: var(--td-brand-shadow-md);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-
-  &.active {
+  &.is-open &__pop {
     display: flex;
   }
 
-  // One row shape for every entry: a fixed icon column, then the label.
-  .mobile-menu-link {
+  &__option {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    padding: 12px 6px;
+    gap: 8px;
+    padding: 7px 9px;
     border: 0;
-    border-radius: 0;
-    background: none;
-    color: var(--bs-body-color);
-    font-family: var(--td-ui-font-family);
-    font-size: 0.95rem;
-    font-weight: 500;
-    text-align: start;
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--bs-link-color);
-      text-decoration: none;
-    }
-
-    &.active {
-      color: var(--bs-link-color);
-    }
-
-    // Font Awesome (menu entries) and lucide (utilities) share one column so
-    // every label starts on the same axis.
-    > i,
-    > .td-shell-icon {
-      flex: 0 0 auto;
-      width: 18px;
-      height: 18px;
-      font-size: 15px;
-      line-height: 18px;
-      text-align: center;
-      color: var(--bs-tertiary-color);
-    }
-
-    > span {
-      min-width: 0;
-    }
-  }
-
-  .mobile-menu-section {
-    border-bottom: 1px solid var(--bs-border-color);
-  }
-
-  .mobile-menu-parent {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 42px;
-    align-items: center;
-  }
-
-  .mobile-menu-disclosure {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--bs-tertiary-color);
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible {
-      background: var(--td-brand-elev);
-      color: var(--bs-body-color);
-    }
-
-    .td-shell-icon {
-      width: 16px;
-      height: 16px;
-      transition: transform 140ms ease;
-    }
-  }
-
-  .mobile-menu-section.is-open .mobile-menu-disclosure .td-shell-icon {
-    transform: rotate(180deg);
-  }
-
-  .mobile-menu-children {
-    padding-block: 0 7px;
-    padding-inline-start: 24px;
-
-    &[hidden] {
-      display: none;
-    }
-
-    .mobile-menu-link {
-      padding-block: 9px;
-      font-size: 0.9rem;
-    }
-
-    .td-navbar-entry__description {
-      display: block;
-      margin-block-start: 2px;
-    }
-
-    .td-navbar-group__items {
-      margin-inline-start: 15px;
-    }
-  }
-
-  .td-navbar-entry__external {
-    display: inline-flex;
-    margin-inline-start: auto;
-    color: var(--bs-tertiary-color);
-
-    .td-shell-icon {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  .mobile-menu-group-title {
-    font-weight: 650;
-  }
-
-  // Rows that pair an action with its options: language, color theme.
-  .mobile-menu-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-
-    .mobile-menu-link {
-      width: auto;
-      flex: 0 1 auto;
-    }
-  }
-
-  .mobile-menu-options {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .mobile-menu-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    height: 30px;
-    padding: 0 0.6rem;
-    border: 1px solid transparent;
     border-radius: 7px;
     background: transparent;
-    color: var(--bs-secondary-color);
-    font-family: var(--td-ui-font-family);
-    font-size: 0.85rem;
-    font-weight: 500;
+    color: var(--bs-body-color);
+    font-size: 13px;
+    font-weight: 400;
+    text-align: start;
+    text-decoration: none;
     cursor: pointer;
-    transition:
-      background-color 100ms ease,
-      color 100ms ease;
 
     &:hover,
     &:focus-visible {
@@ -517,39 +352,64 @@
       text-decoration: none;
     }
 
+    &[aria-pressed='true'],
     &.is-active {
-      border-color: var(--bs-border-color);
-      background: var(--td-brand-elev);
       color: var(--bs-link-color);
     }
 
-    .td-shell-icon {
-      width: 16px;
-      height: 16px;
+    &.is-disabled {
+      color: var(--bs-tertiary-color);
+      cursor: default;
+    }
+
+    > i {
+      width: 15px;
+      color: var(--bs-tertiary-color);
+      font-size: 13px;
+      text-align: center;
     }
   }
 
-  .mobile-menu-chip--icon {
-    padding: 0;
-  }
-
-  // Separators between top-level entries, but not inside a paired row.
-  > .mobile-menu-link,
-  > .mobile-menu-row,
-  > .mobile-menu-section {
-    border-bottom: 1px solid var(--bs-border-color);
-  }
-
-  > :last-child {
-    border-bottom: 0;
+  &__divider {
+    margin: 4px 2px;
+    border: 0;
+    border-top: 1px solid var(--bs-border-color);
+    opacity: 1;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .landing-header .nav-menu__toggle .td-shell-icon,
-  .mobile-menu .mobile-menu-disclosure .td-shell-icon {
-    transition: none;
+// Compact state: below lg every fixed-count control drops its text so the row
+// always fits, right-aligned — logo only, icon-only menu items, and icon
+// triggers for search, language, theme, version, and GitHub. This is the only
+// other navbar state; phones use it too.
+@media (max-width: 991.98px) {
+  .landing-header {
+    .nav-title,
+    .nav-wordmark {
+      display: none;
+    }
+
+    .nav-logo--fallback {
+      display: block;
+    }
+
+    .nav-links > .nav-link .td-navbar-entry__label,
+    .nav-links > .nav-link .td-navbar-entry__external,
+    .nav-menu > .nav-menu__parent-link .td-navbar-entry__label,
+    .nav-menu > .nav-menu__parent-link .td-navbar-entry__external {
+      display: none;
+    }
+
+    .nav-link {
+      padding: 6px 8px;
+      font-size: 1rem;
+    }
   }
+}
+
+// Shell drawer opener; shown below md only (the drawer only exists there).
+.landing-header .mobile-menu-toggle.nav-util {
+  display: none;
 }
 
 .td-default {
@@ -564,21 +424,14 @@
   }
 }
 
-@media (max-width: 768px) {
-  .landing-header .nav-links {
-    display: none;
-  }
-
+// Below md the shell sidebar becomes a drawer; its toggle joins the icon row.
+@media (max-width: 767.98px) {
   .landing-header .mobile-menu-toggle.nav-util {
     display: inline-flex;
   }
 
-  .landing-header .nav-link i {
-    display: none;
-  }
-
   .landing-container {
-    padding: 0 18px;
+    padding: 0 14px;
   }
 }
 

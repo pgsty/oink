@@ -5,6 +5,15 @@
 {{- with .Site.GetPage (printf "/%s" .Type) -}}
   {{- if .IsSection }}{{ $root = . }}{{ end -}}
 {{- end -}}
+{{- /* Term pages have no content ancestry; adopt their members' shared top
+     section (mirroring the sidebar tree) so a docs term shows docs-scoped
+     clouds, not the site-wide mix. */ -}}
+{{- if eq .Kind "term" -}}
+  {{- $tops := slice -}}
+  {{- range .Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
+  {{- $tops = $tops | uniq -}}
+  {{- if eq (len $tops) 1 }}{{ $root = index $tops 0 }}{{ end -}}
+{{- end -}}
 {{- $global := or (not $root) (eq $root .Site.Home) -}}
 {{- range $plural, $taxonomy := .Site.Taxonomies -}}
   {{- $items := slice -}}
@@ -22,12 +31,21 @@
   {{- if gt (len $items) 0 -}}
     {{- $title := partial "taxonomy-label.html" (dict "page" $ "key" $plural) -}}
     {{- $id := printf "td-shell-taxonomy-%s-%s" $plural ($root.RelPermalink | default "all" | anchorize) -}}
+    {{- /* Every aside group carries an icon. Sites may override per taxonomy
+         via params.ui.taxonomy_icons.<plural>; unknown taxonomies get a
+         generic glyph. */ -}}
+    {{- $icon := "" -}}
+    {{- with $.Site.Params.ui.taxonomy_icons }}{{ with index . $plural }}{{ $icon = . }}{{ end }}{{ end -}}
+    {{- if not $icon -}}
+      {{- $icon = index (dict "categories" "fa-solid fa-folder" "tags" "fa-solid fa-tags") $plural | default "fa-solid fa-shapes" -}}
+    {{- end -}}
 <div class="td-shell-aside-group td-shell-tags-cloud" data-taxonomy="{{ $plural }}" data-taxonomy-root="{{ $root.RelPermalink | default "/" }}">
   <button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
     aria-expanded="true" aria-controls="{{ $id }}-children"
     aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}"
     data-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $title }}"
     data-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}">
+    <span class="td-shell-aside-group__icon"><i class="{{ $icon }}" aria-hidden="true"></i></span>
     <span class="td-shell-aside-group__title td-shell-tags-cloud__title">{{ $title }}</span>
     <span class="td-shell-tree__chevron" aria-hidden="true">
       {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}

@@ -37,14 +37,15 @@ Only one child level is interactive. A parent with children renders a
 navigable label and a separate disclosure button on desktop and mobile. No
 operation depends on hover.
 
-Desktop disclosure supports click, Enter, Space, and ArrowDown. ArrowDown opens
-the dropdown and focuses its first actionable item. Escape closes it and
-restores focus to the disclosure. Outside click closes it. The button owns
-aria-expanded and aria-controls.
+Parent labels are ordinary links: click navigates to the section landing, while
+hover or keyboard focus opens the panel. ArrowDown opens the dropdown and
+focuses its first actionable item, Escape closes it and restores focus, and an
+outside press closes it. The parent link owns aria-expanded and aria-controls.
 
-Mobile uses the same split link/button model as an accordion. Multiple sections
-may be open by default. params.ui.navbar_accordion_single_open may opt into
-single-open behavior.
+The navbar has exactly two states, full and compact; the compact state keeps
+every item visible as an icon, so there is no separate mobile menu and the
+former params.ui.navbar_accordion_single_open accordion parameter is retired.
+On shell pages below md an extra icon opens the sidebar drawer.
 
 The parent is active when it or any descendant is current. External links have
 an explicit visual affordance and include noopener noreferrer when opened in a
@@ -109,7 +110,9 @@ switch_language, switch_version, and open_github.
 Corresponding PRD 4 page and Palette actions share internal descriptors and URL
 resolution. Copy text and Print also share their registry executors; assistant
 actions resolve the browser URL at activation time, and theme controls call the
-same theme application function. Historical rail-only compatibility actions
+same theme application function. On the page surface the actions render as a
+split button beside the document title: Copy text is the primary half and the
+caret disclosure lists the full set. Historical rail-only compatibility actions
 outside the PRD 4 built-in set remain out of scope.
 Availability, title, description, icon, keywords, execution kind, URL, and
 disabled reason are data rather than duplicated behavior.

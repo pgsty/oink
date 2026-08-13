@@ -1,12 +1,16 @@
-{{- /* One <footer> per page. The landing grid and the copyright row are two
+{{- /* One <footer> per page. The column grid and the copyright row are two
        regions of the same site footer; emitting each as its own <footer> gave
-       the home page two contentinfo landmarks. */ -}}
-{{- $home := partial "home-data.html" . -}}
+       the page two contentinfo landmarks. `footer_style` picks the shape:
+       fat (grid + line, the default), slim (line only), none. A fat footer
+       without any footer data degrades to slim. */ -}}
+{{- $style := partial "footer-style.html" . -}}
+{{- if ne $style "none" -}}
 {{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
-{{- $landing := and .IsHome $home.footer -}}
-{{- if $landing -}}
-<footer class="d-print-none">
-  {{- with $home.footer }}
+{{- $data := dict -}}
+{{- if eq $style "fat" }}{{ $data = partial "footer-data.html" . }}{{ end -}}
+{{- if or $data.brand $data.columns -}}
+<footer class="d-print-none" data-td-shell-footer>
+  {{- with $data }}
   <div class="td-site-footer">
     <div class="td-site-footer__container">
       {{/* The brand sits outside the column grid. Spanning every track, its
@@ -14,22 +18,23 @@
            columns from being sized to their own links. */ -}}
       <div class="td-site-footer__inner">
         <div class="td-site-footer__brand">
-          {{- $footerLogo := .brand.logo | default "" -}}
+          {{- $brand := .brand | default dict -}}
+          {{- $footerLogo := $brand.logo | default "" -}}
           {{- $useWordmark := and (not $footerLogo) $config.wordmarkURL -}}
-          <a class="td-site-footer__logo{{ if $useWordmark }} td-site-footer__logo--wordmark{{ end }}" href="{{ $.Site.Home.RelPermalink }}" aria-label="{{ .brand.name | default $config.brandName }}">
+          <a class="td-site-footer__logo{{ if $useWordmark }} td-site-footer__logo--wordmark{{ end }}" href="{{ $.Site.Home.RelPermalink }}" aria-label="{{ $brand.name | default $config.brandName }}">
             {{- if $useWordmark }}
             <img src="{{ $config.wordmarkURL }}" alt="" width="100" height="40">
             {{- else }}
-            <img src="{{ .brand.logo | default $config.logoURL | relURL }}" alt="" width="28" height="28">
-            <span>{{ .brand.name | default $config.brandName }}</span>
+            <img src="{{ $brand.logo | default $config.logoURL | relURL }}" alt="" width="28" height="28">
+            <span>{{ $brand.name | default $config.brandName }}</span>
             {{- end }}
           </a>
-          {{- with .brand.tagline }}<div class="td-site-footer__tagline">{{ . | markdownify }}</div>{{ end }}
-          {{- with .brand.slogan }}<div class="td-site-footer__slogan">{{ . | markdownify }}</div>{{ end }}
+          {{- with $brand.tagline }}<div class="td-site-footer__tagline">{{ . | markdownify }}</div>{{ end }}
+          {{- with $brand.slogan }}<div class="td-site-footer__slogan">{{ . | markdownify }}</div>{{ end }}
         </div>
         {{/* The track count follows the data, not the viewport: `auto-fit` left
              empty tracks parked on the end of the row. */ -}}
-        <div class="td-site-footer__grid" style="--td-footer-cols: {{ len .columns | default 1 }}">
+        <div class="td-site-footer__grid" style="--td-footer-cols: {{ len (.columns | default slice) | default 1 }}">
           {{- range .columns }}
           <nav class="td-site-footer__column" aria-label="{{ .title }}">
             <h2>{{ .title }}</h2>
@@ -49,4 +54,5 @@
 </footer>
 {{- else -}}
 {{ partial "shell/footer-line.html" . }}
+{{- end -}}
 {{- end -}}

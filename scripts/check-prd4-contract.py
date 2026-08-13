@@ -107,21 +107,19 @@ def validate_contract(contract: dict[str, Any]) -> None:
         "navigation supports exactly one interactive child level",
     )
     require(
-        navigation.get("desktop_control") == "separate_link_and_button"
-        and navigation.get("mobile_control") == "separate_link_and_button",
-        "desktop and mobile parent links must be separate from disclosure buttons",
+        navigation.get("desktop_control") == "link_with_hover_panel"
+        and "mobile_control" not in navigation,
+        "parents open on hover/focus with a navigating link at every width; "
+        "there is no separate mobile menu",
     )
     require(
         navigation.get("hover_required") is False,
-        "navigation must not require hover",
+        "reaching child pages must not require hover: the parent link navigates "
+        "to the section landing and keyboard focus opens the panel",
     )
     require(
-        navigation.get("mobile_single_open")
-        == {
-            "parameter": "params.ui.navbar_accordion_single_open",
-            "default": False,
-        },
-        "mobile accordion single-open contract changed",
+        "mobile_single_open" not in navigation,
+        "the mobile accordion was retired with the two-state navbar",
     )
     require(
         navigation.get("external_rel") == ["noopener", "noreferrer"],
@@ -229,7 +227,10 @@ def validate_contract(contract: dict[str, Any]) -> None:
             "view_markdown",
             "view_history",
             "edit_page",
+            "create_child_page",
             "create_issue",
+            "create_project_issue",
+            "print_section",
             "print",
             "switch_theme",
             "switch_language",
@@ -854,7 +855,13 @@ def validate_observation(
                         "deep": [0, 1, 1, 2, 1, 0, 0, 0],
                     }[variant]
                     navigation = build["navigation"][lang]
-                    for region in ("desktop", "mobile"):
+                    require(
+                        navigation["mobile"] == []
+                        and navigation["docs_active"]["mobile"] == [],
+                        f"{deployment}/{variant}/{state}/{lang} the retired "
+                        "mobile menu reappeared",
+                    )
+                    for region in ("desktop",):
                         links = navigation[region]
                         require(
                             [link["text"] for link in links] == expected_text
@@ -925,16 +932,14 @@ def validate_observation(
                         )
                     controls = navigation["controls"]
                     panels = navigation["panels"]
-                    expected_control_count = 0 if variant == "flat" else 2
+                    # Hover panels have no disclosure buttons; the parent link
+                    # carries aria-expanded instead, so the parser sees only
+                    # the panel element per nested menu.
+                    expected_panel_count = 0 if variant == "flat" else 1
                     require(
-                        len(controls) == expected_control_count
-                        and len(panels) == expected_control_count
-                        and len(panels) == len(set(panels))
-                        and all(
-                            control["expanded"] == "false"
-                            and control["controls"] in panels
-                            for control in controls
-                        ),
+                        len(controls) == 0
+                        and len(panels) == expected_panel_count
+                        and len(panels) == len(set(panels)),
                         f"{deployment}/{variant}/{state}/{lang} disclosure "
                         "ARIA relationship changed",
                     )
@@ -948,7 +953,7 @@ def validate_observation(
                         "confused product roots sharing one layout type",
                     )
                     if variant == "deep":
-                        for region in ("desktop", "mobile"):
+                        for region in ("desktop",):
                             links = navigation[region]
                             group = next(
                                 link

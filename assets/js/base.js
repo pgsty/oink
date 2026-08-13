@@ -30,48 +30,6 @@ limitations under the License.
         update();
     }
 
-    function initMobileMenu() {
-        const toggle = document.querySelector('.mobile-menu-toggle');
-        const menu = document.querySelector('.mobile-menu');
-        if (!toggle || !menu) return;
-
-        function setOpen(open) {
-            if (open && window.OinkSurfaceCoordinator) {
-                window.OinkSurfaceCoordinator.closeOthers('mobile-menu');
-            }
-            menu.classList.toggle('active', open);
-            toggle.classList.toggle('active', open);
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-            const label = open ? toggle.dataset.labelClose : toggle.dataset.labelOpen;
-            if (label) toggle.setAttribute('aria-label', label);
-        }
-        if (window.OinkSurfaceCoordinator) {
-            window.OinkSurfaceCoordinator.register('mobile-menu', function() {
-                setOpen(false);
-            });
-        }
-
-        toggle.addEventListener('click', function() {
-            setOpen(!menu.classList.contains('active'));
-        });
-
-        // The theme and language option chips act on the current page, so they
-        // must not dismiss the menu the way a navigation link does.
-        menu.querySelectorAll('a, [data-mobile-menu-dismiss]').forEach(function(item) {
-            if (item.closest('.mobile-menu-options')) return;
-            item.addEventListener('click', function() {
-                setOpen(false);
-            });
-        });
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && menu.classList.contains('active')) {
-                setOpen(false);
-                toggle.focus();
-            }
-        });
-    }
-
     function initLanguageMenus() {
         document.querySelectorAll('.td-language-selector--menu').forEach(function(menu, index) {
             const trigger = menu.querySelector('.td-language-selector__trigger');
@@ -135,9 +93,61 @@ limitations under the License.
         });
     }
 
+    // Hover popovers (theme, version): hover or focus reveals the options
+    // while the trigger keeps its own click action (dark-mode.js binds the
+    // theme toggle; the version trigger toggles the popover for touch).
+    function initThemeMenus() {
+        document.querySelectorAll('[data-td-nav-hover]').forEach(function(menu, index) {
+            const trigger = menu.querySelector('.nav-util');
+            const surfaceName = 'theme-menu-' + index;
+            let closeTimer = 0;
+
+            function open() {
+                if (window.OinkSurfaceCoordinator) {
+                    window.OinkSurfaceCoordinator.closeOthers(surfaceName);
+                }
+                window.clearTimeout(closeTimer);
+                menu.classList.add('is-open');
+                if (trigger) trigger.setAttribute('aria-expanded', 'true');
+            }
+
+            function close() {
+                menu.classList.remove('is-open');
+                if (trigger) trigger.setAttribute('aria-expanded', 'false');
+            }
+
+            function closeSoon() {
+                window.clearTimeout(closeTimer);
+                closeTimer = window.setTimeout(close, 140);
+            }
+
+            if (window.OinkSurfaceCoordinator) {
+                window.OinkSurfaceCoordinator.register(surfaceName, close);
+            }
+
+            menu.addEventListener('pointerenter', function(event) {
+                if (event.pointerType !== 'touch') open();
+            });
+            menu.addEventListener('pointerleave', function(event) {
+                if (event.pointerType !== 'touch') closeSoon();
+            });
+            menu.addEventListener('focusin', open);
+            menu.addEventListener('focusout', function(event) {
+                if (!menu.contains(event.relatedTarget)) closeSoon();
+            });
+            // Triggers without their own click action (the version menu)
+            // toggle on tap, so touch reaches the options too.
+            if (trigger && trigger.hasAttribute('data-td-nav-hover-open')) {
+                trigger.addEventListener('click', function() {
+                    if (menu.classList.contains('is-open')) close(); else open();
+                });
+            }
+        });
+    }
+
     initHeaderScroll();
-    initMobileMenu();
     initLanguageMenus();
     initVersionMenus();
+    initThemeMenus();
 
 }());

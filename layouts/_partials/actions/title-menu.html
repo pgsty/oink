@@ -1,0 +1,122 @@
+{{/* cSpell:ignore querify subdir */ -}}
+{{/* Page actions: a split button in the breadcrumb row. This is the only
+     surface that renders data-oink-action controls; the Command Palette reads
+     the JSON manifest instead. The left half is an icon-only copy control
+     (clipboard, flipping to a green check on success); the caret disclosure
+     lists every page action — reading items above the separator, acting items
+     below — so `copy_markdown` renders twice on purpose (primary + first row).
+     Without a Markdown output the primary half is dropped and the caret
+     becomes a labeled "Actions" button. */ -}}
+
+{{ $p := . -}}
+{{ $feedURL := "" -}}
+{{ if reflect.IsMap . -}}
+  {{ $p = .page -}}
+  {{ $feedURL = .feedURL | default "" -}}
+{{ end -}}
+{{ if $p.File -}}
+{{ if not (in (slice "term" "taxonomy") $p.Kind) -}}
+{{ $actionContext := partial "actions/context.html" $p -}}
+{{ if $actionContext.pagePlacement -}}
+{{ $assistantLinks := $actionContext.assistantLinks -}}
+{{ $actionURLs := $actionContext.urls -}}
+{{ $markdownURL := $actionURLs.markdown -}}
+{{ $byID := $actionContext.byId -}}
+{{ $customLinks := slice -}}
+{{ with $p.Site.Params.ui.page_context_menu.links }}{{ $customLinks = . }}{{ end -}}
+<div class="td-page-actions d-print-none" data-td-page-actions data-td-page-context
+  data-t-copied="{{ T "ui_copy_success" }}" data-t-copy-error="{{ T "ui_copy_error" }}">
+  {{- $hasPrimary := or $feedURL $markdownURL }}
+  <div class="td-page-actions__group">
+    {{- if $feedURL }}
+    <a class="td-page-actions__primary" href="{{ $feedURL | safeURL }}" title="RSS" aria-label="RSS">
+      <span class="td-page-actions__icon"><i class="fa-solid fa-rss" aria-hidden="true"></i></span>
+    </a>
+    {{- else }}{{ with $markdownURL }}
+    <button type="button" class="td-page-actions__primary" data-oink-action="copy_markdown" data-url="{{ . }}"
+      title="{{ T "ui_copy_markdown" }}" aria-label="{{ T "ui_copy_markdown" }}">
+      <span class="td-page-actions__icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>
+      <span class="td-page-actions__icon td-page-actions__icon--done">{{ partialCached "shell/icon.html" "check" "check" }}</span>
+    </button>
+    {{- end }}{{ end }}
+    <button type="button" class="td-page-actions__toggle{{ if not $hasPrimary }} td-page-actions__toggle--solo{{ end }}"
+      data-td-page-actions-toggle aria-expanded="false" aria-controls="td-page-actions-menu"
+      {{ if $hasPrimary }}title="{{ T "ui_page_actions" }}" {{ end }}aria-label="{{ T "ui_page_actions" }}">
+      {{- if not $hasPrimary }}<span>{{ T "ui_page_actions" }}</span>{{ end -}}
+      {{ partialCached "shell/icon.html" "chevron-down" "chevron-down" }}
+    </button>
+  </div>
+  <ul class="td-page-actions__menu" id="td-page-actions-menu" data-td-page-actions-menu
+    aria-label="{{ T "ui_page_actions" }}">
+    {{- /* Reading half: take the content somewhere else. The RSS variant only
+         swaps the primary; the menu keeps the full copy action. */ -}}
+    {{- with $markdownURL }}
+    <li><button type="button" class="td-page-actions__item" data-oink-action="copy_markdown" data-url="{{ . }}">
+      {{ partialCached "shell/icon.html" "copy" "copy" }}<span>{{ T "ui_copy_markdown" }}</span>
+    </button></li>
+    {{- end }}
+    {{- if $assistantLinks }}
+    <li><a class="td-page-actions__item" data-oink-action="open_chatgpt" data-td-page-open-in="chatgpt"
+      href="{{ $byID.open_chatgpt.url | safeURL }}" target="_blank" rel="noopener noreferrer">
+      <i class="{{ $byID.open_chatgpt.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_chatgpt" }}</span>
+    </a></li>
+    <li><a class="td-page-actions__item" data-oink-action="open_claude" data-td-page-open-in="claude"
+      href="{{ $byID.open_claude.url | safeURL }}" target="_blank" rel="noopener noreferrer">
+      <i class="{{ $byID.open_claude.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_claude" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $markdownURL }}
+    <li><a class="td-page-actions__item" data-oink-action="view_markdown" href="{{ . }}" target="_blank" rel="noopener">
+      {{ partialCached "shell/icon.html" "markdown" "markdown" }}<span>{{ T "post_view_markdown" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $actionURLs.history }}
+    <li><a class="td-page-actions__item" data-oink-action="view_history" href="{{ . }}" target="_blank" rel="noopener">
+      {{ partialCached "shell/icon.html" "history" "history" }}<span>{{ T "ui_view_history" }}</span>
+    </a></li>
+    {{- end }}
+    {{- /* Acting half: change or produce something. */ -}}
+    {{- if or $actionURLs.edit $actionURLs.createChild $actionURLs.createIssue $actionURLs.createProjectIssue $actionURLs.printSection $customLinks }}
+    <li class="td-page-actions__separator" role="separator"></li>
+    {{- end }}
+    {{- with $actionURLs.edit }}
+    <li><a class="td-page-actions__item" data-oink-action="edit_page" href="{{ . }}" target="_blank" rel="noopener">
+      {{ partialCached "shell/icon.html" "pencil" "pencil" }}<span>{{ T "post_edit_this" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $actionURLs.createChild }}
+    <li><a class="td-page-actions__item" data-oink-action="create_child_page" href="{{ . | safeURL }}" target="_blank" rel="noopener">
+      {{ partialCached "shell/icon.html" "file-plus" "file-plus" }}<span>{{ T "post_create_child_page" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $actionURLs.createIssue }}
+    <li><a class="td-page-actions__item" data-oink-action="create_issue" href="{{ . | safeURL }}" target="_blank" rel="noopener">
+      {{ partialCached "shell/icon.html" "circle-help" "circle-help" }}<span>{{ T "post_create_issue" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $actionURLs.createProjectIssue }}
+    <li><a class="td-page-actions__item" data-oink-action="create_project_issue" href="{{ . }}" target="_blank" rel="noopener">
+      {{ partialCached "shell/icon.html" "circle-alert" "circle-alert" }}<span>{{ T "post_create_project_issue" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $actionURLs.printSection }}
+    <li><a class="td-page-actions__item" data-oink-action="print_section" href="{{ . }}">
+      {{ partialCached "shell/icon.html" "files" "files" }}<span>{{ T "print_entire_section" }}</span>
+    </a></li>
+    {{- end }}
+    {{- with $customLinks }}
+    <li class="td-page-actions__separator" role="separator"></li>
+    {{- range . -}}
+      {{- $url := partial "url-template.html" (dict "template" .url "values" (dict
+        "url" $p.Permalink "title" $p.Title "markdown_url" $markdownURL)) }}
+    <li><a class="td-page-actions__item" href="{{ $url | safeURL }}" target="_blank" rel="noopener noreferrer">
+      {{ with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ else }}{{ partialCached "shell/icon.html" "external-link" "external-link" }}{{ end }}<span>{{ .name }}</span>
+    </a></li>
+    {{- end }}
+    {{- end }}
+  </ul>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-td-page-context-status></span>
+</div>
+{{ end -}}
+{{ end -}}
+{{ end -}}

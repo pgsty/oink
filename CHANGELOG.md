@@ -5,7 +5,61 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Render the site navbar on every layout, including docs, blog, swagger, and
+  taxonomy pages. The new `navbar_enabled` switch (default `true`) can turn it
+  off globally via `params.ui.navbar_enabled`, per section via a front-matter
+  cascade, or per page; disabling it restores the previous chrome (mobile
+  subnav, sidebar brand and search rows, TOC-rail utility buttons, sidebar
+  footer utilities). The navbar has exactly two states: full, and a compact
+  state below `lg` that keeps every item visible as a right-aligned icon —
+  there is no separate mobile menu, and the `navbar_accordion_single_open`
+  parameter is retired. Menu parents are plain links that open their panel on
+  hover or keyboard focus (no disclosure caret); the version selector, the
+  language selector, and the theme control (with a System/Light/Dark picker)
+  are Font Awesome icon triggers sharing one popover style; search is a
+  magnifier icon opening the Command Palette. On shell pages below `md` an
+  extra icon opens the sidebar drawer.
+- Introduce `footer_style` (default `fat`) with the same site, cascade, and
+  page override chain: `fat` renders the four-column footer grid above the
+  copyright line on every layout, `slim` keeps only the line, and `none`
+  removes the footer; an unknown value fails the build. Fat-footer data now
+  lives in `data/footer/<lang>.yaml` (or single-language `data/footer.yaml`),
+  with the legacy `data/home/<lang>.yaml` `footer` key still honored — note
+  that sites using the legacy key now get the fat footer site-wide, where it
+  was previously homepage-only. A fat footer without data degrades to slim.
+
 ### Changed
+
+- Move the page actions from the collapsible TOC-rail group to a Fumadocs-style
+  split button in the breadcrumb row: an icon-only primary copies the page's
+  Markdown (flipping to a green check), and the caret disclosure lists ten
+  actions — reading items (copy, assistants, view markdown, view history)
+  above a separator, acting items (edit, create child page, create docs or
+  project issue, print entire section) below, plus configured custom links.
+  `create_child_page`, `create_project_issue`, and `print_section` are now
+  first-class registry actions surfaced in the Command Palette too; the
+  page-level `print` action is retired in favor of Cmd/Ctrl+P. On the blog
+  root and its first-level sections the primary becomes the RSS link. Pages
+  without a Markdown output render a labeled dropdown-only button. Top-level
+  section pages keep their one-crumb breadcrumb so the row stays anchored.
+- The TOC collapse toggle is a three-line glyph inline with the group title
+  (now labeled "Content"), aligned with the taxonomy group heads, which carry
+  configurable icons (`params.ui.taxonomy_icons`, with folder/tags defaults);
+  the whole header row highlights as one item, and in the sidebar drawer the
+  group keeps a static three-line icon so it reads like the taxonomy heads.
+- Scope the sidebar root switcher to the current top-level section: the
+  dropdown appears only when a descendant section opts in with
+  `sidebar_root_for: self`, listing the section itself (the default) plus each
+  opted-in descendant. Sibling top-level sections belong to the navbar, and a
+  section without switchable descendants renders a plain, unboxed link to its
+  landing page — flush with the tree's top-level rows — instead of a
+  single-entry dropdown. Taxonomy term pages adopt their members' shared top
+  section for both the sidebar tree and the root link, so following a docs tag
+  keeps the docs navigation instead of falling back to the site-wide tree. Blog leaf pages no longer show an RSS
+  icon — feeds belong to the blog root and its sections. Fix the blank seam
+  between the sidebar's lower edge and the footer while scrolling.
 
 - Upgrade the vendored Font Awesome Free assets from 6.7.2 to 7.3.1, use its
   official OpenAI and Claude icons for the assistant actions, and follow the

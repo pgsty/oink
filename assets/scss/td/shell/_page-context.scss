@@ -1,6 +1,7 @@
 // ============================================================
-// Page actions. One surface only: the action list in the TOC rail. The page
-// heading no longer carries a duplicate dropdown.
+// Page actions. One surface only: the split button in the breadcrumb row.
+// The left half is an icon-only copy control; the caret opens a disclosure
+// listing every page action. The Command Palette reads the manifest instead.
 // ============================================================
 
 .td-content > .td-page-heading {
@@ -14,19 +15,170 @@
   }
 }
 
-.td-page-meta {
+// Breadcrumb row: crumbs on the start side, RSS and the split button on the
+// end side, so the actions never collide with a long page title.
+.td-shell-topline {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  .td-breadcrumbs {
+    min-width: 0;
+  }
+
+  .breadcrumb {
+    margin-bottom: 0;
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
 }
 
-.td-page-meta__action {
+.td-page-actions {
+  position: relative;
+  flex: none;
+
+  @media print {
+    display: none !important;
+  }
+}
+
+.td-page-actions__group {
+  display: inline-flex;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  background: var(--bs-body-bg);
+  // Clean corners for both halves in LTR and RTL without per-corner radii.
+  overflow: hidden;
+}
+
+.td-page-actions__primary,
+.td-page-actions__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  border: 0;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+  }
+
+  // Inset so the ring is not clipped by the group's overflow: hidden.
+  &:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+  }
+}
+
+.td-page-actions__primary {
+  text-decoration: none; // The feed variant is an anchor.
+
+  .td-page-actions__icon > i {
+    font-size: 14px;
+    line-height: 15px;
+  }
+}
+
+.td-page-actions__toggle {
+  border-inline-start: 1px solid var(--bs-border-color);
+
+  .td-shell-icon {
+    width: 14px;
+    height: 14px;
+    transition: transform 150ms ease;
+  }
+
+  &--solo {
+    border-inline-start: 0;
+  }
+}
+
+.td-page-actions.is-open .td-page-actions__toggle .td-shell-icon {
+  transform: rotate(180deg);
+}
+
+// Copy button: the check swaps in for the clipboard while the toast is up.
+.td-page-actions__icon {
+  display: inline-flex;
+
+  .td-shell-icon {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.td-page-actions__icon--done {
+  display: none;
+  color: var(--bs-success);
+}
+
+.td-page-actions__primary.is-copied {
+  color: var(--bs-success);
+
+  .td-page-actions__icon {
+    display: none;
+  }
+
+  .td-page-actions__icon--done {
+    display: inline-flex;
+  }
+}
+
+// Disclosure panel. Click-driven only: rows carry side effects, so there are
+// no hover or focus-within openers. Above the fixed TOC panel (20) and the
+// floating controls (40); below the drawer backdrop (1040) and dialogs.
+.td-page-actions__menu {
+  position: absolute;
+  inset-block-start: calc(100% + 0.35rem);
+  inset-inline-end: 0;
+  z-index: 45;
+  min-width: 13.5rem;
+  margin: 0;
+  padding: 0.35rem;
+  font-weight: 400; // One weight throughout; no row reads as emphasized.
+  list-style: none;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.7rem;
+  background: var(--td-shell-popover);
+  box-shadow: var(--td-shell-shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition:
+    opacity 120ms ease,
+    visibility 120ms ease,
+    transform 120ms ease;
+}
+
+.td-page-actions.is-open .td-page-actions__menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.td-page-actions__item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 3px 0;
+  padding: 0.3rem 0.5rem;
   border: 0;
+  border-radius: 0.45rem;
   background: transparent;
   color: var(--td-shell-muted-fg);
   font: inherit;
@@ -35,10 +187,13 @@
   text-align: start;
   text-decoration: none;
   cursor: pointer;
-  transition: color 100ms ease;
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
 
   &:hover,
   &:focus-visible {
+    background: var(--bs-tertiary-bg);
     color: var(--bs-body-color);
     text-decoration: none;
   }
@@ -60,30 +215,22 @@
   }
 }
 
-// Copy button: the check swaps in for the clipboard while the toast is up.
-.td-page-meta__icon {
-  display: inline-flex;
-}
-
-.td-page-meta__icon--done {
-  display: none;
-  color: var(--bs-success);
-}
-
-.td-page-meta__action.is-copied {
-  color: var(--bs-success);
-
-  .td-page-meta__icon {
-    display: none;
-  }
-
-  .td-page-meta__icon--done {
-    display: inline-flex;
-  }
-}
-
-.td-page-meta__separator {
+.td-page-actions__separator {
   height: 1px;
-  margin: 0.35rem 0;
+  margin: 0.35rem;
   background: var(--bs-border-color);
+}
+
+@media (forced-colors: active) {
+  .td-page-actions__menu {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-page-actions__menu,
+  .td-page-actions__toggle .td-shell-icon {
+    transition: none;
+  }
 }

@@ -41,7 +41,7 @@ ui_category_title: 分類
 ui_theme_toggle: 切換配色
 ui_language: 語言切換
 ui_theme: 主題顏色
-ui_theme_auto: 跟隨系統
+ui_theme_auto: 系統
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
 ui_page_actions: 操作
@@ -74,8 +74,8 @@ post_created: 建立
 post_last_mod: 最後更新於
 post_upstream_attribution: 上游文件原文與署名
 post_downstream_modified: 本頁包含{{ .Site.Title }}所作的下游修改。
-post_edit_this: 編輯此頁面
-post_view_markdown: 檢視原始碼
+post_edit_this: 編輯目前頁面
+post_view_markdown: 檢視 Markdown 原始碼
 post_view_this: 檢視頁面原始碼
 post_create_child_page: 建立子頁面
 post_create_issue: 建立文件議題
@@ -88,7 +88,7 @@ post_less_than_a_minute_read: 1 分鐘內可讀完
 print_printable_section: 這是本節的多頁可列印檢視。
 print_click_to_print: 點選此處列印
 print_show_regular: 返回此頁面的標準檢視
-print_entire_section: 列印整章節
+print_entire_section: 列印完整章節
 
 # Community
 community_join: 加入 {{ .Site.Title }} 社群
@@ -124,7 +124,7 @@ error_404_home: 返回首頁
 # OINK UI additions.
 ui_search_results: '找到 {count} 筆結果'
 ui_skip_to_content: 跳至主要內容
-ui_copy_markdown: 複製文字
+ui_copy_markdown: 複製 Markdown 文字
 ui_copy_success: 已複製 Markdown
 ui_copy_error: 無法複製 Markdown
 ui_code_copy: 複製

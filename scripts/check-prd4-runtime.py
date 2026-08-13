@@ -94,7 +94,6 @@ def main() -> int:
             "palette",
             "drawer",
             "root-menu",
-            "mobile-menu",
             "language-menu-",
             "version-menu-",
         ):

@@ -15,13 +15,14 @@
   {{ $sidebarMax := .Param "ui.sidebar_width_max" | default 480 -}}
   {{ $navWrap := eq (.Param "ui.sidebar_item_overflow") "wrap" -}}
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
+  {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ $pageWidth := .Param "page_width" | default "normal" -}}
   {{ if not (in (slice "normal" "wide" "full") $pageWidth) -}}
     {{ errorf "invalid page_width %q in %s (allowed: normal | wide | full)" $pageWidth .Path -}}
   {{ end -}}
-  <body class="td-{{ .Kind }} td-swagger td-shell-chrome{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+  <body class="td-{{ .Kind }} td-swagger td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
-    {{ partial "shell/subnav.html" . }}
+    {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
     <div class="container-fluid td-outer">
       <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if not $hasToc }} td-shell-layout--no-toc{{ end }}{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
            style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
@@ -35,15 +36,21 @@
         {{- end }}
         <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
           <article class="td-shell-article">
-            {{ if not (.Param "ui.breadcrumb_disable") -}}
-              {{ partial "breadcrumb.html" . -}}
+            {{ $crumbs := not (.Param "ui.breadcrumb_disable") -}}
+            {{ $actionsHTML := partial "actions/title-menu.html" . -}}
+            {{ if or $crumbs (strings.ContainsNonSpace $actionsHTML) -}}
+            <div class="td-shell-topline">
+              {{ if $crumbs }}{{ partial "breadcrumb.html" . }}{{ end }}
+              <span class="td-shell-topline__spacer"></span>
+              {{ $actionsHTML }}
+            </div>
             {{ end -}}
             {{ block "main" . }}{{ end }}
           </article>
         </main>
         {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" $hasToc) }}
       </div>
-      {{ partial "shell/footer-line.html" . }}
+      {{ partial "footer.html" . }}
     </div>
     {{ partial "scripts.html" . }}
   </body>

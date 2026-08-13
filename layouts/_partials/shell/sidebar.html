@@ -31,6 +31,17 @@
   {{- with .Site.GetPage (printf "/%s" $config.docsSection) }}{{ $sidebarRoot = . }}{{ end -}}
 {{- end -}}
 
+{{- /* A term's members are root-homogeneous in practice — the clouds are
+     scoped per content root — so adopt their shared top section: arriving
+     from a docs tag keeps the docs tree, from a blog tag the blog tree.
+     Mixed terms keep the wider root resolved above. */ -}}
+{{- if eq .Kind "term" -}}
+  {{- $tops := slice -}}
+  {{- range .Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
+  {{- $tops = $tops | uniq -}}
+  {{- if eq (len $tops) 1 }}{{ $sidebarRoot = index $tops 0 }}{{ end -}}
+{{- end -}}
+
 {{- $args := dict
   "context" .
   "cacheSidebar" $cacheSidebar

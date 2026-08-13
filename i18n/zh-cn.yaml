@@ -42,7 +42,7 @@ ui_category_title: 分类
 ui_theme_toggle: 切换配色
 ui_language: 语言切换
 ui_theme: 主题颜色
-ui_theme_auto: 跟随系统
+ui_theme_auto: 系统
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
 ui_toc_hide: 隐藏目录
@@ -55,7 +55,7 @@ ui_page_actions: 操作
 ui_open_in_chatgpt: 在 ChatGPT 中打开
 ui_open_in_claude: 在 Claude 中打开
 ui_open_in_prompt: 请阅读 %s 的内容，以便我就此向你提问。
-ui_copy_markdown: 复制文本
+ui_copy_markdown: 复制 Markdown 文本
 ui_copy_success: 已复制 Markdown
 ui_copy_error: 无法复制 Markdown
 ui_code_copy: 复制
@@ -97,12 +97,12 @@ post_created: 创建
 post_last_mod: 最后修改
 post_upstream_attribution: 上游文档原文与署名
 post_downstream_modified: 本页包含{{ .Site.Title }}所作的下游修改。
-post_edit_this: 编辑此页面
-post_view_markdown: 查阅源码
+post_edit_this: 编辑当前页面
+post_view_markdown: 查阅 Markdown 源码
 post_view_this: 查看页面源码
 post_create_child_page: 添加子页面
-post_create_issue: 提交文档问题
-post_create_project_issue: 提交项目问题
+post_create_issue: 提交文档议题
+post_create_project_issue: 提交项目议题
 post_posts_in: 撰写于
 post_reading_time: 分钟阅读
 post_less_than_a_minute_read: 1分钟内可阅读完
@@ -111,7 +111,7 @@ post_less_than_a_minute_read: 1分钟内可阅读完
 print_printable_section: 这是本节的多页打印视图。
 print_click_to_print: 点击此处打印
 print_show_regular: 返回本页常规视图
-print_entire_section: 打印整章节
+print_entire_section: 打印完整章节
 
 # Community
 community_join: 加入 {{ .Site.Title }}社区

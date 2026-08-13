@@ -142,35 +142,6 @@
   }
 }
 
-// RSS is an icon-only action; hover changes color without adding a box.
-.td-shell-chrome .td-rss-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  height: auto;
-  padding: 4px;
-  border: 0 !important;
-  border-radius: 0;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: var(--td-shell-muted-fg);
-  font-size: 1rem;
-  transition: color 100ms ease;
-
-  &:hover {
-    color: var(--td-shell-primary);
-    background: transparent !important;
-  }
-}
-
-// When the right rail is collapsed, group RSS with its restore control.
-@include media-breakpoint-up(xl) {
-  [data-td-shell-toc='collapsed'] .td-rss-button--content {
-    display: none !important;
-  }
-}
-
 /* -------------------------------------------- inline taxonomy terms */
 
 // The article/list "Tags:" row rendered by taxonomy_terms_article.

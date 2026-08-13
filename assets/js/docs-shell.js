@@ -85,7 +85,7 @@
 
   // Shorten the fixed sidebar as the footer enters the viewport.
   function initFooterOffset() {
-    var footer = document.querySelector('.td-shell-footline');
+    var footer = document.querySelector('[data-td-shell-footer]');
     var panel = document.querySelector('.td-shell-sidebar__panel');
     if (!footer || !panel) return;
     var frame = 0;
@@ -438,11 +438,11 @@
   /* -------------------------------------------------------- asideRelocate */
 
   /*
-   * Below xl the TOC rail is hidden, which used to take the table of contents,
-   * the page actions and the taxonomy clouds with it. Rather than render a
-   * second copy — duplicate ids would break the scrollspy and the disclosure
-   * wiring — the single block is moved into a slot in the sidebar drawer and
-   * moved back on the way up.
+   * Below xl the TOC rail is hidden, which used to take the table of contents
+   * and the taxonomy clouds with it. Rather than render a second copy —
+   * duplicate ids would break the scrollspy and the disclosure wiring — the
+   * single block is moved into a slot in the sidebar drawer and moved back on
+   * the way up.
    *
    * The groups follow the context: expanded in the rail, where there is room
    * for them, collapsed in the drawer, where the navigation tree comes first.

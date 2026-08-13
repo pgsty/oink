@@ -5,7 +5,9 @@
 // ============================================================
 
 :root {
-  // The shell has no fixed top bar. The mobile subnav remains in normal flow.
+  // Height of the viewport-pinned chrome that fixed shell elements must clear.
+  // Zero when the navbar is off: the fallback subnav stays in normal flow.
+  // body.td-shell-chrome--navbar raises it to the sticky navbar height below.
   --td-shell-nav-h: 0px;
 
   // Default sidebar widths at md and lg. Dragging updates this custom property;
@@ -74,6 +76,13 @@
 // Override the inherited anchor offset, which assumes a 4rem fixed navbar.
 html:has(body.td-shell-chrome) {
   scroll-padding-top: 1.5rem;
+}
+
+// With the sticky navbar on, fixed rails and anchor jumps clear its height.
+// Set on html so the scroll-padding above and every body descendant share it.
+html:has(body.td-shell-chrome--navbar) {
+  --td-shell-nav-h: #{$td-navbar-min-height};
+  scroll-padding-top: calc(var(--td-shell-nav-h) + 1.5rem);
 }
 
 // Compact gradient wordmark shared by the sidebar and mobile subnav.

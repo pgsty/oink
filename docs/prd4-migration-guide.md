@@ -112,19 +112,14 @@ or a descendant is current, but only the exact page receives
 
 ### Navigation interaction {#navigation-interaction}
 
-Desktop disclosure works with click, Enter, Space, and ArrowDown. ArrowDown
-opens and focuses the first item. Escape closes and restores button focus.
-Focus leaving the menu or a pointer press outside closes it. No behavior
-requires hover.
+Parent labels are ordinary links: click navigates to the section landing while
+hover or keyboard focus opens the panel. ArrowDown opens and focuses the first
+item, Escape closes and restores focus, and a pointer press outside closes it.
+Reaching child pages never requires hover.
 
-Mobile uses the same split link/button model. Multiple accordions may remain
-open by default. To opt into a single open section:
-
-```yaml
-params:
-  ui:
-    navbar_accordion_single_open: true
-```
+The navbar has two states — full and compact. The compact state keeps every
+item visible as an icon, so there is no separate mobile menu; the former
+`navbar_accordion_single_open` accordion parameter is retired and ignored.
 
 Language, version, theme, and search remain in the utility area rather than
 becoming children of the content menu.
@@ -287,8 +282,10 @@ print executor, and theme controls call the same theme application function.
 The assistant actions start with real no-JavaScript fallback anchors, then
 resolve the deployed host, query string, and fragment from the browser URL at
 activation time. Other PRD 4 URL actions keep an href that matches the shared
-descriptor. Historical rail-only actions outside the PRD 4 built-in set remain
-separate compatibility features.
+descriptor. On the page the actions render as a split button beside the
+document title — the Copy text primary plus a caret disclosure — replacing the
+earlier TOC-rail list. Historical rail-only actions outside the PRD 4 built-in
+set remain separate compatibility features, now listed in the same disclosure.
 
 Assistant links are disabled by default because activation sends the full
 browser URL to a third party. A site that opts in must avoid secrets in query

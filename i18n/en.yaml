@@ -42,7 +42,7 @@ ui_category_title: Category
 ui_theme_toggle: Toggle color theme
 ui_language: Language
 ui_theme: Theme
-ui_theme_auto: Follow system
+ui_theme_auto: System
 ui_theme_light: Light
 ui_theme_dark: Dark
 ui_toc_hide: Hide table of contents
@@ -55,7 +55,7 @@ ui_page_actions: Actions
 ui_open_in_chatgpt: Open in ChatGPT
 ui_open_in_claude: Open in Claude
 ui_open_in_prompt: Read from %s so I can ask questions about it.
-ui_copy_markdown: Copy text
+ui_copy_markdown: Copy Markdown
 ui_copy_success: Markdown copied
 ui_copy_error: Could not copy Markdown
 ui_code_copy: Copy
@@ -98,7 +98,7 @@ post_upstream_attribution: Upstream source and attribution
 post_downstream_modified:
   This page includes downstream modifications by {{ .Site.Title }}.
 post_edit_this: Edit this page
-post_view_markdown: View source
+post_view_markdown: View markdown
 post_view_this: View page source
 post_create_child_page: Create child page
 post_create_issue: Create docs issue
@@ -137,7 +137,7 @@ feedback_positive: Yes
 feedback_negative: No
 
 # Table of contents
-toc_on_this_page: On this page
+toc_on_this_page: Content
 toc_top_of_page: Top of page
 
 # Error pages

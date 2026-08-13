@@ -17,31 +17,13 @@
     {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link") }}
   {{- end -}}
 {{- else if eq $mode "desktop" -}}
+{{- /* No disclosure caret on desktop: the parent label navigates on click and
+     the panel opens on hover or keyboard focus (see navbar-menu.js). Touch
+     users navigate directly; the target page carries its own navigation. */ -}}
 <div class="nav-menu" data-td-navbar-menu>
-  <div class="nav-menu__parent">
-    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link") }}
-    <button type="button" class="nav-menu__toggle" data-td-navbar-toggle
-      aria-controls="{{ $panelID }}" aria-expanded="false"
-      aria-label="{{ $expandLabel }}" data-label-expand="{{ $expandLabel }}" data-label-collapse="{{ $collapseLabel }}">
-      {{- partialCached "shell/icon.html" "chevron-down" "navbar-chevron" -}}
-    </button>
-  </div>
+  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link") }}
   <div class="nav-menu__panel" id="{{ $panelID }}" data-td-navbar-panel hidden>
     {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" "desktop" "top" $entry "depth" 1) }}
-  </div>
-</div>
-{{- else -}}
-<div class="mobile-menu-section" data-td-navbar-accordion>
-  <div class="mobile-menu-parent">
-    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link mobile-menu-parent-link") }}
-    <button type="button" class="mobile-menu-disclosure" data-td-navbar-accordion-toggle
-      aria-controls="{{ $panelID }}" aria-expanded="false"
-      aria-label="{{ $expandLabel }}" data-label-expand="{{ $expandLabel }}" data-label-collapse="{{ $collapseLabel }}">
-      {{- partialCached "shell/icon.html" "chevron-down" "mobile-navbar-chevron" -}}
-    </button>
-  </div>
-  <div class="mobile-menu-children" id="{{ $panelID }}" data-td-navbar-accordion-panel hidden>
-    {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" "mobile" "top" $entry "depth" 1) }}
   </div>
 </div>
 {{- end -}}

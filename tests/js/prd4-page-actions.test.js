@@ -5,6 +5,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
+const source = fs.readFileSync(
+  path.join(__dirname, '..', '..', 'assets/js/page-actions.js'),
+  'utf8',
+);
+
 function control(id, root, tagName = 'BUTTON') {
   const listeners = new Map();
   const label = { textContent: 'Copy Markdown', dataset: {} };
@@ -34,7 +39,8 @@ function control(id, root, tagName = 'BUTTON') {
   };
 }
 
-(async () => {
+/* Scenario 1: registry binding on plain controls (no title menu present). */
+async function testBindings() {
   const status = { textContent: '' };
   const root = {
     dataset: { tCopied: 'Markdown copied', tCopyError: 'Copy failed' },
@@ -71,11 +77,11 @@ function control(id, root, tagName = 'BUTTON') {
       assert.equal(selector, '[data-oink-action]');
       return [copy, print, chatgpt, claude];
     },
+    querySelector(selector) {
+      assert.equal(selector, '[data-td-page-actions]');
+      return null;
+    },
   };
-  const source = fs.readFileSync(
-    path.join(__dirname, '..', '..', 'assets/js/page-actions.js'),
-    'utf8',
-  );
   vm.runInNewContext(source, {
     window: fakeWindow,
     document: fakeDocument,
@@ -122,7 +128,126 @@ function control(id, root, tagName = 'BUTTON') {
     { id: 'open_claude', current: 'initial' },
     { id: 'open_chatgpt', current: 'query-and-hash' },
   ]);
+}
 
+/* Scenario 2: the title split button — disclosure behavior and the copy
+   feedback landing on the primary half even for the menu row. */
+async function testTitleMenu() {
+  const events = { run: [], coordinator: [], timers: [] };
+  const status = { textContent: '' };
+  const docListeners = new Map();
+  const menuListeners = new Map();
+  const toggleAttrs = new Map([['aria-expanded', 'false']]);
+  const rootClasses = new Set();
+
+  const toggle = {
+    focused: 0,
+    addEventListener(name, handler) { menuListeners.set(`toggle:${name}`, handler); },
+    setAttribute(name, value) { toggleAttrs.set(name, String(value)); },
+    getAttribute(name) { return toggleAttrs.get(name) || null; },
+    focus() { this.focused += 1; },
+  };
+  const menu = {
+    addEventListener(name, handler) { menuListeners.set(`menu:${name}`, handler); },
+    querySelectorAll() { return []; },
+  };
+  const root = {
+    dataset: { tCopied: 'Markdown copied', tCopyError: 'Copy failed' },
+    classList: {
+      add(value) { rootClasses.add(value); },
+      remove(value) { rootClasses.delete(value); },
+      contains(value) { return rootClasses.has(value); },
+    },
+    contains(target) { return target && target.inside === true; },
+    querySelector(selector) {
+      if (selector === '[data-td-page-context-status]') return status;
+      if (selector === '.td-page-actions__primary[data-oink-action="copy_markdown"]') return primary;
+      if (selector === '[data-td-page-actions-toggle]') return toggle;
+      if (selector === '[data-td-page-actions-menu]') return menu;
+      return null;
+    },
+  };
+  const primary = control('copy_markdown', root);
+  const menuCopy = control('copy_markdown', root);
+  menuCopy.querySelector = () => null; // The menu row has no feedback label.
+
+  const fakeWindow = {
+    OinkActions: {
+      get(id) {
+        return id === 'copy_markdown'
+          ? { id, available: true, url: '/page.md' }
+          : null;
+      },
+      preloadMarkdown() { return Promise.resolve(); },
+      run(id, context) { events.run.push({ id, context }); return Promise.resolve(); },
+      resolveUrl() { return null; },
+    },
+    OinkSurfaceCoordinator: {
+      register(name) { events.coordinator.push(`register:${name}`); },
+      closeOthers(name) { events.coordinator.push(`closeOthers:${name}`); },
+    },
+    requestAnimationFrame(callback) { callback(); },
+    setTimeout(callback) { events.timers.push(callback); },
+  };
+  const fakeDocument = {
+    activeElement: toggle,
+    querySelectorAll(selector) {
+      assert.equal(selector, '[data-oink-action]');
+      return [primary, menuCopy];
+    },
+    querySelector(selector) {
+      assert.equal(selector, '[data-td-page-actions]');
+      return root;
+    },
+    addEventListener(name, handler) { docListeners.set(name, handler); },
+  };
+  vm.runInNewContext(source, {
+    window: fakeWindow,
+    document: fakeDocument,
+    Promise,
+  });
+
+  assert.deepEqual(events.coordinator, ['register:page-actions']);
+
+  // Toggle opens: coordinator closes other surfaces, state is reflected.
+  menuListeners.get('toggle:click')();
+  assert.equal(rootClasses.has('is-open'), true);
+  assert.equal(toggleAttrs.get('aria-expanded'), 'true');
+  assert.deepEqual(events.coordinator, [
+    'register:page-actions',
+    'closeOthers:page-actions',
+  ]);
+
+  // Outside pointerdown closes without stealing focus.
+  docListeners.get('pointerdown')({ target: { inside: false } });
+  assert.equal(rootClasses.has('is-open'), false);
+  assert.equal(toggle.focused, 0);
+
+  // Escape closes and returns focus to the toggle.
+  menuListeners.get('toggle:click')();
+  docListeners.get('keydown')({ key: 'Escape' });
+  assert.equal(rootClasses.has('is-open'), false);
+  assert.equal(toggle.focused, 1);
+
+  // Activating any menu row closes the disclosure.
+  menuListeners.get('toggle:click')();
+  menuListeners.get('menu:click')({ target: { closest: () => menuCopy } });
+  assert.equal(rootClasses.has('is-open'), false);
+
+  // Copy from the menu row: the confirmation lands on the primary half.
+  menuCopy.listeners.get('click').handler();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(events.run[0].id, 'copy_markdown');
+  assert.equal(events.run[0].context.source, 'page');
+  assert.equal(primary.classList.contains('is-copied'), true);
+  assert.equal(primary.label.textContent, 'Markdown copied');
+  assert.equal(status.textContent, 'Markdown copied');
+}
+
+(async () => {
+  await testBindings();
+  await testTitleMenu();
   console.log('PRD 4 page action DOM binding checks passed');
 })().catch((error) => {
   console.error(error);

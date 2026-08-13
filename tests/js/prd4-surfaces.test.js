@@ -125,34 +125,7 @@ function keyboardEvent(key) {
   };
 }
 
-function navbarSection(active = false) {
-  const panel = element({
-    hidden: true,
-    querySelectorAll() {
-      return [];
-    },
-  });
-  const toggle = element({
-    dataset: {
-      labelExpand: 'Expand',
-      labelCollapse: 'Collapse',
-    },
-  });
-  const parent = element();
-  if (active) parent.classList.add('active');
-  const section = element({
-    querySelector(selector) {
-      return {
-        '[data-td-navbar-accordion-toggle]': toggle,
-        '[data-td-navbar-accordion-panel]': panel,
-        '.mobile-menu-parent-link': parent,
-      }[selector];
-    },
-  });
-  return { panel, parent, section, toggle };
-}
-
-function testNavbarDisclosureAndAccordion() {
+function testNavbarHoverPanel() {
   const documentListeners = new Map();
   const first = element();
   const second = element();
@@ -162,19 +135,14 @@ function testNavbarDisclosureAndAccordion() {
       return [first, second];
     },
   });
-  const toggle = element({
-    dataset: {
-      labelExpand: 'Expand Docs',
-      labelCollapse: 'Collapse Docs',
-    },
-  });
+  const parent = element();
   const menu = element({
     contains(candidate) {
-      return candidate === toggle || candidate === panel;
+      return candidate === parent || candidate === panel;
     },
     querySelector(selector) {
       return {
-        '[data-td-navbar-toggle]': toggle,
+        '.nav-menu__parent-link': parent,
         '[data-td-navbar-panel]': panel,
       }[selector];
     },
@@ -199,6 +167,12 @@ function testNavbarDisclosureAndAccordion() {
     requestAnimationFrame(callback) {
       callback();
     },
+    // Immediate timers: closeSoon's grace period collapses to a direct close.
+    setTimeout(callback) {
+      callback();
+      return 1;
+    },
+    clearTimeout() {},
     OinkSurfaceCoordinator: {
       closeOthers(name) {
         coordinated.push(name);
@@ -210,15 +184,23 @@ function testNavbarDisclosureAndAccordion() {
   };
 
   load('assets/js/navbar-menu.js');
-  toggle.dispatch('click');
+
+  // Touch hover must not open: touch users navigate via the parent link.
+  menu.dispatch('pointerenter', { pointerType: 'touch' });
+  assert.equal(panel.hidden, true);
+
+  menu.dispatch('pointerenter', { pointerType: 'mouse' });
   assert.equal(panel.hidden, false);
-  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
-  assert.equal(toggle.getAttribute('aria-label'), 'Collapse Docs');
+  assert.equal(parent.getAttribute('aria-expanded'), 'true');
   assert.deepEqual(coordinated, ['navbar-menu-0']);
 
+  menu.dispatch('pointerleave', { pointerType: 'mouse' });
+  assert.equal(panel.hidden, true);
+
   const down = keyboardEvent('ArrowDown');
-  toggle.dispatch('keydown', down);
+  parent.dispatch('keydown', down);
   assert.equal(down.defaultPrevented, true);
+  assert.equal(panel.hidden, false);
   assert.equal(document.activeElement, first);
 
   const next = keyboardEvent('ArrowDown');
@@ -228,73 +210,15 @@ function testNavbarDisclosureAndAccordion() {
   const escape = keyboardEvent('Escape');
   panel.dispatch('keydown', escape);
   assert.equal(panel.hidden, true);
-  assert.equal(document.activeElement, toggle);
-  assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+  assert.equal(document.activeElement, parent);
+  assert.equal(parent.getAttribute('aria-expanded'), 'false');
 
-  toggle.dispatch('click');
+  menu.dispatch('pointerenter', { pointerType: 'mouse' });
   (documentListeners.get('pointerdown') || [])[0]({ target: element() });
   assert.equal(panel.hidden, true);
-  toggle.dispatch('click');
+  menu.dispatch('pointerenter', { pointerType: 'mouse' });
   registered.get('navbar-menu-0')(false);
   assert.equal(panel.hidden, true);
-
-  function runAccordions(singleOpen) {
-    const a = navbarSection();
-    const b = navbarSection();
-    const root = element({
-      dataset: { accordionSingleOpen: singleOpen ? 'true' : 'false' },
-      querySelectorAll() {
-        return [a.section, b.section];
-      },
-    });
-    global.document = {
-      activeElement: null,
-      addEventListener() {},
-      querySelector(selector) {
-        return selector === '[data-mobile-menu]' ? root : null;
-      },
-      querySelectorAll() {
-        return [];
-      },
-    };
-    global.window = { requestAnimationFrame(callback) { callback(); } };
-    load('assets/js/navbar-menu.js');
-    a.toggle.dispatch('click');
-    b.toggle.dispatch('click');
-    return { a, b };
-  }
-
-  const multiple = runAccordions(false);
-  assert.equal(multiple.a.panel.hidden, false);
-  assert.equal(multiple.b.panel.hidden, false);
-  multiple.a.parent.dispatch('click');
-  assert.equal(multiple.a.panel.hidden, false, 'parent link must not toggle');
-
-  const single = runAccordions(true);
-  assert.equal(single.a.panel.hidden, true);
-  assert.equal(single.b.panel.hidden, false);
-
-  const active = navbarSection(true);
-  const activeRoot = element({
-    dataset: { accordionSingleOpen: 'false' },
-    querySelectorAll() {
-      return [active.section];
-    },
-  });
-  global.document = {
-    activeElement: null,
-    addEventListener() {},
-    querySelector(selector) {
-      return selector === '[data-mobile-menu]' ? activeRoot : null;
-    },
-    querySelectorAll() {
-      return [];
-    },
-  };
-  global.window = { requestAnimationFrame(callback) { callback(); } };
-  load('assets/js/navbar-menu.js');
-  assert.equal(active.panel.hidden, false);
-  assert.equal(active.toggle.getAttribute('aria-expanded'), 'true');
 }
 
 function testPaletteFocusFromDrawer() {
@@ -425,5 +349,5 @@ function testPaletteFocusFromDrawer() {
 
 testCoordinatorCompatibility();
 testPaletteFocusFromDrawer();
-testNavbarDisclosureAndAccordion();
+testNavbarHoverPanel();
 console.log('PRD 4 surface behavior checks passed');

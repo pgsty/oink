@@ -1,8 +1,13 @@
 {{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $hasAlgolia := and .Site.Params.search (isset .Site.Params.search "algolia") -}}
 {{- $hasOnlineSearch := or .Site.Params.gcs_engine_id $hasAlgolia -}}
+{{- /* With the navbar on, the brand and the palette opener live up there; the
+       sidebar keeps only the collapse button, and the header row survives for
+       the drawer close button (plus online search, which has no navbar home). */ -}}
+{{- $navbar := partial "shell/navbar-enabled.html" . -}}
 <div class="td-shell-sidebar__panel">
   <div class="td-shell-sidebar__header">
+    {{- if not $navbar }}
     <div class="td-shell-sidebar__brand-row">
       <a class="td-shell-sidebar__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
         {{- if $config.wordmarkURL }}
@@ -17,8 +22,10 @@
         {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
       </button>
     </div>
-    <div class="td-shell-sidebar__header-row">
-      {{- if partial "shell/search-enabled.html" . }}
+    {{- end }}
+    {{- $drawerOnly := and $navbar (not $hasOnlineSearch) }}
+    <div class="td-shell-sidebar__header-row{{ if $drawerOnly }} td-shell-sidebar__header-row--drawer-only{{ end }}">
+      {{- if and (not $navbar) (partial "shell/search-enabled.html" .) }}
       <button type="button" class="td-shell-search-btn" data-td-shell-search-open
         aria-controls="td-shell-search" aria-expanded="false">
         {{ partialCached "shell/icon.html" "search" "search" }}
@@ -33,19 +40,31 @@
       <button type="button" class="td-shell-iconbtn td-shell-sidebar__close" data-td-shell-drawer-close
         aria-label="{{ T "ui_drawer_close" }}" aria-controls="td-shell-sidebar">{{ partialCached "shell/icon.html" "x" "x" }}</button>
     </div>
+    {{- if $navbar }}
+    {{- /* With the brand row gone, the root switcher heads the sidebar and the
+         collapse action sits beside it. A static current-root link stands in
+         when no switcher is configured. */ -}}
+    <div class="td-shell-sidebar__root-row">
+      {{ partial "shell/root-menu.html" (dict "page" . "fallback" true) }}
+      <button type="button" class="td-shell-iconbtn td-shell-sidebar__collapse" data-td-shell-sidebar-toggle
+        title="{{ T "ui_sidebar_collapse" }}" aria-label="{{ T "ui_sidebar_collapse" }}">
+        {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
+      </button>
+    </div>
+    {{- else }}
     {{ partial "shell/root-menu.html" . }}
+    {{- end }}
   </div>
   <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
     {{ partial "shell/sidebar.html" . }}
     {{/* Below xl the TOC rail is hidden; docs-shell.js parks its contents here
-         so the table of contents, the page actions and the taxonomies stay
-         reachable from the drawer. Empty until then. */ -}}
+         so the table of contents and the taxonomies stay reachable from the drawer. Empty until then. */ -}}
     <div class="td-shell-sidebar__aside" data-td-shell-aside-slot hidden></div>
   </div>
-  {{/* Footer row: the version selector, then the global utilities. They live
-       here rather than under the brand so they stay in the same place whether
-       the sidebar is a column or a drawer, and so they are still reachable
-       once the TOC rail (their other home) drops out below xl. */ -}}
+  {{- /* Footer row only for the navbar-off chrome: with the navbar on, the
+       version, language, theme, and GitHub controls are always visible up
+       there — at every width — so the sidebar carries no duplicate. */ -}}
+  {{- if not $navbar }}
   {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
   <div class="td-shell-sidebar__footer">
     {{ if .Site.Params.versions -}}
@@ -68,5 +87,6 @@
       {{- end }}
     </div>
   </div>
+  {{- end }}
   <div class="td-shell-sidebar__resizer" data-td-shell-resizer aria-hidden="true"></div>
 </div>

@@ -23,6 +23,42 @@
   }
 }
 
+// Without switchable sub-roots the trigger is a plain link back to the
+// section landing: no box, flush with the tree's top-level rows, reading as
+// the highest-level item rather than a control.
+.td-shell-root--static .td-shell-root__trigger {
+  border: 0;
+  background: transparent;
+  font-weight: 600;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--td-shell-accent);
+    text-decoration: none;
+  }
+}
+
+// Navbar mode: the root switcher (or the static current-root link) heads the
+// sidebar with the collapse action beside it.
+.td-shell-sidebar__root-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  > .td-shell-root {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  > .td-shell-sidebar__collapse {
+    flex: 0 0 auto;
+
+    @include media-breakpoint-down(md) {
+      display: none; // The drawer has its own close button.
+    }
+  }
+}
+
 .td-shell-sidebar__brand {
   display: inline-flex;
   align-items: center;
@@ -61,6 +97,14 @@
   .DocSearch-Button {
     width: 100%;
     margin: 0;
+  }
+
+  // With the navbar carrying the palette opener, the row only hosts the
+  // drawer close action, so it disappears on desktop.
+  &--drawer-only {
+    @include media-breakpoint-up(md) {
+      display: none;
+    }
   }
 }
 

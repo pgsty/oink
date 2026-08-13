@@ -1,8 +1,11 @@
 /**
- * navbar-menu.js — one-level desktop disclosure and mobile accordion.
+ * navbar-menu.js — one-level desktop hover panel.
  *
- * Parent labels remain ordinary links. Only the adjacent button owns the
- * disclosure state, so navigation and expansion never compete for one click.
+ * Parent labels remain ordinary links: click navigates, while hovering or
+ * keyboard-focusing the item opens the panel (with a grace timer so crossing
+ * the gap below the label never snaps it shut). Touch users navigate directly
+ * and rely on the target page's own navigation; the compact navbar keeps the
+ * same items as icons, so there is no separate mobile menu.
  */
 (function () {
   'use strict';
@@ -28,38 +31,49 @@
 
   function initDesktopMenus() {
     document.querySelectorAll('[data-td-navbar-menu]').forEach(function (menu, index) {
-      var toggle = menu.querySelector('[data-td-navbar-toggle]');
+      var parent = menu.querySelector('.nav-menu__parent-link');
       var panel = menu.querySelector('[data-td-navbar-panel]');
       var surfaceName = 'navbar-menu-' + index;
-      if (!toggle || !panel) return;
+      if (!parent || !panel) return;
+      var closeTimer = 0;
 
       function isOpen() {
         return !panel.hidden;
       }
       function close(restoreFocus) {
+        window.clearTimeout(closeTimer);
         if (!isOpen()) return;
-        setDisclosure(toggle, panel, menu, false);
-        if (restoreFocus === true) toggle.focus();
+        setDisclosure(parent, panel, menu, false);
+        if (restoreFocus === true) parent.focus();
       }
       function open(focusFirst) {
+        window.clearTimeout(closeTimer);
         if (window.OinkSurfaceCoordinator)
           window.OinkSurfaceCoordinator.closeOthers(surfaceName);
-        setDisclosure(toggle, panel, menu, true);
+        setDisclosure(parent, panel, menu, true);
         if (focusFirst)
           window.requestAnimationFrame(function () {
             var items = panelItems(panel);
             if (items.length) items[0].focus();
           });
       }
+      function closeSoon() {
+        window.clearTimeout(closeTimer);
+        closeTimer = window.setTimeout(function () {
+          close(false);
+        }, 140);
+      }
 
       if (window.OinkSurfaceCoordinator)
         window.OinkSurfaceCoordinator.register(surfaceName, close);
 
-      toggle.addEventListener('click', function () {
-        if (isOpen()) close(false);
-        else open(false);
+      menu.addEventListener('pointerenter', function (event) {
+        if (event.pointerType !== 'touch') open(false);
       });
-      toggle.addEventListener('keydown', function (event) {
+      menu.addEventListener('pointerleave', function (event) {
+        if (event.pointerType !== 'touch') closeSoon();
+      });
+      parent.addEventListener('keydown', function (event) {
         if (event.key === 'ArrowDown') {
           event.preventDefault();
           open(true);
@@ -105,37 +119,5 @@
     });
   }
 
-  function initMobileAccordions() {
-    var root = document.querySelector('[data-mobile-menu]');
-    if (!root) return;
-    var sections = Array.prototype.slice.call(
-      root.querySelectorAll('[data-td-navbar-accordion]'),
-    );
-    var singleOpen = root.dataset.accordionSingleOpen === 'true';
-
-    function setOpen(section, open) {
-      var toggle = section.querySelector('[data-td-navbar-accordion-toggle]');
-      var panel = section.querySelector('[data-td-navbar-accordion-panel]');
-      if (!toggle || !panel) return;
-      if (open && singleOpen)
-        sections.forEach(function (other) {
-          if (other !== section) setOpen(other, false);
-        });
-      setDisclosure(toggle, panel, section, open);
-    }
-
-    sections.forEach(function (section) {
-      var toggle = section.querySelector('[data-td-navbar-accordion-toggle]');
-      var panel = section.querySelector('[data-td-navbar-accordion-panel]');
-      var parent = section.querySelector('.mobile-menu-parent-link');
-      if (!toggle || !panel) return;
-      toggle.addEventListener('click', function () {
-        setOpen(section, panel.hidden);
-      });
-      if (parent && parent.classList.contains('active')) setOpen(section, true);
-    });
-  }
-
   initDesktopMenus();
-  initMobileAccordions();
 })();

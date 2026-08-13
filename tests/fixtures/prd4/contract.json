@@ -8,17 +8,12 @@
   },
   "navigation": {
     "interactive_child_levels": 1,
-    "desktop_control": "separate_link_and_button",
-    "mobile_control": "separate_link_and_button",
+    "desktop_control": "link_with_hover_panel",
     "hover_required": false,
     "deep_menu": {
       "warning": true,
       "rendering": "flatten_under_group_heading",
       "third_level_flyout": false
-    },
-    "mobile_single_open": {
-      "parameter": "params.ui.navbar_accordion_single_open",
-      "default": false
     },
     "external_rel": [
       "noopener",
@@ -85,7 +80,10 @@
       "view_markdown",
       "view_history",
       "edit_page",
+      "create_child_page",
       "create_issue",
+      "create_project_issue",
+      "print_section",
       "print",
       "switch_theme",
       "switch_language",

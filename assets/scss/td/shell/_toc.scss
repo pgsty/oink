@@ -22,7 +22,8 @@
 
   @include media-breakpoint-up(xl) {
     position: fixed;
-    inset-block: 0;
+    inset-block-start: var(--td-shell-nav-h);
+    inset-block-end: 0;
     inset-inline-end: 0;
     width: 286px;
     z-index: 20;
@@ -58,7 +59,7 @@
 .td-shell-toc-float {
   display: none;
   position: fixed;
-  top: 16px;
+  top: calc(var(--td-shell-nav-h) + 16px);
   inset-inline-end: 16px;
   z-index: 40;
   gap: 2px;
@@ -67,10 +68,6 @@
   border: 1px solid var(--bs-border-color);
   background: var(--td-shell-card);
   box-shadow: var(--td-shell-shadow-lg);
-}
-
-.td-shell-toc-float__rss {
-  font-size: 1rem;
 }
 
 @include media-breakpoint-up(xl) {
@@ -297,13 +294,6 @@
     opacity 150ms ease;
 }
 
-/* Page metadata actions below the TOC. */
-
-// The group heading supplies the separation now; no rule of its own.
-.td-shell-aside .td-page-meta {
-  padding-inline-start: 8px;
-}
-
 .td-shell-toc__panel > .td-shell-aside {
   flex: 1 1 auto;
   min-height: 0;
@@ -339,13 +329,102 @@
 
 /* ---------------------------------------------- relocatable rail contents */
 
-// Labelled, collapsible group around the page actions, matching the taxonomy
-// clouds so the rail reads as one stack of sections.
+// Labelled, collapsible group around the TOC, matching the taxonomy clouds so
+// the rail reads as one stack of sections.
 .td-shell-aside-group__head {
   width: 100%;
   border: 0;
   background: transparent;
   cursor: pointer;
+}
+
+// TOC group header row: the rail collapse toggle occupies the icon column, so
+// the title starts exactly where the taxonomy group titles do, and the whole
+// row highlights as one item — the toggle just carries a special click.
+.td-shell-aside-group__row {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background: var(--td-shell-accent);
+    transition: none;
+  }
+
+  .td-shell-aside-group__head {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline-start: 0; // The rail toggle supplies the icon column.
+
+    &:hover {
+      background: transparent;
+    }
+  }
+}
+
+.td-shell-aside-group__rail-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 4px 8px 8px; // Icon lands on the taxonomy heads' icon column.
+  border: 0;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  cursor: pointer;
+
+  @include media-breakpoint-up(md) {
+    padding-block: 6px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: transparent;
+    color: var(--bs-body-color);
+  }
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Group icon shared by the taxonomy clouds; in the rail the TOC group's icon
+// is the rail toggle itself, so its static twin stays hidden there.
+.td-shell-aside-group__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  width: 16px;
+  color: var(--td-shell-muted-fg);
+  font-size: 12px;
+  text-align: center;
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &--toc {
+    display: none;
+  }
+}
+
+// Inside the drawer the rail does not exist: the toggle hides, its static
+// icon shows, and the head regains the tree indent so the "Content" group
+// lines up with the taxonomy heads below it.
+.td-shell-sidebar__aside {
+  .td-shell-aside-group__rail-toggle {
+    display: none;
+  }
+
+  .td-shell-aside-group__icon--toc {
+    display: inline-flex;
+  }
+
+  .td-shell-aside-group__row .td-shell-aside-group__head {
+    padding-inline-start: var(--td-shell-indent, 8px);
+  }
 }
 
 .td-shell-aside-group__title {
@@ -402,33 +481,6 @@
 
     &:hover {
       background: var(--td-shell-accent);
-    }
-  }
-
-  // Action rows line up with the tree's child links.
-  .td-page-meta {
-    padding-inline-start: 0;
-  }
-
-  .td-page-meta__action {
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: var(--td-shell-muted-fg);
-
-    &:hover,
-    &:focus-visible {
-      background: var(--td-shell-accent);
-      color: var(--bs-body-color);
-    }
-
-    > i,
-    .td-shell-icon {
-      width: 16px;
-      height: 16px;
-      font-size: 14px;
-      line-height: 16px;
     }
   }
 

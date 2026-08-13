@@ -1,0 +1,17 @@
+# Fat-footer fixture: exercises the data/footer/<lang>.yaml resolution path and
+# the column grid on every layout. Kept small on purpose.
+brand:
+  name: Oink
+  tagline: A Hugo documentation theme.
+columns:
+  - title: Documentation
+    links:
+      - label: Docs
+        url: /docs/
+      - label: Blog
+        url: /blog/
+  - title: Project
+    links:
+      - label: GitHub
+        url: https://github.com/pgsty/oink
+        external: true

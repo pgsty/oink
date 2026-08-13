@@ -1,4 +1,4 @@
-/** Bind the progressive-enhancement page rail to the shared action registry. */
+/** Bind the title split button and its menu to the shared action registry. */
 (function () {
   'use strict';
   if (!window.OinkActions) return;
@@ -34,6 +34,14 @@
     var root = control.closest('[data-td-page-context]');
 
     if (id === 'copy_markdown') {
+      // Feedback always lands on the visible primary half, so a copy from a
+      // menu row flashes the same confirmation.
+      // Only a copy primary may carry the flash — on feed pages the primary
+      // is the RSS link and must keep its icon.
+      var feedback =
+        (root &&
+          root.querySelector('.td-page-actions__primary[data-oink-action="copy_markdown"]')) ||
+        control;
       ['pointerenter', 'focus'].forEach(function (eventName) {
         control.addEventListener(eventName, function () {
           window.OinkActions.preloadMarkdown(action.url).catch(function () {});
@@ -41,7 +49,7 @@
       });
       control.addEventListener('click', function () {
         window.OinkActions.run(id, { source: 'page' })
-          .then(function () { showCopied(control, root); })
+          .then(function () { showCopied(feedback, root); })
           .catch(function () {
             announce(root, (root && root.dataset.tCopyError) || 'Copy failed');
           });
@@ -59,4 +67,84 @@
       control.addEventListener('click', function () { syncUrl(control, id); });
     }
   });
+
+  /* The caret disclosure beside the title. */
+  function initTitleMenu() {
+    var root = document.querySelector('[data-td-page-actions]');
+    if (!root) return;
+    var toggle = root.querySelector('[data-td-page-actions-toggle]');
+    var menu = root.querySelector('[data-td-page-actions-menu]');
+    if (!toggle || !menu) return;
+
+    function isOpen() {
+      return root.classList.contains('is-open');
+    }
+
+    function open() {
+      if (window.OinkSurfaceCoordinator) {
+        window.OinkSurfaceCoordinator.closeOthers('page-actions');
+      }
+      root.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function close(restoreFocus) {
+      root.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) toggle.focus();
+    }
+
+    if (window.OinkSurfaceCoordinator) {
+      window.OinkSurfaceCoordinator.register('page-actions', function () {
+        close(false);
+      });
+    }
+
+    toggle.addEventListener('click', function () {
+      if (isOpen()) close(false); else open();
+    });
+
+    // Rows act on activation; links open a new tab, copy and print run their
+    // own handlers first in bubble order. Either way the menu closes.
+    menu.addEventListener('click', function (event) {
+      if (event.target.closest('a, button')) close(false);
+    });
+
+    document.addEventListener('pointerdown', function (event) {
+      if (isOpen() && !root.contains(event.target)) close(false);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && isOpen()) {
+        close(true);
+        return;
+      }
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp' &&
+          event.key !== 'Home' && event.key !== 'End') return;
+      if (!root.contains(document.activeElement)) return;
+      var items = Array.prototype.slice.call(menu.querySelectorAll('a, button'));
+      if (!items.length) return;
+      if (!isOpen()) {
+        if (event.key === 'ArrowDown' && document.activeElement === toggle) {
+          event.preventDefault();
+          open();
+          items[0].focus();
+        }
+        return;
+      }
+      event.preventDefault();
+      var index = items.indexOf(document.activeElement);
+      if (event.key === 'Home' || (event.key === 'ArrowDown' && index === -1)) {
+        items[0].focus();
+      } else if (event.key === 'End') {
+        items[items.length - 1].focus();
+      } else if (event.key === 'ArrowDown') {
+        items[Math.min(index + 1, items.length - 1)].focus();
+      } else if (event.key === 'ArrowUp') {
+        items[Math.max(index - 1, 0)].focus();
+      }
+    });
+  }
+
+  initTitleMenu();
 })();

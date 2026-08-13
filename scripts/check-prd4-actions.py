@@ -19,7 +19,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_SCRIPT = ROOT / "scripts" / "check-prd4-contract.py"
-# Order is part of the contract: the page rail renders these in sequence, so
+# Order is part of the contract: the title menu renders these in sequence, so
 # this list is also the reading order a visitor sees.
 BUILTINS = [
     "copy_markdown",
@@ -28,7 +28,10 @@ BUILTINS = [
     "view_markdown",
     "view_history",
     "edit_page",
+    "create_child_page",
     "create_issue",
+    "create_project_issue",
+    "print_section",
     "print",
     "switch_theme",
     "switch_language",
@@ -396,6 +399,13 @@ def main() -> int:
                     html = path.read_text(encoding="utf-8")
                     manifest = manifest_from(html)
                     validate_manifest(manifest, lang, prefix)
+                    # The split button renders copy_markdown twice on purpose:
+                    # once as the primary half, once as the first menu row.
+                    # One partial owns both, so the URL-divergence hazard the
+                    # old exactly-once rule guarded against cannot recur. Every
+                    # other page-placed action renders once when available;
+                    # `print` has no page placement at all (readers use ⌘P).
+                    page_placed = map_by_id(manifest_from(html)["actions"])
                     for action_id in (
                         "copy_markdown",
                         "open_chatgpt",
@@ -403,13 +413,31 @@ def main() -> int:
                         "view_markdown",
                         "view_history",
                         "edit_page",
+                        "create_child_page",
                         "create_issue",
-                        "print",
+                        "create_project_issue",
+                        "print_section",
                     ):
+                        descriptor = page_placed[action_id]
+                        expected = 0
+                        if descriptor["available"] and descriptor["placements"]["page"]:
+                            expected = 2 if action_id == "copy_markdown" else 1
                         require(
-                            html.count(f'data-oink-action="{action_id}"') == 1,
+                            html.count(f'data-oink-action="{action_id}"') == expected,
                             f"{deployment}/{lang} page action {action_id} is missing or duplicated",
                         )
+                    require(
+                        html.count('data-oink-action="print"') == 0,
+                        f"{deployment}/{lang} print action must not render on the page",
+                    )
+                    require(
+                        html.count("data-td-page-actions-toggle") == 1,
+                        f"{deployment}/{lang} title menu toggle is missing or duplicated",
+                    )
+                    require(
+                        'id="td-shell-aside-actions"' not in html,
+                        f"{deployment}/{lang} retired TOC-rail action group reappeared",
+                    )
                     require("data-td-page-copy " not in html, "legacy copy controller remains")
                     require("data-td-page-print" not in html, "legacy print controller remains")
                     require("</script><script>alert(1)</script>" not in html, "command title escaped inert JSON")
@@ -428,8 +456,12 @@ def main() -> int:
                         "view_markdown",
                         "view_history",
                         "edit_page",
+                        "create_child_page",
                         "create_issue",
+                        "create_project_issue",
                     ):
+                        if not by_id[action_id]["available"]:
+                            continue
                         require(
                             attribute(html, action_id, "href") == by_id[action_id]["url"],
                             f"{deployment}/{lang} no-JS {action_id} link diverges from descriptor",
@@ -442,6 +474,13 @@ def main() -> int:
                             "noopener" in attribute(html, action_id, "rel").split(),
                             f"{deployment}/{lang} {action_id} lost opener protection",
                         )
+                    # Print-entire-section stays a same-tab link.
+                    if by_id["print_section"]["available"]:
+                        require(
+                            attribute(html, "print_section", "href")
+                            == by_id["print_section"]["url"],
+                            f"{deployment}/{lang} print_section link diverges from descriptor",
+                        )
 
                     reference = (
                         output / lang / "docs" / "reference" / "index.html"
@@ -451,6 +490,16 @@ def main() -> int:
                         reference_actions["copy_markdown"]["available"] is False
                         and reference_actions["view_markdown"]["available"] is False,
                         f"{deployment}/{lang} page without Markdown advertises Markdown actions",
+                    )
+                    # Without a Markdown output the primary half is dropped and
+                    # the caret degrades to a labeled dropdown-only button.
+                    require(
+                        reference.count('data-oink-action="copy_markdown"') == 0,
+                        f"{deployment}/{lang} page without Markdown renders a copy control",
+                    )
+                    require(
+                        "data-td-page-actions-toggle" in reference,
+                        f"{deployment}/{lang} page without Markdown lost the actions menu",
                     )
 
                 bundles = sorted((output / "js").glob("main-*.js"))

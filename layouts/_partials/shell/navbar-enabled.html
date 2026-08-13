@@ -1,0 +1,8 @@
+{{- /* Whether this page renders the site navbar. Resolved with isset rather
+       than .Param/default so an explicit `false` survives: front matter (and
+       cascaded front matter, which Hugo merges into .Params with the page's
+       own keys winning) beats params.ui.navbar_enabled, which beats true. */ -}}
+{{- $enabled := true -}}
+{{- if isset .Site.Params.ui "navbar_enabled" }}{{ $enabled = .Site.Params.ui.navbar_enabled }}{{ end -}}
+{{- if isset .Params "navbar_enabled" }}{{ $enabled = .Params.navbar_enabled }}{{ end -}}
+{{- return $enabled -}}

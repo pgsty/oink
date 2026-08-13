@@ -31,6 +31,9 @@
 {{- $editURL := $urls.edit -}}
 {{- $historyURL := $urls.history -}}
 {{- $issueURL := $urls.createIssue -}}
+{{- $childURL := $urls.createChild -}}
+{{- $projectIssueURL := $urls.createProjectIssue -}}
+{{- $printSectionURL := $urls.printSection -}}
 {{- $unavailable := T "ui_action_unavailable" -}}
 
 {{- /* Hand the page's canonical URL to an assistant. The runtime rewrites the
@@ -76,6 +79,9 @@
   "palette" $assistantLinks
 -}}
 {{- $paletteOnly := dict "page" false "palette" true -}}
+{{- /* `print` keeps its registry executor for the print output's button, but
+       readers reach printing via Cmd/Ctrl+P — no page or palette row. */ -}}
+{{- $noPlacement := dict "page" false "palette" false -}}
 {{- $copyTitle := T "ui_copy_markdown" -}}
 {{- $viewTitle := T "post_view_markdown" -}}
 {{- $chatgptTitle := T "ui_open_in_chatgpt" -}}
@@ -84,6 +90,9 @@
 {{- $askKeyword := T "ui_open_in_prompt_label" -}}
 {{- $editTitle := T "post_edit_this" -}}
 {{- $issueTitle := T "post_create_issue" -}}
+{{- $childTitle := T "post_create_child_page" -}}
+{{- $projectIssueTitle := T "post_create_project_issue" -}}
+{{- $printSectionTitle := T "print_entire_section" -}}
 {{- $themeTitle := T "ui_theme_toggle" -}}
 {{- $languageTitle := T "ui_language_switch" -}}
 {{- $versionTitle := $p.Site.Params.version_menu | default "Version" -}}
@@ -115,14 +124,26 @@
     "icon" "fa-solid fa-pencil" "keywords" (slice $editTitle "edit" "github")
     "kind" "url" "available" (ne $editURL "") "disabledReason" (cond (ne $editURL "") "" (printf "%s: %s" $editTitle $unavailable)) "url" $editURL
     "target" "blank" "placements" $pageOnly "options" (slice))
+  (dict "id" "create_child_page" "title" $childTitle "description" $childTitle
+    "icon" "fa-solid fa-file-circle-plus" "keywords" (slice $childTitle "child" "new" "page")
+    "kind" "url" "available" (ne $childURL "") "disabledReason" (cond (ne $childURL "") "" (printf "%s: %s" $childTitle $unavailable)) "url" $childURL
+    "target" "blank" "placements" $pageOnly "options" (slice))
   (dict "id" "create_issue" "title" $issueTitle "description" $issueTitle
     "icon" "fa-regular fa-circle-question" "keywords" (slice $issueTitle "issue" "github")
     "kind" "url" "available" (ne $issueURL "") "disabledReason" (cond (ne $issueURL "") "" (printf "%s: %s" $issueTitle $unavailable)) "url" $issueURL
     "target" "blank" "placements" $pageOnly "options" (slice))
+  (dict "id" "create_project_issue" "title" $projectIssueTitle "description" $projectIssueTitle
+    "icon" "fa-solid fa-circle-exclamation" "keywords" (slice $projectIssueTitle "issue" "github" "project")
+    "kind" "url" "available" (ne $projectIssueURL "") "disabledReason" (cond (ne $projectIssueURL "") "" (printf "%s: %s" $projectIssueTitle $unavailable)) "url" $projectIssueURL
+    "target" "blank" "placements" $pageOnly "options" (slice))
+  (dict "id" "print_section" "title" $printSectionTitle "description" $printSectionTitle
+    "icon" "fa-solid fa-print" "keywords" (slice $printSectionTitle "print" "section")
+    "kind" "url" "available" (ne $printSectionURL "") "disabledReason" (cond (ne $printSectionURL "") "" (printf "%s: %s" $printSectionTitle $unavailable)) "url" $printSectionURL
+    "target" "self" "placements" $pageOnly "options" (slice))
   (dict "id" "print" "title" (T "ui_print_page") "description" (T "ui_print_page")
     "icon" "fa-solid fa-print" "keywords" (slice (T "ui_print_page") "print")
     "kind" "invoke" "available" true "disabledReason" "" "url" ""
-    "target" "self" "placements" $pageOnly "options" (slice))
+    "target" "self" "placements" $noPlacement "options" (slice))
   (dict "id" "switch_theme" "title" $themeTitle "description" $themeTitle
     "icon" "fa-solid fa-circle-half-stroke" "keywords" (slice $themeTitle (T "ui_theme_light") (T "ui_theme_dark"))
     "kind" "choice" "available" $darkMode.enable "disabledReason" (cond $darkMode.enable "" (printf "%s: %s" $themeTitle $unavailable)) "url" ""

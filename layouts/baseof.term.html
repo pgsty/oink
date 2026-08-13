@@ -13,10 +13,11 @@
   {{ $sidebarMax := .Param "ui.sidebar_width_max" | default 480 -}}
   {{ $navWrap := eq (.Param "ui.sidebar_item_overflow") "wrap" -}}
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
+  {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ $pageWidth := .Param "page_width" | default "normal" -}}
-  <body class="td-{{ .Kind }} td-blog td-shell-chrome{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+  <body class="td-{{ .Kind }} td-blog td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
-    {{ partial "shell/subnav.html" . }}
+    {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
     <div class="container-fluid td-outer">
       <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }} td-shell-layout--no-toc{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
            style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
@@ -36,7 +37,7 @@
         </main>
         {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" false) }}
       </div>
-      {{ partial "shell/footer-line.html" . }}
+      {{ partial "footer.html" . }}
     </div>
     {{ partial "scripts.html" . }}
   </body>

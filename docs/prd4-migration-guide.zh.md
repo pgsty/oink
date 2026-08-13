@@ -106,18 +106,13 @@ parent 显示 active；只有精确匹配的页面才获得 `aria-current="page"
 
 ### 导航交互 {#navigation-interaction}
 
-桌面 disclosure 支持点击、Enter、Space 和 ArrowDown。ArrowDown 会打开面板并
-聚焦第一项。Escape 关闭面板并将焦点还给 disclosure button。焦点离开菜单或
-在外部按下指针时，面板关闭。任何行为都不依赖 hover。
+Parent 标签是普通链接：点击前往栏目落地页，hover 或键盘聚焦展开面板。
+ArrowDown 打开并聚焦第一项，Escape 关闭并还焦，在外部按下指针时面板关闭。
+到达子页面永远不依赖 hover。
 
-移动端使用同样的 link/button 分离模型。默认允许多个 accordion 同时打开。
-若需要单开模式：
-
-```yaml
-params:
-  ui:
-    navbar_accordion_single_open: true
-```
+导航栏只有两种状态——完整与紧缩。紧缩态把每一项保持为可见的图标，因此不存在
+独立的移动端菜单；原 `navbar_accordion_single_open` accordion 参数已退役并被
+忽略。
 
 语言、版本、主题和搜索仍位于 utility 区域，不会变成内容菜单的 children。
 
@@ -267,8 +262,10 @@ front matter 规则覆盖继承值。
 共享 pending/success cache；Print 调用共享 print executor；主题控件调用同一个
 theme apply 函数。助手 actions 先提供无 JavaScript 可用的真实 fallback anchor，
 激活时再从浏览器 URL 解析实际部署域名、查询参数与片段。其他 PRD 4 URL actions
-的 href 与共享 descriptor 保持一致。PRD 4 内置集合之外的历史 rail-only actions
-继续作为独立兼容功能。
+的 href 与共享 descriptor 保持一致。页面侧的 actions 以文档标题旁的 split button
+呈现——“复制文本”为主按钮，caret 展开完整菜单——取代早先的 TOC rail 列表。
+PRD 4 内置集合之外的历史 rail-only actions 继续作为独立兼容功能，
+现列于同一展开菜单中。
 
 助手链接默认关闭，因为激活会把完整浏览器 URL 发送给第三方。站点选择启用时，
 必须避免在 query string 与 fragment 中放置秘密信息、披露该出站边界，并可用布尔型

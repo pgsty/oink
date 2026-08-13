@@ -15,9 +15,13 @@
 {{- $to := $copyright.to_year | default now.Year -}}
 {{- if eq (printf "%v" $to) "present" }}{{ $to = now.Year }}{{ end -}}
 {{- /* Composed rather than branched: splitting an element across the arms of a
-       conditional leaves Go's HTML template parser with unbalanced tags. */ -}}
+       conditional leaves Go's HTML template parser with unbalanced tags.
+       `data-td-shell-footer` marks the page's one footer block for the
+       footer-offset measurement in docs-shell.js; when nested, the wrapping
+       <footer> in footer.html carries it instead. */ -}}
 {{- $tag := cond $nested "div" "footer" -}}
-{{ printf `<%s class="td-shell-footline d-print-none">` $tag | safeHTML }}
+{{- $attr := cond $nested "" " data-td-shell-footer" -}}
+{{ printf `<%s class="td-shell-footline d-print-none"%s>` $tag $attr | safeHTML }}
   <div class="td-shell-footline__copy">
     &copy; {{ $from }}{{ if ne (printf "%v" $from) (printf "%v" $to) }}&ndash;{{ $to }}{{ end }}
     {{- if $authorURL }} <a href="{{ $authorURL }}">{{ $author | plainify }}</a>{{ else }} <span>{{ $author | markdownify }}</span>{{ end -}}

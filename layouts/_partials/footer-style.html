@@ -1,0 +1,10 @@
+{{- /* Footer presentation for this page: `fat` (column grid plus the
+       copyright line), `slim` (line only), or `none`. Front matter — including
+       cascaded front matter — overrides params.ui.footer_style. */ -}}
+{{- $style := "fat" -}}
+{{- with .Site.Params.ui.footer_style }}{{ $style = . }}{{ end -}}
+{{- with .Params.footer_style }}{{ $style = . }}{{ end -}}
+{{- if not (in (slice "fat" "slim" "none") $style) -}}
+  {{- errorf "invalid footer_style %q in %s (allowed: fat | slim | none)" $style .Path -}}
+{{- end -}}
+{{- return $style -}}

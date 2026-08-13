@@ -2,12 +2,19 @@
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{- $targets := partial "language-targets.html" . -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
+{{- /* On shell pages with a sidebar, the compact navbar gains one extra
+       icon below md that opens the shell drawer (docs tree + relocated
+       aside). */ -}}
+{{- $drawerMode := and (partial "shell/chrome-enabled.html" .) (partial "shell/sidebar-enabled.html" .) -}}
 <header class="landing-header d-print-none" data-header>
   <div class="landing-container">
     <nav class="landing-nav" aria-label="{{ T "ui_main_nav" }}">
       <a href="{{ .Site.Home.RelPermalink }}" class="nav-brand" aria-label="{{ $config.brandName }} — {{ T "ui_home" }}">
         {{- if $config.wordmarkURL }}
         <img src="{{ $config.wordmarkURL }}" alt="" class="nav-wordmark" width="100" height="40">
+        {{- /* Compact fallback for the icon-mode range, where the wordmark
+             would eat the row. */ -}}
+        <img src="{{ $config.logoURL }}" alt="" class="nav-logo nav-logo--fallback" width="22" height="22">
         {{- else }}
         <img src="{{ $config.logoURL }}" alt="" class="nav-logo" width="22" height="22">
         <span class="nav-title">{{ $config.brandName }}</span>
@@ -20,9 +27,30 @@
             {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "desktop" "index" $index) -}}
           {{- end -}}
         {{- end }}
-        {{- if .Site.Params.versions }}
-        <div class="landing-version-selector">
-          {{ partial "navbar-version-selector.html" (dict "page" .) }}
+        {{- with .Site.Params.versions }}
+        {{- $menuName := $.Site.Params.version_menu | default "Version" }}
+        <div class="nav-hover-menu nav-version-menu" data-td-nav-hover>
+          <button type="button" class="nav-util" data-td-nav-hover-open
+            title="{{ $menuName | plainify }}" aria-label="{{ $menuName | plainify }}" aria-expanded="false">
+            <i class="fa-solid fa-code-branch" aria-hidden="true"></i>
+          </button>
+          <div class="nav-hover-menu__pop" role="group" aria-label="{{ $menuName | plainify }}">
+            {{- range . }}
+            {{- if eq .name "---" }}
+            <hr class="nav-hover-menu__divider">
+            {{- else }}
+            {{- $url := strings.TrimSuffix "/" (.url | default "") }}
+            {{- $isActive := or (eq .version $.Site.Params.version) (eq (strings.TrimSuffix "/" $.Site.BaseURL) $url) }}
+            {{- $path := cond (and $.Site.Params.version_menu_pagelinks (ne .pagelinks false)) $.RelPermalink "" }}
+            {{- if $url }}
+            <a class="nav-hover-menu__option{{ if $isActive }} is-active{{ end }}"
+              {{- if $isActive }} aria-current="page"{{ end }} href="{{ $url }}{{ $path }}">{{ .name | default .version | markdownify }}</a>
+            {{- else }}
+            <span class="nav-hover-menu__option is-disabled">{{ .name | default .version | markdownify }}</span>
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          </div>
         </div>
         {{- end }}
         {{- if $localSearch }}
@@ -33,14 +61,29 @@
         </button>
         {{- end }}
         {{- if gt (len $targets) 1 }}
-          {{ partial "language-selector.html" (dict "page" . "class" "nav-util landing-language-selector" "icon" "shell") }}
+          {{ partial "language-selector.html" (dict "page" . "class" "nav-util landing-language-selector") }}
         {{- end }}
         {{- if $darkMode.showMenu }}
-        <button type="button" class="nav-util" data-td-theme-toggle
-          title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}">
-          {{- partialCached "shell/icon.html" "moon" "moon" -}}
-          {{- partialCached "shell/icon.html" "sun" "sun" -}}
-        </button>
+        {{- /* Click toggles light/dark; hovering reveals the three-mode
+             picker. dark-mode.js binds every [data-bs-theme-value]. */ -}}
+        <div class="nav-hover-menu" data-td-nav-hover>
+          <button type="button" class="nav-util" data-td-theme-toggle
+            title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}" aria-expanded="false">
+            {{- partialCached "shell/icon.html" "moon" "moon" -}}
+            {{- partialCached "shell/icon.html" "sun" "sun" -}}
+          </button>
+          <div class="nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
+            <button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
+              <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>{{ T "ui_theme_auto" }}</span>
+            </button>
+            <button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
+              <i class="fa-solid fa-sun" aria-hidden="true"></i><span>{{ T "ui_theme_light" }}</span>
+            </button>
+            <button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
+              <i class="fa-solid fa-moon" aria-hidden="true"></i><span>{{ T "ui_theme_dark" }}</span>
+            </button>
+          </div>
+        </div>
         {{- end }}
         {{- with $config.projectRepo }}
         <a href="{{ . }}" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub">
@@ -49,83 +92,16 @@
         {{- end }}
       </div>
 
-      {{/* Same ghost icon button as the rest of the header; the glyph swaps
-           between menu and close instead of morphing three bars. */ -}}
-      <button class="nav-util mobile-menu-toggle" type="button" aria-label="{{ T "ui_drawer_open" }}"
-        data-label-open="{{ T "ui_drawer_open" }}" data-label-close="{{ T "ui_drawer_close" }}"
-        aria-controls="mobile-site-menu" aria-expanded="false" data-menu-toggle>
+      {{- if $drawerMode }}
+      {{- /* The one width-gated control: below md the sidebar becomes a
+           drawer, and this opens it. Non-shell pages need no equivalent —
+           the compact navbar keeps every item visible as an icon. */ -}}
+      <button class="nav-util mobile-menu-toggle" type="button" data-td-shell-drawer-open
+        title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
+        aria-controls="td-shell-sidebar" aria-expanded="false">
         {{- partialCached "shell/icon.html" "menu" "menu" -}}
-        {{- partialCached "shell/icon.html" "x" "x" -}}
       </button>
+      {{- end }}
     </nav>
   </div>
 </header>
-
-<div class="mobile-menu d-print-none" id="mobile-site-menu" data-mobile-menu
-  data-accordion-single-open="{{ if .Site.Params.ui.navbar_accordion_single_open }}true{{ else }}false{{ end }}">
-  {{- range $index, $entry := .Site.Menus.main -}}
-    {{- if ne .Identifier "github" -}}
-      {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "mobile" "index" $index) -}}
-    {{- end -}}
-  {{- end }}
-  {{- if $localSearch }}
-  <button type="button" class="mobile-menu-link" data-td-shell-search-open
-    data-mobile-menu-dismiss aria-controls="td-shell-search" aria-expanded="false">
-    {{- partialCached "shell/icon.html" "search" "mobile-search" -}}
-    <span>{{ T "ui_search" }}</span>
-  </button>
-  {{- end }}
-  {{- if gt (len $targets) 1 }}
-  {{/* Left: the label, which cycles to the next language. Right: every
-       language in configured order. */ -}}
-  {{- $currentIndex := 0 -}}
-  {{- range $index, $target := $targets }}{{ if $target.active }}{{ $currentIndex = $index }}{{ end }}{{ end -}}
-  {{- $next := index $targets (mod (add $currentIndex 1) (len $targets)) -}}
-  <div class="mobile-menu-row">
-    <a class="mobile-menu-link" href="{{ $next.url }}" lang="{{ $next.code }}" hreflang="{{ $next.code }}"
-      title="{{ T "ui_language_switch" }}: {{ $next.label }}">
-      {{- partialCached "shell/icon.html" "languages" "languages" -}}
-      <span>{{ T "ui_language" }}</span>
-    </a>
-    <div class="mobile-menu-options" role="group" aria-label="{{ T "ui_language_select" }}">
-      {{- range $targets }}
-      {{- if .active }}
-      <span class="mobile-menu-chip is-active" lang="{{ .code }}" aria-current="page">{{ .label }}</span>
-      {{- else }}
-      <a class="mobile-menu-chip" href="{{ .url }}" lang="{{ .code }}" hreflang="{{ .code }}">{{ .label }}</a>
-      {{- end }}
-      {{- end }}
-    </div>
-  </div>
-  {{- end }}
-  {{- if $darkMode.showMenu }}
-  {{/* Left: the current mode, which toggles. Right: the three modes, icon only. */ -}}
-  <div class="mobile-menu-row">
-    <button type="button" class="mobile-menu-link" data-td-theme-toggle>
-      {{- partialCached "shell/icon.html" "moon" "moon" -}}
-      {{- partialCached "shell/icon.html" "sun" "sun" -}}
-      <span>{{ T "ui_theme" }}</span>
-    </button>
-    <div class="mobile-menu-options" role="group" aria-label="{{ T "ui_theme_toggle" }}">
-      <button type="button" class="mobile-menu-chip mobile-menu-chip--icon" data-bs-theme-value="auto"
-        title="{{ T "ui_theme_auto" }}" aria-label="{{ T "ui_theme_auto" }}" aria-pressed="false">
-        {{- partialCached "shell/icon.html" "contrast" "contrast" -}}
-      </button>
-      <button type="button" class="mobile-menu-chip mobile-menu-chip--icon" data-bs-theme-value="light"
-        title="{{ T "ui_theme_light" }}" aria-label="{{ T "ui_theme_light" }}" aria-pressed="false">
-        {{- partialCached "shell/icon.html" "sun" "sun" -}}
-      </button>
-      <button type="button" class="mobile-menu-chip mobile-menu-chip--icon" data-bs-theme-value="dark"
-        title="{{ T "ui_theme_dark" }}" aria-label="{{ T "ui_theme_dark" }}" aria-pressed="false">
-        {{- partialCached "shell/icon.html" "moon" "moon" -}}
-      </button>
-    </div>
-  </div>
-  {{- end }}
-  {{- with $config.projectRepo }}
-  <a class="mobile-menu-link" href="{{ . }}" target="_blank" rel="noopener noreferrer">
-    {{- partialCached "shell/icon.html" "github" "github" -}}
-    <span>GitHub</span>
-  </a>
-  {{- end }}
-</div>

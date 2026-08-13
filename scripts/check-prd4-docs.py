@@ -63,8 +63,8 @@ def build_example(base_url: str, destination: Path) -> None:
     docs = (destination / "docs" / "index.html").read_text(encoding="utf-8")
     require(
         home.count("data-td-navbar-menu") == 1
-        and home.count("data-td-navbar-accordion-toggle") == 1,
-        f"starter lost its one desktop/mobile nested menu at {base_url}",
+        and home.count("data-td-navbar-accordion-toggle") == 0,
+        f"starter desktop nested menu missing or mobile accordion returned at {base_url}",
     )
     require(
         'data-sidebar-icon-policy="groups"' in docs,

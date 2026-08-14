@@ -2,9 +2,11 @@
   {{ $s := .section }}
   {{ $psid := .psid }}
   {{ $pages := (union $s.Pages $s.Sections).ByWeight }}
+  {{ $pages = where $pages ".Params.no_print" "!=" true }}
+  {{ $pages = where $pages ".Params.sidebar_divider" "!=" true }}
   {{ $subSection := 1 }}
 
-  {{ range where $pages ".Params.no_print" "!=" true }}
+  {{ range $pages }}
     {{ $sid := printf "%s%d" $psid $subSection }}
     {{ $subSection = add $subSection 1 }}
     <li>
@@ -22,12 +24,14 @@
   {{ $s := .section }}
   {{ $psid := .psid }}
   {{ $pages := (union $s.Pages $s.Sections).ByWeight }}
+  {{ $pages = where $pages ".Params.no_print" "!=" true }}
+  {{ $pages = where $pages ".Params.sidebar_divider" "!=" true }}
   {{ $subSection := 1 }}
 
   {{ $breakOnWordCount := default 50 ($s.Site.Param "print.section_break_wordcount") }}
   {{ $doPageBreak := gt (countwords $s.Content) $breakOnWordCount }}
 
-  {{ range where $pages ".Params.no_print" "!=" true }}
+  {{ range $pages }}
     {{ $sid := printf "%s%d" $psid $subSection }}
     {{ $subSection = add $subSection 1 }}
 	{{ $params := dict "Page" . "PageNum" $sid "DoPageBreak" $doPageBreak }}

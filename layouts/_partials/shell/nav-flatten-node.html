@@ -1,0 +1,16 @@
+{{- $page := .page -}}
+{{- $node := .node -}}
+{{- $pages := slice -}}
+{{- $target := $page.Site.GetPage $node.page -}}
+{{- if not $target -}}
+  {{- errorf "Docs navigation page not found: %s" $node.page -}}
+{{- else -}}
+  {{- if partial "shell/nav-page-enabled.html" $target -}}
+    {{- $pages = $pages | append $target -}}
+  {{- end -}}
+  {{- range ($node.children | default (slice)) -}}
+    {{- $branch := partial "shell/nav-flatten-node.html" (dict "page" $page "node" .) -}}
+    {{- range $branch }}{{ $pages = $pages | append . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $pages -}}

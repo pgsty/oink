@@ -1,0 +1,10 @@
+{{ define "main" -}}
+{{- .Store.Set "tdOutputFormat" "print" -}}
+<div class="td-content">
+  {{- partial "print/page-heading.html" . -}}
+  {{- with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end -}}
+  {{- $content := .RenderString (dict "display" "block") .RawContent -}}
+  {{- $content = partial "content/static-image-output.html" $content -}}
+  {{ $content }}
+</div>
+{{- end }}

@@ -48,6 +48,12 @@ python3 scripts/check-prd4-search.py                 # search metadata and ranki
 python3 scripts/check-prd4-actions.py                # action registry and command manifest
 python3 scripts/check-prd4-palette.py                # Command Palette modes and behavior
 python3 scripts/check-prd4-docs.py                   # bilingual migration and starter guidance
+python3 scripts/check-prd5-contract.py               # PRD 5 human/machine contract alignment
+python3 scripts/check-prd5-docs.py                   # PRD 5 bilingual migration + root/subpath starter
+python3 scripts/check-prd5-reading.py                # math passthrough + tree-order pager
+python3 scripts/check-release-assets.py              # release facts/cards/checksum output matrix
+python3 scripts/check-download.py                    # download schema and publication states
+python3 scripts/check-prd5-misc.py                    # shared scenario fixes and compatibility
 
 cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warning-free
 
@@ -213,14 +219,16 @@ files (`--sync` does the mechanical part).
 
 ## Frozen contracts
 
-`docs/content-primitives.md`, `docs/enhanced-code-blocks.md`, and
-`docs/typography-tokens.md` are implementation contracts, not tutorials. The
+`docs/content-primitives.md`, `docs/enhanced-code-blocks.md`,
+`docs/typography-tokens.md`, and `docs/prd5-reading-release-contract.md` are
+implementation contracts, not tutorials. The
 first is machine-checked for structure by `check-content-primitives-contract.py`.
 They define the public shortcode APIs (Badge, Kbd, Fields/Field, FileTree,
-imgproc, Image Zoom, Gallery/Gallery Image; enhanced fences and code groups),
-parameter validation, escaping and URL policy, ID generation, and the output
-matrix. **Read the relevant contract before changing a primitive**, and change
-the contract in the same commit as the behavior.
+imgproc, Image Zoom, Gallery/Gallery Image, Release Assets, Tables, and the
+display-equation escape hatch; enhanced fences and code groups), parameter validation,
+escaping and URL policy, ID generation, and the output matrix. **Read the
+relevant contract before changing a primitive**, and change the contract in the
+same commit as the behavior.
 
 Recurring rules from those contracts:
 

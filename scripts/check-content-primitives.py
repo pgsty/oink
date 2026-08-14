@@ -54,11 +54,19 @@ def check_outputs(public: Path) -> list[str]:
         '<span class="td-filetree__name" dir="auto">本地化</span>',
         '<span class="td-filetree__name" dir="auto">واجهة</span>',
         'a-deliberately-long-unbroken-filename-that-must-wrap-within-a-narrow-content-column.example.json',
+        'class="td-table-scroll" tabindex="0" role="region"',
+        'aria-label="Scrollable table"',
+        'class="td-table-scroll td-table-scroll--full"',
+        '<table class="full-width">',
     ):
         require(marker in page, f"HTML fixture missing {marker}", errors)
 
     require("javascript:" not in page, "HTML contains an unsafe URL", errors)
-    require("<table" not in page, "Fields rendered as a table", errors)
+    require(
+        '<dl class="td-fields__list"' in page,
+        "Fields no longer render as a definition list",
+        errors,
+    )
     require(page.count('class="td-field"') == 9, "Fields lost author order or entries", errors)
     require(
         page.count('class="td-filetree__details"') == 13,
@@ -125,6 +133,9 @@ def check_outputs(public: Path) -> list[str]:
         "- واجهة/",
         "  - دليل\\-الإعداد\\.md",
         "- hugo\\.yml",
+        "| Component | HTML behavior | Print behavior | Markdown behavior | Runtime |",
+        "| Full table | 100% | Horizontal scroll | Complete table |",
+        "{.full-width}",
     ):
         require(marker in markdown, f"Markdown fixture missing {marker}", errors)
     for marker in (
@@ -163,9 +174,11 @@ def check_outputs(public: Path) -> list[str]:
         "دليل-الإعداد.md",
         'class="td-fields"',
         'class="td-filetree td-filetree--static"',
+        '<table class="full-width">',
     ):
         require(marker in print_page, f"print fixture missing {marker}", errors)
     require("**Repository structure**" not in print_page, "print used the FileTree Markdown fallback", errors)
+    require("td-table-scroll" not in print_page, "print kept a table scroll viewport", errors)
 
     return errors
 

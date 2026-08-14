@@ -1,0 +1,26 @@
+{{- $entries := .entries -}}
+{{- $disabled := .disabled | default false -}}
+{{- $groups := slice "" -}}
+{{- if .grouped -}}
+  {{- $groups = slice ".rpm" ".deb" ".apk" ".tar.gz" ".zip" ".exe / .msi" ".dmg / .pkg" "*" -}}
+{{- end -}}
+{{- $chunks := slice -}}
+{{- range $groups -}}
+  {{- $group := . -}}
+  {{- $rows := $entries -}}
+  {{- if $.grouped }}{{ $rows = where $entries "group" $group }}{{ end -}}
+  {{- if not $rows }}{{ continue }}{{ end -}}
+  {{- $table := slice
+    (printf "| %s | %s |" (T "ui_assets_file") (T "ui_assets_checksum"))
+    "| --- | --- |"
+  -}}
+  {{- range $rows -}}
+    {{- $name := partial "content/markdown-escape.html" .name -}}
+    {{- $file := cond $disabled $name (printf "[%s](%s)" $name .url) -}}
+    {{- $table = $table | append (printf "| %s | %s · `%s` |" $file .algorithm .hash) -}}
+  {{- end -}}
+  {{- $chunk := delimit $table "\n" -}}
+  {{- if $.grouped }}{{ $chunk = printf "### `%s`\n\n%s" $group $chunk }}{{ end -}}
+  {{- $chunks = $chunks | append $chunk -}}
+{{- end -}}
+{{- return (delimit $chunks "\n\n") -}}

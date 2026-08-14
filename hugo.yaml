@@ -33,13 +33,19 @@ params:
     # `navbar_enabled` and `footer_style` front-matter keys.
     navbar_enabled: true
     footer_style: fat # fat | slim | none
+    section_index: list # list | cards
+    lastmod_commit: subject # subject | hash | none
     image_zoom:
       enable: false
     typography:
       preset: technical
-    shell_types: [docs, blog, swagger]
+    shell_types: [docs, book, blog, swagger]
     docs_section: docs
     blog_section: blog
+    # Sequential navigation is on by default for reading-oriented content.
+    # Override this list site-wide, or set `pager: false` in front matter.
+    pager:
+      types: [docs, book, blog]
     feedback:
       enable: false
     sidebar_menu_compact: true

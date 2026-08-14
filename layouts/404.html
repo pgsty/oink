@@ -1,7 +1,28 @@
-{{ define "main" -}}
-<div class="td-content">
-  <h1>{{ T "error_404_title" }}</h1>
-  <p>{{ T "error_404_body" }}</p>
-  <p><a href="{{ .Site.Home.RelPermalink }}">{{ T "error_404_home" }}</a></p>
-</div>
-{{- end }}
+{{- /* A complete document is intentional. A block-only 404 can be paired
+     with an alternate-output base template during multilingual concurrent
+     builds; this page must always use the interactive document shell. */ -}}
+{{- .Page.Store.Set "tdOutputFormat" "html" -}}
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+    dir="{{ .Site.Language.Direction | default "ltr" }}"
+    lang="{{ partial "language-tag.html" . }}"
+    data-td-typography="{{ partial "typography-preset.html" .Site }}"
+    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+  <head>{{ partial "head.html" . }}</head>
+  <body class="td-404">
+    {{ partial "skip-link.html" . }}
+    {{ if partial "shell/navbar-enabled.html" . }}{{ partial "navbar.html" . }}{{ end }}
+    <div class="container-fluid td-default td-outer">
+      <main id="td-main-content" role="main" class="td-main" tabindex="-1">
+        <div class="td-content">
+          <h1>{{ T "error_404_title" }}</h1>
+          <p>{{ T "error_404_body" }}</p>
+          <p><a href="{{ .Site.Home.RelPermalink }}">{{ T "error_404_home" }}</a></p>
+        </div>
+      </main>
+      {{ partial "footer.html" . }}
+    </div>
+    {{ partial "scripts.html" . }}
+  </body>
+</html>

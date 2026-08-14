@@ -13,7 +13,8 @@ Compatibility floor: Hugo Extended 0.160.1
 OINK will add a small set of high-frequency content primitives for engineering
 documentation without changing its Hugo-only consumer boundary. The public
 interfaces in this document are the version-one contract for Badge, Kbd,
-Fields, FileTree, Image Zoom, and Gallery.
+Fields, FileTree, Image Zoom, Gallery, Release Assets, contained Tables, and
+the PRD 5 display-equation escape hatch.
 
 The implementation order is intentional:
 
@@ -22,6 +23,9 @@ The implementation order is intentional:
    media contract.
 3. Image Zoom progressively enhances eligible images.
 4. Gallery reuses the image resolver and the Zoom runtime.
+5. Release Assets adds a strict checksum parser and one conditional copy runtime.
+6. Tables and the equation escape hatch close two production correctness gaps
+   without adding a browser runtime.
 
 A standalone public Icon shortcode is deferred. A component may use a small,
 private, allowlisted icon registry for its own decoration, but that registry is
@@ -41,11 +45,11 @@ fallbacks explicit.
   final rendering.
 - FileTree renders recursively through `.Inner`. Folder and file children own
   their nested list fragments instead of flattening the tree into Scratch.
-- Fields alone accepts Markdown in a field description. After the child has
-  registered its raw inner content, the parent uses `.Page.RenderString` for
-  HTML, print, and RSS; Markdown output preserves and indents the validated
-  source Markdown instead. Other public string parameters are plain text, not
-  Markdown.
+- Among the everyday components in sections 3.1 through 3.10, Fields alone
+  accepts Markdown in a field description. After the child has registered its
+  raw inner content, the parent uses `.Page.RenderString` for HTML, print, and
+  RSS; Markdown output preserves and indents the validated source Markdown
+  instead. Public string parameters remain plain text.
 
 Nested public names are stable:
 
@@ -62,7 +66,8 @@ Hugo does not permit named and positional arguments in the same call. Each
 OINK shortcode therefore chooses one form permanently:
 
 - Kbd is positional-only.
-- Every other primitive is named-only.
+- Every other parameterized primitive is named-only. The equation escape hatch
+  accepts no parameters.
 
 ### 2.2 Parameter validation
 
@@ -83,8 +88,8 @@ Public parameter names and enum values are case-sensitive.
 - Every author error uses `errorf`, names the shortcode and parameter, and
   includes `.Position`.
 
-The theme does not accept arbitrary `class`, `style`, color, event-handler, or
-public `id` parameters for these MVP components.
+The components in sections 3.1 through 3.10 do not accept arbitrary `class`,
+`style`, color, event-handler, or public `id` parameters.
 
 ### 2.3 Escaping and rendered content
 
@@ -95,9 +100,9 @@ Author text remains data in every output:
   suppress validation or escaping.
 - Theme-owned static markup may be returned as trusted template output only
   after every author value has been inserted through a safe context.
-- Fields descriptions are the only new arbitrary Markdown surface. HTML,
+- Fields descriptions are the documented arbitrary Markdown surface. HTML,
   print, and RSS render them through `.Page.RenderString`, using the consuming
-  site's Goldmark security policy. Markdown fallback retains their source
+  site's Goldmark security policy. Their Markdown fallback retains source
   Markdown and must not convert it to HTML first.
 - Markdown fallbacks use context-specific escaping for plain text, code spans,
   emphasis, and link destinations. They do not reuse an HTML escape helper.
@@ -158,7 +163,7 @@ idempotent.
 - A duplicate check uses a stable owner composed from shortcode name and
   ordinal. Seeing the same owner again is allowed; seeing a different owner for
   the same public value is an error.
-- The MVP does not expose author-supplied DOM IDs.
+- The everyday MVP does not expose author-supplied DOM IDs.
 - Generated IDs use a component prefix, a page-derived digest where needed,
   and the shortcode ordinal. Interactive IDs must be registered before output.
 - A future public ID must share a page-wide registry with existing code
@@ -170,13 +175,12 @@ candidate.
 
 ### 2.7 Runtime loading
 
-Badge, Kbd, Fields, FileTree, and the shared image renderer never load
-JavaScript.
-
-Image Zoom is the only runtime introduced by this roadmap. Gallery may request
-that same runtime but must not add a second bundle or dialog implementation.
-The runtime is appended from `layouts/_partials/scripts.html` after content has
-set its Page Store flag. Print, Markdown, and RSS never receive it.
+Badge, Kbd, Fields, FileTree, Tables, and the equation escape hatch never load
+JavaScript. Image Zoom owns one opt-in dialog runtime and Gallery may request
+that same runtime without adding another bundle. Release Assets owns a separate
+opt-in copy runtime keyed by `hasAssetList`; it never reads the Image Zoom flag.
+Both are appended from `layouts/_partials/scripts.html` only after content sets
+its own Page Store flag. Print, Markdown, and RSS never receive either runtime.
 
 The server-rendered HTML is complete before enhancement. If JavaScript is
 disabled, blocked, fails, or `HTMLDialogElement` is unavailable, all original
@@ -535,6 +539,86 @@ Print and RSS render static sequential figures. Reordering, uploads,
 filtering, fullscreen slideshows, decorative Gallery images, and remote
 build-time image fetching are deferred.
 
+### 3.8 Release Assets
+
+Release Assets turns exact `sha*sum` output into a verified download table:
+
+```go-html-template
+{{< release-assets group="auto" >}}
+e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1  pig-1.7.0-1.aarch64.rpm
+34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8 *pig-1.7.0-1.x86_64.rpm
+{{< /release-assets >}}
+```
+
+The only accepted line forms are `<hex><two spaces><name>` and
+`<hex><space>*<name>`. Blank lines and lines whose first non-space character is
+`#` are ignored. Hash lengths identify MD5, SHA-1, SHA-256, or SHA-512. A block
+must use exactly one algorithm; malformed lines, unsupported lengths, and
+mixed algorithms fail with the source line. Filenames are one path segment,
+remain visible text, and are path-segment escaped when OINK derives links.
+
+Parameters:
+
+| Parameter | Required | Accepted values | Default |
+| --- | --- | --- | --- |
+| `algo` | no | `md5`, `sha1`, `sha256`, or `sha512`; must match hash length | inferred |
+| `base` | conditional | non-empty local, `http`, or `https` URL prefix | derived from page `release` facts |
+| `src` | no | exact page-bundle or global asset path | checksum lines in inner content |
+| `group` | no | `auto` | author order in one table |
+
+`src` and inner checksum lines are mutually exclusive. A page with `release`
+front matter derives the GitHub asset base from its normalized repo and tag;
+otherwise `base` is required. `base` is deliberately not a version input and
+is rejected when release facts already exist. The component performs no
+network request. Type, OS, and architecture badges are filename-derived
+decoration and are omitted when inference is uncertain.
+
+HTML truncates the visible hash but retains the complete hash as the accessible
+name and copy source. The local copy runtime exposes one-row and whole-block
+copy buttons; without JavaScript those hidden buttons leave a complete linked
+table. Print exposes full hashes without controls. Markdown and RSS emit pure
+pipe tables with full hashes and download URLs.
+
+### 3.9 Tables and full-width tables
+
+OINK wraps every Goldmark pipe table in a local scroll region. In interactive
+HTML the region is keyboard-focusable, uses the localized accessible name
+`ui_table_scroll`, and contains horizontal overflow without widening the page.
+The table remains fully visible when JavaScript is absent because tables have
+no runtime.
+
+Sites that enable Goldmark block attributes can opt a table out of the prose
+measure while keeping the same contained overflow policy:
+
+```markdown
+| Feature | Community | Professional |
+| --- | --- | --- |
+| Support | Forum | Priority |
+
+{.full-width}
+```
+
+The `full-width` class is applied to the table and the theme gives its wrapper
+the `td-table-scroll--full` modifier. Normal, `wide`, and `full` page widths
+therefore share one predictable API. Print removes the scroll viewport and
+renders the complete table at page width; Markdown and RSS preserve the table
+data without interactive attributes.
+
+### 3.10 Equation escape hatch
+
+A consuming site normally enables Goldmark passthrough and authors delimiter
+mathematics. For one display formula on a site that cannot enable passthrough
+yet, OINK exposes this strict escape hatch:
+
+```go-html-template
+{{< eq >}}X \approx \frac{C}{R+Z}{{< /eq >}}
+```
+
+The shortcode requires non-empty TeX and accepts no parameters. HTML and print
+pass the source through the same local server-side KaTeX renderer used by the
+passthrough hook. Markdown and RSS emit a plain `$$` TeX block. It creates no
+number, caption, anchor, Page Store target, JavaScript, or remote request.
+
 ## 4. Output matrix
 
 | Component | HTML | Print | Markdown | RSS | JavaScript disabled | Runtime |
@@ -546,6 +630,9 @@ build-time image fetching are deferred.
 | Shared image | image/figure and caption | image/figure and caption | ordinary image and caption | static figure | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
 | Gallery | responsive figure grid | sequential figures | sequential images and captions | sequential figures | complete static grid | reuses Image Zoom only |
+| Release Assets | linked table with copy controls | linked static table with full hashes | pipe table with full hashes | pipe table with full hashes | complete linked table | one opt-in local copy runtime |
+| Table | keyboard-focusable contained scroll region | complete table at page width | source pipe table | static table | complete table remains readable | none |
+| Eq escape | display KaTeX/MathML | static display KaTeX/MathML | plain `$$` TeX block | plain `$$` TeX block | identical static formula | none |
 
 ## 5. Verification contract
 

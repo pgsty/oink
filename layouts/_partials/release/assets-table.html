@@ -1,0 +1,62 @@
+{{- $entries := .entries -}}
+{{- $interactive := .interactive -}}
+{{- $grouped := .grouped -}}
+{{- $disabled := .disabled | default false -}}
+{{- $groups := slice "" -}}
+{{- if $grouped -}}
+  {{- $groups = slice ".rpm" ".deb" ".apk" ".tar.gz" ".zip" ".exe / .msi" ".dmg / .pkg" "*" -}}
+{{- end -}}
+<div class="td-asset-list{{ if not $interactive }} td-asset-list--static{{ end }}"{{ if $interactive }} data-td-asset-list{{ end }}>
+  {{- if $interactive }}
+  <div class="td-asset-list__toolbar">
+    <button class="td-asset-list__copy-all" type="button" data-td-asset-copy-all data-label-copy="{{ T "ui_assets_copy_all" }}" data-label-copied="{{ T "ui_assets_copied" }}" hidden>
+      <i class="fa-regular fa-copy" aria-hidden="true"></i><span>{{ T "ui_assets_copy_all" }}</span>
+    </button>
+    <span class="visually-hidden" aria-live="polite" data-td-asset-status></span>
+  </div>
+  {{- end }}
+  {{- range $groups }}
+    {{- $group := . -}}
+    {{- $rows := $entries -}}
+    {{- if $grouped }}{{ $rows = where $entries "group" $group }}{{ end -}}
+    {{- if not $rows }}{{ continue }}{{ end -}}
+    {{- if $grouped }}<h3 class="td-asset-list__group"><code>{{ $group }}</code></h3>{{ end }}
+  <div class="td-asset-list__table-wrap" tabindex="0" role="region" aria-label="{{ T "ui_assets_download" }}{{ with $group }} · {{ . }}{{ end }}">
+    <table class="td-asset-list__table">
+      <caption class="visually-hidden">{{ T "ui_assets_download" }}</caption>
+      <thead><tr><th scope="col">{{ T "ui_assets_file" }}</th><th scope="col">{{ T "ui_assets_checksum" }}</th>{{ if $interactive }}<th scope="col" aria-label="{{ T "ui_assets_copy" }}"></th>{{ end }}</tr></thead>
+      <tbody>
+        {{- range $rows }}
+        <tr{{ if $interactive }} data-td-asset data-td-asset-hash="{{ .hash }}" data-td-asset-name="{{ .name }}"{{ if .binary }} data-td-asset-binary{{ end }}{{ end }}>
+          <td class="td-asset-list__file">
+            <i class="{{ .icon }} td-asset-list__icon" aria-hidden="true"></i>
+            {{- if $disabled -}}
+            <span class="td-asset-list__disabled" aria-disabled="true" dir="auto">{{ .name }}</span>
+            {{- else -}}
+            <a href="{{ .url }}" aria-label="{{ T "ui_assets_download" }}: {{ .name }}" dir="auto">{{ .name }}</a>
+            {{- end }}
+            <span class="td-asset-list__badges">
+              {{- with .os }}<span class="td-badge td-badge--neutral td-badge--outline">{{ . }}</span>{{ end -}}
+              {{- with .arch }}<span class="td-badge td-badge--neutral td-badge--outline">{{ . }}</span>{{ end -}}
+              <span class="td-badge td-badge--info td-badge--outline">{{ .algorithm }}</span>
+            </span>
+          </td>
+          <td class="td-asset-list__checksum">
+            {{- if $interactive -}}
+            <code aria-label="{{ .hash }}">{{ substr .hash 0 8 }}…{{ substr .hash (sub (len .hash) 4) }}</code>
+            {{- else -}}
+            <code>{{ .hash }}</code>
+            {{- end -}}
+          </td>
+          {{- if $interactive }}
+          <td class="td-asset-list__action">
+            <button type="button" data-td-asset-copy data-label-copy="{{ T "ui_assets_copy" }}" data-label-copied="{{ T "ui_assets_copied" }}" aria-label="{{ T "ui_assets_copy" }}: {{ .name }}" title="{{ T "ui_assets_copy" }}" hidden><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+          </td>
+          {{- end }}
+        </tr>
+        {{- end }}
+      </tbody>
+    </table>
+  </div>
+  {{- end }}
+</div>

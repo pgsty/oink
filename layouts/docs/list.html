@@ -14,6 +14,7 @@
 	{{ partial "section-index.html" . -}}
 	{{ partial "page-meta-lastmod.html" . -}}
 	{{ partial "feedback.html" . -}}
+	{{ partial "pager.html" . -}}
 	{{ partial "comments.html" . -}}
 	{{ if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) -}}
 		<br />

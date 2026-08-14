@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "release_assignment": "0.4.0",
+  "compatibility_floor": "0.160.1",
+  "authority": {
+    "navigation": "existing_sidebar_tree",
+    "release_facts": "page_front_matter",
+    "download_facts": "data_download_key"
+  },
+  "pager": {
+    "default_types": ["docs", "book", "blog"],
+    "docs_book_order": "sidebar_preorder",
+    "docs_root_values": ["section", "home"],
+    "blog_order": "time",
+    "non_html": "strip"
+  },
+  "mathematics": {
+    "passthrough_hook": true,
+    "eq_escape_parameters": "none",
+    "eq_escape_registers_target": false,
+    "runtime": false
+  },
+  "release": {
+    "forge": "github.com",
+    "fact_fields": ["version", "repo", "product", "tag", "date", "prev", "checksums"],
+    "runtime": false,
+    "network_fetch": false
+  },
+  "download": {
+    "source": "data/download/<key>.yaml",
+    "channel_kinds": ["rolling", "pinned"],
+    "pinned_tokens": ["version", "tag"],
+    "rolling_interpolation": false,
+    "rss": "strip"
+  },
+  "output_matrix": {
+    "pager": {"html": "cards_and_head_rel", "print": "strip", "markdown": "strip", "rss": "strip"},
+    "release_card": {"html": "card", "print": "links", "markdown": "links", "rss": "links"},
+    "release_assets": {"html": "copy_table", "print": "static_table", "markdown": "pipe_table", "rss": "pipe_table"},
+    "download": {"html": "sections", "print": "expanded", "markdown": "source", "rss": "strip"},
+    "eq_escape": {"html": "display_math", "print": "display_math", "markdown": "tex_block", "rss": "tex_block"}
+  },
+  "runtime_flags": {
+    "hasAssetList": "asset-list.js"
+  },
+  "planned_tracks": {
+    "landing": "0.5.0",
+    "book": "0.6.0"
+  },
+  "non_goals": [
+    "non_github_release_forge",
+    "remote_fact_fetch",
+    "archive_shell",
+    "glossary_component"
+  ]
+}

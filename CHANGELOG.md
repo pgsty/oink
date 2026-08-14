@@ -5,7 +5,22 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-14
+
 ### Added
+
+- Add the PRD 5 Reading & Release track: a sidebar-tree-order sequential pager
+  for docs and generic book pages (with blog time order preserved), matching
+  same-origin `rel=prev/next` head links, a server-side Goldmark passthrough hook
+  for local KaTeX/MathML, and a strict parameter-free `eq` display-math escape
+  hatch for sites that cannot yet enable passthrough.
+- Add local-first GitHub release facts, cards, lists, and checksum asset tables
+  with one conditional copy runtime. Add a validated
+  `data/download/<key>.yaml` model and `download` shortcode for rolling and
+  pinned channels, including explicit pending-release behavior.
+- Freeze the PRD 5 0.4 human and machine contracts, bilingual migration guide,
+  root/subpath fixtures, and focused validators for the complete
+  HTML/print/Markdown/RSS matrix.
 
 - Single-key keyboard navigation (PRD 6), on by default on docs, blog, and
   swagger shells and configurable via `params.ui.keyboard_nav.enable` (site,
@@ -55,6 +70,20 @@ All notable changes to OINK are documented here. The project follows
   was previously homepage-only. A fat footer without data degrades to slim.
 
 ### Changed
+
+- Preserve Docsy's `params.copyright` string/map contract and Hugo's top-level
+  `copyright` fallback for the left side of the bottom bar. Replace OINK's
+  ICP-specific `params.footer_icp` and `params.footer_icp_url` fields with one
+  inline-Markdown `params.footer_center_info` string. It defaults to
+  `Powered by Oink`; an explicit empty string hides the center region. The
+  former ICP fields are no longer read.
+- Make `docs`, `book`, and `blog` sequential reading types by default; allow a
+  site type list or boolean `pager: false` page override. Explicit
+  `data/docs_nav.json`, link-only pages, and sidebar dividers now share one
+  flattened navigation projection with the pager.
+- Extend the content-primitives contract with Release Assets, full-width
+  contained tables, and the parameter-free equation escape hatch, including
+  strict parameter, URL, i18n, repeated-render, and output-format behavior.
 
 - **`/` now opens the Command Palette in full search mode** (it previously
   opened the command-only mode); the new `\` shortcut opens command-only
@@ -128,6 +157,15 @@ All notable changes to OINK are documented here. The project follows
   second time during a production build.
 
 ### Fixed
+
+- Supply an environment-aware default `robots.txt`, deterministic multilingual
+  multi-output 404 document, functional `{.full-width}` table rendering,
+  card-style section indexes, configurable last-commit subject/hash/omission,
+  first-class non-linking `sidebar_divider` rows, and a search-keyword extension
+  hook that avoids copying the search metadata partial.
+- Preserve the sticky mobile subnav offset for deep anchors, contain wide
+  tables and long KaTeX displays inside the article canvas, and keep print
+  tables free of interactive wrappers.
 
 - Render the shared OpenAI and Claude icon descriptors in both the page-action
   rail and Command Palette instead of keeping custom inline SVGs on only one
@@ -351,7 +389,8 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/pgsty/oink/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pgsty/oink/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/pgsty/oink/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/pgsty/oink/compare/v0.1.0...v0.2.0

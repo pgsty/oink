@@ -1,0 +1,24 @@
+{{- $section := .section -}}
+{{- $includeSelf := .includeSelf -}}
+{{- $pages := slice -}}
+
+{{- if and $includeSelf (partial "shell/nav-page-enabled.html" $section) -}}
+  {{- $pages = $pages | append $section -}}
+{{- end -}}
+
+{{- $children := (union $section.Pages $section.Sections).ByWeight -}}
+{{- $children = where $children ".Params.toc_hide" "!=" true -}}
+{{- $truncate := $section.Site.Params.ui.sidebar_menu_truncate | default 128 -}}
+{{- $children = $children | first $truncate -}}
+{{- range $children -}}
+  {{- if and (eq $section $section.Site.Home) (eq .Params.toc_root true) -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $branch := partial "shell/nav-flatten-section.html" (dict
+      "section" .
+      "includeSelf" true
+  ) -}}
+  {{- range $branch }}{{ $pages = $pages | append . }}{{ end -}}
+{{- end -}}
+
+{{- return $pages -}}

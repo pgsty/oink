@@ -79,6 +79,19 @@ ui_doc_carousel: 文档轮播
 ui_carousel_previous: 上一张卡片
 ui_carousel_next: 下一张卡片
 ui_asciinema_timer: 播放时间
+ui_release_view: 查看发布
+ui_release_source: 源码
+ui_release_compare: 比较变更
+ui_release_released: 发布于
+ui_release_checksums: 校验和
+ui_assets_file: 文件
+ui_assets_checksum: 校验和
+ui_assets_copy: 复制校验和
+ui_assets_copied: 已复制
+ui_assets_copy_all: 复制全部校验和
+ui_assets_download: 下载资产
+ui_download_channels: 下载渠道
+ui_download_unpublished: 待发布
 
 # Used in sentences such as "Posted in News"
 ui_in: 发布于
@@ -158,3 +171,4 @@ comments_noscript_link: 在 GitHub 上查看讨论。
 # LLM 页面操作
 ui_open_in_prompt_label: 就本页提问
 ui_view_history: 查阅编辑历史
+ui_table_scroll: "可横向滚动的表格"

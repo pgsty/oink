@@ -1,8 +1,22 @@
-<ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
-  <li>
-    <a {{if .PrevInSection}}href="{{.PrevInSection.RelPermalink}}" aria-label="{{ T "ui_pager_prev" }} - {{.PrevInSection.Title}}" {{end}}class="btn btn-primary{{if not .PrevInSection}} disabled{{end}}" data-td-pager-prev><span class="me-1">←</span>{{ T "ui_pager_prev" }}</a>
-  </li>
-  <li>
-    <a {{if .NextInSection}}href="{{.NextInSection.RelPermalink}}" aria-label="{{ T "ui_pager_next" }} - {{.NextInSection.Title}}" {{end}}class="btn btn-primary{{if not .NextInSection}} disabled{{end}}" data-td-pager-next>{{ T "ui_pager_next" }}<span class="ms-1">→</span></a>
-  </li>
-</ul>
+{{- $state := partial "pager-state.html" . -}}
+{{- if and $state.enabled (or $state.prev $state.next) -}}
+<nav class="td-pager d-print-none" data-td-pager
+  aria-label="{{ T "ui_pager_prev" }} / {{ T "ui_pager_next" }}">
+  {{- with $state.prev }}
+  <a class="td-pager__card td-pager__card--prev" href="{{ .RelPermalink }}"
+    aria-label="{{ T "ui_pager_prev" }} - {{ .Title }}" data-td-pager-prev>
+    <span class="td-pager__direction"><span class="td-pager__arrow" aria-hidden="true">←</span>{{ T "ui_pager_prev" }}</span>
+    <span class="td-pager__title" dir="auto">{{ .LinkTitle }}</span>
+    {{- with .Parent }}{{ if not .IsHome }}<span class="td-pager__section" dir="auto">{{ .LinkTitle }}</span>{{ end }}{{ end -}}
+  </a>
+  {{- end }}
+  {{- with $state.next }}
+  <a class="td-pager__card td-pager__card--next" href="{{ .RelPermalink }}"
+    aria-label="{{ T "ui_pager_next" }} - {{ .Title }}" data-td-pager-next>
+    <span class="td-pager__direction">{{ T "ui_pager_next" }}<span class="td-pager__arrow" aria-hidden="true">→</span></span>
+    <span class="td-pager__title" dir="auto">{{ .LinkTitle }}</span>
+    {{- with .Parent }}{{ if not .IsHome }}<span class="td-pager__section" dir="auto">{{ .LinkTitle }}</span>{{ end }}{{ end -}}
+  </a>
+  {{- end }}
+</nav>
+{{- end -}}

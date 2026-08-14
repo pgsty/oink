@@ -182,3 +182,44 @@ ui_footer_collapse: Hide footer links
 ui_footer_expand: Show footer links
 
 # Post (blog, article, etc.)
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_release_view: View release
+ui_release_source: Source
+ui_release_compare: Compare changes
+ui_release_released: Released
+ui_release_checksums: Checksums
+
+# Used in sentences such as "Posted in News"
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_assets_file: File
+ui_assets_checksum: Checksum
+ui_assets_copy: Copy checksum
+ui_assets_copied: Copied
+ui_assets_copy_all: Copy all checksums
+ui_assets_download: Download asset
+
+# Used in sentences such as "Posted in News"
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_download_channels: Download channels
+ui_download_unpublished: Pending release
+
+# Used in sentences such as "Posted in News"
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_table_scroll: "Scrollable table"
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.

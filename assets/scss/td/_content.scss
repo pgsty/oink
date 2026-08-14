@@ -106,6 +106,56 @@
   .lead {
     margin-bottom: 1.5rem;
   }
+
+  // Server-rendered KaTeX can be wider than the document column. Keep long
+  // equations readable without allowing them to widen the page itself.
+  .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 0.25rem;
+  }
+
+  // Hugo's table render hook owns the scroll viewport so a wide table cannot
+  // widen the page. The full-width author modifier opts out of the regular
+  // prose measure and uses the entire article canvas.
+  .td-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+
+    &:focus-visible {
+      outline: 2px solid var(--bs-link-color);
+      outline-offset: 3px;
+    }
+
+    > table {
+      width: max-content;
+      min-width: 100%;
+      margin-bottom: 0;
+    }
+
+    &--full {
+      width: 100%;
+      max-width: none;
+    }
+  }
+}
+
+@media print {
+  .td-content .katex-display,
+  .td-content .td-table-scroll {
+    max-width: none;
+    overflow: visible;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-content .td-table-scroll:focus-visible {
+    outline-color: Highlight;
+  }
 }
 
 .td-title {

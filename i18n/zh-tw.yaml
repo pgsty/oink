@@ -146,6 +146,19 @@ ui_print_page: 列印此頁
 ui_sidebar_expand_section: 展開章節
 ui_sidebar_collapse_section: 收合章節
 ui_asciinema_timer: 播放時間
+ui_release_view: 檢視發布
+ui_release_source: 原始碼
+ui_release_compare: 比較變更
+ui_release_released: 發布於
+ui_release_checksums: 校驗和
+ui_assets_file: 檔案
+ui_assets_checksum: 校驗和
+ui_assets_copy: 複製校驗和
+ui_assets_copied: 已複製
+ui_assets_copy_all: 複製全部校驗和
+ui_assets_download: 下載資產
+ui_download_channels: 下載渠道
+ui_download_unpublished: 待發布
 
 # Version banner
 version_banner_archived: >-
@@ -160,3 +173,4 @@ comments_noscript_link: 在 GitHub 上檢視討論。
 # LLM 頁面操作
 ui_open_in_prompt_label: 就本頁提問
 ui_view_history: 檢視編輯歷史
+ui_table_scroll: "可橫向捲動的表格"

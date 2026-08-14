@@ -1,0 +1,29 @@
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $classes := printf "%v" (.Attributes.class | default "") -}}
+{{- $full := in (split $classes " ") "full-width" -}}
+<div class="td-table-scroll{{ if $full }} td-table-scroll--full{{ end }}"{{ if eq $format "html" }} tabindex="0" role="region" aria-label="{{ T "ui_table_scroll" }}"{{ end }}>
+<table
+  {{- range $key, $value := .Attributes }}
+    {{- if $value }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}
+  {{- end }}>
+  <thead>
+    {{- range .THead }}
+    <tr>
+      {{- range . }}
+      <th scope="col"{{ with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ .Text }}</th>
+      {{- end }}
+    </tr>
+    {{- end }}
+  </thead>
+  <tbody>
+    {{- range .TBody }}
+    <tr>
+      {{- range . }}
+      <td{{ with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ .Text }}</td>
+      {{- end }}
+    </tr>
+    {{- end }}
+  </tbody>
+</table>
+</div>

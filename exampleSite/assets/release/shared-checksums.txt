@@ -1,0 +1,3 @@
+# Shared by translated pages without duplicating release facts.
+e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1  pig-1.10.0-1.aarch64.rpm
+34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8 *pig-1.10.0-1.x86_64.rpm

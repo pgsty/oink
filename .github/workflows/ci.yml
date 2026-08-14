@@ -76,6 +76,24 @@ jobs:
       - name: Check PRD 4 bilingual migration and starter guidance
         run: python3 scripts/check-prd4-docs.py
 
+      - name: Check PRD 5 frozen contracts
+        run: python3 scripts/check-prd5-contract.py
+
+      - name: Check PRD 5 bilingual migration and starter guidance
+        run: python3 scripts/check-prd5-docs.py
+
+      - name: Check PRD 5 reading and mathematics
+        run: python3 scripts/check-prd5-reading.py
+
+      - name: Check PRD 5 releases and assets
+        run: python3 scripts/check-release-assets.py
+
+      - name: Check PRD 5 download data
+        run: python3 scripts/check-download.py
+
+      - name: Check PRD 5 shared scenario fixes
+        run: python3 scripts/check-prd5-misc.py
+
       - name: Check PRD 6 keyboard navigation
         run: python3 scripts/check-prd6-keyboard.py
 

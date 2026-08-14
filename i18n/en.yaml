@@ -78,6 +78,19 @@ ui_doc_carousel: Document carousel
 ui_carousel_previous: Previous card
 ui_carousel_next: Next card
 ui_asciinema_timer: Playback time
+ui_release_view: View release
+ui_release_source: Source
+ui_release_compare: Compare changes
+ui_release_released: Released
+ui_release_checksums: Checksums
+ui_assets_file: File
+ui_assets_checksum: Checksum
+ui_assets_copy: Copy checksum
+ui_assets_copied: Copied
+ui_assets_copy_all: Copy all checksums
+ui_assets_download: Download asset
+ui_download_channels: Download channels
+ui_download_unpublished: Pending release
 
 # Used in sentences such as "Posted in News"
 ui_in: in
@@ -161,3 +174,4 @@ comments_noscript_link: View discussions on GitHub.
 # LLM page actions
 ui_open_in_prompt_label: Ask about this page
 ui_view_history: View edit history
+ui_table_scroll: "Scrollable table"

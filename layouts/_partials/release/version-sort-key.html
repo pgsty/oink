@@ -1,0 +1,38 @@
+{{- /* Return a lexical key whose descending order matches SemVer precedence.
+      Non-SemVer release labels remain supported and use a deterministic,
+      case-insensitive lexical fallback. */ -}}
+{{- $version := strings.TrimSpace (printf "%s" .) -}}
+{{- $match := index (findRESubmatch `^v?([0-9]+)[.]([0-9]+)[.]([0-9]+)(-([0-9A-Za-z-]+([.][0-9A-Za-z-]+)*))?([+]([0-9A-Za-z-]+([.][0-9A-Za-z-]+)*))?$` $version) 0 | default false -}}
+{{- $validSemver := false -}}
+{{- if $match -}}
+  {{- $validSemver = true -}}
+  {{- range slice (index $match 1) (index $match 2) (index $match 3) -}}
+    {{- if and (gt (len .) 1) (hasPrefix . "0") }}{{ $validSemver = false }}{{ end -}}
+  {{- end -}}
+  {{- with index $match 5 -}}
+    {{- range split . "." -}}
+      {{- if and (findRE `^[0-9]+$` .) (gt (len .) 1) (hasPrefix . "0") -}}
+        {{- $validSemver = false -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $result := printf "0|%s" (lower $version) -}}
+{{- if $validSemver -}}
+  {{- $key := printf "1|%020d|%020d|%020d" (int (index $match 1)) (int (index $match 2)) (int (index $match 3)) -}}
+  {{- $prerelease := index $match 5 -}}
+  {{- if not $prerelease -}}
+    {{- $result = printf "%s|2" $key -}}
+  {{- else -}}
+    {{- $key = printf "%s|1" $key -}}
+    {{- range split $prerelease "." -}}
+      {{- if findRE `^[0-9]+$` . -}}
+        {{- $key = printf "%s|0%020d" $key (int .) -}}
+      {{- else -}}
+        {{- $key = printf "%s|1%s" $key (lower .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $result = $key -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

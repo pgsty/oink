@@ -63,6 +63,23 @@ Escaped keys remain readable: {{< kbd "[" "A+B" ">" >}}.
   {{< /field >}}
 {{< /fields >}}
 
+## Tables
+
+Ordinary wide tables scroll inside a keyboard-focusable viewport instead of
+widening the page.
+
+| Component | HTML behavior | Print behavior | Markdown behavior | Runtime |
+| --- | --- | --- | --- | --- |
+| Table | Scrolls within its own region | Expands at full width | Retains source table | None |
+
+The `full-width` modifier opts out of the prose measure while keeping the same
+contained overflow policy.
+
+| Surface | Width | Narrow viewport | Print |
+| --- | ---: | --- | --- |
+| Full table | 100% | Horizontal scroll | Complete table |
+{.full-width}
+
 ## FileTree
 
 {{< filetree label="Repository structure" >}}

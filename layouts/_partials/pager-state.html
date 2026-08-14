@@ -1,0 +1,54 @@
+{{- $page := . -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $types := slice "docs" "book" "blog" -}}
+{{- with $page.Site.Params.ui.pager -}}
+  {{- if not (reflect.IsMap .) -}}
+    {{- errorf "params.ui.pager must be a map" -}}
+  {{- else if isset . "types" -}}
+    {{- $types = .types -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (reflect.IsSlice $types) -}}
+  {{- errorf "params.ui.pager.types must be an array of docs, book, and/or blog" -}}
+{{- end -}}
+{{- range $types -}}
+  {{- if or (ne (printf "%T" .) "string") (not (in (slice "docs" "book" "blog") .)) -}}
+    {{- errorf "invalid params.ui.pager.types value %q (allowed: docs | book | blog)" . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $enabled := and (eq $format "html") (in $types $page.Type) -}}
+{{- if isset $page.Params "pager" -}}
+  {{- if ne (printf "%T" $page.Params.pager) "bool" -}}
+    {{- errorf "front matter pager must be a boolean at %s" $page.Path -}}
+  {{- end -}}
+  {{- if not $page.Params.pager }}{{ $enabled = false }}{{ end -}}
+{{- end -}}
+
+{{- $prev := false -}}
+{{- $next := false -}}
+{{- if $enabled -}}
+  {{- if eq $page.Type "blog" -}}
+    {{- $prev = $page.PrevInSection -}}
+    {{- $next = $page.NextInSection -}}
+  {{- else -}}
+    {{- $root := partial "shell/sidebar-root.html" $page -}}
+    {{- $pages := partialCached "shell/nav-flatten.html"
+        (dict "page" $page "root" $root)
+        $root.RelPermalink $page.Site.Language.Lang $page.Type -}}
+    {{- $position := newScratch -}}
+    {{- $position.Set "index" -1 -}}
+    {{- range $index, $candidate := $pages -}}
+      {{- if eq $candidate.RelPermalink $page.RelPermalink -}}
+        {{- $position.Set "index" $index -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $index := $position.Get "index" -}}
+    {{- if ge $index 0 -}}
+      {{- if gt $index 0 }}{{ $prev = index $pages (sub $index 1) }}{{ end -}}
+      {{- if lt (add $index 1) (len $pages) }}{{ $next = index $pages (add $index 1) }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return (dict "enabled" $enabled "prev" $prev "next" $next) -}}

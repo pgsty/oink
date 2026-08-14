@@ -19,6 +19,7 @@
 {{ $imageZoomConfig := partial "content/image-zoom-config.html" . -}}
 {{ $hasImageZoom := and $interactiveOutput $imageZoomConfig.enable (.Page.Store.Get "hasImageZoom" | default false) -}}
 {{ $hasCodeRuntime := and $interactiveOutput (.Page.Store.Get "hasCodeRuntime" | default false) -}}
+{{ $hasAssetList := and $interactiveOutput (.Page.Store.Get "hasAssetList" | default false) -}}
 {{ $hasTabRuntime := and $interactiveOutput (or
   (.Page.Store.Get "hasTabpane" | default false)
   (.Page.Store.Get "hasCodeGroup" | default false)
@@ -223,6 +224,9 @@ window.markmap = {
 {{ if $hasCodeRuntime -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/code-block.js") -}}
 {{ end -}}
+{{ if $hasAssetList -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/asset-list.js") -}}
+{{ end -}}
 {{ if $hasTabRuntime -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/code-tabs.js") -}}
 {{ end -}}
@@ -235,11 +239,11 @@ window.markmap = {
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch $hasGoogleSearch .Site.Language.Lang $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
   $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus $hasFeedback
-  $hasCodeRuntime $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable"))
+  $hasCodeRuntime $hasAssetList $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable"))
   $hasKeyboardNav $hasFooterCollapse | md5 -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}

@@ -50,6 +50,13 @@
 {{ range .AlternativeOutputFormats -}}
 <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
 {{ end -}}
+{{- $pager := partial "pager-state.html" . -}}
+{{- with $pager.prev }}
+<link rel="prev" href="{{ .RelPermalink }}">
+{{- end -}}
+{{- with $pager.next }}
+<link rel="next" href="{{ .RelPermalink }}">
+{{- end -}}
 
 {{/* Every baseof template records the format in the page store before head is
 rendered, so read that instead of re-deriving it from the output-format lists. */ -}}

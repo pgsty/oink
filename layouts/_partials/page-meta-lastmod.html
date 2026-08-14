@@ -1,6 +1,10 @@
 {{ $upstream := .Params.upstream_attribution -}}
 {{ $modified := .Params.downstream_modified -}}
 {{ $showLastmod := not .Lastmod.IsZero -}}
+{{ $commitMode := .Param "ui.lastmod_commit" | default "subject" -}}
+{{ if not (in (slice "subject" "hash" "none") $commitMode) -}}
+  {{ errorf "invalid params.ui.lastmod_commit %q (allowed: subject | hash | none)" $commitMode -}}
+{{ end -}}
 {{ if or $showLastmod $upstream $modified -}}
 <div class="td-page-meta__footer">
   {{ if $showLastmod -}}
@@ -8,8 +12,10 @@
     <span class="td-page-meta__icon"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span>
     <span>
       {{- T "post_last_mod" }} {{ .Lastmod.Format .Site.Params.time_format_default -}}
-      {{- with .GitInfo -}}
-        {{- with $.Site.Params.github_repo }} · <a data-proofer-ignore href="{{ . }}/commit/{{ $.GitInfo.Hash }}">{{ $.GitInfo.Subject }} ({{ $.GitInfo.AbbreviatedHash }})</a>{{ end -}}
+      {{- if ne $commitMode "none" -}}
+        {{- with .GitInfo -}}
+          {{- with $.Site.Params.github_repo }} · <a data-proofer-ignore href="{{ . }}/commit/{{ $.GitInfo.Hash }}">{{ if eq $commitMode "hash" }}commit {{ $.GitInfo.AbbreviatedHash }}{{ else }}{{ $.GitInfo.Subject }} ({{ $.GitInfo.AbbreviatedHash }}){{ end }}</a>{{ end -}}
+        {{- end -}}
       {{- end -}}
     </span>
   </div>

@@ -1,0 +1,45 @@
+{{- $page := .page -}}
+{{- $meta := .meta | default (partial "release/meta.html" (dict "page" $page)) -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $links := slice
+  (dict "label" (T "ui_release_view") "url" $meta.releaseURL "icon" "fa-brands fa-github")
+  (dict "label" (printf "%s · tar.gz" (T "ui_release_source")) "url" $meta.sourceTarURL "icon" "fa-solid fa-file-zipper")
+  (dict "label" (printf "%s · zip" (T "ui_release_source")) "url" $meta.sourceZipURL "icon" "fa-solid fa-file-zipper")
+-}}
+{{- with $meta.checksumsURL -}}
+  {{- $links = $links | append (dict "label" (T "ui_release_checksums") "url" . "icon" "fa-solid fa-shield-halved") -}}
+{{- end -}}
+{{- with $meta.compareURL -}}
+  {{- $links = $links | append (dict "label" (T "ui_release_compare") "url" . "icon" "fa-solid fa-code-compare") -}}
+{{- end -}}
+{{- $links = $links | append (dict "label" $meta.repo "url" $meta.repoURL "icon" "fa-solid fa-code-branch") -}}
+
+{{- if eq $format "markdown" -}}
+  {{- $rows := slice (printf "**%s · %s**" (partial "content/markdown-escape.html" $meta.tag) $meta.dateDisplay) -}}
+  {{- range $links -}}
+    {{- $label := partial "content/markdown-escape.html" .label -}}
+    {{- $rows = $rows | append (printf "- [%s](%s)" $label .url) -}}
+  {{- end -}}
+  {{- delimit $rows "\n" | safeHTML -}}
+{{- else if in (slice "print" "rss") $format -}}
+<div class="td-release-card-static">
+  <p><strong>{{ $meta.tag }}</strong> · <time datetime="{{ $meta.date.Format "2006-01-02" }}">{{ $meta.dateDisplay }}</time></p>
+  <ul>
+    {{- range $links }}
+    <li><a href="{{ .url }}">{{ .label }}</a></li>
+    {{- end }}
+  </ul>
+</div>
+{{- else -}}
+<aside class="td-release-card" aria-label="{{ T "ui_release_released" }}">
+  <header class="td-release-card__header">
+    <span class="td-release-card__tag" dir="auto">{{ $meta.tag }}</span>
+    <span class="td-release-card__date"><span>{{ T "ui_release_released" }}</span> <time datetime="{{ $meta.date.Format "2006-01-02" }}">{{ $meta.dateDisplay }}</time></span>
+  </header>
+  <nav class="td-release-card__links" aria-label="{{ T "ui_release_released" }}">
+    {{- range $links }}
+    <a class="td-release-card__link" href="{{ .url }}"><i class="{{ .icon }}" aria-hidden="true"></i><span>{{ .label }}</span></a>
+    {{- end }}
+  </nav>
+</aside>
+{{- end -}}

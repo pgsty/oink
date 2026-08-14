@@ -1,0 +1,75 @@
+{{- $page := .page -}}
+{{- $data := .data -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $owner := .owner -}}
+{{- $assetBase := "" -}}
+{{- with $data.repo }}{{ $assetBase = printf "https://github.com/%s/releases/download/%s" . (urls.PathEscape $data.tag) }}{{ end -}}
+
+{{- if eq $format "rss" -}}
+  {{- /* The component is deliberately absent from feeds. */ -}}
+{{- else if eq $format "markdown" -}}
+  {{- $chunks := slice -}}
+  {{- range $channelIndex, $channel := $data.channels -}}
+    {{- $lines := slice (printf "## %s" (partial "content/markdown-escape.html" $channel.title)) -}}
+    {{- if and (eq $channel.kind "pinned") (not $data.published) -}}
+      {{- $lines = $lines | append (printf "**%s**" (partial "content/markdown-escape.html" (T "ui_download_unpublished"))) -}}
+    {{- end -}}
+    {{- with $channel.note }}{{ $lines = $lines | append . }}{{ end -}}
+    {{- with $channel.url -}}
+      {{- if and (eq $channel.kind "pinned") (not $data.published) -}}
+        {{- $lines = $lines | append (partial "content/markdown-escape.html" $channel.title) -}}
+      {{- else -}}
+        {{- $lines = $lines | append (printf "[%s](%s)" (partial "content/markdown-escape.html" $channel.title) .) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not (and (eq $channel.kind "pinned") (not $data.published)) -}}
+    {{- range $stepIndex, $step := $channel.steps -}}
+      {{- $rendered := partial "download/code.html" (dict "page" $page "step" $step "key" (printf "%s-%d-%d" $owner $channelIndex $stepIndex)) -}}
+      {{- $lines = $lines | append (printf "%s" $rendered) -}}
+    {{- end -}}
+    {{- end -}}
+    {{- with $channel.checksums -}}
+      {{- $entries := partial "release/assets-parse.html" (dict "content" . "position" (printf "%s channel %q checksums" $page.Path $channel.id) "base" $assetBase "algo" "") -}}
+      {{- $assets := partial "release/assets-markdown.html" (dict "entries" $entries "grouped" false "disabled" (not $data.published)) -}}
+      {{- $lines = $lines | append (printf "%s" $assets) -}}
+    {{- end -}}
+    {{- $chunks = $chunks | append (delimit $lines "\n\n") -}}
+  {{- end -}}
+  {{- delimit $chunks "\n\n" | safeHTML -}}
+{{- else -}}
+  {{- $interactive := eq $format "html" -}}
+<div class="td-download{{ if not $interactive }} td-download--static{{ end }}" data-download-key="{{ $data.key }}">
+  {{- if $interactive }}
+  <nav class="td-download__channels" aria-label="{{ T "ui_download_channels" }}">
+    {{- range $data.channels }}<a class="td-download__chip" href="#download-{{ $data.key }}-{{ .id }}">{{ .title }}</a>{{ end -}}
+  </nav>
+  {{- end }}
+  {{- range $channelIndex, $channel := $data.channels }}
+  <section class="td-download__channel" id="download-{{ $data.key }}-{{ $channel.id }}" data-download-kind="{{ $channel.kind }}">
+    <header class="td-download__heading">
+      <h2>{{ with $channel.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<span>{{ $channel.title }}</span></h2>
+      {{- if and (eq $channel.kind "pinned") (not $data.published) }}<span class="td-download__state" aria-disabled="true">{{ T "ui_download_unpublished" }}</span>{{ end }}
+    </header>
+    {{- with $channel.note }}<div class="td-download__note">{{ $page.RenderString (dict "display" "block") . }}</div>{{ end -}}
+    {{- with $channel.url -}}
+      {{- if and (eq $channel.kind "pinned") (not $data.published) -}}
+      <span class="td-download__action is-disabled" aria-disabled="true">{{ $channel.title }}</span>
+      {{- else -}}
+      <a class="td-download__action" href="{{ . }}">{{ $channel.title }}</a>
+      {{- end -}}
+    {{- end -}}
+    {{- if not (and (eq $channel.kind "pinned") (not $data.published)) -}}
+    {{- range $stepIndex, $step := $channel.steps }}
+      {{- partial "download/code.html" (dict "page" $page "step" $step "key" (printf "%s-%d-%d" $owner $channelIndex $stepIndex)) -}}
+    {{- end -}}
+    {{- end -}}
+    {{- with $channel.checksums -}}
+      {{- $entries := partial "release/assets-parse.html" (dict "content" . "position" (printf "%s channel %q checksums" $page.Path $channel.id) "base" $assetBase "algo" "") -}}
+      {{- $assetsInteractive := and $interactive $data.published -}}
+      {{- if $assetsInteractive }}{{ $page.Store.Set "hasAssetList" true }}{{ end -}}
+      {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" false "interactive" $assetsInteractive "disabled" (not $data.published)) -}}
+    {{- end }}
+  </section>
+  {{- end }}
+</div>
+{{- end -}}

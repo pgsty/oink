@@ -1,0 +1,5 @@
+{{- $keywords := slice -}}
+{{- if eq .RelPermalink "/docs/guides/first/" -}}
+  {{- $keywords = $keywords | append "scenario-hook-keyword" -}}
+{{- end -}}
+{{- return $keywords -}}

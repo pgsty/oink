@@ -1,0 +1,9 @@
+{{- if gt (len .Params) 0 }}{{ errorf "shortcode %q accepts no parameters at %s" .Name .Position }}{{ end -}}
+{{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- if not $inner }}{{ errorf "shortcode %q requires TeX content at %s" .Name .Position }}{{ end -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- printf "$$\n%s\n$$" $inner | safeHTML -}}
+{{- else -}}
+  {{- partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) -}}
+{{- end -}}

@@ -85,6 +85,14 @@ html:has(body.td-shell-chrome--navbar) {
   scroll-padding-top: calc(var(--td-shell-nav-h) + 1.5rem);
 }
 
+// On narrow shell pages the document subnav remains sticky even without the
+// desktop navbar. Keep deep-linked headings below that occupied top region.
+@media (max-width: 767.98px) {
+  html:has(body.td-shell-chrome) {
+    scroll-padding-top: var(--td-scroll-padding-top);
+  }
+}
+
 // Compact gradient wordmark shared by the sidebar and mobile subnav.
 .td-shell-wordmark {
   font-family: var(--td-display-font-family);

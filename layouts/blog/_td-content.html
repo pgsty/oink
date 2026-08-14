@@ -14,13 +14,12 @@
 	</header>
 	{{ .Render "_td-content-after-header" -}}
 	{{ partial "content/render.html" . }}
+	{{ partial "pager.html" . }}
 	{{ partial "comments.html" . -}}
 	{{ if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) -}}
 		<br />
 		{{- partial "disqus-comment.html" . -}}
 		<br />
 	{{ end -}}
-
-	{{ partial "pager.html" . }}
 	{{ partial "page-meta-lastmod.html" . -}}
 </div>

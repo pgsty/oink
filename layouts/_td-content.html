@@ -11,6 +11,7 @@
 	{{ .Render "_td-content-after-header" -}}
 	{{ partial "content/render.html" . }}
 	{{ partial "feedback.html" . -}}
+	{{ partial "pager.html" . -}}
 	{{ partial "comments.html" . -}}
 	{{ if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) -}}
 		<br />

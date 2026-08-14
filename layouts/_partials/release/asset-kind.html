@@ -1,0 +1,55 @@
+{{- /* Infer presentation-only file metadata. None of these labels are facts. */ -}}
+{{- $name := lower (printf "%s" .) -}}
+{{- $group := "*" -}}
+{{- $icon := "fa-regular fa-file" -}}
+{{- $kind := "file" -}}
+{{- if hasSuffix $name ".tar.gz" -}}
+  {{- $group = ".tar.gz" -}}
+  {{- $icon = "fa-regular fa-file-zipper" -}}
+  {{- $kind = "tar.gz" -}}
+{{- else if hasSuffix $name ".rpm" -}}
+  {{- $group = ".rpm" -}}
+  {{- $icon = "fa-solid fa-box" -}}
+  {{- $kind = "rpm" -}}
+{{- else if hasSuffix $name ".deb" -}}
+  {{- $group = ".deb" -}}
+  {{- $icon = "fa-solid fa-box" -}}
+  {{- $kind = "deb" -}}
+{{- else if hasSuffix $name ".apk" -}}
+  {{- $group = ".apk" -}}
+  {{- $icon = "fa-solid fa-box" -}}
+  {{- $kind = "apk" -}}
+{{- else if hasSuffix $name ".zip" -}}
+  {{- $group = ".zip" -}}
+  {{- $icon = "fa-regular fa-file-zipper" -}}
+  {{- $kind = "zip" -}}
+{{- else if or (hasSuffix $name ".exe") (hasSuffix $name ".msi") -}}
+  {{- $group = ".exe / .msi" -}}
+  {{- $icon = "fa-brands fa-windows" -}}
+  {{- $kind = cond (hasSuffix $name ".exe") "exe" "msi" -}}
+{{- else if or (hasSuffix $name ".dmg") (hasSuffix $name ".pkg") -}}
+  {{- $group = ".dmg / .pkg" -}}
+  {{- $icon = "fa-brands fa-apple" -}}
+  {{- $kind = cond (hasSuffix $name ".dmg") "dmg" "pkg" -}}
+{{- end -}}
+
+{{- $os := "" -}}
+{{- if or (in (slice "rpm" "deb" "apk") $kind) (findRE `(^|[._+-])linux([._+-]|$)` $name) -}}
+  {{- $os = "Linux" -}}
+{{- else if or (in (slice "exe" "msi") $kind) (findRE `(^|[._+-])(windows|win32|win64)([._+-]|$)` $name) -}}
+  {{- $os = "Windows" -}}
+{{- else if or (in (slice "dmg" "pkg") $kind) (findRE `(^|[._+-])(darwin|macos)([._+-]|$)` $name) -}}
+  {{- $os = "macOS" -}}
+{{- end -}}
+
+{{- $arch := "" -}}
+{{- if findRE `(^|[._+-])(amd64|x86_64)([._+-]|$)` $name -}}
+  {{- $arch = "amd64" -}}
+{{- else if findRE `(^|[._+-])(arm64|aarch64)([._+-]|$)` $name -}}
+  {{- $arch = "arm64" -}}
+{{- else if findRE `(^|[._+-])loongarch64([._+-]|$)` $name -}}
+  {{- $arch = "loongarch64" -}}
+{{- else if findRE `(^|[._+-])riscv64([._+-]|$)` $name -}}
+  {{- $arch = "riscv64" -}}
+{{- end -}}
+{{- return (dict "group" $group "icon" $icon "kind" $kind "os" $os "arch" $arch) -}}

@@ -59,6 +59,10 @@ outputs:
   section: [HTML, RSS, print, markdown]
 
 params:
+  copyright:
+    authors: '[Example Documentation](https://example.org/)'
+    from_year: 2026
+  # footer_center_info defaults to Powered by Oink and accepts inline Markdown.
   offlineSearch: true
   ui:
     showLightDarkModeMenu: true
@@ -78,11 +82,39 @@ Then preview the site:
 hugo server
 ```
 
+### Delimiter-style mathematics
+
+OINK renders fenced `math` code blocks out of the box. To author inline
+`\( ... \)` or block `\[ ... \]` / `$$ ... $$` formulae, the consuming site
+must also enable Hugo's Goldmark passthrough extension:
+
+```yaml
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block: [['\[', '\]'], ['$$', '$$']]
+          inline: [['\(', '\)']]
+```
+
+Hugo does not merge a theme module's `markup` configuration into the consumer,
+so OINK cannot enable this on a site's behalf. A passthrough configuration with
+no matching render hook silently leaves delimiter text such as `$$` in the
+page; OINK supplies that hook and renders KaTeX locally at build time. The
+legacy Hextra front matter key `math: true` has no meaning in OINK and is not a
+substitute for the Goldmark configuration above.
+
+For an isolated display formula on a site that cannot enable passthrough yet,
+use `{{< eq >}}E = mc^2{{< /eq >}}`. This parameter-free escape hatch is
+unnumbered and accepts no parameters in OINK 0.4.
+
 For production, pin a release tag in `go.mod`. See the
 [getting-started guide](https://oink.pgsty.com/docs/tutorial/) for site
 structure, configuration, and deployment.
 
-The shell defaults to content whose Hugo type is `docs`, `blog`, or `swagger`.
+The shell defaults to content whose Hugo type is `docs`, `book`, `blog`, or `swagger`.
 Sites with a different docs path can set `params.ui.docs_section` (for example,
 `guide`) and use a front matter cascade with `type: docs`; additional types can
 be added through `params.ui.shell_types`.
@@ -126,11 +158,16 @@ Theme implementation contracts:
 [Content primitives](docs/content-primitives.md) ·
 [Enhanced code blocks](docs/enhanced-code-blocks.md) ·
 [Typography tokens](docs/typography-tokens.md) ·
-[PRD 4 contract](docs/prd4-navigation-command-palette-contract.md)
+[PRD 4 contract](docs/prd4-navigation-command-palette-contract.md) ·
+[PRD 5 reading/release](docs/prd5-reading-release-contract.md)
 
 Navigation and Command Palette migration reference, included in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·
 [简体中文](docs/prd4-migration-guide.zh.md).
+
+Scenario Components 0.4 migration reference:
+[English](docs/prd5-migration-guide.md) ·
+[简体中文](docs/prd5-migration-guide.zh.md).
 
 ## Localization status
 

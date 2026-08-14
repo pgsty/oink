@@ -1,0 +1,28 @@
+{{- /* Expand the only permitted version facts inside a pinned channel. */ -}}
+{{- $value := .value -}}
+{{- $field := .field -}}
+{{- $kind := .kind -}}
+{{- $position := .position -}}
+{{- if ne (printf "%T" $value) "string" -}}
+  {{- errorf "%s: download %s must be a string" $position $field -}}
+{{- end -}}
+{{- $result := $value -}}
+{{- $result = replace $result "\r\n" "\n" -}}
+{{- $result = replace $result "\r" "\n" -}}
+{{- $tokens := findRE `\$\{[^}]*\}` $result -}}
+{{- if and $tokens (eq $kind "rolling") -}}
+  {{- errorf "%s: rolling download channel %s must not interpolate version facts" $position $field -}}
+{{- end -}}
+{{- range $tokens -}}
+  {{- if eq . "${version}" -}}
+    {{- $result = replace $result . $.version -}}
+  {{- else if eq . "${tag}" -}}
+    {{- $result = replace $result . $.tag -}}
+  {{- else -}}
+    {{- errorf "%s: download %s has unknown interpolation variable %q" $position $field . -}}
+  {{- end -}}
+{{- end -}}
+{{- if strings.Contains $result "${" -}}
+  {{- errorf "%s: download %s has malformed interpolation syntax" $position $field -}}
+{{- end -}}
+{{- return $result -}}

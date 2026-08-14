@@ -29,4 +29,12 @@
   > ul {
     margin-bottom: 0;
   }
+
+  &--cards {
+    padding-top: 1.25rem;
+  }
+
+  &__card {
+    padding: 0;
+  }
 }

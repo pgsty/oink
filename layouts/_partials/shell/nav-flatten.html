@@ -1,0 +1,36 @@
+{{- /* Return the pre-order reading sequence represented by the sidebar tree.
+       The root section index precedes its descendants; data/docs_nav.json is
+       authoritative when the docs shell already uses that explicit tree. */ -}}
+{{- $page := .page -}}
+{{- $root := .root -}}
+{{- $pages := slice -}}
+{{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
+{{- $explicit := and
+      (in (slice "docs" "book") $page.Type)
+      (ne $root $page.Site.Home)
+      (isset $docsNav "sections")
+  -}}
+
+{{- if $explicit -}}
+  {{- /* A real docs section index is part of the reading sequence. A site
+       home used only as a book/landing cover is not silently prepended. */ -}}
+  {{- if and (ne $root $page.Site.Home) (partial "shell/nav-page-enabled.html" $root) -}}
+    {{- $pages = $pages | append $root -}}
+  {{- end -}}
+  {{- with (index $docsNav "sections") -}}
+    {{- range . -}}
+      {{- $branch := partial "shell/nav-flatten-node.html" (dict "page" $page "node" .) -}}
+      {{- range $branch }}{{ $pages = $pages | append . }}{{ end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- errorf "data/docs_nav.json does not define any Docs navigation sections" -}}
+  {{- end -}}
+{{- else -}}
+  {{- $includeRoot := or (ne $root $page.Site.Home) (eq $root.Type $page.Type) -}}
+  {{- $pages = partial "shell/nav-flatten-section.html" (dict
+      "section" $root
+      "includeSelf" $includeRoot
+  ) -}}
+{{- end -}}
+
+{{- return ($pages | uniq) -}}

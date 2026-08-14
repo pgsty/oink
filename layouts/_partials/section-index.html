@@ -2,13 +2,16 @@
 {{ $pages := (where .Site.Pages "Section" .Section).ByWeight -}}
 {{ $pages = (where $pages "Type" "!=" "search") }}
 {{ $pages = (where $pages ".Params.hide_summary" "!=" true) -}}
+{{ $pages = (where $pages ".Params.sidebar_divider" "!=" true) -}}
 {{ $pages = (where $pages ".Parent" "!=" nil) -}}
 {{ $pages = (where $pages ".Parent.File" "!=" nil) -}}
 {{ if $page.File -}}
     {{ $pages = (where $pages "Parent.File.UniqueID" "==" $page.File.UniqueID) -}}
 {{ end -}}
 {{ if not (or $page.Params.no_list (eq (len $pages) 0)) -}}
-<div class="section-index">
+{{ $mode := $page.Param "ui.section_index" | default "list" -}}
+{{ if not (in (slice "list" "cards") $mode) }}{{ errorf "invalid params.ui.section_index %q in %s (allowed: list | cards)" $mode $page.Path }}{{ end -}}
+<div class="section-index section-index--{{ $mode }}{{ if eq $mode "cards" }} td-content-cards{{ end }}"{{ if eq $mode "cards" }} style="--td-card-columns: {{ $page.Param "ui.section_index_columns" | default 2 }}"{{ end }}>
     {{ if $page.Params.simple_list -}}
         {{/* If simple_list is true we show a bulleted list of subpages */}}
         <ul>
@@ -17,6 +20,19 @@
                 <li><a href="{{ $manualLink }}"{{ with .Params.manualLinkTitle }} title="{{ . }}"{{ end }}{{ with .Params.manualLinkTarget }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}>{{- .Title -}}</a></li>
             {{ end -}}
         </ul>
+    {{ else if eq $mode "cards" -}}
+        {{ range $pages -}}
+            {{ $manualLink := cond (isset .Params "manuallink") .Params.manualLink ( cond (isset .Params "manuallinkrelref") (relref . .Params.manualLinkRelref) .RelPermalink) -}}
+            <article class="td-content-card section-index__card">
+                <div class="td-content-card__body">
+                    <div class="td-content-card__head">
+                        {{- with .Params.icon }}<i class="{{ . }} td-content-card__icon" aria-hidden="true"></i>{{ end -}}
+                        <a class="td-content-card__title" href="{{ $manualLink }}"{{ with .Params.manualLinkTitle }} title="{{ . }}"{{ end }}{{ with .Params.manualLinkTarget }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}>{{ .LinkTitle | default .Title }}</a>
+                    </div>
+                    {{- with .Description }}<p class="td-content-card__description">{{ . | markdownify }}</p>{{ end -}}
+                </div>
+            </article>
+        {{ end -}}
     {{ else -}}
         {{/* Otherwise we show a formatted list of subpages with page descriptions */}}
         {{ range $pages -}}

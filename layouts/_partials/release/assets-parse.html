@@ -1,0 +1,64 @@
+{{- /* Parse one sha*sum-compatible block into validated asset records. */ -}}
+{{- $content := printf "%s" .content -}}
+{{- $position := .position -}}
+{{- $base := strings.TrimSuffix "/" .base -}}
+{{- $override := .algo | default "" -}}
+{{- $algorithms := dict
+  "32" (dict "id" "md5" "label" "MD5")
+  "40" (dict "id" "sha1" "label" "SHA-1")
+  "64" (dict "id" "sha256" "label" "SHA-256")
+  "128" (dict "id" "sha512" "label" "SHA-512")
+-}}
+{{- $entries := slice -}}
+{{- $seenAlgorithm := "" -}}
+{{- $content = replace $content "\r\n" "\n" -}}
+{{- $content = replace $content "\r" "\n" -}}
+{{- range $index, $rawLine := split $content "\n" -}}
+  {{- $lineNumber := add $index 1 -}}
+  {{- $trimmed := strings.TrimSpace $rawLine -}}
+  {{- if or (not $trimmed) (hasPrefix $trimmed "#") }}{{ continue }}{{ end -}}
+  {{- $matches := findRESubmatch `^([0-9A-Fa-f]+) ([ *])(.+)$` $rawLine -}}
+  {{- if ne (len $matches) 1 -}}
+    {{- errorf "%s: release-assets line %d must be <hex><two spaces><name> or <hex><space>*<name>; got %q" $position $lineNumber $rawLine -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $match := index $matches 0 -}}
+  {{- $hash := index $match 1 -}}
+  {{- $binary := eq (index $match 2) "*" -}}
+  {{- $name := index $match 3 -}}
+  {{- if not (strings.TrimSpace $name) -}}
+    {{- errorf "%s: release-assets line %d has an empty filename" $position $lineNumber -}}
+  {{- end -}}
+  {{- if or (strings.Contains $name "/") (strings.Contains $name `\`) -}}
+    {{- errorf "%s: release-assets line %d filename must be one path segment; got %q" $position $lineNumber $name -}}
+  {{- end -}}
+  {{- $algorithm := index $algorithms (printf "%d" (len $hash)) | default false -}}
+  {{- if not $algorithm -}}
+    {{- errorf "%s: release-assets line %d has unsupported hex length %d" $position $lineNumber (len $hash) -}}
+  {{- end -}}
+  {{- if and $override (ne $override $algorithm.id) -}}
+    {{- errorf "%s: release-assets line %d is %s by length, which conflicts with algo=%q" $position $lineNumber $algorithm.label $override -}}
+  {{- end -}}
+  {{- if and $seenAlgorithm (ne $seenAlgorithm $algorithm.id) -}}
+    {{- errorf "%s: release-assets mixes checksum algorithms (%s and %s); split them into separate blocks" $position $seenAlgorithm $algorithm.id -}}
+  {{- end -}}
+  {{- $seenAlgorithm = $algorithm.id -}}
+  {{- $kind := partial "release/asset-kind.html" $name -}}
+  {{- $entries = $entries | append (dict
+    "hash" $hash
+    "binary" $binary
+    "name" $name
+    "url" (printf "%s/%s" $base (urls.PathEscape $name))
+    "algorithm" $algorithm.label
+    "algorithmID" $algorithm.id
+    "group" $kind.group
+    "icon" $kind.icon
+    "kind" $kind.kind
+    "os" $kind.os
+    "arch" $kind.arch
+  ) -}}
+{{- end -}}
+{{- if not $entries -}}
+  {{- errorf "%s: release-assets requires at least one checksum line" $position -}}
+{{- end -}}
+{{- return $entries -}}

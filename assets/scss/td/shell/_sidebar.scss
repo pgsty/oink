@@ -275,6 +275,26 @@
   }
 }
 
+// Content authors may insert a non-link grouping label into a long sidebar
+// with `sidebar_divider: true`. It is intentionally neither focusable nor a
+// pager destination.
+.td-shell-tree__heading {
+  margin-block: 0.9rem 0.25rem;
+  padding-block-start: 0.65rem;
+  border-block-start: 1px solid var(--bs-border-color);
+}
+
+.td-shell-tree__heading-label {
+  display: block;
+  padding-inline: 0.65rem;
+  color: var(--td-shell-muted-fg);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* ------------------------------------------------------ navigation tree */
 
 .td-shell-tree {

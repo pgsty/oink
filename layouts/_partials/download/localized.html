@@ -1,0 +1,12 @@
+{{- /* Resolve an exact language suffix, then its primary language, then the
+     unsuffixed local fact. This 0.4 data helper is intentionally independent
+     from the later Landing renderer. */ -}}
+{{- $record := .record -}}
+{{- $key := .key -}}
+{{- $lang := replace (lower .page.Site.Language.Lang) "-" "_" -}}
+{{- $primary := index (split $lang "_") 0 -}}
+{{- $value := false -}}
+{{- range slice (printf "%s_%s" $key $lang) (printf "%s_%s" $key $primary) $key -}}
+  {{- if and (eq $value false) (isset $record .) }}{{ $value = index $record . }}{{ end -}}
+{{- end -}}
+{{- return $value -}}

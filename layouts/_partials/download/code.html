@@ -1,0 +1,25 @@
+{{- $page := .page -}}
+{{- $step := .step -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $format "markdown" -}}
+  {{- $fenceLength := 3 -}}
+  {{- range findRE "`+" $step.code -}}
+    {{- if ge (len .) $fenceLength }}{{ $fenceLength = add (len .) 1 }}{{ end -}}
+  {{- end -}}
+  {{- $fence := strings.Repeat $fenceLength "`" -}}
+  {{- with $step.title }}{{ printf "**%s**\n\n" (partial "content/markdown-escape.html" .) | safeHTML }}{{ end -}}
+  {{- printf "%s%s\n%s\n%s" $fence $step.lang $step.code $fence | safeHTML -}}
+{{- else -}}
+  {{- $attrs := dict -}}
+  {{- with $step.title }}{{ $attrs = dict "title" . }}{{ end -}}
+  {{- $config := partial "code/normalize.html" (dict
+    "page" $page
+    "position" $step.position
+    "code" $step.code
+    "language" $step.lang
+    "attributes" $attrs
+    "key" .key
+  ) -}}
+  {{- $highlighted := partial "code/highlight.html" $config -}}
+  {{- partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
+{{- end -}}

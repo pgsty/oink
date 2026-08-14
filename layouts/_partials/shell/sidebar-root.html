@@ -1,0 +1,46 @@
+{{- /* Resolve the navigation root once for both the rendered sidebar and the
+       sequential-reading pager. Keep this in lockstep with sidebar-root-for
+       semantics; callers must not invent a second root resolver. */ -}}
+{{- $page := . -}}
+{{- $root := cond $page.Site.Params.ui.sidebar_root_enabled $page.Site.Home $page.FirstSection -}}
+{{- $config := partialCached "shell/config.html" $page $page.Site.Language.Lang -}}
+
+{{- if $page.Site.Params.ui.sidebar_root_enabled -}}
+  {{- if and $page.IsSection (eq $page.Params.sidebar_root_for "self") -}}
+    {{- $root = $page -}}
+  {{- else -}}
+    {{- range $page.Ancestors -}}
+      {{- if not .IsSection }}{{ continue }}{{ end -}}
+      {{- $rootFor := .Params.sidebar_root_for -}}
+      {{- if not $rootFor }}{{ continue }}{{ end -}}
+      {{- if not (in (slice "self" "children") $rootFor) -}}
+        {{- warnf "%s: sidebar_root_for should be 'self' or 'children', got %q" .Path $rootFor -}}
+        {{- continue -}}
+      {{- end -}}
+      {{- $root = . -}}
+      {{- break -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (eq $page.Type "blog") (eq $root $page.Site.Home) -}}
+  {{- with $page.Site.GetPage (printf "/%s" $config.blogSection) }}{{ $root = . }}{{ end -}}
+{{- end -}}
+
+{{- if and (eq $page.Type "docs") (eq $root $page.Site.Home) (ne $config.docsRoot "home") -}}
+  {{- with $page.Site.GetPage (printf "/%s" $config.docsSection) }}{{ $root = . }}{{ end -}}
+{{- end -}}
+
+{{- if and (eq $page.Type "book") (eq $root $page.Site.Home) -}}
+  {{- with $page.FirstSection }}{{ $root = . }}{{ end -}}
+{{- end -}}
+
+{{- /* A term's members are root-homogeneous in practice. */ -}}
+{{- if eq $page.Kind "term" -}}
+  {{- $tops := slice -}}
+  {{- range $page.Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
+  {{- $tops = $tops | uniq -}}
+  {{- if eq (len $tops) 1 }}{{ $root = index $tops 0 }}{{ end -}}
+{{- end -}}
+
+{{- return $root -}}

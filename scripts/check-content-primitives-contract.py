@@ -30,6 +30,9 @@ REQUIRED_HEADINGS = (
     "### 3.5 Shared images and imgproc compatibility",
     "### 3.6 Image Zoom",
     "### 3.7 Gallery and Gallery Image",
+    "### 3.8 Release Assets",
+    "### 3.9 Tables and full-width tables",
+    "### 3.10 Equation escape hatch",
     "## 4. Output matrix",
     "## 5. Verification contract",
     "## 6. Contract changes",
@@ -46,8 +49,15 @@ REQUIRED_LITERALS = (
     '| `columns` | no | strict integer from `1` through `4` | `2` |',
     "A standalone public Icon shortcode is deferred.",
     "The Markdown output must contain no component classes",
-    "Markdown fallback retains their source",
+    "Their Markdown fallback retains source\n  Markdown",
     "remains for at least one complete minor release",
+    "`<hex><two spaces><name>`",
+    "`src` and inner checksum lines are mutually exclusive.",
+    "`td-table-scroll--full`",
+    "`ui_table_scroll`",
+    "{{< eq >}}X \\approx \\frac{C}{R+Z}{{< /eq >}}",
+    "accepts no parameters",
+    "creates no\nnumber, caption, anchor, Page Store target, JavaScript, or remote request",
 )
 
 EXPECTED_RUNTIMES = {
@@ -58,6 +68,9 @@ EXPECTED_RUNTIMES = {
     "Shared image": "none",
     "Image Zoom": "one opt-in local dialog runtime",
     "Gallery": "reuses Image Zoom only",
+    "Release Assets": "one opt-in local copy runtime",
+    "Table": "none",
+    "Eq escape": "none",
 }
 
 

@@ -61,7 +61,8 @@
         )
         true false
   -}}
-  {{ $mid := printf "m-%s" ($s.RelPermalink | anchorize) -}}
+  {{ $nodeID := $s.RelPermalink | default $s.Path | default $s.Title -}}
+  {{ $mid := printf "m-%s" ($nodeID | anchorize) -}}
   {{ $children := union $s.Pages $s.Sections -}}
   {{ $orderedChildren := $children.ByWeight -}}
   {{ if eq $s.Type "blog" -}}
@@ -103,7 +104,12 @@
   {{/* With the root switcher enabled, emit only children, not the root row. */ -}}
   {{ $rootMenuOn := and $p.Site.Params.ui.sidebar_root_menu
       (gt (len (where $p.Site.Pages "Params.sidebar_root_for" "self")) 0) -}}
-  {{ if and $treeRoot $rootMenuOn -}}
+  {{ $isDivider := $s.Params.sidebar_divider | default false -}}
+  {{ if $isDivider -}}
+  <li class="td-shell-tree__item td-shell-tree__heading" id="{{ $mid }}-li">
+    <span class="td-shell-tree__heading-label" id="{{ $mid }}"><span>{{ $s.LinkTitle }}</span></span>
+  </li>
+  {{ else if and $treeRoot $rootMenuOn -}}
   <li class="td-shell-tree__item td-shell-tree__item--rootless">
     {{ if $withChild -}}
     <ul class="td-shell-tree__list ul-1">
@@ -131,8 +137,8 @@
         class="td-shell-tree__link{{ if $active }} active{{ end }}"
         id="{{ $mid }}">
         {{- if $showIcon }}{{ with $s.Params.Icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ end -}}
-        <span>{{ $s.LinkTitle }}</span>
-      </a>
+          <span>{{ $s.LinkTitle }}</span>
+        </a>
       {{ if $foldable -}}
       <button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
         aria-expanded="{{ $shouldExpand }}" aria-controls="{{ $mid }}-children"
@@ -143,7 +149,6 @@
       </button>
       {{- end }}
     </div>
-
     {{ if $withChild -}}
       {{ $childUlNr := add $ulNr 1 -}}
       <div id="{{ $mid }}-children" class="td-shell-tree__children{{ if not $foldable }} td-shell-tree__children--static{{ else if $shouldExpand }} is-open{{ end }}">

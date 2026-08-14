@@ -1,0 +1,16 @@
+{{- /* Render a validated data/download/<key> record; facts are not params. */ -}}
+{{- if or .IsNamedParams (ne (len .Params) 1) -}}
+  {{- errorf "shortcode %q requires exactly one positional data key at %s" .Name .Position -}}
+{{- end -}}
+{{- $keyParam := .Get 0 -}}
+{{- if ne (printf "%T" $keyParam) "string" }}{{ errorf "shortcode %q data key must be a string at %s" .Name .Position }}{{ end -}}
+{{- $key := strings.TrimSpace $keyParam -}}
+{{- $owner := printf "download-%d" .Ordinal -}}
+{{- $owners := .Page.Store.Get "tdDownloadOwners" | default (dict) -}}
+{{- if isset $owners $key -}}
+  {{- if ne (index $owners $key) $owner }}{{ errorf "shortcode %q: duplicate data key %q at %s" .Name $key .Position }}{{ end -}}
+{{- else -}}
+  {{- .Page.Store.SetInMap "tdDownloadOwners" $key $owner -}}
+{{- end -}}
+{{- $data := partial "download/resolve.html" (dict "page" .Page "key" $key "position" .Position) -}}
+{{- partial "download/render.html" (dict "page" .Page "data" $data "owner" $owner) -}}

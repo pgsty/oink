@@ -69,7 +69,8 @@
     {{ $showIcon := partial "shell/sidebar-icon-enabled.html" (dict "policy" $iconPolicy "root" (eq $ulNr 1) "hasChildren" $withChild) -}}
     {{ $foldable := and ($p.Param "ui.sidebar_menu_foldable") $withChild -}}
     {{ $ellipsis := ne ($p.Param "ui.sidebar_item_overflow") "wrap" -}}
-    {{ $mid := printf "m-%s" ($s.RelPermalink | anchorize) -}}
+    {{ $nodeID := $s.RelPermalink | default $s.Path | default $s.Title -}}
+    {{ $mid := printf "m-%s" ($nodeID | anchorize) -}}
     {{ $manualLink := cond
         (isset $s.Params "manuallink")
         $s.Params.manualLink
@@ -84,6 +85,12 @@
         $s.Params.manualLinkTitle
         $s.Title
     -}}
+    {{ $isDivider := $s.Params.sidebar_divider | default false -}}
+    {{ if $isDivider -}}
+    <li class="td-shell-tree__item td-shell-tree__heading" id="{{ $mid }}-li">
+      <span class="td-shell-tree__heading-label" id="{{ $mid }}"><span>{{ $s.LinkTitle }}</span></span>
+    </li>
+    {{ else -}}
     <li class="td-shell-tree__item
           {{- if $withChild }} has-child{{ else }} leaf{{ end -}}
           {{- if $activePath }} active-path{{ end }}"
@@ -109,7 +116,6 @@
         </button>
         {{- end }}
       </div>
-
       {{ if $withChild -}}
         {{ $childUlNr := add $ulNr 1 -}}
         <div id="{{ $mid }}-children" class="td-shell-tree__children{{ if not $foldable }} td-shell-tree__children--static{{ else if $shouldExpand }} is-open{{ end }}">
@@ -131,5 +137,6 @@
         </div>
       {{- end }}
     </li>
+    {{- end }}
   {{- end }}
 {{- end }}

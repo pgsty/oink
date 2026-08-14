@@ -1,0 +1,13 @@
+{{- /* Pages that are visible navigation destinations may participate in the
+       reading chain. Link-only placeholders and divider rows stay in the
+       sidebar information architecture but must never become pager targets. */ -}}
+{{- $page := . -}}
+{{- $enabled := not ($page.Params.toc_hide | default false) -}}
+{{- if or
+      ($page.Params.sidebar_divider | default false)
+      (isset $page.Params "manuallink")
+      (isset $page.Params "manuallinkrelref")
+  -}}
+  {{- $enabled = false -}}
+{{- end -}}
+{{- return $enabled -}}

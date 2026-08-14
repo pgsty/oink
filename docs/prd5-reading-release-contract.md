@@ -51,10 +51,12 @@ without formulae do not. Long display formulae scroll within the document
 column in screen output and remain static in print.
 
 `{{< eq >}}...{{< /eq >}}` is the explicit display-math escape hatch for a
-page whose consuming site cannot enable Goldmark passthrough. The OINK 0.4
-form accepts no parameters: it sends non-empty TeX through the same local
-renderer, registers no target, and emits a plain `$$` block in Markdown and
-RSS. It loads no JavaScript.
+page whose consuming site cannot enable Goldmark passthrough. With no
+parameters it sends non-empty TeX through the same local renderer, registers
+no Book target, and emits a plain `$$` block in Markdown and RSS. The numbered
+OINK 0.6 form adds `num`; `id`, `caption`, and `class` are rejected without
+that number so an unnumbered equation cannot accidentally present a partial
+Book identity. Neither form loads JavaScript.
 
 ## 3. Release primitives
 

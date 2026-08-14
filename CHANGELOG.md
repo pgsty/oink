@@ -5,6 +5,35 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-14
+
+### Added
+
+- Add the Book capability package on the existing docs shell: `book_*` chapter
+  metadata, draft labels and optional notices, active-page sidebar headings,
+  stable `fig`/`tbl`/numbered-`eq` targets, current-language `xref`, Book-wide
+  figure lists and tables of contents, and opt-in whole-Book print HTML with
+  document-local cross-chapter links and collision-free heading IDs.
+- Add a dry-run-first, idempotent Book migration tool with reproducible TPME,
+  DDIA v1/v2, and pg-internal recipes. JSON reports preserve conversion counts,
+  skipped ambiguities, and a diff digest; focused checks cover dry-run, write,
+  zero-change second runs, rendered target numbers, alternatives, duplicate IDs,
+  and missing fragments.
+- Freeze the PRD 5 0.6 Book contract and extend the machine contract, bilingual
+  migration guide, root/subpath fixtures, 32-locale labels, and dual-Hugo CI
+  matrix for the complete HTML/print/Markdown/RSS behavior.
+
+### Changed
+
+- Extend the 0.4 parameter-free `eq` escape hatch without breaking it: no
+  parameters remains unnumbered and registers no target, while an explicit
+  quoted `num` selects the 0.6 Book equation form; identity and caption fields
+  are rejected unless that number is present.
+- Extend the content-primitives contract with semantic numbered figures,
+  tables, equations, cross references, Book indexes, strict parameter/URL/ID
+  validation, print containment, and plain non-HTML fallbacks. PDF/EPUB
+  generation and automatic numbering remain site-owned non-goals.
+
 ## [0.5.0] - 2026-08-14
 
 ### Added
@@ -414,7 +443,8 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/pgsty/oink/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/pgsty/oink/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/pgsty/oink/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pgsty/oink/compare/v0.2.1...v0.3.0

@@ -1,0 +1,14 @@
+{{- $name := .name | default "book component" -}}
+{{- $position := .position | default "unknown position" -}}
+{{- $value := .value -}}
+{{- if ne (printf "%T" $value) "string" -}}
+  {{- errorf "shortcode %q: num must be a string at %s" $name $position -}}
+{{- end -}}
+{{- $num := strings.TrimSpace $value -}}
+{{- if not $num -}}
+  {{- errorf "shortcode %q: num must not be empty at %s" $name $position -}}
+{{- end -}}
+{{- if not (findRE `^[0-9A-Za-z.-]+$` $num) -}}
+  {{- errorf "shortcode %q: num must match [0-9A-Za-z.-]+; got %q at %s" $name $num $position -}}
+{{- end -}}
+{{- return $num -}}

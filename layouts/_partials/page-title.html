@@ -1,3 +1,3 @@
 <div class="td-page-heading">
-  <h1>{{ .Title }}</h1>
+  <h1>{{ if eq .Type "book" }}{{ with .Params.book_number }}<span class="td-book-number">{{ . }}</span> {{ end }}{{ end }}{{ .Title }}</h1>
 </div>

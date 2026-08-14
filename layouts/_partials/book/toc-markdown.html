@@ -1,0 +1,23 @@
+{{- $page := .page -}}
+{{- $depth := .depth -}}
+{{- $level := .level | default 1 -}}
+{{- $prefix := .prefix | default "" -}}
+{{- $includeDraft := .includeDraft -}}
+{{- $rows := slice -}}
+{{- $children := (union $page.Pages $page.Sections).ByWeight -}}
+{{- range $children -}}
+  {{- if or (.Params.toc_hide | default false) (.Params.sidebar_divider | default false) }}{{ continue }}{{ end -}}
+  {{- if and (not $includeDraft) (eq .Params.book_status "draft") }}{{ continue }}{{ end -}}
+  {{- $title := .LinkTitle -}}
+  {{- with .Params.book_number }}{{ $title = printf "%v %s" . $title }}{{ end -}}
+  {{- $rows = $rows | append (printf "%s- [%s](%s)" $prefix $title .RelPermalink) -}}
+  {{- if and (ge $depth 2) (lt $level 2) .IsSection -}}
+    {{- $nested := partial "book/toc-markdown.html" (dict "page" . "depth" $depth "level" (add $level 1) "prefix" (printf "%s  " $prefix) "includeDraft" $includeDraft) -}}
+    {{- if $nested }}{{ $rows = $rows | append $nested }}{{ end -}}
+  {{- end -}}
+  {{- if eq $depth 3 -}}
+    {{- $headings := partial "book/toc-headings-markdown.html" (dict "page" . "headings" .Fragments.Headings "prefix" (printf "%s  " $prefix)) -}}
+    {{- if $headings }}{{ $rows = $rows | append $headings }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (delimit $rows "\n") -}}

@@ -1,0 +1,32 @@
+{{- $page := .page -}}
+{{- $kind := .kind | default "fig" -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $aggregate := and (eq $format "print") ($page.Store.Get "tdBookAggregate") -}}
+{{- $entries := slice -}}
+{{- $root := partial "shell/sidebar-root.html" $page -}}
+{{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" $page "root" $root) $root.Path $page.Site.Language.Lang -}}
+{{- range $sequence -}}
+  {{- if eq . $page }}{{ continue }}{{ end -}}
+  {{- $discard := .Content -}}
+  {{- range (.Store.Get "tdBookTargetOrder" | default dict) -}}
+    {{- if eq .kind $kind }}{{ $entries = $entries | append . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $entries -}}
+  {{- if in (slice "markdown" "rss") $format -}}
+  {{- $rows := slice -}}
+  {{- range $entries -}}
+    {{- $label := partial "book/label.html" . -}}
+    {{- $caption := partial "content/markdown-escape.html" .caption -}}
+    {{- $href := printf "%s#%s" .page.RelPermalink .id | partial "content/markdown-url.html" -}}
+    {{- $rows = $rows | append (printf "- [%s](%s)%s" $label $href (cond (ne $caption "") (printf " — %s" $caption) "")) -}}
+  {{- end -}}
+  {{- delimit $rows "\n" | safeHTML -}}
+  {{- else -}}
+<ol class="td-book-figures td-book-figures--{{ $kind }}">
+  {{- range $entries }}
+  <li><a href="{{ if $aggregate }}#{{ .id }}{{ else }}{{ .page.RelPermalink }}#{{ .id }}{{ end }}"><span class="td-book-label">{{ partial "book/label.html" . }}</span>{{ with .caption }} <span class="td-book-figures__caption">— {{ . }}</span>{{ end }}</a></li>
+  {{- end }}
+</ol>
+  {{- end -}}
+{{- end -}}

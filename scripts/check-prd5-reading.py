@@ -139,7 +139,7 @@ def check_math(public: Path) -> list[str]:
     require("td-book-" not in math_markdown, "parameter-free eq leaked Book markup into Markdown", errors)
 
     eq = (ROOT / "layouts/_shortcodes/eq.html").read_text()
-    require("gt (len .Params) 0" in eq, "eq escape hatch does not reject parameters", errors)
+    require("if not $hasNum" in eq, "eq escape hatch still requires num", errors)
     require('partial "scripts/math.html"' in eq, "eq escape hatch bypasses the shared math renderer", errors)
 
     styles = (ROOT / "assets/scss/td/_content.scss").read_text()
@@ -503,11 +503,10 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
     errors: list[str] = []
     cases = (
         ("empty", "{{< eq >}}{{< /eq >}}", "requires TeX content"),
-        ("caption", '{{< eq caption="ambiguous" >}}x{{< /eq >}}', "accepts no parameters"),
-        ("id", '{{< eq id="equation" >}}x{{< /eq >}}', "accepts no parameters"),
-        ("class", '{{< eq class="wide" >}}x{{< /eq >}}', "accepts no parameters"),
-        ("num", '{{< eq num="1" >}}x{{< /eq >}}', "accepts no parameters"),
-        ("positional", '{{< eq "x" >}}x{{< /eq >}}', "accepts no parameters"),
+        ("caption-without-num", '{{< eq caption="ambiguous" >}}x{{< /eq >}}', 'parameter "caption" requires num'),
+        ("id-without-num", '{{< eq id="equation" >}}x{{< /eq >}}', 'parameter "id" requires num'),
+        ("class-without-num", '{{< eq class="wide" >}}x{{< /eq >}}', 'parameter "class" requires num'),
+        ("positional", '{{< eq "x" >}}x{{< /eq >}}', "accepts named parameters only"),
     )
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-prd5-eq-{name}-") as temp:

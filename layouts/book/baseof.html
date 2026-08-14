@@ -1,0 +1,50 @@
+{{- .Page.Store.Set "tdOutputFormat" "html" -}}
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+    dir="{{ .Site.Language.Direction | default "ltr" }}"
+    lang="{{ partial "language-tag.html" . }}"
+    data-td-typography="{{ partial "typography-preset.html" .Site }}"
+    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+  <head>{{ partial "head.html" . }}</head>
+  {{ $toc := .TableOfContents -}}
+  {{ $hasToc := and (not .Params.notoc) $toc (ne $toc `<nav id="TableOfContents"></nav>`) -}}
+  {{ $sidebarMin := .Param "ui.sidebar_width_min" | default 220 -}}
+  {{ $sidebarMax := .Param "ui.sidebar_width_max" | default 480 -}}
+  {{ $navWrap := eq (.Param "ui.sidebar_item_overflow") "wrap" -}}
+  {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
+  {{ $navbar := partial "shell/navbar-enabled.html" . -}}
+  {{ $pageWidth := .Param "page_width" | default "normal" -}}
+  {{ if not (in (slice "normal" "wide" "full") $pageWidth) }}{{ errorf "invalid page_width %q in %s (allowed: normal | wide | full)" $pageWidth .Path }}{{ end -}}
+  <body class="td-{{ .Kind }} td-book td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+    {{ partial "skip-link.html" . }}
+    {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
+    <div class="container-fluid td-outer">
+      <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if not $hasToc }} td-shell-layout--no-toc{{ end }}{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
+           style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
+        {{ if $hasSidebar }}
+        <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none" aria-label="{{ T "ui_sidebar_nav" }}">{{ partial "shell/sidebar-panel.html" . }}</aside>
+        <div class="td-shell-drawer-backdrop d-md-none d-print-none" data-td-shell-drawer-close></div>
+        {{ partial "shell/floating-pill.html" . }}
+        {{ end }}
+        <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
+          <article class="td-shell-article">
+            {{ partial "version-banner.html" . }}
+            {{ $crumbs := not (.Param "ui.breadcrumb_disable") -}}
+            {{ $actionsHTML := partial "actions/title-menu.html" . -}}
+            {{ if or $crumbs (strings.ContainsNonSpace $actionsHTML) }}
+            <div class="td-shell-topline">
+              {{ if $crumbs }}{{ partial "breadcrumb.html" . }}{{ end }}
+              <span class="td-shell-topline__spacer"></span>{{ $actionsHTML }}
+            </div>
+            {{ end }}
+            {{ block "main" . }}{{ end }}
+          </article>
+        </main>
+        {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" $hasToc) }}
+      </div>
+      {{ partial "footer.html" . }}
+    </div>
+    {{ partial "scripts.html" . }}
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{{- $page := .page -}}
+{{- $id := .id -}}
+{{- $num := .num -}}
+{{- $kind := .kind -}}
+{{- $position := .position | default $page.Path -}}
+{{- $ordinal := .ordinal | default 0 -}}
+{{- $identity := printf "%s:%d" $page.Path $ordinal -}}
+{{- $targets := $page.Store.Get "tdBookTargets" | default (dict) -}}
+{{- if isset $targets $id -}}
+  {{- $existing := index $targets $id -}}
+  {{- if not (and (eq $existing.identity $identity) (eq $existing.kind $kind) (eq $existing.num $num)) -}}
+    {{- errorf "book component: duplicate id %q at %s (already used by %s %s at %s)" $id $position $existing.kind $existing.num $existing.position -}}
+  {{- end -}}
+{{- end -}}
+{{- $numbers := $page.Store.Get "tdBookTargetNums" | default (dict) -}}
+{{- $numberKey := printf "%s:%s" $kind $num -}}
+{{- if and (not (isset $targets $id)) (isset $numbers $numberKey) -}}
+  {{- $existing := index $numbers $numberKey -}}
+  {{- if ne $existing.id $id }}{{ errorf "book component: duplicate %s number %q at %s (already uses id %q)" $kind $num $position $existing.id }}{{ end -}}
+{{- end -}}
+{{- if not (isset $targets $id) -}}
+{{- $entry := dict
+  "id" $id
+  "num" $num
+  "kind" $kind
+  "caption" (.caption | default "")
+  "ordinal" $ordinal
+  "identity" $identity
+  "page" $page
+  "position" $position
+-}}
+{{- $page.Store.SetInMap "tdBookTargets" $id $entry -}}
+{{- $page.Store.SetInMap "tdBookTargetNums" $numberKey $entry -}}
+{{- $page.Store.SetInMap "tdBookTargetOrder" (printf "%08d-%s" $ordinal $id) $entry -}}
+{{- end -}}

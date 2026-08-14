@@ -52,6 +52,11 @@ params:
     # Override this list site-wide, or set `pager: false` in front matter.
     pager:
       types: [docs, book, blog]
+    # Book pages may opt into an h2-h4 branch beneath the active sidebar row.
+    sidebar_headings: false
+    # Draft state is always labeled in the sidebar; this optional banner adds
+    # an explicit notice at the start of draft book pages.
+    book_draft_banner: false
     feedback:
       enable: false
     sidebar_menu_compact: true

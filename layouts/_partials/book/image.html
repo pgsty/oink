@@ -1,0 +1,30 @@
+{{- $sc := .shortcode -}}
+{{- $src := .src -}}
+{{- $alt := .alt -}}
+{{- $link := .link -}}
+{{- $format := .format -}}
+{{- $url := partial "content/url.html" (dict
+  "name" $sc.Name "parameter" "src" "position" $sc.Position
+  "value" $src "kind" "image"
+) -}}
+{{- $href := "" -}}
+{{- $image := "" -}}
+{{- if $link -}}
+  {{- $linkURL := partial "content/url.html" (dict
+    "name" $sc.Name "parameter" "link" "position" $sc.Position
+    "value" $link "kind" "link"
+  ) -}}
+  {{- $href = $linkURL.href -}}
+{{- end -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- $markdownAlt := partial "content/markdown-escape.html" $alt -}}
+  {{- $image = printf "![%s](%s)" $markdownAlt $url.markdown -}}
+  {{- if $href }}{{ $image = printf "[%s](%s)" $image (partial "content/markdown-url.html" $href) }}{{ end -}}
+  {{- $image | safeHTML -}}
+{{- else -}}
+{{- if $href }}<a class="td-book-figure__link" href="{{ $href }}">{{ end -}}
+<img class="td-book-figure__image" src="{{ $url.href }}" alt="{{ $alt }}"
+  {{- with .width }} width="{{ . }}"{{ end -}}
+  {{- with .height }} height="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- if $href }}</a>{{ end -}}
+{{- end -}}

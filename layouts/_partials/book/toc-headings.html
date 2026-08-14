@@ -1,0 +1,24 @@
+{{- $page := .page -}}
+{{- $headings := .headings -}}
+{{- $depth := .depth -}}
+{{- $level := .level | default 1 -}}
+{{- $aggregate := .aggregate | default false -}}
+{{- $visible := false -}}
+{{- range $headings }}{{ if gt .Level 0 }}{{ $visible = true }}{{ end }}{{ end -}}
+{{- if and (le $level $depth) $headings $visible -}}
+<ol class="td-book-toc__headings td-book-toc__headings--level-{{ $level }}">
+  {{- range $headings -}}
+    {{- if gt .Level 0 }}
+      {{- $headingAnchor := .ID -}}
+      {{- if $aggregate }}{{ $headingAnchor = partial "book/aggregate-heading-anchor.html" (dict "page" $page "anchor" .ID) }}{{ end -}}
+  <li><a href="{{ if $aggregate }}#{{ $headingAnchor }}{{ else }}{{ $page.RelPermalink }}#{{ $headingAnchor }}{{ end }}">{{ .Title }}</a>
+      {{- if lt $level $depth }}{{ partial "book/toc-headings.html" (dict "page" $page "headings" .Headings "depth" $depth "level" (add $level 1) "aggregate" $aggregate) }}{{ end -}}
+  </li>
+    {{- else }}
+      {{- partial "book/toc-headings.html" (dict "page" $page "headings" .Headings "depth" $depth "level" $level "aggregate" $aggregate) -}}
+    {{- end -}}
+  {{- end }}
+</ol>
+{{- else if and (le $level $depth) $headings -}}
+  {{- range $headings }}{{ partial "book/toc-headings.html" (dict "page" $page "headings" .Headings "depth" $depth "level" $level "aggregate" $.aggregate) }}{{ end -}}
+{{- end -}}

@@ -104,7 +104,7 @@
           class="td-shell-tree__link{{ if $active }} active{{ end }}"
           id="{{ $mid }}">
           {{- if $showIcon }}{{ with $s.Params.Icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ end -}}
-          <span>{{ $s.LinkTitle }}</span>
+          {{- if eq $s.Type "book" }}{{ partial "book/sidebar-label.html" $s }}{{ else }}<span>{{ $s.LinkTitle }}</span>{{ end -}}
         </a>
         {{ if $foldable -}}
         <button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
@@ -116,6 +116,8 @@
         </button>
         {{- end }}
       </div>
+      {{- if eq $s.Type "book" }}{{ partial "book/sidebar-headings.html" (dict "page" $s "current" $p) }}{{ end -}}
+
       {{ if $withChild -}}
         {{ $childUlNr := add $ulNr 1 -}}
         <div id="{{ $mid }}-children" class="td-shell-tree__children{{ if not $foldable }} td-shell-tree__children--static{{ else if $shouldExpand }} is-open{{ end }}">

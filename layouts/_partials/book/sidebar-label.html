@@ -1,0 +1,5 @@
+{{- $page := . -}}
+{{- $number := $page.Params.book_number | default "" -}}
+{{- if $number }}<span class="td-book-number">{{ $number }}</span>{{ end -}}
+<span>{{ $page.LinkTitle }}</span>
+{{- if eq $page.Params.book_status "draft" }} <span class="td-book-draft-badge">{{ T "book_draft" }}</span>{{ end -}}

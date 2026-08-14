@@ -1,0 +1,53 @@
+{{- /* Language-correct figure/table/equation or arbitrary fragment link. */ -}}
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "fig" "tbl" "eq" "page" "anchor")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
+{{- $kinds := slice -}}
+{{- range $kind := slice "fig" "tbl" "eq" -}}
+  {{- if isset $params $kind }}{{ $kinds = $kinds | append $kind }}{{ end -}}
+{{- end -}}
+{{- if gt (len $kinds) 1 }}{{ errorf "shortcode %q accepts only one of fig, tbl, or eq at %s" .Name .Position }}{{ end -}}
+{{- $kind := "" -}}
+{{- $num := "" -}}
+{{- if eq (len $kinds) 1 -}}
+  {{- $kind = index $kinds 0 -}}
+  {{- $num = partial "book/validate-num.html" (dict "name" .Name "value" (.Get $kind) "position" .Position) -}}
+{{- end -}}
+{{- $hasAnchor := isset $params "anchor" -}}
+{{- $anchor := "" -}}
+{{- if $hasAnchor }}{{ $anchor = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "anchor") "position" .Position) }}{{ end -}}
+{{- if and (not $kind) (not $anchor) }}{{ errorf "shortcode %q requires fig, tbl, eq, or anchor at %s" .Name .Position }}{{ end -}}
+{{- if not $anchor }}{{ $anchor = printf "%s-%s" $kind $num }}{{ end -}}
+{{- $pageRef := "" -}}
+{{- $targetPage := .Page -}}
+{{- if isset $params "page" -}}
+  {{- $pageRef = .Get "page" -}}
+  {{- if or (ne (printf "%T" $pageRef) "string") (not (strings.TrimSpace $pageRef)) }}{{ errorf "shortcode %q: page must be a non-empty string at %s" .Name .Position }}{{ end -}}
+  {{- $pageRef = strings.TrimSpace $pageRef -}}
+  {{- $targetPage = .Page.GetPage $pageRef | default (.Page.Site.GetPage $pageRef) -}}
+  {{- if not $targetPage }}{{ errorf "shortcode %q: page %q was not found in language %s at %s" .Name $pageRef .Page.Language.Lang .Position }}{{ end -}}
+{{- end -}}
+{{- /* Registration is diagnostic only; rendering never depends on target order. */ -}}
+{{- .Page.Store.SetInMap "tdBookXrefs" (printf "%08d" .Ordinal) (dict
+  "kind" $kind "num" $num "anchor" $anchor "pageRef" $pageRef
+  "targetPage" $targetPage "position" .Position
+) -}}
+{{- $href := printf "#%s" $anchor -}}
+{{- if $pageRef }}{{ $href = printf "%s#%s" $targetPage.RelPermalink $anchor }}{{ end -}}
+{{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- $label := "" -}}
+{{- if $inner }}{{ $label = .Page.RenderString (dict "display" "inline") $inner }}{{ else if $kind }}{{ $label = partial "book/label.html" (dict "kind" $kind "num" $num) }}{{ else }}{{ errorf "shortcode %q: an anchor-only reference requires inner link text at %s" .Name .Position }}{{ end -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if and (eq $format "print") (.Page.Store.Get "tdBookAggregate") -}}
+  {{- if $targetPage.Fragments.Identifiers.Contains $anchor -}}
+    {{- $anchor = partial "book/aggregate-heading-anchor.html" (dict "page" $targetPage "anchor" $anchor) -}}
+  {{- end -}}
+  {{- $href = printf "#%s" $anchor -}}
+{{- end -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- $markdownText := $inner -}}
+  {{- if not $markdownText }}{{ $markdownText = partial "book/label.html" (dict "kind" $kind "num" $num) }}{{ end -}}
+  {{- printf "[%s](%s)" $markdownText (partial "content/markdown-url.html" $href) | safeHTML -}}
+{{- else -}}
+<a class="td-book-xref{{ with $kind }} td-book-xref--{{ . }}{{ end }}" href="{{ $href }}"{{ with $kind }} data-book-kind="{{ . }}" data-book-num="{{ $num }}"{{ end }}>{{ $label }}</a>
+{{- end -}}

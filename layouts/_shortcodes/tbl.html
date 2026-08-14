@@ -1,0 +1,25 @@
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
+{{- if not (isset .Params "num") }}{{ errorf "shortcode %q requires parameter num at %s" .Name .Position }}{{ end -}}
+{{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
+{{- $id := printf "tbl-%s" $num -}}
+{{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
+{{- $caption := "" -}}
+{{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
+{{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption must be a string at %s" .Name .Position }}{{ end -}}
+{{- $caption = strings.TrimSpace $caption -}}
+{{- $class := "" -}}
+{{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
+{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+{{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- if not $inner }}{{ errorf "shortcode %q requires inner table content at %s" .Name .Position }}{{ end -}}
+{{- partial "book/register-target.html" (dict "page" .Page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $label := partial "book/label.html" (dict "kind" "tbl" "num" $num) -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- printf "**%s.**%s\n\n%s" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
+{{- else -}}
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--tbl{{ with $class }} {{ . }}{{ end }}" data-book-kind="tbl" data-book-num="{{ $num }}">
+  <div class="td-book-figure__body">{{ .Page.RenderString (dict "display" "block") $inner }}</div>
+  <figcaption><span class="td-tbl-label">{{ $label }}</span>{{ with $caption }} <span class="td-tbl-caption">{{ . }}</span>{{ end }}</figcaption>
+</figure>
+{{- end -}}

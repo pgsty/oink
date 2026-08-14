@@ -40,6 +40,8 @@ params:
       label: Example 中文站
       url: https://example.cn/
     section_index: cards
+    book_draft_banner: true
+    sidebar_headings: 3
     quick_links: [docs, blog]
     sidebar_icon_policy: groups
     page_context_menu:

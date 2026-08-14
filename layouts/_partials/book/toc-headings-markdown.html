@@ -1,0 +1,16 @@
+{{- $page := .page -}}
+{{- $headings := .headings -}}
+{{- $prefix := .prefix | default "" -}}
+{{- $rows := slice -}}
+{{- range $headings -}}
+  {{- if gt .Level 0 -}}
+    {{- $title := printf "%v" .Title | plainify -}}
+    {{- $rows = $rows | append (printf "%s- [%s](%s#%s)" $prefix $title $page.RelPermalink .ID) -}}
+    {{- $children := partial "book/toc-headings-markdown.html" (dict "page" $page "headings" .Headings "prefix" (printf "%s  " $prefix)) -}}
+    {{- if $children }}{{ $rows = $rows | append $children }}{{ end -}}
+  {{- else -}}
+    {{- $children := partial "book/toc-headings-markdown.html" (dict "page" $page "headings" .Headings "prefix" $prefix) -}}
+    {{- if $children }}{{ $rows = $rows | append $children }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (delimit $rows "\n") -}}

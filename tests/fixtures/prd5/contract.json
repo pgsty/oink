@@ -3,13 +3,15 @@
   "compatibility_floor": "0.160.1",
   "release_assignments": {
     "reading_release": "0.4.0",
-    "landing": "0.5.0"
+    "landing": "0.5.0",
+    "book": "0.6.0"
   },
   "authority": {
     "navigation": "existing_sidebar_tree",
     "landing_content": "local_data_or_inline_sections",
     "release_facts": "page_front_matter",
-    "download_facts": "data_download_key"
+    "download_facts": "data_download_key",
+    "book_structure": "content_tree_or_docs_nav"
   },
   "pager": {
     "default_types": ["docs", "book", "blog"],
@@ -20,7 +22,7 @@
   },
   "mathematics": {
     "passthrough_hook": true,
-    "eq_escape_parameters": "none",
+    "eq_escape_num_required": false,
     "eq_escape_registers_target": false,
     "runtime": false
   },
@@ -49,26 +51,41 @@
     "network_fetch": false,
     "rss": "strip"
   },
+  "book": {
+    "type": "book",
+    "front_matter": ["book_kind", "book_number", "book_part", "book_status"],
+    "numbered_components": ["fig", "tbl", "eq"],
+    "number_pattern": "^[0-9A-Za-z.-]+$",
+    "id_pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$",
+    "xref_kinds": ["fig", "tbl", "eq"],
+    "toc_depth": [1, 2, 3],
+    "sidebar_heading_depth": [2, 3, 4],
+    "whole_book_output": "print_html",
+    "automatic_numbering": false,
+    "pdf_epub": false
+  },
   "output_matrix": {
     "pager": {"html": "cards_and_head_rel", "print": "strip", "markdown": "strip", "rss": "strip"},
     "release_card": {"html": "card", "print": "links", "markdown": "links", "rss": "links"},
     "release_assets": {"html": "copy_table", "print": "static_table", "markdown": "pipe_table", "rss": "pipe_table"},
     "download": {"html": "sections", "print": "expanded", "markdown": "source", "rss": "strip"},
     "eq_escape": {"html": "display_math", "print": "display_math", "markdown": "tex_block", "rss": "tex_block"},
-    "landing": {"html": "enhanced", "print": "static", "markdown": "text", "rss": "strip"}
+    "landing": {"html": "enhanced", "print": "static", "markdown": "text", "rss": "strip"},
+    "fig_tbl_eq": {"html": "figure", "print": "figure", "markdown": "labeled_source", "rss": "labeled_source"},
+    "xref": {"html": "link", "print": "link", "markdown": "relative_link", "rss": "relative_link"},
+    "book_toc": {"html": "nested", "print": "nested", "markdown": "nested_list", "rss": "strip"}
   },
   "runtime_flags": {
     "hasAssetList": "asset-list.js",
     "hasLanding": "landing.js"
-  },
-  "planned_tracks": {
-    "book": "0.6.0"
   },
   "non_goals": [
     "non_github_release_forge",
     "pricing_period_toggle",
     "remote_fact_fetch",
     "image_hotspots",
+    "automatic_book_numbering",
+    "pdf_epub_generation",
     "archive_shell",
     "glossary_component"
   ]

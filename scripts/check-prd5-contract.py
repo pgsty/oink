@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the published PRD 5 0.4 and 0.5 contracts aligned."""
+"""Keep PRD 5 human and machine contracts aligned."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ CONTRACT_PATH = ROOT / "tests/fixtures/prd5/contract.json"
 DOCS = {
     "reading_release": ROOT / "docs/prd5-reading-release-contract.md",
     "landing": ROOT / "docs/prd5-landing-contract.md",
+    "book": ROOT / "docs/prd5-book-contract.md",
 }
 
 
@@ -30,78 +31,98 @@ def validate_machine(contract: dict[str, object]) -> None:
     require(contract.get("compatibility_floor") == "0.160.1", "Hugo floor changed")
     require(
         contract.get("release_assignments")
-        == {"reading_release": "0.4.0", "landing": "0.5.0"},
-        "release assignments changed",
+        == {"reading_release": "0.4.0", "landing": "0.5.0", "book": "0.6.0"},
+        "PRD 5 milestone assignment changed",
     )
+    authority = contract.get("authority")
     require(
-        contract.get("authority")
+        authority
         == {
             "navigation": "existing_sidebar_tree",
             "landing_content": "local_data_or_inline_sections",
             "release_facts": "page_front_matter",
             "download_facts": "data_download_key",
+            "book_structure": "content_tree_or_docs_nav",
         },
-        "authority boundaries changed",
+        "PRD 5 authority boundaries changed",
     )
     pager = contract.get("pager", {})
-    require(pager.get("default_types") == ["docs", "book", "blog"], "pager defaults changed")
+    require(pager.get("default_types") == ["docs", "book", "blog"], "pager type default changed")
     require(pager.get("docs_book_order") == "sidebar_preorder", "reading order changed")
     require(pager.get("docs_root_values") == ["section", "home"], "docs root modes changed")
-    require(pager.get("blog_order") == "time" and pager.get("non_html") == "strip", "pager outputs changed")
+    mathematics = contract.get("mathematics", {})
     require(
-        contract.get("mathematics")
+        mathematics
         == {
             "passthrough_hook": True,
-            "eq_escape_parameters": "none",
+            "eq_escape_num_required": False,
             "eq_escape_registers_target": False,
             "runtime": False,
         },
         "mathematics escape-hatch contract changed",
     )
     release = contract.get("release", {})
-    require(release.get("forge") == "github.com", "release forge boundary changed")
-    require(release.get("network_fetch") is False and release.get("runtime") is False, "release local-first boundary changed")
+    require(release.get("forge") == "github.com" and release.get("network_fetch") is False, "release local-first boundary changed")
     download = contract.get("download", {})
     require(download.get("channel_kinds") == ["rolling", "pinned"], "download channel kinds changed")
     require(download.get("rolling_interpolation") is False and download.get("rss") == "strip", "download safety/output changed")
     landing = contract.get("landing", {})
-    require(landing.get("runtime_flag") == "hasLanding", "Landing runtime flag changed")
+    require(landing.get("runtime_flag") == "hasLanding", "landing flag changed")
     require(
         landing.get("new_sections")
         == ["pricing", "pricing-compare", "command-box", "steps", "timeline", "code-plate", "case-study", "download", "bar-chart"],
-        "Landing section registry changed",
+        "landing section registry changed",
     )
-    require(landing.get("localized_field_order") == ["exact_language", "primary_language", "base"], "Landing language fallback changed")
-    require(landing.get("marquee_pause") == "css_checkbox", "Landing pause contract changed")
-    require(landing.get("marquee_duplicate") == ["aria-hidden", "inert"], "Landing duplicate isolation changed")
-    require(landing.get("network_fetch") is False and landing.get("rss") == "strip", "Landing local-first/output boundary changed")
+    require(landing.get("network_fetch") is False and landing.get("rss") == "strip", "landing local-first/output changed")
+    require(landing.get("marquee_pause") == "css_checkbox", "landing marquee pause contract changed")
+    require(landing.get("marquee_duplicate") == ["aria-hidden", "inert"], "landing marquee duplicate isolation changed")
+    book = contract.get("book", {})
+    require(book.get("numbered_components") == ["fig", "tbl", "eq"], "Book numbered components changed")
+    require(book.get("xref_kinds") == ["fig", "tbl", "eq"], "Book xref kinds changed")
+    require(book.get("toc_depth") == [1, 2, 3], "Book ToC depth changed")
+    require(book.get("automatic_numbering") is False and book.get("pdf_epub") is False, "Book non-goals changed")
     require(
         contract.get("runtime_flags")
         == {"hasAssetList": "asset-list.js", "hasLanding": "landing.js"},
-        "runtime flags changed",
+        "PRD 5 runtime flags changed",
     )
-    require(contract.get("planned_tracks") == {"book": "0.6.0"}, "future Book milestone changed")
     matrix = contract.get("output_matrix", {})
-    require(
-        set(matrix) == {"pager", "release_card", "release_assets", "download", "eq_escape", "landing"},
-        "0.5 output matrix component set changed",
-    )
+    require(set(matrix) == {"pager", "release_card", "release_assets", "download", "eq_escape", "landing", "fig_tbl_eq", "xref", "book_toc"}, "output matrix component set changed")
     require(all(set(row) == {"html", "print", "markdown", "rss"} for row in matrix.values()), "output matrix surfaces changed")
+    require(
+        contract.get("non_goals")
+        == [
+            "non_github_release_forge",
+            "pricing_period_toggle",
+            "remote_fact_fetch",
+            "image_hotspots",
+            "automatic_book_numbering",
+            "pdf_epub_generation",
+            "archive_shell",
+            "glossary_component",
+        ],
+        "PRD 5 non-goals changed",
+    )
 
 
 def validate_docs(contract: dict[str, object]) -> None:
+    release_assignments = contract["release_assignments"]
     required = {
         "reading_release": (
             "# PRD 5 reading and release contract",
+            "Status: frozen for implementation",
             "## 1. Sequential reading pager",
             "## 2. Mathematics passthrough",
             "## 3. Release primitives",
             "## 4. Release assets and download data",
+            "## 5. Shared production-site compatibility",
             "hasAssetList",
             "{{< eq >}}...{{< /eq >}}",
+            "data/docs_nav.json",
         ),
         "landing": (
             "# PRD 5 landing contract",
+            "Status: frozen for implementation",
             "## 1. Landing shell and data authority",
             "## 2. Section registry",
             "## 3. Language resolution",
@@ -110,16 +131,30 @@ def validate_docs(contract: dict[str, object]) -> None:
             "## 6. Compatibility and non-goals",
             "hasLanding",
             "OinkSurfaceCoordinator",
+            "pricing-compare",
+        ),
+        "book": (
+            "# PRD 5 Book contract",
+            "Status: frozen for implementation",
+            "## 1. Book type and navigation",
+            "## 2. Numbered components",
+            "## 3. Cross references and consistency",
+            "## 4. Book tables of contents and figure lists",
+            "## 5. Whole-Book print and output matrix",
+            "## 6. Migration boundaries and non-goals",
+            "scripts/check-book.py",
+            "scripts/check-prd5-migrations.py",
+            "scripts/migrations/prd5_book_migrate.py",
+            "data/docs_nav.json",
         ),
     }
-    assignments = contract["release_assignments"]
     for name, path in DOCS.items():
         source = path.read_text(encoding="utf-8")
-        require(f"OINK {assignments[name]}" in source, f"{path.name} lacks its version")
-        require("Status: frozen for implementation" in source, f"{path.name} is not frozen")
-        require("Compatibility floor: Hugo Extended 0.160.1" in source, f"{path.name} lacks Hugo floor")
-        require("tests/fixtures/prd5/contract.json" in source, f"{path.name} lacks machine companion")
-        require("prd5-migration-guide.md" in source and "prd5-migration-guide.zh.md" in source, f"{path.name} lacks bilingual links")
+        version = release_assignments[name]
+        require(f"OINK {version}" in source, f"{path.name} does not name OINK {version}")
+        require("not a publication claim" in source, f"{path.name} overstates release status")
+        require("tests/fixtures/prd5/contract.json" in source, f"{path.name} does not name its companion")
+        require("prd5-migration-guide.md" in source and "prd5-migration-guide.zh.md" in source, f"{path.name} lacks bilingual migration links")
         for literal in required[name]:
             require(literal in source, f"{path.name} lacks {literal}")
 
@@ -133,7 +168,7 @@ def main() -> int:
     except (OSError, json.JSONDecodeError, ContractError, TypeError, AttributeError) as exc:
         print(f"PRD 5 contract check failed: {exc}", file=sys.stderr)
         return 1
-    print("PRD 5 0.4/0.5 contracts are aligned")
+    print("PRD 5 contracts are aligned")
     return 0
 
 

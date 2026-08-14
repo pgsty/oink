@@ -1,0 +1,53 @@
+{{- /* Numbered figure with DDIA-compatible src/id/caption/title/class/link/alt/size. */ -}}
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice
+  "num" "id" "caption" "title" "class" "src" "link" "alt" "width" "height"
+)) -}}
+{{- if not (isset .Params "num") }}{{ errorf "shortcode %q requires parameter num at %s" .Name .Position }}{{ end -}}
+{{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
+{{- $id := printf "fig-%s" $num -}}
+{{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
+{{- $caption := "" -}}
+{{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
+{{- if isset .Params "title" -}}
+  {{- if $caption }}{{ errorf "shortcode %q: title and caption are mutually exclusive at %s" .Name .Position }}{{ end -}}
+  {{- $caption = .Get "title" -}}
+{{- end -}}
+{{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption/title must be a string at %s" .Name .Position }}{{ end -}}
+{{- $caption = strings.TrimSpace $caption -}}
+{{- $class := "" -}}
+{{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
+{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+{{- $src := "" -}}
+{{- if isset .Params "src" }}{{ $src = .Get "src" }}{{ end -}}
+{{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- if and $src $inner }}{{ errorf "shortcode %q: src and inner content are mutually exclusive at %s" .Name .Position }}{{ end -}}
+{{- if not (or $src $inner) }}{{ errorf "shortcode %q requires src or inner content at %s" .Name .Position }}{{ end -}}
+{{- $alt := $caption -}}
+{{- if isset .Params "alt" -}}
+  {{- $alt = .Get "alt" -}}
+  {{- if ne (printf "%T" $alt) "string" }}{{ errorf "shortcode %q: alt must be a string at %s" .Name .Position }}{{ end -}}
+{{- end -}}
+{{- $link := "" -}}
+{{- if isset .Params "link" }}{{ $link = .Get "link" }}{{ end -}}
+{{- $width := "" -}}
+{{- $height := "" -}}
+{{- range $name := slice "width" "height" -}}
+  {{- if isset $.Params $name -}}
+    {{- $value := printf "%v" ($.Get $name) -}}
+    {{- if not (findRE `^[1-9][0-9]*$` $value) }}{{ errorf "shortcode %q: %s must be a positive integer at %s" $.Name $name $.Position }}{{ end -}}
+    {{- if eq $name "width" }}{{ $width = $value }}{{ else }}{{ $height = $value }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- partial "book/register-target.html" (dict "page" .Page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $label := partial "book/label.html" (dict "kind" "fig" "num" $num) -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- $body := $inner -}}
+  {{- if $src }}{{ $body = partial "book/image.html" (dict "shortcode" . "src" $src "alt" $alt "link" $link "width" $width "height" $height "format" "markdown") }}{{ end -}}
+  {{- printf "**%s.**%s%s" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") (cond $body (printf "\n\n%s" $body) "") | safeHTML -}}
+{{- else -}}
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--fig{{ with $class }} {{ . }}{{ end }}" data-book-kind="fig" data-book-num="{{ $num }}">
+  {{- if $src }}{{ partial "book/image.html" (dict "shortcode" . "src" $src "alt" $alt "link" $link "width" $width "height" $height "format" $format) }}{{ else }}<div class="td-book-figure__body">{{ .Page.RenderString (dict "display" "block") $inner }}</div>{{ end }}
+  <figcaption><span class="td-fig-label">{{ $label }}</span>{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}</figcaption>
+</figure>
+{{- end -}}

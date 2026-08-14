@@ -54,6 +54,8 @@ python3 scripts/check-prd5-reading.py                # math passthrough + tree-o
 python3 scripts/check-release-assets.py              # release facts/cards/checksum output matrix
 python3 scripts/check-download.py                    # download schema and publication states
 python3 scripts/check-landing.py                     # landing registry/runtime/output matrix
+python3 scripts/check-book.py                        # numbered targets/xrefs/Book assembly
+python3 scripts/check-prd5-migrations.py              # dry-run/idempotency Book migration profiles
 python3 scripts/check-prd5-misc.py                    # shared scenario fixes and compatibility
 
 cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warning-free
@@ -221,14 +223,12 @@ files (`--sync` does the mechanical part).
 ## Frozen contracts
 
 `docs/content-primitives.md`, `docs/enhanced-code-blocks.md`,
-`docs/typography-tokens.md`, `docs/prd5-reading-release-contract.md`, and
-`docs/prd5-landing-contract.md` are
+`docs/typography-tokens.md`, and the three `docs/prd5-*-contract.md` files are
 implementation contracts, not tutorials. The
 first is machine-checked for structure by `check-content-primitives-contract.py`.
-They define the public shortcode and page APIs (Badge, Kbd, Fields/Field, FileTree,
-imgproc, Image Zoom, Gallery/Gallery Image, Release Assets, Tables, and the
-display-equation escape hatch; enhanced fences, code groups, and Landing
-sections), parameter validation,
+They define the public shortcode APIs (Badge, Kbd, Fields/Field, FileTree,
+imgproc, Image Zoom, Gallery/Gallery Image, Release Assets, numbered Book
+components, and xref; enhanced fences and code groups), parameter validation,
 escaping and URL policy, ID generation, and the output matrix. **Read the
 relevant contract before changing a primitive**, and change the contract in the
 same commit as the behavior.

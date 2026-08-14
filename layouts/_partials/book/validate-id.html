@@ -1,0 +1,14 @@
+{{- $name := .name | default "book component" -}}
+{{- $position := .position | default "unknown position" -}}
+{{- $value := .value -}}
+{{- if ne (printf "%T" $value) "string" -}}
+  {{- errorf "shortcode %q: id must be a string at %s" $name $position -}}
+{{- end -}}
+{{- $id := strings.TrimSpace $value -}}
+{{- if not $id -}}
+  {{- errorf "shortcode %q: id must not be empty at %s" $name $position -}}
+{{- end -}}
+{{- if not (findRE `^[A-Za-z][A-Za-z0-9_.:-]*$` $id) -}}
+  {{- errorf "shortcode %q: id must match [A-Za-z][A-Za-z0-9_.:-]*; got %q at %s" $name $id $position -}}
+{{- end -}}
+{{- return $id -}}

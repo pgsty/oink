@@ -13,8 +13,8 @@ Compatibility floor: Hugo Extended 0.160.1
 OINK will add a small set of high-frequency content primitives for engineering
 documentation without changing its Hugo-only consumer boundary. The public
 interfaces in this document are the version-one contract for Badge, Kbd,
-Fields, FileTree, Image Zoom, Gallery, Release Assets, contained Tables, and
-the PRD 5 display-equation escape hatch.
+Fields, FileTree, Image Zoom, Gallery, Release Assets, and PRD 5 numbered Book
+components.
 
 The implementation order is intentional:
 
@@ -24,8 +24,6 @@ The implementation order is intentional:
 3. Image Zoom progressively enhances eligible images.
 4. Gallery reuses the image resolver and the Zoom runtime.
 5. Release Assets adds a strict checksum parser and one conditional copy runtime.
-6. Tables and the equation escape hatch close two production correctness gaps
-   without adding a browser runtime.
 
 A standalone public Icon shortcode is deferred. A component may use a small,
 private, allowlisted icon registry for its own decoration, but that registry is
@@ -45,11 +43,13 @@ fallbacks explicit.
   final rendering.
 - FileTree renders recursively through `.Inner`. Folder and file children own
   their nested list fragments instead of flattening the tree into Scratch.
-- Among the everyday components in sections 3.1 through 3.10, Fields alone
+- Among the everyday components in sections 3.1 through 3.9, Fields alone
   accepts Markdown in a field description. After the child has registered its
   raw inner content, the parent uses `.Page.RenderString` for HTML, print, and
   RSS; Markdown output preserves and indents the validated source Markdown
-  instead. Public string parameters remain plain text.
+  instead. Book Figure/Table bodies in section 3.10 are the second documented
+  Markdown surface. Public string parameters, including captions, remain
+  plain text.
 
 Nested public names are stable:
 
@@ -66,8 +66,7 @@ Hugo does not permit named and positional arguments in the same call. Each
 OINK shortcode therefore chooses one form permanently:
 
 - Kbd is positional-only.
-- Every other parameterized primitive is named-only. The equation escape hatch
-  accepts no parameters.
+- Every other primitive is named-only.
 
 ### 2.2 Parameter validation
 
@@ -88,8 +87,12 @@ Public parameter names and enum values are case-sensitive.
 - Every author error uses `errorf`, names the shortcode and parameter, and
   includes `.Position`.
 
-The components in sections 3.1 through 3.10 do not accept arbitrary `class`,
-`style`, color, event-handler, or public `id` parameters.
+The everyday components in sections 3.1 through 3.9 do not accept arbitrary
+`class`, `style`, color, event-handler, or public `id` parameters. The Book
+Figure compatibility surface in section 3.10 is the explicit exception: it
+accepts a grammar-constrained semantic `id` and safe class tokens so DDIA and
+O'Reilly anchors can migrate without breaking public links. It never accepts
+`style`, color, or event handlers.
 
 ### 2.3 Escaping and rendered content
 
@@ -100,10 +103,11 @@ Author text remains data in every output:
   suppress validation or escaping.
 - Theme-owned static markup may be returned as trusted template output only
   after every author value has been inserted through a safe context.
-- Fields descriptions are the documented arbitrary Markdown surface. HTML,
-  print, and RSS render them through `.Page.RenderString`, using the consuming
-  site's Goldmark security policy. Their Markdown fallback retains source
-  Markdown and must not convert it to HTML first.
+- Fields descriptions and Book Figure/Table bodies are the documented
+  arbitrary Markdown surfaces. HTML and print render them through
+  `.Page.RenderString`, using the consuming site's Goldmark security policy.
+  Their Markdown fallback retains source Markdown and must not convert it to
+  HTML first.
 - Markdown fallbacks use context-specific escaping for plain text, code spans,
   emphasis, and link destinations. They do not reuse an HTML escape helper.
 - A code span chooses a fence longer than any run of backticks in its value.
@@ -114,8 +118,8 @@ these primitives.
 
 ### 2.4 URL policy
 
-Badge `link`, FileTree file `link`, Gallery image `src`, and shared media URLs
-use one internal URL helper.
+Badge `link`, FileTree file `link`, Gallery/Book Figure image `src`, Book Figure
+`link`, and shared media URLs use one internal URL helper.
 
 For links:
 
@@ -163,7 +167,8 @@ idempotent.
 - A duplicate check uses a stable owner composed from shortcode name and
   ordinal. Seeing the same owner again is allowed; seeing a different owner for
   the same public value is an error.
-- The everyday MVP does not expose author-supplied DOM IDs.
+- The everyday MVP does not expose author-supplied DOM IDs. Book numbered
+  components are the documented exception and use a separate page registry.
 - Generated IDs use a component prefix, a page-derived digest where needed,
   and the shortcode ordinal. Interactive IDs must be registered before output.
 - A future public ID must share a page-wide registry with existing code
@@ -175,12 +180,13 @@ candidate.
 
 ### 2.7 Runtime loading
 
-Badge, Kbd, Fields, FileTree, Tables, and the equation escape hatch never load
-JavaScript. Image Zoom owns one opt-in dialog runtime and Gallery may request
-that same runtime without adding another bundle. Release Assets owns a separate
-opt-in copy runtime keyed by `hasAssetList`; it never reads the Image Zoom flag.
-Both are appended from `layouts/_partials/scripts.html` only after content sets
-its own Page Store flag. Print, Markdown, and RSS never receive either runtime.
+Badge, Kbd, Fields, FileTree, Tables, and the numbered Book components never
+load JavaScript. Image Zoom owns one opt-in dialog runtime and Gallery may
+request that same runtime without adding another bundle. Release Assets owns a
+separate opt-in copy runtime keyed by `hasAssetList`; it never reads the Image
+Zoom flag. Both are appended from `layouts/_partials/scripts.html` only after
+content sets its own Page Store flag. Print, Markdown, and RSS never receive
+either runtime.
 
 The server-rendered HTML is complete before enhancement. If JavaScript is
 disabled, blocked, fails, or `HTMLDialogElement` is unavailable, all original
@@ -604,20 +610,85 @@ therefore share one predictable API. Print removes the scroll viewport and
 renders the complete table at page width; Markdown and RSS preserve the table
 data without interactive attributes.
 
-### 3.10 Equation escape hatch
+### 3.10 Numbered Figure, Table, and Equation
 
-A consuming site normally enables Goldmark passthrough and authors delimiter
-mathematics. For one display formula on a site that cannot enable passthrough
-yet, OINK exposes this strict escape hatch:
+The Book components make a manual, language-aware number and stable target one
+semantic unit:
+
+```go-html-template
+{{< fig num="2-1" id="office_2003" src="/fig/word.png"
+    caption="The Word 2003 interface" alt="Word 2003 with stacked toolbars" />}}
+
+{{< tbl num="9-1" caption="Isolation-level behavior" >}}
+| Anomaly | RC | RR | SER |
+| --- | --- | --- | --- |
+{{< /tbl >}}
+
+{{< eq num="5.3" >}}X \approx \frac{C}{R+Z}{{< /eq >}}
+```
+
+The same `eq` name also has a deliberately smaller 0.4 escape-hatch form:
 
 ```go-html-template
 {{< eq >}}X \approx \frac{C}{R+Z}{{< /eq >}}
 ```
 
-The shortcode requires non-empty TeX and accepts no parameters. HTML and print
-pass the source through the same local server-side KaTeX renderer used by the
-passthrough hook. Markdown and RSS emit a plain `$$` TeX block. It creates no
-number, caption, anchor, Page Store target, JavaScript, or remote request.
+Without parameters it renders non-empty TeX as display math, registers no
+numbered target, and emits a plain `$$` source block in Markdown and RSS.
+`id`, `caption`, and `class` require `num`; they cannot create a partially
+numbered equation. This lets a site author one isolated formula without first
+enabling Goldmark passthrough while keeping Book identities explicit.
+
+The numbered forms of all three components require a quoted `num` matching
+`[0-9A-Za-z.-]+`. Their default IDs
+are `fig-<num>`, `tbl-<num>`, and `eq-<num>`. An explicit ID matching
+`[A-Za-z][A-Za-z0-9_.:-]*` is preserved without a prefix. The Page Store
+registry rejects duplicate IDs and two targets of the same kind/number that
+claim different IDs. Repeated rendering of the same shortcode owner remains
+idempotent.
+
+Captions are plain text. Figure and Table inner content passes through
+`.Page.RenderString`; Equation inner content passes directly through the local
+server-side KaTeX renderer. Table keeps its Markdown table, label, caption, and
+anchor inside one `<figure>`. Equation places its number at the right edge.
+
+Figure additionally accepts the mechanical DDIA migration surface
+`src/id/caption/title/class/link/alt/width/height`. `title` aliases `caption`
+but cannot appear beside it; `src` and inner content are mutually exclusive;
+width and height are positive integers. Class tokens and links use strict
+grammars. A missing legacy `alt` falls back to the caption for compatibility;
+new authored figures should always supply explicit meaningful alternative
+text. `scripts/check-book.py` rejects empty alternatives beside numbered
+captions.
+
+HTML and print use `<figure>` and `<figcaption>` with localized Figure/Table/
+Equation prefixes and stable IDs. Print removes an interactive table's scroll
+wrapper. Markdown and RSS emit `**Figure 2-1.** caption` followed by the
+original source body; Equation emits the authored TeX delimiter block. No Book
+component loads JavaScript.
+
+### 3.11 Cross references and Book indexes
+
+`xref` provides a current-language internal link and may appear before its
+target:
+
+```go-html-template
+{{< xref fig="2-1" anchor="office_2003" >}}
+{{< xref page="../replication" anchor="sync-mode" >}}synchronous mode{{< /xref >}}
+```
+
+Exactly one of `fig`, `tbl`, or `eq` may supply a numbered localized label.
+`anchor` overrides the derived target. `page` resolves through Hugo's current
+language page lookup. With no kind, `anchor` and non-empty inner link text are
+required. Rendering never reads a target registry; post-build validation
+checks the target ID, kind, and number so forward references remain legal.
+
+`{{< book-figures >}}` accepts an optional `kind="fig|tbl|eq"` and aggregates
+the registered targets in Book reading order. `{{< book-toc depth=1..3 >}}`
+uses the same Book tree as the sidebar; depth three includes Hugo fragment
+headings and `drafts=false` filters draft rows. In whole-Book print, all of
+these links become local document fragments. Markdown ToC is a nested list;
+RSS strips Book ToC.
 
 ## 4. Output matrix
 
@@ -633,6 +704,8 @@ number, caption, anchor, Page Store target, JavaScript, or remote request.
 | Release Assets | linked table with copy controls | linked static table with full hashes | pipe table with full hashes | pipe table with full hashes | complete linked table | one opt-in local copy runtime |
 | Table | keyboard-focusable contained scroll region | complete table at page width | source pipe table | static table | complete table remains readable | none |
 | Eq escape | display KaTeX/MathML | static display KaTeX/MathML | plain `$$` TeX block | plain `$$` TeX block | identical static formula | none |
+| Fig/Tbl/Eq | semantic numbered figure | figure with stable ID | labeled source content | labeled source content | identical numbered content | none |
+| Xref/Book index | current-language links and nested lists | document-local links and nested lists | relative links and nested lists | xref only; Book ToC stripped | identical links | none |
 
 ## 5. Verification contract
 
@@ -646,7 +719,9 @@ Theme-level checks cover:
 - Page Store/runtime absence on unrelated pages;
 - escaping, subpath URLs, repeat rendering, and ID behavior;
 - semantic markup, RTL, dark mode, print, reduced motion, forced colors, long
-  content, and CJK where relevant.
+  content, and CJK where relevant;
+- Book xref target/kind/number consistency, image alternatives, fragment-tree
+  ToC depth, and whole-Book duplicate-ID safety.
 
 The `oink.pgsty.com` regression site owns:
 

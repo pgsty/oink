@@ -108,7 +108,7 @@ substitute for the Goldmark configuration above.
 
 For an isolated display formula on a site that cannot enable passthrough yet,
 use `{{< eq >}}E = mc^2{{< /eq >}}`. This parameter-free escape hatch is
-unnumbered and accepts no parameters in OINK 0.4.
+unnumbered; the Book form adds an explicit `num`.
 
 For production, pin a release tag in `go.mod`. See the
 [getting-started guide](https://oink.pgsty.com/docs/tutorial/) for site
@@ -160,15 +160,22 @@ Theme implementation contracts:
 [Typography tokens](docs/typography-tokens.md) ·
 [PRD 4 contract](docs/prd4-navigation-command-palette-contract.md) ·
 [PRD 5 reading/release](docs/prd5-reading-release-contract.md) ·
-[PRD 5 Landing](docs/prd5-landing-contract.md)
+[PRD 5 landing](docs/prd5-landing-contract.md) ·
+[PRD 5 Book](docs/prd5-book-contract.md)
 
 Navigation and Command Palette migration reference, included in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·
 [简体中文](docs/prd4-migration-guide.zh.md).
 
-Scenario Components 0.4–0.5 migration reference:
+Scenario Components migration reference (source assigned to 0.4.0–0.6.0;
+publication remains a separate release gate):
 [English](docs/prd5-migration-guide.md) ·
 [简体中文](docs/prd5-migration-guide.zh.md).
+
+Book content rewrite recipes:
+[TPME](docs/prd5-migrate-tpme.md) ·
+[DDIA](docs/prd5-migrate-ddia.md) ·
+[pg-internal](docs/prd5-migrate-pg-internal.md).
 
 ## Localization status
 

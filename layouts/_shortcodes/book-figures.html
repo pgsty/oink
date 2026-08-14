@@ -1,0 +1,5 @@
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "kind")) -}}
+{{- $kind := "fig" -}}
+{{- with .Params }}{{ if isset . "kind" }}{{ $kind = $.Get "kind" }}{{ end }}{{ end -}}
+{{- if not (in (slice "fig" "tbl" "eq") $kind) }}{{ errorf "shortcode %q: kind must be fig, tbl, or eq at %s" .Name .Position }}{{ end -}}
+{{- partial "book/figure-list.html" (dict "page" .Page "kind" $kind) -}}

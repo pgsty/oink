@@ -1,0 +1,8 @@
+{{- /* A heading ID is page-local in ordinary HTML but must be document-local
+       when many Book pages are assembled into one print document. Numbered
+       component IDs stay global and therefore do not use this helper. */ -}}
+{{- $page := .page -}}
+{{- $anchor := .anchor -}}
+{{- $pageID := $page.Path | anchorize -}}
+{{- with $page.File }}{{ $pageID = .UniqueID }}{{ end -}}
+{{- return (printf "pg-%s--%s" $pageID $anchor) -}}

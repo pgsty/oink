@@ -1,0 +1,24 @@
+{{- $page := .page -}}
+{{- $current := .current -}}
+{{- if eq $page $current -}}
+  {{- $depthValue := $current.Param "ui.sidebar_headings" -}}
+  {{- if ne $depthValue nil -}}
+    {{- $valueType := printf "%T" $depthValue -}}
+    {{- $integerTypes := slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float64" -}}
+    {{- if not (or (eq $valueType "bool") (in $integerTypes $valueType)) }}{{ errorf "params.ui.sidebar_headings must be false, true, or an integer from 2 through 4 in %s" $current.Path }}{{ end -}}
+    {{- if ne $depthValue false -}}
+      {{- $depth := 2 -}}
+      {{- if ne $valueType "bool" }}
+        {{- if and (eq $valueType "float64") (ne $depthValue (math.Floor $depthValue)) }}{{ errorf "params.ui.sidebar_headings must be an integer from 2 through 4 in %s" $current.Path }}{{ end -}}
+        {{- $depth = int $depthValue -}}
+      {{- end -}}
+      {{- if or (lt $depth 2) (gt $depth 4) }}{{ errorf "params.ui.sidebar_headings must be false, true, or an integer from 2 through 4 in %s" $current.Path }}{{ end -}}
+      {{- $html := $current.Fragments.ToHTML 2 $depth false -}}
+      {{- if ne $html `<nav id="TableOfContents"></nav>` }}
+    <div class="td-shell-tree__headings" data-td-book-headings>
+      {{- $html | replaceRE `<nav id="TableOfContents">([\s\S]*)</nav>` "$1" | safeHTML -}}
+    </div>
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

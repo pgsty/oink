@@ -1,30 +1,31 @@
-# OINK PRD 5 场景组件迁移参考
+# OINK PRD 5 迁移与配置参考
 
-版本归属：OINK 0.4.0（阅读与发布）与 OINK 0.5.0（Landing）
+版本归属：OINK 0.4.0（阅读与发布）、OINK 0.5.0（Landing）与
+OINK 0.6.0（Book）
 
-本文覆盖 0.4「阅读与发布」与 0.5「Landing」源码契约。源码状态、已验收
-checkout、不可变签名标签、消费站固定版本与线上部署是彼此独立的证据。
-规范性决策见[阅读/发布契约](prd5-reading-release-contract.md)与
-[Landing 契约](prd5-landing-contract.md)，机器可读副本为
-`tests/fixtures/prd5/contract.json`。
-
-兼容下限：Hugo Extended 0.160.1。
+本文描述当前 checkout 中的源码实现，不代表不可变公开标签已经包含这些能力。
+只有当主题变更合并并验收、对应标签可解析、消费站固定到该标签，而且部署结果
+通过冒烟检查后，消费站才能把功能称为“已发布”。规范性决策见
+[阅读/发布契约](prd5-reading-release-contract.md)、
+[Landing 契约](prd5-landing-contract.md)与
+[Book 契约](prd5-book-contract.md)。
 
 ## 发布闸门 {#release-gates}
 
-以下状态分别记录：
+以下证据状态互不等价：
 
-1. 主题 checkout 中的源码完成；
-2. 两个支持的 Hugo 版本与聚焦契约均通过；
-3. 对应的 OINK 0.4.0 或 0.5.0 不可变签名标签可解析；
-4. 消费站在 `go.mod` 中固定该精确标签；
-5. 线上输出通过 URL、语言和浏览器冒烟检查。
+1. 主题 checkout 源码完成；
+2. Hugo Extended 0.160.1 与当前矩阵版本验收通过；
+3. 发布为不可变、已签名的主题标签；
+4. 消费站固定该标签并完成文档化；
+5. 已部署，并在真实 URL 上完成检查。
 
-生产环境不以 `@latest` 作为版本策略，也不能用本地构建推断线上已交付。
+不要把示例复制到仍固定旧版本的站点后，便假设旧主题认识它。生产环境的
+`go.mod` 固定具体版本，不以 `@latest` 作为发布策略。
 
-## 顺序阅读导航 {#reading-navigation}
+## 阅读与发布接入 {#reading-and-release-adoption}
 
-Pager 默认为 `docs`、`book`、`blog` 开启。站点可以替换类型列表，页面也可
+Pager 默认为 `docs`、`book`、`blog` 开启；站点可以明确列出类型，页面也可
 单独退出：
 
 ```yaml
@@ -36,11 +37,8 @@ params:
 pager: false
 ```
 
-docs 与普通 book 页面遵循侧栏同一棵树的前序顺序；blog 保持时间顺序。
-存在 `data/docs_nav.json` 时，其可见页面树是权威顺序；link-only 页面与
-`sidebar_divider` 分组仍可见，但不成为阅读目标。
-
-直接位于站点根部的手册可让侧栏与 Pager 共享同一棵树：
+手册通常位于已配置的 docs section 下。若文档页刻意直接挂在 `/`，而
+`/docs/` 只是总览页，应显式声明这套信息架构，而不是 fork 侧栏：
 
 ```yaml
 params:
@@ -49,13 +47,14 @@ params:
     docs_root: home
 ```
 
-`docs_root` 只接受 `section` 或 `home`。HTML 输出 Pager 卡片与同源
-`rel=prev` / `rel=next`；print、Markdown、RSS 均剥离这些导航。
+`docs_root` 只接受默认值 `section` 或 `home`；侧栏可见树与 Pager 顺序共同
+使用同一个解析结果。
 
-## 数学公式 {#mathematics}
+站点存在 `data/docs_nav.json` 时，这棵显式树同时定义 Pager 顺序。
+`manualLink` 幽灵页与 `sidebar_divider` 分组仍显示在导航里，但不会成为阅读
+跳转目标。
 
-分隔符数学需要消费站开启 Goldmark，因为 Hugo 不会合并主题的 `markup`
-配置：
+分隔符数学需要消费站开启 Goldmark；Hugo 不会合并主题里的 `markup` 配置：
 
 ```yaml
 markup:
@@ -68,17 +67,18 @@ markup:
           inline: [['\(', '\)']]
 ```
 
-OINK 提供 render hook 与本地 KaTeX CSS；仅写 `math: true` 没有语义。若站点
-暂时无法启用 passthrough，可用严格的 display-only 逃生舱：
+主题提供 render hook 与本地 KaTeX CSS；仅写 `math: true` 没有语义。至少构建
+一页行内与块公式，确认输出是 MathML，而不是裸露的 `$$`。
+
+若站点暂时无法启用 passthrough，可直接使用严格的 display-only 逃生舱，
+无需修改站点配置：
 
 ```go-html-template
 {{< eq >}}E = mc^2{{< /eq >}}
 ```
 
-0.4 形态不接受参数，也不创建编号、图注、锚点或 Book target。HTML 与 print
-得到本地 KaTeX/MathML；Markdown 与 RSS 保留纯 `$$` TeX 块。
-
-## 发布页面 {#release-pages}
+这个无参数形态没有编号、锚点、图注或 Book registry 记录。只有在接入 0.6
+的编号 Book 组件时，才加入 `num="5.3"`。
 
 发布事实属于页面 front matter：
 
@@ -86,107 +86,165 @@ OINK 提供 render hook 与本地 KaTeX CSS；仅写 `math: true` 没有语义�
 release:
   version: 1.7.0
   repo: pgsty/pig
-  product: PIG
   tag: v1.7.0
   prev: v1.6.0
   checksums: SHA256SUMS
 ```
 
-使用 `{{< release-card >}}` 本地生成仓库、归档、校验和与版本比较链接，不发
-网络请求。已提交的校验和数据用
-`{{< release-assets src="release/SHA256SUMS" >}}` 渲染。资产表只在交互 HTML
-加载 `asset-list.js`；print、Markdown 与 RSS 显示完整 hash，不保留控件。
+随后使用 `{{< release-card >}}`，并在该页使用
+`{{< release-assets src="release/SHA256SUMS" >}}`。下载数据只写一份
+`data/download/<key>.yaml`，同时供 `{{< download "key" >}}` 与 landing 的
+`download` section 消费。rolling 渠道不得插版本；只有 pinned 渠道可以展开
+`${version}` 与 `${tag}`。
 
-发布 section 可声明 `layout: releases`，按日期和 SemVer 排序而非 page weight；
-产品分组与过滤均为显式 opt-in。
+删除站点覆盖前逐项检查：
 
-## 下载数据 {#download-data}
-
-提交一份 `data/download/<key>.yaml` 事实记录：
-
-```yaml
-version: 1.7.0
-published: true
-channels:
-  - id: source
-    kind: rolling
-    title: Source repository
-    url: https://github.com/pgsty/pig
-  - id: binary
-    kind: pinned
-    title: Versioned archive
-    url: https://github.com/pgsty/pig/releases/download/${tag}/pig-${version}.tar.gz
-```
-
-通过 `{{< download "key" >}}` 渲染。rolling 渠道拒绝插值；只有 pinned URL
-与命令步骤可以展开 `${version}` 和 `${tag}`。`published: false` 仍保留
-rolling 渠道，但 pinned 渠道显示为待发布状态，不输出误导性链接或命令。
-RSS 剥离组件；print 与 Markdown 保留安全静态说明。
+- 只有站点固定的新主题确实包含 hook 后，才删除本地 passthrough hook；
+- 删除复制的 `robots.txt`、404、lastmod、section-index、search-metadata 或
+  sidebar-tree 前，先核对真实本地差异；
+- 纯分组占位页改用 `sidebar_divider: true` 与 `build.render: never`，但保持
+  list 可见，才能维持排序；
+- 使用 `{.full-width}` 前先开启 Goldmark block attributes。
 
 ## Landing 迁移 {#landing-migration}
 
-任意普通内容页都可选择复用全宽壳层。页面身份放在 front matter，section
-数据放在本地且区分语言的记录中：
+把独立页面壳改成内容与本地数据：
 
 ```yaml
 ---
-title: 价格
+title: Pricing
 layout: landing
 landing: pricing
 ---
-# data/landing/pricing/zh.yaml
-sections:
-  - type: pricing
-    data:
-      title: 静态套餐
-      tiers:
-        - { name: 社区版, price: 免费, features: [本地优先] }
 ```
 
-通用路径为 `data/landing/<key>/<lang>.yaml`；front matter 内联 `sections`
-优先。精确语言标签依次回退到主语言与无后缀本地值。首页继续兼容
-`data/home/<lang>.yaml`，但首页与普通页面都由 `landing/` 注册表渲染。
+叙事数据放在 `data/landing/pricing/<lang>.yaml`；共享事实可以使用
+`title_zh_cn`、`title_zh`、`title` 这条回退链。一次性页面也可在 front
+matter 内联 `sections`。首页继续使用 `data/home/`，内部已走同一分发器。
 
-注册表保留已有首页 section，并新增 `pricing`、`pricing-compare`、
-`command-box`、`steps`、`timeline`、`code-plate`、`case-study`、`download`
-与 `bar-chart`。Landing download section 与 shortcode 读取同一份
-`data/download/<key>.yaml` 事实，不会在运行时获取价格、GitHub stars、图片、
-发布信息或其他可变事实。
+站点模板按以下顺序映射到 section registry：
 
-交互 HTML 设置 `hasLanding`，并按需加载 `landing.js` 增强 reveal、count-up、
-复制、主题图片与紧凑菜单；禁用 JavaScript 时服务端内容仍然完整。Marquee
-用本地化 CSS checkbox 暂停，复制轨道同时设置 `aria-hidden` 与 `inert`。
-reduced motion 关闭移动与 reveal 动画，forced colors 仍保留控件和状态差异。
+1. 迁移 navbar/footer 外壳，删除页面级重复 chrome；
+2. 把 pricing、`pricing-compare`、command、steps、timeline、code plate、
+   case study、download、bar chart 改成数据；
+3. 用 `hasLanding` 取代复制的 reveal/count/copy/双图/menu JavaScript；
+4. 手工复制两遍的跑马灯改为一份 item 数组；
+5. 在禁用 JavaScript 与 reduced motion 下检查静态内容。
 
-`params.ui.landing_search` 是严格布尔值，默认 true，但搜索仍要求已有的
-`offlineSearch` opt-in。可选本地事实放在 `params.ui.github_stars` 与
-`params.ui.alt_site`。Navbar 父菜单可将 `params.columns` 设为 1–4，生成
-mega-menu 网格。这些值都在构建期渲染，不由浏览器 API 补写。
+section 不得发 API 请求。GitHub star、价格、头像、截图等事实由站点 CI 更新，
+在 Hugo 构建前变成本地数据；浏览器不得抓取可变事实。
 
-HTML 在完整静态 section 上渐进增强；print 保留静态布局，Markdown 输出
-朴素结构，RSS 剥离 Landing 正文。根相对链接与资源必须在 `/` 和
-`/preview/` 等部署前缀下都正确。旧 `blocks/*` shortcode 保持兼容，但新
-Landing 页面不应继续采用。
+旧 Docsy blocks shortcode 保持兼容但已弃用。新内容迁移到 landing data，
+不要再把页面翻译成另一层自定义 HTML partial。
 
-## 删除共享覆盖 {#shared-overrides}
+## Book 起步配置与稳定锚点 {#book-starter-and-stable-anchors}
 
-删除消费站 override 前，必须把真实本地差异与已固定的主题版本逐项比较。
-OINK 0.4–0.5 已包含 passthrough hook、生产环境感知的 `robots.txt`、确定性 404、
-last-commit 模式、全宽表格、卡片式 section index、侧栏 divider、显式导航树
-支持、搜索关键词扩展 hook，以及供首页和普通页面共用的 Landing renderer。
-站点政策与内容事实仍留在消费站仓库。
+Book 根声明类型并向后代 cascade；需要 print/Markdown 的站点还要显式请求输出：
+
+```yaml
+---
+title: Systems Handbook
+type: book
+book_kind: book
+book_number: B
+outputs: [HTML, print, markdown]
+cascade:
+  type: book
+---
+```
+
+站点配置：
+
+```yaml
+outputs:
+  # 若书根就是站点根，改为配置 home。
+  section: [HTML, print]
+params:
+  ui:
+    shell_types: [docs, book, blog, swagger]
+    sidebar_headings: 3
+    book_draft_banner: true
+```
+
+章节添加 `book_number`、`book_kind`，草稿可写 `book_status: draft`。替换跨页
+链接前，先为标题补显式稳定锚点：
+
+```markdown
+## Synchronous replication {#sec_replication_sync}
+
+See {{< xref page="../replication" anchor="sec_replication_sync" >}}synchronous replication{{< /xref >}}.
+```
+
+公开术语表、索引与引用不能依赖自动生成的标题 ID。每轮编号引用改写后运行
+`python3 scripts/check-book.py`。
+整书 print 会按源页面为 Markdown 标题 ID 加命名空间，因此不同页面的同名
+标题可以安全聚合。Book ToC、`xref` 与图表目录链接会转为文档内片段；普通
+Markdown 跨页 URL 刻意仍是站点 URL，必须在整书内工作的引用应迁移为
+`xref`。
+
+## 插图迁移配方 {#figure-migration-recipes}
+
+DDIA v2 可机械迁移，因为 `fig` 接受已有的
+`src/id/caption/title/class/link/alt/width/height` 参数面。把已有图注编号补成
+带引号的 `num`，并优先明确填写有意义的 `alt`：
+
+```markdown
+{{< fig num="2-1" id="office_2003" src="/fig/tpme_0201.png"
+    caption="The cluttered Word 2003 interface" alt="Word 2003 interface with stacked toolbars" />}}
+```
+
+DDIA v1 的一次性站点脚本应当：
+
+1. 盘点每张裸图及其后续图注段落；
+2. 从现有文本提出编号，但不修改文件路径；
+3. 把伪装成“引用”的图片链接改为 `xref`；
+4. 图注缺失或含糊时停止，不猜测；
+5. 提交前运行 Book 检查器并对比渲染前后的锚点数量。
+
+pg-internal 先盘点四种图注与 90 处纯文本引用，只包裹清晰匹配的图表并改写
+无歧义的 `Figure N`/`Table N`；三张漏注与两张空 alt 必须交给人工处理。
+tpme 则把每个 h6 伪标题与图片合成一个 `fig`，保留 O'Reilly 语义 ID，再把
+`/en/...#anchor` 改为当前语言的 `xref page=... anchor=...`。
+
+这些是脚本设计位置，不是主题命令：命名与歧义属于站点事实。务必在分支上
+执行，保留机器可读的前后清单，并人工审阅所有跳过项。
+
+OINK 现已提供一个默认 dry-run 的可执行工具，并附三份基于真实语料的配方：
+
+- [TPME](prd5-migrate-tpme.md)：迁移 h6 伪图注、编号表格，以及简中正文全部
+  `/en/` fragment 泄漏；
+- [DDIA](prd5-migrate-ddia.md)：区分 v2 的图、表与示例，并配对 v1 裸图；
+- [pg-internal](prd5-migrate-pg-internal.md)：迁移相邻图注/图片、表格，以及不
+  依赖目标先后次序的正文编号引用。
+
+每份配方均记录干净 checkout 的清点数字、精确命令、跳过边界、临时克隆严格
+构建证据，以及必须为零改动的第二次运行。共享工具是
+`scripts/migrations/prd5_book_migrate.py`；其安全契约由双 Hugo 矩阵中的
+`scripts/check-prd5-migrations.py` 覆盖。
+
+## Part 层级与整书输出 {#part-hierarchy-and-whole-book-output}
+
+自然层级使用目录；需要保持 URL 时复用已有 `data/docs_nav.json` 来安排 part 与
+chapter。不要仅为模板再造一份平行 `chapters.yaml` 模型。
+`{{< book-toc depth=3 >}}` 消费同一棵树与 Hugo fragment；
+`{{< book-figures >}}` 汇总稳定编号目标。
+
+Book 根的 print URL 是整书 HTML，锚点保留，跨章链接会变成文档内链接。
+PDF/EPUB 分页仍由站点负责；已经能用本地 KaTeX/MathML 渲染公式时，不要恢复
+依赖网络的 `pandoc --webtex`。
 
 ## 验收清单 {#validation-checklist}
 
 - [ ] `python3 scripts/check-prd5-contract.py` 通过。
-- [ ] `check-prd5-reading.py`、`check-release-assets.py`、`check-download.py`
-      、`check-landing.py` 与 `check-prd5-misc.py` 在 Hugo Extended 0.160.1
-      和 0.164.0 通过。
+- [ ] `check-prd5-reading.py`、`check-release-assets.py`、
+      `check-download.py`、`check-landing.py`、`check-book.py`、
+      `check-prd5-misc.py` 在两个 Hugo 版本上通过。
 - [ ] `python3 scripts/check-content-primitives-contract.py` 与
       `python3 scripts/check-i18n.py` 通过。
 - [ ] `node --test 'tests/js/**/*.test.js'` 通过。
-- [ ] 严格 root 与 `/preview/` 构建都保留部署前缀。
-- [ ] HTML、print、Markdown 与 RSS 遵守冻结的输出矩阵。
-- [ ] Landing 在禁用 JavaScript、reduced motion、forced colors、双主题、
-      键盘操作与窄视口下仍可使用。
-- [ ] 消费站 pin、CI 结果、签名标签与线上部署分别验收。
+- [ ] root 与 `/preview/` 构建中的内部 URL 都保留部署前缀。
+- [ ] HTML、print、Markdown、RSS 符合输出矩阵。
+- [ ] Landing 在无 JavaScript、reduced motion、forced colors 下可用。
+- [ ] Book xref、目标编号、图片 alt 与整书 ID 验收通过。
+- [ ] 英中两份文档与稳定锚点覆盖一致。
+- [ ] 消费站 CI、线上冒烟与公开发布状态和本地主题验收分开记录。

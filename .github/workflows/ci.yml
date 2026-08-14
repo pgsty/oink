@@ -94,6 +94,12 @@ jobs:
       - name: Check PRD 5 landing surfaces
         run: python3 scripts/check-landing.py
 
+      - name: Check PRD 5 Book surfaces
+        run: python3 scripts/check-book.py
+
+      - name: Check PRD 5 Book migrations
+        run: python3 scripts/check-prd5-migrations.py
+
       - name: Check PRD 5 shared scenario fixes
         run: python3 scripts/check-prd5-misc.py
 

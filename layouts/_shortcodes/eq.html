@@ -1,9 +1,39 @@
-{{- if gt (len .Params) 0 }}{{ errorf "shortcode %q accepts no parameters at %s" .Name .Position }}{{ end -}}
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- if not $inner }}{{ errorf "shortcode %q requires TeX content at %s" .Name .Position }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if in (slice "markdown" "rss") $format -}}
-  {{- printf "$$\n%s\n$$" $inner | safeHTML -}}
+{{- $hasNum := false -}}
+{{- if .IsNamedParams }}{{ $hasNum = isset .Params "num" }}{{ end -}}
+{{- if not $hasNum -}}
+  {{- if .IsNamedParams -}}
+    {{- range $name := slice "id" "caption" "class" -}}
+      {{- if isset $.Params $name }}{{ errorf "shortcode %q: parameter %q requires num at %s" $.Name $name $.Position }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if in (slice "markdown" "rss") $format -}}
+    {{- printf "$$\n%s\n$$" $inner | safeHTML -}}
+  {{- else -}}
+    {{- partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) -}}
+  {{- end -}}
 {{- else -}}
-  {{- partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) -}}
+  {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
+  {{- $id := printf "eq-%s" $num -}}
+  {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
+  {{- $caption := "" -}}
+  {{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
+  {{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption must be a string at %s" .Name .Position }}{{ end -}}
+  {{- $caption = strings.TrimSpace $caption -}}
+  {{- $class := "" -}}
+  {{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
+  {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+  {{- partial "book/register-target.html" (dict "page" .Page "kind" "eq" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+  {{- $label := partial "book/label.html" (dict "kind" "eq" "num" $num) -}}
+  {{- if in (slice "markdown" "rss") $format -}}
+    {{- printf "**%s.**%s\n\n$$\n%s\n$$" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
+  {{- else -}}
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $class }} {{ . }}{{ end }}" data-book-kind="eq" data-book-num="{{ $num }}">
+  <div class="td-book-equation__body">{{ partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) }}</div>
+  <figcaption><span class="td-eq-label">{{ $label }}</span>{{ with $caption }} <span class="td-eq-caption">{{ . }}</span>{{ end }}</figcaption>
+</figure>
+  {{- end -}}
 {{- end -}}

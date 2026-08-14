@@ -1,0 +1,27 @@
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "depth" "drafts")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
+{{- $depth := 2 -}}
+{{- if isset $params "depth" -}}
+  {{- $value := .Get "depth" -}}
+  {{- if not (in (slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64") (printf "%T" $value)) }}{{ errorf "shortcode %q: depth must be an integer from 1 through 3 at %s" .Name .Position }}{{ end -}}
+  {{- $depth = int $value -}}
+{{- end -}}
+{{- if or (lt $depth 1) (gt $depth 3) }}{{ errorf "shortcode %q: depth must be from 1 through 3 at %s" .Name .Position }}{{ end -}}
+{{- $includeDraft := true -}}
+{{- if isset $params "drafts" -}}
+  {{- $value := .Get "drafts" -}}
+  {{- if ne (printf "%T" $value) "bool" }}{{ errorf "shortcode %q: drafts must be boolean at %s" .Name .Position }}{{ end -}}
+  {{- $includeDraft = $value -}}
+{{- end -}}
+{{- $root := partial "shell/sidebar-root.html" .Page -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $aggregate := and (eq $format "print") (.Page.Store.Get "tdBookAggregate") -}}
+{{- if eq $format "rss" -}}
+{{- else if eq $format "markdown" -}}
+  {{- partial "book/toc-markdown.html" (dict "page" $root "depth" $depth "level" 1 "prefix" "" "includeDraft" $includeDraft) | safeHTML -}}
+{{- else -}}
+<nav class="td-book-toc td-book-toc--depth-{{ $depth }}" aria-label="{{ T "book_toc" }}">
+  {{- partial "book/toc-tree.html" (dict "page" $root "depth" $depth "includeDraft" $includeDraft "format" $format "level" 1 "aggregate" $aggregate) -}}
+</nav>
+{{- end -}}

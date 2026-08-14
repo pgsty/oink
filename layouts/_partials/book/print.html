@@ -1,0 +1,34 @@
+{{- $section := .CurrentSection -}}
+{{- if .IsSection }}{{ $section = . }}{{ end -}}
+{{- $navRoot := partial "shell/sidebar-root.html" . -}}
+{{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" . "root" $navRoot) $navRoot.Path .Site.Language.Lang -}}
+{{- $pages := slice -}}
+{{- range $sequence -}}
+  {{- if and (ne .Params.no_print true) (or (eq . $section) (.IsDescendant $section)) -}}
+    {{- $pages = $pages | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (in $pages $section) }}{{ $pages = (slice $section) | append $pages }}{{ end -}}
+<div class="td-content td-book-print-cover">
+  {{ partial "print/page-heading.html" $section }}
+  <nav class="td-book-print-toc" aria-label="{{ T "book_toc" }}">
+    <ol>
+      {{- range $pages }}
+      <li><a href="#pg-{{ .File.UniqueID }}">{{ with .Params.book_number }}<span class="td-book-number">{{ . }}</span> {{ end }}{{ .LinkTitle }}</a></li>
+      {{- end }}
+    </ol>
+  </nav>
+</div>
+{{- range $pages -}}
+  {{- .Store.Set "tdOutputFormat" "print" -}}
+  {{- .Store.Set "tdBookAggregate" true -}}
+  {{- $content := .RenderString (dict "display" "block") .RawContent -}}
+  {{- $content = partial "content/static-image-output.html" $content -}}
+  {{- $content = partial "book/namespace-print-headings.html" (dict "page" . "content" $content) -}}
+  {{- .Store.Delete "tdBookAggregate" -}}
+<section class="td-content td-book-print-page" id="pg-{{ .File.UniqueID }}" data-book-page="{{ .Path }}">
+  <h1>{{ with .Params.book_number }}<span class="td-book-number">{{ . }}</span> {{ end }}{{ .Title }}</h1>
+  {{ with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
+  {{ $content }}
+</section>
+{{- end -}}

@@ -1,0 +1,12 @@
+{{- /* Goldmark heading IDs are unique only inside one page. Namespace those
+       IDs and their same-page links while assembling a whole Book, leaving
+       fig/tbl/eq and arbitrary non-heading anchors byte-stable. */ -}}
+{{- $page := .page -}}
+{{- $content := printf "%s" .content -}}
+{{- range $anchor := $page.Fragments.Identifiers -}}
+  {{- $target := partial "book/aggregate-heading-anchor.html" (dict "page" $page "anchor" $anchor) -}}
+  {{- $content = replace $content (printf `id="%s"` $anchor) (printf `id="%s"` $target) -}}
+  {{- $content = replace $content (printf `href="#%s"` $anchor) (printf `href="#%s"` $target) -}}
+  {{- $content = replace $content (printf `href="%s#%s"` $page.RelPermalink $anchor) (printf `href="#%s"` $target) -}}
+{{- end -}}
+{{- return ($content | safeHTML) -}}

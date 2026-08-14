@@ -1,14 +1,17 @@
 # OINK PRD 5 migration and configuration reference
 
-Consolidated release: OINK 0.4.0 (Reading & Release, Landing, and Book)
+Base consolidated release: OINK 0.4.0 (Reading & Release, Landing, and Book)
+
+Presentation update: OINK 0.4.1 (`content_width`, `example`, `contributors`,
+and Landing Hero `title_size`)
 
 Original design milestones: OINK 0.4.0 (Reading & Release), OINK 0.5.0
 (Landing), and OINK 0.6.0 (Book)
 
-This guide covers the source frozen for the consolidated v0.4.0 release. A
-consumer may call a feature released only after the signed tag resolves, the
-site pins that tag, and its rendered output passes smoke tests. Normative
-decisions live in the
+This guide covers the source frozen for the consolidated v0.4.0 release and
+the backward-compatible presentation additions in v0.4.1. A consumer may call
+a feature released only after the signed tag resolves, the site pins that tag,
+and its rendered output passes smoke tests. Normative decisions live in the
 [reading/release](prd5-reading-release-contract.md),
 [landing](prd5-landing-contract.md), and
 [Book](prd5-book-contract.md) contracts.

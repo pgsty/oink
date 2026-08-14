@@ -1,13 +1,16 @@
 # OINK PRD 5 迁移与配置参考
 
-合并发布版本：OINK 0.4.0（阅读与发布、Landing 与 Book）
+基础合并发布版本：OINK 0.4.0（阅读与发布、Landing 与 Book）
+
+展示能力更新：OINK 0.4.1（`content_width`、`example`、`contributors` 与
+Landing Hero `title_size`）
 
 原始设计里程碑：OINK 0.4.0（阅读与发布）、OINK 0.5.0（Landing）与
 OINK 0.6.0（Book）
 
-本文描述为 v0.4.0 合并发布冻结的源码。只有当已签名标签可解析、消费站固定
-到该标签，而且渲染结果通过冒烟检查后，消费站才能把功能称为“已发布”。
-规范性决策见
+本文描述为 v0.4.0 合并发布冻结的源码，以及 v0.4.1 中向后兼容的展示能力
+增量。只有当已签名标签可解析、消费站固定到该标签，而且渲染结果通过冒烟
+检查后，消费站才能把功能称为“已发布”。规范性决策见
 [阅读/发布契约](prd5-reading-release-contract.md)、
 [Landing 契约](prd5-landing-contract.md)与
 [Book 契约](prd5-book-contract.md)。

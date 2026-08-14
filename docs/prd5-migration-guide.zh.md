@@ -1,11 +1,13 @@
 # OINK PRD 5 迁移与配置参考
 
-版本归属：OINK 0.4.0（阅读与发布）、OINK 0.5.0（Landing）与
+合并发布版本：OINK 0.4.0（阅读与发布、Landing 与 Book）
+
+原始设计里程碑：OINK 0.4.0（阅读与发布）、OINK 0.5.0（Landing）与
 OINK 0.6.0（Book）
 
-本文描述当前 checkout 中的源码实现，不代表不可变公开标签已经包含这些能力。
-只有当主题变更合并并验收、对应标签可解析、消费站固定到该标签，而且部署结果
-通过冒烟检查后，消费站才能把功能称为“已发布”。规范性决策见
+本文描述为 v0.4.0 合并发布冻结的源码。只有当已签名标签可解析、消费站固定
+到该标签，而且渲染结果通过冒烟检查后，消费站才能把功能称为“已发布”。
+规范性决策见
 [阅读/发布契约](prd5-reading-release-contract.md)、
 [Landing 契约](prd5-landing-contract.md)与
 [Book 契约](prd5-book-contract.md)。

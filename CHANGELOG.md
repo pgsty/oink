@@ -5,10 +5,30 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
-## [0.6.0] - 2026-08-14
+## [0.4.0] - 2026-08-14
 
 ### Added
 
+- Ship all five PRD 5 Scenario Components tracks in one consolidated release;
+  the original 0.4/0.5/0.6 milestones remain design history rather than public
+  tags.
+- Add the Reading & Release track: a sidebar-tree-order sequential pager
+  for docs and generic book pages (with blog time order preserved), matching
+  same-origin `rel=prev/next` head links, a server-side Goldmark passthrough hook
+  for local KaTeX/MathML, and a strict parameter-free `eq` display-math escape
+  hatch for sites that cannot yet enable passthrough.
+- Add local-first GitHub release facts, cards, lists, and checksum asset tables
+  with one conditional copy runtime. Add a validated
+  `data/download/<key>.yaml` model and `download` shortcode for rolling and
+  pinned channels, including explicit pending-release behavior.
+- Generalize the data-driven homepage renderer into a reusable `layout: landing`
+  shell for regular pages, with inline and language-aware local data sources,
+  the existing section family, and new pricing, comparison, command, steps,
+  timeline, code, case-study, download, and bar-chart sections.
+- Add a conditional `landing.js` progressive-enhancement runtime for reveal,
+  count-up, copy, theme-image, and compact-menu behavior. Keep server-rendered
+  content complete without JavaScript and make CSS-only marquees pausable,
+  reduced-motion safe, forced-colors legible, and duplicate-track inert.
 - Add the Book capability package on the existing docs shell: `book_*` chapter
   metadata, draft labels and optional notices, active-page sidebar headings,
   stable `fig`/`tbl`/numbered-`eq` targets, current-language `xref`, Book-wide
@@ -19,62 +39,9 @@ All notable changes to OINK are documented here. The project follows
   skipped ambiguities, and a diff digest; focused checks cover dry-run, write,
   zero-change second runs, rendered target numbers, alternatives, duplicate IDs,
   and missing fragments.
-- Freeze the PRD 5 0.6 Book contract and extend the machine contract, bilingual
-  migration guide, root/subpath fixtures, 32-locale labels, and dual-Hugo CI
-  matrix for the complete HTML/print/Markdown/RSS behavior.
-
-### Changed
-
-- Extend the 0.4 parameter-free `eq` escape hatch without breaking it: no
-  parameters remains unnumbered and registers no target, while an explicit
-  quoted `num` selects the 0.6 Book equation form; identity and caption fields
-  are rejected unless that number is present.
-- Extend the content-primitives contract with semantic numbered figures,
-  tables, equations, cross references, Book indexes, strict parameter/URL/ID
-  validation, print containment, and plain non-HTML fallbacks. PDF/EPUB
-  generation and automatic numbering remain site-owned non-goals.
-
-## [0.5.0] - 2026-08-14
-
-### Added
-
-- Generalize the data-driven homepage renderer into a reusable `layout: landing`
-  shell for regular pages, with inline and language-aware local data sources,
-  the existing section family, and new pricing, comparison, command, steps,
-  timeline, code, case-study, download, and bar-chart sections.
-- Add a conditional `landing.js` progressive-enhancement runtime for reveal,
-  count-up, copy, theme-image, and compact-menu behavior. Keep server-rendered
-  content complete without JavaScript and make CSS-only marquees pausable,
-  reduced-motion safe, forced-colors legible, and duplicate-track inert.
-- Freeze the PRD 5 0.5 Landing human and machine contracts, bilingual migration
-  guidance, root/subpath output fixtures, and focused Hugo and browser checks.
-
-### Changed
-
-- Consolidate the legacy `home/` partial family behind thin adapters to the
-  canonical Landing registry; keep existing homepage data and deliberate local
-  partial escape hatches compatible while deprecating Docsy block shortcodes
-  for new Landing work.
-- Reuse the 0.4 download facts in Landing pages, add local navbar/footer facts
-  for GitHub stars and an alternate site, and support one-to-four-column navbar
-  mega menus without introducing runtime fact retrieval or a second data model.
-
-## [0.4.0] - 2026-08-14
-
-### Added
-
-- Add the PRD 5 Reading & Release track: a sidebar-tree-order sequential pager
-  for docs and generic book pages (with blog time order preserved), matching
-  same-origin `rel=prev/next` head links, a server-side Goldmark passthrough hook
-  for local KaTeX/MathML, and a strict parameter-free `eq` display-math escape
-  hatch for sites that cannot yet enable passthrough.
-- Add local-first GitHub release facts, cards, lists, and checksum asset tables
-  with one conditional copy runtime. Add a validated
-  `data/download/<key>.yaml` model and `download` shortcode for rolling and
-  pinned channels, including explicit pending-release behavior.
-- Freeze the PRD 5 0.4 human and machine contracts, bilingual migration guide,
-  root/subpath fixtures, and focused validators for the complete
-  HTML/print/Markdown/RSS matrix.
+- Freeze all three PRD 5 human contracts and their machine companion, bilingual
+  migration guidance, root/subpath fixtures, 32-locale labels, and dual-Hugo
+  checks for the complete HTML/print/Markdown/RSS behavior.
 
 - Single-key keyboard navigation (PRD 6), on by default on docs, blog, and
   swagger shells and configurable via `params.ui.keyboard_nav.enable` (site,
@@ -125,6 +92,17 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Consolidate the legacy `home/` partial family behind thin adapters to the
+  canonical Landing registry; keep existing homepage data and deliberate local
+  partial escape hatches compatible while deprecating Docsy block shortcodes
+  for new Landing work.
+- Reuse the download facts in Landing pages, add local navbar/footer facts for
+  GitHub stars and an alternate site, and support one-to-four-column navbar mega
+  menus without runtime fact retrieval or a second data model.
+- Extend the parameter-free `eq` escape hatch without breaking it: no parameters
+  remains unnumbered and registers no target, while an explicit quoted `num`
+  selects the numbered Book equation form; identity and caption fields are
+  rejected unless that number is present.
 - Preserve Docsy's `params.copyright` string/map contract and Hugo's top-level
   `copyright` fallback for the left side of the bottom bar. Replace OINK's
   ICP-specific `params.footer_icp` and `params.footer_icp_url` fields with one
@@ -136,8 +114,9 @@ All notable changes to OINK are documented here. The project follows
   `data/docs_nav.json`, link-only pages, and sidebar dividers now share one
   flattened navigation projection with the pager.
 - Extend the content-primitives contract with Release Assets, full-width
-  contained tables, and the parameter-free equation escape hatch, including
-  strict parameter, URL, i18n, repeated-render, and output-format behavior.
+  contained tables, semantic numbered figures/tables/equations, cross
+  references, Book indexes, strict parameter/URL/ID/i18n validation, print
+  containment, repeated-render behavior, and plain non-HTML fallbacks.
 
 - **`/` now opens the Command Palette in full search mode** (it previously
   opened the command-only mode); the new `\` shortcut opens command-only
@@ -443,9 +422,7 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.6.0...HEAD
-[0.6.0]: https://github.com/pgsty/oink/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/pgsty/oink/compare/v0.4.0...v0.5.0
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.4.0...HEAD
 [0.4.0]: https://github.com/pgsty/oink/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pgsty/oink/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/pgsty/oink/compare/v0.2.0...v0.2.1

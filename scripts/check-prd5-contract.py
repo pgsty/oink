@@ -31,8 +31,13 @@ def validate_machine(contract: dict[str, object]) -> None:
     require(contract.get("compatibility_floor") == "0.160.1", "Hugo floor changed")
     require(
         contract.get("release_assignments")
+        == {"reading_release": "0.4.0", "landing": "0.4.0", "book": "0.4.0"},
+        "PRD 5 consolidated release assignment changed",
+    )
+    require(
+        contract.get("design_milestones")
         == {"reading_release": "0.4.0", "landing": "0.5.0", "book": "0.6.0"},
-        "PRD 5 milestone assignment changed",
+        "PRD 5 historical design milestones changed",
     )
     authority = contract.get("authority")
     require(
@@ -110,7 +115,7 @@ def validate_docs(contract: dict[str, object]) -> None:
     required = {
         "reading_release": (
             "# PRD 5 reading and release contract",
-            "Status: frozen for implementation",
+            "Status: frozen for OINK v0.4.0",
             "## 1. Sequential reading pager",
             "## 2. Mathematics passthrough",
             "## 3. Release primitives",
@@ -122,7 +127,7 @@ def validate_docs(contract: dict[str, object]) -> None:
         ),
         "landing": (
             "# PRD 5 landing contract",
-            "Status: frozen for implementation",
+            "Status: frozen for OINK v0.4.0",
             "## 1. Landing shell and data authority",
             "## 2. Section registry",
             "## 3. Language resolution",
@@ -135,7 +140,7 @@ def validate_docs(contract: dict[str, object]) -> None:
         ),
         "book": (
             "# PRD 5 Book contract",
-            "Status: frozen for implementation",
+            "Status: frozen for OINK v0.4.0",
             "## 1. Book type and navigation",
             "## 2. Numbered components",
             "## 3. Cross references and consistency",
@@ -148,11 +153,19 @@ def validate_docs(contract: dict[str, object]) -> None:
             "data/docs_nav.json",
         ),
     }
+    design_milestones = contract["design_milestones"]
     for name, path in DOCS.items():
         source = path.read_text(encoding="utf-8")
         version = release_assignments[name]
-        require(f"OINK {version}" in source, f"{path.name} does not name OINK {version}")
-        require("not a publication claim" in source, f"{path.name} overstates release status")
+        milestone = design_milestones[name]
+        require(
+            f"Release assignment: OINK {version}" in source,
+            f"{path.name} does not name consolidated OINK {version}",
+        )
+        require(
+            f"Original design milestone: OINK {milestone}" in source,
+            f"{path.name} does not preserve design milestone OINK {milestone}",
+        )
         require("tests/fixtures/prd5/contract.json" in source, f"{path.name} does not name its companion")
         require("prd5-migration-guide.md" in source and "prd5-migration-guide.zh.md" in source, f"{path.name} lacks bilingual migration links")
         for literal in required[name]:

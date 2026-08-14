@@ -1,14 +1,17 @@
 # PRD 5 Book contract
 
-Version assignment: OINK 0.6.0 (source contract; not a publication claim)
+Release assignment: OINK 0.4.0 (consolidated PRD 5 release)
+
+Original design milestone: OINK 0.6.0
 
 Contract version: 1
 
-Status: frozen for implementation
+Status: frozen for OINK v0.4.0
 
 Compatibility floor: Hugo Extended 0.160.1
 
-This document freezes the 0.6 track of PRD 5. Its machine-readable companion
+This document freezes the originally planned 0.6 track of PRD 5, consolidated
+into the v0.4.0 release. Its machine-readable companion
 is `tests/fixtures/prd5/contract.json`; `scripts/check-prd5-contract.py` keeps
 the two aligned. Configuration and migration recipes are available in
 [English](prd5-migration-guide.md) and

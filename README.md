@@ -167,8 +167,8 @@ Navigation and Command Palette migration reference, included in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·
 [简体中文](docs/prd4-migration-guide.zh.md).
 
-Scenario Components migration reference (source assigned to 0.4.0–0.6.0;
-publication remains a separate release gate):
+Scenario Components migration reference (all tracks included in 0.4.0; the
+original 0.4.0–0.6.0 design milestones remain documented as history):
 [English](docs/prd5-migration-guide.md) ·
 [简体中文](docs/prd5-migration-guide.zh.md).
 

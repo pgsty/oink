@@ -1,10 +1,12 @@
 # PRD 5 reading and release contract
 
-Version assignment: OINK 0.4.0 (source contract; not a publication claim)
+Release assignment: OINK 0.4.0 (consolidated PRD 5 release)
+
+Original design milestone: OINK 0.4.0
 
 Contract version: 1
 
-Status: frozen for implementation
+Status: frozen for OINK v0.4.0
 
 Compatibility floor: Hugo Extended 0.160.1
 

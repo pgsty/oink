@@ -1,15 +1,17 @@
 # PRD 5 · 场景组件体系（Scenario Components）— 设计沉淀
 
-状态：**已实现并冻结源码契约，待完整发布链验收** —— 开放问题已于
-2026-08-13 裁决（见 §8 逐条决议）；三条实现契约分别见
+状态：**已实现、验收并冻结为 OINK v0.4.0 发布内容** —— 开放问题已于
+2026-08-13 裁决（见 §8 逐条决议）；维护者于 2026-08-14 决定将原定
+0.4/0.5/0.6 的三阶段实现合并为一个 v0.4.0 标签。三条实现契约分别见
 `prd5-reading-release-contract.md`、`prd5-landing-contract.md` 与
-`prd5-book-contract.md`。源码完成不等于标签发布、消费站 pin 或线上部署。
+`prd5-book-contract.md`。公开发布事实仍以不可变标签可解析、消费站 pin 与
+部署验收为准。
 任务分解与执行提示词见本地 `plan/` 目录（gitignored 工作区，不入库）。
 各 track 验收后按惯例冻结为 contract。
 
 日期：2026-08-13
 
-范围：OINK 0.4.x – 0.6.x 三个里程碑的功能规划与公共 API 设计
+范围：OINK v0.4.0 场景组件完整释出（原 0.4.x–0.6.x 三阶段设计）
 
 前置阅读：`docs/content-primitives.md`、`docs/prd4-navigation-command-palette-contract.md`、`CLAUDE.md`
 
@@ -27,15 +29,15 @@ OINK 服务四类场景：**文档站、博客站、落地展示站、书籍站*
 OINK 0.2.1–0.3.0 之上（唯一例外 pigsty.cc 仍在 Docsy 0.15，是迁移对象）。
 各站点 `layouts/` 里的覆盖文件，就是主题缺什么的直接证据。
 
-本轮规划五条 track，按三个里程碑交付：
+本轮规划五条 track；原始里程碑用于解释实现依赖，实际统一随 v0.4.0 交付：
 
-| Track | 对应需求 | 里程碑 | 一句话 |
-| --- | --- | --- | --- |
-| 5.1 顺序阅读 Pager | 想法 3 | 0.4 | 把现有 blog-only 的原始 pager 升级为侧栏树序的卡片式上一页/下一页，docs/book 可用 |
-| 5.2 Release 与资产 | 想法 1 | 0.4 | `release` front matter → 发布卡片；`{{< release-assets >}}` 把 sha256sum 文本渲染为可下载资产表 |
-| 5.3 下载页模板 | 想法 4 | 0.4/0.5 | data 驱动的多渠道下载页：版本号一处定义，RPM/DEB/Docker/二进制渠道可配置 |
-| 5.4 Landing 泛化 | 想法 5 | 0.5 | 把已有的 12 种 home section 数据驱动系统泛化到任意页面，补 pricing/timeline/compare/marquee |
-| 5.5 Book 能力包 | 想法 2 | 0.6 | `book` 类型 + 图/表/公式编号锚点与交叉引用 + 图表目录 + 整书视图；**数学 passthrough 补洞提前到 0.4（唯一 P0 正确性缺陷）** |
+| Track | 对应需求 | 原始里程碑 | 实际发布 | 一句话 |
+| --- | --- | --- | --- | --- |
+| 5.1 顺序阅读 Pager | 想法 3 | 0.4 | v0.4.0 | 把现有 blog-only 的原始 pager 升级为侧栏树序的卡片式上一页/下一页，docs/book 可用 |
+| 5.2 Release 与资产 | 想法 1 | 0.4 | v0.4.0 | `release` front matter → 发布卡片；`{{< release-assets >}}` 把 sha256sum 文本渲染为可下载资产表 |
+| 5.3 下载页模板 | 想法 4 | 0.4/0.5 | v0.4.0 | data 驱动的多渠道下载页：版本号一处定义，RPM/DEB/Docker/二进制渠道可配置 |
+| 5.4 Landing 泛化 | 想法 5 | 0.5 | v0.4.0 | 把已有的 12 种 home section 数据驱动系统泛化到任意页面，补 pricing/timeline/compare/marquee |
+| 5.5 Book 能力包 | 想法 2 | 0.6 | v0.4.0 | `book` 类型 + 图/表/公式编号锚点与交叉引用 + 图表目录 + 整书视图；**数学 passthrough 补洞提前到 0.4（唯一 P0 正确性缺陷）** |
 
 核心架构决策：**不建任何平行体系**。五条 track 全部落在既有机制的延长线上
 （landing section 注册表、Page Store flag 装配、content-primitives 契约、
@@ -895,11 +897,15 @@ palette-in-landing 四条 spec。
 
 ---
 
-## 7. 里程碑与释出规划
+## 7. 原始里程碑与合并释出记录
 
 排序原则：正确性缺陷最先；小体量高确定性先于大体量；每个里程碑必须有
 **真实站点作为验收载体**（绿色本地构建不算完成——按 README 的
 release states 走完 validated → published → documented → deployed）。
+
+以下三段保留原始分期设计。实现与强化验收完成后，维护者决定不发布中间的
+v0.5.0/v0.6.0 标签，而是把三个阶段的最终树统一标记为 v0.4.0；因此这里的
+0.5/0.6 是设计阶段名，不是已发布版本。
 
 ### 0.4.0 「阅读与发布」（Reading & Release）
 

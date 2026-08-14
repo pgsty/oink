@@ -3,6 +3,11 @@
   "compatibility_floor": "0.160.1",
   "release_assignments": {
     "reading_release": "0.4.0",
+    "landing": "0.4.0",
+    "book": "0.4.0"
+  },
+  "design_milestones": {
+    "reading_release": "0.4.0",
     "landing": "0.5.0",
     "book": "0.6.0"
   },

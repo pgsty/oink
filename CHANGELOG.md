@@ -5,6 +5,29 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Make the action-oriented keyboard shortcuts available on every interactive
+  page, including the homepage: `l` cycles languages, `t` toggles the theme,
+  and `f` / `c` open search or command mode. Add `r` to cycle through Home and
+  the unique same-origin top-level routes registered in the navbar; shell-only
+  tree, outline, pager, and reading-mode keys remain scoped to shell pages.
+
+### Fixed
+
+- Align `j` / `k` heading jumps with native right-rail TOC navigation by using
+  the computed root `scroll-padding-top` and target scroll margin. Navbar
+  heights authored in `rem` are no longer misread as pixel values that leave
+  headings hidden beneath the sticky header.
+- Make the rendered sidebar tree the authoritative `q` / `e` order whenever it
+  is available. Blog navigation now crosses a column boundary through the next
+  column landing page before its first post, independent of date pager order;
+  tree edges no longer fall through to another navigation family.
+- Namespace automatic enhanced-code IDs with their enclosing alert and tab
+  identities when Hugo resets fence ordinals in nested Markdown fragments.
+  Copy, collapse, viewport, and line-anchor targets now remain unambiguous
+  across repeated alerts and text tabs; authored public IDs stay unchanged.
+
 ## [0.4.0] - 2026-08-14
 
 ### Added

@@ -17,6 +17,7 @@
   {{- $config.page.Store.Set "hasCodeRuntime" true -}}
 {{- end -}}
 <div class="{{ $config.classes }}" id="{{ $config.rootID }}" data-td-code
+     {{- if $config.autoID }} data-td-code-auto-id{{ end }}
      data-language="{{ $config.language }}" data-line-count="{{ $config.lineCount }}"
      {{- if $config.collapsible }} data-collapse-lines="{{ $config.collapseLines }}"{{ end }}
      {{- if $config.label }} role="group" aria-label="{{ $config.label }}"

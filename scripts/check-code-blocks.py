@@ -131,6 +131,21 @@ def check_template_contracts() -> list[str]:
             f"{relative} loads scripts before content sets Page Store flags",
             errors,
         )
+    namespace = (ROOT / "layouts/_partials/code/namespace-html.html").read_text()
+    alert = (ROOT / "layouts/_shortcodes/alert.html").read_text()
+    tab = (ROOT / "layouts/_shortcodes/tab.html").read_text()
+    render = (ROOT / "layouts/_partials/code/render.html").read_text()
+    require(
+        "data-td-code-auto-id" in namespace and "data-td-code-auto-id" in render,
+        "automatic code-ID namespace marker is missing",
+        errors,
+    )
+    require(
+        'partial "code/namespace-html.html"' in alert
+        and 'partial "code/namespace-html.html"' in tab,
+        "alert or text-tab code IDs are no longer namespaced",
+        errors,
+    )
     return errors
 
 
@@ -213,6 +228,83 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             '<button class="nav-link',
         ):
             require(marker not in source, f"generic RSS code fixture contains {marker}", errors)
+    return errors
+
+
+def check_nested_render_ids(hugo: str) -> list[str]:
+    """Nested RenderString calls reset fence ordinals; DOM IDs must not."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-code-nested-ids-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs"
+        content.mkdir(parents=True)
+        (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
+        (content / "nested.md").write_text(
+            "---\ntitle: Nested code IDs\n---\n\n"
+            "{{< tabpane text=true persist=header >}}\n"
+            "{{% tab header=\"First\" %}}\n"
+            "{{% alert color=\"info\" %}}\n"
+            "```shell\necho repeated\n```\n"
+            "{{% /alert %}}\n\n"
+            "{{% /tab %}}\n"
+            "{{% tab header=\"Second\" %}}\n"
+            "{{% alert color=\"warning\" %}}\n"
+            "```shell\necho repeated\n```\n"
+            "{{% /alert %}}\n\n"
+            "{{% /tab %}}\n"
+            "{{< /tabpane >}}\n\n"
+            "```shell\necho repeated\n```\n",
+            encoding="utf-8",
+        )
+        destination = temp_path / "public"
+        override = temp_path / "unsafe.yaml"
+        override.write_text(
+            "markup:\n  goldmark:\n    renderer:\n      unsafe: true\n",
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            [
+                hugo,
+                "--source",
+                str(EXAMPLE),
+                "--config",
+                f"{EXAMPLE / 'hugo.yaml'},{override}",
+                "--contentDir",
+                str(temp_path / "content"),
+                "--destination",
+                str(destination),
+                "--logLevel",
+                "warn",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            errors.append(
+                "nested code-ID fixture failed to build: "
+                f"{result.stdout}{result.stderr}"
+            )
+            return errors
+        source = (destination / "docs/nested/index.html").read_text(encoding="utf-8")
+        roots = re.findall(r'id="(td-code-[^"]+)" data-td-code(?:\s|>)', source)
+        require(
+            len(roots) == 3,
+            f"nested fixture rendered {len(roots)} code roots: {roots}",
+            errors,
+        )
+        require(
+            len(roots) == len(set(roots)),
+            f"nested RenderString code roots are not unique: {roots}",
+            errors,
+        )
+        for root in roots:
+            require(
+                f'id="{root}-viewport"' in source,
+                f"nested code root {root} lost its unique viewport target",
+                errors,
+            )
     return errors
 
 
@@ -403,6 +495,7 @@ def main() -> int:
         check_outputs(args.public)
         + check_template_contracts()
         + check_generic_rss_output(args.hugo)
+        + check_nested_render_ids(args.hugo)
         + check_invalid_cases(args.hugo)
     )
     if errors:

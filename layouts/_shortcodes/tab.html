@@ -54,7 +54,10 @@
 {{ with $.Inner -}}
   {{/* Trim any leading and trailing newlines from .Inner, this avoids
        spurious lines during syntax highlighting */ -}}
-  {{ $tab = merge $tab (dict "content" .) -}}
+  {{- $content := partial "code/namespace-html.html" (dict
+    "html" . "scope" (printf "tabpane-%d-tab-%d" $.Parent.Ordinal $.Ordinal)
+  ) -}}
+  {{ $tab = merge $tab (dict "content" $content) -}}
 {{ end -}}
 
 {{/* add dict tab to parent's scratchpad */ -}}

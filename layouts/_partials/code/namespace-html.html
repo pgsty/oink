@@ -1,0 +1,16 @@
+{{- /* Namespace automatic code IDs inside a Markdown-rendering shortcode.
+      Hugo resets render-hook ordinals for each such fragment, so a stable
+      outer-shortcode scope is required before sibling fragments join one DOM.
+      Authored IDs and component-owned IDs are deliberately left unchanged. */ -}}
+{{- $html := printf "%s" .html -}}
+{{- $scope := anchorize (printf "%s" .scope) -}}
+{{- if not $scope -}}
+  {{- errorf "code namespace scope must not be empty" -}}
+{{- end -}}
+{{- range findRESubmatch `id="([^"]+)" data-td-code data-td-code-auto-id(?:\s|>)` $html -}}
+  {{- $old := index . 1 -}}
+  {{- $new := printf "%s-%s" $old $scope -}}
+  {{- $pattern := printf `((?:id|aria-controls|aria-labelledby|data-td-code-target)="|href="#)%s((?:-(?:viewport|title|[0-9]+))?")` $old -}}
+  {{- $html = replaceRE $pattern (printf `${1}%s${2}` $new) $html -}}
+{{- end -}}
+{{- return ($html | safeHTML) -}}

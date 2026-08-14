@@ -458,6 +458,12 @@ An author `id` is public and stable. Otherwise the renderer generates a
 page-scoped ID from the page and block ordinal; generated IDs are implementation
 details and are not documented as permalinks.
 
+Markdown-rendering `alert` and text `tabpane` fragments can each restart
+Hugo's render-hook ordinal at zero. OINK marks only generated IDs and namespaces
+their root, viewport, control references, and default line anchors with the
+enclosing alert/tab identity before sibling fragments enter the same DOM.
+Explicit author IDs and component-owned IDs are never rewritten.
+
 When `anchorLineNos` is enabled, the renderer supplies a block-unique line
 anchor prefix. Code-tab prefixes derive from the stable group and child IDs so
 multiple panels cannot emit duplicate line anchors. Ordinary line anchors are

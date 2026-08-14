@@ -58,6 +58,7 @@
     {{- errorf "code block: id must not contain ASCII whitespace or control characters; got %q at %s" $rootID $position -}}
   {{- end -}}
 {{- end -}}
+{{- $autoID := not $rootID -}}
 {{- if not $rootID -}}
   {{- $pageHash := printf "%.8s" (md5 $page.RelPermalink) -}}
   {{- $key := $ownerKey | anchorize -}}
@@ -226,6 +227,7 @@
   "outputFormat" (lower $outputFormat)
   "ownerKey" $ownerKey
   "rootID" $rootID
+  "autoID" $autoID
   "filenameID" (printf "%s-title" $rootID)
   "filename" $filename
   "label" $label

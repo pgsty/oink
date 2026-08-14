@@ -78,6 +78,7 @@ def check_example(public: Path) -> list[str]:
 
     section_markers = (
         'class="oink-hero',
+        '--oink-hero-title-size: 4.25rem',
         'data-count="2189"',
         '>2.2k</strong>',
         'class="oink-metric__source"',
@@ -314,6 +315,7 @@ INVALID_CASES = (
     ("bad-visual", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual: {type: video}\n", "unsupported visual.type"),
     ("missing-alt", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual: {type: image, src: /bad.png}\n", "requires alt"),
     ("bad-faq", "sections:\n  - type: faq\n    data:\n      style: tabs\n      items: [{question: Q, answer: A}]\n", "faq.style must be accordion or flat"),
+    ("bad-hero-title-size", "sections:\n  - type: hero\n    data:\n      title: Bad\n      title_size: calc(100vw)\n", "hero.title_size must be a CSS length in rem, em, or px"),
     ("bad-marquee", "sections:\n  - type: logo-wall\n    data:\n      layout: carousel\n      items: [{title: Logo}]\n", "layout must be grid or marquee"),
     ("bad-compare", "sections:\n  - type: pricing-compare\n    data:\n      tiers: [Free, Pro]\n      groups:\n        - name: Group\n          rows: [{name: Row, cells: [Y]}]\n", "has 1 cells for 2 tiers"),
     ("bad-bar", "sections:\n  - type: bar-chart\n    data:\n      items: [{label: Bad, value: nope}]\n", "value must be numeric"),

@@ -141,7 +141,7 @@
     margin: 0 0 22px;
     color: var(--oink-ink);
     font-family: var(--td-display-font-family);
-    font-size: clamp(2.7rem, 5.4vw, 4.8rem);
+    font-size: clamp(2.7rem, 5.4vw, var(--oink-hero-title-size, 4.8rem));
     font-weight: 700;
     letter-spacing: 0;
     line-height: 1.06;

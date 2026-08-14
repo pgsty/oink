@@ -3,6 +3,7 @@ sections:
     data:
       eyebrow: Scenario component
       title: Any page can be a landing page
+      title_size: 4.25rem
       lead: The page reuses the site navbar, command palette, full-width section registry, and fat footer.
       actions:
         - { label: Read the docs, url: /docs/, style: primary }

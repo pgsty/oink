@@ -20,6 +20,12 @@
 {{- $hasImage := and $imageLight $imageDark -}}
 {{- $imageStyle := "" -}}
 {{- $heroStyle := "" -}}
+{{- if isset $hero "title_size" -}}
+  {{- if ne (printf "%T" $hero.title_size) "string" }}{{ errorf "%s: hero.title_size must be a CSS length string" $page.Path }}{{ end -}}
+  {{- $titleSize := strings.TrimSpace $hero.title_size -}}
+  {{- if not (findRE `^[0-9]+(?:[.][0-9]+)?(?:rem|em|px)$` $titleSize) }}{{ errorf "%s: hero.title_size must be a CSS length in rem, em, or px" $page.Path }}{{ end -}}
+  {{- $heroStyle = printf "%s --oink-hero-title-size: %s;" $heroStyle $titleSize -}}
+{{- end -}}
 {{- $media := $hero.media | default dict -}}
 {{- if and $media (not (reflect.IsMap $media)) }}{{ errorf "%s: hero.media must be a map" $page.Path }}{{ end -}}
 {{- $breakpoint := strings.TrimSpace (printf "%v" ($media.hide_below | default "")) -}}

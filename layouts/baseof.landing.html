@@ -1,0 +1,23 @@
+{{- .Page.Store.Set "tdOutputFormat" "html" -}}
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+    dir="{{ .Site.Language.Direction | default "ltr" }}"
+    lang="{{ partial "language-tag.html" . }}"
+    data-td-typography="{{ partial "typography-preset.html" .Site }}"
+    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body class="td-{{ .Kind }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+    {{ partial "skip-link.html" . }}
+    {{ if partial "shell/navbar-enabled.html" . }}{{ partial "navbar.html" . }}{{ end }}
+    <div class="container-fluid td-default td-outer">
+      <main id="td-main-content" role="main" class="td-main" tabindex="-1">
+        {{ block "main" . }}{{ end }}
+      </main>
+      {{ partial "footer.html" . }}
+    </div>
+    {{ partial "scripts.html" . }}
+  </body>
+</html>

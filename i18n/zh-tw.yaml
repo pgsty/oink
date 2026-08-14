@@ -136,6 +136,10 @@ ui_code_copy_error: 複製失敗
 ui_code_show_all: 顯示全部 {{ .Count }} 行
 ui_code_collapse: 收合程式碼
 ui_code_group_label: 程式碼範例
+ui_pricing_featured: 推薦
+ui_pricing_included: 包含
+ui_pricing_excluded: 不包含
+ui_marquee_pause: 暫停捲動
 ui_kbd_with: 加
 ui_field_required: 必填
 ui_action_unavailable: 暂不可用

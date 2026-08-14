@@ -1,0 +1,26 @@
+{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
+{{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ errorf "%s: bar-chart.items must be a non-empty array" $page.Path }}{{ end -}}
+{{- $values := slice -}}{{- $max := 0.0 -}}
+{{- range $index, $item := $items -}}
+  {{- if not (reflect.IsMap $item) }}{{ errorf "%s: bar-chart item %d must be a map" $page.Path (add $index 1) }}{{ end -}}
+  {{- if not ($item.label | default "") }}{{ errorf "%s: bar-chart item %d requires label" $page.Path (add $index 1) }}{{ end -}}
+  {{- if not (isset $item "value") }}{{ errorf "%s: bar-chart item %d requires value" $page.Path (add $index 1) }}{{ end -}}
+  {{- $raw := printf "%v" $item.value -}}{{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` $raw) }}{{ errorf "%s: bar-chart item %d value must be numeric" $page.Path (add $index 1) }}{{ end -}}
+  {{- /* Always normalize to float before comparison: Go template comparisons
+       across mixed numeric types can otherwise become lexicographic. */ -}}
+  {{- $value := float $item.value -}}{{- if lt $value 0.0 }}{{ errorf "%s: bar-chart item %d value must not be negative" $page.Path (add $index 1) }}{{ end -}}
+  {{- if gt $value $max }}{{ $max = $value }}{{ end -}}
+  {{- $values = $values | append (dict "item" $item "value" $value) -}}
+{{- end -}}
+{{- if le $max 0.0 }}{{ errorf "%s: bar-chart requires at least one value greater than zero" $page.Path }}{{ end -}}
+<section id="{{ $id }}" class="oink-section oink-bar-chart-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="landing-container">
+    {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
+    <div class="oink-bar-chart"{{ if $interactive }} data-reveal{{ end }}>{{ range $index, $entry := $values }}{{ $percent := mul (div $entry.value $max) 100.0 }}<div class="oink-bar-chart__row oink-bar-chart__row--{{ mod $index 4 }}">
+      <div class="oink-bar-chart__label"><span>{{ $entry.item.label }}</span><strong>{{ $entry.item.value }}{{ with $data.unit }} {{ . }}{{ end }}</strong></div>
+      <div class="oink-bar-chart__track" aria-hidden="true"><i style="--oink-bar-width: {{ printf "%.4f%%" $percent }}"></i></div>
+      {{ with $entry.item.note }}<small>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</small>{{ end }}
+    </div>{{ end }}</div>
+  </div>
+</section>

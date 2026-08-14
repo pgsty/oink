@@ -1,0 +1,21 @@
+{{- $page := . -}}
+{{- $raw := $page.Site.Params.ui.alt_site | default false -}}
+{{- $result := false -}}
+{{- if $raw -}}
+  {{- if not (reflect.IsMap $raw) -}}
+    {{- errorf "params.ui.alt_site must be a map with label and url" -}}
+  {{- end -}}
+  {{- $label := strings.TrimSpace (printf "%v" ($raw.label | default "")) -}}
+  {{- $url := strings.TrimSpace (printf "%v" ($raw.url | default "")) -}}
+  {{- if or (not $label) (not $url) -}}
+    {{- errorf "params.ui.alt_site requires non-empty label and url" -}}
+  {{- end -}}
+  {{- $parsedResult := try (urls.Parse $url) -}}
+  {{- with $parsedResult.Err }}{{ errorf "params.ui.alt_site.url is invalid: %s" . }}{{ end -}}
+  {{- $parsed := $parsedResult.Value -}}
+  {{- if or (not (in (slice "http" "https") (lower $parsed.Scheme))) (not $parsed.Host) -}}
+    {{- errorf "params.ui.alt_site.url must be an absolute http(s) URL" -}}
+  {{- end -}}
+  {{- $result = dict "label" $label "url" $url -}}
+{{- end -}}
+{{- return $result -}}

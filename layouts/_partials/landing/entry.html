@@ -1,0 +1,24 @@
+{{- /* Normalize one registry entry without rendering it. Shared by the HTML
+     dispatcher and text-output renderer so aliases and inline data cannot
+     drift between formats. */ -}}
+{{- $home := .home -}}{{- $entry := .entry -}}{{- $rawType := "" -}}{{- $key := "" -}}{{- $entryMap := dict -}}
+{{- if reflect.IsMap $entry -}}
+  {{- $entryMap = $entry -}}
+  {{- with index $entry "type" }}{{ $rawType = printf "%v" . }}{{ else }}{{ with index $entry "key" }}{{ $rawType = printf "%v" . }}{{ end }}{{ end -}}
+  {{- with index $entry "key" }}{{ $key = printf "%v" . }}{{ end -}}
+{{- else }}{{ $rawType = printf "%v" $entry }}{{ end -}}
+{{- if not $key }}{{ $key = $rawType }}{{ end -}}
+{{- $type := replace (lower $rawType) "_" "-" -}}
+{{- if or (eq $type "logos") (eq $type "logo") }}{{ $type = "logo-wall" }}{{ end -}}
+{{- if or (eq $type "comments") (eq $type "comment-wall") (eq $type "voices") }}{{ $type = "testimonials" }}{{ end -}}
+{{- if eq $type "contributor" }}{{ $type = "contributors" }}{{ end -}}
+{{- if eq $type "features" }}{{ $type = "cards" }}{{ end -}}
+{{- if eq $type "content" }}{{ $type = "markdown" }}{{ end -}}
+{{- $data := dict -}}
+{{- if and (reflect.IsMap $entry) (isset $entry "data") }}{{ $data = index $entry "data" }}
+{{- else if and $key (isset $home $key) }}{{ $data = index $home $key }}
+{{- else }}{{ $normalizedKey := replace $key "-" "_" }}{{ if and $normalizedKey (isset $home $normalizedKey) }}{{ $data = index $home $normalizedKey }}{{ else if reflect.IsMap $entry }}{{ $data = $entry }}{{ end }}{{ end -}}
+{{- $enabled := true -}}
+{{- if and (reflect.IsMap $entry) (isset $entry "enabled") (not (index $entry "enabled")) }}{{ $enabled = false }}{{ end -}}
+{{- if and (reflect.IsMap $data) (isset $data "enabled") (not (index $data "enabled")) }}{{ $enabled = false }}{{ end -}}
+{{- return (dict "rawType" $rawType "type" $type "key" $key "entry" $entryMap "data" $data "enabled" $enabled) -}}

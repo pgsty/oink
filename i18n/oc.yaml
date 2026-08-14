@@ -223,3 +223,10 @@ ui_table_scroll: "Scrollable table"
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_pricing_featured: Recommended
+ui_pricing_included: Included
+ui_pricing_excluded: Not included
+ui_marquee_pause: Pause motion

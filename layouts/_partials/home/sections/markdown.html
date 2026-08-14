@@ -1,11 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-markdown-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    {{- with ($data.body | default $data.content) }}
-    <div class="oink-markdown">{{ partial "home/markdown-block.html" (dict "page" $page "value" .) }}</div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/markdown.html. */ -}}
+{{- partial "landing/sections/markdown.html" . -}}

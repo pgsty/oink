@@ -1,0 +1,137 @@
+sections:
+  - type: hero
+    data:
+      eyebrow: Scenario component
+      title: Any page can be a landing page
+      lead: The page reuses the site navbar, command palette, full-width section registry, and fat footer.
+      actions:
+        - { label: Read the docs, url: /docs/, style: primary }
+      image: { src: /icons/logo.svg, dark: /icons/logo.svg, alt: OINK mark }
+      media: { ratio: "1fr 240px", max_width: 240px, hide_below: md }
+  - type: metrics
+    key: landing-metrics
+    data:
+      title: Runtime features
+      animate: true
+      items:
+        - { value: 2189, compact: true, label: Stars, source: { label: Local CI data, url: https://example.org/ } }
+        - { value: 32, suffix: "+", label: Locales }
+  - type: capabilities
+    key: landing-capabilities
+    data:
+      title: Media variants
+      items:
+        - title: Theme-aware image
+          bullets: [Required alt text, optional dimensions]
+          visual: { type: image, src: /icons/logo.svg, src_dark: /icons/logo.svg#dark, alt: OINK theme logo, width: 256, height: 256 }
+        - title: Data card
+          bullets: [Strict visual type]
+          visual: { type: card, icon: fa-solid fa-layer-group, title: One reusable card, lines: [Local data, Semantic markup] }
+  - type: cards
+    key: landing-cards
+    data:
+      title: Localized data source
+      columns: 2
+      items:
+        - { title: No sidebar, desc: The canvas is intentionally full width., icon: fa-solid fa-expand }
+        - { title: Strict lookup, desc: Missing landing data fails the build., icon: fa-solid fa-shield }
+  - type: faq
+    key: landing-faq
+    data:
+      title: Flat FAQ
+      style: flat
+      items:
+        - { question: Does it require JavaScript?, answer: No. The flat FAQ is static HTML. }
+        - { question: Is accordion still supported?, answer: Yes. Accordion remains the default. }
+  - type: logo-wall
+    key: landing-marquee
+    data:
+      title: CSS-only marquee
+      layout: marquee
+      direction: left
+      speed: fast
+      rows: 2
+      items:
+        - { title: PostgreSQL, icon: fa-solid fa-database, url: /docs/ }
+        - { title: Hugo, icon: fa-solid fa-bolt }
+        - { title: OINK, icon: fa-solid fa-layer-group }
+  - type: cta
+    data:
+      title: One shell, many scenarios
+      desc: CTA supports multiple actions while the legacy single-action schema remains valid.
+      actions:
+        - { label: Documentation, url: /docs/, style: primary }
+        - { label: Source, url: https://github.com/pgsty/oink, external: true, style: ghost }
+  - type: pricing
+    data:
+      eyebrow: Pricing
+      title: Static pricing cards
+      tiers:
+        - name: Community
+          price: Free
+          period: forever
+          desc: Full open-source access.
+          features: [All components, Community support]
+          cta: { label: Download, url: /docs/download-demo/ }
+        - name: Professional
+          featured: true
+          price: $24K
+          period: /year
+          desc: Support for production teams.
+          features: [Priority response, Release packages]
+          cta: { label: Contact, url: "mailto:example@example.org" }
+  - type: pricing-compare
+    data:
+      title: Plan comparison
+      tiers: [Community, Professional]
+      groups:
+        - name: Support
+          rows:
+            - { name: Priority response, cells: [N, Y] }
+            - { name: Annual price, price_row: true, cells: [Free, $24K] }
+  - type: command-box
+    data:
+      title: Install command
+      code: curl -fsSL https://example.org/install | bash
+      lang: bash
+      note: Copy is owned by the conditional Landing runtime.
+  - type: steps
+    data:
+      title: Three steps
+      items:
+        - { title: Download, desc: Fetch the release. }
+        - { title: Configure, desc: Edit the local file., cmd: { code: oink configure } }
+        - { title: Publish, desc: Build the static site. }
+  - type: timeline
+    data:
+      title: Project timeline
+      items:
+        - { date: "2024", title: Prototype, desc: The first data-driven sections shipped. }
+        - { date: "2026", title: Scenario components, desc: Landing pages became a reusable shell. }
+  - type: code-plate
+    data:
+      title: Chroma code plate
+      aria_label: Example configuration
+      lang: yaml
+      code: |
+        layout: landing
+        landing: demo
+  - type: case-study
+    data:
+      title: Migration result
+      stats:
+        - { value: 12, label: reusable sections }
+        - { value: 0, label: remote requests }
+      quote: “One YAML document now replaces a bespoke page template.”
+      source: Example maintainer
+  - type: download
+    data:
+      title: One source, landing presentation
+      keys: [demo, pending]
+  - type: bar-chart
+    data:
+      title: Numeric normalization
+      unit: units
+      items:
+        - { label: Large integer, value: 1120, group: large }
+        - { label: Decimal value, value: 43.5, group: small, note: Mixed numeric types compare as floats. }

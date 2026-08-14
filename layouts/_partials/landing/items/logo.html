@@ -1,0 +1,9 @@
+{{- $page := .page -}}{{- $data := .data -}}{{- $item := .item -}}
+<article class="oink-logo-card{{ with $item.class }} {{ . }}{{ end }}">
+  {{- if or $item.image $item.logo $item.icon }}<div class="oink-logo-card__media">{{ partial "landing/media.html" (dict "item" $item) }}</div>{{ end }}
+  <div class="oink-logo-card__copy">
+    {{- with ($item.name | default $item.title) }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
+    {{- with ($item.desc | default $item.text) }}<p>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+  </div>
+  {{- partial "landing/action.html" (dict "page" $page "item" $item "label" $data.link_label) }}
+</article>

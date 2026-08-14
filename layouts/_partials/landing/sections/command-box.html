@@ -1,0 +1,17 @@
+{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}
+{{- $code := strings.TrimSpace (printf "%v" ($data.code | default "")) -}}
+{{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{- if not $code }}{{ errorf "%s: command-box.code is required" $page.Path }}{{ end -}}
+{{- if $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
+<section id="{{ $id }}" class="oink-section oink-command-box-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="landing-container">
+    {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id "compact" true) }}
+    <div class="oink-command-box"{{ if $interactive }} data-reveal{{ end }}>
+      <pre tabindex="0"><code{{ with $data.lang }} class="language-{{ . }}"{{ end }}>{{ $code }}</code></pre>
+      {{- if $interactive }}
+      <button type="button" data-copy-text="{{ $code }}" data-label-copied="{{ T "ui_code_copied" }}" aria-label="{{ T "ui_code_copy_label" }}" title="{{ T "ui_code_copy_label" }}"><i class="fa-regular fa-copy" aria-hidden="true"></i><span data-copy-status aria-live="polite"></span></button>
+      {{- end }}
+    </div>
+    {{- with $data.note }}<p class="oink-command-box__note">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+  </div>
+</section>

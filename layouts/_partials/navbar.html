@@ -6,6 +6,13 @@
        icon below md that opens the shell drawer (docs tree + relocated
        aside). */ -}}
 {{- $drawerMode := and (partial "shell/chrome-enabled.html" .) (partial "shell/sidebar-enabled.html" .) -}}
+{{- /* The homepage already follows the PRD 4 compact-navbar contract: one
+       semantic link tree, visually condensed below lg. Only an explicit
+       non-home Landing layout needs this separate full-menu surface. */ -}}
+{{- $landingSurface := eq .Layout "landing" -}}
+{{- $githubStars := partial "landing/github-stars.html" . -}}
+{{- $altSite := false -}}
+{{- if le (len $targets) 1 }}{{ $altSite = partial "landing/alt-site.html" . }}{{ end -}}
 <header class="landing-header d-print-none" data-header>
   <div class="landing-container">
     <nav class="landing-nav" aria-label="{{ T "ui_main_nav" }}">
@@ -71,6 +78,10 @@
         {{- end }}
         {{- if gt (len $targets) 1 }}
           {{ partial "language-selector.html" (dict "page" . "class" "nav-util landing-language-selector") }}
+        {{- else }}{{ with $altSite }}
+        <a class="nav-util nav-alt-site" href="{{ .url }}" target="_blank" rel="noopener noreferrer"
+           title="{{ .label }}" aria-label="{{ .label }}"><i class="fa-solid fa-language" aria-hidden="true"></i><span>{{ .label }}</span></a>
+        {{- end }}
         {{- end }}
         {{- if $darkMode.showMenu }}
         {{- /* Click toggles light/dark; hovering reveals the three-mode
@@ -97,6 +108,7 @@
         {{- with $config.projectRepo }}
         <a href="{{ . }}" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub">
           {{- partialCached "shell/icon.html" "github" "github" -}}
+          {{- with $githubStars }}<span class="nav-count" data-td-github-stars>{{ . }}</span>{{ end -}}
         </a>
         {{- end }}
         {{- if $drawerMode }}
@@ -109,7 +121,40 @@
           {{- partialCached "shell/icon.html" "menu" "menu" -}}
         </button>
         {{- end }}
+        {{- if $landingSurface }}
+        <button class="nav-util landing-mobile-menu-toggle" type="button" data-td-landing-menu-toggle
+          title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
+          aria-controls="td-landing-mobile-menu" aria-expanded="false">
+          {{- partialCached "shell/icon.html" "menu" "landing-menu" -}}
+        </button>
+        {{- end }}
       </div>
     </nav>
   </div>
 </header>
+{{- if $landingSurface }}
+<div class="landing-mobile-menu d-print-none" id="td-landing-mobile-menu" data-td-landing-menu hidden>
+  <nav aria-label="{{ T "ui_main_nav" }}">
+    {{- range .Site.Menus.main }}
+      {{- if ne .Identifier "github" }}
+        {{- partial "navbar-entry-link.html" (dict "page" $ "entry" . "class" "mobile-menu-link") -}}
+        {{- if .HasChildren }}
+        <div class="landing-mobile-menu__children">
+          {{- partial "navbar-group-items.html" (dict "page" $ "items" .Children "mode" "mobile" "top" . "depth" 1) -}}
+        </div>
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if $localSearch }}
+    <button type="button" class="mobile-menu-link mobile-menu-link--button" data-td-shell-search-open data-td-landing-menu-dismiss
+      aria-haspopup="dialog" aria-expanded="false">{{ partialCached "shell/icon.html" "search" "landing-mobile-search" }}<span>{{ T "ui_search" }}</span></button>
+    {{- end }}
+    {{- with $altSite }}
+    <a class="mobile-menu-link" href="{{ .url }}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-language" aria-hidden="true"></i><span>{{ .label }}</span></a>
+    {{- end }}
+    {{- with $config.projectRepo }}
+    <a class="mobile-menu-link" href="{{ . }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i><span>GitHub{{ with $githubStars }} · {{ . }}{{ end }}</span></a>
+    {{- end }}
+  </nav>
+</div>
+{{- end }}

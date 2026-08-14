@@ -1,3 +1,5 @@
+{{- /* Deprecated compatibility shortcode. Prefer landing section actions;
+     retained unchanged for Docsy-derived sites. */ -}}
 {{ with .Parent }}
 {{ $id := $.Get "id" | default (printf "td-block-%d" ( add .Ordinal 1 ))  }}
 {{ $color := $.Get "color" | default "blue" }}

@@ -1,9 +1,9 @@
 # PRD 5 · 场景组件体系（Scenario Components）— 设计沉淀
 
-状态：**0.4 阅读与发布已实现并冻结；0.5 Landing 与 0.6 Book 待后续实现**
-—— 开放问题已于 2026-08-13 裁决（见 §8 逐条决议）；0.4 实现契约见
-`prd5-reading-release-contract.md`。源码完成不等于标签发布、消费站 pin 或
-线上部署。
+状态：**0.4 阅读与发布、0.5 Landing 已实现并冻结；0.6 Book 待后续实现**
+—— 开放问题已于 2026-08-13 裁决（见 §8 逐条决议）；已实现契约见
+`prd5-reading-release-contract.md` 与 `prd5-landing-contract.md`。源码完成
+不等于标签发布、消费站 pin 或线上部署。
 任务分解与执行提示词见本地 `plan/` 目录（gitignored 工作区，不入库）。
 各 track 验收后按惯例冻结为 contract。
 

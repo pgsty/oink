@@ -1,0 +1,30 @@
+{{- /* Compact numeric chrome while preserving preformatted site data such as
+     "5.52k". Numeric values use one decimal only when it carries information. */ -}}
+{{- $value := . -}}
+{{- $result := "" -}}
+{{- if eq (printf "%T" $value) "string" -}}
+  {{- $result = strings.TrimSpace $value -}}
+{{- else -}}
+  {{- $number := float $value -}}
+  {{- $absolute := math.Abs $number -}}
+  {{- $scaled := $number -}}
+  {{- $suffix := "" -}}
+  {{- if ge $absolute 1000000000.0 -}}
+    {{- $scaled = div $number 1000000000.0 -}}
+    {{- $suffix = "B" -}}
+  {{- else if ge $absolute 1000000.0 -}}
+    {{- $scaled = div $number 1000000.0 -}}
+    {{- $suffix = "M" -}}
+  {{- else if ge $absolute 1000.0 -}}
+    {{- $scaled = div $number 1000.0 -}}
+    {{- $suffix = "k" -}}
+  {{- end -}}
+  {{- if not $suffix -}}
+    {{- $result = printf "%v" $value -}}
+  {{- else -}}
+    {{- $text := printf "%.1f" $scaled -}}
+    {{- $text = replaceRE `[.]0$` "" $text -}}
+    {{- $result = printf "%s%s" $text $suffix -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

@@ -1,0 +1,41 @@
+{{- $page := .page -}}{{- $home := .data -}}{{- $chunks := slice -}}
+{{- range $index, $entry := ($home.sections | default slice) -}}
+  {{- $resolved := partial "landing/entry.html" (dict "home" $home "entry" $entry) -}}
+  {{- if and $resolved.enabled $resolved.data -}}
+    {{- $data := $resolved.data -}}{{- $type := $resolved.type -}}{{- $lines := slice -}}
+    {{- with $data.title }}{{ $lines = $lines | append (printf "## %v" .) }}{{ end -}}
+    {{- $desc := $data.desc | default $data.lead | default $data.text -}}{{- with $desc }}{{ $lines = $lines | append (printf "%v" .) }}{{ end -}}
+    {{- if eq $type "hero" }}
+      {{- if not $data.title }}{{ with $data.title_lines }}{{ $title := slice }}{{ range . }}{{ if reflect.IsMap . }}{{ $words := slice }}{{ range .words }}{{ $words = $words | append .text }}{{ end }}{{ $title = $title | append (delimit $words " ") }}{{ else }}{{ $title = $title | append (printf "%v" .) }}{{ end }}{{ end }}{{ $lines = $lines | append (printf "## %s" (delimit $title " ")) }}{{ end }}{{ end -}}
+      {{- range ($data.actions | default slice) }}{{ $action := . }}{{ with ($action.url | default $action.href) }}{{ $lines = $lines | append (printf "[%s](%s)" (partial "content/markdown-escape.html" $action.label) (partial "content/markdown-url.html" .)) }}{{ end }}{{ end -}}
+    {{- else if eq $type "pricing" }}
+      {{- range $data.tiers }}{{ $name := partial "landing/field.html" (dict "page" $page "record" . "key" "name") }}{{ $price := partial "landing/field.html" (dict "page" $page "record" . "key" "price") }}{{ $period := partial "landing/field.html" (dict "page" $page "record" . "key" "period") }}{{ $lines = $lines | append (printf "### %s\n\n**%s%s**" $name $price (cond (eq $period false) "" (printf " %s" $period))) }}{{ $features := partial "landing/field.html" (dict "page" $page "record" . "key" "features") }}{{ range $features }}{{ $lines = $lines | append (printf "- %v" .) }}{{ end }}{{ end -}}
+    {{- else if eq $type "pricing-compare" }}
+      {{- $head := slice "Feature" }}{{ range $data.tiers }}{{ $head = $head | append (printf "%v" .) }}{{ end }}{{ $separator := slice }}{{ range $head }}{{ $separator = $separator | append "---" }}{{ end }}{{ $lines = $lines | append (printf "| %s |\n| %s |" (delimit $head " | ") (delimit $separator " | ")) }}{{ range $data.groups }}{{ $group := partial "landing/field.html" (dict "page" $page "record" . "key" "name") }}{{ $groupCells := slice (printf "**%s**" $group) }}{{ range $data.tiers }}{{ $groupCells = $groupCells | append "" }}{{ end }}{{ $lines = $lines | append (printf "| %s |" (delimit $groupCells " | ")) }}{{ range .rows }}{{ $name := partial "landing/field.html" (dict "page" $page "record" . "key" "name") }}{{ $cells := partial "landing/field.html" (dict "page" $page "record" . "key" "cells") }}{{ $lines = $lines | append (printf "| %s | %s |" $name (delimit $cells " | ")) }}{{ end }}{{ end -}}
+    {{- else if eq $type "command-box" }}
+      {{- $lines = $lines | append (printf "```%s\n%s\n```" ($data.lang | default "text") $data.code) -}}
+    {{- else if eq $type "steps" }}
+      {{- range $stepIndex, $item := $data.items }}{{ $lines = $lines | append (printf "%d. **%s** — %s" (add $stepIndex 1) $item.title ($item.desc | default $item.text | default "")) }}{{ with $item.cmd }}{{ $lines = $lines | append (printf "   `%s`" .code) }}{{ end }}{{ end -}}
+    {{- else if eq $type "timeline" }}
+      {{- range $data.items }}{{ $lines = $lines | append (printf "- **%s · %s** — %s" .date .title (.desc | default .text | default "")) }}{{ end -}}
+    {{- else if eq $type "code-plate" }}
+      {{- if isset $data "code" }}{{ $lines = $lines | append (printf "```%s\n%s\n```" ($data.lang | default "text") (strings.TrimRight "\r\n" $data.code)) }}{{ else }}{{ $raw := slice }}{{ range $data.lines }}{{ $raw = $raw | append (printf "%s%s" (.prefix | default "") .text) }}{{ end }}{{ $lines = $lines | append (printf "```text\n%s\n```" (delimit $raw "\n")) }}{{ end -}}
+    {{- else if eq $type "case-study" }}
+      {{- range $data.stats }}{{ $lines = $lines | append (printf "- **%v** %s" .value .label) }}{{ end }}{{ $lines = $lines | append (printf "> %s\n>\n> — %s" $data.quote $data.source) -}}
+    {{- else if eq $type "download" }}
+      {{- $keys := $data.keys | default slice }}{{ with $data.key }}{{ $keys = $keys | append . }}{{ end }}{{ range $downloadIndex, $key := $keys }}{{ $download := partial "download/resolve.html" (dict "page" $page "key" $key "position" (printf "%s: landing download %s" $page.Path $key)) }}{{ $rendered := partial "download/render.html" (dict "page" $page "data" $download "owner" (printf "landing-text-%d-%d" $index $downloadIndex)) }}{{ $lines = $lines | append (printf "%s" $rendered) }}{{ end -}}
+    {{- else if eq $type "bar-chart" }}
+      {{- range $data.items }}{{ $lines = $lines | append (printf "- %s: %v%s" .label .value (cond (isset $data "unit") (printf " %s" $data.unit) "")) }}{{ end -}}
+    {{- else if eq $type "metrics" }}
+      {{- range $data.items }}{{ $value := printf "%v%s" .value (.suffix | default "") }}{{ $label := partial "landing/field.html" (dict "page" $page "record" . "key" "label") }}{{ $line := printf "- **%s** %s" $value $label }}{{ with .source }}{{ $source := . }}{{ with $source.url }}{{ $line = printf "%s ([%s](%s))" $line ($source.label | default .) . }}{{ end }}{{ end }}{{ $lines = $lines | append $line }}{{ end -}}
+    {{- else if eq $type "capabilities" }}
+      {{- range $data.items }}{{ $label := partial "landing/field.html" (dict "page" $page "record" . "key" "title") }}{{ $lines = $lines | append (printf "- **%s**" $label) }}{{ range (.bullets | default slice) }}{{ $lines = $lines | append (printf "  - %v" .) }}{{ end }}{{ end -}}
+    {{- else if or (isset $data "items") (in (slice "capabilities" "cards" "logo-wall" "gallery" "testimonials" "contributors" "faq" "metrics" "principles") $type) }}
+      {{- range $data.items }}{{ $item := . }}{{ $label := $item.title | default $item.name | default $item.question | default $item.label }}{{ $body := $item.desc | default $item.text | default $item.answer | default $item.comment | default $item.quote }}{{ if $label }}{{ $display := printf "**%v**" $label }}{{ with ($item.url | default $item.href) }}{{ $display = printf "[%s](%s)" $display (partial "content/markdown-url.html" .) }}{{ end }}{{ $lines = $lines | append (printf "- %s%s" $display (cond (ne $body nil) (printf " — %v" $body) "")) }}{{ end }}{{ end -}}
+    {{- else if eq $type "markdown" }}{{ with ($data.body | default $data.content) }}{{ $lines = $lines | append (printf "%v" .) }}{{ end -}}
+    {{- else if eq $type "cta" }}{{ range ($data.actions | default slice) }}{{ $action := . }}{{ with $action.url }}{{ $lines = $lines | append (printf "[%s](%s)" $action.label .) }}{{ end }}{{ end -}}
+    {{- end -}}
+    {{- if $lines }}{{ $chunks = $chunks | append (delimit $lines "\n\n") }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (delimit $chunks "\n\n") -}}

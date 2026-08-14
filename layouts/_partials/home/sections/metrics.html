@@ -1,21 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-metrics{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id "compact" true) }}
-    {{- with $data.items }}
-    <div class="oink-metric-grid" style="--oink-columns: {{ $data.columns | default 4 }}">
-      {{- range . }}
-      <div class="oink-metric">
-        {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
-        {{- if isset . "value" }}<strong>{{ partial "home/markdown.html" (dict "page" $page "value" .value) }}</strong>{{ end }}
-        {{- with .label }}<span>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</span>{{ end }}
-        {{- with .desc }}<small>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</small>{{ end }}
-        {{- partial "home/action.html" (dict "page" $page "item" . "label" $data.link_label) }}
-      </div>
-      {{- end }}
-    </div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/metrics.html. */ -}}
+{{- partial "landing/sections/metrics.html" . -}}

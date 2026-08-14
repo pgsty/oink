@@ -1,15 +1,2 @@
-{{- $page := .page -}}
-{{- $item := .item -}}
-{{- $url := $item.url | default $item.href -}}
-{{- with $url -}}
-  {{- $name := $item.name | default $item.title | default "item" | markdownify | plainify -}}
-  {{- $label := $.label | default $item.link_label -}}
-<a class="oink-card-link" href="{{ . | relLangURL }}"{{ if $item.external }} target="_blank" rel="noopener noreferrer"{{ end }}>
-  {{- with $label -}}
-    {{- partial "home/markdown.html" (dict "page" $page "value" .) -}}
-  {{- else -}}
-  <span class="visually-hidden">{{ $name }}</span>
-  {{- end }}
-  <i class="{{ $item.link_icon | default "fa-solid fa-arrow-right" }}" aria-hidden="true"></i>
-</a>
-{{- end -}}
+{{- /* Deprecated compatibility adapter: use landing/action.html. */ -}}
+{{- partial "landing/action.html" . -}}

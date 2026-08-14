@@ -1,5 +1,5 @@
 {{ define "main" -}}
-{{- $home := partial "home-data.html" . -}}
+{{- $home := partial "landing/home-data.html" . -}}
 {{- $sections := slice -}}
 
 {{- if isset $home "sections" -}}
@@ -13,14 +13,5 @@
   {{- end -}}
 {{- end -}}
 
-<div class="oink-landing">
-  {{- range $index, $section := $sections -}}
-    {{- partial "home/section.html" (dict
-      "page" $
-      "home" $home
-      "entry" $section
-      "index" $index
-    ) -}}
-  {{- end -}}
-</div>
+{{- partial "landing/render.html" (dict "page" . "data" (merge $home (dict "sections" $sections))) -}}
 {{- end }}

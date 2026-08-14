@@ -1,0 +1,4 @@
+{{- /* Landing sections are deliberately omitted from feed output. A landing
+     page may opt into RSS for output-matrix tests, but it contributes no
+     interactive or presentation-only component markup. */ -}}
+{{- .Store.Set "tdOutputFormat" "rss" -}}

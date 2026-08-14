@@ -65,6 +65,10 @@ ui_code_copy_error: Copy failed
 ui_code_show_all: Show all {{ .Count }} lines
 ui_code_collapse: Collapse code
 ui_code_group_label: Code examples
+ui_pricing_featured: Recommended
+ui_pricing_included: Included
+ui_pricing_excluded: Not included
+ui_marquee_pause: Pause motion
 ui_kbd_with: with
 ui_field_required: required
 ui_action_unavailable: unavailable

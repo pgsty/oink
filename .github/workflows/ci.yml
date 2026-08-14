@@ -91,6 +91,9 @@ jobs:
       - name: Check PRD 5 download data
         run: python3 scripts/check-download.py
 
+      - name: Check PRD 5 landing surfaces
+        run: python3 scripts/check-landing.py
+
       - name: Check PRD 5 shared scenario fixes
         run: python3 scripts/check-prd5-misc.py
 

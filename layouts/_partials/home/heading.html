@@ -1,23 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-{{- $description := "" -}}
-{{- with index $data "desc" -}}
-  {{- $description = printf "%v" . -}}
-{{- else -}}
-  {{- with index $data "text" }}{{ $description = printf "%v" . }}{{ end -}}
-{{- end -}}
-{{- $compact := cond (index . "compact") " oink-section__head--compact" "" -}}
-{{- if or (index $data "eyebrow") (index $data "title") $description -}}
-<header class="oink-section__head{{ $compact }}">
-  {{- with index $data "eyebrow" }}
-  <p class="oink-section__eyebrow"><span>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</span><i aria-hidden="true"></i></p>
-  {{- end }}
-  {{- with index $data "title" }}
-  <h2 id="{{ $id }}-title">{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</h2>
-  {{- end }}
-  {{- with $description }}
-  <p class="oink-section__description">{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>
-  {{- end }}
-</header>
-{{- end -}}
+{{- /* Deprecated compatibility adapter: use landing/heading.html. */ -}}
+{{- partial "landing/heading.html" . -}}

@@ -1,0 +1,23 @@
+{{- /* Local-only badge data. A direct parameter is the generic API; the
+     brand.metrics fallback keeps the already deployed PGSTY data shape useful
+     without any client-side request. */ -}}
+{{- $value := false -}}
+{{- $result := false -}}
+{{- if isset .Site.Params.ui "github_stars" -}}
+  {{- $value = .Site.Params.ui.github_stars -}}
+{{- else -}}
+  {{- with index hugo.Data "brand" -}}
+    {{- with index . "metrics" -}}
+      {{- if isset . "github_stars" }}{{ $value = .github_stars }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if ne $value false -}}
+  {{- if not (in (slice "string" "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float32" "float64") (printf "%T" $value)) -}}
+    {{- errorf "params.ui.github_stars must be a string or number" -}}
+  {{- end -}}
+  {{- $label := partial "landing/compact-number.html" $value -}}
+  {{- if not $label }}{{ errorf "params.ui.github_stars must not be empty" }}{{ end -}}
+  {{- $result = $label -}}
+{{- end -}}
+{{- return $result -}}

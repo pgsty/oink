@@ -1,0 +1,12 @@
+{{- /* Language-aware fact field: full language tag (underscored), primary
+     tag, then unsuffixed base. camelCase aliases are intentionally excluded. */ -}}
+{{- $record := .record -}}
+{{- $key := .key -}}
+{{- $page := .page -}}
+{{- $value := false -}}
+{{- $lang := replace (lower $page.Site.Language.Lang) "-" "_" -}}
+{{- $primary := index (split $lang "_") 0 -}}
+{{- range slice (printf "%s_%s" $key $lang) (printf "%s_%s" $key $primary) $key -}}
+  {{- if and (eq $value false) (isset $record .) }}{{ $value = index $record . }}{{ end -}}
+{{- end -}}
+{{- return $value -}}

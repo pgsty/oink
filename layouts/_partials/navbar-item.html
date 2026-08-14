@@ -15,12 +15,23 @@
     {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link") }}
   {{- end -}}
 {{- else if eq $mode "desktop" -}}
+{{- $columns := 1 -}}
+{{- with $entry.Params.columns -}}
+  {{- if not (findRE `^[1-4]$` (printf "%v" .)) -}}
+    {{- errorf "Navbar menu %q columns must be an integer from 1 to 4" $entry.Name -}}
+  {{- end -}}
+  {{- $columns = int . -}}
+  {{- if or (lt $columns 1) (gt $columns 4) -}}
+    {{- errorf "Navbar menu %q columns must be from 1 to 4; got %d" $entry.Name $columns -}}
+  {{- end -}}
+{{- end -}}
 {{- /* No disclosure caret on desktop: the parent label navigates on click and
      the panel opens on hover or keyboard focus (see navbar-menu.js). Touch
      users navigate directly; the target page carries its own navigation. */ -}}
 <div class="nav-menu" data-td-navbar-menu>
   {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link" "controls" $panelID) }}
-  <div class="nav-menu__panel" id="{{ $panelID }}" data-td-navbar-panel hidden>
+  <div class="nav-menu__panel{{ if gt $columns 1 }} nav-menu__panel--mega{{ end }}" id="{{ $panelID }}" data-td-navbar-panel
+       style="--td-navbar-columns: {{ $columns }}" data-td-navbar-columns="{{ $columns }}" hidden>
     {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" "desktop" "top" $entry "depth" 1) }}
   </div>
 </div>

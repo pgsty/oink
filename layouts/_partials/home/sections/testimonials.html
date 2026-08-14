@@ -1,27 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-testimonials-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    {{- with $data.items }}
-    <div class="oink-testimonial-grid" style="--oink-columns: {{ $data.columns | default 3 }}">
-      {{- range . }}
-      <figure class="oink-testimonial{{ with .class }} {{ . }}{{ end }}">
-        {{- with (.comment | default .quote) }}
-        <blockquote>{{ partial "home/markdown-block.html" (dict "page" $page "value" .) }}</blockquote>
-        {{- end }}
-        <figcaption>
-          {{- if or .image .logo .icon }}<div class="oink-testimonial__avatar">{{ partial "home/media.html" (dict "item" .) }}</div>{{ end }}
-          <div>
-            {{- with (.name | default .title) }}<strong>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</strong>{{ end }}
-            {{- with (.desc | default .role) }}<span>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</span>{{ end }}
-          </div>
-          {{- partial "home/action.html" (dict "page" $page "item" . "label" (.source | default $data.link_label)) }}
-        </figcaption>
-      </figure>
-      {{- end }}
-    </div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/testimonials.html. */ -}}
+{{- partial "landing/sections/testimonials.html" . -}}

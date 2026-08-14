@@ -15,6 +15,6 @@
   {{- end -}}
 {{- end -}}
 {{- if not (or $footer.brand $footer.columns) -}}
-  {{- with (partial "home-data.html" .).footer }}{{ $footer = . }}{{ end -}}
+  {{- with (partial "landing/home-data.html" .).footer }}{{ $footer = . }}{{ end -}}
 {{- end -}}
 {{- return $footer -}}

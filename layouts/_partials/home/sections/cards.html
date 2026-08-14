@@ -1,21 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-cards-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    {{- with $data.items }}
-    <div class="oink-card-grid" style="--oink-columns: {{ $data.columns | default 3 }}">
-      {{- range . }}
-      <article class="oink-card{{ with .class }} {{ . }}{{ end }}">
-        {{- if or .image .logo .icon }}<div class="oink-card__media">{{ partial "home/media.html" (dict "item" .) }}</div>{{ end }}
-        {{- with .meta }}<p class="oink-card__meta">{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
-        {{- with (.title | default .name) }}<h3>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
-        {{- with (.desc | default .text) }}<div class="oink-card__description">{{ partial "home/markdown-block.html" (dict "page" $page "value" .) }}</div>{{ end }}
-        {{- partial "home/action.html" (dict "page" $page "item" . "label" $data.link_label) }}
-      </article>
-      {{- end }}
-    </div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/cards.html. */ -}}
+{{- partial "landing/sections/cards.html" . -}}

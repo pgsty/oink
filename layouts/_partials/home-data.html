@@ -1,14 +1,2 @@
-{{- $home := dict -}}
-{{- with index hugo.Data "home" -}}
-  {{- with index . $.Site.Language.Lang -}}
-    {{- $home = . -}}
-  {{- else -}}
-    {{- with index . "en" -}}
-      {{- $home = . -}}
-    {{- else -}}
-      {{- /* Single-language sites may use data/home.yaml directly. */ -}}
-      {{- $home = . -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- return $home -}}
+{{- /* Deprecated compatibility adapter: use landing/home-data.html. */ -}}
+{{- return (partial "landing/home-data.html" .) -}}

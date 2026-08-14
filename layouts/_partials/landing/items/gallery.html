@@ -1,0 +1,12 @@
+{{- $page := .page -}}{{- $data := .data -}}{{- $item := .item -}}{{- $marquee := .marquee | default false -}}
+<article class="oink-gallery-card{{ with $item.class }} {{ . }}{{ end }}">
+  {{- if or $item.image $item.logo $item.icon }}
+  <div class="oink-gallery-card__media">{{ partial "landing/media.html" (dict "item" (merge $item (cond $marquee (dict "loading" "lazy") dict))) }}</div>
+  {{- end }}
+  <div class="oink-gallery-card__body">
+    {{- with $item.badge }}<p class="oink-gallery-card__badge">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+    {{- with ($item.title | default $item.name) }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
+    {{- with ($item.desc | default $item.text) }}<div class="oink-gallery-card__description">{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</div>{{ end }}
+    {{- partial "landing/action.html" (dict "page" $page "item" $item "label" $data.link_label) }}
+  </div>
+</article>

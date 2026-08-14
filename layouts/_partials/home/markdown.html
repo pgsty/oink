@@ -1,3 +1,2 @@
-{{- if and (isset . "value") (ne .value nil) -}}
-  {{- .page.RenderString (dict "display" "inline") (printf "%v" .value) -}}
-{{- end -}}
+{{- /* Deprecated compatibility adapter: use landing/markdown.html. */ -}}
+{{- partial "landing/markdown.html" . -}}

@@ -159,13 +159,14 @@ Theme implementation contracts:
 [Enhanced code blocks](docs/enhanced-code-blocks.md) ·
 [Typography tokens](docs/typography-tokens.md) ·
 [PRD 4 contract](docs/prd4-navigation-command-palette-contract.md) ·
-[PRD 5 reading/release](docs/prd5-reading-release-contract.md)
+[PRD 5 reading/release](docs/prd5-reading-release-contract.md) ·
+[PRD 5 Landing](docs/prd5-landing-contract.md)
 
 Navigation and Command Palette migration reference, included in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·
 [简体中文](docs/prd4-migration-guide.zh.md).
 
-Scenario Components 0.4 migration reference:
+Scenario Components 0.4–0.5 migration reference:
 [English](docs/prd5-migration-guide.md) ·
 [简体中文](docs/prd5-migration-guide.zh.md).
 

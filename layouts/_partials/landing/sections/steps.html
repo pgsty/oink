@@ -1,0 +1,22 @@
+{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
+{{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ errorf "%s: steps.items must be a non-empty array" $page.Path }}{{ end -}}
+<section id="{{ $id }}" class="oink-section oink-steps-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="landing-container">
+    {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
+    <ol class="oink-landing-steps"{{ if $interactive }} data-reveal{{ end }}>
+      {{- range $index, $item := $items }}
+        {{- if not (reflect.IsMap $item) }}{{ errorf "%s: steps item %d must be a map" $page.Path (add $index 1) }}{{ end -}}
+        {{- if not ($item.title | default "") }}{{ errorf "%s: steps item %d requires title" $page.Path (add $index 1) }}{{ end -}}
+      <li>{{ with $item.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" $item.title) }}</h3>{{ with ($item.desc | default $item.text) }}<div>{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</div>{{ end }}
+        {{- with $item.cmd }}
+          {{- if not (reflect.IsMap .) }}{{ errorf "%s: steps item %d cmd must be a map" $page.Path (add $index 1) }}{{ end -}}
+          {{- $code := strings.TrimSpace (printf "%v" (.code | default "")) -}}{{- if not $code }}{{ errorf "%s: steps item %d cmd.code is required" $page.Path (add $index 1) }}{{ end -}}
+          {{- if $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
+        <div class="oink-step-command"><code>{{ $code }}</code>{{ if $interactive }}<button type="button" data-copy-text="{{ $code }}" data-label-copied="{{ T "ui_code_copied" }}" aria-label="{{ T "ui_code_copy_label" }}"><i class="fa-regular fa-copy" aria-hidden="true"></i><span data-copy-status aria-live="polite"></span></button>{{ end }}</div>
+        {{- end }}
+      </li>
+      {{- end }}
+    </ol>
+  </div>
+</section>

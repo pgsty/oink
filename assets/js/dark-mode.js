@@ -42,6 +42,13 @@
     } else {
       document.documentElement.setAttribute('data-bs-theme', theme)
     }
+    try {
+      window.dispatchEvent(new CustomEvent('oink-theme-change', {
+        detail: { theme: document.documentElement.getAttribute('data-bs-theme') },
+      }))
+    } catch (_) {
+      // The attribute remains the source of truth; observers still update.
+    }
   }
 
   const syncDirectThemeButtons = () => {

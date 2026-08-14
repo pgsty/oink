@@ -1,0 +1,54 @@
+{{- $page := .page -}}
+{{- $home := .home -}}
+{{- $resolved := partial "landing/entry.html" (dict "home" $home "entry" .entry) -}}
+{{- $rawType := $resolved.rawType -}}
+{{- $type := $resolved.type -}}
+{{- $key := $resolved.key -}}
+{{- $entryMap := $resolved.entry -}}
+{{- $data := $resolved.data -}}
+{{- $enabled := $resolved.enabled -}}
+
+{{- $registry := dict
+  "hero" "landing/sections/hero.html"
+  "metrics" "landing/sections/metrics.html"
+  "capabilities" "landing/sections/capabilities.html"
+  "principles" "landing/sections/principles.html"
+  "cards" "landing/sections/cards.html"
+  "logo-wall" "landing/sections/logo-wall.html"
+  "gallery" "landing/sections/gallery.html"
+  "testimonials" "landing/sections/testimonials.html"
+  "contributors" "landing/sections/contributors.html"
+  "faq" "landing/sections/faq.html"
+  "markdown" "landing/sections/markdown.html"
+  "cta" "landing/sections/cta.html"
+  "pricing" "landing/sections/pricing.html"
+  "pricing-compare" "landing/sections/pricing-compare.html"
+  "command-box" "landing/sections/command-box.html"
+  "steps" "landing/sections/steps.html"
+  "timeline" "landing/sections/timeline.html"
+  "code-plate" "landing/sections/code-plate.html"
+  "case-study" "landing/sections/case-study.html"
+  "download" "landing/sections/download.html"
+  "bar-chart" "landing/sections/bar-chart.html"
+-}}
+
+{{- $template := index $registry $type | default "" -}}
+{{- with index $entryMap "partial" }}{{ $template = printf "%v" . }}{{ end -}}
+
+{{- if and $enabled $data $template -}}
+    {{- $id := $key | default $type -}}
+    {{- with index $entryMap "id" }}{{ $id = printf "%v" . }}{{ end -}}
+    {{- with index $data "id" }}{{ $id = printf "%v" . }}{{ end -}}
+    {{- $id = $id | anchorize -}}
+    {{- partial $template (dict
+      "page" $page
+      "home" $home
+      "data" $data
+      "entry" $entryMap
+      "type" $type
+      "id" $id
+      "index" $.index
+    ) -}}
+{{- else if and $enabled $data -}}
+  {{- warnf "OINK landing page: unknown section type %q" $rawType -}}
+{{- end -}}

@@ -1,0 +1,32 @@
+{{- $page := .Page -}}
+{{- with .Site.Params.copyright -}}
+  {{- $fromYear := "" -}}
+  {{- $toYear := now.Year -}}
+  {{- $authors := "" -}}
+  {{- if reflect.IsMap . -}}
+    {{- $fromYear = .from_year -}}
+    {{- $toYear = .to_year | default now.Year -}}
+    {{- $authors = .authors -}}
+  {{- else -}}
+    {{- $authors = . -}}
+  {{- end -}}
+  {{- if eq (printf "%v" $toYear) "present" }}{{ $toYear = now.Year }}{{ end -}}
+
+  <span class="td-footer__copyright">&copy;
+    {{- with $fromYear }} {{ . }}{{ if ne (printf "%v" .) (printf "%v" $toYear) }}&ndash;{{ $toYear }}{{ end }}{{ else }} {{ $toYear }}{{ end }}
+    <span class="td-footer__authors">
+      {{- $authors
+            | default (printf "%s Authors" ($.Site.Title | default "Site"))
+            | $page.RenderString -}}
+    </span>
+  </span>
+
+  {{- with T "footer_all_rights_reserved" -}}
+    <span class="td-footer__all_rights_reserved">{{ . }}</span>
+  {{- end -}}
+{{- else -}}
+  {{- with .Site.Copyright -}}
+    {{- /* For historical reasons Docsy processes this as HTML, not Markdown. */ -}}
+    <span class="td-footer__copyright">{{ . | safeHTML }}</span>
+  {{- end -}}
+{{- end -}}

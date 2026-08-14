@@ -1,20 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-principles{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    {{- with $data.items }}
-    <div class="oink-principle-grid" style="--oink-columns: {{ $data.columns | default 3 }}">
-      {{- range $index, $item := . }}
-      <article>
-        <span>{{ printf "%02d" (add $index 1) }}</span>
-        <div class="oink-principle__icon">{{ partial "home/media.html" (dict "item" $item) }}</div>
-        <h3>{{ partial "home/markdown.html" (dict "page" $page "value" ($item.title | default $item.name)) }}</h3>
-        {{- with ($item.desc | default $item.text) }}<p>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
-      </article>
-      {{- end }}
-    </div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/principles.html. */ -}}
+{{- partial "landing/sections/principles.html" . -}}

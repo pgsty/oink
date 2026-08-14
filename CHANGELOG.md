@@ -5,6 +5,31 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-14
+
+### Added
+
+- Generalize the data-driven homepage renderer into a reusable `layout: landing`
+  shell for regular pages, with inline and language-aware local data sources,
+  the existing section family, and new pricing, comparison, command, steps,
+  timeline, code, case-study, download, and bar-chart sections.
+- Add a conditional `landing.js` progressive-enhancement runtime for reveal,
+  count-up, copy, theme-image, and compact-menu behavior. Keep server-rendered
+  content complete without JavaScript and make CSS-only marquees pausable,
+  reduced-motion safe, forced-colors legible, and duplicate-track inert.
+- Freeze the PRD 5 0.5 Landing human and machine contracts, bilingual migration
+  guidance, root/subpath output fixtures, and focused Hugo and browser checks.
+
+### Changed
+
+- Consolidate the legacy `home/` partial family behind thin adapters to the
+  canonical Landing registry; keep existing homepage data and deliberate local
+  partial escape hatches compatible while deprecating Docsy block shortcodes
+  for new Landing work.
+- Reuse the 0.4 download facts in Landing pages, add local navbar/footer facts
+  for GitHub stars and an alternate site, and support one-to-four-column navbar
+  mega menus without introducing runtime fact retrieval or a second data model.
+
 ## [0.4.0] - 2026-08-14
 
 ### Added
@@ -389,7 +414,8 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/pgsty/oink/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/pgsty/oink/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pgsty/oink/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/pgsty/oink/compare/v0.2.0...v0.2.1

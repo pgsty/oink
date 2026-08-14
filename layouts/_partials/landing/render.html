@@ -1,0 +1,15 @@
+{{- $page := .page -}}
+{{- $data := .data -}}
+{{- $sections := $data.sections | default (slice) -}}
+{{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{- if $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
+<div class="oink-landing{{ if not $page.IsHome }} oink-landing--page{{ end }}"{{ if $interactive }} data-td-landing{{ end }}>
+  {{- range $index, $section := $sections -}}
+    {{- partial "landing/section.html" (dict
+      "page" $page
+      "home" $data
+      "entry" $section
+      "index" $index
+    ) -}}
+  {{- end -}}
+</div>

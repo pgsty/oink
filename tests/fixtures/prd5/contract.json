@@ -1,9 +1,13 @@
 {
   "version": 1,
-  "release_assignment": "0.4.0",
   "compatibility_floor": "0.160.1",
+  "release_assignments": {
+    "reading_release": "0.4.0",
+    "landing": "0.5.0"
+  },
   "authority": {
     "navigation": "existing_sidebar_tree",
+    "landing_content": "local_data_or_inline_sections",
     "release_facts": "page_front_matter",
     "download_facts": "data_download_key"
   },
@@ -33,23 +37,38 @@
     "rolling_interpolation": false,
     "rss": "strip"
   },
+  "landing": {
+    "layout": "landing",
+    "sources": ["inline_sections", "data/landing/<key>", "data/home/<lang>"],
+    "runtime_flag": "hasLanding",
+    "runtime_features": ["reveal", "count", "copy", "theme_image", "compact_menu"],
+    "marquee_pause": "css_checkbox",
+    "marquee_duplicate": ["aria-hidden", "inert"],
+    "new_sections": ["pricing", "pricing-compare", "command-box", "steps", "timeline", "code-plate", "case-study", "download", "bar-chart"],
+    "localized_field_order": ["exact_language", "primary_language", "base"],
+    "network_fetch": false,
+    "rss": "strip"
+  },
   "output_matrix": {
     "pager": {"html": "cards_and_head_rel", "print": "strip", "markdown": "strip", "rss": "strip"},
     "release_card": {"html": "card", "print": "links", "markdown": "links", "rss": "links"},
     "release_assets": {"html": "copy_table", "print": "static_table", "markdown": "pipe_table", "rss": "pipe_table"},
     "download": {"html": "sections", "print": "expanded", "markdown": "source", "rss": "strip"},
-    "eq_escape": {"html": "display_math", "print": "display_math", "markdown": "tex_block", "rss": "tex_block"}
+    "eq_escape": {"html": "display_math", "print": "display_math", "markdown": "tex_block", "rss": "tex_block"},
+    "landing": {"html": "enhanced", "print": "static", "markdown": "text", "rss": "strip"}
   },
   "runtime_flags": {
-    "hasAssetList": "asset-list.js"
+    "hasAssetList": "asset-list.js",
+    "hasLanding": "landing.js"
   },
   "planned_tracks": {
-    "landing": "0.5.0",
     "book": "0.6.0"
   },
   "non_goals": [
     "non_github_release_forge",
+    "pricing_period_toggle",
     "remote_fact_fetch",
+    "image_hotspots",
     "archive_shell",
     "glossary_component"
   ]

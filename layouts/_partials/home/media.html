@@ -1,18 +1,2 @@
-{{- $item := .item -}}
-{{- $label := $item.name | default $item.title | default "" -}}
-{{- $alt := $item.alt | default ($label | markdownify | plainify) -}}
-{{- $asset := $item.image | default $item.logo -}}
-{{- with $asset -}}
-<img src="{{ . | relURL }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
-{{- else -}}
-  {{- with $item.icon -}}
-    {{- $icon := printf "%v" . -}}
-    {{- if or (hasPrefix $icon "fa-") (in $icon " fa-") -}}
-<i class="{{ $icon }}" aria-hidden="true"></i>
-    {{- else if or (hasPrefix $icon "http://") (hasPrefix $icon "https://") (hasPrefix $icon "/") (in $icon "/") (in $icon ".svg") (in $icon ".png") (in $icon ".webp") (in $icon ".jpg") (in $icon ".jpeg") -}}
-<img src="{{ $icon | relURL }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
-    {{- else -}}
-<span aria-hidden="true">{{ $icon }}</span>
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- /* Deprecated compatibility adapter: use landing/media.html. */ -}}
+{{- partial "landing/media.html" . -}}

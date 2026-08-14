@@ -10,12 +10,10 @@
   {{- $collapsible = .collapsible | default false -}}
 {{- end -}}
 {{- with $p -}}
-{{- $copyright := .Site.Params.copyright | default dict -}}
-{{- $author := $copyright.authors | default .Site.Title -}}
-{{- $authorURL := $copyright.url | default "" -}}
-{{- $from := $copyright.from_year | default now.Year -}}
-{{- $to := $copyright.to_year | default now.Year -}}
-{{- if eq (printf "%v" $to) "present" }}{{ $to = now.Year }}{{ end -}}
+{{- $center := "Powered by [Oink](https://oink.pgsty.com)" -}}
+{{- if isset .Site.Params "footer_center_info" -}}
+  {{- $center = strings.TrimSpace (printf "%v" .Site.Params.footer_center_info) -}}
+{{- end -}}
 {{- /* Composed rather than branched: splitting an element across the arms of a
        conditional leaves Go's HTML template parser with unbalanced tags.
        `data-td-shell-footer` marks the page's one footer block for the
@@ -24,28 +22,30 @@
 {{- $tag := cond $nested "div" "footer" -}}
 {{- $attr := cond $nested "" " data-td-shell-footer" -}}
 {{ printf `<%s class="td-shell-footline d-print-none"%s>` $tag $attr | safeHTML }}
-  <div class="td-shell-footline__copy">
-    &copy; {{ $from }}{{ if ne (printf "%v" $from) (printf "%v" $to) }}&ndash;{{ $to }}{{ end }}
-    {{- if $authorURL }} <a href="{{ $authorURL }}">{{ $author | plainify }}</a>{{ else }} <span>{{ $author | markdownify }}</span>{{ end -}}
-  </div>
-  {{ with .Site.Params.footer_icp -}}
-  <div class="td-shell-footline__icp">
-    <a href="{{ $.Site.Params.footer_icp_url | default "https://beian.miit.gov.cn/" }}" target="_blank" rel="noopener">{{ . }}</a>
-  </div>
+  {{- with (partial "footer/copyright.html" .) }}
+  <div class="td-shell-footline__copy">{{ . }}</div>
   {{- end }}
-  <div class="td-shell-footline__lang">
-    {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
-  </div>
-  {{- if $collapsible }}
-  {{- /* Collapses the fat footer above this line; footer-collapse.js owns the
-       behavior and persists the choice in localStorage. */}}
-  <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
-    aria-expanded="true" aria-controls="td-site-footer"
-    title="{{ T "ui_footer_collapse" }}" aria-label="{{ T "ui_footer_collapse" }}"
-    data-label-collapse="{{ T "ui_footer_collapse" }}"
-    data-label-expand="{{ T "ui_footer_expand" }}">
-    {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
-  </button>
+  {{- with $center }}
+  <div class="td-shell-footline__center">{{ $p.RenderString (dict "display" "inline") . }}</div>
   {{- end }}
+  <div class="td-shell-footline__right">
+    <div class="td-shell-footline__lang">
+      {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
+      {{- if le (len (partial "language-targets.html" .)) 1 }}
+        {{- with (partial "landing/alt-site.html" .) }}<a class="td-shell-alt-site" href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .label }}</a>{{ end -}}
+      {{- end }}
+    </div>
+    {{- if $collapsible }}
+    {{- /* Collapses the fat footer above this line; footer-collapse.js owns the
+         behavior and persists the choice in localStorage. */}}
+    <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
+      aria-expanded="true" aria-controls="td-site-footer"
+      title="{{ T "ui_footer_collapse" }}" aria-label="{{ T "ui_footer_collapse" }}"
+      data-label-collapse="{{ T "ui_footer_collapse" }}"
+      data-label-expand="{{ T "ui_footer_expand" }}">
+      {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+    </button>
+    {{- end }}
+  </div>
 {{ printf "</%s>" $tag | safeHTML }}
 {{- end -}}

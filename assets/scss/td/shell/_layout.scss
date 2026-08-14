@@ -67,7 +67,8 @@
 .td-shell-footline {
   position: relative;
   z-index: 35; // Above both rails, below floating controls and dialogs.
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 1rem;
   width: 100%;
@@ -86,14 +87,22 @@
     }
   }
 
-  &__icp {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+  &__center {
+    grid-column: 2;
+    text-align: center;
+  }
+
+  &__right {
+    display: flex;
+    grid-column: 3;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    min-width: 0;
   }
 
   &__lang {
-    margin-inline-start: auto;
+    min-width: 0;
 
     .td-language-selector__item {
       padding: 4px 7px;
@@ -102,27 +111,29 @@
   }
 
   &__copy {
+    grid-column: 1;
     min-width: 0;
 
-    > span,
-    > span > p {
+    > .td-footer__copyright,
+    > .td-footer__copyright > p {
       display: inline;
       margin: 0;
     }
   }
 
   @media (max-width: 575.98px) {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr);
     gap: 6px;
     text-align: center;
 
-    &__icp {
-      position: static;
-      transform: none;
+    &__copy,
+    &__center,
+    &__right {
+      grid-column: 1;
     }
 
-    &__lang {
-      margin-inline-start: 0;
+    &__right {
+      justify-content: center;
     }
   }
 }

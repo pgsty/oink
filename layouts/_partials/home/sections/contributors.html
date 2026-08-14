@@ -1,22 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-contributors-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    {{- with $data.items }}
-    <div class="oink-contributor-grid" style="--oink-columns: {{ $data.columns | default 4 }}">
-      {{- range . }}
-      <article class="oink-contributor{{ with .class }} {{ . }}{{ end }}">
-        {{- if or .image .logo .icon }}<div class="oink-contributor__avatar">{{ partial "home/media.html" (dict "item" .) }}</div>{{ end }}
-        <div class="oink-contributor__copy">
-          {{- with (.name | default .title) }}<h3>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
-          {{- with (.desc | default .role) }}<p>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
-        </div>
-        {{- partial "home/action.html" (dict "page" $page "item" . "label" $data.link_label) }}
-      </article>
-      {{- end }}
-    </div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/contributors.html. */ -}}
+{{- partial "landing/sections/contributors.html" . -}}

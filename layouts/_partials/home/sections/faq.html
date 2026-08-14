@@ -1,21 +1,2 @@
-{{- $page := .page -}}
-{{- $data := .data -}}
-{{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-faq-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
-    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    {{- with $data.items }}
-    <div class="oink-faq-list">
-      {{- range . }}
-      <details class="oink-faq"{{ if .open }} open{{ end }}>
-        <summary>{{ partial "home/markdown.html" (dict "page" $page "value" (.question | default .title)) }}<i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-        <div class="oink-faq__answer">
-          {{- partial "home/markdown-block.html" (dict "page" $page "value" (.answer | default .desc | default .text)) -}}
-          {{- partial "home/action.html" (dict "page" $page "item" . "label" (.link_label | default $data.link_label)) }}
-        </div>
-      </details>
-      {{- end }}
-    </div>
-    {{- end }}
-  </div>
-</section>
+{{- /* Deprecated compatibility adapter: use landing/sections/faq.html. */ -}}
+{{- partial "landing/sections/faq.html" . -}}

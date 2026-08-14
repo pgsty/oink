@@ -1,3 +1,9 @@
-{{- $surface := or .IsHome (partial "shell/chrome-enabled.html" .) -}}
+{{- $isLanding := eq .Layout "landing" -}}
+{{- $landingSearch := true -}}
+{{- if isset .Site.Params.ui "landing_search" }}{{ $landingSearch = .Site.Params.ui.landing_search }}{{ end -}}
+{{- if and $isLanding (ne (printf "%T" $landingSearch) "bool") -}}
+  {{- errorf "params.ui.landing_search must be a boolean" -}}
+{{- end -}}
+{{- $surface := or .IsHome (partial "shell/chrome-enabled.html" .) (and $isLanding $landingSearch) -}}
 {{- $format := lower (.Store.Get "tdOutputFormat" | default "html") -}}
 {{- return and .Site.Params.offlineSearch $surface (ne $format "print") -}}

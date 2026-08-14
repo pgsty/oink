@@ -159,6 +159,17 @@
     }
   }
 
+  .nav-menu__panel--mega {
+    width: unquote('min(760px, calc(100vw - 32px))');
+    max-width: none;
+    grid-template-columns: repeat(var(--td-navbar-columns, 2), minmax(0, 1fr));
+    gap: 4px 10px;
+
+    &:not([hidden]) {
+      display: grid;
+    }
+  }
+
   .nav-menu__item-link,
   .nav-menu__group-title {
     display: grid;
@@ -349,6 +360,76 @@
     }
   }
 
+}
+
+.landing-mobile-menu-toggle {
+  display: none;
+}
+
+.landing-mobile-menu {
+  position: fixed;
+  inset: 56px 0 auto;
+  z-index: 99;
+  max-height: calc(100dvh - 56px);
+  overflow-y: auto;
+  padding: 12px 14px 20px;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  box-shadow: var(--td-brand-shadow-md);
+
+  &[hidden] {
+    display: none;
+  }
+
+  nav {
+    display: grid;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .mobile-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--bs-body-color);
+    text-align: start;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--td-brand-elev);
+    }
+  }
+
+  .mobile-menu-link--button {
+    width: 100%;
+  }
+
+  &__children {
+    padding-inline-start: 18px;
+  }
+}
+
+@media (max-width: 767.98px) {
+  // The rendered menu toggle is the authority for the alternate Landing
+  // navbar. Do not key this off [data-td-landing]: the homepage uses the
+  // Landing renderer too, but its PRD 4 compact navbar must keep the single
+  // visible link tree and utility controls.
+  body:has([data-td-landing-menu-toggle]) {
+    .landing-header .nav-menu-zone,
+    .landing-header .nav-util-zone > :not(.landing-mobile-menu-toggle) {
+      display: none;
+    }
+
+    .landing-header .landing-mobile-menu-toggle {
+      display: inline-flex;
+    }
+  }
 }
 
 // Wordmark sites keep a plain logo in reserve for the compact state.

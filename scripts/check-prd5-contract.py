@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the published PRD 5 0.4 human and machine contracts aligned."""
+"""Keep the published PRD 5 0.4 and 0.5 contracts aligned."""
 
 from __future__ import annotations
 
@@ -10,7 +10,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "tests/fixtures/prd5/contract.json"
-DOC = ROOT / "docs/prd5-reading-release-contract.md"
+DOCS = {
+    "reading_release": ROOT / "docs/prd5-reading-release-contract.md",
+    "landing": ROOT / "docs/prd5-landing-contract.md",
+}
 
 
 class ContractError(RuntimeError):
@@ -24,12 +27,17 @@ def require(condition: bool, message: str) -> None:
 
 def validate_machine(contract: dict[str, object]) -> None:
     require(contract.get("version") == 1, "contract version must be 1")
-    require(contract.get("release_assignment") == "0.4.0", "release assignment changed")
     require(contract.get("compatibility_floor") == "0.160.1", "Hugo floor changed")
+    require(
+        contract.get("release_assignments")
+        == {"reading_release": "0.4.0", "landing": "0.5.0"},
+        "release assignments changed",
+    )
     require(
         contract.get("authority")
         == {
             "navigation": "existing_sidebar_tree",
+            "landing_content": "local_data_or_inline_sections",
             "release_facts": "page_front_matter",
             "download_facts": "data_download_key",
         },
@@ -56,36 +64,64 @@ def validate_machine(contract: dict[str, object]) -> None:
     download = contract.get("download", {})
     require(download.get("channel_kinds") == ["rolling", "pinned"], "download channel kinds changed")
     require(download.get("rolling_interpolation") is False and download.get("rss") == "strip", "download safety/output changed")
-    require(contract.get("runtime_flags") == {"hasAssetList": "asset-list.js"}, "runtime flags changed")
-    require(contract.get("planned_tracks") == {"landing": "0.5.0", "book": "0.6.0"}, "future milestone plan changed")
+    landing = contract.get("landing", {})
+    require(landing.get("runtime_flag") == "hasLanding", "Landing runtime flag changed")
+    require(
+        landing.get("new_sections")
+        == ["pricing", "pricing-compare", "command-box", "steps", "timeline", "code-plate", "case-study", "download", "bar-chart"],
+        "Landing section registry changed",
+    )
+    require(landing.get("localized_field_order") == ["exact_language", "primary_language", "base"], "Landing language fallback changed")
+    require(landing.get("marquee_pause") == "css_checkbox", "Landing pause contract changed")
+    require(landing.get("marquee_duplicate") == ["aria-hidden", "inert"], "Landing duplicate isolation changed")
+    require(landing.get("network_fetch") is False and landing.get("rss") == "strip", "Landing local-first/output boundary changed")
+    require(
+        contract.get("runtime_flags")
+        == {"hasAssetList": "asset-list.js", "hasLanding": "landing.js"},
+        "runtime flags changed",
+    )
+    require(contract.get("planned_tracks") == {"book": "0.6.0"}, "future Book milestone changed")
     matrix = contract.get("output_matrix", {})
     require(
-        set(matrix) == {"pager", "release_card", "release_assets", "download", "eq_escape"},
-        "0.4 output matrix component set changed",
+        set(matrix) == {"pager", "release_card", "release_assets", "download", "eq_escape", "landing"},
+        "0.5 output matrix component set changed",
     )
     require(all(set(row) == {"html", "print", "markdown", "rss"} for row in matrix.values()), "output matrix surfaces changed")
 
 
-def validate_doc() -> None:
-    source = DOC.read_text(encoding="utf-8")
-    for literal in (
-        "# PRD 5 reading and release contract",
-        "Version assignment: OINK 0.4.0",
-        "Status: frozen for implementation",
-        "Compatibility floor: Hugo Extended 0.160.1",
-        "## 1. Sequential reading pager",
-        "## 2. Mathematics passthrough",
-        "## 3. Release primitives",
-        "## 4. Release assets and download data",
-        "## 5. Shared production-site compatibility",
-        "tests/fixtures/prd5/contract.json",
-        "prd5-migration-guide.md",
-        "prd5-migration-guide.zh.md",
-        "{{< eq >}}...{{< /eq >}}",
-        "hasAssetList",
-        "data/docs_nav.json",
-    ):
-        require(literal in source, f"{DOC.name} lacks {literal}")
+def validate_docs(contract: dict[str, object]) -> None:
+    required = {
+        "reading_release": (
+            "# PRD 5 reading and release contract",
+            "## 1. Sequential reading pager",
+            "## 2. Mathematics passthrough",
+            "## 3. Release primitives",
+            "## 4. Release assets and download data",
+            "hasAssetList",
+            "{{< eq >}}...{{< /eq >}}",
+        ),
+        "landing": (
+            "# PRD 5 landing contract",
+            "## 1. Landing shell and data authority",
+            "## 2. Section registry",
+            "## 3. Language resolution",
+            "## 4. Runtime and accessibility",
+            "## 5. Output matrix",
+            "## 6. Compatibility and non-goals",
+            "hasLanding",
+            "OinkSurfaceCoordinator",
+        ),
+    }
+    assignments = contract["release_assignments"]
+    for name, path in DOCS.items():
+        source = path.read_text(encoding="utf-8")
+        require(f"OINK {assignments[name]}" in source, f"{path.name} lacks its version")
+        require("Status: frozen for implementation" in source, f"{path.name} is not frozen")
+        require("Compatibility floor: Hugo Extended 0.160.1" in source, f"{path.name} lacks Hugo floor")
+        require("tests/fixtures/prd5/contract.json" in source, f"{path.name} lacks machine companion")
+        require("prd5-migration-guide.md" in source and "prd5-migration-guide.zh.md" in source, f"{path.name} lacks bilingual links")
+        for literal in required[name]:
+            require(literal in source, f"{path.name} lacks {literal}")
 
 
 def main() -> int:
@@ -93,11 +129,11 @@ def main() -> int:
         contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
         require(isinstance(contract, dict), "PRD 5 contract must be a JSON object")
         validate_machine(contract)
-        validate_doc()
+        validate_docs(contract)
     except (OSError, json.JSONDecodeError, ContractError, TypeError, AttributeError) as exc:
         print(f"PRD 5 contract check failed: {exc}", file=sys.stderr)
         return 1
-    print("PRD 5 0.4 contracts are aligned")
+    print("PRD 5 0.4/0.5 contracts are aligned")
     return 0
 
 

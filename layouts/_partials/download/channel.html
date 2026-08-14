@@ -1,7 +1,7 @@
 {{- $page := .page -}}{{- $data := .data -}}{{- $channel := .channel -}}{{- $format := .format -}}
 {{- $disabled := and (not $data.published) (eq $channel.kind "pinned") -}}
 {{- if $disabled }}<p class="td-download__unpublished" role="status"><i class="fa-solid fa-clock" aria-hidden="true"></i> {{ T "ui_download_unpublished" }}</p>{{ end -}}
-{{- with $channel.note }}<p class="td-download__note">{{ $page.RenderString (dict "display" "inline") (printf "%v" .) }}</p>{{ end -}}
+{{- with $channel.note }}<p class="td-download__note">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end -}}
 {{- with $channel.url }}{{ if $disabled }}<span class="td-download__channel-link is-disabled" aria-disabled="true">{{ $channel.title }}</span>{{ else }}<a class="td-download__channel-link" href="{{ . }}">{{ $channel.title }}</a>{{ end }}{{ end -}}
 {{- if not $disabled }}{{ range $channel.steps }}{{ partial "download/code.html" (dict "page" $page "step" . "format" $format "disabled" false) }}{{ end }}{{ end -}}
 {{- with $channel.checksums }}{{ $base := "" }}{{ with $data.repo }}{{ $base = printf "https://github.com/%s/releases/download/%s" . (urls.PathEscape $data.tag) }}{{ end }}{{ $entries := partial "release/assets-parse.html" (dict "content" . "position" $channel.id "base" $base) }}{{ partial "release/assets-table.html" (dict "page" $page "entries" $entries "base" $base "grouped" true "disabled" $disabled) }}{{ end -}}

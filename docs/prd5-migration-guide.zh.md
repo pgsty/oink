@@ -1,10 +1,11 @@
-# OINK PRD 5 阅读与发布迁移参考
+# OINK PRD 5 场景组件迁移参考
 
-版本归属：OINK 0.4.0
+版本归属：OINK 0.4.0（阅读与发布）与 OINK 0.5.0（Landing）
 
-本文覆盖 0.4「阅读与发布」源码契约。源码状态、已验收 checkout、不可变签名
-标签、消费站固定版本与线上部署是彼此独立的证据。规范性决策见
-[阅读/发布契约](prd5-reading-release-contract.md)，机器可读副本为
+本文覆盖 0.4「阅读与发布」与 0.5「Landing」源码契约。源码状态、已验收
+checkout、不可变签名标签、消费站固定版本与线上部署是彼此独立的证据。
+规范性决策见[阅读/发布契约](prd5-reading-release-contract.md)与
+[Landing 契约](prd5-landing-contract.md)，机器可读副本为
 `tests/fixtures/prd5/contract.json`。
 
 兼容下限：Hugo Extended 0.160.1。
@@ -15,7 +16,7 @@
 
 1. 主题 checkout 中的源码完成；
 2. 两个支持的 Hugo 版本与聚焦契约均通过；
-3. 不可变、已签名的 OINK 0.4.0 标签可解析；
+3. 对应的 OINK 0.4.0 或 0.5.0 不可变签名标签可解析；
 4. 消费站在 `go.mod` 中固定该精确标签；
 5. 线上输出通过 URL、语言和浏览器冒烟检查。
 
@@ -122,21 +123,70 @@ channels:
 rolling 渠道，但 pinned 渠道显示为待发布状态，不输出误导性链接或命令。
 RSS 剥离组件；print 与 Markdown 保留安全静态说明。
 
+## Landing 迁移 {#landing-migration}
+
+任意普通内容页都可选择复用全宽壳层。页面身份放在 front matter，section
+数据放在本地且区分语言的记录中：
+
+```yaml
+---
+title: 价格
+layout: landing
+landing: pricing
+---
+# data/landing/pricing/zh.yaml
+sections:
+  - type: pricing
+    data:
+      title: 静态套餐
+      tiers:
+        - { name: 社区版, price: 免费, features: [本地优先] }
+```
+
+通用路径为 `data/landing/<key>/<lang>.yaml`；front matter 内联 `sections`
+优先。精确语言标签依次回退到主语言与无后缀本地值。首页继续兼容
+`data/home/<lang>.yaml`，但首页与普通页面都由 `landing/` 注册表渲染。
+
+注册表保留已有首页 section，并新增 `pricing`、`pricing-compare`、
+`command-box`、`steps`、`timeline`、`code-plate`、`case-study`、`download`
+与 `bar-chart`。Landing download section 与 shortcode 读取同一份
+`data/download/<key>.yaml` 事实，不会在运行时获取价格、GitHub stars、图片、
+发布信息或其他可变事实。
+
+交互 HTML 设置 `hasLanding`，并按需加载 `landing.js` 增强 reveal、count-up、
+复制、主题图片与紧凑菜单；禁用 JavaScript 时服务端内容仍然完整。Marquee
+用本地化 CSS checkbox 暂停，复制轨道同时设置 `aria-hidden` 与 `inert`。
+reduced motion 关闭移动与 reveal 动画，forced colors 仍保留控件和状态差异。
+
+`params.ui.landing_search` 是严格布尔值，默认 true，但搜索仍要求已有的
+`offlineSearch` opt-in。可选本地事实放在 `params.ui.github_stars` 与
+`params.ui.alt_site`。Navbar 父菜单可将 `params.columns` 设为 1–4，生成
+mega-menu 网格。这些值都在构建期渲染，不由浏览器 API 补写。
+
+HTML 在完整静态 section 上渐进增强；print 保留静态布局，Markdown 输出
+朴素结构，RSS 剥离 Landing 正文。根相对链接与资源必须在 `/` 和
+`/preview/` 等部署前缀下都正确。旧 `blocks/*` shortcode 保持兼容，但新
+Landing 页面不应继续采用。
+
 ## 删除共享覆盖 {#shared-overrides}
 
 删除消费站 override 前，必须把真实本地差异与已固定的主题版本逐项比较。
-OINK 0.4 已包含 passthrough hook、生产环境感知的 `robots.txt`、确定性 404、
+OINK 0.4–0.5 已包含 passthrough hook、生产环境感知的 `robots.txt`、确定性 404、
 last-commit 模式、全宽表格、卡片式 section index、侧栏 divider、显式导航树
-支持与搜索关键词扩展 hook。站点政策与内容事实仍留在消费站仓库。
+支持、搜索关键词扩展 hook，以及供首页和普通页面共用的 Landing renderer。
+站点政策与内容事实仍留在消费站仓库。
 
 ## 验收清单 {#validation-checklist}
 
 - [ ] `python3 scripts/check-prd5-contract.py` 通过。
 - [ ] `check-prd5-reading.py`、`check-release-assets.py`、`check-download.py`
-      与 `check-prd5-misc.py` 在 Hugo Extended 0.160.1 和 0.164.0 通过。
+      、`check-landing.py` 与 `check-prd5-misc.py` 在 Hugo Extended 0.160.1
+      和 0.164.0 通过。
 - [ ] `python3 scripts/check-content-primitives-contract.py` 与
       `python3 scripts/check-i18n.py` 通过。
 - [ ] `node --test 'tests/js/**/*.test.js'` 通过。
 - [ ] 严格 root 与 `/preview/` 构建都保留部署前缀。
 - [ ] HTML、print、Markdown 与 RSS 遵守冻结的输出矩阵。
+- [ ] Landing 在禁用 JavaScript、reduced motion、forced colors、双主题、
+      键盘操作与窄视口下仍可使用。
 - [ ] 消费站 pin、CI 结果、签名标签与线上部署分别验收。

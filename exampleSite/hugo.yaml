@@ -34,7 +34,11 @@ params:
   offlineSearchSummaryLength: 80
   offlineSearchMaxResults: 10
   ui:
+    github_stars: 2189
     showLightDarkModeMenu: true
+    alt_site:
+      label: Example 中文站
+      url: https://example.cn/
     section_index: cards
     quick_links: [docs, blog]
     sidebar_icon_policy: groups
@@ -77,6 +81,8 @@ menus:
       name: Documentation
       pageRef: /docs
       weight: 10
+      params:
+        columns: 2
     - identifier: primitives
       parent: docs
       name: Content primitives

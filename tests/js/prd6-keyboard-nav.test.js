@@ -61,8 +61,14 @@ class Element {
     if (selector === 'link[rel="canonical"]') return this.tagName === 'LINK' && this.getAttribute('rel') === 'canonical';
     if (selector === 'link[rel="prev"]') return this.tagName === 'LINK' && this.getAttribute('rel') === 'prev';
     if (selector === 'link[rel="next"]') return this.tagName === 'LINK' && this.getAttribute('rel') === 'next';
+    if (selector === '[data-td-pager]') return this.hasAttribute('data-td-pager');
     if (selector === '[data-td-pager-prev][href]') return this.hasAttribute('data-td-pager-prev') && this.hasAttribute('href');
     if (selector === '[data-td-pager-next][href]') return this.hasAttribute('data-td-pager-next') && this.hasAttribute('href');
+    if (selector === '[data-td-navbar-route][href]') return this.hasAttribute('data-td-navbar-route') && this.hasAttribute('href');
+    if (selector === '[data-td-language-route][href]') return this.hasAttribute('data-td-language-route') && this.hasAttribute('href');
+    if (selector === '[data-td-keyboard-search-route][href]') return this.hasAttribute('data-td-keyboard-search-route') && this.hasAttribute('href');
+    if (selector === '[data-td-theme-toggle]') return this.hasAttribute('data-td-theme-toggle');
+    if (selector === '[data-theme-toggle]') return this.hasAttribute('data-theme-toggle');
     return false;
   }
   querySelectorAll(selector) {
@@ -141,10 +147,13 @@ function setup({
   registry = null,
   palette = null,
   reducedMotion = true,
+  scrollPadding = null,
+  scrollMargin = '0px',
   session = {},
+  shell = true,
 } = {}) {
   const html = new Element('html');
-  const root = new Element('body');
+  const root = new Element('body', shell ? 'td-shell-chrome' : '');
   const doc = {
     documentElement: html,
     activeElement: null,
@@ -174,6 +183,7 @@ function setup({
   };
 
   const frames = [];
+  const timeouts = [];
   const win = {
     scrolled: [],
     scrolledTo: [],
@@ -185,12 +195,26 @@ function setup({
     scrollY: 0,
     requestAnimationFrame(callback) { frames.push(callback); },
     matchMedia() { return { matches: reducedMotion }; },
-    setTimeout() { return 0; },
+    setTimeout(callback) { timeouts.push(callback); return timeouts.length; },
     clearTimeout() {},
     sessionStorage: memoryStorage(session),
     history: { replaceState(state, title, url) { win.hashes.push(url); } },
   };
   win.location.assign = (url) => win.assigned.push(url);
+  if (scrollPadding !== null) {
+    win.getComputedStyle = (element) => ({
+      display: 'block',
+      visibility: 'visible',
+      getPropertyValue(name) {
+        if (element === html && name === 'scroll-padding-top') return scrollPadding;
+        if (element === html && name === '--td-shell-nav-h') return '3.5rem';
+        if (name === 'scroll-margin-block-start' || name === 'scroll-margin-top') {
+          return scrollMargin;
+        }
+        return '';
+      },
+    });
+  }
 
   let tree = null;
   if (withTree) {
@@ -237,7 +261,7 @@ function setup({
   own(html);
 
   const controller = nav.init({ document: doc, window: win, registry, palette });
-  return { doc, win, html, root, tree, frames, controller };
+  return { doc, win, html, root, tree, frames, timeouts, controller };
 }
 
 function press(harness, values) {
@@ -355,6 +379,32 @@ function press(harness, values) {
     'j glides to the first heading minus the nav margin',
   );
   assert.deepEqual(outline.win.hashes, ['#first'], 'the hash follows the jump');
+
+  const paddedOutline = setup({
+    withTree: false,
+    scrollPadding: '80px',
+  });
+  paddedOutline.html.scrollHeight = 4000;
+  paddedOutline.win.innerHeight = 800;
+  const paddedToc = new Element('nav');
+  paddedToc.id = 'TableOfContents';
+  const paddedAnchor = new Element('a');
+  paddedAnchor.setAttribute('href', '#padded-heading');
+  paddedToc.appendChild(paddedAnchor);
+  const paddedHeading = new Element('h2');
+  paddedHeading.id = 'padded-heading';
+  paddedHeading.getBoundingClientRect = () => ({
+    top: 500 - paddedOutline.win.scrollY,
+  });
+  paddedOutline.root.appendChild(paddedHeading);
+  paddedOutline.root.appendChild(paddedToc);
+  press(paddedOutline, { key: 'j' });
+  assert.deepEqual(
+    paddedOutline.win.scrolledTo,
+    [420],
+    'j uses resolved scroll-padding-top instead of parsing a rem navbar token as px',
+  );
+
   press(outline, { key: 'j' });
   assert.equal(outline.win.scrolledTo[1], 1576, 'j continues to the next heading');
   press(outline, { key: 'j' });
@@ -518,30 +568,136 @@ function press(harness, values) {
   press(relPage, { key: 'q' });
   assert.deepEqual(
     relPage.win.assigned,
-    ['https://example.test/docs/from-rel/'],
-    'head rel links take precedence over tree order',
+    ['/docs/b/'],
+    'the visible sidebar takes precedence over head rel links',
   );
 
   const noTree = setup({ withTree: false });
   press(noTree, { key: 'e' });
   assert.deepEqual(noTree.win.assigned, [], 'no target keeps e a silent no-op');
+  const pagerRoot = new Element('nav');
+  pagerRoot.setAttribute('data-td-pager', '');
   const pager = new Element('a');
   pager.setAttribute('data-td-pager-next', '');
   pager.setAttribute('href', '/blog/next-post/');
-  noTree.root.appendChild(pager);
+  pagerRoot.appendChild(pager);
+  noTree.root.appendChild(pagerRoot);
   press(noTree, { key: 'e' });
   assert.deepEqual(
     noTree.win.assigned,
     ['/blog/next-post/'],
     'the blog pager is the fallback when no tree exists',
   );
+  press(noTree, { key: 'q' });
+  assert.deepEqual(
+    noTree.win.assigned,
+    ['/blog/next-post/'],
+    'a missing pager direction stays empty instead of changing families',
+  );
+
+  // Blog paging follows the rendered sidebar across column boundaries:
+  // column landing -> its posts -> next column landing -> its first post.
+  const blogPage = setup({ withTree: false });
+  const blogMenu = new Element('div');
+  blogMenu.id = 'td-sidebar-menu';
+  const blogList = new Element('ul');
+  const lastPostItem = treeItem({ href: '/blog/post/last/' });
+  const postSection = treeItem({
+    href: '/blog/post/',
+    expanded: true,
+    children: [lastPostItem],
+  });
+  const firstReleaseItem = treeItem({ href: '/blog/release/first/' });
+  const releaseSection = treeItem({
+    href: '/blog/release/',
+    expanded: true,
+    children: [firstReleaseItem],
+  });
+  blogList.appendChild(postSection);
+  blogList.appendChild(releaseSection);
+  blogMenu.appendChild(blogList);
+  blogPage.root.appendChild(blogMenu);
+
+  const lastPost = lastPostItem.querySelector('a.td-shell-tree__link');
+  const releaseLanding = releaseSection.querySelector('a.td-shell-tree__link');
+  const firstRelease = firstReleaseItem.querySelector('a.td-shell-tree__link');
+  lastPost.classList.add('active');
+
+  // A conflicting date pager must not change the sidebar sequence.
+  const datePager = new Element('nav');
+  datePager.setAttribute('data-td-pager', '');
+  const dateNext = new Element('a');
+  dateNext.setAttribute('data-td-pager-next', '');
+  dateNext.setAttribute('href', '/blog/post/by-date/');
+  datePager.appendChild(dateNext);
+  blogPage.root.appendChild(datePager);
+
+  press(blogPage, { key: 'e' });
+  assert.deepEqual(
+    blogPage.win.assigned,
+    ['/blog/release/'],
+    'e leaves the last post through the next column landing page',
+  );
+  lastPost.classList.remove('active');
+  releaseLanding.classList.add('active');
+  press(blogPage, { key: 'e' });
+  assert.deepEqual(
+    blogPage.win.assigned,
+    ['/blog/release/', '/blog/release/first/'],
+    'the next e enters the first page in that column',
+  );
+  releaseLanding.classList.remove('active');
+  firstRelease.classList.add('active');
+  press(blogPage, { key: 'q' });
+  assert.equal(
+    blogPage.win.assigned.at(-1),
+    '/blog/release/',
+    'q returns from the first page to its column landing page',
+  );
+  firstRelease.classList.remove('active');
+  releaseLanding.classList.add('active');
+  press(blogPage, { key: 'q' });
+  assert.equal(
+    blogPage.win.assigned.at(-1),
+    '/blog/post/last/',
+    'the next q returns to the previous column last page',
+  );
+
+  const relEdge = setup({ withTree: false });
+  const relNext = new Element('link');
+  relNext.setAttribute('rel', 'next');
+  relNext.href = 'https://example.test/blog/second/';
+  relEdge.root.appendChild(relNext);
+  press(relEdge, { key: 'q' });
+  assert.deepEqual(
+    relEdge.win.assigned,
+    [],
+    'a missing rel direction must not fall through to a different navigation order',
+  );
+  press(relEdge, { key: 'e' });
+  assert.deepEqual(
+    relEdge.win.assigned,
+    ['https://example.test/blog/second/'],
+    'head rel links remain a fallback on pages without a tree or pager',
+  );
 
   const edge = setup();
   edge.win.location.href = 'https://example.test/docs/a/';
   edge.tree.active.classList.remove('active');
   edge.tree.menu.querySelectorAll('a.td-shell-tree__link')[0].classList.add('active');
+  const edgePager = new Element('nav');
+  edgePager.setAttribute('data-td-pager', '');
+  const edgePrev = new Element('a');
+  edgePrev.setAttribute('data-td-pager-prev', '');
+  edgePrev.setAttribute('href', '/blog/date-previous/');
+  edgePager.appendChild(edgePrev);
+  edge.root.appendChild(edgePager);
   press(edge, { key: 'q' });
-  assert.deepEqual(edge.win.assigned, [], 'first page keeps q a silent no-op');
+  assert.deepEqual(
+    edge.win.assigned,
+    [],
+    'the first sidebar page keeps q a no-op instead of falling through',
+  );
 
   // ---------------------------------------------------------- h zen mode
   const zen = setup();
@@ -613,6 +769,105 @@ function press(harness, values) {
   const noPalette = setup();
   const idle = press(noPalette, { key: 'f' });
   assert.notEqual(idle.defaultPrevented, true, 'f without a palette stays inert');
+
+  // ---------------------------------------- global landing-page shortcuts
+  const landingRuns = [];
+  const landing = setup({
+    withTree: false,
+    shell: false,
+    registry: {
+      get(id) {
+        if (id === 'switch_theme') return { available: true };
+        if (id === 'switch_language') {
+          return {
+            available: true,
+            options: [
+              { id: 'en', url: '/', active: true, available: true },
+              { id: 'zh', url: '/zh/', active: false, available: true },
+            ],
+          };
+        }
+        return null;
+      },
+      run(id, context) { landingRuns.push([id, context.value]); return { then() {} }; },
+    },
+    palette: paletteStub,
+    session: { 'td-kbd-zen': '1' },
+  });
+  for (const href of ['/', '/docs/', '/blog/', '/blog/']) {
+    const route = new Element('a');
+    route.setAttribute('data-td-navbar-route', '');
+    route.setAttribute('href', href);
+    landing.root.appendChild(route);
+  }
+  landing.win.location.href = 'https://example.test/docs/guide/';
+  landing.win.location.pathname = '/docs/guide/';
+  const rEvent = press(landing, { key: 'r' });
+  assert.deepEqual(
+    landing.win.assigned,
+    ['/blog/'],
+    'r advances from a nested page to the next unique internal navbar route',
+  );
+  assert.equal(rEvent.defaultPrevented, true, 'r swallows the literal character');
+  landing.win.assigned.length = 0;
+  landing.win.location.href = 'https://example.test/blog/post/';
+  press(landing, { key: 'r' });
+  assert.deepEqual(landing.win.assigned, ['/'], 'r wraps the navbar cycle to home');
+  press(landing, { key: 't' });
+  assert.deepEqual(landingRuns, [['switch_theme', 'dark']], 't works outside the shell');
+  press(landing, { key: 'l' });
+  assert.deepEqual(
+    landing.win.assigned,
+    ['/', '/zh/'],
+    'l works outside the shell',
+  );
+  const landingScrolls = landing.win.scrolled.length;
+  press(landing, { key: 'j' });
+  press(landing, { key: 'q' });
+  press(landing, { key: 'h' });
+  assert.equal(landing.win.scrolled.length, landingScrolls, 'shell navigation stays inert on landing pages');
+  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), false, 'landing pages do not inherit or toggle shell zen mode');
+
+  // A standalone consumer homepage can bridge the same global actions with
+  // data attributes, without loading the action registry or palette bundle.
+  const bridge = setup({ withTree: false, shell: false });
+  const bridgeTheme = new Element('button');
+  bridgeTheme.setAttribute('data-theme-toggle', '');
+  bridge.root.appendChild(bridgeTheme);
+  const bridgeLanguage = new Element('a');
+  bridgeLanguage.setAttribute('data-td-language-route', '');
+  bridgeLanguage.setAttribute('href', '/zh/');
+  bridge.root.appendChild(bridgeLanguage);
+  const bridgeSearch = new Element('a');
+  bridgeSearch.setAttribute('data-td-keyboard-search-route', '');
+  bridgeSearch.setAttribute('href', '/docs/');
+  bridge.root.appendChild(bridgeSearch);
+  press(bridge, { key: 't' });
+  assert.equal(bridgeTheme.clicks, 1, 't clicks a standalone homepage theme bridge');
+  press(bridge, { key: 'l' });
+  assert.deepEqual(bridge.win.assigned, ['/zh/'], 'l follows a standalone language bridge');
+  bridge.win.assigned.length = 0;
+  const bridgeF = press(bridge, { key: 'f' });
+  assert.deepEqual(bridge.win.assigned, ['/docs/'], 'f leaves a standalone page for its search surface');
+  assert.equal(bridge.win.sessionStorage.getItem('td-kbd-palette'), 'search');
+  assert.equal(bridgeF.defaultPrevented, true);
+  bridge.win.assigned.length = 0;
+  press(bridge, { key: 'c' });
+  assert.deepEqual(bridge.win.assigned, ['/docs/'], 'c uses the same registered search surface');
+  assert.equal(bridge.win.sessionStorage.getItem('td-kbd-palette'), 'command');
+
+  const resumedOpens = [];
+  const resumed = setup({
+    withTree: false,
+    session: { 'td-kbd-palette': 'command' },
+    palette: {
+      commandPrefix: '>',
+      instance: { open(event, seed) { resumedOpens.push(seed); } },
+    },
+  });
+  assert.equal(resumed.win.sessionStorage.getItem('td-kbd-palette'), null, 'a pending palette mode is consumed once');
+  resumed.timeouts.splice(0).forEach((callback) => callback());
+  assert.deepEqual(resumedOpens, ['>'], 'the destination resumes command mode after its runtime initializes');
 
   // -------------------------------------------------- collapsed desktop tree
   const collapsed = setup({ sidebarToggle: true });

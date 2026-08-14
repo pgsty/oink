@@ -29,6 +29,7 @@ external-link behavior identical at every rendered level. */ -}}
 {{- end -}}
 <a class="{{ $class }}{{ if $active }} active{{ end }}" href="{{ $href }}"
   data-td-navbar-level="{{ $level }}" data-td-navbar-kind="{{ $kind }}"
+  {{- if and (eq $level 0) (not $external) }} data-td-navbar-route{{ end }}
   aria-label="{{ $entry.Name | plainify }}"
   data-td-navbar-region="{{ $region }}" data-td-navbar-label="{{ $entry.Name | plainify }}"
   data-td-navbar-external="{{ if $external }}true{{ else }}false{{ end }}"{{ if $current }} aria-current="page"{{ end }}{{ with .controls }} aria-controls="{{ . }}" aria-expanded="false"{{ end }}{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>

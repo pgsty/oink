@@ -16,7 +16,8 @@
 <header class="landing-header d-print-none" data-header>
   <div class="landing-container">
     <nav class="landing-nav" aria-label="{{ T "ui_main_nav" }}">
-      <a href="{{ .Site.Home.RelPermalink }}" class="nav-brand" aria-label="{{ $config.brandName }} — {{ T "ui_home" }}">
+      <a href="{{ .Site.Home.RelPermalink }}" class="nav-brand" data-td-navbar-route
+         aria-label="{{ $config.brandName }} — {{ T "ui_home" }}"{{ if .IsHome }} aria-current="page"{{ end }}>
         {{- if $config.wordmarkURL }}
         <img src="{{ $config.wordmarkURL }}" alt="" class="nav-wordmark" width="100" height="40">
         {{- /* Compact fallback for the icon-mode range, where the wordmark

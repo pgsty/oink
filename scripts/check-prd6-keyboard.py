@@ -22,7 +22,7 @@ ACTIONS_SCRIPT = ROOT / "scripts" / "check-prd4-actions.py"
 KEYMAP = [
     "'w'", "'s'", "'a'", "'d'",
     "'j'", "'k'", "'q'", "'e'",
-    "'h'", "'l'", "'t'", "'f'",
+    "'h'", "'l'", "'t'", "'r'", "'f'",
     "'g'", "'c'", "' '", "'Escape'",
     "'ArrowUp'", "'ArrowDown'",
 ]
@@ -68,6 +68,10 @@ def check_sources() -> None:
         "params.ui.keyboard_nav.enable must be a boolean" in scripts,
         "scripts.html lost the keyboard_nav errorf validation",
     )
+    require(
+        "$hasKeyboardNav := and $interactiveOutput" in scripts,
+        "keyboard-nav is still restricted to shell layouts",
+    )
 
     defaults = (ROOT / "hugo.yaml").read_text(encoding="utf-8")
     require(
@@ -104,6 +108,15 @@ def check_sources() -> None:
         "data-td-pager-" in source and 'link[rel="' in source,
         "keyboard-nav lost a paging source",
     )
+    paging = source.partition("function pageTarget(direction)")[2].partition(
+        "function goPage(direction)"
+    )[0]
+    require(
+        "visibleTreeLinks(menu())" in paging
+        and "[data-td-pager]" in paging
+        and paging.index("visibleTreeLinks(menu())") < paging.index("[data-td-pager]"),
+        "keyboard-nav must keep the rendered sidebar ahead of pager fallbacks",
+    )
     require(
         "data-td-kbd-zen" in source and "sessionStorage" in source,
         "keyboard-nav lost the zen-mode toggle or its persistence",
@@ -121,6 +134,11 @@ def check_sources() -> None:
         and "Math.pow(1 - progress, 3)" in source
         and "outlineCursor" in source,
         "j/k lost the fast fixed-duration glide or queued outline cursor",
+    )
+    require(
+        "getPropertyValue('scroll-padding-top')" in source
+        and "getPropertyValue('scroll-margin-block-start')" in source,
+        "j/k no longer shares the native TOC anchor offset",
     )
     require(
         "style.scrollBehavior = 'auto'" in source,
@@ -161,6 +179,14 @@ def check_sources() -> None:
         "data-td-pager-prev" in pager and "data-td-pager-next" in pager,
         "pager.html lost its keyboard-nav hooks",
     )
+    navbar = (ROOT / "layouts" / "_partials" / "navbar.html").read_text(encoding="utf-8")
+    navbar_link = (ROOT / "layouts" / "_partials" / "navbar-entry-link.html").read_text(
+        encoding="utf-8"
+    )
+    require(
+        "data-td-navbar-route" in navbar and "data-td-navbar-route" in navbar_link,
+        "navbar lost the internal route-cycle hooks",
+    )
 
 
 def toggle_off(config: str) -> str:
@@ -197,6 +223,18 @@ def main() -> int:
                 any("OinkKeyboardNav" in bundle for bundle in referenced_bundles(output, html)),
                 "default bundle omitted the keyboard-nav runtime",
             )
+            home_html = (output / "en" / "index.html").read_text(encoding="utf-8")
+            require(
+                any(
+                    "OinkKeyboardNav" in bundle
+                    for bundle in referenced_bundles(output, home_html)
+                ),
+                "homepage bundle omitted the keyboard-nav runtime",
+            )
+            require(
+                "data-td-navbar-route" in home_html,
+                "homepage omitted the navbar route-cycle hooks",
+            )
 
             output, _ = actions.build(helper, workspace, "kbd-off", toggle_off(config))
             html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(
@@ -206,6 +244,12 @@ def main() -> int:
                 require(
                     "OinkKeyboardNav" not in bundle,
                     "disabled site still bundles the keyboard-nav runtime",
+                )
+            home_html = (output / "en" / "index.html").read_text(encoding="utf-8")
+            for bundle in referenced_bundles(output, home_html):
+                require(
+                    "OinkKeyboardNav" not in bundle,
+                    "disabled site still bundles keyboard-nav on the homepage",
                 )
 
             output, _ = actions.build(

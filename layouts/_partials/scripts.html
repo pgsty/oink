@@ -10,7 +10,10 @@
 {{ if and (ne $keyboardNavParam nil) (ne (printf "%T" $keyboardNavParam) "bool") -}}
   {{ errorf "params.ui.keyboard_nav.enable must be a boolean" -}}
 {{ end -}}
-{{ $hasKeyboardNav := and $shell $interactiveOutput (ne $keyboardNavParam false) -}}
+{{/* Global action keys (language/theme/navbar/search) also belong on landing
+     and ordinary pages; keyboard-nav.js keeps tree, pager, and zen bindings
+     scoped to shell chrome at runtime. */ -}}
+{{ $hasKeyboardNav := and $interactiveOutput (ne $keyboardNavParam false) -}}
 {{ $footerData := dict -}}
 {{ if eq (partial "footer-style.html" .) "fat" -}}
   {{ $footerData = partial "footer-data.html" . -}}

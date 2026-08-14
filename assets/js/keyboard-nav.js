@@ -1,19 +1,22 @@
 /**
  * PRD 6 keyboard navigation. WASD and arrow keys drive the sidebar tree,
- * q/e page through the tree order, j/k jump between the page outline's
- * sections, h toggles a chrome-free reading mode, l cycles languages,
- * t flips light/dark, and f/c open the Command Palette in search or
- * command mode. Every binding is a bare single-character shortcut, so all
- * of them yield to anything the reader could be typing into and to open
- * overlays. Bundled only when params.ui.keyboard_nav.enable is not false.
+ * q/e page through the visible sidebar order, j/k jump between the page
+ * outline's sections, h toggles a chrome-free reading mode, l cycles
+ * languages, t flips light/dark, r cycles the internal top-level navbar
+ * routes, and f/c open the Command Palette in search or command mode. Shell
+ * navigation stays shell-only; l/t/r/f/c work on every interactive page.
+ * Every binding is a bare single-character shortcut, so all of them yield to
+ * anything the reader could be typing into and to open overlays. Bundled only
+ * when params.ui.keyboard_nav.enable is not false.
  */
 (function (global) {
   'use strict';
 
   var SCROLL_STEP = 300; // px per fallback scroll press
   var SCROLL_DURATION = 100; // ms: a short cue, not a leisurely page scroll
-  var NAV_MARGIN = 24; // breathing room under the sticky navbar
+  var NAV_MARGIN = 24; // fallback when computed anchor padding is unavailable
   var ZEN_KEY = 'td-kbd-zen';
+  var PALETTE_KEY = 'td-kbd-palette';
 
   var TYPING_TAGS = { INPUT: true, TEXTAREA: true, SELECT: true };
 
@@ -109,6 +112,13 @@
 
     function menu() {
       return doc.getElementById('td-sidebar-menu');
+    }
+
+    function isShellPage() {
+      return Boolean(
+        doc.body && doc.body.classList &&
+        doc.body.classList.contains('td-shell-chrome'),
+      );
     }
 
     function hasOpenDialog() {
@@ -387,23 +397,47 @@
       );
     }
 
-    function navOffset() {
-      var raw = win.getComputedStyle
-        ? win.getComputedStyle(html).getPropertyValue('--td-shell-nav-h')
-        : '';
-      var px = parseFloat(raw);
-      return (isNaN(px) ? 0 : px) + NAV_MARGIN;
+    function cssPixels(raw) {
+      var value = String(raw || '').trim();
+      if (value === '0') return 0;
+      var match = /^(-?(?:\d+(?:\.\d+)?|\.\d+))px$/i.exec(value);
+      return match ? parseFloat(match[1]) : null;
+    }
+
+    // Native hash navigation and clicks in the right-rail TOC use the root
+    // scroller's computed scroll-padding plus the target's scroll margin.
+    // Read those resolved pixel values directly so j/k lands at exactly the
+    // same visual position. In particular, parsing --td-shell-nav-h itself is
+    // wrong when its authored value is 3.5rem: parseFloat would treat that as
+    // 3.5px and leave the heading underneath the navbar.
+    function scrollPaddingOffset() {
+      if (!win.getComputedStyle) return NAV_MARGIN;
+      var style = win.getComputedStyle(html);
+      var px = cssPixels(style.getPropertyValue('scroll-padding-top'));
+      return px === null ? NAV_MARGIN : Math.max(0, px);
+    }
+
+    function anchorOffset(target) {
+      var padding = scrollPaddingOffset();
+      if (!target || !win.getComputedStyle) return padding;
+      var style = win.getComputedStyle(target);
+      var margin = cssPixels(style.getPropertyValue('scroll-margin-block-start'));
+      if (margin === null)
+        margin = cssPixels(style.getPropertyValue('scroll-margin-top'));
+      return Math.max(0, padding + (margin === null ? 0 : margin));
     }
 
     function jumpHeading(delta) {
       var targets = headingTargets();
       if (!targets.length) return scrollByStep(delta * SCROLL_STEP);
-      var offset = navOffset();
       var queued = scrollAnimating && outlineCursor !== null;
       var current = queued ? outlineCursor : -1;
       if (!queued) {
         for (var i = 0; i < targets.length; i += 1) {
-          if (targets[i].getBoundingClientRect().top <= offset + 8) current = i;
+          if (
+            targets[i].getBoundingClientRect().top <=
+            anchorOffset(targets[i]) + 8
+          ) current = i;
           else break;
         }
       }
@@ -411,7 +445,8 @@
       // Deep inside a section, k first re-anchors at the section's own start.
       if (
         !queued && delta < 0 && current >= 0 &&
-        targets[current].getBoundingClientRect().top < offset - 40
+        targets[current].getBoundingClientRect().top <
+          anchorOffset(targets[current]) - 40
       ) next = current;
       if (next < 0) {
         outlineCursor = -1;
@@ -423,7 +458,10 @@
       if (next >= targets.length) return;
       var target = targets[next];
       outlineCursor = next;
-      glideTo((win.scrollY || 0) + target.getBoundingClientRect().top - offset);
+      glideTo(
+        (win.scrollY || 0) + target.getBoundingClientRect().top -
+        anchorOffset(target),
+      );
       if (target.id && win.history && win.history.replaceState)
         win.history.replaceState(null, '', '#' + target.id);
     }
@@ -431,8 +469,10 @@
     /* ------------------------------------------------------ paging (q/e) */
 
     function pageTarget(direction) {
-      var rel = doc.querySelector('link[rel="' + direction + '"]');
-      if (rel && rel.href) return rel.href;
+      // The rendered sidebar is the authoritative page order whenever it is
+      // available. Section landing rows are links too, so a blog column ends
+      // at the next column landing page before continuing into its first post.
+      // Its empty edges stay empty: never mix the tree with a date-based pager.
       var links = visibleTreeLinks(menu());
       if (links.length) {
         var index = currentTreeIndex(links, doc, win);
@@ -440,11 +480,25 @@
           var neighbor = links[index + (direction === 'next' ? 1 : -1)];
           return neighbor ? neighbor.getAttribute('href') : '';
         }
+        return '';
       }
-      var pager = doc.querySelector(
-        '[data-td-pager-' + (direction === 'next' ? 'next' : 'prev') + '][href]',
-      );
-      return pager ? pager.getAttribute('href') : '';
+
+      // Pages without a usable sidebar may opt into one fallback family.
+      // Once selected, a missing direction is still an authoritative edge.
+      var pagerRoot = doc.querySelector('[data-td-pager]');
+      if (pagerRoot) {
+        var pager = pagerRoot.querySelector(
+          '[data-td-pager-' + (direction === 'next' ? 'next' : 'prev') + '][href]',
+        );
+        return pager ? pager.getAttribute('href') : '';
+      }
+      var relPrev = doc.querySelector('link[rel="prev"]');
+      var relNext = doc.querySelector('link[rel="next"]');
+      if (relPrev || relNext) {
+        var rel = direction === 'next' ? relNext : relPrev;
+        return rel && rel.href ? rel.href : '';
+      }
+      return '';
     }
 
     function goPage(direction) {
@@ -452,7 +506,7 @@
       if (url) win.location.assign(url);
     }
 
-    /* ---------------------------------------------------------- h/l/t/f/c */
+    /* -------------------------------------------------------- h/l/t/r/f/c */
 
     // Chrome-free reading mode: both rails, the footer, and the floating
     // restore pill disappear. The state survives q/e page flips through
@@ -470,39 +524,131 @@
 
     function cycleLanguage() {
       var actions = registry();
-      if (!actions || !actions.get) return;
-      var action = actions.get('switch_language');
-      if (!action || action.available === false) return;
-      var choices = action.options || [];
-      var active = -1;
-      for (var i = 0; i < choices.length; i += 1) {
-        if (choices[i].active) active = i;
-      }
-      for (var step = 1; step <= choices.length; step += 1) {
-        var candidate = choices[(active + step + choices.length) % choices.length];
-        if (candidate && candidate.available !== false && candidate.url && !candidate.active) {
-          win.location.assign(candidate.url);
-          return;
+      if (actions && actions.get) {
+        var action = actions.get('switch_language');
+        if (action && action.available !== false) {
+          var choices = action.options || [];
+          var active = -1;
+          for (var i = 0; i < choices.length; i += 1) {
+            if (choices[i].active) active = i;
+          }
+          for (var step = 1; step <= choices.length; step += 1) {
+            var candidate = choices[(active + step + choices.length) % choices.length];
+            if (candidate && candidate.available !== false && candidate.url && !candidate.active) {
+              win.location.assign(candidate.url);
+              return true;
+            }
+          }
         }
       }
+      var fallback = doc.querySelector('[data-td-language-route][href]');
+      if (!fallback) return false;
+      win.location.assign(fallback.getAttribute('href'));
+      return true;
     }
 
     function cycleTheme() {
       var actions = registry();
-      if (!actions || !actions.get || !actions.run) return;
-      var action = actions.get('switch_theme');
-      if (!action || action.available === false) return;
-      var next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-      var result = actions.run('switch_theme', { value: next });
-      if (result && result.then) result.then(null, function () {});
+      if (actions && actions.get && actions.run) {
+        var action = actions.get('switch_theme');
+        if (action && action.available !== false) {
+          var next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+          var result = actions.run('switch_theme', { value: next });
+          if (result && result.then) result.then(null, function () {});
+          return true;
+        }
+      }
+      var fallback = doc.querySelector('[data-td-theme-toggle]') ||
+        doc.querySelector('[data-theme-toggle]');
+      if (!fallback || typeof fallback.click !== 'function') return false;
+      fallback.click();
+      return true;
+    }
+
+    function navbarRoutes() {
+      if (!doc.querySelectorAll) return [];
+      var seen = Object.create(null);
+      return Array.prototype.filter.call(
+        doc.querySelectorAll('[data-td-navbar-route][href]'),
+        function (link) {
+          var href = link.getAttribute('href') || '';
+          try {
+            var target = new URL(href, win.location.href);
+            var current = new URL(win.location.href);
+            var key = target.origin + pathOf(target.href, win.location.href);
+            if (target.origin !== current.origin || seen[key]) return false;
+            seen[key] = true;
+            return true;
+          } catch (_) {
+            return false;
+          }
+        },
+      );
+    }
+
+    function cycleNavbar() {
+      var routes = navbarRoutes();
+      if (routes.length < 2) return false;
+      var here = pathOf(win.location.href, win.location.href);
+      var current = -1;
+      var currentLength = -1;
+      for (var i = 0; i < routes.length; i += 1) {
+        var route = pathOf(routes[i].getAttribute('href') || '', win.location.href);
+        var active = routes[i].getAttribute('aria-current') === 'page' ||
+          (routes[i].classList && routes[i].classList.contains('active'));
+        var contains = route && (here === route ||
+          (route !== '/' && here.indexOf(route) === 0));
+        if (active || (contains && route.length > currentLength)) {
+          current = i;
+          currentLength = active ? Number.MAX_SAFE_INTEGER : route.length;
+        }
+      }
+      var next = routes[(current + 1 + routes.length) % routes.length];
+      var url = next && next.getAttribute('href');
+      if (!url) return false;
+      win.location.assign(url);
+      return true;
     }
 
     function openPalette(event, commandMode) {
       var owner = palette();
       var instance = owner && owner.instance;
-      if (!instance || typeof instance.open !== 'function') return;
+      if (instance && typeof instance.open === 'function') {
+        event.preventDefault();
+        instance.open(event, commandMode ? owner.commandPrefix || '>' : undefined);
+        return true;
+      }
+      // A deliberately standalone consumer homepage may not load the palette
+      // or action registry. Move to its registered search surface, then resume
+      // the requested mode once the full OINK runtime has initialized there.
+      var fallback = doc.querySelector('[data-td-keyboard-search-route][href]');
+      if (!fallback) return false;
       event.preventDefault();
-      instance.open(event, commandMode ? owner.commandPrefix || '>' : undefined);
+      try {
+        win.sessionStorage.setItem(PALETTE_KEY, commandMode ? 'command' : 'search');
+      } catch (_) {
+        /* storage may be unavailable; navigation remains useful */
+      }
+      win.location.assign(fallback.getAttribute('href'));
+      return true;
+    }
+
+    function resumePalette() {
+      var mode = '';
+      try {
+        mode = win.sessionStorage.getItem(PALETTE_KEY) || '';
+        if (mode) win.sessionStorage.removeItem(PALETTE_KEY);
+      } catch (_) {
+        return;
+      }
+      if (!mode) return;
+      win.setTimeout(function () {
+        var owner = palette();
+        var instance = owner && owner.instance;
+        if (instance && typeof instance.open === 'function') {
+          instance.open(null, mode === 'command' ? owner.commandPrefix || '>' : undefined);
+        }
+      }, 0);
     }
 
     /* ------------------------------------------------------------ keymap */
@@ -565,25 +711,32 @@
         }
       }
 
-      if (key === 'j' || key === 'k') {
+      if (isShellPage() && (key === 'j' || key === 'k')) {
         event.preventDefault();
         return jumpHeading(key === 'j' ? 1 : -1);
       }
-      if (key === 'q') return goPage('prev');
-      if (key === 'e') return goPage('next');
-      if (key === 'h') {
+      if (isShellPage() && key === 'q') return goPage('prev');
+      if (isShellPage() && key === 'e') return goPage('next');
+      if (isShellPage() && key === 'h') {
         event.preventDefault();
         return setZen(!html.hasAttribute('data-td-kbd-zen'));
       }
       if (key === 'l') return cycleLanguage();
       if (key === 't') return cycleTheme();
+      if (key === 'r') {
+        if (cycleNavbar()) event.preventDefault();
+        return;
+      }
       if (key === 'f') return openPalette(event, false);
       if (key === 'c') return openPalette(event, true);
     }
 
     // Re-apply the chrome-free mode chosen on a previous page.
     try {
-      if (win.sessionStorage && win.sessionStorage.getItem(ZEN_KEY))
+      if (
+        isShellPage() && win.sessionStorage &&
+        win.sessionStorage.getItem(ZEN_KEY)
+      )
         html.setAttribute('data-td-kbd-zen', '');
     } catch (_) {
       /* storage may be unavailable */
@@ -596,11 +749,13 @@
         ring.classList.remove('td-kbd-focus');
       }
     });
+    resumePalette();
 
     return Object.freeze({
       guarded: guarded,
       jumpHeading: jumpHeading,
       onKeydown: onKeydown,
+      navbarRoutes: navbarRoutes,
       pageTarget: pageTarget,
       setZen: setZen,
     });

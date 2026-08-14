@@ -59,6 +59,8 @@ outputs:
   section: [HTML, RSS, print, markdown]
 
 params:
+  # Book content measure: slim | norm | wide (default: norm).
+  content_width: norm
   copyright:
     authors: '[Example Documentation](https://example.org/)'
     from_year: 2026
@@ -75,6 +77,8 @@ params:
 the theme menu, and native image previews are opt-in; the theme supplies their
 implementation but does not silently enable site policy. A page can override
 Image Zoom with the same nested `params.ui.image_zoom.enable` front matter key.
+Book pages can likewise override `content_width`; this controls the inner
+reading measure while `page_width` continues to control the surrounding shell.
 
 Then preview the site:
 

@@ -131,6 +131,16 @@ fact file with suffixes such as `title_zh_cn`, `title_zh`, and `title`. Inline
 `sections` are useful for a one-off page. Keep the homepage at `data/home/`;
 it already uses the same internal dispatcher.
 
+Hero data may set `title_size` to a CSS length in `rem`, `em`, or `px`. It
+caps the large-screen display title without replacing OINK's smaller
+responsive breakpoints:
+
+```yaml
+hero:
+  title: A deliberately long landing title
+  title_size: 4.45rem
+```
+
 Map site templates to registry sections in this order:
 
 1. migrate navbar/footer wrappers and remove duplicate page chrome;
@@ -172,11 +182,19 @@ outputs:
   # Use home instead when the Book root is the site root.
   section: [HTML, print]
 params:
+  # slim | norm | wide; Book defaults to norm.
+  content_width: norm
   ui:
     shell_types: [docs, book, blog, swagger]
-    sidebar_headings: 3
+    # Keep false when the right outline already carries page headings.
+    sidebar_headings: false
     book_draft_banner: true
 ```
+
+`content_width` controls only the inner Book measure: `slim` is a compact
+prose column, `norm` aligns prose with normal figures and code, and `wide`
+fills the article canvas. It is independent from the outer `page_width` shell
+and can be overridden in page front matter.
 
 Add `book_number`, `book_kind`, and optional `book_status: draft` to chapters.
 Use explicit heading anchors before replacing existing cross-page URLs:
@@ -205,6 +223,24 @@ from the existing caption and prefer an explicit meaningful `alt`:
 {{< fig num="2-1" id="office_2003" src="/fig/tpme_0201.png"
     caption="The cluttered Word 2003 interface" alt="Word 2003 interface with stacked toolbars" />}}
 ```
+
+Code and data samples that need a visible label but must stay out of Hugo's
+heading outline use `example` instead of a fake h4/h6 caption:
+
+````markdown
+{{< example num="2-1" id="example-query" caption="Querying the current snapshot" />}}
+
+```sql
+SELECT * FROM snapshot;
+```
+````
+
+For a content-page contributor wall, create `data/contributors.yaml` with an
+`items` list of GitHub handles and render it with
+`{{< contributors data="contributors" >}}`. Optional `name`, `role`, `url`,
+and `avatar` fields stay local to the data file; no runtime API is required.
+An omitted avatar becomes a local initial placeholder. Prefer committed,
+root-relative avatar paths when a portrait is required.
 
 For DDIA v1, design a one-time site script that:
 

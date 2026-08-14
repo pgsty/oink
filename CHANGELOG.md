@@ -7,6 +7,15 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add a Book-specific `content_width` presentation API with `slim`, `norm`,
+  and `wide` modes. The default `norm` measure aligns prose, code, tables, and
+  figures while remaining independent from the outer `page_width` shell.
+- Add a non-heading `example` caption shortcode for labeled code/data samples,
+  plus a reusable local-data `contributors` shortcode that renders an
+  accessible, responsive GitHub contributor wall with Markdown, print, and RSS
+  fallbacks.
+- Let Landing Hero data cap its responsive display-title size with a validated
+  `title_size` CSS length.
 - Make the action-oriented keyboard shortcuts available on every interactive
   page, including the homepage: `l` cycles languages, `t` toggles the theme,
   and `f` / `c` open search or command mode. Add `r` to cycle through Home and
@@ -15,6 +24,11 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Keep article reading-time metadata off Book chapters, where numbered
+  structure and whole-Book output make the per-page estimate misleading.
+- Keep Book sidebar numbers in a compact column and left-align the title text
+  after it instead of letting both spans divide the row and visually center
+  chapter labels.
 - Align `j` / `k` heading jumps with native right-rail TOC navigation by using
   the computed root `scroll-padding-top` and target scroll margin. Navbar
   heights authored in `rem` are no longer misread as pixel values that leave

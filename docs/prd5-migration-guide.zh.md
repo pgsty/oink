@@ -124,6 +124,15 @@ landing: pricing
 `title_zh_cn`、`title_zh`、`title` 这条回退链。一次性页面也可在 front
 matter 内联 `sections`。首页继续使用 `data/home/`，内部已走同一分发器。
 
+Hero 数据可通过 `title_size` 设置 `rem`、`em` 或 `px` 长度。它会限制大屏
+展示标题的最大字号，同时保留 OINK 在较窄屏幕上的响应式断点：
+
+```yaml
+hero:
+  title: 一个有意写得很长的 Landing 标题
+  title_size: 4.45rem
+```
+
 站点模板按以下顺序映射到 section registry：
 
 1. 迁移 navbar/footer 外壳，删除页面级重复 chrome；
@@ -162,11 +171,18 @@ outputs:
   # 若书根就是站点根，改为配置 home。
   section: [HTML, print]
 params:
+  # slim | norm | wide；Book 默认为 norm。
+  content_width: norm
   ui:
     shell_types: [docs, book, blog, swagger]
-    sidebar_headings: 3
+    # 右栏已有页内目录时保持 false。
+    sidebar_headings: false
     book_draft_banner: true
 ```
+
+`content_width` 只控制 Book 正文内层宽度：`slim` 是紧凑的文字栏，`norm`
+让正文与普通图片、代码块对齐，`wide` 则铺满文章画布。它与控制外层框架的
+`page_width` 相互独立，也可在页面 front matter 中单独覆盖。
 
 章节添加 `book_number`、`book_kind`，草稿可写 `book_status: draft`。替换跨页
 链接前，先为标题补显式稳定锚点：
@@ -194,6 +210,22 @@ DDIA v2 可机械迁移，因为 `fig` 接受已有的
 {{< fig num="2-1" id="office_2003" src="/fig/tpme_0201.png"
     caption="The cluttered Word 2003 interface" alt="Word 2003 interface with stacked toolbars" />}}
 ```
+
+需要可见题注、但不应进入 Hugo 标题目录的代码或数据样例，应使用 `example`
+而不是伪 h4/h6 标题：
+
+````markdown
+{{< example num="2-1" id="example-query" caption="查询当前快照" />}}
+
+```sql
+SELECT * FROM snapshot;
+```
+````
+
+内容页贡献者墙可在 `data/contributors.yaml` 中维护 GitHub 用户名 `items`
+列表，并用 `{{< contributors data="contributors" >}}` 渲染。`name`、`role`、
+`url` 与 `avatar` 均为可选本地字段，不需要浏览器调用运行时 API。省略头像时
+使用本地首字母占位；确需头像时，生产站点应优先填写已提交的根相对路径。
 
 DDIA v1 的一次性站点脚本应当：
 

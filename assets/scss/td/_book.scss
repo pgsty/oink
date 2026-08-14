@@ -6,6 +6,53 @@
   font-weight: 700;
 }
 
+// Book content has its own reading measure, independent from the outer shell.
+// Consumer sites can override these tokens without replacing the layout API.
+.td-book {
+  --td-book-content-slim: 48rem;
+  --td-book-content-norm: 70rem;
+}
+
+.td-book-content--slim .td-shell-article > .td-content,
+.td-book-content--norm .td-shell-article > .td-content,
+.td-book-content--wide .td-shell-article > .td-content {
+  width: 100%;
+  margin-inline: auto;
+}
+
+.td-book-content--slim .td-shell-article > .td-content {
+  max-width: var(--td-book-content-slim);
+}
+
+.td-book-content--norm .td-shell-article > .td-content {
+  max-width: var(--td-book-content-norm);
+}
+
+.td-book-content--wide .td-shell-article > .td-content {
+  max-width: none;
+}
+
+// The generic tree rule makes every child span flexible. Book numbers are a
+// compact, right-aligned column; the following title owns the remaining row.
+body.td-book .td-shell-tree__link {
+  text-align: start;
+
+  > .td-book-number {
+    flex: 0 0 1.75rem;
+    min-width: 1.75rem;
+    text-align: end;
+  }
+
+  > .td-book-number + span {
+    flex: 1 1 auto;
+    text-align: start;
+  }
+
+  > .td-book-draft-badge {
+    flex: none;
+  }
+}
+
 .td-book-draft-badge {
   flex: none;
   padding: 0.08rem 0.35rem;
@@ -110,6 +157,39 @@
   white-space: nowrap;
 }
 
+.td-book-example {
+  display: flex;
+  gap: 0.35em;
+  align-items: baseline;
+  width: 100%;
+  margin-block: 2rem 0.75rem;
+  padding: 0.7rem 0.9rem;
+  scroll-margin-block-start: var(--td-scroll-padding-top);
+  border: 1px solid var(--bs-border-color);
+  border-inline-start: 4px solid var(--bs-primary);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-tertiary-bg);
+  font-family: var(--td-ui-font-family);
+  font-size: 0.95rem;
+  line-height: 1.5;
+
+  &__label {
+    flex: none;
+    color: var(--bs-body-color);
+    font-family: var(--td-meta-font-family);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  &__caption {
+    min-width: 0;
+  }
+}
+
+.td-book-example + :is(.highlight, pre, .td-code) {
+  margin-block-start: 0;
+}
+
 .td-book-toc,
 .td-book-figures {
   max-width: 100%;
@@ -192,6 +272,12 @@
 }
 
 @media print {
+  .td-book-content--slim .td-shell-article > .td-content,
+  .td-book-content--norm .td-shell-article > .td-content,
+  .td-book-content--wide .td-shell-article > .td-content {
+    max-width: none;
+  }
+
   .td-book-draft,
   .td-book-draft-badge {
     border-color: #777 !important;

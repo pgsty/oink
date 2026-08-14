@@ -22,6 +22,14 @@ Cross-chapter heading: {{< xref page="../chapter-two" anchor="stable-heading" >}
 
 {{< eq num="1.1" caption="A direct ToMath escape hatch." >}}X \approx \frac{C}{R+Z}{{< /eq >}}
 
+{{< example num="1-1" id="example-query" caption="A labeled example stays out of the page outline." />}}
+
+```sql
+SELECT book_number FROM chapters ORDER BY weight;
+```
+
+{{< contributors data="contributors" >}}
+
 ## Chapter details {#chapter-details}
 
 This heading participates in the depth-three book table of contents.

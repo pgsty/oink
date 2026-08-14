@@ -70,6 +70,7 @@ class BookHTML(HTMLParser):
         self.pager: dict[str, str] = {}
         self.book_pages: list[str] = []
         self.has_sidebar_headings = False
+        self.body_classes: set[str] = set()
         self._figure: dict[str, object] | None = None
         self._figure_caption = False
         self._xref: dict[str, str] | None = None
@@ -78,6 +79,8 @@ class BookHTML(HTMLParser):
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
         classes = set((values.get("class") or "").split())
+        if tag == "body":
+            self.body_classes = classes
         if element_id := values.get("id"):
             self.ids.append(element_id)
         if "data-td-book-headings" in values:
@@ -298,6 +301,7 @@ def check_example(public: Path) -> list[str]:
     two = documents.get("/book/chapter-two/")
     root = documents.get("/book/")
     if one and two and root:
+        require("td-book-content--norm" in one.body_classes, "Book default content width is not norm", errors)
         require(one.sidebar_links[:3] == ["/book/", "/book/chapter-one/", "/book/chapter-two/"], "Book sidebar order changed", errors)
         require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
         require(two.pager == {"prev": "/book/chapter-one/"}, "last Book page pager is wrong", errors)
@@ -335,12 +339,26 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["two"], f"draft/sidebar output lost {marker}", errors)
     for marker in ("td-table-scroll", 'class="katex-display"', "third_party/katex/katex.min."):
         require(marker in source["one"], f"interactive Book page lost {marker}", errors)
+    for marker in (
+        'id="example-query"',
+        'class="td-book-example"',
+        "Example 1-1.",
+        'class="td-contributor-wall"',
+        'data-contributor-count="3"',
+        'class="td-contributor-wall__avatar td-contributor-wall__avatar--placeholder"',
+        ">P</span>",
+    ):
+        require(marker in source["one"], f"Book presentation component lost {marker}", errors)
+    require("https://github.com/pgsty.png" not in source["one"], "contributors defaulted to a remote GitHub avatar", errors)
+    require("A labeled example stays out of the page outline." not in (toc.group(0) if toc else ""), "example caption leaked into Book ToC", errors)
 
     for marker in (
         "**Figure 1-1.** A stable\\, manually numbered figure\\.",
         "![OINK mark used as a fixture](/icons/logo.svg)",
         "**Table 1-1.** Output behavior by surface\\.",
         "**Equation 1.1.** A direct ToMath escape hatch\\.",
+        "**Example 1-1.** A labeled example stays out of the page outline\\.",
+        "- [\\@pgsty](https://github.com/pgsty) — Theme fixture",
         "[the stable heading](/book/chapter-two/#stable-heading)",
     ):
         require(marker in source["one_md"], f"Markdown Book output lost {marker}", errors)
@@ -350,7 +368,15 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["root_md"], f"Markdown Book index lost {marker}", errors)
 
     require("td-table-scroll" not in source["one_print"], "print Book table retained its scroll wrapper", errors)
-    for marker in ('id="office_2003"', 'id="tbl-1-1"', 'id="eq-1.1"', "Figure 1-1", "Table 1-1"):
+    for marker in (
+        'id="office_2003"',
+        'id="tbl-1-1"',
+        'id="eq-1.1"',
+        "Figure 1-1",
+        "Table 1-1",
+        'class="td-book-example"',
+        'class="td-contributor-wall"',
+    ):
         require(marker in source["one_print"], f"chapter print lost {marker}", errors)
     aggregate = parse_html(source["book_print"])
     require(aggregate.book_pages == ["/book", "/book/chapter-one", "/book/chapter-two"], "whole-Book print order changed", errors)
@@ -400,6 +426,23 @@ def create_site(root: Path, body: str, *, extra_ui: str = "", draft: bool = Fals
     write(root / "content/book/page.md", f"---\ntitle: Page\n{status}---\n\n{body}\n")
 
 
+def check_reading_time(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-prd5-book-reading-time-") as temp:
+        source = Path(temp)
+        create_site(source, "Book chapter words.\n", extra_ui="    readingtime:\n      enable: true\n")
+        write(source / "content/docs/_index.md", "---\ntitle: Docs\ntype: docs\n---\n")
+        write(source / "content/docs/page.md", "---\ntitle: Docs page\ntype: docs\n---\n\nDocs page words.\n")
+        result = build(hugo, source, source / "public")
+        if result.returncode != 0:
+            return [f"Book reading-time fixture failed: {result.stdout}{result.stderr}"]
+        book = (source / "public/book/page/index.html").read_text(encoding="utf-8")
+        docs = (source / "public/docs/page/index.html").read_text(encoding="utf-8")
+        require('class="reading-time"' not in book, "Book chapter retained reading-time metadata", errors)
+        require('class="reading-time"' in docs, "Book reading-time guard suppressed regular docs metadata", errors)
+    return errors
+
+
 def check_invalid_components(hugo: str) -> list[str]:
     errors: list[str] = []
     cases = (
@@ -419,6 +462,8 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("xref-page", '{{< xref page="missing" anchor="heading" >}}text{{< /xref >}}', "was not found"),
         ("toc-depth", '{{< book-toc depth=4 >}}', "depth must be from 1 through 3"),
         ("toc-drafts", '{{< book-toc drafts="false" >}}', "drafts must be boolean"),
+        ("example-caption", '{{< example num="1" />}}', "requires parameter caption"),
+        ("example-num", '{{< example num="1/2" caption="Bad" />}}', "num must match"),
     )
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-prd5-book-invalid-{name}-") as temp:
@@ -430,17 +475,41 @@ def check_invalid_components(hugo: str) -> list[str]:
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
 
     config_cases = (
-        ("headings", "    sidebar_headings: 1\n", False, "params.ui.sidebar_headings"),
-        ("banner", '    book_draft_banner: "yes"\n', True, "params.ui.book_draft_banner"),
+        ("headings", "    sidebar_headings: 1\n", "", False, "params.ui.sidebar_headings"),
+        ("banner", '    book_draft_banner: "yes"\n', "", True, "params.ui.book_draft_banner"),
+        ("content-width", "", "  content_width: broad\n", False, "invalid content_width"),
     )
-    for name, extra_ui, draft, expected in config_cases:
+    for name, extra_ui, extra_params, draft, expected in config_cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-prd5-book-config-{name}-") as temp:
             source = Path(temp)
             create_site(source, "## Heading\n", extra_ui=extra_ui, draft=draft)
+            if extra_params:
+                config = source / "hugo.yaml"
+                config.write_text(config.read_text(encoding="utf-8").replace("params:\n", "params:\n" + extra_params), encoding="utf-8")
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
             require(result.returncode != 0, f"invalid Book config {name} unexpectedly built", errors)
             require(expected in output, f"invalid Book config {name} did not report {expected!r}", errors)
+    return errors
+
+
+def check_invalid_contributors(hugo: str) -> list[str]:
+    errors: list[str] = []
+    cases = (
+        ("role-type", "items:\n  - github: pgsty\n    role: false\n", "role for \"pgsty\" must be a string"),
+        ("url-type", "items:\n  - github: pgsty\n    url: 0\n", "url for \"pgsty\" must be a string"),
+        ("avatar-empty", 'items:\n  - github: pgsty\n    avatar: ""\n', "avatar for \"pgsty\" must not be empty"),
+        ("duplicate", "items:\n  - github: pgsty\n  - github: PGSTY\n", "duplicate GitHub handle"),
+    )
+    for name, data, expected in cases:
+        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-contributors-invalid-{name}-") as temp:
+            source = Path(temp)
+            create_site(source, "{{< contributors >}}")
+            write(source / "data/contributors.yaml", data)
+            result = build(hugo, source, source / "public")
+            output = result.stdout + result.stderr
+            require(result.returncode != 0, f"invalid contributors case {name} unexpectedly built", errors)
+            require(expected in output, f"invalid contributors case {name} did not report {expected!r}", errors)
     return errors
 
 
@@ -481,6 +550,7 @@ def check_rss_output(hugo: str) -> list[str]:
             base_config().replace("disableKinds: [home, RSS, sitemap, taxonomy, term]", "disableKinds: [home, sitemap, taxonomy, term]").replace("page: [HTML]", "page: [RSS]"),
         )
         write(source / "content/book/_index.md", "---\ntitle: Book\ntype: book\ncascade:\n  type: book\n---\n")
+        write(source / "data/contributors.yaml", "items:\n  - github: pgsty\n    role: Theme fixture\n")
         write(
             source / "content/book/page.md",
             """---
@@ -492,6 +562,8 @@ title: RSS page
 | 1 | 2 |{{< /tbl >}}
 {{< eq >}}a+b{{< /eq >}}
 {{< eq num="1" >}}x+y{{< /eq >}}
+{{< example num="1" caption="Sample" />}}
+{{< contributors >}}
 {{< xref fig="1" />}}
 before{{< book-toc >}}after
 """,
@@ -507,7 +579,16 @@ before{{< book-toc >}}after
         require(path.exists(), "Book RSS fixture emitted no page output", errors)
         if path.exists():
             rss = path.read_text(encoding="utf-8")
-            for marker in ("**Figure 1.** Caption", "**Table 1.** Rows", "$$\na+b\n$$", "**Equation 1.**", "[Figure 1](#fig-1)", "beforeafter"):
+            for marker in (
+                "**Figure 1.** Caption",
+                "**Table 1.** Rows",
+                "$$\na+b\n$$",
+                "**Equation 1.**",
+                "**Example 1.** Sample",
+                "- [\\@pgsty](https://github.com/pgsty) — Theme fixture",
+                "[Figure 1](#fig-1)",
+                "beforeafter",
+            ):
                 require(marker in rss, f"Book RSS fallback lost {marker}", errors)
             for marker in ("<figure", "td-book-", "Book contents", "<nav"):
                 require(marker not in rss, f"Book RSS output leaked {marker}", errors)
@@ -540,11 +621,17 @@ def check_sources() -> list[str]:
         "layouts/_shortcodes/eq.html": ("scripts/math.html", "data-book-kind"),
         "layouts/_shortcodes/xref.html": ("targetPage.RelPermalink", "tdBookAggregate", "data-book-num"),
         "layouts/_shortcodes/book-toc.html": ("depth", "drafts", "toc-tree.html", "toc-markdown.html"),
+        "layouts/_shortcodes/example.html": ("book_example", "td-book-example", "markdown"),
+        "layouts/_shortcodes/contributors.html": ("contributors/items.html", "contributors/wall.html", "markdown"),
+        "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
+        "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
         "layouts/_partials/book/print.html": ("nav-flatten.html", "tdBookAggregate", "namespace-print-headings.html", "data-book-page"),
         "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink"),
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
-        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft"),
+        "layouts/_td-content.html": ('ne .Type "book"', "reading-time.html"),
+        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--norm", "td-book-example"),
+        "assets/scss/td/_contributors.scss": ("auto-fill", "forced-colors", "@media print"),
     }
     for relative, markers in source_markers.items():
         path = ROOT / relative
@@ -555,7 +642,7 @@ def check_sources() -> list[str]:
         for marker in markers:
             require(marker in source, f"{relative} lacks {marker}", errors)
     i18n = (ROOT / "i18n/en.yaml").read_text(encoding="utf-8")
-    for key in ("book_figure", "book_table", "book_equation", "book_lof", "book_lot", "book_toc", "book_draft", "book_draft_notice"):
+    for key in ("book_figure", "book_table", "book_equation", "book_example", "book_lof", "book_lot", "book_toc", "book_draft", "book_draft_notice", "contributors_count"):
         require(re.search(rf"^{key}:", i18n, re.M) is not None, f"English i18n lacks {key}", errors)
     return errors
 
@@ -593,7 +680,9 @@ def main() -> int:
         errors = check_example(args.public)
 
     errors += (
-        check_invalid_components(args.hugo)
+        check_reading_time(args.hugo)
+        + check_invalid_components(args.hugo)
+        + check_invalid_contributors(args.hugo)
         + check_ddia_compatibility(args.hugo)
         + check_rss_output(args.hugo)
         + check_validator_regressions()

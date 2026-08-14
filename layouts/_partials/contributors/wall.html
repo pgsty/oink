@@ -1,0 +1,26 @@
+{{- $items := .items -}}
+{{- $id := .id -}}
+<section class="td-contributor-wall{{ with .class }} {{ . }}{{ end }}" aria-labelledby="{{ $id }}" data-contributor-count="{{ len $items }}">
+  <div class="td-contributor-wall__summary" id="{{ $id }}">
+    <span class="td-contributor-wall__count">{{ len $items }}</span>
+    <span>{{ T "contributors_count" }}</span>
+    <span class="td-contributor-wall__source">GitHub</span>
+  </div>
+  <ul class="td-contributor-wall__grid" role="list">
+    {{- range $items }}
+    {{- $description := printf "@%s" .github -}}
+    {{- if ne .name .github }}{{ $description = printf "%s · @%s" .name .github }}{{ end -}}
+    {{- with .role }}{{ $description = printf "%s · %s" $description . }}{{ end -}}
+    <li class="td-contributor-wall__item">
+      <a class="td-contributor-wall__link" href="{{ .url }}" aria-label="{{ $description }}" title="{{ $description }}">
+        {{- with .avatar }}
+        <img class="td-contributor-wall__avatar" src="{{ . }}" alt="" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+        {{- else }}
+        <span class="td-contributor-wall__avatar td-contributor-wall__avatar--placeholder" aria-hidden="true">{{ strings.Substr .github 0 1 | upper }}</span>
+        {{- end }}
+        <span class="td-contributor-wall__handle" aria-hidden="true">{{ .github }}</span>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+</section>

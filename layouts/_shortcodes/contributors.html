@@ -1,0 +1,26 @@
+{{- /* Dense, local-data-driven GitHub avatar wall for content pages. */ -}}
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "data" "class")) -}}
+{{- $key := "contributors" -}}
+{{- if and .IsNamedParams (isset .Params "data") -}}
+  {{- $key = .Get "data" -}}
+  {{- if ne (printf "%T" $key) "string" }}{{ errorf "shortcode %q: data must be a string at %s" .Name .Position }}{{ end -}}
+  {{- $key = strings.TrimSpace $key -}}
+{{- end -}}
+{{- if not (findRE `^[A-Za-z][A-Za-z0-9_-]*$` $key) }}{{ errorf "shortcode %q: data must name one top-level data file at %s" .Name .Position }}{{ end -}}
+{{- $data := index hugo.Data $key -}}
+{{- if not $data }}{{ errorf "shortcode %q: data file %q was not found at %s" .Name $key .Position }}{{ end -}}
+{{- $class := "" -}}
+{{- if and .IsNamedParams (isset .Params "class") }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
+{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+{{- $items := partial "contributors/items.html" (dict "data" $data "key" $key) -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- range $items }}
+    {{- $label := printf "@%s" .github | partial "content/markdown-escape.html" -}}
+    {{- $url := .url | partial "content/markdown-url.html" -}}
+    {{- printf "- [%s](%s)%s\n" $label $url (cond .role (printf " — %s" (partial "content/markdown-escape.html" .role)) "") | safeHTML -}}
+  {{- end -}}
+{{- else -}}
+  {{- $id := printf "contributors-%s-%d" .Page.File.UniqueID .Ordinal -}}
+  {{- partial "contributors/wall.html" (dict "id" $id "items" $items "class" $class) -}}
+{{- end -}}

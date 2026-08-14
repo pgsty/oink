@@ -182,8 +182,10 @@ ui_table_scroll: "Scrollable table"
 book_figure: Figure
 book_table: Table
 book_equation: Equation
+book_example: Example
 book_lof: List of figures
 book_lot: List of tables
 book_toc: Book contents
 book_draft: Draft
 book_draft_notice: This chapter is still being revised.
+contributors_count: contributors

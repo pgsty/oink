@@ -237,3 +237,8 @@ book_draft_notice: This chapter is still being revised.
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_marquee_pause: Pause motion
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+book_example: Example
+contributors_count: contributors

@@ -14,6 +14,9 @@ params:
   time_format_default: January 2, 2006
   rss_sections: [blog]
   page_width: normal
+  # Inner reading measure for Book pages: slim | norm | wide. Unlike
+  # page_width, this changes content rather than the surrounding shell.
+  content_width: norm
   comments:
     enable: false
     type: giscus

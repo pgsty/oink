@@ -1,0 +1,48 @@
+{{- /* Normalize and validate one local GitHub contributor data set. */ -}}
+{{- $source := .data -}}
+{{- if not (reflect.IsMap $source) }}{{ errorf "contributors data %q must be a map" .key }}{{ end -}}
+{{- if not (isset $source "items") }}{{ errorf "contributors data %q requires items" .key }}{{ end -}}
+{{- $rawItems := index $source "items" -}}
+{{- if not (reflect.IsSlice $rawItems) }}{{ errorf "contributors data %q: items must be a list" .key }}{{ end -}}
+{{- $seen := newScratch -}}
+{{- $items := slice -}}
+{{- range $index, $item := $rawItems -}}
+  {{- if not (reflect.IsMap $item) }}{{ errorf "contributors data %q: item %d must be a map" $.key $index }}{{ end -}}
+  {{- if not (isset $item "github") }}{{ errorf "contributors data %q: item %d requires github" $.key $index }}{{ end -}}
+  {{- $github := index $item "github" -}}
+  {{- if ne (printf "%T" $github) "string" }}{{ errorf "contributors data %q: item %d github must be a string" $.key $index }}{{ end -}}
+  {{- $github = strings.TrimSpace $github -}}
+  {{- if not (findRE `^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$` $github) }}{{ errorf "contributors data %q: invalid GitHub handle %q" $.key $github }}{{ end -}}
+  {{- $identity := lower $github -}}
+  {{- if $seen.Get $identity }}{{ errorf "contributors data %q: duplicate GitHub handle %q" $.key $github }}{{ end -}}
+  {{- $seen.Set $identity true -}}
+  {{- $name := $github -}}
+  {{- if isset $item "name" -}}
+    {{- $value := index $item "name" -}}
+    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: name for %q must be a string" $.key $github }}{{ end -}}
+    {{- $name = strings.TrimSpace $value | default $github -}}
+  {{- end -}}
+  {{- $role := "" -}}
+  {{- if isset $item "role" -}}
+    {{- $value := index $item "role" -}}
+    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: role for %q must be a string" $.key $github }}{{ end -}}
+    {{- $role = strings.TrimSpace $value -}}
+  {{- end -}}
+  {{- $url := printf "https://github.com/%s" $github -}}
+  {{- if isset $item "url" -}}
+    {{- $value := index $item "url" -}}
+    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: url for %q must be a string" $.key $github }}{{ end -}}
+    {{- $url = strings.TrimSpace $value -}}
+  {{- end -}}
+  {{- if not (findRE `^(https?://|/)` $url) }}{{ errorf "contributors data %q: url for %q must be HTTP(S) or root-relative" $.key $github }}{{ end -}}
+  {{- $avatar := "" -}}
+  {{- if isset $item "avatar" -}}
+    {{- $value := index $item "avatar" -}}
+    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: avatar for %q must be a string" $.key $github }}{{ end -}}
+    {{- $avatar = strings.TrimSpace $value -}}
+    {{- if not $avatar }}{{ errorf "contributors data %q: avatar for %q must not be empty" $.key $github }}{{ end -}}
+    {{- if not (findRE `^(https?://|/)` $avatar) }}{{ errorf "contributors data %q: avatar for %q must be HTTP(S) or root-relative" $.key $github }}{{ end -}}
+  {{- end -}}
+  {{- $items = $items | append (dict "github" $github "name" $name "role" $role "url" $url "avatar" $avatar) -}}
+{{- end -}}
+{{- return $items -}}

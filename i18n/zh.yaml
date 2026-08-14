@@ -179,8 +179,10 @@ ui_table_scroll: "可横向滚动的表格"
 book_figure: 图
 book_table: 表
 book_equation: 公式
+book_example: 示例
 book_lof: 插图目录
 book_lot: 表格目录
 book_toc: 全书目录
 book_draft: 草稿
 book_draft_notice: 本章仍在修订中。
+contributors_count: 位贡献者

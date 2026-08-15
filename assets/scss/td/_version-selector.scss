@@ -31,7 +31,7 @@
       color: var(--td-brand-copper);
     }
 
-    > .td-shell-icon {
+    > .td-shell-icon--chevron-down {
       width: 14px;
       height: 14px;
       margin-inline-start: auto;
@@ -39,8 +39,15 @@
       transition: transform 120ms ease;
     }
 
-    &[aria-expanded='true'] > .td-shell-icon {
+    &[aria-expanded='true'] > .td-shell-icon--chevron-down {
       transform: rotate(180deg);
+    }
+
+    > .td-shell-icon--git-branch {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      color: currentColor;
     }
 
     p {
@@ -104,12 +111,14 @@
   }
 }
 
-.td-version-menu.dropup .td-version-menu__title > .td-shell-icon {
+.td-version-menu.dropup
+  .td-version-menu__title
+  > .td-shell-icon--chevron-down {
   transform: rotate(180deg);
 }
 
 .td-version-menu.dropup
   .td-version-menu__title[aria-expanded='true']
-  > .td-shell-icon {
+  > .td-shell-icon--chevron-down {
   transform: none;
 }

@@ -96,30 +96,22 @@
         $s.Params.manualLinkTitle
         $s.Title
   -}}
-  {{ if and $treeRoot (eq $s.Params.sidebar_root_for "self") (not $s.Params.sidebar_root_link_self) -}}
+  {{ $rootLinkSelf := true -}}
+  {{ if isset $s.Params "sidebar_root_link_self" -}}
+    {{ if ne (printf "%T" $s.Params.sidebar_root_link_self) "bool" -}}
+      {{ errorf "sidebar_root_link_self must be a boolean in %s" $s.Path -}}
+    {{ end -}}
+    {{ $rootLinkSelf = $s.Params.sidebar_root_link_self -}}
+  {{ end -}}
+  {{ if and $treeRoot (eq $s.Params.sidebar_root_for "self") (not $rootLinkSelf) -}}
     {{ with $s.Parent -}}
       {{ $manualLink = .RelPermalink -}}
     {{ end -}}
   {{ end -}}
-  {{/* With the root switcher enabled, emit only children, not the root row. */ -}}
-  {{ $rootMenuOn := and $p.Site.Params.ui.sidebar_root_menu
-      (gt (len (where $p.Site.Pages "Params.sidebar_root_for" "self")) 0) -}}
   {{ $isDivider := $s.Params.sidebar_divider | default false -}}
   {{ if $isDivider -}}
   <li class="td-shell-tree__item td-shell-tree__heading" id="{{ $mid }}-li">
     <span class="td-shell-tree__heading-label" id="{{ $mid }}"><span>{{ $s.LinkTitle }}</span></span>
-  </li>
-  {{ else if and $treeRoot $rootMenuOn -}}
-  <li class="td-shell-tree__item td-shell-tree__item--rootless">
-    {{ if $withChild -}}
-    <ul class="td-shell-tree__list ul-1">
-      {{ range $pages -}}
-        {{ if (not (and (eq $s $p.Site.Home) (eq .Params.toc_root true))) -}}
-          {{ template "shell-section-tree-nav-section" (dict "page" $p "section" . "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" 1 "ulShow" $ulShow "iconPolicy" $iconPolicy) }}
-        {{- end }}
-      {{- end }}
-    </ul>
-    {{- end }}
   </li>
   {{ else -}}
   <li class="td-shell-tree__item

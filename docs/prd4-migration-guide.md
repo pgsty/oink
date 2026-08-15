@@ -117,9 +117,19 @@ hover or keyboard focus opens the panel. ArrowDown opens and focuses the first
 item, Escape closes and restores focus, and a pointer press outside closes it.
 Reaching child pages never requires hover.
 
-The navbar has two states — full and compact. The compact state keeps every
-item visible as an icon, so there is no separate mobile menu; the former
-`navbar_accordion_single_open` accordion parameter is retired and ignored.
+The navbar has two states — full and compact. Compact content-menu entries use
+icons. Below `md`, the utility edge keeps only search and the relevant menu or
+drawer opener; language, version, theme, and GitHub move to the drawer footer.
+The former `navbar_accordion_single_open` accordion parameter is retired and
+ignored.
+
+The bar is 50px high. Set `params.ui.navbar_autohide: true` to keep it above the
+viewport on mouse-driven devices until the pointer enters the upper 60% of its
+original top-edge area or keyboard focus enters the navbar. Touch-only devices
+and viewports below 768px keep it visible; the drawer-width tier also wins over
+keyboard reading mode. A page or section cascade can override the global policy with the top-level
+`navbar_autohide` front-matter key. `navbar_enabled: false` remains the separate
+choice that omits the navbar entirely.
 
 Language, version, theme, and search remain in the utility area rather than
 becoming children of the content menu.
@@ -149,8 +159,9 @@ Set `params.ui.sidebar_icon_policy` to one of:
 | `none` | Sidebar item icons are omitted. |
 
 The pre-1.0 compatibility default for an absent setting is `all`. New starter
-sites explicitly choose `groups`. Invalid values warn and fall back to `all`.
-This separates a starter recommendation from a compatibility change.
+sites also explicitly choose `all`, so an icon authored on a leaf page remains
+visible. Sites that prefer a sparse, structural tree can opt into `groups`.
+Invalid values warn and fall back to `all`.
 
 ## Search metadata and index {#search-metadata-and-index}
 
@@ -421,7 +432,7 @@ site.
 - Existing flat `menus.main` HTML and behavior remain supported without
   configuration changes.
 - `params.ui.sidebar_icon_policy` remains `all` when absent throughout 0.x;
-  starters choose `groups` explicitly.
+  starters choose `all` explicitly so authored leaf icons remain visible.
 - `exclude_search` and `excludeSearch` remain search-exclusion aliases
   throughout 0.x and can be removed no earlier than 1.0.
 - Cmd/Ctrl-K stays the Palette shortcut and ordinary text remains page search.
@@ -435,10 +446,10 @@ entry and updated characterization fixtures.
 ## Starter versus theme defaults {#starter-versus-theme-defaults}
 
 The minimal `exampleSite/hugo.yaml` intentionally demonstrates a nested Hugo
-Menu, `sidebar_icon_policy: groups`, summary-sized local search, and safe URL
-and built-in commands. These are starter choices. The theme itself continues
-to preserve the compatibility defaults for a consumer that configures none of
-them.
+Menu, `sidebar_icon_policy: all`, summary-sized local search, and safe URL and
+built-in commands. The explicit `all` keeps authored leaf icons visible and
+matches the theme's compatibility default; `groups` remains available as an
+opt-in sparse mode.
 
 ## Verification and release evidence {#verification-and-release-evidence}
 

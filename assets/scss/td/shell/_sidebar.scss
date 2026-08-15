@@ -12,14 +12,15 @@
   padding: 16px 16px 8px;
 }
 
-// Brand row with the logo/wordmark and collapse action. The mobile subnav
-// already carries the brand, so this row is hidden in drawer mode.
+// Brand row with the logo/wordmark and collapse action. The desktop sidebar
+// owns this identity even when the global navbar is enabled.
 .td-shell-sidebar__brand-row {
   display: none;
 
   @include media-breakpoint-up(md) {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    min-height: 26px;
   }
 }
 
@@ -99,8 +100,8 @@
     margin: 0;
   }
 
-  // With the navbar carrying the palette opener, the row only hosts the
-  // drawer close action, so it disappears on desktop.
+  // With the navbar carrying the palette opener, this row is the mobile
+  // search/close cluster, so it disappears on desktop.
   &--drawer-only {
     @include media-breakpoint-up(md) {
       display: none;
@@ -108,20 +109,41 @@
   }
 }
 
-// Footer row: version selector on the left, global utilities on the right.
+// Footer row: language/version stay at the start edge while theme/GitHub stay
+// at the end edge, at the bottom of both the fixed rail and mobile drawer.
 .td-shell-sidebar__footer {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  padding: 10px 12px 12px 16px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+  color: var(--td-shell-muted-fg);
 }
 
-.td-shell-sidebar__utils {
+.td-shell-sidebar__footer-start,
+.td-shell-sidebar__footer-end {
   display: flex;
   align-items: center;
   gap: 2px;
+}
+
+.td-shell-sidebar__footer-start {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.td-shell-sidebar__footer-end {
+  flex: 0 0 auto;
   margin-inline-start: auto;
+}
+
+// Every footer utility glyph shares one optical size and one quiet foreground.
+.td-shell-sidebar__footer .td-shell-icon {
+  width: 18px;
+  height: 18px;
+  color: currentColor;
 }
 
 // A quiet text button, not a field: the framed control read as an input and
@@ -132,7 +154,9 @@
 
   .td-version-menu__title {
     width: auto;
-    min-height: 28px;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 30px;
     padding: 4px 6px;
     border-color: transparent;
     background: transparent;
@@ -148,14 +172,25 @@
     }
 
     .td-version-menu__title-text {
+      min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    > .td-shell-icon--git-branch {
+      flex: 0 0 auto;
+      margin-inline-start: 0;
+      color: currentColor;
+      transform: none;
+    }
   }
 
   .dropdown-menu {
-    min-width: 12rem;
+    // 11rem ends exactly at the 220px rail edge after the language trigger;
+    // wider rails still gain room from their content without overflowing the
+    // configured minimum sidebar width.
+    min-width: 11rem;
     max-height: 26rem;
     overflow-y: auto;
   }
@@ -216,6 +251,12 @@
       background: var(--bs-body-bg);
       color: var(--td-shell-muted-fg);
     }
+  }
+
+  // The drawer deliberately advertises the global slash shortcut even on a
+  // coarse pointer device; a hardware keyboard can still be attached.
+  &--drawer &__keys {
+    display: inline-flex;
   }
 }
 

@@ -1,0 +1,14 @@
+{{- /* Compact taxonomy dropdown: one chip per term, sorted by Hugo's
+     count-descending taxonomy order. Input: dict {page, taxonomyPage}. */ -}}
+{{- $page := .page -}}
+{{- $taxonomyPage := .taxonomyPage -}}
+{{- $plural := $taxonomyPage.Data.Plural | default ($taxonomyPage.Title | urlize) -}}
+{{- $taxonomy := index $page.Site.Taxonomies $plural -}}
+<div class="td-navbar-taxonomy-tags" data-taxonomy="{{ $plural }}">
+  {{- range $taxonomy.ByCount }}
+  <a class="td-navbar-taxonomy-tag" href="{{ .Page.RelPermalink }}">
+    <span class="td-navbar-taxonomy-tag__name">{{ .Page.LinkTitle }}</span>
+    <span class="td-navbar-taxonomy-tag__count" aria-label="{{ .Count }}">{{ .Count }}</span>
+  </a>
+  {{- end }}
+</div>

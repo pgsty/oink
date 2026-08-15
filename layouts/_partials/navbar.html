@@ -13,6 +13,10 @@
 {{- $githubStars := partial "landing/github-stars.html" . -}}
 {{- $altSite := false -}}
 {{- if le (len $targets) 1 }}{{ $altSite = partial "landing/alt-site.html" . }}{{ end -}}
+{{- $autohide := partial "shell/navbar-autohide.html" . -}}
+{{- if $autohide }}
+<div class="td-navbar-autohide" data-td-navbar-autohide>
+{{- end }}
 <header class="landing-header d-print-none" data-header>
   <div class="landing-container">
     <nav class="landing-nav" aria-label="{{ T "ui_main_nav" }}">
@@ -54,9 +58,9 @@
         {{- with .Site.Params.versions }}
         {{- $menuName := $.Site.Params.version_menu | default "Version" }}
         <div class="nav-hover-menu nav-version-menu" data-td-nav-hover>
-          <button type="button" class="nav-util" data-td-nav-hover-open
+          <button type="button" class="nav-util" data-td-nav-hover-trigger data-td-nav-hover-open
             title="{{ $menuName | plainify }}" aria-label="{{ $menuName | plainify }}" aria-expanded="false">
-            <i class="fa-solid fa-code-branch" aria-hidden="true"></i>
+            {{- partialCached "shell/icon.html" "git-branch" "navbar-version-git-branch" -}}
           </button>
           <div class="nav-hover-menu__pop" role="group" aria-label="{{ $menuName | plainify }}">
             {{- range . }}
@@ -87,21 +91,21 @@
         {{- if $darkMode.showMenu }}
         {{- /* Click toggles light/dark; hovering reveals the three-mode
              picker. dark-mode.js binds every [data-bs-theme-value]. */ -}}
-        <div class="nav-hover-menu" data-td-nav-hover>
-          <button type="button" class="nav-util" data-td-theme-toggle
+        <div class="nav-hover-menu nav-theme-menu" data-td-nav-hover>
+          <button type="button" class="nav-util" data-td-nav-hover-trigger data-td-theme-toggle
             title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}" aria-expanded="false">
             {{- partialCached "shell/icon.html" "moon" "moon" -}}
             {{- partialCached "shell/icon.html" "sun" "sun" -}}
           </button>
           <div class="nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
-            <button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
-              <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>{{ T "ui_theme_auto" }}</span>
-            </button>
             <button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
-              <i class="fa-solid fa-sun" aria-hidden="true"></i><span>{{ T "ui_theme_light" }}</span>
+              {{- partialCached "shell/icon.html" "sun" "navbar-theme-light" -}}<span>{{ T "ui_theme_light" }}</span>
             </button>
             <button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
-              <i class="fa-solid fa-moon" aria-hidden="true"></i><span>{{ T "ui_theme_dark" }}</span>
+              {{- partialCached "shell/icon.html" "moon" "navbar-theme-dark" -}}<span>{{ T "ui_theme_dark" }}</span>
+            </button>
+            <button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
+              {{- partialCached "shell/icon.html" "contrast" "navbar-theme-auto" -}}<span>{{ T "ui_theme_auto" }}</span>
             </button>
           </div>
         </div>
@@ -157,5 +161,8 @@
     <a class="mobile-menu-link" href="{{ . }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i><span>GitHub{{ with $githubStars }} · {{ . }}{{ end }}</span></a>
     {{- end }}
   </nav>
+</div>
+{{- end }}
+{{- if $autohide }}
 </div>
 {{- end }}

@@ -40,10 +40,12 @@ ui_tags_title: 标签
 ui_tag_title: 标签
 ui_categories_title: 分类
 ui_category_title: 分类
+ui_modules_title: 模块
+ui_module_title: 模块
 ui_theme_toggle: 切换配色
 ui_language: 语言切换
 ui_theme: 主题颜色
-ui_theme_auto: 系统
+ui_theme_auto: 跟随系统
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
 ui_toc_hide: 隐藏目录
@@ -71,6 +73,19 @@ ui_pricing_included: 包含
 ui_pricing_excluded: 不包含
 ui_marquee_pause: 暂停滚动
 ui_kbd_with: 加
+ui_keyboard_shortcuts: 键盘快捷键
+ui_shortcut_tree_move: 在侧栏中移动
+ui_shortcut_tree_toggle: 收起或展开章节
+ui_shortcut_tree_open: 打开当前页面
+ui_shortcut_heading_move: 上一个或下一个标题
+ui_shortcut_page_move: 上一页或下一页
+ui_shortcut_search: 搜索
+ui_shortcut_commands: 命令面板
+ui_shortcut_reading_mode: 专注阅读模式
+ui_shortcut_language: 切换语言
+ui_shortcut_theme: 切换主题
+ui_shortcut_route: 切换顶层页面
+ui_page_annotation: 页面信息
 ui_field_required: 必填
 ui_action_unavailable: 暂不可用
 ui_image_zoom_dialog: 图片预览
@@ -148,9 +163,17 @@ community_guideline: >-
 
 # Feedback
 feedback_title: 意见反馈
-feedback_question: 这个页面对您有帮助吗？
-feedback_positive: 有帮助
-feedback_negative: 没帮助
+feedback_question: 这篇文档解决了你的问题吗？
+feedback_positive: 已解决
+feedback_negative: 未解决
+feedback_thanks: 感谢反馈，我们会据此改进这篇文档。
+feedback_reason_prompt: 哪里没有解决？（可选）
+feedback_reason_missing: 缺少必要信息
+feedback_reason_outdated: 内容错误或已过时
+feedback_reason_failed: 操作步骤没有生效
+feedback_reason_unclear: 内容难以理解
+feedback_details: 在评论区补充详情
+feedback_change: 修改反馈
 
 # Table of contents
 toc_on_this_page: 目录

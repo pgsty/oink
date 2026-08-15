@@ -31,7 +31,7 @@
         {{- end }}
         <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
           <article class="td-shell-article">
-            {{ if not (.Param "ui.breadcrumb_disable") }}{{ partial "breadcrumb.html" . }}{{ end }}
+            {{ if partial "shell/breadcrumb-enabled.html" . }}{{ partial "breadcrumb.html" . }}{{ end }}
             {{ block "main" . }}{{ end }}
           </article>
         </main>

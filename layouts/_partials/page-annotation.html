@@ -1,0 +1,29 @@
+{{- /* Stable consumer override slot for page provenance and revision notes.
+     The legacy lastmod partial remains the default implementation so existing
+     site overrides continue to work unchanged. */ -}}
+{{- $enabled := true -}}
+{{- if isset .Site.Params.ui "annotation" -}}
+  {{- $annotation := .Site.Params.ui.annotation -}}
+  {{- if reflect.IsMap $annotation -}}
+    {{- if isset $annotation "enable" }}{{ $enabled = index $annotation "enable" }}{{ end -}}
+  {{- else -}}
+    {{- $enabled = $annotation -}}
+  {{- end -}}
+{{- end -}}
+{{- if isset .Params "annotation" -}}
+  {{- $annotation := .Params.annotation -}}
+  {{- if reflect.IsMap $annotation -}}
+    {{- if isset $annotation "enable" }}{{ $enabled = index $annotation "enable" }}{{ end -}}
+  {{- else -}}
+    {{- $enabled = $annotation -}}
+  {{- end -}}
+{{- end -}}
+{{- if ne (printf "%T" $enabled) "bool" -}}
+  {{- errorf "annotation.enable must be a boolean on %s" .RelPermalink -}}
+{{- end -}}
+{{- $hasDefault := or (not .Lastmod.IsZero) .Params.upstream_attribution .Params.downstream_modified -}}
+{{- if and $enabled $hasDefault -}}
+<section class="td-page-annotation" data-td-page-annotation aria-label="{{ T "ui_page_annotation" }}">
+  {{ partial "page-meta-lastmod.html" . }}
+</section>
+{{- end -}}

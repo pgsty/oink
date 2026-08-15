@@ -1,47 +1,21 @@
-{{- /* Sidebar root switcher, scoped to the current top-level section: the
-       dropdown exists only when a descendant section opts in with
-       `sidebar_root_for: self`. Entries are the section itself (the default,
-       e.g. Docs) plus each opted-in descendant; sibling top-level sections
-       are the top navbar's job, not this menu's. params.ui.sidebar_root_menu
-       gates the dropdown.
-
-       Accepts a page, or a dict {page, fallback}. With `fallback: true` (the
-       navbar-mode root row) a page without any switchable descendant still
-       gets a static link to its section, so the row always names where you
-       are and clicking it returns to the section landing. */ -}}
-{{- $p := . -}}
-{{- $fallback := false -}}
-{{- if reflect.IsMap . -}}
-  {{- $p = .page -}}
-  {{- $fallback = .fallback | default false -}}
-{{- end -}}
-{{- $top := $p.FirstSection -}}
-{{- if in (slice "taxonomy" "term") $p.Kind -}}
-  {{- /* Taxonomy pages have no content ancestry; a term adopts its members'
-       shared top section (mirroring the sidebar tree), and mixed or empty
-       cases render nothing. */ -}}
-  {{- $top = "" -}}
-  {{- if eq $p.Kind "term" -}}
-    {{- $tops := slice -}}
-    {{- range $p.Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
-    {{- $tops = $tops | uniq -}}
-    {{- if eq (len $tops) 1 }}{{ $top = index $tops 0 }}{{ end -}}
-  {{- end -}}
-{{- end -}}
-{{- $rendered := false -}}
-{{- if and $p.Site.Params.ui.sidebar_root_menu $top (not $top.IsHome) -}}
-  {{- $subRoots := slice -}}
-  {{- range where $p.Site.Pages "Params.sidebar_root_for" "self" -}}
-    {{- if and (ne . $top) (.IsDescendant $top) }}{{ $subRoots = $subRoots | append . }}{{ end -}}
-  {{- end -}}
-  {{- if gt (len $subRoots) 0 -}}
-  {{- $rendered = true -}}
-  {{- $entries := slice $top -}}
-  {{- range $subRoots }}{{ $entries = $entries | append . }}{{ end -}}
-  {{- $current := $top -}}
-  {{- range $subRoots -}}
-    {{- if or (eq $p .) ($p.IsDescendant .) }}{{ $current = . }}{{ end -}}
-  {{- end -}}
+{{- /* Global sidebar-root switcher. Every top-level section and every
+     sidebar_root_for:self section participates; one item degrades to a quiet
+     link instead of pretending to be a dropdown. */ -}}
+{{- $page := . -}}
+{{- if $page.Site.Params.ui.sidebar_root_menu -}}
+  {{- $state := partial "shell/root-menu-entries.html" $page -}}
+  {{- $entries := $state.entries -}}
+  {{- $current := $state.current -}}
+  {{- if eq (len $entries) 1 -}}
+    {{- $only := index $entries 0 -}}
+<div class="td-shell-root td-shell-root--static">
+  <a class="td-shell-root__trigger" href="{{ $only.RelPermalink }}"{{ if eq $page $only }} aria-current="page"{{ end }}>
+    {{- with $only.Params.icon }}<span class="td-shell-root__icon"><i class="{{ . }}" aria-hidden="true"></i></span>{{ end -}}
+    <span class="td-shell-root__title">{{ $only.LinkTitle }}</span>
+  </a>
+</div>
+  {{- else if gt (len $entries) 1 -}}
+    {{- if or (not $current) $current.IsHome }}{{ $current = index $entries 0 }}{{ end -}}
 <div class="td-shell-root">
   <button type="button" class="td-shell-root__trigger" data-td-shell-root-toggle
     aria-haspopup="true" aria-expanded="false" aria-label="{{ T "ui_root_menu_label" }}">
@@ -50,9 +24,9 @@
     {{ partialCached "shell/icon.html" "chevrons-up-down" "chevrons-up-down" }}
   </button>
   <div class="td-shell-root__pop" hidden>
-    {{ range $entries -}}
-    {{ $active := eq . $current -}}
-    <a class="td-shell-root__item{{ if $active }} is-active{{ end }}" href="{{ .RelPermalink }}">
+    {{- range $entries }}
+    {{- $active := eq . $current -}}
+    <a class="td-shell-root__item{{ if $active }} is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>
       <span class="td-shell-root__icon">{{ with .Params.Icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
       <span class="td-shell-root__meta">
         <span class="td-shell-root__item-title">{{ .LinkTitle }}</span>
@@ -62,16 +36,8 @@
         {{- partialCached "shell/icon.html" "check" "check" -}}
       </span>
     </a>
-    {{ end -}}
+    {{- end }}
   </div>
 </div>
   {{- end -}}
-{{- end -}}
-{{- if and $fallback (not $rendered) $top (not $top.IsHome) -}}
-<div class="td-shell-root td-shell-root--static">
-  <a class="td-shell-root__trigger" href="{{ $top.RelPermalink }}">
-    {{- with $top.Params.icon }}<span class="td-shell-root__icon"><i class="{{ . }}" aria-hidden="true"></i></span>{{ end -}}
-    <span class="td-shell-root__title">{{ $top.LinkTitle }}</span>
-  </a>
-</div>
 {{- end -}}

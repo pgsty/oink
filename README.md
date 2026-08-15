@@ -66,8 +66,16 @@ params:
     from_year: 2026
   # footer_center_info defaults to Powered by Oink and accepts inline Markdown.
   offlineSearch: true
+  # `hugo server` skips the index by default; opt in only when testing search.
+  offlineSearchOnServe: false
   ui:
     showLightDarkModeMenu: true
+    # Hide the 50px navbar until a mouse reaches the top edge; touch stays visible.
+    navbar_autohide: false
+    # Optional one-click docs feedback; records structured gtag events only.
+    feedback:
+      enable: false
+      reasons: true
     image_zoom:
       enable: true
 ```
@@ -79,11 +87,31 @@ implementation but does not silently enable site policy. A page can override
 Image Zoom with the same nested `params.ui.image_zoom.enable` front matter key.
 Book pages can likewise override `content_width`; this controls the inner
 reading measure while `page_width` continues to control the surrounding shell.
+Set `params.ui.navbar_autohide: true` to tuck the navbar above the viewport on
+mouse-driven devices at the `md` breakpoint (768px) and above and reveal it
+from the center of the top edge. The two 64px corners stay inactive for
+collapsed-rail controls, while touch pointers and every drawer-width viewport
+keep the sticky navbar visible. A section cascade or page can override that
+policy with the top-level `navbar_autohide` front-matter key. This differs from
+`navbar_enabled: false`, which omits the navbar completely.
 
-Then preview the site:
+`params.ui.feedback.enable: true` adds a “Solved / Not solved” prompt. A click
+immediately emits a `docs_feedback` event through an existing `gtag` function;
+an optional reason emits a refining event with `refinement: true`. OINK does
+not send free text and needs no endpoint. When Giscus comments are active, the
+result also links readers to the comments section for a detailed report. Use a
+Docs/Book/Swagger section cascade to enable it only where it is useful.
+When upgrading an older feedback configuration, remove `yes`, `no`,
+`max_value`, `endpoint`, and `max_length`; the one-click model does not use a
+Worker or a submission endpoint.
+
+Then preview the site. Local search is omitted from `hugo server` so large-site
+content edits stay fast; set the standard Hugo parameter environment override
+when the preview specifically needs to exercise search:
 
 ```sh
 hugo server
+HUGO_PARAMS_OFFLINESEARCHONSERVE=true hugo server
 ```
 
 ### Delimiter-style mathematics
@@ -165,7 +193,10 @@ Theme implementation contracts:
 [PRD 4 contract](docs/prd4-navigation-command-palette-contract.md) ·
 [PRD 5 reading/release](docs/prd5-reading-release-contract.md) ·
 [PRD 5 landing](docs/prd5-landing-contract.md) ·
-[PRD 5 Book](docs/prd5-book-contract.md)
+[PRD 5 Book](docs/prd5-book-contract.md) ·
+[PRD 7 design](docs/prd7-docs-shell-page-end.md) ·
+[PRD 7 migration: English](docs/prd7-migration-guide.md) /
+[简体中文](docs/prd7-migration-guide.zh.md)
 
 Navigation and Command Palette migration reference, included in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·

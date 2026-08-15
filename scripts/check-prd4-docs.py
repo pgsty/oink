@@ -67,8 +67,12 @@ def build_example(base_url: str, destination: Path) -> None:
         f"starter desktop nested menu missing or mobile accordion returned at {base_url}",
     )
     require(
-        'data-sidebar-icon-policy="groups"' in docs,
-        f"starter did not opt into groups sidebar icons at {base_url}",
+        'data-sidebar-icon-policy="all"' in docs,
+        f"starter did not keep all authored sidebar icons at {base_url}",
+    )
+    require(
+        'class="fa-solid fa-route"' in docs,
+        f"starter suppressed the authored leaf-page icon at {base_url}",
     )
     require(
         'id="td-shell-search"' in docs and 'id="oink-action-manifest"' in docs,

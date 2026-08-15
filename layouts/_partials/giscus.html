@@ -50,7 +50,7 @@
 {{- $theme := index $giscus "theme" | default "auto" -}}
 {{- $lightTheme := index $giscus "lighttheme" | default "light" -}}
 {{- $darkTheme := index $giscus "darktheme" | default "dark" -}}
-<section class="td-comments d-print-none"
+<section id="td-comments" class="td-comments d-print-none"
   data-td-giscus
   data-repo="{{ $repo }}"
   data-repo-id="{{ $repoID }}"

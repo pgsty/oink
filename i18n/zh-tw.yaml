@@ -38,10 +38,12 @@ ui_tags_title: 標籤
 ui_tag_title: 標籤
 ui_categories_title: 分類
 ui_category_title: 分類
+ui_modules_title: 模組
+ui_module_title: 模組
 ui_theme_toggle: 切換配色
 ui_language: 語言切換
 ui_theme: 主題顏色
-ui_theme_auto: 系統
+ui_theme_auto: 跟隨系統
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
 ui_page_actions: 操作
@@ -109,9 +111,17 @@ community_guideline: >-
 
 # Feedback
 feedback_title: 意見回饋
-feedback_question: 這個頁面對您有幫助嗎？
-feedback_positive: 有幫助
-feedback_negative: 沒幫助
+feedback_question: 這篇文件解決了你的問題嗎？
+feedback_positive: 已解決
+feedback_negative: 未解決
+feedback_thanks: 感謝回饋，我們會據此改進這篇文件。
+feedback_reason_prompt: 哪裡沒有解決？（選填）
+feedback_reason_missing: 缺少必要資訊
+feedback_reason_outdated: 內容錯誤或已過時
+feedback_reason_failed: 操作步驟沒有生效
+feedback_reason_unclear: 內容難以理解
+feedback_details: 在留言區補充詳情
+feedback_change: 修改回饋
 
 # Table of contents
 toc_on_this_page: 目錄
@@ -141,6 +151,19 @@ ui_pricing_included: 包含
 ui_pricing_excluded: 不包含
 ui_marquee_pause: 暫停捲動
 ui_kbd_with: 加
+ui_keyboard_shortcuts: 鍵盤快捷鍵
+ui_shortcut_tree_move: 在側欄中移動
+ui_shortcut_tree_toggle: 收合或展開章節
+ui_shortcut_tree_open: 開啟目前頁面
+ui_shortcut_heading_move: 上一個或下一個標題
+ui_shortcut_page_move: 上一頁或下一頁
+ui_shortcut_search: 搜尋
+ui_shortcut_commands: 命令面板
+ui_shortcut_reading_mode: 專注閱讀模式
+ui_shortcut_language: 切換語言
+ui_shortcut_theme: 切換主題
+ui_shortcut_route: 切換頂層頁面
+ui_page_annotation: 頁面資訊
 ui_field_required: 必填
 ui_action_unavailable: 暂不可用
 ui_image_zoom_dialog: 圖片預覽

@@ -145,12 +145,12 @@ a.td-language-selector__item:focus-visible {
 
 // Sidebar footer row: icon-only trigger sized like the neighbouring icon
 // buttons, with the list opening upward since the row sits on the bottom edge.
-.td-shell-sidebar__utils .td-language-selector--menu {
+.td-shell-sidebar__footer .td-language-selector--menu {
   padding: 0;
 
   > .td-language-selector__trigger {
-    min-width: 28px;
-    min-height: 28px;
+    min-width: 30px;
+    min-height: 30px;
     padding: 6px;
     border-radius: 8px;
     color: var(--td-shell-muted-fg);
@@ -160,8 +160,8 @@ a.td-language-selector__item:focus-visible {
     }
 
     .td-shell-icon {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
     }
 
     &:hover {
@@ -172,6 +172,12 @@ a.td-language-selector__item:focus-visible {
 
   > ul {
     inset-block: auto calc(100% + 0.35rem);
-    transform-origin: bottom right;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    transform-origin: bottom left;
   }
+}
+
+[dir='rtl'] .td-shell-sidebar__footer .td-language-selector--menu > ul {
+  transform-origin: bottom right;
 }

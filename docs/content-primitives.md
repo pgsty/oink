@@ -590,8 +590,9 @@ pipe tables with full hashes and download URLs.
 OINK wraps every Goldmark pipe table in a local scroll region. In interactive
 HTML the region is keyboard-focusable, uses the localized accessible name
 `ui_table_scroll`, and contains horizontal overflow without widening the page.
-The table remains fully visible when JavaScript is absent because tables have
-no runtime.
+The table formatting context fills at least the available prose width, and the
+scroll region adds a bottom spacer before following content. The table remains
+fully visible when JavaScript is absent because tables have no runtime.
 
 Sites that enable Goldmark block attributes can opt a table out of the prose
 measure while keeping the same contained overflow policy:

@@ -1,0 +1,12 @@
+{{- /* Add the page-specific current root to the cached global root set only
+     when a custom sidebar resolver returns something outside that set. */ -}}
+{{- $page := . -}}
+{{- $entries := partialCached "shell/root-menu-roots.html"
+    $page.Site $page.Site.Language.Lang $page.Site.Home.RelPermalink -}}
+
+{{- $current := partial "shell/sidebar-root.html" $page -}}
+{{- if and $current (not $current.IsHome) (not (in $entries $current)) -}}
+  {{- $entries = $entries | append $current -}}
+{{- end -}}
+
+{{- return (dict "entries" $entries "current" $current) -}}

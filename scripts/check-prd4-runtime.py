@@ -42,10 +42,13 @@ def main() -> int:
         )
         require(
             '.Site.Params.offlineSearch' in search_enabled
+            and '.Site.Params.offlineSearchOnServe' in search_enabled
+            and 'hugo.IsServer' in search_enabled
+            and 'printf "%T" $serveSearch' in search_enabled
             and 'partial "shell/chrome-enabled.html"' in search_enabled
             and resolves_format
             and '(ne $format "print")' in search_enabled,
-            "search-enabled.html is not the complete capability predicate",
+            "search-enabled.html is not the complete build/surface capability predicate",
         )
         require(
             '{{ if partial "shell/search-enabled.html" . -}}' in head,

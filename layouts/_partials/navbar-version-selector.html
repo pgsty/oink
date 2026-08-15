@@ -9,9 +9,8 @@
 <div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}" data-td-version-menu>
   <button class="td-version-menu__title" type="button" data-bs-toggle="dropdown"
     aria-haspopup="true" aria-expanded="false" aria-label="{{ $menuName | plainify }}">
-    <i class="fa-solid fa-code-branch" aria-hidden="true"></i>
+    {{- partialCached "shell/icon.html" "git-branch" "version-git-branch" -}}
     <span class="td-version-menu__title-text">{{ $menuName | markdownify }}</span>
-    {{- partialCached "shell/icon.html" "chevron-down" "version-chevron" -}}
   </button>
   <ul class="dropdown-menu{{ if $dropup }} dropdown-menu-up{{ end }}">
     {{- range $page.Site.Params.versions -}}

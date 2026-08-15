@@ -5,6 +5,50 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Reduce the shared navbar height to 50px and add opt-in
+  `params.ui.navbar_autohide`, with section-cascade and page overrides. On
+  mouse-driven devices at 768px and above the hidden bar returns from a
+  corner-safe top-edge reveal zone or keyboard focus without reflowing the
+  page; touch-only devices and the complete drawer-width tier keep it visible.
+- Add the PRD 7 Docs/Blog shell and page-end system: global sidebar-root
+  switching, count-sorted taxonomy tag panels, a stable Annotation override,
+  compact root-aware Previous/Next cards, and one-click structured feedback
+  that can hand detailed reports to the page's Giscus discussion.
+- Accept `y` as a global alias for the `l` language switch, and `n` as a
+  homepage-only next-section alias for `j`.
+
+### Changed
+
+- Replace the legacy configurable Yes/No response fragments and the unreleased
+  endpoint/Worker prototype with structured `docs_feedback` events, optional
+  fixed reasons, local per-language state, and a Giscus details link.
+- Make Blog Previous/Next links follow the exact rendered sidebar sequence,
+  including the Blog root, instead of a separate `PrevInSection` branch.
+
+### Fixed
+
+- Keep explicitly authored leaf-page icons visible in the starter sidebar by
+  using the `all` icon-density policy. The sparse `groups` policy remains
+  available as an explicit opt-in.
+- Keep each Docs/Blog root landing as the first selectable W/S and Q/E entry,
+  including sites that provide an explicit `data/docs_nav.json` order. A
+  `sidebar_root_for: self` root now links to itself unless the legacy
+  `sidebar_root_link_self: false` behavior is explicitly requested.
+- Align the collapsed left/right rail restore controls with the breadcrumb and
+  page-action row, outside the hidden navbar's corner-safe reveal area.
+- Restore the sidebar's bottom utility dock at every rail and drawer width,
+  with language/version anchored left and theme/GitHub anchored right. Its
+  menus open upward on hover, while the mobile header carries a full search
+  field with `/` hint immediately before the close control.
+- Remove the empty breadcrumb band from top-level Docs and Blog pages: their
+  title now starts at the content top while the page-action split button stays
+  fixed on the original context-row coordinate.
+- Keep a rendered navbar visible below 768px even when auto-hide or keyboard
+  reading mode is active. Its phone utility edge contains only search and the
+  relevant menu opener; the other global tools live in the drawer footer.
+
 ## [0.4.1] - 2026-08-14
 
 ### Added

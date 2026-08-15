@@ -8,6 +8,9 @@ params:
   # through layouts/_markup/render-codeblock.html instead. Set to false to fall
   # back to Hugo's inline highlight styles.
   highlight_classes: true
+  # `hugo server` skips the local index and search runtime by default. Set this
+  # true when a preview specifically needs to exercise local search.
+  offlineSearchOnServe: false
   offlineSearchIndex: content
   offlineSearchMaxResults: 10
   time_format_blog: Monday, January 02, 2006
@@ -31,16 +34,19 @@ params:
       darkTheme: dark
       loading: lazy
   ui:
-    # The site navbar and footer render on every layout by default. Both can be
-    # overridden per page (or per section, via a front-matter cascade) with the
-    # `navbar_enabled` and `footer_style` front-matter keys.
+    # The site navbar and footer render on every layout by default. Rendering,
+    # auto-hide, and footer style can be overridden per page (or per section,
+    # via a front-matter cascade) with the matching top-level keys.
     navbar_enabled: true
+    navbar_autohide: false
     footer_style: fat # fat | slim | none
     # Non-home pages with `layout: landing` reuse the search/command palette
     # when offlineSearch is enabled. Set false to omit it from that shell.
     landing_search: true
     section_index: list # list | cards
     lastmod_commit: subject # subject | hash | none
+    annotation:
+      enable: true
     # Optional local chrome data (never fetched by the browser):
     # github_stars: 5500
     # alt_site: { label: 中文站, url: https://example.cn/ }
@@ -57,11 +63,17 @@ params:
       types: [docs, book, blog]
     # Book pages may opt into an h2-h4 branch beneath the active sidebar row.
     sidebar_headings: false
+    # Cache section trees once a site reaches this many pages. Active state is
+    # restored client-side when the cached tree is used.
+    sidebar_cache_limit: 500
     # Draft state is always labeled in the sidebar; this optional banner adds
     # an explicit notice at the start of draft book pages.
     book_draft_banner: false
+    # One-click structured docs feedback. The theme calls the site's existing
+    # gtag integration when present; no endpoint or free-text form is used.
     feedback:
       enable: false
+      reasons: true
     sidebar_menu_compact: true
     sidebar_menu_foldable: true
     sidebar_menu_truncate: 2000

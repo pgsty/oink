@@ -159,12 +159,32 @@ def check_sources() -> list[str]:
         "table": (ROOT / "layouts/_markup/render-table.html").read_text(encoding="utf-8"),
         "section": (ROOT / "layouts/_partials/section-index.html").read_text(encoding="utf-8"),
         "lastmod": (ROOT / "layouts/_partials/page-meta-lastmod.html").read_text(encoding="utf-8"),
+        "page_end": (ROOT / "layouts/_partials/page-end.html").read_text(encoding="utf-8"),
+        "annotation": (ROOT / "layouts/_partials/page-annotation.html").read_text(encoding="utf-8"),
+        "docs_content": (ROOT / "layouts/_td-content.html").read_text(encoding="utf-8"),
+        "docs_list": (ROOT / "layouts/docs/list.html").read_text(encoding="utf-8"),
+        "book_list": (ROOT / "layouts/book/list.html").read_text(encoding="utf-8"),
+        "swagger_list": (ROOT / "layouts/swagger/list.html").read_text(encoding="utf-8"),
+        "blog_content": (ROOT / "layouts/blog/_td-content.html").read_text(encoding="utf-8"),
+        "blog_list": (ROOT / "layouts/blog/list.html").read_text(encoding="utf-8"),
         "sidebar": (ROOT / "layouts/_partials/shell/sidebar-tree.html").read_text(encoding="utf-8"),
         "docs_sidebar": (ROOT / "layouts/_partials/shell/docs-sidebar-tree.html").read_text(encoding="utf-8"),
         "search": (ROOT / "layouts/_partials/search/metadata.html").read_text(encoding="utf-8"),
         "404": (ROOT / "layouts/404.html").read_text(encoding="utf-8"),
         "tokens": (ROOT / "assets/scss/td/shell/_tokens.scss").read_text(encoding="utf-8"),
         "content": (ROOT / "assets/scss/td/_content.scss").read_text(encoding="utf-8"),
+        "navbar": (ROOT / "layouts/_partials/navbar.html").read_text(
+            encoding="utf-8"
+        ),
+        "navbar_autohide": (
+            ROOT / "layouts/_partials/shell/navbar-autohide.html"
+        ).read_text(encoding="utf-8"),
+        "navbar_styles": (ROOT / "assets/scss/td/_site-navbar.scss").read_text(
+            encoding="utf-8"
+        ),
+        "variables": (ROOT / "assets/scss/td/_variables.scss").read_text(
+            encoding="utf-8"
+        ),
         "contract": (ROOT / "docs/prd5-reading-release-contract.md").read_text(encoding="utf-8"),
     }
     require("hugo.IsProduction" in sources["robots"], "robots policy is not environment-aware", errors)
@@ -176,6 +196,26 @@ def check_sources() -> list[str]:
         require(marker in sources["section"], f"section index lacks {marker}", errors)
     for marker in ('slice "subject" "hash" "none"', "AbbreviatedHash", "GitInfo.Subject"):
         require(marker in sources["lastmod"], f"lastmod mode handling lacks {marker}", errors)
+    for name in ("docs_content", "docs_list", "book_list", "swagger_list", "blog_content", "blog_list"):
+        require(
+            'partial "page-end.html"' in sources[name],
+            f"{name} does not use the shared page-end composition",
+            errors,
+        )
+    page_end = sources["page_end"]
+    require(
+        page_end.index('partial "feedback.html"')
+        < page_end.index('partial "page-annotation.html"')
+        < page_end.index('partial "pager.html"')
+        < page_end.index('partial "comments.html"'),
+        "page-end composition order drifted",
+        errors,
+    )
+    require(
+        'partial "page-meta-lastmod.html"' in sources["annotation"],
+        "annotation no longer preserves the legacy lastmod override slot",
+        errors,
+    )
     for name in ("sidebar", "docs_sidebar"):
         require("sidebar_divider" in sources[name], f"{name} lacks sidebar_divider", errors)
         require("td-shell-tree__heading-label" in sources[name], f"{name} lacks divider semantics", errors)
@@ -193,6 +233,38 @@ def check_sources() -> list[str]:
         "narrow shell anchor offset fix is missing",
         errors,
     )
+    require(
+        "$td-navbar-min-height: 50px" in sources["variables"],
+        "navbar height is not 50px",
+        errors,
+    )
+    require(
+        'partial "shell/navbar-autohide.html"' in sources["navbar"]
+        and "data-td-navbar-autohide" in sources["navbar"],
+        "navbar auto-hide wrapper is missing",
+        errors,
+    )
+    for marker in (
+        '.Site.Params.ui "navbar_autohide"',
+        '.Params "navbar_autohide"',
+        "navbar_autohide must be a boolean",
+    ):
+        require(
+            marker in sources["navbar_autohide"],
+            f"navbar auto-hide resolver lacks {marker}",
+            errors,
+        )
+    for marker in (
+        "(hover: hover) and (pointer: fine)",
+        "height: $td-navbar-min-height",
+        ".td-navbar-autohide:focus-within",
+        "@media (prefers-reduced-motion: reduce)",
+    ):
+        require(
+            marker in sources["navbar_styles"],
+            f"navbar auto-hide styles lack {marker}",
+            errors,
+        )
     for marker in ("data/docs_nav.json", "manualLink", "build.render: link", "sidebar_divider"):
         require(marker in sources["contract"], f"reading contract lacks {marker}", errors)
     hook = ROOT / "layouts/_partials/hooks/search-keywords-extra.html"
@@ -217,19 +289,43 @@ def check_development_robots(hugo: str) -> list[str]:
 def check_invalid_config(hugo: str) -> list[str]:
     errors: list[str] = []
     cases = (
-        ("section-index", "tiles", None, "invalid params.ui.section_index"),
-        ("lastmod", None, "message", "invalid params.ui.lastmod_commit"),
+        ("section-index", "    section_index: tiles\n", "invalid params.ui.section_index"),
+        ("lastmod", "    lastmod_commit: message\n", "invalid params.ui.lastmod_commit"),
+        (
+            "navbar-autohide",
+            "    navbar_autohide: sometimes\n",
+            "navbar_autohide must be a boolean",
+        ),
+        (
+            "feedback-enable",
+            "    feedback:\n      enable: sometimes\n",
+            "feedback.enable must be a boolean",
+        ),
+        (
+            "annotation-enable",
+            "    annotation:\n      enable: sometimes\n",
+            "annotation.enable must be a boolean",
+        ),
     )
-    for name, section_index, lastmod, expected in cases:
+    for name, value, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-prd5-invalid-{name}-") as temp:
             temp_path = Path(temp)
             override = temp_path / "override.yaml"
-            value = f"    section_index: {section_index}\n" if section_index else f"    lastmod_commit: {lastmod}\n"
             write(override, "params:\n  ui:\n" + value)
             result = build(hugo, EXAMPLE, temp_path / "public", config=override)
             output = result.stdout + result.stderr
             require(result.returncode != 0, f"invalid {name} config unexpectedly built", errors)
             require(expected in output, f"invalid {name} config did not report {expected!r}", errors)
+
+    with tempfile.TemporaryDirectory(prefix="oink-prd5-invalid-search-serve-") as temp:
+        temp_path = Path(temp)
+        override = temp_path / "override.yaml"
+        write(override, "params:\n  offlineSearchOnServe: 0\n")
+        result = build(hugo, EXAMPLE, temp_path / "public", config=override)
+        output = result.stdout + result.stderr
+        expected = "params.offlineSearchOnServe must be a boolean"
+        require(result.returncode != 0, "invalid offlineSearchOnServe config unexpectedly built", errors)
+        require(expected in output, f"invalid offlineSearchOnServe config did not report {expected!r}", errors)
 
     with tempfile.TemporaryDirectory(prefix="oink-prd5-search-hook-") as temp:
         temp_path = Path(temp)
@@ -259,6 +355,65 @@ disableKinds: [home, RSS, sitemap, taxonomy, term]
             f"non-array search hook lacks a focused error; Hugo reported: {output.strip()}",
             errors,
         )
+    return errors
+
+
+def check_navbar_autohide(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-navbar-autohide-") as temp:
+        temp_path = Path(temp)
+        source = temp_path / "site"
+        public = temp_path / "public"
+        write(
+            source / "hugo.yaml",
+            f"""baseURL: https://example.org/
+title: Navbar auto-hide fixture
+theme: {ROOT.name}
+disableKinds: [home, RSS, sitemap, taxonomy, term]
+params:
+  offlineSearch: false
+  ui:
+    navbar_autohide: true
+""",
+        )
+        write(
+            source / "content/project.md",
+            "---\ntitle: Project\n---\nGlobal policy.\n",
+        )
+        write(
+            source / "content/docs/_index.md",
+            "---\ntitle: Docs\ntype: docs\ncascade:\n  type: docs\n  navbar_autohide: false\n---\nSection policy.\n",
+        )
+        write(
+            source / "content/docs/inherit.md",
+            "---\ntitle: Inherit\n---\nSection override.\n",
+        )
+        write(
+            source / "content/docs/override.md",
+            "---\ntitle: Override\nnavbar_autohide: true\n---\nPage override.\n",
+        )
+
+        result = build(hugo, source, public)
+        if result.returncode != 0:
+            return [f"navbar auto-hide fixture failed: {result.stdout}{result.stderr}"]
+
+        outputs = {
+            "global": public / "project/index.html",
+            "section": public / "docs/inherit/index.html",
+            "page": public / "docs/override/index.html",
+        }
+        for name, path in outputs.items():
+            require(path.exists(), f"navbar auto-hide {name} fixture is missing", errors)
+        if not all(path.exists() for path in outputs.values()):
+            return errors
+
+        marker = 'class="td-navbar-autohide" data-td-navbar-autohide'
+        global_page = outputs["global"].read_text(encoding="utf-8")
+        section_page = outputs["section"].read_text(encoding="utf-8")
+        page_override = outputs["page"].read_text(encoding="utf-8")
+        require(marker in global_page, "global navbar auto-hide policy did not apply", errors)
+        require(marker not in section_page, "section navbar auto-hide override did not apply", errors)
+        require(marker in page_override, "page navbar auto-hide override did not win", errors)
     return errors
 
 
@@ -381,6 +536,7 @@ def main() -> int:
         check_sources()
         + check_development_robots(args.hugo)
         + check_invalid_config(args.hugo)
+        + check_navbar_autohide(args.hugo)
         + check_lastmod_output(args.hugo)
         + check_stable_404(args.hugo)
     )

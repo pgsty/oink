@@ -110,9 +110,17 @@ Parent 标签是普通链接：点击前往栏目落地页，hover 或键盘聚�
 ArrowDown 打开并聚焦第一项，Escape 关闭并还焦，在外部按下指针时面板关闭。
 到达子页面永远不依赖 hover。
 
-导航栏只有两种状态——完整与紧缩。紧缩态把每一项保持为可见的图标，因此不存在
-独立的移动端菜单；原 `navbar_accordion_single_open` accordion 参数已退役并被
-忽略。
+导航栏只有两种状态——完整与紧缩。紧缩态的内容菜单项使用图标；小于 `md` 时，
+右侧 utility 只保留搜索与对应的菜单或 drawer 打开按钮，语言、版本、主题和
+GitHub 移入 drawer 底部。原 `navbar_accordion_single_open` accordion 参数已
+退役并被忽略。
+
+导航栏高度为 50px。设置 `params.ui.navbar_autohide: true` 后，在鼠标类精细
+指针设备上，导航栏默认收起到视口上方；指针进入顶部原区域上方 60%，或键盘焦点
+进入导航栏时，它会以浮层形式出现。纯触屏设备与小于 768px 的 drawer 档位始终
+常显，后者也覆盖键盘阅读模式的隐藏规则。页面或栏目 cascade 可用
+顶层 front matter `navbar_autohide` 覆盖全局策略；`navbar_enabled: false` 仍是
+完全不渲染导航栏的独立选项。
 
 语言、版本、主题和搜索仍位于 utility 区域，不会变成内容菜单的 children。
 
@@ -138,9 +146,9 @@ group heading 与普通后代，不会生成第三级 flyout。这个 warning �
 | `groups` | Root 和有 children 的节点显示图标；普通 leaf 不显示。 |
 | `none` | 不输出侧栏条目图标。 |
 
-在 1.0 之前，未配置时的兼容默认值仍为 `all`；新 starter site 显式选择
-`groups`。非法值会 warning 并回退到 `all`。这样能把 starter 建议与兼容性
-默认值变更分开。
+在 1.0 之前，未配置时的兼容默认值仍为 `all`；新 starter site 也显式选择
+`all`，确保叶子页面中已配置的图标不会被隐藏。偏好稀疏结构树的站点仍可主动
+选择 `groups`。非法值会 warning 并回退到 `all`。
 
 ## 搜索元数据与索引 {#search-metadata-and-index}
 
@@ -389,7 +397,7 @@ request 或助手 URL。消费站显式启用的助手链接、analytics、评�
 
 - 现有平铺 `menus.main` 无需改配置，HTML 与行为继续受到兼容测试保护。
 - 整个 0.x 期间，未配置 `params.ui.sidebar_icon_policy` 时仍为 `all`；starter
-  显式选择 `groups`。
+  显式选择 `all`，确保已配置的叶子页图标保持可见。
 - `exclude_search` 与 `excludeSearch` 在整个 0.x 期间保留，最早只能在 1.0
   删除。
 - Cmd/Ctrl-K 继续作为 Palette 快捷键，普通文本继续搜索页面。
@@ -402,8 +410,9 @@ characterization fixtures。
 ## Starter 与主题默认值 {#starter-versus-theme-defaults}
 
 最小 `exampleSite/hugo.yaml` 有意演示嵌套 Hugo Menu、
-`sidebar_icon_policy: groups`、summary 大小的本地搜索，以及安全 URL 与内置
-命令。这些是 starter 选择；对于没有配置它们的消费站，主题继续维持兼容默认值。
+`sidebar_icon_policy: all`、summary 大小的本地搜索，以及安全 URL 与内置
+命令。显式的 `all` 会保留叶子页中已配置的图标，并与主题兼容默认值一致；
+`groups` 仍可作为稀疏模式主动启用。
 
 ## 验证与发布证据 {#verification-and-release-evidence}
 

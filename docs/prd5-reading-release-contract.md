@@ -23,13 +23,14 @@ OINK enables sequential navigation by default for the `docs`, `book`, and
 `params.ui.pager.types`; only those three type names are valid. A page or
 section can opt out with the boolean front matter value `pager: false`.
 
-For `docs` and `book`, reading order is the pre-order traversal of the same
-navigation root used by the sidebar: each section index precedes its visible
-children, ordinary children use weight order, and a `data/docs_nav.json` tree
-is authoritative when the docs sidebar uses one. Pages hidden with `toc_hide`,
-link-only placeholders using `manualLink`/`manualLinkRelref`, and
-`sidebar_divider` rows are not pager destinations. For `blog`, OINK preserves
-Hugo's existing `PrevInSection` and `NextInSection` time order.
+Reading order is the pre-order traversal of the same navigation root used by
+the sidebar: each section index precedes its visible children, ordinary Docs
+and Book children use weight order, and a `data/docs_nav.json` tree is
+authoritative when the docs sidebar uses one. Blog children share the sidebar's
+ordering helper: explicitly weighted entries come first, then unweighted
+entries in reverse chronological order. Pages hidden with `toc_hide`, link-only
+placeholders using `manualLink`/`manualLinkRelref`, and `sidebar_divider` rows
+are not pager destinations.
 
 The docs navigation root defaults to the configured docs section. A site whose
 manual pages intentionally live at the content root may set

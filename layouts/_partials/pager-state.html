@@ -28,26 +28,21 @@
 {{- $prev := false -}}
 {{- $next := false -}}
 {{- if $enabled -}}
-  {{- if eq $page.Type "blog" -}}
-    {{- $prev = $page.PrevInSection -}}
-    {{- $next = $page.NextInSection -}}
-  {{- else -}}
-    {{- $root := partial "shell/sidebar-root.html" $page -}}
-    {{- $pages := partialCached "shell/nav-flatten.html"
-        (dict "page" $page "root" $root)
-        $root.RelPermalink $page.Site.Language.Lang $page.Type -}}
-    {{- $position := newScratch -}}
-    {{- $position.Set "index" -1 -}}
-    {{- range $index, $candidate := $pages -}}
-      {{- if eq $candidate.RelPermalink $page.RelPermalink -}}
-        {{- $position.Set "index" $index -}}
-      {{- end -}}
+  {{- $root := partial "shell/sidebar-root.html" $page -}}
+  {{- $pages := partialCached "shell/nav-flatten.html"
+      (dict "page" $page "root" $root)
+      $root.RelPermalink $page.Site.Language.Lang $page.Type -}}
+  {{- $position := newScratch -}}
+  {{- $position.Set "index" -1 -}}
+  {{- range $index, $candidate := $pages -}}
+    {{- if eq $candidate.RelPermalink $page.RelPermalink -}}
+      {{- $position.Set "index" $index -}}
     {{- end -}}
-    {{- $index := $position.Get "index" -}}
-    {{- if ge $index 0 -}}
-      {{- if gt $index 0 }}{{ $prev = index $pages (sub $index 1) }}{{ end -}}
-      {{- if lt (add $index 1) (len $pages) }}{{ $next = index $pages (add $index 1) }}{{ end -}}
-    {{- end -}}
+  {{- end -}}
+  {{- $index := $position.Get "index" -}}
+  {{- if ge $index 0 -}}
+    {{- if gt $index 0 }}{{ $prev = index $pages (sub $index 1) }}{{ end -}}
+    {{- if lt (add $index 1) (len $pages) }}{{ $next = index $pages (add $index 1) }}{{ end -}}
   {{- end -}}
 {{- end -}}
 

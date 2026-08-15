@@ -1,15 +1,16 @@
 # PRD 6 · 键盘导航（Keyboard Navigation）— 设计方案
 
-状态：**已实现 · v4** —— 开放问题已于 2026-08-13 裁决（§11）；
+状态：**已实现 · v5** —— 开放问题已于 2026-08-13 裁决（§11）；
 2026-08-14 实站回归将全局动作键扩展到首页、加入 `r`，并修复
-`q/e` 在博客栏目边界混用导航序列的问题。
+`q/e` 在博客栏目边界混用导航序列的问题；2026-08-15 又把首页纳入
+`n/j/k` 顶层 section 跳转与 `h` 专注模式，并把 `y` 加为全局语言切换别名。
 
 日期：2026-08-13
 
-范围：全部交互式 HTML 页面的全局动作键，以及 shell 布局
+范围：全部交互式 HTML 页面的全局动作键，以及首页和 shell 布局
 （docs / blog / swagger）下的阅读导航：
 侧栏树焦点导航（WASD / 方向键）、目录跳转与翻页（j/k、q/e）、
-外观、语言与顶栏切换（h/l/t/r）、面板快捷键（f/c 与 `/`、`\`），以及
+外观、语言与顶栏切换（h/l/y/t/r）、面板快捷键（f/c 与 `/`、`\`），以及
 fat footer 的折叠箭头。
 
 前置阅读：`docs/prd4-navigation-command-palette-contract.md`、`CLAUDE.md`
@@ -31,15 +32,16 @@ fat footer 的折叠箭头。
 | `Enter` `Space` `g`（树内）                | 前往当前焦点项                                                |
 | `Escape`（树内）                           | 退出树焦点，返回正文                                          |
 | `q` `e`（shell 全局）                      | 上一篇 / 下一篇（页面权威 pager 序）                           |
-| `j` `k`（shell 全局）                      | 沿右侧页面目录跳到下一节 / 上一节（无目录页面退化为平滑滚动） |
-| `h`（shell 全局）                          | Hide：隐藏/恢复左右栏与页脚（禅模式，会话内跨页记忆）         |
-| `l`（全局）                                | Language：循环切换可用语言                                    |
+| `n`（仅首页）                              | Next：跳到下一个顶层 section（等同首页的 `j`）                |
+| `j` `k`（首页 + shell）                    | 首页逐个顶层 section；shell 沿页面目录跳到下一节 / 上一节     |
+| `h`（首页 + shell）                        | Hide：首页隐藏顶栏与页脚；shell 隐藏全部阅读外壳              |
+| `l` / `y`（全局）                          | Language：循环切换可用语言（等价别名）                         |
 | `t`（全局）                                | Theme：亮/暗模式切换                                          |
 | `r`（全局）                                | Route：在首页与顶栏注册的同源一级入口间循环                    |
 | `f`（全局）                                | 同 `/`：打开命令面板**完整搜索态**                            |
 | `c`（全局）                                | 同 `\`：打开命令面板**纯命令态**                              |
 | `/` `\`（全局）                            | 搜索态 / 命令态（属搜索功能，不受键盘导航开关影响，见 §6.1）  |
-| `?`                                        | **保留不占用**（未来快捷键帮助浮层）                          |
+| `?`                                        | **保留不占用**；侧栏问号按钮提供可视化快捷键速查               |
 
 配套交付：fat footer 的版权行右端新增**折叠箭头**，可收起/展开上方的
 链接栅格，选择经 localStorage 跨页持久（§6.5）；`h` 键的禅模式则把
@@ -49,14 +51,15 @@ fat footer 的折叠箭头。
 核心架构决策：**不建平行体系**。所有能力都接在既有机制上——
 树的展开/折叠走 `docs-shell.js` 的 chevron 按钮，`/` `\` 落在
 `command-palette.js` 内部并暴露 `OinkCommandPalette.instance` 供
-f/c 复用，`l`/`t` 走 `OinkActions` 的 `switch_language` /
-`switch_theme` 动作，j/k 以 `#TableOfContents` 为目录数据源，
+f/c 复用，`l`/`y`/`t` 走 `OinkActions` 的 `switch_language` /
+`switch_theme` 动作，shell 的 j/k 以 `#TableOfContents` 为目录数据源，
+首页则以 Landing 容器的顶层 section 为数据源，
 装配走 `_partials/scripts.html` 的参数门控 + `$bundleKey`。
 键盘主体集中在 `assets/js/keyboard-nav.js`；footer 折叠箭头独立为
 `footer-collapse.js`（不依赖键盘导航开关）。
 
-新增 i18n key：**2 个**（`ui_footer_collapse` / `ui_footer_expand`，
-en 与 zh/zh-cn/zh-tw 人工翻译，其余 locale 经 `check-i18n.py --sync`）。
+新增 i18n key：footer 折叠 2 个，快捷键速查 12 个；en 与
+zh/zh-cn/zh-tw 人工翻译，其余 locale 经 `check-i18n.py --sync`。
 
 ---
 
@@ -65,7 +68,8 @@ en 与 zh/zh-cn/zh-tw 人工翻译，其余 locale 经 `check-i18n.py --sync`）
 用户侧（oink.pgsty.com 维护者）已裁决四点，本文视为约束：
 
 1. **可配置，默认开启**。`params.ui.keyboard_nav.enable`，主题默认 `true`。
-2. **`?` 帮助浮层保留**：在全部快捷键设计定稿前不实现，但键位为其留空。
+2. **`?` 键位继续保留**：不绑定裸按键；侧栏底部的问号按钮通过 hover、
+   focus 或触控打开快捷键速查卡。
 3. **输入焦点绝对让行**：任何输入类焦点（input / textarea / select /
    contenteditable / IME 组字）存在时，全部单键快捷键必须禁用。
 4. **静态站语义**：树内移动只移焦点、不换页；`Enter` / `Space` / `g`
@@ -96,8 +100,10 @@ en 与 zh/zh-cn/zh-tw 人工翻译，其余 locale 经 `check-i18n.py --sync`）
 
 作用域分两级：
 
-- **全站**（任意交互式 HTML 页，focus 在非输入位置）：`l t r f c`，以及
+- **全站**（任意交互式 HTML 页，focus 在非输入位置）：`l y t r f c`，以及
   `/` `\`（面板自有）。
+- **首页阅读**：`n j k h`，逐个顶层 Landing section 跳转，并切换只隐藏
+  顶栏与页脚的专注模式。
 - **shell 全局**（docs / blog / swagger）：`w s a d q e j k h`，并继承
   上述全站动作键。
 - **树内**（focus 位于 `nav.td-shell-tree` 内部）：方向键、
@@ -119,19 +125,20 @@ en 与 zh/zh-cn/zh-tw 人工翻译，其余 locale 经 `check-i18n.py --sync`）
 | `Space`   | 树内               | 前往焦点项链接                                            | `preventDefault` 阻止翻屏后 `click()`   |
 | `g`       | 树内               | 前往焦点项链接                                            | 与未来 `gg` 序列的关系见 §11.3          |
 | `Escape`  | 树内               | 焦点返回正文（触发前元素或 blur）                         | drawer 开启时让行给 docs-shell          |
-| `j`       | shell 全局         | 目录下一节（Vim 语义：j 下 k 上）                         | 无目录页退化为 +300px 缓动滚动          |
-| `k`       | shell 全局         | 目录上一节；深入节内时先回本节起点                        | 无目录页退化为 -300px 缓动滚动          |
+| `j`       | 首页 + shell       | 首页下一顶层 section；shell 目录下一节（j 下 k 上）       | shell 无目录页退化为 +300px 缓动滚动    |
+| `k`       | 首页 + shell       | 首页上一顶层 section；shell 目录上一节                    | 深入 shell 节内时先回本节起点            |
+| `n`       | 仅首页             | Next：下一顶层 section（首页 `j` 的助记别名）             | 在 shell 与普通内页静默                  |
 | `q`       | shell 全局         | 上一篇（页面权威 pager 序）                               | 无上一篇则静默                          |
 | `e`       | shell 全局         | 下一篇（页面权威 pager 序）                               | 无下一篇则静默                          |
-| `h`       | shell 全局         | Hide：禅模式开关（左右栏 + 页脚 + 浮动按钮）              | sessionStorage 跨页记忆                 |
-| `l`       | 全局               | Language：循环切换语言                                    | 单语言站静默                            |
+| `h`       | 首页 + shell       | Hide：首页隐藏顶栏/页脚；shell 隐藏全部阅读外壳           | sessionStorage 跨页记忆                 |
+| `l` / `y` | 全局               | Language：循环切换语言（等价别名）                         | 单语言站静默                            |
 | `t`       | 全局               | Theme：亮/暗切换                                          | 暗色菜单关闭时静默                      |
 | `r`       | 全局               | Route：循环前往首页及同源一级顶栏入口                    | 去重；外链与顶栏工具控件不参与          |
 | `f`       | 全局               | 面板完整搜索态（同 `/`）                                  | 无本地搜索时静默                        |
 | `c`       | 全局               | 面板纯命令态（同 `\`）                                    | v1 的 c=复制已移除（§12.2）             |
 | `/`       | 全局               | 面板完整搜索态（命令垫底、序同导航栏）                    | **语义变更**，契约修订 §6.1             |
 | `\`       | 全局               | 面板纯命令态（预填 `>`）                                  | 部分键盘布局取 `\` 不便，`>` 前缀恒可用 |
-| `?`       | —                  | **保留**                                                  | 未来帮助浮层                            |
+| `?`       | —                  | **保留**                                                  | 问号按钮提供帮助，裸按键仍不占用        |
 
 明确保留、v2 不占用：`?`（帮助）、`gg` / `Shift+G`（未来顶部/底部）、
 数字键。任何新增键位须先修订本表。
@@ -321,16 +328,17 @@ fallback 还会在边界混用两种顺序，形成两页环。树序优先同�
 sessionStorage 并前往该页面；目标页的完整 runtime 初始化后只消费一次，
 自动打开搜索态或命令态。未注册该桥且无面板时仍保持静默。
 
-### 6.3 `h` / `l` / `t`：外观与语言（v2，§12.5）
+### 6.3 `h` / `l` / `y` / `t`：外观与语言（v2，§12.5）
 
 - **`h` = Hide（禅模式）**：在 `<html>` 上切换 `data-td-kbd-zen`，
   CSS 一次性隐藏 navbar 或 navbar-off 的 compact subnav、
   `#td-shell-sidebar`、`.td-shell-toc`、`.td-shell-float` 与
-  `[data-td-shell-footer]`；flex 布局让正文列自然占满。状态存
+  `[data-td-shell-footer]`；首页因此只隐藏顶栏与页脚，shell 的 flex
+  布局则让正文列自然占满。状态存
   sessionStorage（键 `td-kbd-zen`），由 head 中的 prepaint 在首帧前恢复，
   `q/e` 翻页后无闪烁；关标签页即忘。禅模式中 WASD 不会把焦点送进
   隐藏的侧栏。
-- **`l` = Language**：读 `switch_language` 动作的 options（含每语言
+- **`l` / `y` = Language**：两个键读取同一个 `switch_language` 动作的 options（含每语言
   当前页 URL 与 active 标记），循环跳到下一个可用语言；单语言站
   action 不可用，静默。
 - **`t` = Theme**：读 `<html data-bs-theme>` 现值，经
@@ -384,7 +392,8 @@ params:
   命中则 `$jsArray | append (resources.Get "js/keyboard-nav.js")`，
   并把 `$hasKeyboardNav` 加入 `$bundleKey`（红线 4）。
   所有交互式 HTML 页面都装配；运行时用 `body.td-shell-chrome` 将
-  WASD、j/k、q/e、h 限定在 shell，首页与普通页只启用 l/t/r/f/c。
+  WASD 与 q/e 限定在 shell，用 `body.td-home` 让首页共享 n/j/k/h；普通页
+  只启用 l/t/r/f/c。
 - keyboard-nav.js 排在 docs-shell.js 之后追加（逻辑上事件驱动 +
   惰性查询，实际无硬顺序依赖，但保持"依赖者靠后"惯例）。
 - 完全绕过 base template 的消费者页面需单独加载 `keyboard-nav.js`，并按需

@@ -5,8 +5,8 @@
     display: none;
   }
 
-  // Top-level pages keep their one-crumb trail: it anchors the breadcrumb row
-  // so the page actions on the right never float alone.
+  // Top-level nodes omit their redundant one-crumb trail. Their shell topline
+  // remains in place whenever page actions exist, so the control does not jump.
 
   .breadcrumb {
     background: inherit;

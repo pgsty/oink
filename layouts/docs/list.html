@@ -1,5 +1,4 @@
 {{ define "main" }}
-{{- $commentsState := partial "comments-state.html" . -}}
 <div class="td-content">
 		{{ partial "page-title.html" . }}
   {{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
@@ -12,13 +11,6 @@
 	{{ .Render "_td-content-after-header" -}}
 	{{ partial "content/render.html" . }}
 	{{ partial "section-index.html" . -}}
-	{{ partial "page-meta-lastmod.html" . -}}
-	{{ partial "feedback.html" . -}}
-	{{ partial "pager.html" . -}}
-	{{ partial "comments.html" . -}}
-	{{ if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) -}}
-		<br />
-		{{- partial "disqus-comment.html" . -}}
-	{{ end -}}
+	{{ partial "page-end.html" . -}}
 </div>
 {{ end -}}

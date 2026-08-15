@@ -6,7 +6,12 @@
   {{- $pages = $pages | append $section -}}
 {{- end -}}
 
-{{- $children := (union $section.Pages $section.Sections).ByWeight -}}
+{{- $children := union $section.Pages $section.Sections -}}
+{{- if eq $section.Type "blog" -}}
+  {{- $children = partial "shell/blog-pages.html" $children -}}
+{{- else -}}
+  {{- $children = $children.ByWeight -}}
+{{- end -}}
 {{- $children = where $children ".Params.toc_hide" "!=" true -}}
 {{- $truncate := $section.Site.Params.ui.sidebar_menu_truncate | default 128 -}}
 {{- $children = $children | first $truncate -}}

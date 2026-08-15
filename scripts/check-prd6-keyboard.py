@@ -21,8 +21,8 @@ ACTIONS_SCRIPT = ROOT / "scripts" / "check-prd4-actions.py"
 # the RTL swap ternary rather than a direct comparison.
 KEYMAP = [
     "'w'", "'s'", "'a'", "'d'",
-    "'j'", "'k'", "'q'", "'e'",
-    "'h'", "'l'", "'t'", "'r'", "'f'",
+    "'j'", "'k'", "'n'", "'q'", "'e'",
+    "'h'", "'l'", "'y'", "'t'", "'r'", "'f'",
     "'g'", "'c'", "' '", "'Escape'",
     "'ArrowUp'", "'ArrowDown'",
 ]
@@ -126,8 +126,17 @@ def check_sources() -> None:
         "keyboard-nav lost collapsed-sidebar restoration",
     )
     require(
-        "#TableOfContents" in source,
-        "keyboard-nav lost the outline source for j/k",
+        "#TableOfContents" in source
+        and "[data-td-landing]" in source
+        and "hasReadingShortcuts()" in source,
+        "keyboard-nav lost the shell outline or homepage section source for j/k",
+    )
+    prepaint = (ROOT / "layouts" / "_partials" / "shell" / "prepaint.html").read_text(
+        encoding="utf-8"
+    )
+    require(
+        ".IsHome" in prepaint and "td-kbd-zen" in prepaint,
+        "homepage focus mode is not restored before paint",
     )
     require(
         "SCROLL_DURATION = 100" in source

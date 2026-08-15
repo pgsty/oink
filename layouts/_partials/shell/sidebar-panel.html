@@ -1,13 +1,11 @@
 {{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $hasAlgolia := and .Site.Params.search (isset .Site.Params.search "algolia") -}}
 {{- $hasOnlineSearch := or .Site.Params.gcs_engine_id $hasAlgolia -}}
-{{- /* With the navbar on, the brand and the palette opener live up there; the
-       sidebar keeps only the collapse button, and the header row survives for
-       the drawer close button (plus online search, which has no navbar home). */ -}}
-{{- $navbar := partial "shell/navbar-enabled.html" . -}}
+{{- $localSearch := partial "shell/search-enabled.html" . -}}
+{{- /* The sidebar owns its identity row even when the global navbar exists:
+       content hierarchy has visual priority over site-wide navigation. */ -}}
 <div class="td-shell-sidebar__panel">
   <div class="td-shell-sidebar__header">
-    {{- if not $navbar }}
     <div class="td-shell-sidebar__brand-row">
       <a class="td-shell-sidebar__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
         {{- if $config.wordmarkURL }}
@@ -17,20 +15,29 @@
         <span class="td-shell-wordmark">{{ $config.brandName }}</span>
         {{- end }}
       </a>
+      {{- if $localSearch }}
+      <button type="button" class="td-shell-iconbtn td-shell-sidebar__search" data-td-shell-search-open
+        title="{{ T "ui_search" }}" aria-label="{{ T "ui_search" }}"
+        aria-controls="td-shell-search" aria-expanded="false">
+        {{- partialCached "shell/icon.html" "search" "sidebar-search" -}}
+      </button>
+      {{- end }}
       <button type="button" class="td-shell-iconbtn td-shell-sidebar__collapse" data-td-shell-sidebar-toggle
         title="{{ T "ui_sidebar_collapse" }}" aria-label="{{ T "ui_sidebar_collapse" }}">
         {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
       </button>
     </div>
-    {{- end }}
-    {{- $drawerOnly := and $navbar (not $hasOnlineSearch) }}
+    {{- /* The local palette has a compact desktop opener above, so its full
+           field belongs to the drawer at every navbar setting. Online search
+           has no equivalent icon contract and may keep this row on desktop. */ -}}
+    {{- $drawerOnly := or $localSearch (not $hasOnlineSearch) }}
     <div class="td-shell-sidebar__header-row{{ if $drawerOnly }} td-shell-sidebar__header-row--drawer-only{{ end }}">
-      {{- if and (not $navbar) (partial "shell/search-enabled.html" .) }}
-      <button type="button" class="td-shell-search-btn" data-td-shell-search-open
+      {{- if $localSearch }}
+      <button type="button" class="td-shell-search-btn td-shell-search-btn--drawer" data-td-shell-search-open
         aria-controls="td-shell-search" aria-expanded="false">
         {{ partialCached "shell/icon.html" "search" "search" }}
         <span class="td-shell-search-btn__label">{{ T "ui_search" }}</span>
-        <span class="td-shell-search-btn__keys" aria-hidden="true"><kbd data-td-shell-meta-key>⌘</kbd><kbd>K</kbd></span>
+        <span class="td-shell-search-btn__keys" aria-hidden="true"><kbd>/</kbd></span>
       </button>
       {{- else if $hasOnlineSearch }}
         {{ partial "search-input.html" . }}
@@ -40,20 +47,7 @@
       <button type="button" class="td-shell-iconbtn td-shell-sidebar__close" data-td-shell-drawer-close
         aria-label="{{ T "ui_drawer_close" }}" aria-controls="td-shell-sidebar">{{ partialCached "shell/icon.html" "x" "x" }}</button>
     </div>
-    {{- if $navbar }}
-    {{- /* With the brand row gone, the root switcher heads the sidebar and the
-         collapse action sits beside it. A static current-root link stands in
-         when no switcher is configured. */ -}}
-    <div class="td-shell-sidebar__root-row">
-      {{ partial "shell/root-menu.html" (dict "page" . "fallback" true) }}
-      <button type="button" class="td-shell-iconbtn td-shell-sidebar__collapse" data-td-shell-sidebar-toggle
-        title="{{ T "ui_sidebar_collapse" }}" aria-label="{{ T "ui_sidebar_collapse" }}">
-        {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
-      </button>
-    </div>
-    {{- else }}
     {{ partial "shell/root-menu.html" . }}
-    {{- end }}
   </div>
   <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
     {{ partial "shell/sidebar.html" . }}
@@ -61,25 +55,40 @@
          so the table of contents and the taxonomies stay reachable from the drawer. Empty until then. */ -}}
     <div class="td-shell-sidebar__aside" data-td-shell-aside-slot hidden></div>
   </div>
-  {{- /* Footer row only for the navbar-off chrome: with the navbar on, the
-       version, language, theme, and GitHub controls are always visible up
-       there — at every width — so the sidebar carries no duplicate. */ -}}
-  {{- if not $navbar }}
+  {{- /* Keep the global utilities at the bottom of both the desktop rail and
+       the mobile drawer. Language/version anchor to the start; theme/GitHub
+       anchor to the end. Every menu opens upward from this edge. */ -}}
   {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
   <div class="td-shell-sidebar__footer">
-    {{ if .Site.Params.versions -}}
-    <div class="td-shell-sidebar__version">
-      {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true) }}
-    </div>
-    {{ end -}}
-    <div class="td-shell-sidebar__utils">
+    <div class="td-shell-sidebar__footer-start">
       {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "icon" "shell") }}
+      {{ if .Site.Params.versions -}}
+      <div class="td-shell-sidebar__version">
+        {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true) }}
+      </div>
+      {{ end -}}
+    </div>
+    <div class="td-shell-sidebar__footer-end">
+      {{ partial "shell/keyboard-help.html" . }}
       {{- if $darkMode.showMenu }}
-      <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-theme-toggle
-        title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}">
-        {{- partialCached "shell/icon.html" "moon" "moon" -}}
-        {{- partialCached "shell/icon.html" "sun" "sun" -}}
-      </button>
+      <div class="td-shell-sidebar__theme nav-hover-menu" data-td-nav-hover>
+        <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-nav-hover-trigger data-td-theme-toggle
+          title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}" aria-expanded="false">
+          {{- partialCached "shell/icon.html" "moon" "sidebar-moon" -}}
+          {{- partialCached "shell/icon.html" "sun" "sidebar-sun" -}}
+        </button>
+        <div class="nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
+          <button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
+            {{- partialCached "shell/icon.html" "sun" "sidebar-theme-light" -}}<span>{{ T "ui_theme_light" }}</span>
+          </button>
+          <button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
+            {{- partialCached "shell/icon.html" "moon" "sidebar-theme-dark" -}}<span>{{ T "ui_theme_dark" }}</span>
+          </button>
+          <button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
+            {{- partialCached "shell/icon.html" "contrast" "sidebar-theme-auto" -}}<span>{{ T "ui_theme_auto" }}</span>
+          </button>
+        </div>
+      </div>
       {{- end }}
       {{- with $config.projectRepo }}
       <a class="td-shell-iconbtn" href="{{ . }}" target="_blank" rel="noopener noreferrer"
@@ -87,6 +96,5 @@
       {{- end }}
     </div>
   </div>
-  {{- end }}
   <div class="td-shell-sidebar__resizer" data-td-shell-resizer aria-hidden="true"></div>
 </div>

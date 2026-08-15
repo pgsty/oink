@@ -44,7 +44,7 @@
         {{- end }}
         <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
           <article class="td-shell-article">
-            {{ $crumbs := not (.Param "ui.breadcrumb_disable") -}}
+            {{ $crumbs := partial "shell/breadcrumb-enabled.html" . -}}
             {{- /* On the blog root and its first-level sections the split
                  button leads with RSS instead of copy: those are the pages a
                  reader subscribes to. */ -}}
@@ -54,7 +54,7 @@
             {{ end -}}
             {{ $actionsHTML := partial "actions/title-menu.html" (dict "page" . "feedURL" $feedURL) -}}
             {{ if or $crumbs (strings.ContainsNonSpace $actionsHTML) -}}
-            <div class="td-shell-topline">
+            <div class="td-shell-topline{{ if not $crumbs }} td-shell-topline--actions-only{{ end }}">
               {{ if $crumbs }}{{ partial "breadcrumb.html" . }}{{ end }}
               <span class="td-shell-topline__spacer"></span>
               {{ $actionsHTML }}

@@ -1,0 +1,11 @@
+{{- /* A top-level node already repeats its own section/taxonomy title in the
+     page heading. Hide that redundant one-item trail while leaving leaf pages
+     and nested sections unchanged. The caller still owns the surrounding
+     topline, so page actions keep the same position. */ -}}
+{{- $enabled := not (.Param "ui.breadcrumb_disable") -}}
+{{- with .Parent -}}
+  {{- if and (not $.IsPage) .IsHome -}}
+    {{- $enabled = false -}}
+  {{- end -}}
+{{- end -}}
+{{- return $enabled -}}

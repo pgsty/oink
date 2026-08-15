@@ -39,6 +39,8 @@ ui_tags_title: Tags
 ui_tag_title: Tag
 ui_categories_title: Categories
 ui_category_title: Category
+ui_modules_title: Modules
+ui_module_title: Module
 ui_theme_toggle: Toggle color theme
 ui_language: Language
 ui_theme: Theme
@@ -70,6 +72,19 @@ ui_pricing_included: Included
 ui_pricing_excluded: Not included
 ui_marquee_pause: Pause motion
 ui_kbd_with: with
+ui_keyboard_shortcuts: Keyboard shortcuts
+ui_shortcut_tree_move: Move through sidebar
+ui_shortcut_tree_toggle: Collapse or expand section
+ui_shortcut_tree_open: Open focused page
+ui_shortcut_heading_move: Previous or next heading
+ui_shortcut_page_move: Previous or next page
+ui_shortcut_search: Search
+ui_shortcut_commands: Command palette
+ui_shortcut_reading_mode: Reading mode
+ui_shortcut_language: Switch language
+ui_shortcut_theme: Switch theme
+ui_shortcut_route: Cycle top-level pages
+ui_page_annotation: Page information
 ui_field_required: required
 ui_action_unavailable: unavailable
 ui_image_zoom_dialog: Image preview
@@ -151,8 +166,16 @@ community_guideline: >-
 # Feedback
 feedback_title: Feedback
 feedback_question: Was this page helpful?
-feedback_positive: Yes
-feedback_negative: No
+feedback_positive: Solved
+feedback_negative: Not solved
+feedback_thanks: Thanks—your feedback helps us improve this page.
+feedback_reason_prompt: What got in the way? (optional)
+feedback_reason_missing: Missing information
+feedback_reason_outdated: Incorrect or outdated
+feedback_reason_failed: Steps did not work
+feedback_reason_unclear: Hard to understand
+feedback_details: Add details in the comments
+feedback_change: Change response
 
 # Table of contents
 toc_on_this_page: Content

@@ -1,10 +1,12 @@
 /**
  * PRD 6 keyboard navigation. WASD and arrow keys drive the sidebar tree,
  * q/e page through the visible sidebar order, j/k jump between the page
- * outline's sections, h toggles a chrome-free reading mode, l cycles
+ * outline's sections, h toggles a chrome-free reading mode, l/y cycle
  * languages, t flips light/dark, r cycles the internal top-level navbar
- * routes, and f/c open the Command Palette in search or command mode. Shell
- * navigation stays shell-only; l/t/r/f/c work on every interactive page.
+ * routes, and f/c open the Command Palette in search or command mode. The
+ * homepage shares j/k section jumps and h focus mode with shell pages, and n
+ * is its mnemonic next-section alias;
+ * l/y/t/r/f/c work on every interactive page.
  * Every binding is a bare single-character shortcut, so all of them yield to
  * anything the reader could be typing into and to open overlays. Bundled only
  * when params.ui.keyboard_nav.enable is not false.
@@ -119,6 +121,17 @@
         doc.body && doc.body.classList &&
         doc.body.classList.contains('td-shell-chrome'),
       );
+    }
+
+    function isHomePage() {
+      return Boolean(
+        doc.body && doc.body.classList &&
+        doc.body.classList.contains('td-home'),
+      );
+    }
+
+    function hasReadingShortcuts() {
+      return isShellPage() || isHomePage();
     }
 
     function hasOpenDialog() {
@@ -373,10 +386,21 @@
 
     /* ----------------------------------------------------- outline (j/k) */
 
-    // Targets follow the rendered page outline when one exists, so j/k and
-    // the right-rail TOC always agree; heading-less pages fall back to the
+    // The homepage advances through its server-rendered top-level sections.
+    // Shell targets follow the rendered page outline when one exists, so j/k
+    // and the right-rail TOC always agree; heading-less pages fall back to the
     // plain glide scroll.
     function headingTargets() {
+      if (isHomePage()) {
+        var landing = doc.querySelector('[data-td-landing]');
+        if (!landing) return [];
+        return Array.prototype.filter.call(
+          landing.children || [],
+          function (child) {
+            return child.tagName === 'SECTION' && Boolean(child.id);
+          },
+        );
+      }
       var toc = doc.querySelector('#TableOfContents');
       var targets = [];
       if (toc) {
@@ -506,7 +530,7 @@
       if (url) win.location.assign(url);
     }
 
-    /* -------------------------------------------------------- h/l/t/r/f/c */
+    /* ------------------------------------------------------ h/l/y/t/r/f/c */
 
     // Chrome-free reading mode: both rails, the footer, and the floating
     // restore pill disappear. The state survives q/e page flips through
@@ -711,17 +735,20 @@
         }
       }
 
-      if (isShellPage() && (key === 'j' || key === 'k')) {
+      if (
+        hasReadingShortcuts() &&
+        (key === 'j' || key === 'k' || (isHomePage() && key === 'n'))
+      ) {
         event.preventDefault();
-        return jumpHeading(key === 'j' ? 1 : -1);
+        return jumpHeading(key === 'k' ? -1 : 1);
       }
       if (isShellPage() && key === 'q') return goPage('prev');
       if (isShellPage() && key === 'e') return goPage('next');
-      if (isShellPage() && key === 'h') {
+      if (hasReadingShortcuts() && key === 'h') {
         event.preventDefault();
         return setZen(!html.hasAttribute('data-td-kbd-zen'));
       }
-      if (key === 'l') return cycleLanguage();
+      if (key === 'l' || key === 'y') return cycleLanguage();
       if (key === 't') return cycleTheme();
       if (key === 'r') {
         if (cycleNavbar()) event.preventDefault();
@@ -734,7 +761,7 @@
     // Re-apply the chrome-free mode chosen on a previous page.
     try {
       if (
-        isShellPage() && win.sessionStorage &&
+        hasReadingShortcuts() && win.sessionStorage &&
         win.sessionStorage.getItem(ZEN_KEY)
       )
         html.setAttribute('data-td-kbd-zen', '');

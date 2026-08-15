@@ -153,6 +153,8 @@
   }
 
   &__column {
+    padding-inline-start: 10px;
+
     h2 {
       margin: 0 0 1rem;
       color: var(--td-brand-silk);

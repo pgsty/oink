@@ -212,8 +212,9 @@ def check_pager_outputs(public: Path) -> list[str]:
     require("Nested guides" in first_nested, "pager card lost its optional parent section", errors)
 
     blog_cases = {
-        "blog/older/index.html": {"prev": None, "next": "/blog/typography/"},
-        "blog/typography/index.html": {"prev": "/blog/older/", "next": None},
+        "blog/index.html": {"prev": None, "next": "/blog/typography/"},
+        "blog/typography/index.html": {"prev": "/blog/", "next": "/blog/older/"},
+        "blog/older/index.html": {"prev": "/blog/typography/", "next": "/blog/release/"},
     }
     for relative, expected in blog_cases.items():
         path = public / relative
@@ -224,8 +225,8 @@ def check_pager_outputs(public: Path) -> list[str]:
         for direction in ("prev", "next"):
             actual = url_path(parsed.pager_links.get(direction))
             head = url_path(parsed.head_links.get(direction))
-            require(actual == expected[direction], f"{relative} {direction} time order changed", errors)
-            require(head == expected[direction], f"{relative} head {direction} time order changed", errors)
+            require(actual == expected[direction], f"{relative} {direction} sidebar order changed", errors)
+            require(head == expected[direction], f"{relative} head {direction} sidebar order changed", errors)
 
     print_page = public / "_print/docs/index.html"
     require(print_page.exists(), "docs print fixture is missing", errors)
@@ -343,7 +344,7 @@ build:
         if root_page.exists():
             parsed = parse_navigation(root_page.read_text())
             require(
-                parsed.sidebar_links == ["/docs/gamma/", "/docs/beta/", "/release/", "/docs/alpha/"],
+                parsed.sidebar_links == ["/docs/", "/docs/gamma/", "/docs/beta/", "/release/", "/docs/alpha/"],
                 "explicit sidebar no longer follows docs_nav.json",
                 errors,
             )
@@ -562,9 +563,14 @@ def check_pager_sources() -> list[str]:
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
     head = (ROOT / "layouts/_partials/head.html").read_text()
     styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
-    generic = (ROOT / "layouts/_td-content.html").read_text()
+    page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
+    nav_flatten = (ROOT / "layouts/_partials/shell/nav-flatten-section.html").read_text()
     require('partialCached "shell/nav-flatten.html"' in state, "pager does not cache its flattened tree", errors)
-    require("PrevInSection" in state and "NextInSection" in state, "blog time-order branch is missing", errors)
+    require(
+        'partial "shell/blog-pages.html"' in nav_flatten,
+        "blog pager no longer shares the rendered sidebar order",
+        errors,
+    )
     require("data-td-pager-prev" in pager and "data-td-pager-next" in pager, "keyboard pager hooks are missing", errors)
     require("disabled" not in pager, "pager still renders disabled controls", errors)
     require('rel="prev"' in head and 'rel="next"' in head, "head pager relations are missing", errors)
@@ -574,12 +580,15 @@ def check_pager_sources() -> list[str]:
         errors,
     )
     require(
-        generic.index('partial "feedback.html"')
-        < generic.index('partial "pager.html"')
-        < generic.index('partial "comments.html"'),
-        "generic pager is not between feedback and comments",
+        page_end.index('partial "feedback.html"')
+        < page_end.index('partial "page-annotation.html"')
+        < page_end.index('partial "pager.html"')
+        < page_end.index('partial "comments.html"'),
+        "page-end order is not feedback, annotation, pager, comments",
         errors,
     )
+    require("&__card:only-child" in styles, "single-direction pager does not span the grid", errors)
+    require("td-pager__summary" in pager, "pager lost the second-row description", errors)
     for marker in (
         "[dir='rtl']",
         "@media (prefers-reduced-motion: reduce)",

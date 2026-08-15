@@ -44,10 +44,21 @@ hover or keyboard focus opens the panel. ArrowDown opens the dropdown and
 focuses its first actionable item, Escape closes it and restores focus, and an
 outside press closes it. The parent link owns aria-expanded and aria-controls.
 
-The navbar has exactly two states, full and compact; the compact state keeps
-every item visible as an icon, so there is no separate mobile menu and the
-former params.ui.navbar_accordion_single_open accordion parameter is retired.
-On shell pages below md an extra icon opens the sidebar drawer.
+The navbar has exactly two states, full and compact. Compact content-menu
+entries use icons. Below md, the utility edge keeps only search and the
+relevant menu or drawer opener; language, version, theme, and GitHub move to
+the drawer footer. The former params.ui.navbar_accordion_single_open accordion
+parameter is retired.
+
+The navbar is 50px high. `params.ui.navbar_autohide` defaults to false and may
+be overridden by the top-level `navbar_autohide` key in page front matter or a
+section cascade. When enabled on a fine-pointer device, the navbar leaves
+normal flow and stays above the viewport until the pointer enters its original
+top-edge area within the upper 60% of that height, or keyboard focus enters it;
+it then overlays rather than reflows the page. Coarse-pointer, touch-only, and
+sub-768px viewports keep the navbar visible; the drawer-width tier also overrides
+keyboard reading mode. This presentation policy does not add a third
+navigation-content state.
 
 The parent is active when it or any descendant is current. External links have
 an explicit visual affordance and include noopener noreferrer when opened in a
@@ -66,8 +77,9 @@ params.ui.sidebar_icon_policy accepts:
 
 An absent setting remains all before 1.0. Version 1.0 is the earliest release
 that may reconsider this default; it does not imply that 1.0 will change it.
-New starter sites explicitly choose groups. Invalid input warns and falls back
-to the compatibility default.
+New starter sites explicitly choose all so authored leaf icons remain visible;
+groups remains an opt-in sparse mode. Invalid input warns and falls back to the
+compatibility default.
 
 ## Search schema and ranking contract
 

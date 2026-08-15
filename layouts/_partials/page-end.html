@@ -1,0 +1,12 @@
+{{- /* One page-end composition for every reading layout. Do not reproduce
+     this order in individual content templates. */ -}}
+{{- $commentsState := partial "comments-state.html" . -}}
+<div class="td-page-end">
+  {{ partial "feedback.html" . }}
+  {{ partial "page-annotation.html" . }}
+  {{ partial "pager.html" . }}
+  {{ partial "comments.html" . }}
+  {{- if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) }}
+  <div class="td-page-end__disqus d-print-none">{{ partial "disqus-comment.html" . }}</div>
+  {{- end }}
+</div>

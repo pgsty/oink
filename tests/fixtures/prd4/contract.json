@@ -29,7 +29,7 @@
     ],
     "compatibility_default": "all",
     "compatibility_default_change_earliest": "1.0",
-    "starter_default": "groups"
+    "starter_default": "all"
   },
   "search": {
     "canonical_front_matter": [

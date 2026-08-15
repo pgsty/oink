@@ -24,13 +24,27 @@
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       data-sidebar-icon-policy="{{ $iconPolicy }}"
       {{- if .Site.Params.ui.sidebar_root_enabled }} data-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
-    {{/* Do not repeat the docs root while the root switcher is visible. */ -}}
-    {{ $rootMenuOn := and .Site.Params.ui.sidebar_root_menu
-        (gt (len (where .Site.Pages "Params.sidebar_root_for" "self")) 0) -}}
     {{ with (index $docsNav "sections") -}}
     <ul class="td-shell-tree__list ul-1">
+      {{- $hasRoot := false -}}
+      {{- range . -}}
+        {{- if eq (strings.TrimSuffix "/" .url)
+              (strings.TrimSuffix "/" $sidebarRootURL) -}}
+          {{- $hasRoot = true -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if not $hasRoot -}}
+        {{- template "shell-docs-tree-nav-node" (dict
+            "page" $context
+            "node" (dict "page" $sidebarRootURL "url" $sidebarRootURL "children" (slice))
+            "currentURL" $currentURL
+            "activeURLs" $activeURLs
+            "shouldDelayActive" $shouldDelayActive
+            "ulNr" 1
+            "iconPolicy" $iconPolicy
+        ) -}}
+      {{- end -}}
       {{ range . -}}
-        {{ if and $rootMenuOn (eq .url $sidebarRootURL) }}{{ continue }}{{ end -}}
         {{ template "shell-docs-tree-nav-node" (dict
             "page" $context
             "node" .

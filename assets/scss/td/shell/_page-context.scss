@@ -36,9 +36,33 @@
   }
 }
 
+// When a top-level section suppresses its redundant one-item breadcrumb, keep
+// the actions at the exact same top coordinate but remove the row from normal
+// flow. The page title then fills the vacated space instead of inheriting an
+// empty breadcrumb band. Its end padding prevents long titles from running
+// underneath the split button at compact widths.
+.td-shell-topline--actions-only {
+  align-items: flex-start;
+  height: 0;
+  margin-bottom: 0;
+  overflow: visible;
+}
+
+.td-shell-topline--actions-only + .td-content > .td-page-heading {
+  min-height: 29px;
+  padding-inline-end: 5rem;
+
+  @media print {
+    padding-inline-end: 0;
+  }
+}
+
 .td-page-actions {
   position: relative;
+  display: flex;
+  align-items: center;
   flex: none;
+  min-height: 29px;
 
   @media print {
     display: none !important;

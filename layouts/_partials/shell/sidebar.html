@@ -1,4 +1,4 @@
-{{- $sidebarCacheLimit := .Site.Params.ui.sidebar_cache_limit | default 2000 -}}
+{{- $sidebarCacheLimit := .Site.Params.ui.sidebar_cache_limit | default 500 -}}
 {{- $cacheSidebar := ge (len .Site.Pages) $sidebarCacheLimit -}}
 {{- $sidebarRoot := partial "shell/sidebar-root.html" . -}}
 {{- $iconPolicy := partial "shell/sidebar-icon-policy.html" . -}}

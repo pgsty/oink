@@ -601,7 +601,8 @@
   border-top: 1px solid var(--oink-line);
 
   &__head {
-    max-width: 820px;
+    width: 100%;
+    max-width: none;
     margin-bottom: clamp(38px, 5vw, 64px);
 
     &--compact {

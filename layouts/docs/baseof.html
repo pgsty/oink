@@ -37,10 +37,10 @@
         <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
           <article class="td-shell-article">
             {{ partial "version-banner.html" . }}
-            {{ $crumbs := not (.Param "ui.breadcrumb_disable") -}}
+            {{ $crumbs := partial "shell/breadcrumb-enabled.html" . -}}
             {{ $actionsHTML := partial "actions/title-menu.html" . -}}
             {{ if or $crumbs (strings.ContainsNonSpace $actionsHTML) -}}
-            <div class="td-shell-topline">
+            <div class="td-shell-topline{{ if not $crumbs }} td-shell-topline--actions-only{{ end }}">
               {{ if $crumbs }}{{ partial "breadcrumb.html" . }}{{ end }}
               <span class="td-shell-topline__spacer"></span>
               {{ $actionsHTML }}

@@ -120,7 +120,9 @@
   // widen the page. The full-width author modifier opts out of the regular
   // prose measure and uses the entire article canvas.
   .td-table-scroll {
+    width: 100%;
     max-width: 100%;
+    margin-block-end: $spacer;
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-inline: contain;
@@ -132,6 +134,9 @@
     }
 
     > table {
+      // The wrapper owns responsiveness. Restore the table formatting context
+      // so short tables distribute their columns across the available width.
+      display: table;
       width: max-content;
       min-width: 100%;
       margin-bottom: 0;
@@ -190,24 +195,155 @@
   }
 }
 
-// "Was this page helpful?" widget. Previously an inline <style> block emitted
-// with the markup, which a strict Content Security Policy would drop.
+// Low-friction structured feedback. The first click records an answer through
+// the consumer site's analytics integration; no form or server is required.
 .td-feedback {
-  .feedback--answer {
-    display: inline-block;
+  margin-block: 2.5rem 0;
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--bs-border-color);
+
+  &__prompt {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
   }
 
-  .feedback--answer-no {
-    // Logical, not `margin-left`: the buttons swap sides under RTL.
-    margin-inline-start: 1em;
+  &__question {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
   }
 
-  .feedback--response {
-    display: none;
-    margin-top: 1em;
+  &__choices {
+    display: inline-flex;
+    gap: 0.5rem;
   }
 
-  .feedback--response__visible {
-    display: block;
+  &__choice,
+  &__reason,
+  &__details,
+  &__change {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 38px;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--bs-body-color);
+    font-weight: 600;
+
+    &:hover,
+    &:focus-visible,
+    &[aria-pressed='true'] {
+      border-color: var(--bs-secondary-color);
+      background: var(--bs-tertiary-bg);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.65;
+    }
   }
+
+  &__result {
+    margin-block-start: 1rem;
+    padding: 1rem;
+    border-radius: var(--bs-border-radius-lg);
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+
+    &[hidden] {
+      display: none;
+    }
+
+    p:last-child {
+      margin: 0;
+    }
+  }
+
+  &__thanks {
+    margin: 0;
+    color: var(--bs-body-color);
+    font-weight: 600;
+  }
+
+  &__reasons {
+    margin-block-start: 0.875rem;
+
+    > p {
+      margin-block-end: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  &__reason-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__reason {
+    min-height: 34px;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--bs-border-radius);
+    font-size: 0.8125rem;
+  }
+
+  &__result-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 0.75rem;
+  }
+
+  &__details,
+  &__change {
+    min-height: 34px;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--bs-border-radius);
+    font-size: 0.8125rem;
+    text-decoration: none;
+  }
+
+  &__details {
+    color: var(--bs-link-color);
+  }
+
+  &.is-submitted &__choice[aria-pressed='true'] {
+    color: var(--bs-primary);
+    opacity: 1;
+  }
+
+  &__reason[aria-pressed='true'] {
+    color: var(--bs-primary);
+    opacity: 1;
+  }
+}
+
+.td-page-annotation {
+  margin-block: 1.25rem;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.8125rem;
+}
+
+.td-page-meta__footer {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.td-page-meta__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.td-page-meta__icon {
+  flex: 0 0 1rem;
+  text-align: center;
 }

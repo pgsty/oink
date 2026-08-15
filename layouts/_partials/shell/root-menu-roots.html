@@ -1,0 +1,28 @@
+{{- /* Site-global sidebar roots. This partial is cached because walking every
+     page once per rendered page turns large documentation builds quadratic. */ -}}
+{{- $site := . -}}
+{{- $entries := slice -}}
+{{- $seen := newScratch -}}
+
+{{- range $site.Home.Sections.ByWeight -}}
+  {{- if ne .Params.sidebar_root_menu false -}}
+    {{- $key := .RelPermalink -}}
+    {{- if not ($seen.Get $key) -}}
+      {{- $entries = $entries | append . -}}
+      {{- $seen.Set $key true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $selfRoots := where $site.Pages "Params.sidebar_root_for" "self" -}}
+{{- range $selfRoots.ByWeight -}}
+  {{- if .IsSection -}}
+    {{- $key := .RelPermalink -}}
+    {{- if not ($seen.Get $key) -}}
+      {{- $entries = $entries | append . -}}
+      {{- $seen.Set $key true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $entries -}}

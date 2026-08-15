@@ -67,6 +67,7 @@ class Element {
     if (selector === '[data-td-navbar-route][href]') return this.hasAttribute('data-td-navbar-route') && this.hasAttribute('href');
     if (selector === '[data-td-language-route][href]') return this.hasAttribute('data-td-language-route') && this.hasAttribute('href');
     if (selector === '[data-td-keyboard-search-route][href]') return this.hasAttribute('data-td-keyboard-search-route') && this.hasAttribute('href');
+    if (selector === '[data-td-landing]') return this.hasAttribute('data-td-landing');
     if (selector === '[data-td-theme-toggle]') return this.hasAttribute('data-td-theme-toggle');
     if (selector === '[data-theme-toggle]') return this.hasAttribute('data-theme-toggle');
     return false;
@@ -151,9 +152,13 @@ function setup({
   scrollMargin = '0px',
   session = {},
   shell = true,
+  home = false,
 } = {}) {
   const html = new Element('html');
-  const root = new Element('body', shell ? 'td-shell-chrome' : '');
+  const root = new Element(
+    'body',
+    shell ? 'td-shell-chrome' : (home ? 'td-home' : ''),
+  );
   const doc = {
     documentElement: html,
     activeElement: null,
@@ -734,6 +739,10 @@ function press(harness, values) {
   press(lang, { key: 'l' });
   assert.deepEqual(lang.win.assigned, ['/zh/docs/b/one/'], 'l cycles to the next language');
 
+  const langAlias = setup({ registry: langRegistry });
+  press(langAlias, { key: 'y' });
+  assert.deepEqual(langAlias.win.assigned, ['/zh/docs/b/one/'], 'y is the global language alias');
+
   const singleLang = setup({
     registry: { get: () => ({ available: false, options: [] }) },
   });
@@ -775,6 +784,7 @@ function press(harness, values) {
   const landing = setup({
     withTree: false,
     shell: false,
+    home: true,
     registry: {
       get(id) {
         if (id === 'switch_theme') return { available: true };
@@ -792,8 +802,18 @@ function press(harness, values) {
       run(id, context) { landingRuns.push([id, context.value]); return { then() {} }; },
     },
     palette: paletteStub,
-    session: { 'td-kbd-zen': '1' },
   });
+  landing.html.scrollHeight = 3000;
+  landing.win.innerHeight = 800;
+  const landingRoot = new Element('div');
+  landingRoot.setAttribute('data-td-landing', '');
+  for (const [id, top] of [['hero', 0], ['release', 600], ['capabilities', 1400]]) {
+    const section = new Element('section');
+    section.id = id;
+    section.getBoundingClientRect = () => ({ top: top - landing.win.scrollY });
+    landingRoot.appendChild(section);
+  }
+  landing.root.appendChild(landingRoot);
   for (const href of ['/', '/docs/', '/blog/', '/blog/']) {
     const route = new Element('a');
     route.setAttribute('data-td-navbar-route', '');
@@ -821,12 +841,41 @@ function press(harness, values) {
     ['/', '/zh/'],
     'l works outside the shell',
   );
-  const landingScrolls = landing.win.scrolled.length;
+  landing.win.assigned.length = 0;
+  press(landing, { key: 'y' });
+  assert.deepEqual(landing.win.assigned, ['/zh/'], 'y works outside the shell');
   press(landing, { key: 'j' });
+  assert.equal(landing.win.scrolledTo.at(-1), 576, 'homepage j jumps to the next top-level section');
+  assert.equal(landing.win.hashes.at(-1), '#release', 'homepage section jump updates the hash');
+  press(landing, { key: 'k' });
+  assert.equal(landing.win.scrolledTo.at(-1), 0, 'homepage k jumps to the previous top-level section');
+  press(landing, { key: 'n' });
+  assert.equal(landing.win.scrolledTo.at(-1), 576, 'homepage n aliases the next top-level section');
+  assert.equal(landing.win.hashes.at(-1), '#release', 'homepage n updates the section hash');
+  const landingAssignments = landing.win.assigned.length;
   press(landing, { key: 'q' });
+  assert.equal(landing.win.assigned.length, landingAssignments, 'homepage q remains shell-only');
   press(landing, { key: 'h' });
-  assert.equal(landing.win.scrolled.length, landingScrolls, 'shell navigation stays inert on landing pages');
-  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), false, 'landing pages do not inherit or toggle shell zen mode');
+  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), true, 'homepage h hides navbar and footer chrome');
+  assert.equal(landing.win.sessionStorage.getItem('td-kbd-zen'), '1', 'homepage focus mode persists');
+
+  const homeBack = setup({
+    withTree: false,
+    shell: false,
+    home: true,
+    session: { 'td-kbd-zen': '1' },
+  });
+  assert.equal(homeBack.html.hasAttribute('data-td-kbd-zen'), true, 'homepage restores focus mode');
+
+  const ordinary = setup({
+    withTree: false,
+    shell: false,
+    session: { 'td-kbd-zen': '1' },
+  });
+  press(ordinary, { key: 'j' });
+  press(ordinary, { key: 'h' });
+  assert.equal(ordinary.win.scrolled.length, 0, 'ordinary pages keep reading keys inert');
+  assert.equal(ordinary.html.hasAttribute('data-td-kbd-zen'), false, 'ordinary pages do not restore focus mode');
 
   // A standalone consumer homepage can bridge the same global actions with
   // data attributes, without loading the action registry or palette bundle.

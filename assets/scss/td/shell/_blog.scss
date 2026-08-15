@@ -248,29 +248,22 @@ a.taxonomy-term {
   }
 }
 
-/* Right-rail taxonomy list, ordered by count. */
+/* Right-rail taxonomy cloud, ordered by count. */
 
 .td-shell-tags-cloud {
   &__chips {
     display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: 6px 0 2px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 6px 4px;
   }
 
   .td-shell-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border: 0;
-    border-radius: 10px;
-    background: transparent;
-    font-size: 14px;
-    line-height: 20px;
+    max-width: 100%;
+    border-radius: 999px;
 
     > span:first-child {
-      flex: 1 1 auto;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -282,20 +275,19 @@ a.taxonomy-term {
     }
 
     &.is-active {
-      border-color: transparent;
       background: var(--td-shell-primary-dim);
     }
   }
 
   .td-shell-tag__count {
     flex: 0 0 auto;
-    min-width: 20px;
-    padding: 0 6px;
+    min-width: 18px;
+    padding: 0 5px;
     border-radius: 999px;
     background: var(--td-shell-accent);
     color: var(--bs-body-color);
     font-size: 11px;
-    line-height: 18px;
+    line-height: 17px;
     text-align: center;
   }
 }

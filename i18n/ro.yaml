@@ -239,3 +239,45 @@ ui_marquee_pause: Pause motion
 # Replace these values with reviewed translations when available.
 book_example: Example
 contributors_count: contributors
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_modules_title: Modules
+ui_module_title: Module
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+feedback_thanks: Thanks for your feedback.
+
+# Table of contents
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_keyboard_shortcuts: Keyboard shortcuts
+ui_shortcut_tree_move: Move through sidebar
+ui_shortcut_tree_toggle: Collapse or expand section
+ui_shortcut_tree_open: Open focused page
+ui_shortcut_heading_move: Previous or next heading
+ui_shortcut_page_move: Previous or next page
+ui_shortcut_search: Search
+ui_shortcut_commands: Command palette
+ui_shortcut_reading_mode: Reading mode
+ui_shortcut_language: Switch language
+ui_shortcut_theme: Switch theme
+ui_shortcut_route: Cycle top-level pages
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+feedback_reason_prompt: What got in the way? (optional)
+feedback_reason_missing: Missing information
+feedback_reason_outdated: Incorrect or outdated
+feedback_reason_failed: Steps did not work
+feedback_reason_unclear: Hard to understand
+feedback_details: Add details in the comments
+feedback_change: Change response
+
+# Table of contents
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_page_annotation: Page information

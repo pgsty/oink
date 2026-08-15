@@ -353,7 +353,117 @@ function testPaletteFocusFromDrawer() {
   assert.ok(escape, 'Escape must restore focus to the visible drawer opener');
 }
 
+function testHoverTriggerClickAfterFocus() {
+  const trigger = element();
+  trigger.setAttribute('data-td-nav-hover-open', '');
+  const menu = element({
+    closest() { return null; },
+    querySelector(selector) {
+      return selector === '[data-td-nav-hover-trigger], .nav-util'
+        ? trigger : null;
+    },
+  });
+  global.document = {
+    querySelector() { return null; },
+    querySelectorAll(selector) {
+      return selector === '[data-td-nav-hover]' ? [menu] : [];
+    },
+  };
+  global.window = {
+    addEventListener() {},
+    clearTimeout() {},
+    setTimeout(callback) { callback(); return 1; },
+  };
+
+  load('assets/js/base.js');
+
+  // Browser click order is pointerdown, focusin, then click. That first click must not
+  // undo the open performed by focusin.
+  trigger.dispatch('pointerdown', { pointerType: 'mouse' });
+  menu.dispatch('focusin');
+  trigger.dispatch('click');
+  assert.equal(menu.classList.contains('is-open'), true);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+
+  trigger.dispatch('pointerdown', { pointerType: 'mouse' });
+  trigger.dispatch('click');
+  assert.equal(menu.classList.contains('is-open'), false, 'a second mouse click closes the disclosure');
+
+  menu.dispatch('focusin');
+  trigger.dispatch('click');
+  assert.equal(menu.classList.contains('is-open'), true, 'first keyboard activation remains open after focusin');
+  trigger.dispatch('click');
+  assert.equal(menu.classList.contains('is-open'), false, 'second keyboard activation closes the disclosure');
+
+  // Touch keeps normal toggle semantics: first tap opens, second tap closes.
+  trigger.dispatch('pointerdown', { pointerType: 'touch' });
+  menu.dispatch('focusin');
+  trigger.dispatch('click');
+  assert.equal(menu.classList.contains('is-open'), true);
+  trigger.dispatch('pointerdown', { pointerType: 'touch' });
+  trigger.dispatch('click');
+  assert.equal(menu.classList.contains('is-open'), false);
+}
+
+function testBootstrapVersionTriggerAfterFocus() {
+  const trigger = element();
+  const menu = element({
+    closest() { return null; },
+    querySelector(selector) {
+      return selector === '[data-bs-toggle="dropdown"]' ? trigger : null;
+    },
+  });
+  const dropdown = {
+    show() { trigger.setAttribute('aria-expanded', 'true'); },
+    hide() { trigger.setAttribute('aria-expanded', 'false'); },
+  };
+  global.document = {
+    querySelector() { return null; },
+    querySelectorAll(selector) {
+      return selector === '[data-td-version-menu]' ? [menu] : [];
+    },
+  };
+  global.bootstrap = {
+    Dropdown: { getOrCreateInstance() { return dropdown; } },
+  };
+  global.window = {
+    bootstrap: global.bootstrap,
+    addEventListener() {},
+    clearTimeout() {},
+    setTimeout(callback) { callback(); return 1; },
+  };
+
+  load('assets/js/base.js');
+
+  const activation = () => ({
+    defaultPrevented: false,
+    propagationStopped: false,
+    preventDefault() { this.defaultPrevented = true; },
+    stopPropagation() { this.propagationStopped = true; },
+  });
+
+  trigger.dispatch('pointerdown', { pointerType: 'touch' });
+  menu.dispatch('focusin');
+  const first = activation();
+  trigger.dispatch('click', first);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true', 'first touch activation remains open');
+  assert.equal(first.defaultPrevented, true);
+  assert.equal(first.propagationStopped, true, 'Bootstrap delegated click must not toggle it closed');
+
+  trigger.dispatch('pointerdown', { pointerType: 'touch' });
+  trigger.dispatch('click', activation());
+  assert.equal(trigger.getAttribute('aria-expanded'), 'false', 'second touch activation closes');
+
+  menu.dispatch('focusin');
+  trigger.dispatch('click', activation());
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true', 'first keyboard activation remains open after focusin');
+  trigger.dispatch('click', activation());
+  assert.equal(trigger.getAttribute('aria-expanded'), 'false', 'second keyboard activation closes the focused menu');
+}
+
 testCoordinatorCompatibility();
 testPaletteFocusFromDrawer();
 testNavbarHoverPanel();
+testHoverTriggerClickAfterFocus();
+testBootstrapVersionTriggerAfterFocus();
 console.log('PRD 4 surface behavior checks passed');

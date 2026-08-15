@@ -43,7 +43,7 @@ params:
     book_draft_banner: true
     sidebar_headings: 3
     quick_links: [docs, blog]
-    sidebar_icon_policy: groups
+    sidebar_icon_policy: all
     page_context_menu:
       assistant_links: true
     image_zoom:

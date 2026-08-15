@@ -1,0 +1,90 @@
+{{- /* Context-aware shortcut cheat sheet shared by the desktop sidebar and
+       its mobile drawer. The keycaps deliberately reuse the KBD component's
+       .td-kbd-sequence markup and presentation. */ -}}
+{{- $keyboardNav := ne (.Param "ui.keyboard_nav.enable") false -}}
+{{- $localSearch := partial "shell/search-enabled.html" . -}}
+{{- if or $keyboardNav $localSearch -}}
+{{- $targets := partial "language-targets.html" . -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+<div class="td-shell-keyboard nav-hover-menu" data-td-nav-hover>
+  <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
+    data-td-nav-hover-trigger data-td-nav-hover-open
+    title="{{ T "ui_keyboard_shortcuts" }}" aria-label="{{ T "ui_keyboard_shortcuts" }}"
+    aria-expanded="false">
+    {{- partialCached "shell/icon.html" "circle-help" "sidebar-keyboard-help" -}}
+  </button>
+  <div class="nav-hover-menu__pop td-shell-keyboard-help" role="group"
+    aria-label="{{ T "ui_keyboard_shortcuts" }}">
+    <div class="td-shell-keyboard-help__header">
+      {{- partialCached "shell/icon.html" "circle-help" "keyboard-help-title" -}}
+      <strong>{{ T "ui_keyboard_shortcuts" }}</strong>
+    </div>
+    {{- if $keyboardNav }}
+    <section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-navigation">
+      <p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-navigation">{{ T "ui_sidebar_nav" }}</p>
+      <dl>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>W</kbd><kbd>S</kbd><kbd>↑</kbd><kbd>↓</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_tree_move" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>A</kbd><kbd>D</kbd><kbd>←</kbd><kbd>→</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_tree_toggle" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>Enter</kbd><kbd>G</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_tree_open" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>J</kbd><kbd>K</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_heading_move" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>Q</kbd><kbd>E</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_page_move" }}</dd>
+        </div>
+      </dl>
+    </section>
+    {{- end }}
+    <section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-actions">
+      <p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-actions">{{ T "ui_palette_actions" }}</p>
+      <dl>
+        {{- if $localSearch }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>/</kbd>{{ if $keyboardNav }}<kbd>F</kbd>{{ end }}</span></dt>
+          <dd>{{ T "ui_shortcut_search" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>\</kbd>{{ if $keyboardNav }}<kbd>C</kbd>{{ end }}</span></dt>
+          <dd>{{ T "ui_shortcut_commands" }}</dd>
+        </div>
+        {{- end }}
+        {{- if $keyboardNav }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>H</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_reading_mode" }}</dd>
+        </div>
+        {{- if gt (len $targets) 1 }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>Y</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_language" }}</dd>
+        </div>
+        {{- end }}
+        {{- if $darkMode.showMenu }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>T</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_theme" }}</dd>
+        </div>
+        {{- end }}
+        {{- with .Site.Menus.main }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>R</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_route" }}</dd>
+        </div>
+        {{- end }}
+        {{- end }}
+      </dl>
+    </section>
+  </div>
+</div>
+{{- end -}}

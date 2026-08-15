@@ -6,4 +6,26 @@
 {{- end -}}
 {{- $surface := or .IsHome (partial "shell/chrome-enabled.html" .) (and $isLanding $landingSearch) -}}
 {{- $format := lower (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- return and .Site.Params.offlineSearch $surface (ne $format "print") -}}
+{{- $serveSearch := false -}}
+{{- if isset .Site.Params "offlinesearchonserve" -}}
+  {{- $serveSearch = .Site.Params.offlineSearchOnServe -}}
+{{- end -}}
+{{- /* Hugo preserves top-level HUGO_PARAMS_* values as strings, so normalize
+       the two documented environment forms without accepting arbitrary
+       truthy text from YAML or front matter. */ -}}
+{{- if eq (printf "%T" $serveSearch) "string" -}}
+  {{- if eq $serveSearch "true" -}}
+    {{- $serveSearch = true -}}
+  {{- else if eq $serveSearch "false" -}}
+    {{- $serveSearch = false -}}
+  {{- end -}}
+{{- end -}}
+{{- if ne (printf "%T" $serveSearch) "bool" -}}
+  {{- errorf "params.offlineSearchOnServe must be a boolean or an exact true/false environment value" -}}
+{{- end -}}
+{{- return and
+      .Site.Params.offlineSearch
+      (or (not hugo.IsServer) $serveSearch)
+      $surface
+      (ne $format "print")
+-}}

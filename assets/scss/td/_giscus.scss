@@ -3,6 +3,13 @@
   padding-block-start: clamp(1.5rem, 3vw, 2rem);
   border-block-start: 1px solid var(--bs-border-color);
 
+  // The pager already separates page content from discussion. Keep the
+  // adjacent handoff compact instead of stacking both components' spacing.
+  .td-pager + & {
+    margin-block-start: 0.75rem;
+    padding-block-start: 1rem;
+  }
+
   [data-td-giscus-container] {
     min-height: 8rem;
   }
@@ -24,6 +31,20 @@
   &[aria-busy='false'] [data-td-giscus-container] {
     opacity: 1;
     transition: opacity 160ms ease;
+  }
+}
+
+// Preserve the same page-end separation for the legacy Disqus fallback. The
+// old layouts inserted raw <br> elements; a named wrapper is predictable for
+// consumers and does not leak presentation into the template.
+.td-page-end__disqus {
+  margin-block-start: clamp(3rem, 6vw, 4.5rem);
+  padding-block-start: clamp(1.5rem, 3vw, 2rem);
+  border-block-start: 1px solid var(--bs-border-color);
+
+  .td-pager + & {
+    margin-block-start: 0.75rem;
+    padding-block-start: 1rem;
   }
 }
 

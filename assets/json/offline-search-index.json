@@ -6,18 +6,32 @@
 {{- $pages := where .Site.Pages "Kind" "in" (slice "page" "section") -}}
 {{- range $pages -}}
 {{- if or .Params.search_exclude .Params.exclude_search .Params.excludeSearch }}{{ continue }}{{ end -}}
-{{- if not .Content }}{{ continue }}{{ end -}}
+{{- if not .RawContent }}{{ continue }}{{ end -}}
 {{- /* We have to apply `htmlUnescape` again after `truncate` because `truncate` applies `html.EscapeString` if the argument is not HTML. */ -}}
 {{- /* Individual taxonomies can be added in the next line by add '"taxonomy-name" (.Params.taxonomy-name | default "")' to the dict (as seen for categories and tags). */ -}}
-{{- $summary := (.Description | default (.Summary | plainify)) | htmlUnescape | strings.TrimSpace -}}
-{{- $headings := replace .TableOfContents "</a>" "</a> " | plainify | htmlUnescape | strings.TrimSpace -}}
+{{- $summary := "" -}}
+{{- with .Description -}}
+  {{- $summary = . | htmlUnescape | strings.TrimSpace -}}
+{{- end -}}
+{{- if not $summary -}}
+  {{- $summary = .Summary | plainify | htmlUnescape | strings.TrimSpace -}}
+{{- end -}}
+{{- $headings := "" -}}
+{{- if ne $scope "title" -}}
+  {{- $headings = replace .TableOfContents "</a>" "</a> " | plainify | htmlUnescape | strings.TrimSpace -}}
+{{- end -}}
+{{- $plain := "" -}}
+{{- if or (not $summary) (eq $scope "content") -}}
+  {{- $plain = .Plain | htmlUnescape -}}
+{{- end -}}
+{{- $excerpt := $summary | default $plain -}}
 {{- $metadata := partial "search/metadata.html" . -}}
 {{- $doc := merge $metadata (dict
       "ref" .RelPermalink
       "title" .Title
       "categories" (.Params.categories | default "")
       "tags" (.Params.tags | default "")
-      "excerpt" (($summary | default .Plain) | htmlUnescape | truncate (.Site.Params.offlineSearchSummaryLength | default 70) | htmlUnescape)
+      "excerpt" ($excerpt | truncate (.Site.Params.offlineSearchSummaryLength | default 70) | htmlUnescape)
 ) -}}
 {{- if eq $scope "heading" -}}
   {{- $doc = merge $doc (dict "headings" $headings) -}}
@@ -27,7 +41,7 @@
   {{- $doc = merge $doc (dict
         "headings" $headings
         "description" $summary
-        "body" (.Plain | htmlUnescape)) -}}
+        "body" $plain) -}}
 {{- end -}}
 {{- $.Scratch.Add
     "offline-search-index"

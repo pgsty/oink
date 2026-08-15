@@ -39,6 +39,7 @@ Everything CI runs, in order — see `.github/workflows/ci.yml`:
 # Source-level contract checks (no build needed)
 python3 scripts/check-i18n.py                        # translation key parity across 32 locales
 python3 scripts/check-i18n.py --sync                 # append missing keys as English fallbacks
+python3 scripts/check-taxonomy.py                    # opt-in taxonomy labels and bilingual output
 python3 scripts/check-font-tokens.py                 # no raw font families outside the token layer
 python3 scripts/check-content-primitives-contract.py # docs/content-primitives.md still has required sections
 python3 scripts/check-prd4-contract.py               # navigation/palette/action contracts

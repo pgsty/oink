@@ -1,10 +1,15 @@
-{{- if partial "shell/chrome-enabled.html" . -}}
+{{- $shell := partial "shell/chrome-enabled.html" . -}}
 {{- $keyboardNav := ne (.Param "ui.keyboard_nav.enable") false -}}
+{{- $readingSurface := or $shell (and .IsHome $keyboardNav) -}}
+{{- if $readingSurface -}}
 <script>
   (function () {
     var html = document.documentElement;
+    {{ if $shell -}}
     html.setAttribute('data-td-shell-no-anim', '');
+    {{- end }}
     try {
+      {{ if $shell -}}
       if (localStorage.getItem('td-shell-sidebar-collapsed') === '1'
           && window.matchMedia('(min-width: 768px)').matches) {
         html.setAttribute('data-td-shell-sidebar', 'collapsed');
@@ -15,6 +20,7 @@
           && window.matchMedia('(min-width: 1200px)').matches) {
         html.setAttribute('data-td-shell-toc', 'collapsed');
       }
+      {{- end }}
       {{ if $keyboardNav -}}
       if (sessionStorage.getItem('td-kbd-zen') === '1') {
         html.setAttribute('data-td-kbd-zen', '');

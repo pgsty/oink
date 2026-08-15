@@ -143,8 +143,8 @@ def validate_contract(contract: dict[str, Any]) -> None:
     require(
         sidebar.get("compatibility_default") == "all"
         and sidebar.get("compatibility_default_change_earliest") == "1.0"
-        and sidebar.get("starter_default") == "groups",
-        "sidebar compatibility and starter defaults are distinct",
+        and sidebar.get("starter_default") == "all",
+        "sidebar compatibility and starter defaults must keep leaf icons visible",
     )
 
     search = contract.get("search", {})

@@ -3,19 +3,19 @@
 <nav class="td-pager d-print-none" data-td-pager
   aria-label="{{ T "ui_pager_prev" }} / {{ T "ui_pager_next" }}">
   {{- with $state.prev }}
+  {{- $description := .Description | default (.Summary | plainify) | plainify | strings.TrimSpace -}}
   <a class="td-pager__card td-pager__card--prev" href="{{ .RelPermalink }}"
     aria-label="{{ T "ui_pager_prev" }} - {{ .Title }}" data-td-pager-prev>
-    <span class="td-pager__direction"><span class="td-pager__arrow" aria-hidden="true">←</span>{{ T "ui_pager_prev" }}</span>
-    <span class="td-pager__title" dir="auto">{{ .LinkTitle }}</span>
-    {{- with .Parent }}{{ if not .IsHome }}<span class="td-pager__section" dir="auto">{{ .LinkTitle }}</span>{{ end }}{{ end -}}
+    <span class="td-pager__title" dir="auto"><span class="td-pager__arrow" aria-hidden="true">←</span><span>{{ .LinkTitle }}</span></span>
+    <span class="td-pager__summary" dir="auto"{{ with $description }} title="{{ . }}"{{ end }}>{{ $description }}</span>
   </a>
   {{- end }}
   {{- with $state.next }}
+  {{- $description := .Description | default (.Summary | plainify) | plainify | strings.TrimSpace -}}
   <a class="td-pager__card td-pager__card--next" href="{{ .RelPermalink }}"
     aria-label="{{ T "ui_pager_next" }} - {{ .Title }}" data-td-pager-next>
-    <span class="td-pager__direction">{{ T "ui_pager_next" }}<span class="td-pager__arrow" aria-hidden="true">→</span></span>
-    <span class="td-pager__title" dir="auto">{{ .LinkTitle }}</span>
-    {{- with .Parent }}{{ if not .IsHome }}<span class="td-pager__section" dir="auto">{{ .LinkTitle }}</span>{{ end }}{{ end -}}
+    <span class="td-pager__title" dir="auto"><span>{{ .LinkTitle }}</span><span class="td-pager__arrow" aria-hidden="true">→</span></span>
+    <span class="td-pager__summary" dir="auto"{{ with $description }} title="{{ . }}"{{ end }}>{{ $description }}</span>
   </a>
   {{- end }}
 </nav>

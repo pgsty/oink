@@ -46,6 +46,9 @@ jobs:
       - name: Check translation key parity
         run: python3 scripts/check-i18n.py
 
+      - name: Check opt-in taxonomy localization
+        run: python3 scripts/check-taxonomy.py
+
       - name: Verify vendored dependency inventory
         run: python3 scripts/check-vendor.py
 
@@ -105,6 +108,9 @@ jobs:
 
       - name: Check PRD 6 keyboard navigation
         run: python3 scripts/check-prd6-keyboard.py
+
+      - name: Check PRD 7 navigation and page-end composition
+        run: python3 scripts/check-prd7.py
 
       - name: Build the example site without warnings
         working-directory: exampleSite

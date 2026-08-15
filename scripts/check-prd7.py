@@ -99,6 +99,11 @@ def check_sources() -> list[str]:
 
     require("td-pager__summary" in pager and "&__card:only-child" in pager_styles,
             "pager lost its two-row or full-width boundary behavior", errors)
+    require("with .Description }}{{ $description = . | markdownify" in pager
+            and "$description := .Summary" in pager
+            and 'replaceRE `\\s+` " "' in pager
+            and "truncate 180" in pager,
+            "pager descriptions no longer distinguish rendered summaries from Markdown metadata", errors)
     require("white-space: nowrap" in pager_styles
             and "&__card--next &__summary" in pager_styles,
             "pager descriptions no longer stay on one aligned line", errors)

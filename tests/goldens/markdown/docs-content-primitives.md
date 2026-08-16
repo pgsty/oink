@@ -47,12 +47,11 @@ contained overflow policy.
 | Full table | 100% | Horizontal scroll | Complete table |
 {.full-width}
 ## FileTree
-**Repository structure**
-- content/ # 0755 docs\-admin\:writers · Site content \& templates
-- \_index\.md # 0644 vonng\:docs · Section landing page
+- content/ — 0755 docs-admin:writers · Site content & templates
+- _index.md — 0644 vonng:docs · Section landing page
 - docs/
-- [index\.md](/docs/)
-- [configuration\.md](/docs/configuration/) # 0644 docs\-admin · Runtime settings
+- [index.md](/docs/)
+- [configuration.md](/docs/configuration/) — 0644 docs-admin · Runtime settings
 - level1/
 - level2/
 - level3/
@@ -61,12 +60,8 @@ contained overflow policy.
 - level6/
 - level7/
 - level8/
-- deeply\-nested\.md
-- static/ # 0750 release\-engineering\:documentation · Generated assets
-- index\.md # 0555
-- a\-deliberately\-long\-unbroken\-filename\-that\-must\-truncate\-within\-a\-narrow\-content\-column\.example\.json
-- 本地化/
-- 配置\.md
-- واجهة/
-- دليل\-الإعداد\.md
-- hugo\.yml # 0640 root\:wheel · Site configuration
+- deeply-nested.md
+- static/ — 0750 release-engineering:documentation · Generated assets
+- `favicon.ico`
+- hugo.yaml — *root:root 0644*
+{.filetree}

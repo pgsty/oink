@@ -2,6 +2,7 @@
 title: Cards (rich)
 linkTitle: Cards (rich)
 description: The `{{</* cards */>}}` / `{{</* card */>}}` full form with icons, badges, images and Markdown bodies.
+outputs: [HTML, markdown]
 weight: 35
 ---
 

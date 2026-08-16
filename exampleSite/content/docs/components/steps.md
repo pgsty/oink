@@ -2,6 +2,7 @@
 title: Steps
 linkTitle: Steps
 description: Ordered-list steps (native form) and heading steps (full form).
+outputs: [HTML, markdown]
 weight: 20
 ---
 

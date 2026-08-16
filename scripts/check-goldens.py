@@ -39,6 +39,7 @@ NORMALISERS = [
     (re.compile(r'integrity="sha256-[A-Za-z0-9+/=&#;]+"'), 'integrity="<sri>"'),
     (re.compile(r"[?&]v=[0-9a-f]{6,}"), "?v=<hash>"),
     (re.compile(r"_hu_[0-9a-f]+\."), "_hu_<hash>."),  # processed image cache keys differ per Hugo version
+    (re.compile(r"offline-search-index\.([a-z-]+)\.[0-9a-f]{32}\.json"), r"offline-search-index.\1.<hash>.json"),  # index hash tracks all fixture content
     (re.compile(r'content="Hugo \d+\.\d+\.\d+[^"]*"'), 'content="Hugo <version>"'),
     (re.compile(r"Hugo v?\d+\.\d+\.\d+"), "Hugo <version>"),
     (re.compile(r"/tmp/[A-Za-z0-9._-]+/|/private/tmp/[A-Za-z0-9._/-]+?/exampleSite/"), "<tmp>/"),

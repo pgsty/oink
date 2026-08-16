@@ -131,6 +131,12 @@ jobs:
       - name: Check Gallery output and Zoom reuse
         run: python3 scripts/check-gallery.py
 
+      - name: Check v5 components (callouts, tabs, data fences, removed shortcodes)
+        run: python3 scripts/check-components.py
+
+      - name: Check migration toolkit
+        run: python3 -m unittest discover -s tests/migrations -t .
+
       - name: Check output structure and security
         run: python3 scripts/check-output.py
 

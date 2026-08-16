@@ -27,7 +27,7 @@ def require(condition: bool, message: str) -> None:
 
 
 def validate_machine(contract: dict[str, object]) -> None:
-    require(contract.get("version") == 1, "contract version must be 1")
+    require(contract.get("version") == 2, "contract version must be 2 (Book contract v2)")
     require(contract.get("compatibility_floor") == "0.160.1", "Hugo floor changed")
     require(
         contract.get("release_assignments")
@@ -82,8 +82,24 @@ def validate_machine(contract: dict[str, object]) -> None:
     require(landing.get("marquee_pause") == "css_checkbox", "landing marquee pause contract changed")
     require(landing.get("marquee_duplicate") == ["aria-hidden", "inert"], "landing marquee duplicate isolation changed")
     book = contract.get("book", {})
-    require(book.get("numbered_components") == ["fig", "tbl", "eq"], "Book numbered components changed")
-    require(book.get("xref_kinds") == ["fig", "tbl", "eq"], "Book xref kinds changed")
+    require(book.get("numbered_components") == ["fig", "tbl", "eq", "eg"], "Book numbered components changed")
+    require(book.get("xref_kinds") == ["fig", "tbl", "eq", "eg"], "Book xref kinds changed")
+    require(
+        book.get("native_forms")
+        == {
+            "fig": "standalone_image_attribute_line",
+            "tbl": "table_attribute_line",
+            "eq": "passthrough_block_attribute_line",
+            "eg": "fence_attributes",
+        },
+        "Book native forms changed",
+    )
+    require(
+        book.get("book_indexes") == ["book-toc", "book-figures", "book-tables", "book-equations", "book-examples"],
+        "Book index shortcodes changed",
+    )
+    require(book.get("registration_order") == "source_position", "Book registration order changed")
+    require(book.get("removed") == ["example", "book-figures kind"], "Book removed forms changed")
     require(book.get("toc_depth") == [1, 2, 3], "Book ToC depth changed")
     require(book.get("automatic_numbering") is False and book.get("pdf_epub") is False, "Book non-goals changed")
     require(
@@ -92,7 +108,7 @@ def validate_machine(contract: dict[str, object]) -> None:
         "PRD 5 runtime flags changed",
     )
     matrix = contract.get("output_matrix", {})
-    require(set(matrix) == {"pager", "release_card", "release_assets", "download", "eq_escape", "landing", "fig_tbl_eq", "xref", "book_toc"}, "output matrix component set changed")
+    require(set(matrix) == {"pager", "release_card", "release_assets", "download", "eq_escape", "landing", "fig_tbl_eq_eg", "xref", "book_toc", "book_index"}, "output matrix component set changed")
     require(all(set(row) == {"html", "print", "markdown", "rss"} for row in matrix.values()), "output matrix surfaces changed")
     require(
         contract.get("non_goals")
@@ -140,7 +156,15 @@ def validate_docs(contract: dict[str, object]) -> None:
         ),
         "book": (
             "# PRD 5 Book contract",
-            "Status: frozen for OINK v0.4.0",
+            "Contract version: 2",
+            "Status: frozen for OINK v0.6.0",
+            "`eg`",
+            "book-tables",
+            "book-equations",
+            "book-examples",
+            "wrapStandAloneImageWithinParagraph",
+            "source position",
+            "## 7. Version 2 changes",
             "## 1. Book type and navigation",
             "## 2. Numbered components",
             "## 3. Cross references and consistency",

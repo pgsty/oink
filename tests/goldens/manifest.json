@@ -9,6 +9,25 @@
     "print/docs-section.html": "_print/docs/index.html",
     "markdown/docs-content-primitives.md": "docs/content-primitives/index.md",
     "rss/blog.xml": "blog/index.xml",
-    "llms/llms.txt": "llms.txt"
+    "llms/llms.txt": "llms.txt",
+    "html/docs-components-callouts.html": "docs/components/callouts/index.html",
+    "html/docs-components-steps.html": "docs/components/steps/index.html",
+    "html/docs-components-lists.html": "docs/components/lists/index.html",
+    "html/docs-components-tables.html": "docs/components/tables/index.html",
+    "html/docs-components-cards.html": "docs/components/cards/index.html",
+    "html/docs-components-data-fences.html": "docs/components/data-fences/index.html",
+    "html/docs-media-primitives.html": "docs/media-primitives/index.html",
+    "html/docs-gallery.html": "docs/gallery/index.html",
+    "html/book-chapter-one.html": "book/chapter-one/index.html",
+    "markdown/docs-code-blocks.md": "docs/code-blocks/index.md",
+    "markdown/docs-components-callouts.md": "docs/components/callouts/index.md",
+    "markdown/docs-components-steps.md": "docs/components/steps/index.md",
+    "markdown/docs-components-lists.md": "docs/components/lists/index.md",
+    "markdown/docs-components-tables.md": "docs/components/tables/index.md",
+    "markdown/docs-components-cards.md": "docs/components/cards/index.md",
+    "markdown/docs-components-data-fences.md": "docs/components/data-fences/index.md",
+    "markdown/docs-media-primitives.md": "docs/media-primitives/index.md",
+    "markdown/docs-gallery.md": "docs/gallery/index.md",
+    "markdown/book-chapter-one.md": "book/chapter-one/index.md"
   }
 }

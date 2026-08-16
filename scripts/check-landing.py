@@ -235,8 +235,7 @@ def check_sources() -> list[str]:
     require('aria-hidden="true" inert' in marquee, "marquee duplicate is not inert", errors)
 
     for name in ("cover", "feature", "lead", "link-down", "section"):
-        source = (ROOT / f"layouts/_shortcodes/blocks/{name}.html").read_text()
-        require("Deprecated compatibility shortcode" in source, f"blocks/{name} lacks deprecation marker", errors)
+        require(not (ROOT / f"layouts/_shortcodes/blocks/{name}.html").exists(), f"blocks/{name} must stay deleted (v5 §1.1: layout: landing replaces the Docsy blocks)", errors)
     compatibility = {
         "action.html": "landing/action.html",
         "heading.html": "landing/heading.html",

@@ -82,7 +82,7 @@ def check_outputs(public: Path) -> list[str]:
         "Blue and gold standalone preview",
         "Green and violet processed preview",
         'data-zoom-src="/media/content-primitives-global.png"',
-        'data-zoom-src="/docs/image-zoom/legacy-empty.png" alt=""',
+        'data-zoom-src="/docs/image-zoom/legacy-empty.png" data-no-zoom alt=""',
         "Linked image remains a link",
     ):
         require(marker in zoom, f"enabled Zoom fixture missing {marker}", errors)

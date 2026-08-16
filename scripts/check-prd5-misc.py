@@ -156,7 +156,8 @@ def check_sources() -> list[str]:
     errors: list[str] = []
     sources = {
         "robots": (ROOT / "layouts/robots.txt").read_text(encoding="utf-8"),
-        "table": (ROOT / "layouts/_markup/render-table.html").read_text(encoding="utf-8"),
+        "table": (ROOT / "layouts/_markup/render-table.html").read_text(encoding="utf-8")
+        + (ROOT / "layouts/_partials/content/table-body.html").read_text(encoding="utf-8"),
         "section": (ROOT / "layouts/_partials/section-index.html").read_text(encoding="utf-8"),
         "lastmod": (ROOT / "layouts/_partials/page-meta-lastmod.html").read_text(encoding="utf-8"),
         "page_end": (ROOT / "layouts/_partials/page-end.html").read_text(encoding="utf-8"),

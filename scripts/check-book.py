@@ -190,7 +190,7 @@ def validate_documents(
             caption = str(target["caption"])
             require(bool(num), f"{url} target {target_id!r} has no number", errors)
             require(
-                kind in {"fig", "tbl", "eq"},
+                kind in {"fig", "tbl", "eq", "eg"},
                 f"{url} target {target_id!r} has invalid kind {kind!r}",
                 errors,
             )
@@ -306,7 +306,7 @@ def check_example(public: Path) -> list[str]:
         require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
         require(two.pager == {"prev": "/book/chapter-one/"}, "last Book page pager is wrong", errors)
         require(two.has_sidebar_headings, "active Book page has no sidebar heading branch", errors)
-        require(set(one.targets) == {"office_2003", "tbl-1-1", "eq-1.1"}, "numbered target registry changed", errors)
+        require(set(one.targets) == {"office_2003", "tbl-1-1", "eq-1.1", "example-query", "example-native"}, f"numbered target registry changed: {sorted(one.targets)}", errors)
         figure = one.targets.get("office_2003")
         if figure:
             images = figure["images"]
@@ -333,6 +333,10 @@ def check_example(public: Path) -> list[str]:
         "/book/chapter-one/#office_2003",
         'class="td-book-figures td-book-figures--tbl"',
         "Table 1-1",
+        'class="td-book-figures td-book-figures--eq"',
+        'class="td-book-figures td-book-figures--eg"',
+        "Example 1-1",
+        "/book/chapter-one/#example-native",
     ):
         require(marker in source["root"], f"Book figure list lost {marker}", errors)
     for marker in ("td-book-draft-badge", "td-book-draft", "data-td-book-headings", "#stable-heading"):
@@ -341,8 +345,11 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["one"], f"interactive Book page lost {marker}", errors)
     for marker in (
         'id="example-query"',
-        'class="td-book-example"',
-        "Example 1-1.",
+        'class="td-book-figure td-book-figure--eg"',
+        'id="example-native"',
+        'data-book-num="1-2"',
+        "Example 1-1",
+        "Example 1-2",
         'class="td-contributor-wall"',
         'data-contributor-count="3"',
         'class="td-contributor-wall__avatar td-contributor-wall__avatar--placeholder"',
@@ -358,13 +365,14 @@ def check_example(public: Path) -> list[str]:
         "**Table 1-1.** Output behavior by surface\\.",
         "**Equation 1.1.** A direct ToMath escape hatch\\.",
         "**Example 1-1.** A labeled example stays out of the page outline\\.",
+        '```sql {num="1-2" caption="A native numbered example: one fence plus attributes." #example-native}',
         "- [\\@pgsty](https://github.com/pgsty) — Theme fixture",
         "[the stable heading](/book/chapter-two/#stable-heading)",
     ):
         require(marker in source["one_md"], f"Markdown Book output lost {marker}", errors)
     for forbidden in ("<figure", "td-book-figure", "katex-html", "td-table-scroll"):
         require(forbidden not in source["one_md"], f"Markdown Book output leaked {forbidden}", errors)
-    for marker in ("- [1 Numbered evidence]", "  - [Chapter details]", "- [Figure 1-1]", "- [Table 1-1]"):
+    for marker in ("- [1 Numbered evidence]", "  - [Chapter details]", "- [Figure 1-1]", "- [Table 1-1]", "- [Example 1-1]", "- [Example 1-2]", "- [Equation 1.1]"):
         require(marker in source["root_md"], f"Markdown Book index lost {marker}", errors)
 
     require("td-table-scroll" not in source["one_print"], "print Book table retained its scroll wrapper", errors)
@@ -374,7 +382,7 @@ def check_example(public: Path) -> list[str]:
         'id="eq-1.1"',
         "Figure 1-1",
         "Table 1-1",
-        'class="td-book-example"',
+        'class="td-book-figure td-book-figure--eg"',
         'class="td-contributor-wall"',
     ):
         require(marker in source["one_print"], f"chapter print lost {marker}", errors)
@@ -403,6 +411,14 @@ title: Book fixture
 theme: {ROOT.name}
 defaultContentLanguage: en
 disableKinds: [home, RSS, sitemap, taxonomy, term]
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+    parser:
+      wrapStandAloneImageWithinParagraph: false
+      attribute:
+        block: true
 outputs:
   page: [HTML]
   section: [HTML]
@@ -457,13 +473,20 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("empty-table", '{{< tbl num="1" >}}{{< /tbl >}}', "requires inner table content"),
         ("bad-width", '{{< fig num="1" src="/x.png" width="0" />}}', "must be a positive integer"),
         ("many-kinds", '{{< xref fig="1" tbl="1" />}}', "accepts only one"),
-        ("xref-empty", '{{< xref />}}', "requires fig, tbl, eq, or anchor"),
+        ("xref-empty", '{{< xref />}}', "requires fig, tbl, eq, eg, or anchor"),
         ("xref-anchor-text", '{{< xref anchor="heading" />}}', "requires inner link text"),
         ("xref-page", '{{< xref page="missing" anchor="heading" >}}text{{< /xref >}}', "was not found"),
         ("toc-depth", '{{< book-toc depth=4 >}}', "depth must be from 1 through 3"),
         ("toc-drafts", '{{< book-toc drafts="false" >}}', "drafts must be boolean"),
-        ("example-caption", '{{< example num="1" />}}', "requires parameter caption"),
-        ("example-num", '{{< example num="1/2" caption="Bad" />}}', "num must match"),
+        ("eg-caption", '{{< eg num="1" >}}```sql\nSELECT 1;\n```{{< /eg >}}', "requires parameter caption"),
+        ("eg-num", '{{< eg num="1/2" caption="Bad" >}}x{{< /eg >}}', "num must match"),
+        ("eg-empty", '{{< eg num="1" caption="Empty" >}}{{< /eg >}}', "requires inner content"),
+        ("fence-caption-without-num", '```sql {caption="orphan"}\nSELECT 1;\n```', "caption requires num"),
+        ("fence-num-without-caption", '```sql {num="1"}\nSELECT 1;\n```', "requires caption"),
+        ("table-num-and-tab", '| A |\n| --- |\n| 1 |\n{num="1" tab="x"}', "mutually exclusive"),
+        ("table-unknown-attr", '| A |\n| --- |\n| 1 |\n{bogus="1"}', "unknown attribute"),
+        ("table-style-attr", '| A |\n| --- |\n| 1 |\n{style="color:red"}', "unsafe attribute"),
+        ("book-figures-kind", '{{< book-figures kind="tbl" >}}', "unsupported parameter"),
     )
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-prd5-book-invalid-{name}-") as temp:
@@ -562,7 +585,11 @@ title: RSS page
 | 1 | 2 |{{< /tbl >}}
 {{< eq >}}a+b{{< /eq >}}
 {{< eq num="1" >}}x+y{{< /eq >}}
-{{< example num="1" caption="Sample" />}}
+{{< eg num="1" caption="Sample" >}}
+```sql
+SELECT 1;
+```
+{{< /eg >}}
 {{< contributors >}}
 {{< xref fig="1" />}}
 before{{< book-toc >}}after
@@ -617,11 +644,18 @@ def check_sources() -> list[str]:
     errors: list[str] = []
     source_markers = {
         "layouts/_shortcodes/fig.html": ("register-target.html", "data-book-kind", "src", "title", "width", "height"),
-        "layouts/_shortcodes/tbl.html": ("register-target.html", "RenderString", "data-book-kind"),
+        "layouts/_shortcodes/tbl.html": ("register-target.html", "render-block.html", "data-book-kind"),
         "layouts/_shortcodes/eq.html": ("scripts/math.html", "data-book-kind"),
         "layouts/_shortcodes/xref.html": ("targetPage.RelPermalink", "tdBookAggregate", "data-book-num"),
         "layouts/_shortcodes/book-toc.html": ("depth", "drafts", "toc-tree.html", "toc-markdown.html"),
-        "layouts/_shortcodes/example.html": ("book_example", "td-book-example", "markdown"),
+        "layouts/_shortcodes/eg.html": ("register-target.html", "render-block.html", "data-book-kind", "markdown"),
+        "layouts/_shortcodes/book-tables.html": ('"kind" "tbl"',),
+        "layouts/_shortcodes/book-equations.html": ('"kind" "eq"',),
+        "layouts/_shortcodes/book-examples.html": ('"kind" "eg"',),
+        "layouts/_markup/render-table.html": ("register-target.html", '"kind" "tbl"', "data-book-kind"),
+        "layouts/_markup/render-image.html": ("register-target.html", '"kind" "fig"', "data-book-kind", "wrapStandAloneImageWithinParagraph"),
+        "layouts/_markup/render-passthrough.html": ("register-target.html", '"kind" "eq"', "data-book-kind"),
+        "layouts/_markup/render-codeblock.html": ("register-target.html", '"kind" "eg"', "data-book-kind"),
         "layouts/_shortcodes/contributors.html": ("contributors/items.html", "contributors/wall.html", "markdown"),
         "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
         "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
@@ -630,7 +664,7 @@ def check_sources() -> list[str]:
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
         "layouts/_td-content.html": ('ne .Type "book"', "reading-time.html"),
-        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--norm", "td-book-example"),
+        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--norm", "&--eg"),
         "assets/scss/td/_contributors.scss": ("auto-fill", "forced-colors", "@media print"),
     }
     for relative, markers in source_markers.items():

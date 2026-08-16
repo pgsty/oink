@@ -130,12 +130,12 @@ Feedback 不依赖 endpoint。站点已有 `gtag` 时记录结构化事件；没
 
 ### 2.2 Feedback
 
-紧凑态为一行问题与两个 pill：Solved / Not solved。点击任一项立即完成反馈：
+紧凑态为一行问题与两个 pill：Yes / No。点击任一项立即完成反馈：
 
 1. 被选项显示 `aria-pressed=true`，并按页面与语言写入 `localStorage`；
 2. 若存在全局 `gtag`，立即发送 `docs_feedback`，字段为 `result`、
    `page_path`、`language`；
-3. Not solved 可展开四个可选原因：缺少信息、错误或过时、步骤无效、难以理解；
+3. No 可展开四个可选原因：缺少信息、错误或过时、步骤无效、难以理解；
 4. 选择原因时再次发送 `docs_feedback`，附带 `reason` 与
    `refinement: true`，便于和首次计数区分；
 5. 用户可清除本地选择并重新反馈；
@@ -246,7 +246,7 @@ Q/E；不在 JavaScript 中注入一个不可见的特殊 root。
 7. 文末源码与渲染顺序均为 Feedback → Annotation → Pager → Comments。
 8. 单方向 pager 占满宽度，卡片收窄为标题/简介两行；简介单行省略，Next 简介
    右对齐，Pager 与 Comments 之间不叠加大段留白。
-9. Feedback 一次点击即记录；Not solved 可选原因；状态按语言/页面持久化；
+9. Feedback 一次点击即记录；No 可选原因；状态按语言/页面持久化；
    Giscus 启用时可跳到评论区；页面中没有 textarea、Submit 或 endpoint。
 10. Annotation 可通过 consumer layout 覆盖，旧的 lastmod override 继续工作。
 11. Feedback 前端状态机通过 Node 测试，主题和样例 Hugo 构建通过；浏览器

@@ -166,8 +166,8 @@ community_guideline: >-
 # Feedback
 feedback_title: Feedback
 feedback_question: Was this page helpful?
-feedback_positive: Solved
-feedback_negative: Not solved
+feedback_positive: Yes
+feedback_negative: No
 feedback_thanks: Thanks—your feedback helps us improve this page.
 feedback_reason_prompt: What got in the way? (optional)
 feedback_reason_missing: Missing information

@@ -95,7 +95,7 @@ keep the sticky navbar visible. A section cascade or page can override that
 policy with the top-level `navbar_autohide` front-matter key. This differs from
 `navbar_enabled: false`, which omits the navbar completely.
 
-`params.ui.feedback.enable: true` adds a “Solved / Not solved” prompt. A click
+`params.ui.feedback.enable: true` adds a “Yes / No” prompt. A click
 immediately emits a `docs_feedback` event through an existing `gtag` function;
 an optional reason emits a refining event with `refinement: true`. OINK does
 not send free text and needs no endpoint. When Giscus comments are active, the

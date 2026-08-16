@@ -164,8 +164,8 @@ community_guideline: >-
 # Feedback
 feedback_title: 意见反馈
 feedback_question: 这篇文档解决了你的问题吗？
-feedback_positive: 已解决
-feedback_negative: 未解决
+feedback_positive: 是
+feedback_negative: 否
 feedback_thanks: 感谢反馈，我们会据此改进这篇文档。
 feedback_reason_prompt: 哪里没有解决？（可选）
 feedback_reason_missing: 缺少必要信息

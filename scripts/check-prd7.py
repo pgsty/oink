@@ -42,6 +42,7 @@ def check_sources() -> list[str]:
     language_styles = (ROOT / "assets/scss/td/_language-selector.scss").read_text()
     layout_styles = (ROOT / "assets/scss/td/shell/_layout.scss").read_text()
     toc_styles = (ROOT / "assets/scss/td/shell/_toc.scss").read_text()
+    toc_aside = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text()
     navbar_styles = (ROOT / "assets/scss/td/_site-navbar.scss").read_text()
     footer_styles = (ROOT / "assets/scss/td/_footer.scss").read_text()
     navbar_item = (ROOT / "layouts/_partials/navbar-item.html").read_text()
@@ -105,8 +106,17 @@ def check_sources() -> list[str]:
             and "truncate 180" in pager,
             "pager descriptions no longer distinguish rendered summaries from Markdown metadata", errors)
     require("white-space: nowrap" in pager_styles
-            and "&__card--next &__summary" in pager_styles,
+            and "&__card--next &__summary" in pager_styles
+            and "font-family: var(--td-body-font-family)" in pager_styles,
             "pager descriptions no longer stay on one aligned line", errors)
+    annotation_styles = content_styles.split(".td-page-annotation", 1)[1].split("}", 1)[0]
+    require("font-family: var(--td-body-font-family)" in annotation_styles,
+            "page annotation reverted to a code-like font", errors)
+    feedback_styles = content_styles.split(".td-feedback", 1)[1].split(".td-page-annotation", 1)[0]
+    require("border-block-start" in feedback_styles
+            and "border-block:" not in feedback_styles
+            and "flex-wrap: nowrap" in feedback_styles,
+            "feedback prompt lost its compact single-divider row", errors)
     require(".td-pager + &" in comments_styles,
             "pager-to-discussion spacing is no longer compact", errors)
     require("display: table" in content_styles and "margin-block-end: $spacer" in content_styles,
@@ -171,9 +181,14 @@ def check_sources() -> list[str]:
             and "position: static" in keyboard_styles
             and "inset-inline: 8px" in keyboard_styles,
             "sidebar shortcut help lost its hover trigger or KBD cheat sheet", errors)
-    require('"git-branch"' in icons and '"git-branch"' in version
-            and '"git-branch"' in navbar and "fa-code-branch" not in version,
-            "version controls no longer use the shared standard icon", errors)
+    require('"git-fork"' in icons and '"git-fork"' in version
+            and '"git-fork"' in navbar and "fa-code-branch" not in version,
+            "version controls no longer use the shared fork icon", errors)
+    require("if not $hasToc" in toc_aside
+            and "quickLinks" not in toc_aside
+            and "td-shell-quick-theme" not in toc_aside
+            and 'aria-label="GitHub"' not in toc_aside,
+            "right TOC rail duplicated the sidebar utility controls", errors)
     alignment = "var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem)"
     require(alignment in layout_styles and alignment in toc_styles,
             "collapsed rail controls no longer align with the article topline", errors)

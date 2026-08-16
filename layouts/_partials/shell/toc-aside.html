@@ -1,66 +1,21 @@
-{{- /* Right rail: fixed controls, TOC, and taxonomy terms. Page actions live
+{{- /* Right rail: TOC and taxonomy terms. Page actions live
        in the split button beside the title (actions/title-menu.html). The
        layout column reserves its width; the fixed panel does not move with
        the article. html[data-td-shell-toc=collapsed] hides the whole rail and a
        floating action restores it. Input: dict "page" . "hasToc" bool. */ -}}
 {{- $p := .page -}}
 {{- $hasToc := .hasToc -}}
-{{- $config := partialCached "shell/config.html" $p $p.Site.Language.Lang -}}
-{{- $baseURL := urls.Parse $p.Site.BaseURL -}}
-{{- /* With the navbar on, the quick links and global utilities live up there;
-       the rail keeps only the collapse toggle. */ -}}
-{{- $navbar := partial "shell/navbar-enabled.html" $p -}}
 <aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
   <div class="td-shell-toc__panel">
-    {{- /* The rail collapse toggle sits inline with the TOC group title; this
-         row only renders for the no-TOC fallback or the navbar-off chrome. */ -}}
-    {{- if or (not $navbar) (not $hasToc) }}
+    {{- /* Pages with a TOC keep the collapse toggle inline with its title.
+         A no-TOC fallback still needs one way to collapse the rail. Global
+         utilities stay in the sidebar footer and are not duplicated here. */ -}}
+    {{- if not $hasToc }}
     <div class="td-shell-toc__actions">
-      {{- if not $hasToc }}
       <button type="button" class="td-shell-toc__title-btn" data-td-shell-right-toggle
         title="{{ T "ui_toc_hide" }}" aria-label="{{ T "ui_toc_hide" }}">
         {{- partialCached "shell/icon.html" "menu" "menu" -}}
       </button>
-      {{- end }}
-      {{- if not $navbar -}}
-      {{- range $p.Site.Menus.main -}}
-        {{- $key := .Identifier -}}
-        {{- with .Page }}{{ if not $key }}{{ $key = .Section }}{{ end }}{{ end -}}
-        {{- if in $config.quickLinks $key -}}
-          {{- $href := .URL | relLangURL -}}
-          {{- $description := "" -}}
-          {{- $icon := partial "menu-icon.html" . -}}
-          {{- with .Page -}}
-            {{- $href = .RelPermalink -}}
-            {{- $description = .Description | default .Title | plainify -}}
-          {{- end -}}
-          {{- $target := urls.Parse .URL -}}
-          {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
-          {{- $label := .Name -}}
-          {{- with $description }}{{ $label = printf "%s: %s" $label . }}{{ end -}}
-      <a class="td-shell-iconbtn td-shell-iconbtn--sm" href="{{ $href }}"
-        title="{{ $label }}" aria-label="{{ $label }}"{{ if $external }} target="_blank" rel="noopener"{{ end }}>
-        <i class="{{ $icon }}" aria-hidden="true"></i>
-      </a>
-        {{- end -}}
-      {{- end -}}
-      <span class="td-shell-toc__actions-spacer"></span>
-      {{ partial "language-selector.html" (dict "page" $p "class" "td-shell-language-selector" "icon" "shell") }}
-      {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-      {{- if $darkMode.enable }}
-      <button type="button" class="td-shell-iconbtn td-shell-iconbtn--sm td-shell-quick-theme" data-td-theme-toggle
-        title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}">
-        {{- partialCached "shell/icon.html" "moon" "moon" -}}
-        {{- partialCached "shell/icon.html" "sun" "sun" -}}
-      </button>
-      {{- end }}
-      {{- with $config.projectRepo }}
-      <a class="td-shell-iconbtn td-shell-iconbtn--sm" href="{{ . }}"
-        target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub">
-        {{- partialCached "shell/icon.html" "github" "github" -}}
-      </a>
-      {{- end }}
-      {{- end }}
     </div>
     {{- end }}
     {{/* Everything below the controls row is relocatable: below xl this rail is

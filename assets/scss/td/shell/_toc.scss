@@ -82,7 +82,7 @@
   }
 }
 
-/* Controls for rail collapse, content shortcuts, language, theme, and GitHub. */
+/* No-TOC fallback control; regular TOC pages use the inline group toggle. */
 
 .td-shell-toc__actions {
   display: flex;
@@ -135,10 +135,6 @@
     width: 16px;
     height: 16px;
   }
-}
-
-.td-shell-toc__actions-spacer {
-  flex: 1 1 auto;
 }
 
 // Compact ghost button used in the rail action row.

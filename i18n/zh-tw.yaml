@@ -112,8 +112,8 @@ community_guideline: >-
 # Feedback
 feedback_title: 意見回饋
 feedback_question: 這篇文件解決了你的問題嗎？
-feedback_positive: 已解決
-feedback_negative: 未解決
+feedback_positive: 是
+feedback_negative: 否
 feedback_thanks: 感謝回饋，我們會據此改進這篇文件。
 feedback_reason_prompt: 哪裡沒有解決？（選填）
 feedback_reason_missing: 缺少必要資訊

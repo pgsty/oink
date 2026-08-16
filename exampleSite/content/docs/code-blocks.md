@@ -53,48 +53,73 @@ second
 echo "displayed as Bash"
 ```
 
-## Package managers
+## Package managers (adjacent fences, synchronized group)
 
-{{< code-group id="install-client" sync="package-manager" persist=true label="Choose a package manager" copy="all" >}}
-  {{< code-tab title="npm" value="npm" lang="bash" >}}
+```bash {tab="npm" group="package-manager" value="npm"}
 npm install @example/client
-  {{< /code-tab >}}
+```
 
-  {{< code-tab title="pnpm" value="pnpm" lang="bash" selected=true >}}
+```bash {tab="pnpm" value="pnpm"}
 pnpm add @example/client
-  {{< /code-tab >}}
+```
 
-  {{< code-tab title="yarn" value="yarn" lang="bash" >}}
+```bash {tab="yarn" value="yarn"}
 yarn add @example/client
-  {{< /code-tab >}}
-{{< /code-group >}}
+```
 
 ## Synchronized peer
 
-{{< code-group id="install-tool" sync="package-manager" persist=true >}}
-  {{< code-tab title="npm" value="npm" lang="bash" >}}
+```bash {tab="npm" group="package-manager" value="npm"}
 npm install --global @example/tool
-  {{< /code-tab >}}
-  {{< code-tab title="pnpm" value="pnpm" lang="bash" >}}
+```
+
+```bash {tab="pnpm" value="pnpm"}
 pnpm add --global @example/tool
-  {{< /code-tab >}}
-{{< /code-group >}}
+```
 
-## Plain-text tab titles
+## Local tabs without a group (no hash / persistence)
 
-{{< code-group id="plain-titles" persist=false copy=false >}}
-  {{< code-tab title="A **literal** [label]" value="literal" lang="text" >}}
+```text {tab="A **literal** [label]"}
 punctuation stays literal
-  {{< /code-tab >}}
-{{< /code-group >}}
+```
 
-## Legacy tabpane
+```yaml {tab="YAML" title="config.yaml"}
+message: title and tab coexist
+```
 
-{{< tabpane persist="lang" >}}
-  {{< tab header="YAML" lang="yaml" selected=true >}}
-message: legacy-compatible
-  {{< /tab >}}
-  {{< tab header="JSON" lang="json" >}}
-{"message":"legacy-compatible"}
-  {{< /tab >}}
-{{< /tabpane >}}
+## Full form: `{{</* tabs */>}}` with Markdown bodies
+
+{{< tabs group="setting" default="conf" label="MinIO settings" >}}
+{{< tab label="Environment Variable" value="env" >}}
+###### `MINIO_LOGGER_WEBHOOK_QUEUE_DIR` {#envvar-queue-dir}
+
+Set the queue directory through the environment.
+
+```bash
+export MINIO_LOGGER_WEBHOOK_QUEUE_DIR=/var/lib/minio/queue
+```
+{{< /tab >}}
+{{< tab label="Configuration Setting" value="conf" >}}
+###### `logger_webhook queue_dir` {#conf-queue-dir}
+
+Set it with `mc admin config set`.
+
+> [!TIP]
+> Callouts and other blocks work inside tabs.
+{{< /tab >}}
+{{< /tabs >}}
+
+Local (ungrouped) tabs:
+
+{{< tabs >}}
+{{< tab label="First" >}}
+First body with a table:
+
+| A | B |
+| --- | --- |
+| 1 | 2 |
+{{< /tab >}}
+{{< tab label="Second" >}}
+Second body.
+{{< /tab >}}
+{{< /tabs >}}

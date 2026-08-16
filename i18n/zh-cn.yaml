@@ -73,6 +73,7 @@ ui_code_copy_error: 复制失败
 ui_code_show_all: 显示全部 {{ .Count }} 行
 ui_code_collapse: 收起代码
 ui_code_group_label: 代码示例
+ui_tabs_label: 选项卡
 ui_pricing_featured: 推荐
 ui_pricing_included: 包含
 ui_pricing_excluded: 不包含

@@ -1,7 +1,7 @@
 {{- /* Processed image: named src / alt|decorative / command / options; the
        body is the Markdown caption rendered with RenderString (v5 §3.7).
        Replaces the positional imgproc form; plain images use `![alt](src)`. */ -}}
-{{- if and .Params (not .IsNamedParams) }}{{ errorf "shortcode %q accepts named parameters only (src, alt|decorative, command, options) at %s" .Name .Position }}{{ end -}}
+{{- if or (not .Params) (not .IsNamedParams) }}{{ errorf "shortcode %q requires named parameters (src, alt|decorative, command, options) at %s" .Name .Position }}{{ end -}}
 {{- $allowed := slice "src" "command" "options" "alt" "decorative" -}}
 {{- range $param, $_ := .Params -}}
   {{- if not (in $allowed $param) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $param $.Position }}{{ end -}}

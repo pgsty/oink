@@ -6,7 +6,7 @@
 {{- else -}}
   {{- errorf "shortcode %q must be enclosed by cards at %s" .Name .Position -}}
 {{- end -}}
-{{- if and .Params (not .IsNamedParams) }}{{ errorf "shortcode %q accepts named parameters only at %s" .Name .Position }}{{ end -}}
+{{- if or (not .Params) (not .IsNamedParams) }}{{ errorf "shortcode %q requires named parameters (title, …) at %s" .Name .Position }}{{ end -}}
 {{- $allowed := slice "title" "link" "icon" "badge" "image" "image_alt" "decorative" -}}
 {{- range $name, $_ := .Params -}}
   {{- if not (in $allowed $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}

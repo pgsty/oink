@@ -73,6 +73,7 @@ ui_code_copy_error: Copy failed
 ui_code_show_all: Show all {{ .Count }} lines
 ui_code_collapse: Collapse code
 ui_code_group_label: Code examples
+ui_tabs_label: Tabs
 ui_pricing_featured: Recommended
 ui_pricing_included: Included
 ui_pricing_excluded: Not included

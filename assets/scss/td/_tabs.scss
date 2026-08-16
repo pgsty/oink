@@ -1,0 +1,184 @@
+// Tabs (plan/design/components.md v5 §3.2): one DOM for the `{{< tabs >}}`
+// shortcode and for adjacent-block runs regrouped by assets/js/tabs.js.
+//
+// .td-tabs
+//   .td-tabs__list[role=tablist] > .td-tabs__tab[role=tab]
+//   .td-tabs__panel[role=tabpanel] > .td-tabs__panel-title + .td-tabs__panel-body
+//
+// Before the runtime marks the set with data-td-tabs-ready every panel is
+// visible with its own title (also the print / no-JS rendering) and the
+// tablist is hidden.
+
+.td-tabs {
+  position: relative;
+  max-width: 100%;
+  margin: 1.5rem 0;
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color);
+  border-radius: calc(#{$border-radius} + 0.15rem);
+  background: var(--bs-body-bg);
+  box-shadow: 0 1px 2px rgba($black, 0.06);
+
+  &__list {
+    display: flex;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+    padding: 0.35rem 0.45rem 0;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: color-mix(in srgb, var(--td-pre-bg, var(--bs-tertiary-bg)) 88%, var(--bs-body-bg));
+    scrollbar-width: thin;
+  }
+
+  &__tab {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.5rem 0.8rem 0.55rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: $border-radius-sm $border-radius-sm 0 0;
+    background: transparent;
+    color: var(--bs-secondary-color);
+    font-family: var(--td-ui-font-family);
+    font-size: 0.82rem;
+    font-weight: $font-weight-semibold;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--bs-emphasis-color);
+      background: var(--bs-tertiary-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bs-focus-ring-color);
+      outline-offset: -2px;
+    }
+
+    &[aria-selected='true'] {
+      border-bottom-color: var(--bs-link-color);
+      color: var(--bs-emphasis-color);
+      background: var(--bs-body-bg);
+    }
+  }
+
+  &__panel {
+    margin: 0;
+    padding: 0;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__panel-title {
+    padding: 0.45rem 0.9rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    font-family: var(--td-ui-font-family);
+    font-size: 0.82rem;
+    font-weight: $font-weight-semibold;
+    line-height: 1.4;
+  }
+
+  &__panel-body {
+    padding: 1rem 1.1rem;
+
+    > :first-child {
+      margin-block-start: 0;
+    }
+
+    > :last-child {
+      margin-block-end: 0;
+    }
+
+    // Embedded blocks fill the panel edge to edge.
+    > .td-code:only-child,
+    > .td-table-scroll:only-child,
+    > .td-fields:only-child {
+      margin: -1rem -1.1rem;
+      max-width: none;
+    }
+
+    > .td-code:only-child {
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    > .td-table-scroll:only-child > table {
+      border-block-start: 0;
+    }
+  }
+
+  // Not enhanced (JS absent / not yet run): hide the tablist, show every panel
+  // under its own title.
+  &:not([data-td-tabs-ready]) {
+    > .td-tabs__list {
+      display: none;
+    }
+
+    > .td-tabs__panel + .td-tabs__panel {
+      border-block-start: 1px solid var(--bs-border-color);
+    }
+  }
+
+  &[data-td-tabs-ready] > .td-tabs__panel > .td-tabs__panel-title {
+    display: none;
+  }
+}
+
+// Embedded code blocks (adjacent fence tabs) fill the panel: the tabs frame is
+// the shell. Specificity must beat `.td-content .td-code-group .td-code--embedded`.
+.td-content .td-tabs .td-tabs__panel-body > .td-code.td-code--embedded:only-child {
+  margin: -1rem -1.1rem;
+  max-width: none;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-tabs__tab {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-tabs {
+    border-color: CanvasText;
+
+    &__tab[aria-selected='true'] {
+      border-bottom-color: Highlight;
+      color: Highlight;
+    }
+  }
+}
+
+@media print {
+  .td-tabs {
+    box-shadow: none;
+    break-inside: avoid-page;
+
+    > .td-tabs__list {
+      display: none;
+    }
+
+    > .td-tabs__panel {
+      display: block !important;
+
+      &[hidden] {
+        display: block !important;
+      }
+
+      > .td-tabs__panel-title {
+        display: block !important;
+      }
+    }
+  }
+}

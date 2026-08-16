@@ -294,3 +294,7 @@ quote: Quote
 details: Details
 
 # UI strings. Buttons and similar.
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_tabs_label: Tabs

@@ -25,10 +25,7 @@
 {{ $hasCodeRuntime := and $interactiveOutput (.Page.Store.Get "hasCodeRuntime" | default false) -}}
 {{ $hasAssetList := and $interactiveOutput (.Page.Store.Get "hasAssetList" | default false) -}}
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
-{{ $hasTabRuntime := and $interactiveOutput (or
-  (.Page.Store.Get "hasTabpane" | default false)
-  (.Page.Store.Get "hasCodeGroup" | default false)
-) -}}
+{{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
 
 {{ if $hasMarkmap -}}
 {{ range resources.Match "third_party/katex/fonts/*" -}}
@@ -236,7 +233,7 @@ window.markmap = {
   {{ $jsArray = $jsArray | append (resources.Get "js/landing.js") -}}
 {{ end -}}
 {{ if $hasTabRuntime -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/code-tabs.js") -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/tabs.js") -}}
 {{ end -}}
 {{ if $hasImageZoom -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/image-zoom.js") -}}

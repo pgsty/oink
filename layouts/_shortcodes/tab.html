@@ -1,66 +1,20 @@
-{{- /* Define one tab inside tabpane. Supports header, selected, lang,
-       highlight, text, right, and disabled. */ -}}
-{{- /* Make sure that we are enclosed within a tabpane shortcode block */ -}}
-
-{{ with $.Parent -}}
-  {{ if ne $.Parent.Name "tabpane" -}}
-    {{ errorf "Found shortcode %q enclosed inside a %q block, must be enclosed inside a %q block. Error position: %s" $.Name $.Parent.Name "tabpane" $.Position  -}}
-  {{ end -}}
-{{ else -}}
-  {{ errorf "shortcode %q must be enclosed inside a %q block, but no parent block was found. Error position: %s" $.Name "tabpane" $.Position  -}}
-{{ end -}}
-
-{{ $header := "Tab" -}}
-{{ if and (not .IsNamedParams) (.Get 0) -}}
-  {{ $header = (.Get 0) -}}
-{{ else -}}
-  {{/* Prefill header if not given as named or unnamed parameter */ -}}
-  {{ $header = .Get "header" | default (printf "Tab %v" .Ordinal) -}}
-{{ end -}}
-
-{{/* store all tab info in dict tab */ -}}
-{{ $tab := dict "header" $header -}}
-{{ with $.Get "selected" -}}
-  {{ if ne (printf "%T" .) "bool" -}}
-    {{ errorf "Shortcode %q: boolean value expected for parameter %q. Error position: %s" $.Name "selected" $.Position -}}
-  {{ end -}}
-  {{ $tab = merge $tab (dict "selected" .) -}}
-{{ end -}}
-{{ with $.Get "lang" -}}
-  {{ $tab = merge $tab (dict "language" .) -}}
-{{ end -}}
-{{ with $.Get "highlight" -}}
-  {{ $tab = merge $tab (dict "highlight" .) -}}
-{{ end -}}
-{{ with $.Get "text" -}}
-  {{ if ne ( printf "%T" . ) "bool" -}}
-    {{ errorf "Shortcode %q: boolean value expected for parameter %q, but got %s. Error position: %s" $.Name "text" (printf "%T" .) $.Position  -}}
-  {{ end -}}
-  {{ $tab = merge $tab (dict "text" .) -}}
-{{ end -}}
-{{ with $.Get "right" -}}
-  {{ if ne ( printf "%T" . ) "bool" -}}
-    {{ errorf "Shortcode %q: boolean value expected for parameter %q, but got %s. Error position: %s" $.Name "right" (printf "%T" .) $.Position  -}}
-  {{ end -}}
-  {{ $tab = merge $tab (dict "rightpush" .) -}}
-{{ end -}}
-{{ with $.Get "disabled" -}}
-  {{ if ne ( printf "%T" . ) "bool" -}}
-    {{ errorf "Shortcode %q: boolean value expected for parameter %q, but got %s. Error position: %s" $.Name "disabled" (printf "%T" .) $.Position  -}}
-  {{ end -}}
-  {{ $tab = merge $tab (dict "disabled" .) -}}
-{{ end -}}
-
-{{ with $.Inner -}}
-  {{/* Trim any leading and trailing newlines from .Inner, this avoids
-       spurious lines during syntax highlighting */ -}}
-  {{- $content := partial "code/namespace-html.html" (dict
-    "html" . "scope" (printf "tabpane-%d-tab-%d" $.Parent.Ordinal $.Ordinal)
-  ) -}}
-  {{ $tab = merge $tab (dict "content" $content) -}}
-{{ end -}}
-
-{{/* add dict tab to parent's scratchpad */ -}}
-{{ with .Parent -}}
-  {{ $.Parent.Scratch.SetInMap "tabs" (printf "%02v" $.Ordinal) $tab -}}
-{{ end -}}
+{{- /* One tab inside `{{< tabs >}}`: label (required), value (required when the
+       parent declares group, forbidden otherwise); the body is Markdown. */ -}}
+{{- with .Parent -}}
+  {{- if ne .Name "tabs" }}{{ errorf "shortcode %q must be enclosed by tabs, not %q, at %s" $.Name .Name $.Position }}{{ end -}}
+{{- else -}}
+  {{- errorf "shortcode %q must be enclosed by tabs at %s" .Name .Position -}}
+{{- end -}}
+{{- if or (not .IsNamedParams) (not (isset .Params "label")) }}{{ errorf "shortcode %q requires named parameter label at %s" .Name .Position }}{{ end -}}
+{{- range $name, $_ := .Params -}}
+  {{- if not (in (slice "label" "value") $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
+{{- end -}}
+{{- $label := strings.TrimSpace (printf "%v" (.Get "label")) -}}
+{{- if not $label }}{{ errorf "shortcode %q: label must not be empty at %s" .Name .Position }}{{ end -}}
+{{- $value := "" -}}
+{{- if isset .Params "value" -}}
+  {{- $value = strings.TrimSpace (printf "%v" (.Get "value")) -}}
+  {{- if not (findRE `^[a-z0-9][a-z0-9_-]*$` $value) }}{{ errorf "shortcode %q: value must match ^[a-z0-9][a-z0-9_-]*$; got %q at %s" .Name $value .Position }}{{ end -}}
+{{- end -}}
+{{- $body := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- .Parent.Scratch.SetInMap "tabEntries" (printf "%06d" .Ordinal) (dict "label" $label "value" $value "body" $body "position" (printf "%s" .Position)) -}}

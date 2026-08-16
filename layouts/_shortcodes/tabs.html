@@ -1,0 +1,82 @@
+{{- /*
+  Tabs full form (plan/design/components.md v5 §3.2):
+
+    {{< tabs group="setting" default="env" label="…" >}}
+    {{< tab label="Environment Variable" value="env" >}}…Markdown…{{< /tab >}}
+    {{< /tabs >}}
+
+  `<` collector: tab children register raw Markdown bodies, this template
+  renders them (RenderString) into a complete tabs DOM. Nothing is hidden
+  before the runtime enhances the DOM; print / RSS render titled sections;
+  Markdown output renders "**Label**" sections.
+*/ -}}
+{{- if and .Params (not .IsNamedParams) }}{{ errorf "shortcode %q accepts named parameters only at %s" .Name .Position }}{{ end -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
+{{- range $name, $_ := $params -}}
+  {{- if not (in (slice "group" "default" "label") $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
+{{- end -}}
+{{- $group := "" -}}
+{{- if isset $params "group" -}}
+  {{- $group = strings.TrimSpace (printf "%v" (.Get "group")) -}}
+  {{- if not (findRE `^[a-z][a-z0-9_-]*$` $group) }}{{ errorf "shortcode %q: group must match ^[a-z][a-z0-9_-]*$; got %q at %s" .Name $group .Position }}{{ end -}}
+{{- end -}}
+{{- $label := "" -}}
+{{- if isset $params "label" }}{{ $label = strings.TrimSpace (printf "%v" (.Get "label")) }}{{ end -}}
+{{- $innerOutput := strings.TrimSpace (printf "%s" .Inner) -}}
+{{- if $innerOutput }}{{ errorf "shortcode %q accepts tab children only at %s" .Name .Position }}{{ end -}}
+{{- $entries := .Scratch.Get "tabEntries" | default (dict) -}}
+{{- if eq (len $entries) 0 }}{{ errorf "shortcode %q requires at least one tab child at %s" .Name .Position }}{{ end -}}
+{{- $tabs := slice -}}
+{{- $seen := dict -}}
+{{- $i := 0 -}}
+{{- range $entries -}}
+  {{- $value := .value -}}
+  {{- if $group -}}
+    {{- if not $value }}{{ errorf "shortcode \"tab\": value is required because tabs declares group %q at %s" $group .position }}{{ end -}}
+  {{- else -}}
+    {{- if $value }}{{ errorf "shortcode \"tab\": value is only allowed when tabs declares a group at %s" .position }}{{ end -}}
+    {{- $value = printf "tab%d" (add $i 1) -}}
+  {{- end -}}
+  {{- if isset $seen $value }}{{ errorf "shortcode \"tab\": duplicate value %q at %s" $value .position }}{{ end -}}
+  {{- $seen = merge $seen (dict $value true) -}}
+  {{- $tabs = $tabs | append (merge . (dict "value" $value)) -}}
+  {{- $i = add $i 1 -}}
+{{- end -}}
+{{- $default := "" -}}
+{{- if isset $params "default" -}}
+  {{- $default = strings.TrimSpace (printf "%v" (.Get "default")) -}}
+  {{- if not $group }}{{ errorf "shortcode %q: default requires group at %s" .Name .Position }}{{ end -}}
+  {{- if not (isset $seen $default) }}{{ errorf "shortcode %q: default %q does not match a tab value at %s" .Name $default .Position }}{{ end -}}
+{{- end -}}
+{{- if not $default }}{{ $default = (index $tabs 0).value }}{{ end -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $format "markdown" -}}
+  {{- $chunks := slice -}}
+  {{- range $tabs -}}
+    {{- $chunks = $chunks | append (printf "**%s**\n\n%s" (partial "content/markdown-escape.html" .label) .body) -}}
+  {{- end -}}
+  {{- delimit $chunks "\n\n" | safeHTML -}}
+{{- else -}}
+  {{- $base := printf "td-tabs-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
+  {{- $idFor := printf "%s-%%s" $base -}}
+  {{- $interactive := eq $format "html" -}}
+  {{- if $interactive }}{{ .Page.Store.Set "hasTabs" true }}{{ end -}}
+<div class="td-tabs td-tabs--shortcode" id="{{ $base }}"{{ if $interactive }} data-td-tabs{{ with $group }} data-td-tabs-group="{{ . }}"{{ end }} data-td-tabs-default="{{ $default }}"{{ end }}>
+  {{- if $interactive }}
+  <div class="td-tabs__list" role="tablist" aria-label="{{ $label | default (T "ui_tabs_label") }}">
+    {{- range $tabs }}
+    {{- $panelID := cond (ne $group "") (printf "%s-%s" $group .value) (printf "%s-%s" $base .value) }}
+    <button class="td-tabs__tab" type="button" role="tab" id="{{ $panelID }}-tab" aria-controls="{{ $panelID }}" aria-selected="{{ eq .value $default }}" tabindex="{{ cond (eq .value $default) "0" "-1" }}" data-td-tabs-value="{{ .value }}">{{ .label }}</button>
+    {{- end }}
+  </div>
+  {{- end }}
+  {{- range $tabs }}
+  {{- $panelID := cond (ne $group "") (printf "%s-%s" $group .value) (printf "%s-%s" $base .value) }}
+  <section class="td-tabs__panel" id="{{ $panelID }}"{{ if $interactive }} role="tabpanel" aria-labelledby="{{ $panelID }}-tab" tabindex="0"{{ end }} data-td-tabs-value="{{ .value }}"{{ if eq .value $default }} data-td-tabs-active{{ end }}>
+    <div class="td-tabs__panel-title" aria-hidden="true">{{ .label }}</div>
+    <div class="td-tabs__panel-body">{{ $.Page.RenderString (dict "display" "block") .body }}</div>
+  </section>
+  {{- end }}
+</div>
+{{- end -}}

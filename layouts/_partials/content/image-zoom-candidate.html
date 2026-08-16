@@ -5,6 +5,22 @@
   {{- $blocks := findRE `(?is)<p(?:\s[^>]*)?>.*?</p>` $html -}}
   {{- $blocks = $blocks | append (findRE `(?is)<figure(?:\s[^>]*)?>.*?</figure>` $html) -}}
   {{- $blocks = $blocks | append (findRE `(?is)<img\b[^>]*\sdata-td-image-zoom(?:\s|=|/?>)[^>]*>` $html) -}}
+  {{- /* Native Gallery lists (`{.gallery}`): every list image with meaningful
+         alt text is a candidate even when its item also carries a caption. */ -}}
+  {{- range $gallery := findRE `(?is)<ul class="gallery(?:\s[^"]*)?"[^>]*>.*?</ul>` $html -}}
+    {{- range $image := findRE `(?is)<img\b[^>]*>` $gallery -}}
+      {{- if not $candidate -}}
+        {{- $hasNoZoom := gt (len (findRE `(?is)\sdata-no-zoom(?:\s|=|/?>)` $image 1)) 0 -}}
+        {{- $hidden := or
+          (gt (len (findRE `(?is)\saria-hidden\s*=\s*(?:"true"|'true'|true)(?:\s|/?>)` $image 1)) 0)
+          (gt (len (findRE `(?is)\srole\s*=\s*(?:"(?:presentation|none)"|'(?:presentation|none)'|(?:presentation|none))(?:\s|/?>)` $image 1)) 0)
+        -}}
+        {{- $hasSource := gt (len (findRE `(?is)\ssrc\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>]+)` $image 1)) 0 -}}
+        {{- $hasMeaningfulAlt := gt (len (findRE `(?is)\salt\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>"']+)` $image 1)) 0 -}}
+        {{- if and (not $hasNoZoom) (not $hidden) $hasSource $hasMeaningfulAlt }}{{ $candidate = true }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
 
   {{- range $block := $blocks -}}
     {{- if not $candidate -}}

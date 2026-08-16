@@ -32,8 +32,18 @@
   {{- if $resource -}}
     {{- $kind = "page" -}}
   {{- else -}}
-    {{- $resource = resources.Get $lookup -}}
-    {{- if $resource }}{{ $kind = "global" }}{{ end -}}
+    {{- /* Branch-bundle resources: a regular page in a section may reference
+           files that live beside it under the section directory
+           (content/blog/pg/post/image.png → resource "post/image.png" of blog/pg). */ -}}
+    {{- with $page.CurrentSection -}}
+      {{- if ne . $page -}}
+        {{- with .Resources.Get $lookup }}{{ $resource = . }}{{ $kind = "page" }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not $resource -}}
+      {{- $resource = resources.Get $lookup -}}
+      {{- if $resource }}{{ $kind = "global" }}{{ end -}}
+    {{- end -}}
   {{- end -}}
 {{- else -}}
   {{- $kind = "remote" -}}

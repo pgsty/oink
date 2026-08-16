@@ -33,11 +33,17 @@
   {{- if not $found }}{{ with resources.Get $file }}{{ $content = .Content }}{{ $found = true }}{{ end }}{{ end -}}
 {{- end -}}
 {{- if not $found -}}
+  {{- /* The content root is derived from the page file, so a site with a
+         custom contentDir (e.g. `docs`) resolves correctly too. */ -}}
   {{- $path := "" -}}
-  {{- if hasPrefix $file "/" -}}
-    {{- $path = path.Join "content" (strings.TrimPrefix "/" $file) -}}
-  {{- else if .Page.File -}}
-    {{- $path = path.Join "content" (path.Dir .Page.File.Path) $file -}}
+  {{- with .Page.File -}}
+    {{- /* os.ReadFile / fileExists only accept project-relative paths. */ -}}
+    {{- $contentRoot := strings.TrimPrefix (add hugo.WorkingDir "/") (strings.TrimSuffix .Path .Filename) -}}
+    {{- if hasPrefix $file "/" -}}
+      {{- $path = path.Join $contentRoot (strings.TrimPrefix "/" $file) -}}
+    {{- else -}}
+      {{- $path = path.Join $contentRoot (path.Dir .Path) $file -}}
+    {{- end -}}
   {{- end -}}
   {{- if fileExists $path -}}
     {{- $content = os.ReadFile $path -}}
@@ -55,5 +61,10 @@
     {{- partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
   {{- end -}}
 {{- else -}}
-  {{- $content | .Page.RenderString (dict "display" "block") -}}
+  {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+  {{- if eq $format "markdown" -}}
+    {{- $content | safeHTML -}}
+  {{- else -}}
+    {{- partial "content/render-block.html" (dict "page" .Page "scope" (printf "include%d" .Ordinal) "content" $content) -}}
+  {{- end -}}
 {{- end -}}

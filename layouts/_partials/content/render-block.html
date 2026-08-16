@@ -1,0 +1,13 @@
+{{- /* Render a Markdown body (RenderString, block display) inside a named
+       scope so that generated IDs (e.g. code block td-code-…-fence-N) of
+       hooks that run during this nested render cannot collide with the
+       page's own blocks or with sibling shortcodes. Scopes nest.
+       Input: page, scope (short token), content (Markdown). Returns HTML. */ -}}
+{{- $page := .page -}}
+{{- $scope := .scope | default "" -}}
+{{- $previous := $page.Store.Get "tdRenderScope" | default "" -}}
+{{- $next := cond (ne $previous "") (printf "%s-%s" $previous $scope) $scope -}}
+{{- $page.Store.Set "tdRenderScope" $next -}}
+{{- $html := $page.RenderString (dict "display" "block") .content -}}
+{{- $page.Store.Set "tdRenderScope" $previous -}}
+{{- return $html -}}

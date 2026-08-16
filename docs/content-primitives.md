@@ -6,67 +6,97 @@ Tracking: [pgsty/oink#3](https://github.com/pgsty/oink/issues/3)
 
 Contract issue: [pgsty/oink#4](https://github.com/pgsty/oink/issues/4)
 
+Contract version: 2 (OINK 0.5/0.6 component API v5; version 1 shipped with
+OINK 0.4)
+
 Compatibility floor: Hugo Extended 0.160.1
 
 ## 1. Decision
 
-OINK will add a small set of high-frequency content primitives for engineering
-documentation without changing its Hugo-only consumer boundary. The public
-interfaces in this document are the version-one contract for Badge, Kbd,
-Fields, FileTree, Image Zoom, Gallery, Release Assets, and PRD 5 numbered Book
-components.
+OINK ships one small, closed set of content components for engineering
+documentation without changing its Hugo-only consumer boundary. Version two of
+this contract replaces the Docsy-heritage shortcode zoo (53 templates) with 30
+shortcodes plus a family of **native forms**: ordinary Markdown blocks whose
+meaning is selected by a Goldmark block-attribute line (a marker such as
+`{.steps}` or an attribute such as `{tab="npm"}`) and rendered by a render hook
+or by CSS alone.
 
-The implementation order is intentional:
+The public interfaces in this document are the version-two contract for:
 
-1. Badge, Kbd, Fields, and FileTree establish the non-interactive contract.
-2. A shared image resolver and an accessible `imgproc` migration establish the
-   media contract.
-3. Image Zoom progressively enhances eligible images.
-4. Gallery reuses the image resolver and the Zoom runtime.
-5. Release Assets adds a strict checksum parser and one conditional copy runtime.
+- inline leaves: Badge, Kbd, Param, Comment, Include;
+- Fields (table form and shortcode form);
+- FileTree, Gallery, Steps, and Cards native list forms (+ the `cards`/`card`
+  shortcode);
+- the image render hook and the `image` shortcode; Image Zoom;
+- Release Assets and the `checksums` fence;
+- the table family (`full-width`, `fields`, `matrix`, `caption`, numbered,
+  tabbed);
+- Callouts (blockquote render hook);
+- Tabs (adjacent blocks and the `tabs`/`tab` shortcode);
+- data fences (`echarts`, `infographic`, `checksums`);
+- the numbered Book components (`fig`, `tbl`, `eq`, `eg`, `xref`, Book
+  indexes) in their shortcode and native forms.
 
-A standalone public Icon shortcode is deferred. FileTree's scoped `icon`
-parameter is the narrow exception: it accepts one validated Font Awesome class
-pair for a node, not arbitrary markup, classes, or a reusable icon surface.
+Design principle ("three-place equivalence"): a native form must express the
+same content on GitHub, in a plain Markdown reader, and in OINK's own Markdown
+output. Content that is itself code or data (Mermaid, declarative ECharts
+options, checksum lines) is native as a fenced block because the code block is
+its equivalent presentation. Markdown wrapped in a fence, or an invented DSL
+inside a fence, is not native and is not offered.
+
+A standalone public Icon shortcode is deferred. Icon parameters (Callout
+`icon`, Card `icon`) accept exactly one validated Font Awesome class pair, not
+arbitrary markup or a reusable icon surface.
 
 ## 2. Shared authoring contract
 
 ### 2.1 Notation and nesting
 
-All new shortcodes use standard notation (`{{< ... >}}`). This keeps their
-generated markup out of the surrounding Markdown parse and makes non-HTML
-fallbacks explicit.
+Every component has at most two forms — a **native form** (one Markdown block
+plus a marker or attribute line) and a **full form** (a shortcode) — and every
+shortcode uses exactly one delimiter:
 
-- Badge and Kbd are inline shortcodes.
-- Fields and Gallery are collector shortcodes. Evaluating the parent's
-  `.Inner` lets validated children register ordered data; the parent owns all
-  final rendering.
-- FileTree renders recursively through `.Inner`. Folder and file children own
-  their nested list fragments instead of flattening the tree into Scratch.
-- Among the everyday components in sections 3.1 through 3.9, Fields alone
-  accepts Markdown in a field description. After the child has registered its
-  raw inner content, the parent uses `.Page.RenderString` for HTML, print, and
-  RSS; Markdown output preserves and indents the validated source Markdown
-  instead. Book Figure/Table bodies in section 3.10 are the second documented
-  Markdown surface. Public string parameters, including captions, remain
-  plain text.
+- `{{% steps %}}` is the only `{{% %}}` shortcode. Its body is top-level page
+  Markdown, so headings inside it enter the table of contents. The template
+  emits a blank line before and after `.Inner`; without those blank lines
+  Goldmark would swallow the following Markdown into the opening HTML block.
+- Every other shortcode uses standard notation (`{{< ... >}}`). Collector
+  parents (`fields`, `tabs`, `cards`) evaluate `.Inner` so validated children
+  register ordered data; the parent owns all rendering. Children keep raw
+  Markdown bodies and the parent renders them with `.Page.RenderString` through
+  `layouts/_partials/content/render-block.html`, which scopes generated IDs
+  (section 2.6).
+- Rationale (verified on Hugo 0.160.1 and 0.164.0): a `{{% %}}` shortcode nested
+  inside another shortcode receives `.Inner` already rendered as HTML, so a `%`
+  collector could neither re-render nor emit source Markdown. Angle-bracket
+  children always receive source Markdown (with nested shortcodes already
+  expanded, which `unsafe: true` keeps through `RenderString`).
+- Consequence: a `{{% steps %}}` block must not be written inside a list item;
+  its multi-line output is not re-indented and truncates the list silently. The
+  native `1. … {.steps}` list form can hold any Markdown block except `%`
+  containers.
 
-Nested public names are stable:
+Nested public names are stable and valid only inside their parent: `field` in
+`fields`, `tab` in `tabs`, `card` in `cards`.
 
-- `field` is valid only inside `fields`.
-- `filetree/folder` and `filetree/file` are valid only inside `filetree` or a
-  `filetree/folder` ancestor, as appropriate.
-- `gallery/image` is valid only inside `gallery`.
+Hugo does not permit named and positional arguments in the same call. Kbd and
+Param are positional-only; every other shortcode is named-only.
 
-Hugo supports shortcode templates in subdirectories at the compatibility
-floor, so the slash-separated FileTree and Gallery names are part of the
-public API. Flat aliases are not created preemptively.
+Native forms use Goldmark block attributes on the line **immediately after**
+the block (lists, tables, blockquotes, standalone images, `$$` blocks) or on
+the info string of a fence. An attribute line separated from its block by a
+blank line attaches to nothing and disappears silently; the source linter
+reports such orphan lines. Consumer sites therefore need
+`markup.goldmark.parser.attribute.block: true`, `markup.goldmark.renderer.unsafe:
+true` (for `%`/RenderString output and raw HTML), and, for the block image
+forms, `markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false`.
 
-Hugo does not permit named and positional arguments in the same call. Each
-OINK shortcode therefore chooses one form permanently:
-
-- Kbd is positional-only.
-- Every other primitive is named-only.
+The public marker vocabulary is fixed and unprefixed: `{.steps}` (ordered
+list), `{.cards}` (link list), `{.filetree}` (nested unordered list),
+`{.gallery}` (image list), `{.fields}`, `{.matrix}`, `{.full-width}` (tables),
+and `> [!TYPE]` callouts. Because lists have no render hook, a list marker is
+also the CSS selector (`ol.steps`, `ul.cards`, …); everything the theme
+generates keeps the `td-` prefix.
 
 ### 2.2 Parameter validation
 
@@ -87,14 +117,28 @@ Public parameter names and enum values are case-sensitive.
 - Every author error uses `errorf`, names the shortcode and parameter, and
   includes `.Position`.
 
-The everyday components in sections 3.1 through 3.9 do not accept arbitrary
-`class`, `style`, color, event-handler, or public `id` parameters. FileTree's
-`icon` accepts exactly one Font Awesome style/name pair and its `color` selects
-only an allowlisted semantic theme token; neither accepts arbitrary CSS. The
-Book Figure compatibility surface in section 3.10 is the other explicit
-exception: it accepts a grammar-constrained semantic `id` and safe class tokens
-so DDIA and O'Reilly anchors can migrate without breaking public links. It
-never accepts `style`, color, or event handlers.
+Shortcodes do not accept `class`, `style`, color, event-handler, or `cols`
+parameters. Icons accept exactly one Font Awesome pair matching
+`fa-(solid|regular|brands) fa-[a-z0-9-]+`. The Book components are the
+documented exception: they accept a grammar-constrained semantic `id` and safe
+`class` tokens so DDIA and O'Reilly anchors and site figure classes migrate
+without breaking public links. Nothing accepts `style` or event handlers.
+
+**Hook attribute policy** (`layouts/_partials/content/attributes.html`, shared
+by the table, image, passthrough, blockquote, and data-fence render hooks):
+
+- each hook consumes its own allowlist of keys (documented per component);
+- `class` is validated token by token (`^[A-Za-z0-9_-]+$`) and passed through
+  so site CSS keyed on author classes keeps working;
+- `data-*` and `aria-*` attributes pass through unchanged;
+- `style`, any `on*` handler, `srcdoc`, and every other unknown key fail the
+  build with the position of the block.
+
+Ordinary code fences follow the same policy through
+`docs/enhanced-code-blocks.md` §5.5 (OINK names and Chroma options consumed;
+`class`, `id`, `role`, `data-*`, `aria-*` reach the `.td-code` root; `style`,
+`on*`, `srcdoc`, reserved `data-td-code*` names, and any other unknown key fail
+the build).
 
 ### 2.3 Escaping and rendered content
 
@@ -105,23 +149,25 @@ Author text remains data in every output:
   suppress validation or escaping.
 - Theme-owned static markup may be returned as trusted template output only
   after every author value has been inserted through a safe context.
-- Fields descriptions and Book Figure/Table bodies are the documented
-  arbitrary Markdown surfaces. HTML and print render them through
-  `.Page.RenderString`, using the consuming site's Goldmark security policy.
-  Their Markdown fallback retains source Markdown and must not convert it to
-  HTML first.
+- Markdown bodies (Fields descriptions, Tab bodies, Card bodies, the `image`
+  caption, `include` files, and Book Figure/Table/Example bodies) render through
+  `content/render-block.html` (`.Page.RenderString`, block display) using the
+  consuming site's Goldmark policy. Their Markdown fallback retains source
+  Markdown and must not convert it to HTML first.
 - Markdown fallbacks use context-specific escaping for plain text, code spans,
   emphasis, and link destinations. They do not reuse an HTML escape helper.
 - A code span chooses a fence longer than any run of backticks in its value.
 
 The Markdown output must contain no component classes, `data-*` runtime
 attributes, `<dialog>`, `<details>`, `<dl>`, or other runtime HTML emitted by
-these primitives.
+these primitives. Native forms pass through OINK's Markdown output as their
+source blocks because render hooks do not run under `.RenderShortcodes`; the
+attribute line stays visible there by design.
 
 ### 2.4 URL policy
 
-Badge `link`, FileTree file `link`, Gallery/Book Figure image `src`, Book Figure
-`link`, and shared media URLs use one internal URL helper.
+Badge `link`, Card `link`, image sources, Book Figure `link`, `checksums`/
+Release Assets `base`, and shared media URLs use one internal URL helper.
 
 For links:
 
@@ -133,7 +179,8 @@ For links:
 - Protocol-relative URLs and every other scheme, including `javascript`,
   `data`, `vbscript`, and `file`, are rejected.
 - ASCII control characters and whitespace inside a URL are rejected.
-- Components do not force a new browsing context with `target="_blank"`.
+- Components do not force a new browsing context with `target="_blank"`;
+  external card links receive `rel="noopener"`.
 
 For image sources, only site URLs and explicit `http` or `https` URLs are
 allowed. The theme never downloads a remote image during a normal build.
@@ -154,8 +201,9 @@ The existing Page Store key `tdOutputFormat` is authoritative:
 
 Base templates set the key before rendering content. A shortcode may default
 to `html` only as a defensive fallback when used by a custom consumer layout.
-New components branch on this value within their shared template instead of
-depending on output-specific shortcode lookup.
+Components branch on this value within their shared template instead of
+depending on output-specific shortcode lookup. Render hooks read it through
+`.PageInner | default .Page`.
 
 ### 2.6 Page Store, repeated rendering, and IDs
 
@@ -163,18 +211,26 @@ Hugo may render a shortcode more than once for summaries, alternate outputs,
 or repeated `.Content` access. All Page Store writes must therefore be
 idempotent.
 
-- Boolean feature flags use `Set true`; they are never counters.
+- Boolean feature flags use `Set true`; they are never counters. Flags used by
+  this contract: `hasTabs`, `hasCodeBlock`, `hasCodeRuntime`, `hasImageZoom`,
+  `hasAssetList`, `hasEcharts`, `hasInfographic`, `hasMath`.
 - Ordered child data is scoped to the parent shortcode Scratch, not the Page
   Store.
-- A duplicate check uses a stable owner composed from shortcode name and
-  ordinal. Seeing the same owner again is allowed; seeing a different owner for
-  the same public value is an error.
-- The everyday MVP does not expose author-supplied DOM IDs. Book numbered
-  components are the documented exception and use a separate page registry.
+- A duplicate check uses a stable owner. Seeing the same owner again is
+  allowed; seeing a different owner for the same public value is an error.
+- Bodies rendered through `content/render-block.html` run inside a named scope
+  (`tdRenderScope`, nesting by concatenation). Generated code-block IDs
+  (`td-code-<page>-<scope>-fence-<n>`) include the scope, so a fence inside a
+  tab, card, field, or Book example cannot collide with the page's own fences.
+- The everyday components do not expose author-supplied DOM IDs except through
+  the documented `id` attribute of the table/image/passthrough/fence forms and
+  the Book components. Numbered Book targets share one page registry
+  (`tdBookTargets`) whose identity and ordering come from the source position
+  (`file:line:col`), so shortcode targets and render-hook targets never
+  collide and Book lists follow document order.
 - Generated IDs use a component prefix, a page-derived digest where needed,
-  and the shortcode ordinal. Interactive IDs must be registered before output.
-- A future public ID must share a page-wide registry with existing code
-  components so ARIA references cannot collide across component families.
+  and the shortcode ordinal (`td-tabs-<hash8>-<ordinal>`, `td-card-…`,
+  `td-fields-…`). Interactive IDs must be registered before output.
 
 Feature flags are set only after validation. Interactive flags are set only in
 `html` output and only when the feature is enabled and the page has a usable
@@ -182,37 +238,42 @@ candidate.
 
 ### 2.7 Runtime loading
 
-Badge, Kbd, Fields, Tables, and the numbered Book components never load
-JavaScript. FileTree requests the shared content-component runtime only to
-enhance its static two-column layout with a draggable separator. Image Zoom
-owns one opt-in dialog runtime and Gallery may request that same runtime without
-adding another bundle. Release Assets owns a separate opt-in copy runtime keyed
-by `hasAssetList`; it never reads the Image Zoom flag. Runtimes are appended
-from `layouts/_partials/scripts.html` only after content sets its Page Store
-flag. Print, Markdown, and RSS never receive them.
+Badge, Kbd, Fields, FileTree, Steps, Cards, Callouts, Tables, and the numbered
+Book components never load JavaScript. Tabs (both forms) load one local runtime
+(`assets/js/tabs.js`) keyed by `hasTabs`; it has no Bootstrap dependency.
+Image Zoom owns one opt-in dialog runtime and Gallery images may request that
+same runtime without adding another bundle. Release Assets and the `checksums`
+fence own a separate opt-in copy runtime keyed by `hasAssetList`. Data fences
+request their vendored chart runtimes (`hasEcharts`, `hasInfographic`).
+Runtimes are appended from `layouts/_partials/scripts.html` only after content
+sets its Page Store flag; every flag is part of the bundle key. Print,
+Markdown, and RSS never receive them.
 
 The server-rendered HTML is complete before enhancement. If JavaScript is
-disabled, blocked, fails, or `HTMLDialogElement` is unavailable, all original
-images and captions remain readable.
+disabled, blocked, or fails, every tab panel, image, caption, callout body,
+and code block remains readable.
 
 ### 2.8 CSS and accessibility
 
 Components consume semantic OINK/Bootstrap tokens and may define component
 aliases. They must not embed arbitrary author colors or literal bundled font
-families; FileTree's semantic `color` enum resolves only to those theme tokens.
+families.
 
 - Use logical properties so spacing and alignment work in RTL.
 - Long names, types, paths, and captions must wrap or scroll within their own
   component without creating page-level horizontal overflow.
 - Dark mode derives from semantic tokens.
 - Print removes decorative color dependence, exposes complete content, and
-  avoids hiding descendants of closed disclosure widgets.
+  avoids hiding descendants of closed disclosure widgets: collapsible callouts
+  and tab sets render as static, expanded blocks in the print output format.
 - Forced-colors mode preserves visible boundaries and focus indicators with
   system colors or `currentColor`.
-- Reduced motion disables non-essential Zoom transitions.
+- Reduced motion disables non-essential transitions (Zoom, callout marker,
+  cards hover, tab switch).
 - Native semantics take precedence over ARIA. FileTree does not claim
-  `role="tree"`; Fields remains a definition list; Zoom uses a real dialog and
-  real buttons.
+  `role="tree"`; Fields remains a definition list; collapsible callouts are
+  native `<details>`; Zoom uses a real dialog; Tabs use `role="tablist"`,
+  `role="tab"`, `role="tabpanel"` with real buttons.
 
 ### 2.9 Visible strings, aliases, and deprecation
 
@@ -220,10 +281,11 @@ Author-provided labels, captions, names, keys, and alt text are rendered as
 provided and are not looked up through i18n.
 
 Every theme-owned visible or assistive string is an i18n key submitted to all
-locale files in the same change. Initial examples include the Kbd spoken
-separator and Image Zoom dialog controls. The Fields `required` and `default`
-metadata labels are a deliberate exception: they are API vocabulary rendered
-untranslated in every locale.
+locale files in the same change (callout type labels `note tip important
+warning caution success danger question example quote details`,
+`ui_tabs_label`, `ui_table_scroll`, Book labels, Kbd separator, Zoom controls).
+The Fields `required` and `default` metadata labels are a deliberate
+exception: they are API vocabulary rendered untranslated in every locale.
 
 An intentional historical alias:
 
@@ -233,7 +295,9 @@ An intentional historical alias:
    ships; and
 4. is removed only with an explicit changelog entry.
 
-No aliases are introduced for parameters that have not shipped publicly.
+Version two ships no aliases: the pre-1.0 in-house consumers migrate with
+`scripts/migrations/oink06.py` in the same release train, and removed
+shortcodes fail the build with Hugo's "template for shortcode … not found".
 
 ## 3. Public component APIs
 
@@ -241,7 +305,6 @@ No aliases are introduced for parameters that have not shipped publicly.
 
 ```go-html-template
 {{< badge text="Beta" tone="warning" >}}
-{{< badge text="Deprecated" tone="danger" outline=false >}}
 {{< badge text="v0.3" tone="info" link="/release/" >}}
 ```
 
@@ -250,16 +313,15 @@ No aliases are introduced for parameters that have not shipped publicly.
 | `text` | yes | non-empty plain string | none |
 | `tone` | no | `neutral`, `info`, `success`, `warning`, `danger` | `neutral` |
 | `link` | no | URL allowed by section 2.4 | none |
-| `outline` | no | strict boolean | `true` |
 
-HTML uses an inline `<span>` when `link` is absent and an `<a>` when it is
-present. Tone and outline map to semantic tokens. Tone is not the only carrier
-of meaning: the author-provided text remains visible in all modes.
+HTML uses an inline `<span class="td-badge td-badge--<tone>">` when `link` is
+absent and an `<a>` when it is present. Tone maps to semantic tokens and is not
+the only carrier of meaning: the author-provided text remains visible in all
+modes. The former `outline` parameter was a purely visual switch and is
+removed; there is one badge appearance.
 
-There is no public Badge `icon`, `class`, or color parameter in version one.
-Adding an allowlisted Badge icon later is backwards compatible.
-
-Markdown fallback:
+There is no public Badge `icon`, `class`, or color parameter. Markdown
+fallback:
 
 ```markdown
 **Beta**
@@ -276,11 +338,13 @@ Markdown fallback:
 Kbd accepts one or more non-empty positional string arguments. Its public
 argument list is closed: separator, label, platform, and styling options will
 not be added to the shortcode because named and positional arguments cannot be
-mixed in one call.
+mixed in one call. A literal plus key is written as its own argument
+(`{{< kbd "Ctrl" "+" >}}`). Raw `<kbd>` elements written in Markdown are styled
+by the same CSS.
 
 HTML emits a sequence wrapper with one nested `<kbd>` per key. Visible `+`
-separators and a localized simultaneous-key separator produce an understandable key
-sequence without repeating punctuation to screen readers.
+separators and a localized simultaneous-key separator produce an understandable
+key sequence without repeating punctuation to screen readers.
 
 Print and Markdown use the exact plain notation:
 
@@ -290,6 +354,40 @@ Ctrl + K
 ```
 
 ### 3.3 Fields and Field
+
+Fields has a native table form and a shortcode form; both render through the
+shared `<dl>` partial `layouts/_partials/content/fields-list.html`.
+
+**Table form.** Any pipe table followed by `{.fields}`:
+
+```markdown
+| 参数 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `offlineSearch` | boolean | `false` | 开启本地索引与命令面板 |
+| `offlineSearchMaxResults` | integer | `10` | 结果上限，*支持行内 Markdown* |
+{.fields caption="搜索参数"}
+```
+
+Positional rule, no header vocabulary and no synonym guessing:
+
+- at least two columns; the **first column is the field name**, the **last
+  column is the description**, every **middle column is metadata** whose label
+  is the header text verbatim (any language) and whose value is the cell;
+- an empty middle cell is omitted; a first cell written as a single code span
+  keeps only its text (the `<dt>` supplies the code styling);
+- the first cell must be non-empty and unique within the table (build error
+  otherwise);
+- cells are Goldmark inline HTML (links, code, emphasis); block content is not
+  possible in a table cell — use the shortcode form;
+- `caption` is the visible label (`.td-fields__label`, referenced by
+  `aria-labelledby`); `id` names the wrapper; `.fields` cannot be combined with
+  `.matrix`, `.full-width`, or a Book `num`; the table hook attribute policy of
+  section 3.9 applies.
+
+Markdown output keeps the source table (render hooks do not run there).
+
+**Shortcode form** (unchanged notation from version one; strict typed
+metadata and multi-paragraph descriptions):
 
 ```go-html-template
 {{< fields label="Configuration fields" >}}
@@ -319,19 +417,23 @@ Ctrl + K
 | `default` | no | any shortcode scalar, including `false`, `0`, and `""` | omitted |
 
 Every Field requires a non-empty inner description. After the child is
-registered, the parent renders that description for HTML, print, and RSS while
-retaining the source Markdown in Markdown output. An explicit empty-string
-default is displayed as `""`; an absent default emits no default metadata.
+registered, the parent renders that description through
+`content/render-block.html` for HTML, print, and RSS while retaining the source
+Markdown in Markdown output. An explicit empty-string default is displayed as
+`""`; an absent default emits no default metadata.
 
-HTML is one `<dl>` with HTML-valid wrappers containing paired `<dt>` and
-`<dd>` elements. It must not use `display: contents`. Each entry stacks two
-rows: the `<dt>` header row carries the field name followed by the inline
-`type`, `required`, and `default` metadata in that order, and the `<dd>` below
-it carries the description. Entries are separated by hairline dividers, not
-boxed cells or columns. An optional label is visible and associated with the
-list without inventing a fixed heading level.
+HTML is one `<dl>` (`.td-fields > .td-fields__list`) with HTML-valid wrappers
+containing paired `<dt>` and `<dd>` elements. It must not use
+`display: contents`. Each entry stacks two rows: the `<dt>` header row carries
+the field name followed by metadata chips — `type` (`.td-field__type`),
+`required` (`.td-field__required`), `default: value` (`.td-field__default`) in
+the shortcode form; `label: value` (`.td-field__meta` with
+`.td-field__meta-label` / `.td-field__meta-value`) in the table form — and the
+`<dd>` below it carries the description. Entries are separated by hairline
+dividers, not boxed cells or columns.
 
-Markdown fallback is an ordered author-preserving bullet list:
+Markdown fallback of the shortcode form is an ordered author-preserving bullet
+list:
 
 ```markdown
 **Configuration fields**
@@ -341,107 +443,41 @@ Markdown fallback is an ordered author-preserving bullet list:
   Enables the local search index and command palette.
 ```
 
-When supplied, the author-provided label precedes the list as emphasized plain
-text so it remains visible outside HTML.
-
-The `required` and `default` metadata labels are untranslated API vocabulary:
-every locale renders the literal words `required` and `default` in HTML,
-print, Markdown, and RSS output alike. They are not i18n keys. The deferred
-parameters are `kind`, `location`, `since`, `deprecated`, and `link`, along
-with nested schemas and compiler-driven type extraction.
+The `required` and `default` metadata labels are untranslated API vocabulary
+in every locale. Deferred parameters are `kind`, `location`, `since`,
+`deprecated`, and `link`, along with nested schemas and compiler-driven type
+extraction.
 
 ### 3.4 FileTree
 
-```go-html-template
-{{< filetree label="Repository structure" >}}
-  {{< filetree/folder name="content" open=true comment="0755 docs:writers · Site content" >}}
-    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="0644 docs:writers · Section landing page" >}}
-    {{< filetree/folder name="docs" open=true >}}
-      {{< filetree/file name="getting-started.md" >}}
-      {{< filetree/file name="configuration.md" link="/docs/configuration/" >}}
-    {{< /filetree/folder >}}
-  {{< /filetree/folder >}}
-  {{< filetree/file name="hugo.yml" >}}
-{{< /filetree >}}
-```
-
-`filetree` parameters:
-
-| Parameter | Required | Accepted values | Default |
-| --- | --- | --- | --- |
-| `label` | no | non-empty plain string | empty title bar |
-
-`filetree/folder` parameters:
-
-| Parameter | Required | Accepted values | Default |
-| --- | --- | --- | --- |
-| `name` | yes | non-empty plain string | none |
-| `open` | no | strict boolean | `false` |
-| `icon` | no | one Font Awesome pair matching `fa-(solid\|regular\|brands) fa-[a-z0-9-]+` | stateful folder icons |
-| `color` | no | `neutral`, `primary`, `secondary`, `info`, `success`, `warning`, `danger` | folder theme color |
-| `comment` | no | non-empty plain string | none |
-
-`filetree/file` parameters:
-
-| Parameter | Required | Accepted values | Default |
-| --- | --- | --- | --- |
-| `name` | yes | non-empty plain string | none |
-| `link` | no | URL allowed by section 2.4 | none |
-| `icon` | no | one Font Awesome pair matching `fa-(solid\|regular\|brands) fa-[a-z0-9-]+` | `fa-regular fa-file` |
-| `color` | no | `neutral`, `primary`, `secondary`, `info`, `success`, `warning`, `danger` | neutral theme color |
-| `comment` | no | non-empty plain string | none |
-
-HTML uses nested lists inside a terminal-window surface. The optional `label`
-is centered in the chrome bar; FileTree deliberately omits the three decorative
-macOS control dots. A folder contains native `<details>` and `<summary>`, and
-`open` affects only its initial state. FileTree does not claim `role="tree"`.
-The browser disclosure marker is suppressed: default folders switch between
-`fa-regular fa-folder` and `fa-regular fa-folder-open`, while an authored `icon`
-replaces both states. Hover and keyboard focus tint the complete row.
-
-Every row has the same fixed block size. The first column contains indentation,
-icon, and the code-font name; names never wrap and use an ellipsis when the
-column is too narrow. The second column contains the author-controlled
-code-font `comment` with a visible `#` prefix. All comments begin at one shared
-vertical separator. Long comments remain a one-line horizontal scroll region;
-an end ellipsis indicates hidden content until the reader scrolls to it.
-
-The HTML enhancement marks the separator as a focusable vertical
-`role="separator"`. Pointer dragging keeps the shared split
-between `20%` and `80%`. Arrow keys move it in two-point steps, Shift+Arrow
-moves it by ten,
-Home/End select the limits, and double-click restores the default `56%`. With
-JavaScript disabled, the complete tree remains readable at that default split.
-
-`owner`, `group`, and `mode` are not FileTree parameters. Authors who want
-filesystem notation put exactly the desired text in `comment`, for example
-`comment="0755 docs:writers · Site content"`. FileTree neither parses nor
-reformats that text.
-
-Print and RSS expose every descendant regardless of `open`. Markdown uses a
-nested list, appends `/` to folder names, and preserves file links:
+FileTree has exactly one form: a nested unordered list followed by
+`{.filetree}`.
 
 ```markdown
 - content/
-  - _index.md
+  - _index.md — site home page
   - docs/
-    - getting-started.md
-    - [configuration.md](/docs/configuration/)
-- hugo.yml
+    - [getting-started.md](/docs/getting-started/) — linked entry
+    - configuration.md
+  - logs/
+- hugo.yaml — *root:root 0644*
+{.filetree}
 ```
 
-Markdown preserves the same author-controlled comment after the node:
+- Indentation is the hierarchy; `-` is a node; a trailing `/` marks a
+  directory (an item with a nested list is a directory too); everything after
+  ` — ` is the description **by convention** (CSS cannot parse text, so the
+  separator is not a syntax); links, emphasis, and code spans are ordinary
+  Markdown.
+- Rendering is CSS only: monospace panel, `li:has(> ul)` shows a folder icon,
+  every other item a file icon; static and fully expanded; no per-node `icon`,
+  `color`, `comment`, `open`, or `label` parameters and no runtime. An empty
+  directory written with a trailing `/` keeps the generic file icon.
+- The Markdown output is the source list; print and RSS render the same
+  expanded list. Pasting `tree` output into an ordinary fence remains the
+  zero-component alternative.
 
-```markdown
-- _index.md # 0644 docs:writers · Section landing page
-```
-
-Decorative icon and color choices are omitted. Print and RSS retain the
-complete expanded row and a static separator. Badges, sorting, filesystem
-reads, automatic metadata, selection, and direction-key tree navigation are
-deferred.
-
-### 3.5 Shared images and imgproc compatibility
+### 3.5 Shared images and the image shortcode
 
 The shared image resolver is internal. It resolves an explicit `http` or
 `https` source directly; otherwise it tries, in order:
@@ -456,38 +492,54 @@ the source can be processed. Missing page/global resources and invalid image
 operations fail with the caller's position. A static or remote image may omit
 dimensions when the build cannot know them without I/O.
 
-New image APIs require meaningful alt text unless they expose an explicit
-decorative mode. Gallery version one always requires meaningful alt text.
+**Image render hook** (`layouts/_markup/render-image.html`). Every Markdown
+image `![alt](src "title")` resolves through the shared resolver:
 
-The accessible named `imgproc` form implemented by
-[pgsty/oink#8](https://github.com/pgsty/oink/issues/8) resolves exact page or
-global resources and requires either meaningful alternative text or explicit
-decorative intent:
+- inline images render a bare `<img src alt [title] loading="lazy"
+  decoding="async" [width height]>`; they carry no attributes;
+- a standalone image (its own paragraph; requires the site setting
+  `wrapStandAloneImageWithinParagraph: false`, otherwise Goldmark wraps it and
+  the hook sees an inline image) renders `<p class="td-image [classes]"
+  [id]><img …></p>`;
+- a standalone image followed by an attribute line with `caption` or `num`
+  renders `<figure class="td-figure [td-book-figure td-book-figure--fig]
+  [classes]" [id]>` with `<figcaption>`; `num` registers a Book `fig` target
+  (section 3.10);
+- allowed attributes: `id`, `num`, `caption` (plain text), `width`, `height`
+  (positive integers; they override the resource dimensions and give static
+  or remote images their box), plus `class`, `data-*`, `aria-*`; anything else
+  fails the build;
+- `title` keeps its Markdown meaning (advisory `title` attribute); it never
+  becomes a caption; an empty alt marks the image decorative for Zoom;
+- RSS uses absolute `src`.
+
+**`image` shortcode** (processed images; replaces the removed positional
+`imgproc` form implemented by [pgsty/oink#8](https://github.com/pgsty/oink/issues/8)):
 
 ```go-html-template
-{{< imgproc src="image.png" command="Fit" options="1200x800" alt="Architecture overview" >}}
+{{< image src="image.png" command="Fit" options="1200x800" alt="Architecture overview" >}}
 Caption with Markdown.
-{{< /imgproc >}}
+{{< /image >}}
 
-{{< imgproc src="rule.png" command="Resize" options="600x" decorative=true >}}{{< /imgproc >}}
+{{< image src="rule.png" command="Resize" options="600x" decorative=true >}}{{< /image >}}
 ```
 
-`command` is exactly one of `Fit`, `Resize`, `Fill`, or `Crop`; `options` uses
-Hugo image-processing syntax. Static paths, SVG, and remote URLs resolve for
-shared renderers but fail when passed to `imgproc` because they are not locally
-processable image resources.
+| Parameter | Required | Accepted values | Default |
+| --- | --- | --- | --- |
+| `src` | yes | exact page or global resource path | none |
+| `command` | yes | `Fit`, `Resize`, `Fill`, `Crop` | none |
+| `options` | yes | Hugo image-processing option string | none |
+| `alt` | conditional | meaningful plain string; resource `params.alt` is honored | none |
+| `decorative` | conditional | strict boolean; excludes `alt` | `false` |
 
-The existing positional `imgproc` call remains a compatibility boundary:
-
-```go-html-template
-{{< imgproc "image.png" "Fit" "1200x800" >}}Caption{{< /imgproc >}}
-```
-
-It retains the historical fuzzy page-resource lookup and does not emit a
-deprecation warning in this release. Resource `params.alt` and `params.byline`
-are honored when present; otherwise the legacy image receives `alt=""` while
-its caption remains visible. Zoom and Gallery must use the shared resolver
-rather than copying `imgproc` lookup behavior.
+Named parameters only; the body is the Markdown caption. Either meaningful
+alt text (parameter or resource metadata) or `decorative=true` is required.
+Static paths, SVG, and remote URLs resolve for other renderers but fail here
+because they are not locally processable image resources. HTML renders
+`<figure class="td-figure td-figure--processed">` with `data-zoom-src` (full
+size), `data-no-zoom` when decorative, intrinsic `width`/`height`, and a
+`<figcaption>` holding the rendered caption and the resource `byline`. Markdown
+emits `![alt](src)`, the caption source, and `_byline_`.
 
 ### 3.6 Image Zoom
 
@@ -514,22 +566,18 @@ params:
 The selected `params.ui.image_zoom.enable` value must be a boolean. An explicit
 page `false` wins over a site `true`.
 
-The MVP progressively enhances an image only when it is standalone content or
-an explicit Gallery image. It skips images inside links or buttons, images
-marked `data-no-zoom`, and inline decorative images. `data-zoom-src` from the
-shared renderer wins; otherwise the rendered image URL is used.
+Zoom progressively enhances content images (`.td-content img`, top-level
+`figure > img` and `p > img`). It skips images inside links or buttons, images
+marked `data-no-zoom`, images without alt text, and images already enhanced.
+`data-zoom-src` from the `image` shortcode wins; otherwise the rendered image
+URL is used.
 
-The build-time candidate scan recognizes direct paragraph/figure images and
-theme-owned Gallery markers; the browser repeats the same structural checks
-before mutation. A standalone legacy image with `alt=""` remains eligible and
-its trigger is named by the localized action text. Images explicitly authored
-with `decorative=true` receive `data-no-zoom`, so that intentional declaration
-is never turned into a control.
-
-Eligible images become real focusable controls after enhancement. Enter,
-Space, pointer activation, Escape, the visible close button, and backdrop
-activation follow the native dialog model. One dialog is shared by the page;
-focus moves into it and returns to the originating control.
+The build-time candidate scan recognizes standalone paragraph/figure images and
+explicit `data-td-image-zoom` markers; the browser repeats the same structural
+checks before mutation. Eligible images become real focusable controls after
+enhancement. Enter, Space, pointer activation, Escape, the visible close
+button, and backdrop activation follow the native dialog model. One dialog is
+shared by the page; focus moves into it and returns to the originating control.
 
 The runtime is local, CSP-safe, and loaded only for normal HTML when the
 feature is enabled and a candidate exists. It adds no inline event handlers.
@@ -538,64 +586,44 @@ Print, Markdown, and RSS render only the underlying image and caption.
 Drag, pan, wheel zoom, editing, annotations, image navigation, and third-party
 lightbox runtimes are deferred.
 
-### 3.7 Gallery and Gallery Image
+### 3.7 Gallery
 
-```go-html-template
-{{< gallery columns=2 label="Console screenshots" >}}
-  {{< gallery/image src="overview.webp" alt="Overview page" >}}
-  {{< gallery/image src="detail.webp" alt="Detail page" caption="Request details" >}}
-{{< /gallery >}}
-```
-
-`gallery` parameters:
-
-| Parameter | Required | Accepted values | Default |
-| --- | --- | --- | --- |
-| `columns` | no | strict integer from `1` through `4` | `2` |
-| `label` | no | non-empty plain string | no visible label |
-
-`gallery/image` parameters:
-
-| Parameter | Required | Accepted values | Default |
-| --- | --- | --- | --- |
-| `src` | yes | image URL allowed by section 2.4 | none |
-| `alt` | yes | non-empty meaningful plain string | none |
-| `caption` | no | non-empty plain string | none |
-
-Gallery preserves author order and renders one semantic figure per image.
-HTML is a responsive grid with intrinsic dimensions when known,
-`loading="lazy"`, and captions that do not break the page width. Narrow
-viewports may reduce the effective column count without changing the requested
-desktop maximum.
-
-Gallery reuses the shared image resolver and Image Zoom eligibility. It never
-adds a carousel, second lightbox, second dialog, or separate runtime.
-
-Markdown emits ordinary images in author order, with an italic caption
-paragraph when supplied:
+Gallery has exactly one form: an image list followed by `{.gallery}`.
 
 ```markdown
-![Overview page](overview.webp)
-
-![Detail page](detail.webp)
-
-_Request details_
+- ![Overview page](overview.webp)
+- ![Detail page](detail.webp) — Request details
+{.gallery}
 ```
 
-Print and RSS render static sequential figures. Reordering, uploads,
-filtering, fullscreen slideshows, decorative Gallery images, and remote
-build-time image fetching are deferred.
+Each item is one Markdown image, optionally followed by description text (the
+` — ` separator is a convention, not syntax). Images resolve through the image
+render hook (an image alone in its item is a block image; one followed by text
+is inline), so page resources get intrinsic dimensions and lazy loading, and
+Zoom eligibility follows section 3.6. Rendering is CSS only: a responsive grid
+of `li` cards with the image on top and the description below. Every image
+needs meaningful alt text; the source linter enforces it (an empty alt is
+decorative and therefore never zoomable).
+
+Markdown output is the source list; print and RSS render the same list
+statically. Reordering, uploads, filtering, fullscreen slideshows, carousels,
+and remote build-time image fetching are deferred.
 
 ### 3.8 Release Assets
 
-Release Assets turns exact `sha*sum` output into a verified download table:
+Release Assets turns exact `sha*sum` output into a verified download table.
+It has a shortcode form and a native fence form:
 
-```go-html-template
+````markdown
 {{< release-assets group="auto" >}}
 e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1  pig-1.7.0-1.aarch64.rpm
 34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8 *pig-1.7.0-1.x86_64.rpm
 {{< /release-assets >}}
+
+```checksums {base="https://downloads.example.org/releases/stable" algo="sha256"}
+e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1  pig-1.7.0-1.aarch64.rpm
 ```
+````
 
 The only accepted line forms are `<hex><two spaces><name>` and
 `<hex><space>*<name>`. Blank lines and lines whose first non-space character is
@@ -604,7 +632,7 @@ must use exactly one algorithm; malformed lines, unsupported lengths, and
 mixed algorithms fail with the source line. Filenames are one path segment,
 remain visible text, and are path-segment escaped when OINK derives links.
 
-Parameters:
+Shortcode parameters:
 
 | Parameter | Required | Accepted values | Default |
 | --- | --- | --- | --- |
@@ -616,46 +644,54 @@ Parameters:
 `src` and inner checksum lines are mutually exclusive. A page with `release`
 front matter derives the GitHub asset base from its normalized repo and tag;
 otherwise `base` is required. `base` is deliberately not a version input and
-is rejected when release facts already exist. The component performs no
-network request. Type, OS, and architecture badges are filename-derived
-decoration and are omitted when inference is uncertain.
+is rejected when release facts already exist. The `checksums` fence accepts
+`base`, `algo`, and `group` as fence attributes with the same rules and no
+`src`. The component performs no network request. Type, OS, and architecture
+badges are filename-derived decoration and are omitted when inference is
+uncertain.
 
 HTML truncates the visible hash but retains the complete hash as the accessible
-name and copy source. The local copy runtime exposes one-row and whole-block
-copy buttons; without JavaScript those hidden buttons leave a complete linked
-table. Print exposes full hashes without controls. Markdown and RSS emit pure
-pipe tables with full hashes and download URLs.
+name and copy source. The local copy runtime (`hasAssetList`) exposes one-row
+and whole-block copy buttons; without JavaScript those hidden buttons leave a
+complete linked table. Print exposes full hashes without controls. Markdown
+and RSS emit pure pipe tables with full hashes and download URLs (the fence
+form stays a source fence in `.RenderShortcodes` Markdown output).
 
 ### 3.9 Tables and full-width tables
 
-OINK wraps every Goldmark pipe table in a local scroll region. In interactive
-HTML the region is keyboard-focusable, uses the localized accessible name
-`ui_table_scroll`, and contains horizontal overflow without widening the page.
-The table formatting context fills at least the available prose width, and the
-scroll region adds a bottom spacer before following content. The table remains
-fully visible when JavaScript is absent because tables have no runtime.
+OINK wraps every Goldmark pipe table in a local scroll region
+(`layouts/_markup/render-table.html` + `content/table-body.html`). In
+interactive HTML the region is keyboard-focusable, uses the localized
+accessible name `ui_table_scroll`, and contains horizontal overflow without
+widening the page. The table formatting context fills at least the available
+prose width. Tables have no runtime.
 
-Sites that enable Goldmark block attributes can opt a table out of the prose
-measure while keeping the same contained overflow policy:
+The table family is selected by the attribute line after the table:
 
-```markdown
-| Feature | Community | Professional |
+| Attribute line | Meaning | Rendering |
 | --- | --- | --- |
-| Support | Forum | Priority |
+| `{.full-width}` | opt out of the prose measure | wrapper `td-table-scroll--full`; the `full-width` class stays on `<table>` |
+| `{.fields}` | reference table | `<dl>` (section 3.3) |
+| `{.matrix}` | compatibility/feature matrix | first column `<th scope="row">`, wrapper `td-table-scroll--matrix` with sticky header and first column, other cells centered unless the author aligns them |
+| `{caption="…"}` | table caption | `<caption class="td-table__caption">`; on `.fields` the list label |
+| `{#id}` | stable id | on `<table>` (or on the figure of a numbered table) |
+| `{#id num="9-1" caption="…"}` | numbered Book table | `<figure class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num>` + `<figcaption>`; registers a `tbl` target (section 3.10) |
+| `{tab="…" group="…" value="…"}` | adjacent tables become tabs | tab-block wrapper (section 3.13) |
+| any other class | site CSS | passed through on `<table>` |
 
-{.full-width}
-```
+Exclusivity: `.fields` cannot combine with `.matrix`, `.full-width`, or `num`;
+`num` and `tab` are mutually exclusive; `group`/`value` require `tab`. Allowed
+keys are `id caption num tab group value` plus `class`, `data-*`, `aria-*`;
+`style`, `on*`, and unknown keys fail the build (section 2.2).
 
-The `full-width` class is applied to the table and the theme gives its wrapper
-the `td-table-scroll--full` modifier. Normal, `wide`, and `full` page widths
-therefore share one predictable API. Print removes the scroll viewport and
-renders the complete table at page width; Markdown and RSS preserve the table
-data without interactive attributes.
+Print removes the scroll viewport and renders the complete table at page
+width; Markdown and RSS preserve the table data without interactive
+attributes.
 
 ### 3.10 Numbered Figure, Table, and Equation
 
 The Book components make a manual, language-aware number and stable target one
-semantic unit:
+semantic unit. Every kind has a shortcode (full) form and a native form:
 
 ```go-html-template
 {{< fig num="2-1" id="office_2003" src="/fig/word.png"
@@ -667,9 +703,35 @@ semantic unit:
 {{< /tbl >}}
 
 {{< eq num="5.3" >}}X \approx \frac{C}{R+Z}{{< /eq >}}
+
+{{< eg num="4-1" caption="Analytics query" >}}
+```sql
+SELECT date_trunc('day', ts) FROM events;
+```
+{{< /eg >}}
 ```
 
-The same `eq` name also has a deliberately smaller 0.4 escape-hatch form:
+Native forms — one block plus an attribute line:
+
+````markdown
+![Word 2003 with stacked toolbars](/fig/word.png)
+{#office_2003 num="2-1" caption="The Word 2003 interface" width=640 height=480}
+
+| Anomaly | RC | RR | SER |
+| --- | --- | --- | --- |
+{#tab_iso num="9-1" caption="Isolation-level behavior"}
+
+$$
+X \approx \frac{C}{R+Z}
+$$
+{#eq_x num="5.3"}
+
+```sql {num="4-1" caption="Analytics query" #example-query}
+SELECT date_trunc('day', ts) FROM events;
+```
+````
+
+The same `eq` name also has a deliberately smaller escape-hatch form:
 
 ```go-html-template
 {{< eq >}}X \approx \frac{C}{R+Z}{{< /eq >}}
@@ -678,36 +740,48 @@ The same `eq` name also has a deliberately smaller 0.4 escape-hatch form:
 Without parameters it renders non-empty TeX as display math, registers no
 numbered target, and emits a plain `$$` source block in Markdown and RSS.
 `id`, `caption`, and `class` require `num`; they cannot create a partially
-numbered equation. This lets a site author one isolated formula without first
-enabling Goldmark passthrough while keeping Book identities explicit.
+numbered equation.
 
-The numbered forms of all three components require a quoted `num` matching
-`[0-9A-Za-z.-]+`. Their default IDs
-are `fig-<num>`, `tbl-<num>`, and `eq-<num>`. An explicit ID matching
-`[A-Za-z][A-Za-z0-9_.:-]*` is preserved without a prefix. The Page Store
-registry rejects duplicate IDs and two targets of the same kind/number that
-claim different IDs. Repeated rendering of the same shortcode owner remains
-idempotent.
+Shared rules for all four kinds and both forms:
 
-Captions are plain text. Figure and Table inner content passes through
-`.Page.RenderString`; Equation inner content passes directly through the local
-server-side KaTeX renderer. Table keeps its Markdown table, label, caption, and
-anchor inside one `<figure>`. Equation places its number at the right edge.
+- `num` is a quoted string matching `[0-9A-Za-z.-]+`; default IDs are
+  `fig-<num>`, `tbl-<num>`, `eq-<num>`, and `eg-<num>`; an explicit ID matching
+  `[A-Za-z][A-Za-z0-9_.:-]*` is preserved without a prefix. In the native
+  fence form the author `#id` names the `<figure>` (the Book target), not the
+  code block root.
+- The block type decides the kind (image → `fig`, table → `tbl`, `$$` block →
+  `eq`, fence → `eg`). `caption` is plain text; it is optional for `fig`,
+  `tbl`, and `eq` and required for `eg` (a fence `caption` without `num` and a
+  fence `num` without `caption` are build errors). Alt text is never turned
+  into a caption.
+- The page registry (`tdBookTargets`) rejects duplicate IDs and two targets of
+  the same kind/number that claim different IDs; identity and Book order come
+  from the source position, so hook and shortcode targets share one namespace.
+- Figure and Table shortcode bodies pass through `content/render-block.html`;
+  Equation content passes directly through the local server-side KaTeX
+  renderer. Table keeps its Markdown table, label, caption, and anchor inside
+  one `<figure>`. Equation places its number at the right edge. Example places
+  its caption bar above the body (O'Reilly convention).
+- The `fig` shortcode additionally accepts the mechanical DDIA migration
+  surface `src/id/caption/title/class/link/alt/width/height`. `title` aliases
+  `caption` but cannot appear beside it; `src` and inner content are mutually
+  exclusive; width and height are positive integers. Class tokens and links
+  use strict grammars. A missing legacy `alt` falls back to the caption for
+  compatibility; new authored figures should always supply explicit meaningful
+  alternative text. `scripts/check-book.py` rejects empty alternatives beside
+  numbered captions. Native figures accept `width`/`height` attributes for
+  static or remote images and pass `class` tokens through.
+- `eg` replaces the removed leaf `example` shortcode: it is a wrapper whose
+  body is Markdown (usually one or more fences); its native form is a single
+  fence with `num` and `caption`.
 
-Figure additionally accepts the mechanical DDIA migration surface
-`src/id/caption/title/class/link/alt/width/height`. `title` aliases `caption`
-but cannot appear beside it; `src` and inner content are mutually exclusive;
-width and height are positive integers. Class tokens and links use strict
-grammars. A missing legacy `alt` falls back to the caption for compatibility;
-new authored figures should always supply explicit meaningful alternative
-text. `scripts/check-book.py` rejects empty alternatives beside numbered
-captions.
-
-HTML and print use `<figure>` and `<figcaption>` with localized Figure/Table/
-Equation prefixes and stable IDs. Print removes an interactive table's scroll
-wrapper. Markdown and RSS emit `**Figure 2-1.** caption` followed by the
-original source body; Equation emits the authored TeX delimiter block. No Book
-component loads JavaScript.
+HTML and print use `<figure>` and `<figcaption>` with localized
+Figure/Table/Equation/Example prefixes and stable IDs. Print removes an
+interactive table's scroll wrapper. Markdown and RSS emit `**Figure 2-1.**
+caption` followed by the original source body for the shortcode forms;
+Equation emits the authored TeX delimiter block. Native forms pass through
+Markdown output as their source block plus attribute line. No Book component
+loads JavaScript.
 
 ### 3.11 Cross references and Book indexes
 
@@ -716,21 +790,246 @@ target:
 
 ```go-html-template
 {{< xref fig="2-1" anchor="office_2003" >}}
+{{< xref eg="4-1" >}}
 {{< xref page="../replication" anchor="sync-mode" >}}synchronous mode{{< /xref >}}
 ```
 
-Exactly one of `fig`, `tbl`, or `eq` may supply a numbered localized label.
-`anchor` overrides the derived target. `page` resolves through Hugo's current
-language page lookup. With no kind, `anchor` and non-empty inner link text are
-required. Rendering never reads a target registry; post-build validation
-checks the target ID, kind, and number so forward references remain legal.
+Exactly one of `fig`, `tbl`, `eq`, or `eg` may supply a numbered localized
+label. `anchor` overrides the derived target. `page` resolves through Hugo's
+current language page lookup. With no kind, `anchor` and non-empty inner link
+text are required. Rendering never reads a target registry; post-build
+validation checks the target ID, kind, and number so forward references remain
+legal.
 
-`{{< book-figures >}}` accepts an optional `kind="fig|tbl|eq"` and aggregates
-the registered targets in Book reading order. `{{< book-toc depth=1..3 >}}`
-uses the same Book tree as the sidebar; depth three includes Hugo fragment
-headings and `drafts=false` filters draft rows. In whole-Book print, all of
-these links become local document fragments. Markdown ToC is a nested list;
-RSS strips Book ToC.
+Book indexes aggregate the registered targets in Book reading order:
+`{{< book-figures >}}` (figures only), `{{< book-tables >}}`,
+`{{< book-equations >}}`, and `{{< book-examples >}}`; they take no
+parameters. `{{< book-toc depth=1..3 >}}` uses the same Book tree as the
+sidebar; depth three includes Hugo fragment headings and `drafts=false`
+filters draft rows. In whole-Book print, all of these links become local
+document fragments. Markdown ToC is a nested list; RSS strips Book ToC.
+
+### 3.12 Callouts
+
+Callouts are GitHub/Obsidian-style blockquotes rendered by
+`layouts/_markup/render-blockquote-alert.html`:
+
+```markdown
+> [!TIP] Title with `inline` Markdown
+> Body: page-level Markdown — lists, fences, tables, nested callouts.
+
+> [!NOTE]- Collapsed by default (`+` opens it initially)
+> Body.
+
+> [!DETAILS] Neutral disclosure block
+> Body.
+{icon="fa-solid fa-rocket"}
+```
+
+- Canonical types: `note tip important warning caution success danger
+  question example quote` and `details`; each has a localized default title
+  (`i18n <type>`) and, except `details`, a default icon. Unknown types render as a plain
+  `<blockquote>` with the visible marker (`[!TYPE]±` and title) preserved so
+  nothing is lost.
+- `-` collapses (default closed), `+` collapses (default open); `details`
+  collapses without a sign. Collapsible callouts are native `<details
+  class="td-callout td-callout--<type> td-callout--collapsible">` with a
+  `<summary class="td-callout__title">`; static callouts are `<div class="td-callout
+  td-callout--<type>" role="note">` with `.td-callout__title` (icon +
+  `.td-callout__label`) and `.td-callout__body`.
+- Attribute line: `icon` (one Font Awesome pair) replaces the type icon;
+  `class` passes through; every other key, `style`, and `on*` fail the build.
+- The title is inline Markdown; the body is page-level Markdown.
+- Print and RSS render a static, expanded `<div>` (collapsible ones carry
+  `data-td-callout-collapsible`); Markdown output keeps the source blockquote.
+  No runtime.
+
+### 3.13 Tabs
+
+Tabs have two forms and one runtime (`assets/js/tabs.js`, flag `hasTabs`,
+no Bootstrap).
+
+**Adjacent blocks.** Fences and tables that carry a `tab` attribute:
+
+````markdown
+```bash {tab="Homebrew" group="install" value="brew"}
+brew install pigsty
+```
+```bash {tab="APT" value="apt"}
+sudo apt install pigsty
+```
+````
+
+- `tab` is the visible label (non-empty); `group` (first block of a run,
+  `^[a-z][a-z0-9_-]*$`) opts into hash, sync, and persistence; `value`
+  (`^[a-z0-9][a-z0-9_-]*$`) is required on every block when the run has a
+  group and forbidden without one; `group`/`value` without `tab`, or `num`
+  together with `tab`, fail the build. A fence `tab` coexists with `title`
+  (the tab label goes to the tablist, the title stays the panel's filename
+  header).
+- Each block renders independently and completely as a titled block —
+  `<div class="td-tab-block td-tab-block--code|table" data-td-tab="…"
+  [data-td-tab-group] [data-td-tab-value] data-td-tab-kind="code|table">` with a
+  `.td-tab-block__title` — so GitHub, print, and no-JS readers see consecutive
+  titled blocks with nothing lost.
+- At load the runtime regroups runs of **two or more adjacent siblings of the
+  same kind** into the tabs DOM below (`td-tabs td-tabs--adjacent
+  td-tabs--<kind>`); embedded code blocks receive `td-code--embedded`. A grouped
+  run missing a value on some block, or a run with duplicate values, is left as
+  titled blocks with a console warning. Panel IDs are `<group>-<value>` in a
+  grouped run and generated (`td-tabs-run-<n>-<hash>-<value>`) otherwise.
+
+**Shortcode form** (Markdown bodies):
+
+```go-html-template
+{{< tabs group="setting" default="conf" label="MinIO settings" >}}
+{{< tab label="Environment Variable" value="env" >}}
+Markdown body.
+{{< /tab >}}
+{{< tab label="Configuration Setting" value="conf" >}}
+Markdown body.
+{{< /tab >}}
+{{< /tabs >}}
+```
+
+`tabs`: `group` (optional, same grammar), `default` (a child value; requires
+`group`), `label` (accessible tablist name; default `ui_tabs_label`). `tab`:
+`label` (required), `value` (required with a group, forbidden without;
+ungrouped children get generated `tab<n>` values). Duplicate values, a `tabs`
+without children, and stray content between children fail the build. Bodies
+render through `content/render-block.html`.
+
+DOM contract shared by both forms:
+
+```html
+<div class="td-tabs" data-td-tabs data-td-tabs-group="setting" data-td-tabs-default="conf">
+  <div class="td-tabs__list" role="tablist" aria-label="…">
+    <button class="td-tabs__tab" type="button" role="tab" id="setting-conf-tab"
+            aria-controls="setting-conf" aria-selected="true" tabindex="0" data-td-tabs-value="conf">…</button>
+  </div>
+  <section class="td-tabs__panel" id="setting-conf" role="tabpanel"
+           aria-labelledby="setting-conf-tab" tabindex="0" data-td-tabs-value="conf" data-td-tabs-active>
+    <div class="td-tabs__panel-title" aria-hidden="true">…</div>
+    <div class="td-tabs__panel-body">…</div>
+  </section>
+</div>
+```
+
+Server HTML hides nothing: until the runtime marks the set with
+`data-td-tabs-ready`, CSS hides the tablist and shows every panel under its own
+title; after enhancement inactive panels get `hidden`. Behaviour: roving
+tabindex; Left/Right (RTL aware) and Home/End move and activate; focus stays on
+the tab; only grouped sets write `history.replaceState` hash `#<group>-<value>`
+and localStorage `td-tabs:v1:<group>` on user activation, synchronize every set
+of the same group on the page (a peer lacking the value keeps its selection),
+and read the stored value at load; a URL hash naming a panel wins over storage,
+activates its set, and scrolls it into view (smooth unless
+`prefers-reduced-motion`). Print and RSS render titled static sections
+(shortcode form: no ARIA roles); Markdown output renders `**Label**` sections
+followed by each body (fence tabs stay source fences).
+
+### 3.14 Steps
+
+```markdown
+1. Install the dependencies
+
+   Any block: paragraphs, fences (also `{tab=}` fences), callouts, nested lists.
+
+1. ### Initialise {#init}
+   A heading inside a step enters the table of contents.
+1. Verify
+{.steps}
+```
+
+- Native form: an ordered list followed by `{.steps}`; CSS counters draw the
+  markers and honour `start` (`ol[start]` from 2 through 40). Write every item
+  as `1.` so the content indent is a constant three spaces. Items may contain
+  every block-level construct and `{{< >}}` shortcodes, but not `{{% steps
+  %}}` or any other multi-line `%` output.
+- Full form: `{{% steps %}}` wrapping direct child headings (`##`–`######`);
+  each heading starts a step and the body needs no indentation. It is the only
+  `%` shortcode and the only place where a `%` container may hold shortcodes
+  such as `tabs`, `cards`, or `fields`.
+- No runtime; Markdown output is the source; print keeps the numbering.
+
+### 3.15 Cards
+
+```markdown
+- [Install](/docs/install/) — Deploy from scratch.
+- [Configure](/docs/configure/) — Tune the runtime.
+{.cards}
+```
+
+Native form: a link list followed by `{.cards}`. The link is the card title;
+everything after it in the item is the description (tight form after ` — `,
+or a second paragraph in a loose list). CSS grid, no runtime.
+
+Full form for icons, badges, images, and Markdown bodies:
+
+```go-html-template
+{{< cards >}}
+{{< card title="Install" link="/docs/install/" icon="fa-solid fa-rocket" badge="New"
+        image="cover.png" image_alt="Installer screenshot" >}}
+Deploy from scratch, *with Markdown*.
+{{< /card >}}
+{{< /cards >}}
+```
+
+`cards` takes no parameters. `card`: `title` (required), `link` (section 2.4;
+external links get `rel="noopener"`), `icon` (one Font Awesome pair), `badge`
+(plain text), `image` (shared resolver) with `image_alt` or `decorative=true`
+(one is required, both is an error). The body is the Markdown description.
+HTML: `.td-content-cards.td-content-cards--auto` grid of
+`article.td-content-card` (image, head with icon/title/badge, description).
+Markdown output: `- [Title](link) (badge) — description` per card.
+
+### 3.16 Data fences
+
+Fenced blocks whose language names a render hook are data fences; the fence
+is their Markdown-native form and the code shell does not apply.
+
+````markdown
+```echarts {height="360px"}
+series: [{type: bar, data: [1, 2, 3]}]
+tooltip: {formatter: "$fn:bytesFormatter"}
+```
+```infographic {height="480px" full=true}
+… infographic DSL …
+```
+```checksums {base="https://…/download/v1.7.0/" algo="sha256"}
+e3a339fe…47d1  pig-1.7.0-1.aarch64.rpm
+```
+````
+
+- `echarts`: declarative YAML/JSON options only (a non-mapping or invalid
+  document fails the build); attributes `height` (safe CSS length, default
+  `400px`), `theme`, `full=true`; callbacks stay the `"$fn:<name>"` bridge
+  resolved from `window.tdEchartsFunctions` (unregistered names are ignored
+  with a console warning); the fence cannot carry JavaScript. Sets
+  `hasEcharts`.
+- `infographic`: attributes `height` (`auto` or a safe CSS length), `full`;
+  sets `hasInfographic`.
+- `checksums`: section 3.8.
+- Unknown attributes, `style`, and `on*` fail the build; `class` passes
+  through. Print, Markdown, and RSS show the source in a `<pre>` (`echarts`,
+  `infographic`) or the static asset table (`checksums`).
+- The existing `mermaid`, `plantuml`, `markmap`, `math`, and `chem` fences are
+  unchanged.
+
+### 3.17 Include, Param, and Comment
+
+- `{{< include file="path" [code=true] [lang="yaml"] >}}` (named only) inlines
+  a file resolved as a page resource, then a global asset, then a file under
+  `content/` (a leading `/` is the content root, otherwise relative to the
+  page's directory); `..` is rejected and a missing file fails the build.
+  Without `code` the file is Markdown rendered in the page context (as
+  `readfile` did, this rendered HTML also reaches the Markdown output); with
+  `code=true` (and optional `lang`) it is a code block through the shared
+  code pipeline, and the Markdown output emits a source fence.
+- `{{< param name >}}` prints a page or site parameter: a missing value and a
+  non-scalar value (map, list) fail the build; the output is HTML-escaped plain
+  text usable in prose, tables, links, and fences.
+- `{{< comment >}}…{{< /comment >}}` drops its content in every output.
 
 ## 4. Output matrix
 
@@ -738,32 +1037,45 @@ RSS strips Book ToC.
 | --- | --- | --- | --- | --- | --- | --- |
 | Badge | semantic `<span>` or `<a>` | monochrome inline badge | emphasized text or link | static inline HTML | identical content | none |
 | Kbd | nested `<kbd>` sequence | visible key boundaries | `Ctrl + K` | static inline HTML | identical content | none |
-| Fields | responsive semantic `<dl>` | complete definition list | metadata bullet list | complete static `<dl>` | identical content | none |
-| FileTree | terminal-window nested list with draggable name/comment columns | fully expanded equal-height rows | nested list with comments | fully expanded complete rows | default static split and native disclosure remain usable | one opt-in local divider runtime |
-| Shared image | image/figure and caption | image/figure and caption | ordinary image and caption | static figure | identical content | none |
+| Fields | responsive semantic `<dl>` (both forms) | complete definition list | source table / metadata bullet list | complete static `<dl>` | identical content | none |
+| FileTree | monospace nested list with folder/file icons | fully expanded list | source nested list | fully expanded list | identical content | none |
+| Shared image | `<img>`, `<p class="td-image">`, or `<figure>` with caption | image/figure and caption | source image (+ attribute line) | absolute-URL image | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
-| Gallery | responsive figure grid | sequential figures | sequential images and captions | sequential figures | complete static grid | reuses Image Zoom only |
-| Release Assets | linked table with copy controls | linked static table with full hashes | pipe table with full hashes | pipe table with full hashes | complete linked table | one opt-in local copy runtime |
-| Table | keyboard-focusable contained scroll region | complete table at page width | source pipe table | static table | complete table remains readable | none |
+| Gallery | responsive image-list grid | sequential list | source image list | sequential list | complete static grid | reuses Image Zoom only |
+| Release Assets | linked table with copy controls | linked static table with full hashes | pipe table (shortcode) / source fence (`checksums`) | pipe table with full hashes | complete linked table | one opt-in local copy runtime |
+| Table | keyboard-focusable contained scroll region; family markers | complete table at page width | source pipe table | static table | complete table remains readable | none |
 | Eq escape | display KaTeX/MathML | static display KaTeX/MathML | plain `$$` TeX block | plain `$$` TeX block | identical static formula | none |
-| Fig/Tbl/Eq | semantic numbered figure | figure with stable ID | labeled source content | labeled source content | identical numbered content | none |
+| Fig/Tbl/Eq/Eg | semantic numbered figure (both forms) | figure with stable ID | labeled source content (shortcode) / source block (native) | labeled source content | identical numbered content | none |
 | Xref/Book index | current-language links and nested lists | document-local links and nested lists | relative links and nested lists | xref only; Book ToC stripped | identical links | none |
+| Callout | `<div role="note">` or native `<details>` | static expanded block | source blockquote | static expanded block | identical content, native disclosure | none |
+| Tabs | tablist + panels, nothing hidden server-side | titled static sections | `**Label**` sections / source fences | titled static sections | titled stacked panels | one opt-in local tabs runtime |
+| Steps | numbered `ol.steps` / `.td-steps` | same numbering | source list / headings | static list | identical content | none |
+| Cards | `ul.cards` grid / `.td-content-cards` | stacked cards | source list / link bullets | static list | identical content | none |
+| Data fences | rendered chart / asset table | source `<pre>` / static table | source fence | source `<pre>` / pipe table | source fence readable | opt-in local chart runtimes |
+| Include/Param | rendered file / escaped scalar | same | fence / escaped scalar | same | identical content | none |
 
 ## 5. Verification contract
 
-Each implementation issue adds the smallest focused fixture and checker that
+Each implementation change adds the smallest focused fixture and checker that
 proves its contract at Hugo Extended 0.160.1 and 0.164.0.
 
-Theme-level checks cover:
+Theme-level checks (`scripts/check-content-primitives.py`,
+`scripts/check-media-primitives.py`, `scripts/check-gallery.py`,
+`scripts/check-image-zoom.py`, `scripts/check-code-blocks.py`,
+`scripts/check-components.py`, `scripts/check-book.py`,
+`scripts/check-release-assets.py`, `scripts/check-goldens.py`) cover:
 
-- valid HTML, print, Markdown, and RSS output;
-- strict invalid-parameter failures with source positions;
-- Page Store/runtime absence on unrelated pages;
-- escaping, subpath URLs, repeat rendering, and ID behavior;
+- valid HTML, print, Markdown, and RSS output for both forms of each
+  component;
+- strict invalid-parameter and invalid-attribute failures with source
+  positions, including the hook attribute policy and the exclusivity matrix;
+- Page Store/runtime absence on unrelated pages and the bundle key;
+- escaping, subpath URLs, repeat rendering, scoped ID behavior;
 - semantic markup, RTL, dark mode, print, reduced motion, forced colors, long
   content, and CJK where relevant;
 - Book xref target/kind/number consistency, image alternatives, fragment-tree
-  ToC depth, and whole-Book duplicate-ID safety.
+  ToC depth, and whole-Book duplicate-ID safety;
+- `tests/js/tabs.test.js` for the tabs runtime contract.
 
 The `oink.pgsty.com` regression site owns:
 
@@ -780,8 +1092,20 @@ one.
 
 ## 6. Contract changes
 
-This document is normative for issues #5 through #10. A deliberate change must
-update this document, its contract checker, the affected implementation issue,
-and any already-shipped compatibility guidance in the same review. Additive
-parameters remain deferred until their behavior is specified across the full
-output matrix.
+This document is normative for the everyday content components. A deliberate
+change must update this document, its contract checker
+(`scripts/check-content-primitives-contract.py`), the affected implementation,
+the design record (`plan/design/components.md`), and any already-shipped
+compatibility guidance in the same review. Additive parameters remain deferred
+until their behavior is specified across the full output matrix.
+
+Version two (OINK 0.5/0.6) changes from version one: Badge lost `outline`;
+Fields gained the `{.fields}` table form; FileTree and Gallery became native
+lists (the `filetree`, `filetree/folder`, `filetree/file`, `gallery`,
+`gallery/image` shortcodes were removed); `imgproc` became the named-only
+`image` shortcode and Markdown images gained a render hook; the table family,
+Callouts, Tabs, Steps, Cards, data fences, `include`, strict `param`, and the
+Book `eg`/native forms/`book-*` indexes were added; `alert`, `details`,
+`pageinfo`, `tabpane`/`tab` (legacy), `code-group`/`code-tab`, the card family,
+`doc-carousel`, `echarts`/`infographic` shortcodes, `readfile`, `iframe`,
+`conditional-text`, `_param`, `blocks/*`, and the leaf `example` were removed.

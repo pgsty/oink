@@ -187,6 +187,7 @@ Sites can locally host their own faces and override the documented
 [Contributing](https://oink.pgsty.com/docs/about/contributing/)
 
 Theme implementation contracts:
+[Components (API v5 guide)](docs/components.md) ·
 [Content primitives](docs/content-primitives.md) ·
 [Enhanced code blocks](docs/enhanced-code-blocks.md) ·
 [Typography tokens](docs/typography-tokens.md) ·

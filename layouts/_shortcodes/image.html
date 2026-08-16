@@ -34,7 +34,7 @@
 <img class="td-figure__image" src="{{ $image.src }}"{{ if eq $format "html" }} data-zoom-src="{{ $image.fullSrc }}"{{ if $image.decorative }} data-no-zoom{{ end }}{{ end }} alt="{{ $image.alt }}" width="{{ $image.width }}" height="{{ $image.height }}" loading="lazy" decoding="async">
 {{- if or $caption $image.byline }}
 <figcaption>
-{{- with $caption }}{{ $.Page.RenderString (dict "display" "block") . }}{{ end -}}
+{{- with $caption }}{{ partial "content/render-block.html" (dict "page" $.Page "scope" (printf "image%d" $.Ordinal) "content" .) }}{{ end -}}
 {{- with $image.byline }}<small class="td-figure__byline">{{ . }}</small>{{ end -}}
 </figcaption>
 {{- end }}

@@ -1,6 +1,8 @@
-# Enhanced code blocks and code groups
+# Enhanced code blocks and code tabs
 
-Status: accepted implementation design, adversarially reviewed
+Status: accepted implementation design, adversarially reviewed; updated for the
+OINK 0.5/0.6 component API v5 (code groups replaced by adjacent-fence tabs and
+the `tabs`/`tab` shortcode)
 
 Target: OINK theme and `oink.pgsty.com` regression site
 
@@ -8,50 +10,51 @@ Compatibility floor: Hugo Extended 0.160.1
 
 ## 1. Decision
 
-OINK should add an enhanced shell around ordinary Chroma code blocks and a
-purpose-built `code-group` shortcode. The feature stays server-rendered and
+OINK ships an enhanced shell around ordinary Chroma code blocks and one tabs
+model shared by code and prose. The feature stays server-rendered and
 local-first:
 
 - Hugo and Chroma remain the only syntax-highlighting pipeline.
 - The server emits the complete, readable code structure and all localized
   labels.
 - CSS owns presentation and wrapping.
-- JavaScript only enables copy, visual collapse, tab synchronization,
-  persistence, and hash navigation.
-- Pages without an interactive code block or tab group do not load either code
+- JavaScript only enables copy, visual collapse, tab regrouping and
+  switching, synchronization, persistence, and hash navigation.
+- Pages without an interactive code block or tab set do not load either
   runtime.
 
-This is a vertical product feature, not a cosmetic wrapper around the current
-copy script. Ordinary fences, legacy `tabpane` code, line-number layouts,
-non-HTML outputs, and print must use one normalized rendering contract.
+Tabs are not a code-only feature any more: a fence or a table that carries a
+`tab` attribute becomes a titled block, adjacent titled blocks of the same
+kind become one tab set in the browser, and `{{< tabs >}}`/`{{< tab >}}` hold
+Markdown bodies. The former `code-group`/`code-tab` shortcodes and the Docsy
+`tabpane`/`tab` shortcodes are removed (component API v5, see
+`docs/components.md`).
 
 ## 2. Problems to solve
 
-The current implementation has six coupled limitations:
+The 0.3 implementation had six coupled limitations, all resolved by the
+normalized pipeline described here:
 
-1. `render-codeblock.html` only merges Chroma options and calls
-   `transform.Highlight`; it has no author-facing shell contract.
-2. `click-to-copy.js` discovers code after render, injects controls, hard-codes
-   English labels, and does not report clipboard failures correctly.
-3. Its `.highlight > pre` selector misses Chroma's table line-number layout.
-4. The `tabpane` shortcode calls `highlight` directly, bypassing the code-block
-   render hook. Removing the old copy injector without adapting `tabpane` would
-   silently remove Copy from existing code tabs.
-5. The tab persistence runtime is loaded on every page and has no stable hash
+1. `render-codeblock.html` only merged Chroma options and called
+   `transform.Highlight`; it had no author-facing shell contract.
+2. `click-to-copy.js` discovered code after render, injected controls,
+   hard-coded English labels, and did not report clipboard failures correctly.
+3. Its `.highlight > pre` selector missed Chroma's table line-number layout.
+4. Two tab systems (`tabpane` with lenient parameters, `code-group` with a
+   strict schema) coexisted with mixed delimiters and Bootstrap Tab.
+5. The tab persistence runtime was loaded on every page and had no stable hash
    model.
-6. Print currently reveals all tab panels but hides the tab labels, and long
-   highlighted blocks are marked `break-inside: avoid-page`.
+6. Print revealed all tab panels but hid the tab labels, and long highlighted
+   blocks were marked `break-inside: avoid-page`.
 
-The implementation must also preserve these established contracts:
+The implementation preserves these established contracts:
 
 - class-based Chroma light and dark palettes;
 - `params.highlight_classes`;
 - `params.disable_click2copy_chroma`;
 - the legacy Prism compatibility path;
-- existing `tabpane` parameters, DOM behavior, and `td-tp-persist:*` storage
-  keys;
-- specialized render hooks for Mermaid, math, chemistry, Markmap, and
-  PlantUML;
+- specialized render hooks for Mermaid, math, chemistry, Markmap, PlantUML,
+  and the data fences (`echarts`, `infographic`, `checksums`);
 - Hugo Extended 0.160.1 and 0.164.0 CI coverage;
 - all 32 locale files having exactly the same key set.
 
@@ -60,8 +63,9 @@ The implementation must also preserve these established contracts:
 After implementation, an unannotated fenced block still works without content
 migration, but it gains OINK's standard code surface and localized Copy action.
 Authors can opt into a filename, wrapping, or a visual line limit with fence
-attributes. Code groups provide stable, shareable tabs without replacing the
-general-purpose `tabpane` shortcode.
+attributes. Adjacent fences with a `tab` attribute provide stable, shareable
+code tabs without any shortcode; `{{< tabs >}}` provides the same tabs for
+Markdown bodies.
 
 The feature is complete only when all of these surfaces agree:
 
@@ -76,20 +80,23 @@ The feature is complete only when all of these surfaces agree:
 
 ## 4. Scope and non-goals
 
-Version one includes:
+The contract includes:
 
 - an enhanced shell for ordinary fenced code blocks;
 - filename or title display;
 - localized Copy with `all`, `command`, and disabled modes;
 - author-controlled wrapping;
 - progressively enhanced long-code collapse;
-- a dedicated code-group author API;
-- code-group hash activation, in-page synchronization, and optional
-  cross-page persistence;
-- complete print and Markdown representations;
-- compatibility adaptation for legacy `tabpane` code.
+- adjacent-fence (and adjacent-table) tabs through the `tab`, `group`, and
+  `value` block attributes;
+- the `tabs`/`tab` shortcode for Markdown tab bodies;
+- hash activation, in-page synchronization, and cross-page persistence for
+  grouped tab sets;
+- the numbered Book example fence (`num` + `caption`, see
+  `docs/prd5-book-contract.md`);
+- complete print and Markdown representations.
 
-Version one does not include:
+It does not include:
 
 - Shiki, Twoslash, or runtime syntax highlighting;
 - executable playgrounds;
@@ -97,8 +104,9 @@ Version one does not include:
 - Fumadocs or Nextra magic-comment parsing;
 - a generic diff transformer;
 - user-facing wrap toggles;
-- filenames inside a code-group panel;
-- changing the legacy `tabpane` hash or persistence contract.
+- Bootstrap Tab, the `tabpane`/`tab` (Docsy) and `code-group`/`code-tab`
+  shortcodes, and their `td-tp-persist:*` / `td-code-group:v1:*` storage keys —
+  all removed; `scripts/migrations/oink06.py` rewrites existing content.
 
 Use a standard `diff` fence for diffs. Chroma's `.gi` and `.gd` tokens remain
 the supported inserted/deleted treatment.
@@ -108,9 +116,16 @@ the supported inserted/deleted treatment.
 ### 5.1 Recommended syntax
 
 ````markdown
-```yaml {filename="hugo.yml" copy="all" lineNos="table" hl_lines="4 7-9" wrap=false collapse=18 label="Hugo configuration"}
+```yaml {title="hugo.yml" copy="all" lineNos="table" hl_lines="4 7-9" wrap=false collapse=18 label="Hugo configuration"}
 params:
   offlineSearch: true
+```
+
+```bash {tab="Homebrew" group="install" value="brew"}
+brew install pigsty
+```
+```bash {tab="APT" value="apt"}
+sudo apt install pigsty
 ```
 ````
 
@@ -121,12 +136,18 @@ Hugo's existing spelling and behavior.
 
 | Attribute | Accepted values | Default | Contract |
 | --- | --- | --- | --- |
-| `filename` | non-empty string | none | Visible filename or path. |
-| `title` | non-empty string | none | Compatibility alias for `filename`; using both is a build error. |
+| `title` | non-empty string | none | Visible filename or path in the block header. |
+| `filename` | non-empty string | none | Historical alias for `title`; using both is a build error (content migrates to `title`). |
 | `copy` | `all`, `command`, `false`, or `true` | language-dependent | `true` is an alias for `all`. |
 | `wrap` | boolean | `false` | Enables source-preserving visual wrapping through CSS. |
 | `collapse` | positive integer | none | Maximum source lines initially shown when JavaScript can measure the block. |
 | `label` | non-empty string | derived | Accessible name; it is not additional visible chrome. |
+| `id` | non-empty token | generated | Public stable root ID (or the Book example figure ID when `num` is present). |
+| `tab` | non-empty string | none | Tab label; adjacent fences with `tab` become one tab set (section 6). Coexists with `title`. |
+| `group` | `^[a-z][a-z0-9_-]*$` | none | Opt-in hash / sync / persistence for the run that starts with this fence; requires `tab`. |
+| `value` | `^[a-z0-9][a-z0-9_-]*$` | none | Stable machine value; required on every fence of a grouped run, forbidden without a group; requires `tab`. |
+| `num` | `[0-9A-Za-z.-]+` | none | Numbered Book example (`eg`); requires `caption`; mutually exclusive with `tab`. |
+| `caption` | non-empty plain text | none | Book example caption; requires `num`. |
 
 Invalid values fail the Hugo build with `errorf` including `.Position`. Silent
 coercion is limited to quoted boolean values and `copy=true`.
@@ -182,12 +203,17 @@ Nth Chroma source-line node, so a wrapped source line is never cut in half.
 ### 5.5 Generic attributes
 
 Hugo separates generic attributes into `.Attributes` and highlighting options
-into `.Options`. After consuming the OINK names, the renderer forwards generic
-attributes to the outer `.td-code` element:
+into `.Options`. After consuming the OINK names (`title`, `filename`, `copy`,
+`wrap`, `collapse`, `label`, `id`, `class`, `role`, `tab`, `group`, `value`,
+`num`, `caption`), the renderer forwards generic attributes to the outer
+`.td-code` element:
 
 - `class` is appended to OINK's classes;
 - an author `id` becomes the root ID;
-- safe `data-*`, `aria-*`, and other Hugo-sanitized global attributes survive.
+- `data-*` and `aria-*` attributes survive (same policy as the other render
+  hooks, `content/attributes.html`);
+- any other key — including `style`, `on*`, `srcdoc`, and typos of OINK names —
+  is a build error that lists the allowed names.
 
 Root IDs must be unique within a page and must not collide with another code
 component's generated viewport, tab, panel, title, or line-anchor IDs. Such a
@@ -203,115 +229,140 @@ names also reject a conflicting generic `aria-labelledby`.
 The implementation must escape attribute values and must not introduce a new
 raw-HTML parser.
 
-## 6. Author contract: code groups
+## 6. Author contract: tabs
 
-### 6.1 Recommended syntax
+### 6.1 Adjacent fences and tables
 
-```go-html-template
-{{< code-group id="install-client" sync="package-manager" persist=true label="Choose a package manager" copy="all" >}}
-  {{< code-tab title="npm" value="npm" lang="bash" >}}
+````markdown
+```bash {tab="npm" group="package-manager" value="npm"}
 npm install @example/client
-  {{< /code-tab >}}
-
-  {{< code-tab title="pnpm" value="pnpm" lang="bash" >}}
-pnpm add @example/client
-  {{< /code-tab >}}
-
-  {{< code-tab title="yarn" value="yarn" lang="bash" >}}
-yarn add @example/client
-  {{< /code-tab >}}
-{{< /code-group >}}
 ```
 
-`code-tab` contains raw code, not Markdown. OINK removes the single framing
-newline after the opening shortcode and the newline/indentation before the
-closing shortcode; all other source whitespace is preserved.
+```bash {tab="pnpm" value="pnpm"}
+pnpm add @example/client
+```
+````
 
-### 6.2 Group parameters
+Every block renders on its own as a titled block:
 
-| Parameter | Required | Default | Contract |
+```html
+<div class="td-tab-block td-tab-block--code" data-td-tab="npm"
+     data-td-tab-group="package-manager" data-td-tab-value="npm" data-td-tab-kind="code">
+  <div class="td-tab-block__title" data-td-tab-title>npm</div>
+  <div class="td-code …">…</div>
+</div>
+```
+
+The runtime (`assets/js/tabs.js`) regroups every run of two or more adjacent
+sibling `.td-tab-block` elements of the same `data-td-tab-kind` (`code` for
+fences, `table` for pipe tables carrying `{tab=…}`) into one tab set. A single
+titled block stays a titled block. Only whitespace and comments may separate
+the blocks; a paragraph between two fences ends the run. Embedded code blocks
+receive `td-code--embedded` and drop their own frame inside the tabs frame.
+
+Rules:
+
+- `tab` is the visible label and the block's title when it stands alone.
+- `group` on the first block of a run opts the run into hash, sync, and
+  persistence; then every block of the run needs a `value`. A grouped run
+  missing a value on some block, or a run with duplicate values, is left as
+  titled blocks with a console warning; `value` without any group is a build
+  error, as is `group`/`value` without `tab`.
+- `title` may accompany `tab`: the label goes to the tablist and the filename
+  header stays inside the panel.
+- `num` (Book example) and `tab` are mutually exclusive.
+
+### 6.2 The `tabs`/`tab` shortcode
+
+```go-html-template
+{{< tabs group="package-manager" default="pnpm" label="Choose a package manager" >}}
+{{< tab label="npm" value="npm" >}}
+Markdown body, including fences, tables, and callouts.
+{{< /tab >}}
+{{< tab label="pnpm" value="pnpm" >}}
+Markdown body.
+{{< /tab >}}
+{{< /tabs >}}
+```
+
+| Parameter | Shortcode | Required | Contract |
 | --- | --- | --- | --- |
-| `id` | yes | none | Page-unique stable group ID and hash prefix. |
-| `sync` | no | none | Stable key for in-page synchronization and shared persistence. |
-| `persist` | no | `true` | Enables localStorage read/write for this group or sync key. |
-| `label` | no | localized "Code examples" | Accessible tab-list label. |
-| `copy` | no | ordinary default | Default inherited by children. |
-| `wrap` | no | `false` | Default inherited by children. |
-| `collapse` | no | none | Default inherited by children. |
+| `group` | `tabs` | no | `^[a-z][a-z0-9_-]*$`; enables hash, sync, and persistence for the set. |
+| `default` | `tabs` | no | A child `value`; requires `group`. |
+| `label` | `tabs` | no | Accessible tablist name; default `ui_tabs_label`. |
+| `label` | `tab` | yes | Plain-text visible tab name. |
+| `value` | `tab` | with a group | `^[a-z0-9][a-z0-9_-]*$`; required when the set has a group, forbidden otherwise (ungrouped children get generated `tab<n>` values). |
 
-### 6.3 Child parameters
+Duplicate values, a `tabs` without `tab` children, and content between the
+children fail the build. Bodies are Markdown rendered through
+`content/render-block.html`, so nested code blocks get scoped IDs and Copy.
+Both delimiters use standard `{{< >}}` notation.
 
-| Parameter | Required | Default | Contract |
-| --- | --- | --- | --- |
-| `title` | yes | none | Plain-text visible tab name. |
-| `value` | yes | none | Stable machine value used in hashes, sync, and persistence. |
-| `lang` | no | `text` | Chroma language. |
-| `selected` | no | `false` | Server-selected fallback; at most one child may set it. |
-| `copy` | no | inherited | Child override of group Copy behavior. |
-| `wrap` | no | inherited | Child override of group wrapping. |
-| `collapse` | no | inherited | Child override of group collapse. |
+### 6.3 Shared DOM
 
-Children may also use the tested Hugo highlighting options from section 5.4.
-`filename` and `title`-as-filename are not supported inside a code group because
-the tab header already supplies the example identity.
+```html
+<div class="td-tabs" data-td-tabs data-td-tabs-group="package-manager" data-td-tabs-default="pnpm">
+  <div class="td-tabs__list" role="tablist" aria-label="Choose a package manager">
+    <button class="td-tabs__tab" type="button" role="tab" id="package-manager-npm-tab"
+            aria-controls="package-manager-npm" aria-selected="false" tabindex="-1"
+            data-td-tabs-value="npm">npm</button>
+    …
+  </div>
+  <section class="td-tabs__panel" id="package-manager-npm" role="tabpanel"
+           aria-labelledby="package-manager-npm-tab" tabindex="0" data-td-tabs-value="npm">
+    <div class="td-tabs__panel-title" aria-hidden="true">npm</div>
+    <div class="td-tabs__panel-body">…</div>
+  </section>
+</div>
+```
 
-`id`, `sync`, and `value` use lower-case ASCII slugs. Group IDs and sync keys
-match `^[a-z][a-z0-9_-]*$`; child values match
-`^[a-z0-9][a-z0-9_-]*$`. Duplicate group IDs, duplicate child values, no
-children, or multiple selected children are build errors.
-
-Requiring `value` is intentional. Deriving it from a translated title would
-make shared URLs and saved preferences change when copy is edited or localized.
+Panel IDs are `<group>-<value>` in a grouped set and generated
+(`td-tabs-<hash8>-<ordinal>-<value>` for the shortcode,
+`td-tabs-run-<n>-<hash>-<value>` for a regrouped run) otherwise. Nothing is
+hidden in server HTML: until the runtime marks the set with
+`data-td-tabs-ready`, CSS hides the tablist and shows every panel under its
+`.td-tabs__panel-title`; afterwards inactive panels get `hidden` and the titles
+disappear.
 
 ### 6.4 Hash and activation model
 
-The public hash is:
+The public hash of a grouped set is:
 
 ```text
-#<group-id>-<child-value>
+#<group>-<value>
 ```
 
-For the example above, the pnpm panel is `#install-client-pnpm`. The runtime
+For the example above, the pnpm panel is `#package-manager-pnpm`. The runtime
 resolves the hash by matching a real panel ID, not by splitting on hyphens.
 
-Initial activation priority is:
+Initial activation priority for a grouped set is:
 
-1. a valid URL hash;
-2. a stored value that exists in the group;
-3. the single `selected=true` child;
-4. the first child.
+1. a valid URL hash naming a panel of the set;
+2. a stored value that exists in the set;
+3. the shortcode `default` (or the first block of a run);
+4. the first tab.
 
-A hash-selected tab is applied to same-`sync` peers on the current page but is
+A hash-selected tab is applied to same-group peers on the current page but is
 not written to localStorage. Visiting a shared link must not overwrite the
-reader's durable preference.
+reader's durable preference. After a hash-driven activation the set is
+scrolled into view with `block: 'nearest'`, smoothly unless
+`prefers-reduced-motion` is set.
 
-User tab activation updates the URL with `history.replaceState`, writes the
-preference when persistence is enabled, and activates same-value peers that
-contain that value. A peer without the value stays unchanged. Using Replace
-State keeps the current URL shareable without creating one browser-history
-entry per tab click.
-
-`hashchange` and Back/Forward navigation activate a matching panel without
-writing persistence. After a hash-driven activation, skip scrolling when the
-group is already fully inside the visual viewport. Otherwise call
-`scrollIntoView` with `block: 'nearest'` and use smooth behavior only when
-`prefers-reduced-motion` is not set.
+User activation (click, Left/Right, Home/End) updates the URL with
+`history.replaceState`, writes the preference, and activates every other set
+of the same group that contains that value. A peer without the value stays
+unchanged. Ungrouped sets switch locally and never touch the URL or storage.
+`hashchange` activates a matching panel without writing persistence.
 
 ### 6.5 Persistence namespace
 
-Code groups use a versioned namespace distinct from legacy `tabpane`:
-
 ```text
-td-code-group:v1:sync:<sync-key>
-td-code-group:v1:group:<group-id>
+td-tabs:v1:<group>
 ```
 
-The value is the child `value` string. Storage errors are caught and leave tabs
-functional. `persist=false` disables both reads and writes but does not disable
-in-page `sync`.
-
-Legacy `tabpane` retains its `td-tp-persist:*` keys and timestamp semantics.
-The new runtime must not migrate, rewrite, or reinterpret them.
+The value is the tab `value` string. Storage errors are caught and leave tabs
+functional. The historical `td-tp-persist:*` and `td-code-group:v1:*` keys are
+no longer read or written.
 
 ## 7. Presentation design
 
@@ -347,20 +398,22 @@ upper inline end and the viewport reserves enough top/inline padding to prevent
 overlap with code. On narrow screens the language text may hide, while the
 localized icon button and accessible label remain.
 
-### 7.3 Code group
+### 7.3 Tab set
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│ [ npm ] [ pnpm ] [ yarn ]         BASH   [copy icon]     │
+│ [ npm ] [ pnpm ] [ yarn ]                                │
 ├──────────────────────────────────────────────────────────┤
-│ pnpm add @example/client                                 │
+│ pnpm add @example/client                  BASH [copy]    │
 └──────────────────────────────────────────────────────────┘
 ```
 
-The tab row is the group's only header. The active panel's language and Copy
-action appear in an action slot at the inline end; individual panels do not
-draw a second frame or header. Long tab lists scroll horizontally instead of
-wrapping into multiple ambiguous rows.
+The tab row is the set's only header. An embedded code panel keeps its own
+compact utility cluster (language label and Copy) inside the panel and drops
+its frame; prose panels get the standard panel padding. Long tab lists scroll
+horizontally instead of wrapping into multiple ambiguous rows. Before the
+runtime runs, the same set renders as stacked titled blocks with one visible
+title per panel.
 
 Copy is always an icon-only visual action. Its localized name remains available
 through `aria-label`, `title`, the live status region, and the success/error
@@ -407,9 +460,10 @@ Create three internal layers:
 3. `code/render.html` emits the common shell around the highlighted HTML;
    `code/actions.html` emits reusable localized controls.
 
-The ordinary render hook, legacy non-text `tabpane` panels, and HTML code-tab
-panels all use these layers. Specialized language render hooks remain outside
-the pipeline.
+The ordinary render hook and `{{< include code=true >}}` use these layers;
+tab bodies and Book example bodies reach them through Markdown rendering.
+Specialized language render hooks (Mermaid, math, chemistry, Markmap,
+PlantUML, `echarts`, `infographic`, `checksums`) remain outside the pipeline.
 
 Continue using `transform.Highlight` for this release. Although newer Hugo
 versions offer richer `transform.HighlightCodeBlock` results, changing the
@@ -458,43 +512,39 @@ An author `id` is public and stable. Otherwise the renderer generates a
 page-scoped ID from the page and block ordinal; generated IDs are implementation
 details and are not documented as permalinks.
 
-Markdown-rendering `alert` and text `tabpane` fragments can each restart
-Hugo's render-hook ordinal at zero. OINK marks only generated IDs and namespaces
-their root, viewport, control references, and default line anchors with the
-enclosing alert/tab identity before sibling fragments enter the same DOM.
-Explicit author IDs and component-owned IDs are never rewritten.
+Bodies rendered through `.Page.RenderString` (tab bodies, card and field
+descriptions, `include`, Book figure/table/example bodies) restart Hugo's
+render-hook ordinal at zero. `content/render-block.html` therefore runs every
+such body inside a named scope stored in `tdRenderScope`; the generated root ID
+becomes `td-code-<page>-<scope>-fence-<n>` so sibling fragments never collide
+in one DOM. Explicit author IDs are never rewritten. A fence that carries `num`
+uses its author `id` for the Book `<figure>` and keeps a generated code root ID.
 
 When `anchorLineNos` is enabled, the renderer supplies a block-unique line
-anchor prefix. Code-tab prefixes derive from the stable group and child IDs so
-multiple panels cannot emit duplicate line anchors. Ordinary line anchors are
-stable across content edits only when the author supplies an explicit fence
-`id`; generated ordinal-based IDs may change when blocks are inserted or
-reordered, and the author documentation must say so.
+anchor prefix. Ordinary line anchors are stable across content edits only when
+the author supplies an explicit fence `id`; generated ordinal-based IDs may
+change when blocks are inserted or reordered, and the author documentation
+must say so.
 
 ### 8.4 Page-store flags and bundles
 
-Use two code flags:
+Use three flags:
 
-- `hasCodeBlock` records that ordinary or grouped code was rendered.
+- `hasCodeBlock` records that code was rendered.
 - `hasCodeRuntime` is set whenever the shared presenter emits an enabled Copy
-  or potentially measurable collapse control, regardless of whether the
-  caller is an ordinary fence, a legacy `tabpane`, or a code-group child.
-
-`hasTabpane` already exists. Add `hasCodeGroup` for the new shortcode. Set the
-code flags inside the shared render/action partials rather than in the ordinary
-render hook; a page containing only a legacy code tab must still load Copy.
+  or potentially measurable collapse control, regardless of the caller.
+- `hasTabs` is set by `content/tab-block.html` (a block with `tab`) and by the
+  `tabs` shortcode, in interactive HTML only.
 
 Append `assets/js/code-block.js` to the normal Hugo asset bundle only for
-`hasCodeRuntime`. Append `assets/js/code-tabs.js` only for `hasTabpane` or
-`hasCodeGroup`; call this combined boolean `hasTabRuntime`. Extend the existing
-`printf ... | md5` bundle-key input in `scripts.html` with both
-`hasCodeRuntime` and `hasTabRuntime`, and continue using that hash in the
-`js/main-<hash>.js` target path. Hugo must never call `resources.Concat` with
-the same target path and different resource arrays.
+`hasCodeRuntime` and `assets/js/tabs.js` only for `hasTabs`. Both booleans are
+part of the `printf ... | md5` bundle-key input in `scripts.html`, and that
+hash is used in the `js/main-<hash>.js` target path. Hugo must never call
+`resources.Concat` with the same target path and different resource arrays.
 
 Gate both runtimes on the normal interactive HTML output name as well as the
 Page Store flags. Print, RSS, Markdown, and other static representations never
-load `code-block.js` or `code-tabs.js`, even when they contain code.
+load `code-block.js` or `tabs.js`, even when they contain code or tabs.
 
 The render-hook page facade does not expose the current output format on the
 supported Hugo versions, so every base layout declares it in
@@ -505,10 +555,8 @@ interactive controls from HTML.
 
 Every HTML base layout must invoke `scripts.html` after its `main` block has
 evaluated `.Content`, because render hooks and shortcodes populate Page Store
-while content renders. Do not read these flags from `head.html`. Preserve this
-ordering in a template-structure test and an output test whose page contains
-only a legacy code tab. A consuming site that overrides a base layout inherits
-the same ordering requirement.
+while content renders. Do not read these flags from `head.html`. A consuming
+site that overrides a base layout inherits the same ordering requirement.
 
 Do not emit a second stand-alone Copy script tag. Localized strings live in
 server-rendered text and data attributes, so the static JS bundle is identical
@@ -576,21 +624,16 @@ inside a collapsed block, expand that block before scrolling to the target.
 
 ### 9.4 Tab runtime
 
-`code-tabs.js` has two adapters over shared Bootstrap Tab helpers:
-
-- the legacy adapter preserves current `data-td-tp-persist` behavior and
-  storage keys;
-- the code-group adapter implements stable values, hash, synchronization, and
-  the new namespace.
-
-Use Bootstrap's `shown.bs.tab` event as the state-change boundary. Listening
-only for clicks misses keyboard and programmatic activation. Initialization and
-hash-driven changes carry an internal origin flag so they do not write storage
-or recursively update the URL.
-
-When a panel is shown, update the code-group action slot and notify the collapse
-initializer. Basic tab switching still works through Bootstrap's existing
-`data-bs-toggle="tab"` behavior if the OINK synchronization runtime fails.
+`tabs.js` has no Bootstrap dependency and exports `OinkTabs` (also
+`module.exports` for `tests/js/tabs.test.js`). On start it (1) regroups
+adjacent `.td-tab-block` runs into `.td-tabs` sets, (2) enhances every
+`.td-tabs[data-td-tabs]` set — click and keyboard listeners on the tablist,
+initial activation by hash → storage → default, `data-td-tabs-ready` — and
+(3) applies the current hash, listening for `hashchange`. Activation sets
+`aria-selected`/`tabindex` on tabs and `hidden`/`data-td-tabs-active` on
+panels; a set that lacks the requested value is left untouched so a peer sync
+can never leave a set with no selected tab. Origins (`click`, `keyboard`,
+`hash`, `sync`) decide whether storage and the URL are written.
 
 ## 10. Accessibility and security
 
@@ -600,12 +643,14 @@ initializer. Basic tab switching still works through Bootstrap's existing
 - Copy status uses a nearby polite live region; failures are never announced as
   success.
 - Expand uses `aria-expanded` and `aria-controls`.
-- Code-group tab/button/panel relationships use unique `id`, `aria-controls`,
-  and `aria-labelledby` values.
-- The tablist receives the author label or a localized default.
+- Tab/button/panel relationships use unique `id`, `aria-controls`, and
+  `aria-labelledby` values; tabs form a roving-tabindex group with Left/Right
+  (RTL aware) and Home/End activation, and focus stays on the tab.
+- The tablist receives the author label or the localized `ui_tabs_label`
+  default.
 - Collapsed code remains present in the DOM and accessible to assistive
   technology; collapse is a visual reading aid, not content deletion.
-- Attribute values and titles are HTML-escaped. Code-tab titles are plain text.
+- Attribute values and titles are HTML-escaped. Tab labels are plain text.
 - No code source is evaluated, reparsed as HTML, sent over the network, or
   duplicated into executable script data.
 - Clipboard writes occur only on a user gesture.
@@ -617,17 +662,17 @@ initializer. Basic tab switching still works through Bootstrap's existing
 ### 11.1 Normal HTML
 
 Server HTML is complete. Ordinary code is fully readable with JavaScript off;
-Copy and collapse controls remain hidden. A code group keeps its server-selected
-panel and basic Bootstrap switching; hash, synchronization, and persistence are
-enhancements.
+Copy and collapse controls remain hidden. Tab sets keep every panel visible
+under its own title until the runtime enhances them; hash, synchronization,
+and persistence are enhancements.
 
 ### 11.2 Print
 
-Print CSS must:
+The print output format renders adjacent tabbed blocks as consecutive titled
+blocks and the `tabs` shortcode as titled static sections without ARIA roles.
+Print CSS must additionally:
 
-- show every code-group panel;
-- hide interactive tab rows, utility controls, fades, and status nodes;
-- show a print-only plain-text title before every panel;
+- hide tab rows, utility controls, fades, and status nodes;
 - force every viewport to full height and visible overflow;
 - wrap long lines to page width;
 - override `break-inside: avoid-page` for `.td-code`, its `.highlight`, and
@@ -639,9 +684,11 @@ code, and so on.
 
 ### 11.3 Markdown
 
-Ordinary fences remain ordinary source fences because OINK's Markdown output
-uses `.RenderShortcodes`. `code-group` must explicitly branch on the output
-format and emit every child as readable Markdown:
+Ordinary fences — including fences that carry `tab`, `group`, `value`, `num`,
+or `caption` — remain ordinary source fences because OINK's Markdown output
+uses `.RenderShortcodes` and render hooks do not run there. The `tabs`
+shortcode branches on the output format and emits every child as a bold label
+followed by its body:
 
 ````markdown
 **npm**
@@ -657,23 +704,20 @@ pnpm add @example/client
 ```
 ````
 
-The renderer finds every contiguous backtick run with the RE2 pattern
-`\x60+`, takes the longest match length (zero when absent), and emits
-`max(3, longest + 1)` backticks as both fence delimiters. Interactive classes,
-buttons, data attributes, and storage metadata never appear in Markdown
-output.
+Interactive classes, buttons, data attributes, and storage metadata never
+appear in Markdown output.
 
 ### 11.4 RSS and other non-interactive outputs
 
-RSS emits code-group children as stacked, titled code examples without tabs,
-Copy, or collapse. Unknown non-interactive formats prefer complete readable
-content over the interactive HTML shell.
+RSS emits tab sets as stacked, titled sections without tabs, Copy, or
+collapse. Unknown non-interactive formats prefer complete readable content over
+the interactive HTML shell.
 
 Set `tdOutputFormat=rss` before evaluating each item summary. Hugo may return a
 summary cached from an earlier HTML render, so a summary containing
-`data-td-code` or a page containing a raw `code-group` must be rerendered with
-`.RenderShortcodes` and `.RenderString` under the RSS context. Do not pass a
-cached server Copy button or live region into the feed.
+`data-td-code` or `data-td-tabs` must be rerendered with `.RenderShortcodes`
+and `.RenderString` under the RSS context. Do not pass a cached server Copy
+button or live region into the feed.
 
 ## 12. Localization
 
@@ -686,7 +730,7 @@ ui_code_copied
 ui_code_copy_error
 ui_code_show_all
 ui_code_collapse
-ui_code_group_label
+ui_tabs_label
 ```
 
 `ui_code_show_all` receives the total source-line count. English, Simplified
@@ -714,70 +758,39 @@ acceptance criterion; semantic and visual compatibility is.
 Document the DOM change for sites with direct-child selectors such as
 `.td-content > .highlight`.
 
-### 13.2 Legacy tabpane
+### 13.2 Removed tab shortcodes
 
-- Existing shortcode syntax remains valid.
-- Existing ordinal-based IDs remain.
-- `persist=header|lang|disabled`, deprecated `persistLang`, selected, disabled,
-  text, right, and language inference remain.
-- Existing localStorage names and selection semantics remain.
-- Non-text panels move to the shared code renderer so server Copy survives the
-  removal of client DOM injection.
-- Legacy tabpanes do not gain public code-group hashes.
+`tabpane`/`tab` (Docsy) and `code-group`/`code-tab` are removed together with
+their Bootstrap Tab runtime, `td-tp-persist:*` and `td-code-group:v1:*`
+storage, `persist=header|lang|disabled`, `text`, `right`, `disabled`, and
+`selected`. `scripts/migrations/oink06.py migrate --only tabs` rewrites
+existing content: tab panes that contain exactly one fence each become
+adjacent fences with `{tab= group= value=}` (the group is derived from the
+header set unless `persist=disabled`), every other pane becomes
+`{{< tabs >}}`/`{{< tab >}}`, and code groups keep their `sync` key as the
+group and their child values.
 
 ### 13.3 Prism and specialized blocks
 
 `params.prism_syntax_highlighting=true` remains an unchanged legacy mode and is
-not enhanced in version one. The new code-group shortcode is Chroma-only and
-must fail with a clear build error under Prism mode.
+not enhanced; tab attributes are Chroma-only.
 
-Language-specific hooks for `mermaid`, `math`, `chem`, `markmap`, and
-`plantuml` continue to win Hugo's template lookup and do not receive the code
-shell or runtime.
+Language-specific hooks for `mermaid`, `math`, `chem`, `markmap`, `plantuml`,
+`echarts`, `infographic`, and `checksums` continue to win Hugo's template
+lookup and do not receive the code shell or runtime.
 
-## 14. Implementation plan
+## 14. Implementation history
 
-Each pull request must be independently shippable; no PR may leave visible dead
-buttons or remove Copy from legacy tabs.
-
-### Theme PR C1: normalized renderer and enhanced fence vertical slice
-
-- Add code normalization, highlighting, action, and presentation partials.
-- Replace the ordinary render hook with the normalized pipeline.
-- Adapt non-text legacy tabpane panels to the same presenter in this PR.
-- Add the titled, untitled, wrap, line-number, collapse, and responsive styles.
-- Add localized server controls and all locale keys.
-- Replace `click-to-copy.js` with conditional `code-block.js`.
-- Add page-store flags and include them in the bundle key.
-- Update RTL and print rules needed by ordinary blocks.
-- Add example-site fixtures and Hugo-version contract assertions.
-
-### Theme PR C2: tab runtime foundation and legacy preservation
-
-- Move legacy persistence into `assets/js/code-tabs.js` without changing its
-  storage contract.
-- Load tab code only when `hasTabpane` or `hasCodeGroup` is set.
-- Use `shown.bs.tab` as the shared event boundary.
-- Remove the unconditional `static/js/tabpane-persist.js` path.
-- Add regression fixtures for every legacy `tabpane` mode.
-
-### Theme PR C3: code group
-
-- Add `code-group.html` and `code-tab.html` with strict validation.
-- Add integrated header/action and embedded-panel presentation modes.
-- Implement initial priority, hash, Replace State, hashchange, sync, and the
-  versioned storage namespace.
-- Add HTML, print, Markdown, RSS, and unknown-format branches.
-- Add duplicate-ID/value and invalid-combination build-failure fixtures.
-
-### Site PR C4: documentation and browser acceptance
-
-- Add English and Simplified-Chinese author documentation.
-- Add a single regression page covering untitled, titled, console, YAML, diff,
-  line numbers, highlighted lines, wrap, collapse, and code groups.
-- Add Playwright interaction tests, axe checks, print assertions, and Markdown
-  goldens in `oink.pgsty.com`.
-- Verify desktop, narrow mobile, light, dark, and RTL examples.
+- Theme PR C1 (0.3): normalized renderer, enhanced fence shell, localized
+  controls, `code-block.js`, page-store flags.
+- Theme PR C2/C3 (0.3): Bootstrap-based tab runtime and the `code-group`
+  shortcode.
+- OINK 0.5/0.6 (component API v5): `code-group`, `code-tab`, `tabpane`, and
+  `tab` (Docsy) removed; `tab`/`group`/`value` fence and table attributes,
+  `content/tab-block.html`, the `tabs`/`tab` shortcode, `assets/js/tabs.js`,
+  the `hasTabs` flag, `content/render-block.html` ID scoping, and the `num`/
+  `caption` Book example fence added; content migrated with
+  `scripts/migrations/oink06.py`.
 
 ## 15. Verification matrix
 
@@ -798,8 +811,10 @@ Run under Hugo Extended 0.160.1 and 0.164.0:
 - the same wrap failure when table line numbers come only from site Highlight
   configuration and the fence omits `lineNos`;
 - legacy Prism build;
-- every legacy tabpane mode;
-- code-group HTML, print, Markdown, and RSS forms;
+- adjacent-fence tabs (grouped and local), `tab` + `title`, tab attributes on
+  tables, invalid `group`/`value`/`num` combinations;
+- `tabs`/`tab` shortcode HTML, print, Markdown, and RSS forms;
+- scoped code IDs inside tabs, cards, fields, and Book examples;
 - i18n key parity.
 
 Do not add Node.js as a theme build dependency. Theme-side assertions should
@@ -822,15 +837,14 @@ toolchain.
 - A line-anchor hash expands its containing block.
 - Author documentation distinguishes stable explicit-ID line anchors from
   generated ordinal anchors.
-- Direct code-group hashes activate and scroll to the right panel.
+- Direct `#<group>-<value>` hashes activate and scroll to the right set.
 - Sync only changes peers containing the same value.
 - A hash visit does not overwrite storage.
 - Clicks persist and use Replace State; Back/Forward hash navigation activates
   without persisting.
-- The old `td-tp-persist:*` keys still control legacy tabpanes.
-- A page without interactive code does not request either code runtime.
-- Print and RSS outputs do not request either code runtime.
-- Print shows complete ordinary blocks and every titled group panel.
+- A page without interactive code or tabs does not request either runtime.
+- Print and RSS outputs do not request either runtime.
+- Print shows complete ordinary blocks and every titled panel.
 - Markdown goldens contain all examples and no interactive HTML.
 - Axe reports no new violations in normal and grouped examples.
 
@@ -851,18 +865,18 @@ Review at least:
 
 The feature is ready when:
 
-- existing fence and `tabpane` source requires no migration;
+- existing fence source requires no migration; removed tab shortcodes are
+  rewritten by the migration toolkit;
 - Hugo highlighting behavior is preserved for the tested option matrix;
 - no visible interactive control is dead when its runtime is unavailable;
 - Copy is localized, exact, line-number-free, and reports real failure;
 - console defaults to commands while explicit all mode remains available;
 - wrapping never silently misaligns a table line-number gutter;
 - collapse is visual-only, measured, responsive, and fully removed in print;
-- code-group links are stable and shareable;
+- grouped tab links are stable and shareable;
 - hash, persistence, and sync follow the documented priority without feeding
   back into one another;
-- legacy tab storage remains compatible;
-- every group example survives Markdown, RSS, and print output;
+- every tab example survives Markdown, RSS, and print output;
 - pages without an applicable feature do not load its runtime;
 - all 32 locale files pass parity checks;
 - both supported Hugo versions and the consumer browser suite pass.

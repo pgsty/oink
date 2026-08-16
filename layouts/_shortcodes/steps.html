@@ -6,11 +6,17 @@ starts a step; CSS assigns the numbers. Keep this form for steps that contain
 those cannot live inside the native `1. … {.steps}` list form (list items
 cannot host `%` containers). The blank lines around .Inner are required so
 Goldmark parses the body as Markdown instead of swallowing it into the HTML
-block (plan/design/components.md v5 §2).
+block (plan/design/components.md v5 §2). Markdown output passes the body
+through unchanged (headings + content are already semantic Markdown).
 
 */ -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $format "markdown" -}}
+{{ .Inner }}
+{{- else -}}
 <div class="td-steps td-max-width-on-larger-screens">
 
 {{ .Inner }}
 
 </div>
+{{- end -}}

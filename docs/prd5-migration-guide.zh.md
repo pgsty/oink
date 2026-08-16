@@ -3,7 +3,9 @@
 基础合并发布版本：OINK 0.4.0（阅读与发布、Landing 与 Book）
 
 展示能力更新：OINK 0.4.1（`content_width`、`example`、`contributors` 与
-Landing Hero `title_size`）
+Landing Hero `title_size`）；组件 API v5（OINK 0.5/0.6）：`example` 改为带原生围栏
+形态的 `eg` 包裹组件，`book-figures kind=` 改为 `book-tables` / `book-equations` /
+`book-examples`，四种编号组件都获得原生形态（见 `docs/prd5-book-contract.md` 版本 2）
 
 原始设计里程碑：OINK 0.4.0（阅读与发布）、OINK 0.5.0（Landing）与
 OINK 0.6.0（Book）
@@ -214,16 +216,23 @@ DDIA v2 可机械迁移，因为 `fig` 接受已有的
     caption="The cluttered Word 2003 interface" alt="Word 2003 interface with stacked toolbars" />}}
 ```
 
-需要可见题注、但不应进入 Hugo 标题目录的代码或数据样例，应使用 `example`
-而不是伪 h4/h6 标题：
+需要可见题注、但不应进入 Hugo 标题目录的代码或数据样例，应使用 `eg`
+（编号示例包裹组件，或单围栏原生形态）而不是伪 h4/h6 标题：
 
 ````markdown
-{{< example num="2-1" id="example-query" caption="查询当前快照" />}}
-
+{{< eg num="2-1" id="example-query" caption="查询当前快照" >}}
 ```sql
 SELECT * FROM snapshot;
 ```
+{{< /eg >}}
+
+```sql {num="2-2" caption="同一示例的单围栏写法" #example-native}
+SELECT * FROM snapshot;
+```
 ````
+
+`eg` 目标用 `{{< xref eg="2-1" >}}` 引用、由 `{{< book-examples >}}` 汇总；
+`scripts/migrations/oink06.py migrate --only eg` 改写已删除的叶子形态 `example`。
 
 内容页贡献者墙可在 `data/contributors.yaml` 中维护 GitHub 用户名 `items`
 列表，并用 `{{< contributors data="contributors" >}}` 渲染。`name`、`role`、
@@ -264,7 +273,8 @@ OINK 现已提供一个默认 dry-run 的可执行工具，并附三份基于真
 自然层级使用目录；需要保持 URL 时复用已有 `data/docs_nav.json` 来安排 part 与
 chapter。不要仅为模板再造一份平行 `chapters.yaml` 模型。
 `{{< book-toc depth=3 >}}` 消费同一棵树与 Hugo fragment；
-`{{< book-figures >}}` 汇总稳定编号目标。
+`{{< book-figures >}}`、`{{< book-tables >}}`、`{{< book-equations >}}` 与
+`{{< book-examples >}}` 各自汇总一种稳定编号目标。
 
 Book 根的 print URL 是整书 HTML，锚点保留，跨章链接会变成文档内链接。
 PDF/EPUB 分页仍由站点负责；已经能用本地 KaTeX/MathML 渲染公式时，不要恢复

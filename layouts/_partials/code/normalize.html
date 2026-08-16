@@ -17,7 +17,9 @@
 {{- end -}}
 {{- $outputFormat := $page.Store.Get "tdOutputFormat" | default "html" -}}
 {{- $interactive := eq (lower $outputFormat) "html" -}}
+{{- $renderScope := $page.Store.Get "tdRenderScope" | default "" -}}
 {{- $ownerKey := printf "%v" (.key | default $position) -}}
+{{- if $renderScope }}{{ $ownerKey = printf "%s-%s" $renderScope $ownerKey }}{{ end -}}
 
 {{- $hasFilename := isset $attrs "filename" -}}
 {{- $hasTitle := isset $attrs "title" -}}
@@ -110,8 +112,12 @@
     {{- errorf "code block: attribute %q is reserved by OINK at %s" $name $position -}}
   {{- else if or (strings.HasPrefix $lowerName "on") (in (slice "style" "srcdoc") $lowerName) -}}
     {{- errorf "code block: unsafe generic attribute %q is not supported at %s" $name $position -}}
-  {{- else -}}
+  {{- else if or (strings.HasPrefix $lowerName "data-") (strings.HasPrefix $lowerName "aria-") -}}
     {{- $genericScratch.SetInMap "attributes" $name $value -}}
+  {{- else -}}
+    {{- /* Same policy as the other render hooks (content/attributes.html): only
+           OINK names, Chroma options, class/id/role, data-* and aria-* are known. */ -}}
+    {{- errorf "code block: unknown attribute %q at %s (allowed: %s, class, id, role, data-*, aria-*)" $name $position (delimit $reserved ", ") -}}
   {{- end -}}
 {{- end -}}
 {{- $genericAttributes := $genericScratch.Get "attributes" -}}

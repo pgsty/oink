@@ -8,7 +8,9 @@
                                         → <figure> (numbered = Book `fig` target)
 
   Inline images render a bare <img>; standalone images without caption / num
-  render <p class="td-image"><img></p> so existing image CSS keeps working.
+  render a bare block-level <img class="td-image"> (a wrapper element would be
+  invalid HTML for a linked standalone image, which Hugo also reports as a
+  block) and carry the explicit Image Zoom candidate marker in HTML output.
   Requires `markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false`
   for the block form (site preflight); `title` keeps its Markdown meaning.
 */ -}}
@@ -58,13 +60,25 @@
   {{- end -}}
   {{- $figure = or $num $caption -}}
 {{- end -}}
-{{- $img := printf `<img src="%s" alt="%s"%s%s%s loading="lazy" decoding="async">`
+{{- $plainBlock := and $isBlock (not $figure) -}}
+{{- $zoomable := and $plainBlock (eq $format "html") (ne $image.alt "") -}}
+{{- $genericAttrs := "" -}}
+{{- if $plainBlock -}}
+  {{- range $key, $value := $generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $key (htmlEscape $value) }}{{ end -}}
+{{- end -}}
+{{- /* The Zoom marker sits before loading= so the candidate scan's attribute
+       regex (marker followed by whitespace) matches. */ -}}
+{{- $img := printf `<img%s src="%s" alt="%s"%s%s%s%s loading="lazy" decoding="async"%s%s>`
+  (cond $plainBlock (printf ` class="td-image%s"` (cond (gt (len $classes) 0) (printf " %s" (delimit $classes " ")) "")) "")
   ($src | safeURL) (htmlEscape $image.alt)
   (cond (ne $title "") (printf ` title="%s"` (htmlEscape $title)) "")
   (cond (gt $width 0) (printf ` width="%d"` $width) "")
   (cond (gt $height 0) (printf ` height="%d"` $height) "")
+  (cond $zoomable " data-td-image-zoom" "")
+  (cond (and $plainBlock (ne $id "")) (printf ` id="%s"` $id) "")
+  $genericAttrs
 -}}
-{{- if not $isBlock -}}
+{{- if or (not $isBlock) $plainBlock -}}
   {{- $img | safeHTML -}}
 {{- else if $figure -}}
   {{- $figureClasses := slice "td-figure" -}}
@@ -77,7 +91,4 @@
   {{ $img | safeHTML }}
   <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
-{{- else -}}
-<p class="td-image{{ with $classes }} {{ delimit . " " }}{{ end }}"{{ with $id }} id="{{ . }}"{{ end }}
-  {{- range $key, $value := $generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>{{ $img | safeHTML }}</p>
 {{- end -}}

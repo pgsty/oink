@@ -217,13 +217,17 @@ body.td-book .td-shell-tree__link {
   }
 }
 
-.td-image {
+// A standalone Markdown image without caption / number: a bare block-level
+// <img class="td-image"> (no wrapper, so a linked standalone image stays valid).
+img.td-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
   margin-block: 1rem;
+}
 
-  > img {
-    max-width: 100%;
-    height: auto;
-  }
+a > img.td-image {
+  margin-block: 0;
 }
 
 .td-fig-label,

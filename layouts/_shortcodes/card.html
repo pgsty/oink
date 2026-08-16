@@ -67,7 +67,7 @@
 {{- with $badge }}<span class="td-content-card__badge">{{ . }}</span>{{ end -}}
 </div>
 {{- if $body }}
-<div class="td-content-card__description">{{ .Page.RenderString (dict "display" "block") $body }}</div>
+<div class="td-content-card__description">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "card%d" .Ordinal) "content" $body) }}</div>
 {{- end }}
 </div>
 </article>

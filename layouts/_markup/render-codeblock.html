@@ -1,5 +1,8 @@
 {{- /* Keep the legacy Prism path byte-compatible; enhanced code is Chroma-only. */ -}}
 {{- if .Page.Site.Params.prism_syntax_highlighting -}}
+  {{- range $reserved := slice "tab" "group" "value" "num" "caption" -}}
+    {{- if isset $.Attributes $reserved }}{{ errorf "code block: attribute %q (tabs / numbered examples) requires Hugo/Chroma highlighting; params.prism_syntax_highlighting is enabled at %s" $reserved $.Position }}{{ end -}}
+  {{- end -}}
   {{- $useClasses := .Page.Param "highlight_classes" -}}
   {{- if eq $useClasses nil }}{{ $useClasses = true }}{{ end -}}
   {{- $options := .Options -}}
@@ -10,7 +13,9 @@
   {{- $attrs := .Attributes | default dict -}}
   {{- /* Adjacent-block tabs (v5 §3.2) and the native Book example `eg` (v5 §3.12)
          are consumed here; normalize.html treats the same keys as reserved. */ -}}
-  {{- $tab := "" -}}{{ with index $attrs "tab" }}{{ $tab = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- $hasTab := isset $attrs "tab" -}}
+  {{- $tab := "" -}}{{ if $hasTab }}{{ $tab = strings.TrimSpace (printf "%v" (index $attrs "tab")) }}{{ end -}}
+  {{- if and $hasTab (not $tab) }}{{ errorf "code block: tab label must not be empty at %s" .Position }}{{ end -}}
   {{- $group := "" -}}{{ with index $attrs "group" }}{{ $group = printf "%v" . }}{{ end -}}
   {{- $value := "" -}}{{ with index $attrs "value" }}{{ $value = printf "%v" . }}{{ end -}}
   {{- if and (or (isset $attrs "group") (isset $attrs "value")) (not $tab) }}{{ errorf "code block: group/value require tab at %s" .Position }}{{ end -}}

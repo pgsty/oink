@@ -1,17 +1,16 @@
 # PRD 5 Book contract
 
-Release assignment: OINK 0.4.0 (consolidated PRD 5 release)
+Release assignment: OINK 0.4.0 (consolidated PRD 5 release; contract version 1)
 
 Original design milestone: OINK 0.6.0
 
-Contract version: 1
+Contract version: 2 (OINK 0.5/0.6 component API v5)
 
-Status: frozen for OINK v0.4.0
+Status: frozen for OINK v0.6.0 (version 1 remains the record of OINK v0.4.0)
 
 Compatibility floor: Hugo Extended 0.160.1
 
-This document freezes the originally planned 0.6 track of PRD 5, consolidated
-into the v0.4.0 release. Its machine-readable companion
+This document freezes the Book track of PRD 5. Its machine-readable companion
 is `tests/fixtures/prd5/contract.json`; `scripts/check-prd5-contract.py` keeps
 the two aligned. Configuration and migration recipes are available in
 [English](prd5-migration-guide.md) and
@@ -19,6 +18,13 @@ the two aligned. Configuration and migration recipes are available in
 The executable consumer recipes are frozen separately for
 [TPME](prd5-migrate-tpme.md), [DDIA](prd5-migrate-ddia.md), and
 [pg-internal](prd5-migrate-pg-internal.md).
+
+Version 2 changes from version 1 (see section 7 for the complete list): the
+leaf `example` shortcode became the `eg` wrapper; every numbered kind gained a
+native form (one Markdown block plus an attribute line); `xref` accepts `eg`;
+`book-figures` lost its `kind` parameter in favour of `book-tables`,
+`book-equations`, and `book-examples`; target registration is ordered by
+source position so render-hook and shortcode targets share one namespace.
 
 ## 1. Book type and navigation
 
@@ -43,22 +49,41 @@ IDs (`{#anchor}`); derived heading IDs are not a durable cross-reference API.
 
 ## 2. Numbered components
 
-The numbered forms of `fig`, `tbl`, and `eq` require a quoted `num` matching
-`[0-9A-Za-z.-]+`. The default IDs are `fig-<num>`, `tbl-<num>`, and
-`eq-<num>`; an explicit ID matching `[A-Za-z][A-Za-z0-9_.:-]*` is preserved
-byte-for-byte. Number and ID are intentionally independent. A page rejects a
-duplicate ID and rejects two components of one kind that claim the same
-number with different IDs.
+Four numbered kinds exist: `fig` (figure), `tbl` (table), `eq` (equation),
+and `eg` (example). Each has a shortcode form and a native form:
+
+| Kind | Shortcode form | Native form (block + attribute line) | Default ID |
+| --- | --- | --- | --- |
+| `fig` | `{{< fig num id caption class src link alt width height >}}…{{< /fig >}}` | standalone `![alt](src)` + `{#id num="2-1" caption="…" width= height= .class}` | `fig-<num>` |
+| `tbl` | `{{< tbl num id caption class >}}table{{< /tbl >}}` | pipe table + `{#id num="9-1" caption="…"}` | `tbl-<num>` |
+| `eq` | `{{< eq num id caption class >}}TeX{{< /eq >}}` | `$$…$$` block + `{#id num="5.3" caption="…"}` | `eq-<num>` |
+| `eg` | `{{< eg num id caption class >}}Markdown{{< /eg >}}` | fence with `{num="4-1" caption="…" #id}` | `eg-<num>` |
+
+The numbered forms require a `num` matching `[0-9A-Za-z.-]+`. An explicit ID
+matching `[A-Za-z][A-Za-z0-9_.:-]*` is preserved byte-for-byte; in the native
+fence form the author `#id` names the `<figure>` (the target), not the code
+block root. Number and ID are intentionally independent. A page rejects a
+duplicate ID and rejects two components of one kind that claim the same number
+with different IDs. Registration (`layouts/_partials/book/register-target.html`)
+identifies each target by its source position (`file:line:col`) and orders
+Book lists by it, so shortcode and render-hook targets share one registry
+(`tdBookTargets`) and mixed pages keep document order.
 
 OINK 0.4 already defines parameter-free `{{< eq >}}` as an unnumbered
 display-math escape hatch. It registers no target and therefore cannot be an
-`xref` destination or appear in `book-figures`. Adding `num` selects the Book
+`xref` destination or appear in `book-equations`. Adding `num` selects the Book
 form described here; `id`, `caption`, and `class` require that number.
 
-Captions are plain text. Inner Figure and Table content is rendered through
-the page's Markdown policy. Equation inner content is sent directly to the
-local server-side KaTeX renderer, so `eq` works even when a consumer has not
-enabled Goldmark passthrough delimiters.
+Captions are plain text and, for `eg`, required (a fence `caption` without
+`num` and a fence `num` without `caption` are build errors). Inner Figure,
+Table, and Example content is rendered through the page's Markdown policy
+inside a scoped `content/render-block.html` call, so generated code-block IDs
+inside a Book example cannot collide with the page's own fences. Equation
+inner content is sent directly to the local server-side KaTeX renderer, so
+`eq` works even when a consumer has not enabled Goldmark passthrough; the
+native `$$` form requires passthrough. Native figures require the site setting
+`markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false` (otherwise
+the attribute line attaches to the paragraph and is ignored).
 
 `fig` accepts the DDIA compatibility parameter superset
 `src`, `id`, `caption`, `title`, `class`, `link`, `alt`, `width`, and
@@ -67,20 +92,26 @@ migration and is mutually exclusive with `caption`. `src` and inner content
 are mutually exclusive. Width and height are positive integers; class tokens
 and every URL are validated. When legacy source has no explicit `alt`, the
 plain caption becomes its migration fallback. New content should state a
-meaningful `alt` explicitly.
+meaningful `alt` explicitly. The native figure takes its alt text from the
+Markdown image, accepts `width`/`height` attributes for static or remote
+images (they never turn alt text into a caption), and passes `class` tokens
+through; a `link` needs the shortcode form.
 
 `tbl` wraps a Markdown table inside one semantic figure, keeping the label,
-body, caption, and anchor together. `eq` presents the number on the right in
-screen and print layouts. All three expose a semantic `<figure>` and
-`<figcaption>` and do not use fake h6 captions.
+body, caption, and anchor together; the shortcode form remains for compound
+bodies (several tables under one number). `eq` presents the number on the
+right in screen and print layouts. `eg` presents its caption bar above the
+body (O'Reilly convention); its body is Markdown, usually one or more fences.
+All four expose a semantic `<figure>` with `data-book-kind` and
+`data-book-num` and a `<figcaption>`, and do not use fake h6 captions.
 
 ## 3. Cross references and consistency
 
-`xref` accepts exactly one optional kind key (`fig`, `tbl`, or `eq`), optional
-`page`, and optional `anchor`. A kind supplies the localized default label and
-derives the anchor when one is absent. An anchor-only reference requires inner
-link text. `page` resolves through Hugo's current-language page lookup, so the
-same source does not hard-code an `/en/` destination.
+`xref` accepts exactly one optional kind key (`fig`, `tbl`, `eq`, or `eg`),
+optional `page`, and optional `anchor`. A kind supplies the localized default
+label and derives the anchor when one is absent. An anchor-only reference
+requires inner link text. `page` resolves through Hugo's current-language page
+lookup, so the same source does not hard-code an `/en/` destination.
 
 Rendering is order-independent: an xref may appear before its target and never
 reads a target registration table to decide its output. The companion
@@ -97,11 +128,12 @@ sections, and depth three also projects each page's Hugo `.Fragments` heading
 tree. Draft filtering only affects this generated list; it does not hide the
 underlying page.
 
-`{{< book-figures >}}` and `{{< book-figures kind="tbl" >}}` render ordered
-Book-wide lists by triggering descendant content, then aggregating the
-idempotent Page Store registration. The allowed kinds are `fig`, `tbl`, and
-`eq`. The list links to stable public IDs and remains correct regardless of
-which alternate output Hugo renders first.
+`{{< book-figures >}}`, `{{< book-tables >}}`, `{{< book-equations >}}`, and
+`{{< book-examples >}}` render ordered Book-wide lists of one kind each by
+triggering descendant content, then aggregating the idempotent Page Store
+registration. They take no parameters (the version-1 `kind` parameter of
+`book-figures` is removed). The lists link to stable public IDs and remain
+correct regardless of which alternate output Hugo renders first.
 
 ## 5. Whole-Book print and output matrix
 
@@ -132,8 +164,11 @@ HTML renders semantic numbered figures, linked xrefs, the interactive shell,
 and contained table overflow. Print keeps figures, captions, equations, IDs,
 and complete tables but removes controls, pager, and scroll wrappers.
 Markdown/LLMS emits `**Figure 2-1.** caption` (localized label), the original
-body, and relative Markdown links; Book ToC becomes a nested list. RSS uses the
-same plain fallback for figures/tables/equations/xrefs and strips Book ToC.
+body, and relative Markdown links for the shortcode forms; native forms pass
+through as their source block plus attribute line because render hooks do not
+run under `.RenderShortcodes`; Book ToC becomes a nested list. RSS uses the
+same plain fallback for figures/tables/equations/examples/xrefs and strips Book
+ToC.
 
 ## 6. Migration boundaries and non-goals
 
@@ -152,4 +187,22 @@ The site-specific rewrites use
 is explicit, every run may emit a JSON inventory and diff digest, unknown
 forms remain unchanged, and a second run must report zero changed files.
 `scripts/check-prd5-migrations.py` freezes these safety properties for all
-four profiles (`tpme`, `ddia-v2`, `ddia-v1`, and `pg-internal`).
+four profiles (`tpme`, `ddia-v2`, `ddia-v1`, and `pg-internal`). The version-2
+rewrites (`example` → `eg`, `book-figures kind="tbl"` → `book-tables`) are
+transformations of `scripts/migrations/oink06.py` (`eg`), which follows the
+same dry-run / `--write` / idempotency rules.
+
+## 7. Version 2 changes
+
+- `example` (leaf, caption line only, not a target of `xref` or a Book list)
+  is removed; `eg` is a wrapper with a required caption, a registered `eg`
+  target, `xref eg=` support, and a `book-examples` list.
+- Native forms for `fig`, `tbl`, `eq`, and `eg` (section 2) render through the
+  image, table, passthrough, and code-block render hooks and register targets
+  through the same partial as the shortcodes.
+- `book-figures kind=` is removed; `book-tables`, `book-equations`, and
+  `book-examples` are added.
+- Target identity and Book-list order come from the source position instead
+  of the shortcode ordinal.
+- The `eq` label set gained `book_example` for `eg` (i18n key existed since
+  0.4.1).

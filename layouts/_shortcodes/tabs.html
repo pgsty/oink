@@ -75,7 +75,7 @@
   {{- $panelID := cond (ne $group "") (printf "%s-%s" $group .value) (printf "%s-%s" $base .value) }}
   <section class="td-tabs__panel" id="{{ $panelID }}"{{ if $interactive }} role="tabpanel" aria-labelledby="{{ $panelID }}-tab" tabindex="0"{{ end }} data-td-tabs-value="{{ .value }}"{{ if eq .value $default }} data-td-tabs-active{{ end }}>
     <div class="td-tabs__panel-title" aria-hidden="true">{{ .label }}</div>
-    <div class="td-tabs__panel-body">{{ $.Page.RenderString (dict "display" "block") .body }}</div>
+    <div class="td-tabs__panel-body">{{ partial "content/render-block.html" (dict "page" $.Page "scope" (printf "tabs%d-%s" $.Ordinal .value) "content" .body) }}</div>
   </section>
   {{- end }}
 </div>

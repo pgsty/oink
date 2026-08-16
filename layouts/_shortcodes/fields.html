@@ -79,9 +79,9 @@
       {{- $meta = $meta | append (dict "label" "required" "value" "" "class" "td-field__required") -}}
     {{- end -}}
     {{- if .hasDefault -}}
-      {{- $meta = $meta | append (dict "label" "default: " "value" (printf "<code>%s</code>" (htmlEscape .default)) "class" "td-field__default") -}}
+      {{- $meta = $meta | append (dict "label" "default" "value" (printf "<code>%s</code>" (htmlEscape .default)) "class" "td-field__default") -}}
     {{- end -}}
-    {{- $items = $items | append (dict "name" (htmlEscape .name) "meta" $meta "description" ($.Page.RenderString (dict "display" "block") .description) "descriptionMarkdown" false) -}}
+    {{- $items = $items | append (dict "name" (htmlEscape .name) "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" (printf "fields%d-%s" $.Ordinal (anchorize .name)) "content" .description)) "descriptionMarkdown" false) -}}
   {{- end -}}
   {{- partial "content/fields-list.html" (dict "label" $label "labelID" $labelID "entries" $items) -}}
 {{- end -}}

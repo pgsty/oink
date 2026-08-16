@@ -22,7 +22,9 @@
 {{- $caption := strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
 {{- $numRaw := index $policy.consumed "num" | default "" -}}
 {{- $idRaw := index $policy.consumed "id" | default "" -}}
+{{- $hasTab := isset $policy.consumed "tab" -}}
 {{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
+{{- if and $hasTab (not $tab) }}{{ errorf "table: tab label must not be empty at %s" .Position }}{{ end -}}
 {{- if and $isFields $isMatrix }}{{ errorf "table: .fields and .matrix are mutually exclusive at %s" .Position }}{{ end -}}
 {{- if and $isFields $isFull }}{{ errorf "table: .fields cannot be combined with .full-width at %s" .Position }}{{ end -}}
 {{- if and $numRaw $tab }}{{ errorf "table: num (Book target) and tab (tabs) are mutually exclusive at %s" .Position }}{{ end -}}
@@ -84,7 +86,9 @@
 {{- $wrapperClasses := slice "td-table-scroll" -}}
 {{- if $isFull }}{{ $wrapperClasses = $wrapperClasses | append "td-table-scroll--full" }}{{ end -}}
 {{- if $isMatrix }}{{ $wrapperClasses = $wrapperClasses | append "td-table-scroll--matrix" }}{{ end -}}
-{{- $tableClasses := $siteClasses -}}
+{{- /* Author classes stay on <table> (markers included) so site CSS keyed on
+       e.g. table.full-width keeps working; the wrapper carries the modifiers. */ -}}
+{{- $tableClasses := $classes -}}
 {{- if $isMatrix }}{{ $tableClasses = $tableClasses | append "td-table--matrix" }}{{ end -}}
 {{- $table := printf "%s" (partial "content/table-body.html" (dict
   "thead" .THead "tbody" .TBody "matrix" $isMatrix "format" $format

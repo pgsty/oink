@@ -244,7 +244,7 @@
 
   // `{{% cards %}}` has no cols parameter: the grid adapts to the width.
   &--auto {
-    grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 15rem)'}, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 13.5rem)'}, 1fr));
   }
 }
 

@@ -66,11 +66,18 @@ python3 scripts/check-goldens.py                     # four-state goldens (html 
 cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warning-free
 
 # Output checks (each builds exampleSite into a temp dir itself)
-python3 scripts/check-code-blocks.py        # enhanced fences / code groups
-python3 scripts/check-content-primitives.py # badge, kbd, fields, filetree
-python3 scripts/check-media-primitives.py   # image resolver + imgproc compatibility
+python3 scripts/check-code-blocks.py        # enhanced fences / adjacent-fence tabs / tabs shortcode
+python3 scripts/check-content-primitives.py # badge, kbd, fields (table + shortcode), filetree/steps/cards lists, table family
+python3 scripts/check-media-primitives.py   # image render hook + image shortcode
 python3 scripts/check-image-zoom.py         # zoom gating and output isolation
-python3 scripts/check-gallery.py            # gallery + zoom runtime reuse
+python3 scripts/check-gallery.py            # native gallery list + zoom runtime reuse
+python3 scripts/check-components.py         # callouts, tabs, data fences, removed shortcodes, hook attribute policy
+
+# Content migration toolkit for the 0.4 -> v5 syntax (dry-run by default; tests in tests/migrations/)
+python3 scripts/migrations/oink06.py report --sites <dir>...   # read-only inventory
+python3 scripts/migrations/oink06.py migrate --site <dir> [--write]
+python3 scripts/migrations/oink06.py check --site <dir>        # residual legacy syntax
+python3 -m unittest discover -s tests/migrations -t .
 
 # Browser runtimes (plain assets, no install step)
 node --test 'tests/js/**/*.test.js'
@@ -157,7 +164,7 @@ When extending, override the narrowest partial. Do not copy `baseof.html`.
 ### Conditional runtime loading (the central mechanism)
 
 Shortcodes and render hooks set flags on the Hugo **Page Store**
-(`hasEcharts`, `hasAsciinema`, `hasmermaid`, `hasCodeRuntime`, `hasTabpane`,
+(`hasEcharts`, `hasAsciinema`, `hasmermaid`, `hasCodeRuntime`, `hasTabs`,
 `hasImageZoom`, `hasGiscus`, `hasFeedback`, …). `_partials/scripts.html` reads
 those flags afterwards and concatenates exactly the runtimes the page used —
 once per page, regardless of instance count — into a bundle whose name is an
@@ -229,28 +236,41 @@ files (`--sync` does the mechanical part).
 
 ## Frozen contracts
 
-`docs/content-primitives.md`, `docs/enhanced-code-blocks.md`,
-`docs/typography-tokens.md`, and the three `docs/prd5-*-contract.md` files are
-implementation contracts, not tutorials. The
-first is machine-checked for structure by `check-content-primitives-contract.py`.
-They define the public shortcode APIs (Badge, Kbd, Fields/Field, FileTree,
-imgproc, Image Zoom, Gallery/Gallery Image, Release Assets, numbered Book
-components, and xref; enhanced fences and code groups), parameter validation,
-escaping and URL policy, ID generation, and the output matrix. **Read the
-relevant contract before changing a primitive**, and change the contract in the
-same commit as the behavior.
+`docs/content-primitives.md` (contract v2), `docs/enhanced-code-blocks.md`,
+`docs/typography-tokens.md`, and the three `docs/prd5-*-contract.md` files
+(Book contract v2) are implementation contracts, not tutorials;
+`docs/components.md` is the authoring guide that summarizes the v5 API. The
+first is machine-checked for structure by `check-content-primitives-contract.py`,
+the Book contract by `check-prd5-contract.py`. They define the public component
+APIs — the native forms (`> [!TYPE]` callouts; `{.steps}` `{.cards}`
+`{.filetree}` `{.gallery}` list markers; `{.fields}` `{.matrix}` `{caption=}`
+`{#id num=}` `{tab=}` table attributes; the image render hook; adjacent-fence
+tabs; data fences) and the 30 shortcodes (core 15: `tabs tab steps cards card
+fields field image include kbd badge param comment contributors asciinema`;
+Book 10: `fig tbl eq eg xref book-toc book-figures book-tables book-equations
+book-examples`; Release 3; OpenAPI 2) — plus parameter validation, escaping and
+URL policy, ID generation, and the output matrix. **Read the relevant contract
+before changing a primitive**, and change the contract in the same commit as
+the behavior.
 
 Recurring rules from those contracts:
 
-- Standard shortcode notation `{{< … >}}`; nested names (`filetree/folder`,
-  `gallery/image`, `field`) are part of the public API and are valid only inside
-  their parent.
+- `{{% steps %}}` is the only `{{% %}}` shortcode (its body is top-level page
+  Markdown); every other shortcode uses `{{< … >}}` and renders Markdown bodies
+  through `content/render-block.html` (`RenderString` in a scoped context).
+  Nested names (`tab`, `card`, `field`) are valid only inside their parent.
 - Collector shortcodes evaluate `.Inner` so children register ordered data; the
   parent owns all rendering. Shortcodes do not write Page Store flags that other
   shortcodes read.
-- Invalid parameters `errorf` — strict failure over silent degradation.
-- Only Fields descriptions accept Markdown (via `.Page.RenderString`); every
-  other public string parameter is plain text.
+- Invalid parameters `errorf` — strict failure over silent degradation. Render
+  hooks share one attribute policy (`content/attributes.html`): allowlisted
+  keys are consumed, `class` (token-validated), `data-*`, and `aria-*` pass
+  through, `style`/`on*`/unknown keys fail the build.
+- Public string parameters (captions, labels, titles) are plain text; only
+  Markdown *bodies* (tab, card, field, image caption, Book bodies) are Markdown.
+- Icons are one Font Awesome class pair (`fa-solid fa-rocket`); no icon
+  registry, no `oink-` prefixes — theme-generated classes stay `td-`, author
+  markers are unprefixed.
 - CSS must handle `forced-colors`, reduced motion, print, and RTL (use logical
   properties).
 

@@ -3,7 +3,10 @@
 Base consolidated release: OINK 0.4.0 (Reading & Release, Landing, and Book)
 
 Presentation update: OINK 0.4.1 (`content_width`, `example`, `contributors`,
-and Landing Hero `title_size`)
+and Landing Hero `title_size`); component API v5 (OINK 0.5/0.6): `example`
+became the `eg` wrapper with a native fence form, `book-figures kind=` became
+`book-tables` / `book-equations` / `book-examples`, and every numbered kind
+gained a native form (see `docs/prd5-book-contract.md` version 2)
 
 Original design milestones: OINK 0.4.0 (Reading & Release), OINK 0.5.0
 (Landing), and OINK 0.6.0 (Book)
@@ -228,15 +231,24 @@ from the existing caption and prefer an explicit meaningful `alt`:
 ```
 
 Code and data samples that need a visible label but must stay out of Hugo's
-heading outline use `example` instead of a fake h4/h6 caption:
+heading outline use `eg` (a numbered example wrapper, or the native
+single-fence form) instead of a fake h4/h6 caption:
 
 ````markdown
-{{< example num="2-1" id="example-query" caption="Querying the current snapshot" />}}
-
+{{< eg num="2-1" id="example-query" caption="Querying the current snapshot" >}}
 ```sql
 SELECT * FROM snapshot;
 ```
+{{< /eg >}}
+
+```sql {num="2-2" caption="The same example as one fence" #example-native}
+SELECT * FROM snapshot;
+```
 ````
+
+The `eg` target is referenced with `{{< xref eg="2-1" >}}` and listed by
+`{{< book-examples >}}`; `scripts/migrations/oink06.py migrate --only eg` rewrites
+the removed leaf `example` form.
 
 For a content-page contributor wall, create `data/contributors.yaml` with an
 `items` list of GitHub handles and render it with
@@ -284,8 +296,9 @@ second run. The shared tool is
 Use directories for natural hierarchy or an existing `data/docs_nav.json` to
 place parts and chapters without moving URLs. Do not recreate a parallel
 `chapters.yaml` model solely for templates. `{{< book-toc depth=3 >}}` consumes
-the same tree and Hugo fragment data; `{{< book-figures >}}` aggregates stable
-numbered targets.
+the same tree and Hugo fragment data; `{{< book-figures >}}`, `{{< book-tables >}}`,
+`{{< book-equations >}}`, and `{{< book-examples >}}` aggregate stable numbered
+targets (one kind each).
 
 The Book root print URL is the whole-book HTML surface. It preserves anchors
 and makes cross-chapter links local. PDF/EPUB pagination remains site-owned;

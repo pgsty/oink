@@ -11,7 +11,7 @@
 {{- if and $hasParams (not .IsNamedParams) -}}
   {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
 {{- end -}}
-{{- $allowed := slice "name" "link" -}}
+{{- $allowed := slice "name" "link" "icon" "color" "comment" "owner" "group" "mode" -}}
 {{- range $name, $_ := .Params -}}
   {{- if not (in $allowed $name) -}}
     {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
@@ -35,22 +35,22 @@
     "name" .Name "parameter" "link" "position" .Position "value" (.Get "link")
   ) -}}
 {{- end -}}
+{{- $node := partial "content/filetree-node-params.html" . -}}
 {{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- "<!--td-filetree-child:start-->" | safeHTML -}}
 {{- if eq $outputFormat "markdown" -}}
   {{- $markdownName := partial "content/markdown-escape.html" $fileName -}}
+  {{- $markdownSuffix := partial "content/filetree-markdown-suffix.html" $node -}}
   {{- if $link -}}
-    {{- printf "- [%s](%s)" $markdownName $link.markdown | safeHTML -}}
+    {{- printf "- [%s](%s)%s" $markdownName $link.markdown $markdownSuffix | safeHTML -}}
   {{- else -}}
-    {{- printf "- %s" $markdownName | safeHTML -}}
+    {{- printf "- %s%s" $markdownName $markdownSuffix | safeHTML -}}
   {{- end -}}
 {{- else -}}
 <li class="td-filetree__item td-filetree__item--file">
-  <span class="td-filetree__entry td-filetree__entry--file">
-    {{- partial "content/filetree-icon.html" "file" -}}
-    {{- if $link }}<a class="td-filetree__link" href="{{ $link.href }}"><span class="td-filetree__name" dir="auto">{{ $fileName }}</span></a>
-    {{- else }}<span class="td-filetree__name" dir="auto">{{ $fileName }}</span>{{ end -}}
-  </span>
+  {{- partial "content/filetree-entry.html" (dict
+    "kind" "file" "name" $fileName "link" $link "node" $node
+  ) -}}
 </li>
 {{- end -}}
 {{- "<!--td-filetree-child:end-->" | safeHTML -}}

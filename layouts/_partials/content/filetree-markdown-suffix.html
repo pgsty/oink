@@ -1,0 +1,20 @@
+{{- /* Preserve non-decorative FileTree row data in plain Markdown outputs. */ -}}
+{{- $suffix := "" -}}
+{{- with .comment -}}
+  {{- $suffix = printf " # %s" (partial "content/markdown-escape.html" .) -}}
+{{- end -}}
+{{- $metadata := slice -}}
+{{- with .mode -}}
+  {{- $metadata = $metadata | append (printf "mode: %s" (partial "content/markdown-code-span.html" .)) -}}
+{{- end -}}
+{{- with .owner -}}
+  {{- $identity := . -}}
+  {{- with $.group -}}
+    {{- $identity = printf "%s:%s" $identity . -}}
+  {{- end -}}
+  {{- $metadata = $metadata | append (printf "owner: %s" (partial "content/markdown-code-span.html" $identity)) -}}
+{{- end -}}
+{{- if $metadata -}}
+  {{- $suffix = printf "%s (%s)" $suffix (delimit $metadata "; ") -}}
+{{- end -}}
+{{- return $suffix -}}

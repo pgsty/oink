@@ -25,9 +25,9 @@ The implementation order is intentional:
 4. Gallery reuses the image resolver and the Zoom runtime.
 5. Release Assets adds a strict checksum parser and one conditional copy runtime.
 
-A standalone public Icon shortcode is deferred. A component may use a small,
-private, allowlisted icon registry for its own decoration, but that registry is
-not a content authoring API.
+A standalone public Icon shortcode is deferred. FileTree's scoped `icon`
+parameter is the narrow exception: it accepts one validated Font Awesome class
+pair for a node, not arbitrary markup, classes, or a reusable icon surface.
 
 ## 2. Shared authoring contract
 
@@ -88,11 +88,13 @@ Public parameter names and enum values are case-sensitive.
   includes `.Position`.
 
 The everyday components in sections 3.1 through 3.9 do not accept arbitrary
-`class`, `style`, color, event-handler, or public `id` parameters. The Book
-Figure compatibility surface in section 3.10 is the explicit exception: it
-accepts a grammar-constrained semantic `id` and safe class tokens so DDIA and
-O'Reilly anchors can migrate without breaking public links. It never accepts
-`style`, color, or event handlers.
+`class`, `style`, color, event-handler, or public `id` parameters. FileTree's
+`icon` accepts exactly one Font Awesome style/name pair and its `color` selects
+only an allowlisted semantic theme token; neither accepts arbitrary CSS. The
+Book Figure compatibility surface in section 3.10 is the other explicit
+exception: it accepts a grammar-constrained semantic `id` and safe class tokens
+so DDIA and O'Reilly anchors can migrate without breaking public links. It
+never accepts `style`, color, or event handlers.
 
 ### 2.3 Escaping and rendered content
 
@@ -195,7 +197,8 @@ images and captions remain readable.
 ### 2.8 CSS and accessibility
 
 Components consume semantic OINK/Bootstrap tokens and may define component
-aliases. They must not embed author colors or literal bundled font families.
+aliases. They must not embed arbitrary author colors or literal bundled font
+families; FileTree's semantic `color` enum resolves only to those theme tokens.
 
 - Use logical properties so spacing and alignment work in RTL.
 - Long names, types, paths, and captions must wrap or scroll within their own
@@ -350,8 +353,8 @@ with nested schemas and compiler-driven type extraction.
 
 ```go-html-template
 {{< filetree label="Repository structure" >}}
-  {{< filetree/folder name="content" open=true >}}
-    {{< filetree/file name="_index.md" >}}
+  {{< filetree/folder name="content" open=true comment="Site content" owner="docs" group="writers" mode="0755" >}}
+    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="Section landing page" owner="docs" group="writers" mode="0644" >}}
     {{< filetree/folder name="docs" open=true >}}
       {{< filetree/file name="getting-started.md" >}}
       {{< filetree/file name="configuration.md" link="/docs/configuration/" >}}
@@ -373,6 +376,12 @@ with nested schemas and compiler-driven type extraction.
 | --- | --- | --- | --- |
 | `name` | yes | non-empty plain string | none |
 | `open` | no | strict boolean | `false` |
+| `icon` | no | one Font Awesome pair matching `fa-(solid\|regular\|brands) fa-[a-z0-9-]+` | stateful folder icons |
+| `color` | no | `neutral`, `primary`, `secondary`, `info`, `success`, `warning`, `danger` | folder theme color |
+| `mode` | no | non-empty plain string, normally quoted octal such as `0755` | none |
+| `owner` | no | non-empty plain string | none |
+| `group` | no | non-empty plain string; requires `owner` | none |
+| `comment` | no | non-empty plain string | none |
 
 `filetree/file` parameters:
 
@@ -380,10 +389,35 @@ with nested schemas and compiler-driven type extraction.
 | --- | --- | --- | --- |
 | `name` | yes | non-empty plain string | none |
 | `link` | no | URL allowed by section 2.4 | none |
+| `icon` | no | one Font Awesome pair matching `fa-(solid\|regular\|brands) fa-[a-z0-9-]+` | `fa-regular fa-file` |
+| `color` | no | `neutral`, `primary`, `secondary`, `info`, `success`, `warning`, `danger` | neutral theme color |
+| `mode` | no | non-empty plain string, normally quoted octal such as `0644` | none |
+| `owner` | no | non-empty plain string | none |
+| `group` | no | non-empty plain string; requires `owner` | none |
+| `comment` | no | non-empty plain string | none |
 
 HTML uses nested lists. A folder contains native `<details>` and `<summary>`;
 `open` affects only its initial HTML state. FileTree does not use JavaScript or
-`role="tree"`.
+`role="tree"`. The browser disclosure marker is suppressed: default folders
+switch between `fa-regular fa-folder` and `fa-regular fa-folder-open`, while an
+authored `icon` replaces both states. File and folder names use the code-font
+token. Hover and keyboard focus tint the complete row.
+
+`comment` stays beside the name, uses the code-font token, and receives a
+visible `#` prefix. A preferred filename column aligns comments where space
+allows; long names, narrow viewports, and deep nesting may shrink that column.
+The comment truncates with an ellipsis before it can displace the name or
+metadata.
+
+When any filesystem metadata is present, the row reserves a compact inline-end
+region. `mode` comes first in a fixed `4ch` column and is rendered exactly as
+authored: a value such as `0555` is never converted to symbolic `r-xr-xr-x`
+notation. The second column renders `owner` alone or `owner:group`; `group`
+without `owner` is invalid. This identity column consumes the remaining
+metadata space, truncates with an ellipsis, and retains its full value in
+`title`. The whole region shrinks proportionally on narrow or deeply nested
+rows. The literal metadata labels `owner`, `group`, and `mode` are untranslated
+filesystem vocabulary in assistive and Markdown output.
 
 Print and RSS expose every descendant regardless of `open`. Markdown uses a
 nested list, appends `/` to folder names, and preserves file links:
@@ -397,8 +431,15 @@ nested list, appends `/` to folder names, and preserves file links:
 - hugo.yml
 ```
 
-Author-selected icons, badges, status metadata, sorting, filesystem reads,
-file metadata, selection, and direction-key navigation are deferred.
+Markdown preserves comments and filesystem metadata after the node:
+
+```markdown
+- _index.md # Section landing page (mode: `0644`; owner: `docs:writers`)
+```
+
+Decorative icon and color choices are omitted. Print and RSS retain the
+complete expanded row. Badges, sorting, filesystem reads, automatic metadata,
+selection, and direction-key navigation are deferred.
 
 ### 3.5 Shared images and imgproc compatibility
 
@@ -698,7 +739,7 @@ RSS strips Book ToC.
 | Badge | semantic `<span>` or `<a>` | monochrome inline badge | emphasized text or link | static inline HTML | identical content | none |
 | Kbd | nested `<kbd>` sequence | visible key boundaries | `Ctrl + K` | static inline HTML | identical content | none |
 | Fields | responsive semantic `<dl>` | complete definition list | metadata bullet list | complete static `<dl>` | identical content | none |
-| FileTree | nested lists and native `<details>` | fully expanded tree | nested list | fully expanded nested list | native disclosure remains usable | none |
+| FileTree | nested lists, native `<details>`, comments, and filesystem metadata | fully expanded complete rows | nested list with textual metadata | fully expanded complete rows | native disclosure remains usable | none |
 | Shared image | image/figure and caption | image/figure and caption | ordinary image and caption | static figure | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
 | Gallery | responsive figure grid | sequential figures | sequential images and captions | sequential figures | complete static grid | reuses Image Zoom only |

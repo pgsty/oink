@@ -11,7 +11,7 @@
 {{- if and $hasParams (not .IsNamedParams) -}}
   {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
 {{- end -}}
-{{- $allowed := slice "name" "open" -}}
+{{- $allowed := slice "name" "open" "icon" "color" "comment" "owner" "group" "mode" -}}
 {{- range $name, $_ := .Params -}}
   {{- if not (in $allowed $name) -}}
     {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
@@ -37,6 +37,7 @@
   {{- end -}}
   {{- $open = $openParam -}}
 {{- end -}}
+{{- $node := partial "content/filetree-node-params.html" . -}}
 {{- $children := partial "content/filetree-children.html" (dict
   "source" .Inner "name" .Name "position" .Position
 ) -}}
@@ -45,17 +46,17 @@
 {{- "<!--td-filetree-child:start-->" | safeHTML -}}
 {{- if eq $outputFormat "markdown" -}}
   {{- $markdownName := partial "content/markdown-escape.html" $folderName -}}
-  {{- $markdown := printf "- %s/" $markdownName -}}
+  {{- $markdownSuffix := partial "content/filetree-markdown-suffix.html" $node -}}
+  {{- $markdown := printf "- %s/%s" $markdownName $markdownSuffix -}}
   {{- if $children -}}
     {{- $markdown = printf "%s\n%s" $markdown (partial "content/markdown-indent.html" $children) -}}
   {{- end -}}
   {{- $markdown | safeHTML -}}
 {{- else if in (slice "print" "rss") $outputFormat -}}
 <li class="td-filetree__item td-filetree__item--folder">
-  <span class="td-filetree__entry td-filetree__entry--folder">
-    {{- partial "content/filetree-icon.html" "folder" -}}
-    <span class="td-filetree__name" dir="auto">{{ $folderName }}</span>
-  </span>
+  {{- partial "content/filetree-entry.html" (dict
+    "kind" "folder" "name" $folderName "node" $node
+  ) -}}
   {{- if $children }}
   <ul class="td-filetree__list">{{ $children | safeHTML }}</ul>
   {{- end }}
@@ -64,10 +65,9 @@
 <li class="td-filetree__item td-filetree__item--folder">
   <details class="td-filetree__details"{{ if $open }} open{{ end }}>
     <summary class="td-filetree__summary">
-      <span class="td-filetree__entry td-filetree__entry--folder">
-        {{- partial "content/filetree-icon.html" "folder" -}}
-        <span class="td-filetree__name" dir="auto">{{ $folderName }}</span>
-      </span>
+      {{- partial "content/filetree-entry.html" (dict
+        "kind" "folder" "name" $folderName "node" $node "disclosure" true
+      ) -}}
     </summary>
     {{- if $children }}
     <ul class="td-filetree__list">{{ $children | safeHTML }}</ul>

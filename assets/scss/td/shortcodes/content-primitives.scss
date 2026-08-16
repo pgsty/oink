@@ -196,25 +196,92 @@ a.td-badge {
 }
 
 .td-filetree {
-  --td-filetree-name-column: 28ch;
-  --td-filetree-metadata-width: 20ch;
-  --td-filetree-mode-width: 4ch;
+  --td-filetree-split: 56%;
+  --td-filetree-row-height: 1.95rem;
+  --td-filetree-surface: #f6f9fc;
+  --td-filetree-chrome: #e9eef4;
+  --td-filetree-line: rgba(48, 74, 105, 0.24);
+  --td-filetree-muted: #5d7189;
+  --td-filetree-title: #16222e;
+  --td-filetree-accent: #245f94;
+  --td-filetree-hover: rgba(36, 95, 148, 0.08);
 
+  inline-size: 100%;
   max-width: 100%;
   margin-block: 1.5rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  background: var(--bs-body-bg);
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  border: 1px solid var(--td-filetree-line);
+  border-radius: 0.78rem;
+  background: var(--td-filetree-surface);
+  box-shadow: var(--td-brand-shadow-md, var(--bs-box-shadow));
+  isolation: isolate;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+
+  &:focus-within {
+    border-color: color-mix(
+      in srgb,
+      var(--td-filetree-accent) 65%,
+      var(--td-filetree-line)
+    );
+    box-shadow:
+      0 0 0 3px
+        color-mix(in srgb, var(--td-filetree-accent) 18%, transparent),
+      var(--td-brand-shadow-md, var(--bs-box-shadow));
+  }
+}
+
+[data-bs-theme='dark'] .td-filetree {
+  --td-filetree-surface: #0a0f16;
+  --td-filetree-chrome: #121c29;
+  --td-filetree-line: rgba(148, 176, 210, 0.26);
+  --td-filetree-muted: #93a3b8;
+  --td-filetree-title: #e8eef6;
+  --td-filetree-accent: #5da2dd;
+  --td-filetree-hover: rgba(93, 162, 221, 0.12);
+}
+
+.td-filetree__chrome {
+  display: grid;
+  min-block-size: 2.45rem;
+  place-items: center;
+  padding-inline: 0.85rem;
+  border-block-end: 1px solid var(--td-filetree-line);
+  background: linear-gradient(
+    180deg,
+    color-mix(
+      in srgb,
+      var(--td-filetree-chrome) 94%,
+      var(--td-filetree-muted)
+    ),
+    var(--td-filetree-chrome)
+  );
+  color: var(--td-filetree-muted);
+  font-family: var(--td-meta-font-family);
+  line-height: 1;
 }
 
 .td-filetree__label {
-  margin-block: 0 0.65rem;
-  color: var(--bs-body-color);
-  font-family: var(--td-heading-font-family);
-  font-size: 1rem;
-  font-weight: 650;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--td-filetree-title);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-filetree__body {
+  position: relative;
+  min-width: 0;
+  padding-block: 0.45rem;
+  overflow: hidden;
+  background: var(--td-filetree-surface);
 }
 
 .td-filetree__list {
@@ -224,18 +291,13 @@ a.td-badge {
   list-style: none;
 
   .td-filetree__list {
-    margin-inline-start: 0.45rem;
-    padding-inline-start: 1.35rem;
-    border-inline-start: 1px solid var(--bs-border-color);
+    margin: 0;
+    padding: 0;
   }
 }
 
 .td-filetree__item {
   min-width: 0;
-
-  + .td-filetree__item {
-    margin-block-start: 0.18rem;
-  }
 }
 
 .td-filetree__details {
@@ -245,7 +307,6 @@ a.td-badge {
 .td-filetree__summary {
   display: block;
   min-width: 0;
-  border-radius: var(--bs-border-radius-sm);
   cursor: pointer;
   list-style: none;
 
@@ -260,26 +321,38 @@ a.td-badge {
 
   &:focus-visible {
     outline: 2px solid currentColor;
-    outline-offset: 2px;
+    outline-offset: -2px;
   }
 }
 
 .td-filetree__entry {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.45rem;
+  display: grid;
+  grid-template-columns: minmax(0, var(--td-filetree-split)) minmax(0, 1fr);
+  align-items: stretch;
   min-inline-size: 0;
   inline-size: 100%;
-  padding: 0.22rem 0.3rem;
-  border-radius: var(--bs-border-radius-sm);
-  line-height: 1.45;
+  block-size: var(--td-filetree-row-height);
+  min-block-size: var(--td-filetree-row-height);
+  max-block-size: var(--td-filetree-row-height);
+  overflow: hidden;
+  line-height: 1;
 }
 
 .td-filetree__item--file > .td-filetree__entry:hover,
 .td-filetree__item--file > .td-filetree__entry:focus-within,
 .td-filetree__summary:hover > .td-filetree__entry,
 .td-filetree__summary:focus-visible > .td-filetree__entry {
-  background: var(--bs-tertiary-bg);
+  background: var(--td-filetree-hover);
+}
+
+.td-filetree__name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  block-size: 100%;
+  padding-inline: calc(0.7rem + var(--td-filetree-indent, 0rem)) 0.65rem;
+  overflow: hidden;
 }
 
 .td-filetree__icon-slot {
@@ -289,7 +362,6 @@ a.td-badge {
   justify-content: center;
   inline-size: 1.15em;
   block-size: 1.15em;
-  margin-block-start: 0.16em;
   color: var(--bs-secondary-color);
 
   &--folder {
@@ -344,80 +416,130 @@ a.td-badge {
   display: inline-block;
 }
 
-.td-filetree__main {
-  display: grid;
-  flex: 1 1 0;
-  grid-template-columns:
-    minmax(0, var(--td-filetree-name-column))
-    minmax(0, 1fr);
-  align-items: baseline;
-  gap: 0.75rem;
-  min-inline-size: 0;
-}
-
 .td-filetree__entry--folder .td-filetree__name {
   font-weight: 600;
 }
 
 .td-filetree__name,
 .td-filetree__link {
+  display: block;
   min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow: hidden;
   font-family: var(--td-code-font-family);
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.td-filetree__main > :only-child {
-  grid-column: 1 / -1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .td-filetree__comment {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   min-inline-size: 0;
+  block-size: 100%;
+  padding-inline: 0.65rem 0.55rem;
   overflow: hidden;
-  color: var(--bs-secondary-color);
+  color: var(--td-filetree-muted);
   font-family: var(--td-code-font-family);
   font-size: 0.86em;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .td-filetree__comment-marker {
-  margin-inline-end: 0.45rem;
-  color: var(--bs-secondary-color);
+  flex: none;
+  color: var(--td-filetree-muted);
   font-weight: 600;
 }
 
-.td-filetree__metadata {
-  display: grid;
-  flex: 0 1 var(--td-filetree-metadata-width);
-  grid-template-columns: var(--td-filetree-mode-width) minmax(0, 1fr);
-  gap: 0.8ch;
-  inline-size: var(--td-filetree-metadata-width);
-  max-inline-size: 45%;
-  min-inline-size: 0;
-  margin-inline-start: auto;
-  padding-inline-start: 0.65rem;
-  border-inline-start: 1px solid var(--bs-border-color);
-  color: var(--bs-secondary-color);
-  font-family: var(--td-code-font-family);
-  font-size: 0.78em;
-  line-height: 1.65;
-}
-
-.td-filetree__meta {
-  min-inline-size: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.td-filetree__comment-scroll {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
   white-space: nowrap;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:focus-visible {
+    border-radius: 0.15rem;
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+  }
 }
 
-.td-filetree__meta--mode {
-  inline-size: var(--td-filetree-mode-width);
-  font-variant-numeric: tabular-nums;
+.td-filetree__comment-ellipsis {
+  position: absolute;
+  inset-inline-end: 0.35rem;
+  display: none;
+  padding-inline-start: 0.85rem;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--td-filetree-surface) 48%
+  );
+  pointer-events: none;
 }
 
-.td-filetree__meta-value {
-  unicode-bidi: plaintext;
+[dir='rtl'] .td-filetree__comment-ellipsis {
+  background: linear-gradient(
+    to left,
+    transparent,
+    var(--td-filetree-surface) 48%
+  );
+}
+
+.td-filetree__comment[data-overflow-end] .td-filetree__comment-ellipsis {
+  display: block;
+}
+
+.td-filetree__divider {
+  position: absolute;
+  z-index: 3;
+  inset-block: 0;
+  inset-inline-start: var(--td-filetree-split);
+  inline-size: 1rem;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+  transform: translateX(-50%);
+}
+
+.td-filetree__divider-line {
+  position: absolute;
+  inset-block: 0.4rem;
+  inset-inline-start: 50%;
+  border-inline-start: 1px dashed var(--td-filetree-line);
+  box-shadow: 1px 0 4px rgba(20, 35, 50, 0.14);
+  transform: translateX(-50%);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.td-filetree__divider:hover .td-filetree__divider-line,
+.td-filetree__divider:focus-visible .td-filetree__divider-line,
+.td-filetree--resizing .td-filetree__divider-line {
+  border-color: var(--td-filetree-accent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--td-filetree-accent) 18%, transparent);
+}
+
+.td-filetree--resizing,
+.td-filetree--resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+.td-filetree--static .td-filetree__divider {
+  pointer-events: none;
 }
 
 .td-imgproc {
@@ -656,29 +778,21 @@ a.td-badge {
 
 @media (max-width: 767.98px) {
   .td-filetree {
-    --td-filetree-name-column: 18ch;
-    --td-filetree-metadata-width: 16ch;
-
-    padding-inline: 0.7rem;
+    --td-filetree-row-height: 1.9rem;
   }
 
-  .td-filetree__list .td-filetree__list {
-    margin-inline-start: 0;
-    padding-inline-start: 0.35rem;
+  .td-filetree__chrome {
+    min-block-size: 2.3rem;
   }
 
-  .td-filetree__entry {
+  .td-filetree__name-cell {
+    gap: 0.38rem;
+    padding-inline: calc(0.5rem + var(--td-filetree-indent, 0rem)) 0.45rem;
+  }
+
+  .td-filetree__comment {
     gap: 0.35rem;
-    padding-inline: 0.2rem;
-  }
-
-  .td-filetree__main {
-    gap: 0.5rem;
-  }
-
-  .td-filetree__metadata {
-    max-inline-size: 48%;
-    padding-inline-start: 0.35rem;
+    padding-inline: 0.5rem 0.4rem;
   }
 }
 
@@ -701,8 +815,9 @@ a.td-badge {
     background: Canvas;
   }
 
-  .td-filetree__list .td-filetree__list {
+  .td-filetree__chrome {
     border-color: currentColor;
+    background: Canvas;
   }
 
   .td-filetree__icon-slot,
@@ -710,9 +825,9 @@ a.td-badge {
     color: CanvasText;
   }
 
-  .td-filetree__metadata {
+  .td-filetree__divider-line {
     border-color: currentColor;
-    color: CanvasText;
+    box-shadow: none;
   }
 
   .td-filetree__item--file > .td-filetree__entry:hover,
@@ -759,18 +874,19 @@ a.td-badge {
     color: #000 !important;
   }
 
-  .td-filetree__list .td-filetree__list {
+  .td-filetree__chrome {
     border-color: currentColor !important;
+    background: transparent !important;
   }
 
   .td-filetree__icon-slot,
-  .td-filetree__comment,
-  .td-filetree__metadata {
+  .td-filetree__comment {
     color: #000 !important;
   }
 
-  .td-filetree__metadata {
+  .td-filetree__divider-line {
     border-color: currentColor !important;
+    box-shadow: none !important;
   }
 
   .td-filetree__details > .td-filetree__list {

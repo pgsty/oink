@@ -182,13 +182,14 @@ candidate.
 
 ### 2.7 Runtime loading
 
-Badge, Kbd, Fields, FileTree, Tables, and the numbered Book components never
-load JavaScript. Image Zoom owns one opt-in dialog runtime and Gallery may
-request that same runtime without adding another bundle. Release Assets owns a
-separate opt-in copy runtime keyed by `hasAssetList`; it never reads the Image
-Zoom flag. Both are appended from `layouts/_partials/scripts.html` only after
-content sets its own Page Store flag. Print, Markdown, and RSS never receive
-either runtime.
+Badge, Kbd, Fields, Tables, and the numbered Book components never load
+JavaScript. FileTree requests the shared content-component runtime only to
+enhance its static two-column layout with a draggable separator. Image Zoom
+owns one opt-in dialog runtime and Gallery may request that same runtime without
+adding another bundle. Release Assets owns a separate opt-in copy runtime keyed
+by `hasAssetList`; it never reads the Image Zoom flag. Runtimes are appended
+from `layouts/_partials/scripts.html` only after content sets its Page Store
+flag. Print, Markdown, and RSS never receive them.
 
 The server-rendered HTML is complete before enhancement. If JavaScript is
 disabled, blocked, fails, or `HTMLDialogElement` is unavailable, all original
@@ -353,8 +354,8 @@ with nested schemas and compiler-driven type extraction.
 
 ```go-html-template
 {{< filetree label="Repository structure" >}}
-  {{< filetree/folder name="content" open=true comment="Site content" owner="docs" group="writers" mode="0755" >}}
-    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="Section landing page" owner="docs" group="writers" mode="0644" >}}
+  {{< filetree/folder name="content" open=true comment="0755 docs:writers · Site content" >}}
+    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="0644 docs:writers · Section landing page" >}}
     {{< filetree/folder name="docs" open=true >}}
       {{< filetree/file name="getting-started.md" >}}
       {{< filetree/file name="configuration.md" link="/docs/configuration/" >}}
@@ -368,7 +369,7 @@ with nested schemas and compiler-driven type extraction.
 
 | Parameter | Required | Accepted values | Default |
 | --- | --- | --- | --- |
-| `label` | no | non-empty plain string | no visible label |
+| `label` | no | non-empty plain string | empty title bar |
 
 `filetree/folder` parameters:
 
@@ -378,9 +379,6 @@ with nested schemas and compiler-driven type extraction.
 | `open` | no | strict boolean | `false` |
 | `icon` | no | one Font Awesome pair matching `fa-(solid\|regular\|brands) fa-[a-z0-9-]+` | stateful folder icons |
 | `color` | no | `neutral`, `primary`, `secondary`, `info`, `success`, `warning`, `danger` | folder theme color |
-| `mode` | no | non-empty plain string, normally quoted octal such as `0755` | none |
-| `owner` | no | non-empty plain string | none |
-| `group` | no | non-empty plain string; requires `owner` | none |
 | `comment` | no | non-empty plain string | none |
 
 `filetree/file` parameters:
@@ -391,33 +389,34 @@ with nested schemas and compiler-driven type extraction.
 | `link` | no | URL allowed by section 2.4 | none |
 | `icon` | no | one Font Awesome pair matching `fa-(solid\|regular\|brands) fa-[a-z0-9-]+` | `fa-regular fa-file` |
 | `color` | no | `neutral`, `primary`, `secondary`, `info`, `success`, `warning`, `danger` | neutral theme color |
-| `mode` | no | non-empty plain string, normally quoted octal such as `0644` | none |
-| `owner` | no | non-empty plain string | none |
-| `group` | no | non-empty plain string; requires `owner` | none |
 | `comment` | no | non-empty plain string | none |
 
-HTML uses nested lists. A folder contains native `<details>` and `<summary>`;
-`open` affects only its initial HTML state. FileTree does not use JavaScript or
-`role="tree"`. The browser disclosure marker is suppressed: default folders
-switch between `fa-regular fa-folder` and `fa-regular fa-folder-open`, while an
-authored `icon` replaces both states. File and folder names use the code-font
-token. Hover and keyboard focus tint the complete row.
+HTML uses nested lists inside a terminal-window surface. The optional `label`
+is centered in the chrome bar; FileTree deliberately omits the three decorative
+macOS control dots. A folder contains native `<details>` and `<summary>`, and
+`open` affects only its initial state. FileTree does not claim `role="tree"`.
+The browser disclosure marker is suppressed: default folders switch between
+`fa-regular fa-folder` and `fa-regular fa-folder-open`, while an authored `icon`
+replaces both states. Hover and keyboard focus tint the complete row.
 
-`comment` stays beside the name, uses the code-font token, and receives a
-visible `#` prefix. A preferred filename column aligns comments where space
-allows; long names, narrow viewports, and deep nesting may shrink that column.
-The comment truncates with an ellipsis before it can displace the name or
-metadata.
+Every row has the same fixed block size. The first column contains indentation,
+icon, and the code-font name; names never wrap and use an ellipsis when the
+column is too narrow. The second column contains the author-controlled
+code-font `comment` with a visible `#` prefix. All comments begin at one shared
+vertical separator. Long comments remain a one-line horizontal scroll region;
+an end ellipsis indicates hidden content until the reader scrolls to it.
 
-When any filesystem metadata is present, the row reserves a compact inline-end
-region. `mode` comes first in a fixed `4ch` column and is rendered exactly as
-authored: a value such as `0555` is never converted to symbolic `r-xr-xr-x`
-notation. The second column renders `owner` alone or `owner:group`; `group`
-without `owner` is invalid. This identity column consumes the remaining
-metadata space, truncates with an ellipsis, and retains its full value in
-`title`. The whole region shrinks proportionally on narrow or deeply nested
-rows. The literal metadata labels `owner`, `group`, and `mode` are untranslated
-filesystem vocabulary in assistive and Markdown output.
+The HTML enhancement marks the separator as a focusable vertical
+`role="separator"`. Pointer dragging keeps the shared split
+between `20%` and `80%`. Arrow keys move it in two-point steps, Shift+Arrow
+moves it by ten,
+Home/End select the limits, and double-click restores the default `56%`. With
+JavaScript disabled, the complete tree remains readable at that default split.
+
+`owner`, `group`, and `mode` are not FileTree parameters. Authors who want
+filesystem notation put exactly the desired text in `comment`, for example
+`comment="0755 docs:writers · Site content"`. FileTree neither parses nor
+reformats that text.
 
 Print and RSS expose every descendant regardless of `open`. Markdown uses a
 nested list, appends `/` to folder names, and preserves file links:
@@ -431,15 +430,16 @@ nested list, appends `/` to folder names, and preserves file links:
 - hugo.yml
 ```
 
-Markdown preserves comments and filesystem metadata after the node:
+Markdown preserves the same author-controlled comment after the node:
 
 ```markdown
-- _index.md # Section landing page (mode: `0644`; owner: `docs:writers`)
+- _index.md # 0644 docs:writers · Section landing page
 ```
 
 Decorative icon and color choices are omitted. Print and RSS retain the
-complete expanded row. Badges, sorting, filesystem reads, automatic metadata,
-selection, and direction-key navigation are deferred.
+complete expanded row and a static separator. Badges, sorting, filesystem
+reads, automatic metadata, selection, and direction-key tree navigation are
+deferred.
 
 ### 3.5 Shared images and imgproc compatibility
 
@@ -739,7 +739,7 @@ RSS strips Book ToC.
 | Badge | semantic `<span>` or `<a>` | monochrome inline badge | emphasized text or link | static inline HTML | identical content | none |
 | Kbd | nested `<kbd>` sequence | visible key boundaries | `Ctrl + K` | static inline HTML | identical content | none |
 | Fields | responsive semantic `<dl>` | complete definition list | metadata bullet list | complete static `<dl>` | identical content | none |
-| FileTree | nested lists, native `<details>`, comments, and filesystem metadata | fully expanded complete rows | nested list with textual metadata | fully expanded complete rows | native disclosure remains usable | none |
+| FileTree | terminal-window nested list with draggable name/comment columns | fully expanded equal-height rows | nested list with comments | fully expanded complete rows | default static split and native disclosure remain usable | one opt-in local divider runtime |
 | Shared image | image/figure and caption | image/figure and caption | ordinary image and caption | static figure | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
 | Gallery | responsive figure grid | sequential figures | sequential images and captions | sequential figures | complete static grid | reuses Image Zoom only |

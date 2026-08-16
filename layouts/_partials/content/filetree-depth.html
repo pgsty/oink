@@ -1,0 +1,13 @@
+{{- /* Count folder ancestors so indentation can stay inside the filename
+     column while every comment remains aligned to the shared divider. */ -}}
+{{- $depth := 0 -}}
+{{- $parent := .Parent -}}
+{{- range seq 1 64 -}}
+  {{- if not $parent -}}{{ break }}{{ end -}}
+  {{- if eq $parent.Name "filetree" -}}{{ break }}{{ end -}}
+  {{- if eq $parent.Name "filetree/folder" -}}
+    {{- $depth = add $depth 1 -}}
+  {{- end -}}
+  {{- $parent = $parent.Parent -}}
+{{- end -}}
+{{- return $depth -}}

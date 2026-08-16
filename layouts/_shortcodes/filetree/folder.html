@@ -11,7 +11,7 @@
 {{- if and $hasParams (not .IsNamedParams) -}}
   {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
 {{- end -}}
-{{- $allowed := slice "name" "open" "icon" "color" "comment" "owner" "group" "mode" -}}
+{{- $allowed := slice "name" "open" "icon" "color" "comment" -}}
 {{- range $name, $_ := .Params -}}
   {{- if not (in $allowed $name) -}}
     {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
@@ -38,6 +38,7 @@
   {{- $open = $openParam -}}
 {{- end -}}
 {{- $node := partial "content/filetree-node-params.html" . -}}
+{{- $depth := partial "content/filetree-depth.html" . -}}
 {{- $children := partial "content/filetree-children.html" (dict
   "source" .Inner "name" .Name "position" .Position
 ) -}}
@@ -55,7 +56,7 @@
 {{- else if in (slice "print" "rss") $outputFormat -}}
 <li class="td-filetree__item td-filetree__item--folder">
   {{- partial "content/filetree-entry.html" (dict
-    "kind" "folder" "name" $folderName "node" $node
+    "kind" "folder" "name" $folderName "node" $node "depth" $depth
   ) -}}
   {{- if $children }}
   <ul class="td-filetree__list">{{ $children | safeHTML }}</ul>
@@ -66,7 +67,7 @@
   <details class="td-filetree__details"{{ if $open }} open{{ end }}>
     <summary class="td-filetree__summary">
       {{- partial "content/filetree-entry.html" (dict
-        "kind" "folder" "name" $folderName "node" $node "disclosure" true
+        "kind" "folder" "name" $folderName "node" $node "depth" $depth "disclosure" true
       ) -}}
     </summary>
     {{- if $children }}

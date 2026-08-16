@@ -161,6 +161,112 @@
     }
   }
 
+  function initFileTree(root) {
+    if (root.dataset.tdFiletreeReady === 'true') return;
+    var body = root.querySelector('[data-td-filetree-body]');
+    var divider = root.querySelector('[data-td-filetree-divider]');
+    if (!body || !divider) return;
+    root.dataset.tdFiletreeReady = 'true';
+
+    var minimum = Number(divider.getAttribute('aria-valuemin')) || 20;
+    var maximum = Number(divider.getAttribute('aria-valuemax')) || 80;
+    var initial = Number(divider.getAttribute('aria-valuenow')) || 56;
+    var current = initial;
+    var activePointer = null;
+    var overflowFrame = 0;
+    var commentScrolls = Array.from(
+      root.querySelectorAll('.td-filetree__comment-scroll'),
+    );
+
+    function updateCommentOverflow(scroller) {
+      var comment = scroller.closest('.td-filetree__comment');
+      if (!comment) return;
+      var remaining = scroller.scrollWidth - scroller.clientWidth;
+      var position = Math.abs(scroller.scrollLeft);
+      comment.toggleAttribute(
+        'data-overflow-end',
+        remaining > 1 && position < remaining - 1,
+      );
+    }
+
+    function updateOverflow() {
+      overflowFrame = 0;
+      commentScrolls.forEach(updateCommentOverflow);
+    }
+
+    function scheduleOverflow() {
+      if (overflowFrame) window.cancelAnimationFrame(overflowFrame);
+      overflowFrame = window.requestAnimationFrame(updateOverflow);
+    }
+
+    function setSplit(value) {
+      current = Math.max(minimum, Math.min(maximum, value));
+      current = Math.round(current * 10) / 10;
+      root.style.setProperty('--td-filetree-split', current + '%');
+      divider.setAttribute('aria-valuenow', String(Math.round(current)));
+      scheduleOverflow();
+    }
+
+    function splitFromPointer(event) {
+      var rect = body.getBoundingClientRect();
+      var rtl = getComputedStyle(body).direction === 'rtl';
+      var distance = rtl ? rect.right - event.clientX : event.clientX - rect.left;
+      return (distance / rect.width) * 100;
+    }
+
+    function stopResize(event) {
+      if (activePointer === null) return;
+      root.classList.remove('td-filetree--resizing');
+      if (event && divider.hasPointerCapture(event.pointerId)) {
+        divider.releasePointerCapture(event.pointerId);
+      }
+      activePointer = null;
+    }
+
+    divider.addEventListener('pointerdown', function (event) {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      event.preventDefault();
+      divider.focus();
+      activePointer = event.pointerId;
+      divider.setPointerCapture(event.pointerId);
+      root.classList.add('td-filetree--resizing');
+      setSplit(splitFromPointer(event));
+    });
+    window.addEventListener('pointermove', function (event) {
+      if (event.pointerId !== activePointer) return;
+      setSplit(splitFromPointer(event));
+    });
+    window.addEventListener('pointerup', stopResize);
+    window.addEventListener('pointercancel', stopResize);
+    divider.addEventListener('dblclick', function () {
+      setSplit(initial);
+    });
+    divider.addEventListener('keydown', function (event) {
+      var rtl = getComputedStyle(body).direction === 'rtl';
+      var step = event.shiftKey ? 10 : 2;
+      if (event.key === 'Home') setSplit(minimum);
+      else if (event.key === 'End') setSplit(maximum);
+      else if (event.key === 'ArrowLeft')
+        setSplit(current + (rtl ? step : -step));
+      else if (event.key === 'ArrowRight')
+        setSplit(current + (rtl ? -step : step));
+      else return;
+      event.preventDefault();
+    });
+
+    commentScrolls.forEach(function (scroller) {
+      scroller.addEventListener('scroll', function () {
+        updateCommentOverflow(scroller);
+      });
+    });
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(scheduleOverflow).observe(body);
+    } else {
+      window.addEventListener('resize', scheduleOverflow);
+    }
+    setSplit(initial);
+  }
+
   function initCarousel(root) {
     var track = root.querySelector('[data-td-carousel-track]');
     var cards = track ? Array.from(track.children) : [];
@@ -211,6 +317,7 @@
   }
 
   document.querySelectorAll('[data-td-asciinema]').forEach(initAsciinema);
+  document.querySelectorAll('[data-td-filetree]').forEach(initFileTree);
   document.querySelectorAll('[data-td-echarts]').forEach(initEcharts);
   document.querySelectorAll('[data-td-infographic]').forEach(initInfographic);
   document.querySelectorAll('[data-td-carousel]').forEach(initCarousel);

@@ -1,8 +1,8 @@
-{{- /* Validate and normalize the optional presentation and filesystem fields
-     shared by FileTree folders and files. */ -}}
+{{- /* Validate and normalize the optional presentation fields shared by
+     FileTree folders and files. */ -}}
 {{- $shortcode := . -}}
 {{- $values := dict -}}
-{{- range $parameter := slice "icon" "color" "comment" "owner" "group" "mode" -}}
+{{- range $parameter := slice "icon" "color" "comment" -}}
   {{- $value := "" -}}
   {{- if isset $shortcode.Params $parameter -}}
     {{- $parameterValue := $shortcode.Get $parameter -}}
@@ -28,10 +28,6 @@
   {{- if not (in $colors .) -}}
     {{- errorf "shortcode %q: color must be one of %s; got %q at %s" $shortcode.Name (delimit $colors " | ") . $shortcode.Position -}}
   {{- end -}}
-{{- end -}}
-
-{{- if and $values.group (not $values.owner) -}}
-  {{- errorf "shortcode %q: group requires owner at %s" $shortcode.Name $shortcode.Position -}}
 {{- end -}}
 
 {{- return $values -}}

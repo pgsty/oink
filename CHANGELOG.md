@@ -7,11 +7,11 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
-- Extend FileTree nodes with validated Font Awesome icon overrides, semantic
-  icon colors, aligned code-font `#` comments, and compact mode plus
-  owner/owner:group metadata. Octal modes render verbatim in a fixed-width
-  column; default folders expose distinct open and closed icons, every row
-  receives a hover treatment, and file names use the code-font token.
+- Refine FileTree with validated Font Awesome icon overrides, semantic colors,
+  stateful folders, and one author-controlled code-font `#` comment instead of
+  dedicated owner/group/mode fields. The terminal-window surface uses strictly
+  equal-height single-line rows and a pointer- and keyboard-resizable divider;
+  narrow names truncate while long comments remain horizontally scrollable.
 - Reduce the shared navbar height to 50px and add opt-in
   `params.ui.navbar_autohide`, with section-cascade and page overrides. On
   mouse-driven devices at 768px and above the hidden bar returns from a

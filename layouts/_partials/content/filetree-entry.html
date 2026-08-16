@@ -5,32 +5,21 @@
   {{- errorf "internal FileTree entry kind %q is not supported" $kind -}}
 {{- end -}}
 {{- $node := .node -}}
-{{- $hasMetadata := or $node.owner (or $node.group $node.mode) -}}
-<span class="td-filetree__entry td-filetree__entry--{{ $kind }}">
-  {{- partial "content/filetree-icon.html" (dict
-    "kind" $kind "icon" $node.icon "color" $node.color
-    "disclosure" (.disclosure | default false)
-  ) -}}
-  <span class="td-filetree__main">
+{{- $indent := mul (int (.depth | default 0)) 18 -}}
+<span class="td-filetree__entry td-filetree__entry--{{ $kind }}" style="--td-filetree-indent: {{ $indent }}px">
+  <span class="td-filetree__name-cell">
+    {{- partial "content/filetree-icon.html" (dict
+      "kind" $kind "icon" $node.icon "color" $node.color
+      "disclosure" (.disclosure | default false)
+    ) -}}
     {{- if .link }}<a class="td-filetree__link" href="{{ .link.href }}"><span class="td-filetree__name" dir="auto">{{ .name }}</span></a>
     {{- else }}<span class="td-filetree__name" dir="auto">{{ .name }}</span>{{ end -}}
-    {{- with $node.comment }}
-    <span class="td-filetree__comment" dir="auto" title="{{ . }}"><span class="td-filetree__comment-marker" aria-hidden="true">#</span><span class="td-filetree__comment-text">{{ . }}</span></span>
+  </span>
+  <span class="td-filetree__comment"{{ with $node.comment }} title="{{ . }}"{{ end }}>
+    {{- with $node.comment -}}
+    <span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+    <span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">{{ . }}</span></span>
+    <span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
     {{- end }}
   </span>
-  {{- if $hasMetadata }}
-  <span class="td-filetree__metadata">
-    {{- with $node.mode }}<span class="td-filetree__meta td-filetree__meta--mode" title="mode: {{ . }}" aria-label="mode: {{ . }}"><span class="td-filetree__meta-value" dir="ltr">{{ . }}</span></span>
-    {{- else }}<span class="td-filetree__meta td-filetree__meta--mode" aria-hidden="true"></span>{{ end -}}
-    {{- with $node.owner -}}
-      {{- $identity := . -}}
-      {{- $identityLabel := printf "owner: %s" . -}}
-      {{- with $node.group -}}
-        {{- $identity = printf "%s:%s" $identity . -}}
-        {{- $identityLabel = printf "%s; group: %s" $identityLabel . -}}
-      {{- end -}}
-    <span class="td-filetree__meta td-filetree__meta--identity" title="{{ $identityLabel }}" aria-label="{{ $identityLabel }}"><span class="td-filetree__meta-value" dir="auto">{{ $identity }}</span></span>
-    {{- else }}<span class="td-filetree__meta td-filetree__meta--identity" aria-hidden="true"></span>{{ end }}
-  </span>
-  {{- end }}
 </span>

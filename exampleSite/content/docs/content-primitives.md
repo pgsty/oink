@@ -83,11 +83,11 @@ contained overflow policy.
 ## FileTree
 
 {{< filetree label="Repository structure" >}}
-  {{< filetree/folder name="content" open=true comment="Site content & templates" owner="docs-admin" group="writers" mode="0755" >}}
-    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="Section landing page" owner="vonng" group="docs" mode="0644" >}}
+  {{< filetree/folder name="content" open=true comment="0755 docs-admin:writers · Site content & templates" >}}
+    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="0644 vonng:docs · Section landing page" >}}
     {{< filetree/folder name="docs" >}}
       {{< filetree/file name="index.md" link="/docs/" >}}
-      {{< filetree/file name="configuration.md" link="/docs/configuration/" icon="fa-solid fa-gears" color="info" comment="Runtime settings" owner="docs-admin" mode="0644" >}}
+      {{< filetree/file name="configuration.md" link="/docs/configuration/" icon="fa-solid fa-gears" color="info" comment="0644 docs-admin · Runtime settings" >}}
       {{< filetree/folder name="level1" open=true >}}
         {{< filetree/folder name="level2" >}}
           {{< filetree/folder name="level3" open=true >}}
@@ -107,9 +107,9 @@ contained overflow policy.
       {{< /filetree/folder >}}
     {{< /filetree/folder >}}
   {{< /filetree/folder >}}
-  {{< filetree/folder name="static" icon="fa-solid fa-box-archive" color="success" comment="Generated assets" owner="release-engineering" group="documentation" mode="0750" >}}
-    {{< filetree/file name="index.md" mode="0555" >}}
-    {{< filetree/file name="a-deliberately-long-unbroken-filename-that-must-wrap-within-a-narrow-content-column.example.json" >}}
+  {{< filetree/folder name="static" icon="fa-solid fa-box-archive" color="success" comment="0750 release-engineering:documentation · Generated assets" >}}
+    {{< filetree/file name="index.md" comment="0555" >}}
+    {{< filetree/file name="a-deliberately-long-unbroken-filename-that-must-truncate-within-a-narrow-content-column.example.json" >}}
   {{< /filetree/folder >}}
   {{< filetree/folder name="本地化" open=true >}}
     {{< filetree/file name="配置.md" >}}
@@ -117,5 +117,5 @@ contained overflow policy.
   {{< filetree/folder name="واجهة" >}}
     {{< filetree/file name="دليل-الإعداد.md" >}}
   {{< /filetree/folder >}}
-  {{< filetree/file name="hugo.yml" color="warning" comment="Site configuration" owner="root" group="wheel" mode="0640" >}}
+  {{< filetree/file name="hugo.yml" color="warning" comment="0640 root:wheel · Site configuration" >}}
 {{< /filetree >}}

@@ -45,7 +45,11 @@ def check_outputs(public: Path) -> list[str]:
         '<span class="td-field__default">default: <code>&#34;&#34;</code></span>',
         '<a href="/docs/">documentation</a>',
         'class="td-filetree"',
+        'data-td-filetree',
+        'class="td-filetree__chrome"',
         'class="td-filetree__label"',
+        'class="td-filetree__body" data-td-filetree-body',
+        'class="td-filetree__divider" role="separator" tabindex="0" aria-orientation="vertical" aria-valuemin="20" aria-valuemax="80" aria-valuenow="56"',
         'class="td-filetree__list td-filetree__list--root" aria-labelledby=',
         '<details class="td-filetree__details" open>',
         '<details class="td-filetree__details">',
@@ -57,16 +61,14 @@ def check_outputs(public: Path) -> list[str]:
         'td-filetree__icon-slot--color-primary',
         'td-filetree__icon-slot--color-success',
         '<a class="td-filetree__link" href="/docs/configuration/">',
-        '<span class="td-filetree__comment" dir="auto" title="Site content &amp; templates"><span class="td-filetree__comment-marker" aria-hidden="true">#</span><span class="td-filetree__comment-text">Site content &amp; templates</span></span>',
-        '<span class="td-filetree__metadata">',
-        'title="mode: 0750" aria-label="mode: 0750"',
-        'title="owner: release-engineering; group: documentation" aria-label="owner: release-engineering; group: documentation"',
-        '<span class="td-filetree__meta-value" dir="auto">release-engineering:documentation</span>',
-        'title="owner: docs-admin" aria-label="owner: docs-admin"',
-        'title="mode: 0555" aria-label="mode: 0555"',
+        '<span class="td-filetree__comment" title="0755 docs-admin:writers · Site content &amp; templates">',
+        '<span class="td-filetree__comment-marker" aria-hidden="true">#</span>',
+        '<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0755 docs-admin:writers · Site content &amp; templates</span></span>',
+        '<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>',
+        'style="--td-filetree-indent: 144px"',
         '<span class="td-filetree__name" dir="auto">本地化</span>',
         '<span class="td-filetree__name" dir="auto">واجهة</span>',
-        'a-deliberately-long-unbroken-filename-that-must-wrap-within-a-narrow-content-column.example.json',
+        'a-deliberately-long-unbroken-filename-that-must-truncate-within-a-narrow-content-column.example.json',
         'class="td-table-scroll" tabindex="0" role="region"',
         'aria-label="Scrollable table"',
         'class="td-table-scroll td-table-scroll--full"',
@@ -107,15 +109,11 @@ def check_outputs(public: Path) -> list[str]:
         "FileTree leaked an internal child marker into HTML",
         errors,
     )
-    metadata_start = page.find('<span class="td-filetree__metadata">')
-    metadata_mode = page.find('title="mode: 0755"', metadata_start)
-    metadata_identity = page.find(
-        'title="owner: docs-admin; group: writers"', metadata_start
-    )
     require(
-        metadata_start >= 0
-        and metadata_start < metadata_mode < metadata_identity,
-        "FileTree metadata does not render mode before owner:group",
+        "td-filetree__metadata" not in page
+        and "td-filetree__meta--mode" not in page
+        and "td-filetree__meta--identity" not in page,
+        "FileTree retained dedicated filesystem metadata cells",
         errors,
     )
     require("**Beta**" in markdown, "Markdown lost Badge text", errors)
@@ -149,24 +147,24 @@ def check_outputs(public: Path) -> list[str]:
         "A second paragraph preserves multiline description Markdown and `inline code`.",
         "**Repository structure**",
         "- content/",
-        "- content/ # Site content \\& templates (mode: `0755`; owner: `docs-admin:writers`)",
-        "  - \\_index\\.md # Section landing page (mode: `0644`; owner: `vonng:docs`)",
+        "- content/ # 0755 docs\\-admin\\:writers · Site content \\& templates",
+        "  - \\_index\\.md # 0644 vonng\\:docs · Section landing page",
         "  - \\_index\\.md",
         "  - docs/",
         "    - [configuration\\.md](/docs/configuration/)",
-        "    - [configuration\\.md](/docs/configuration/) # Runtime settings (mode: `0644`; owner: `docs-admin`)",
+        "    - [configuration\\.md](/docs/configuration/) # 0644 docs\\-admin · Runtime settings",
         "    - level1/",
         "                  - level8/",
         "                    - deeply\\-nested\\.md",
         "- static/",
-        "- static/ # Generated assets (mode: `0750`; owner: `release-engineering:documentation`)",
-        "  - index\\.md (mode: `0555`)",
+        "- static/ # 0750 release\\-engineering\\:documentation · Generated assets",
+        "  - index\\.md # 0555",
         "- 本地化/",
         "  - 配置\\.md",
         "- واجهة/",
         "  - دليل\\-الإعداد\\.md",
         "- hugo\\.yml",
-        "- hugo\\.yml # Site configuration (mode: `0640`; owner: `root:wheel`)",
+        "- hugo\\.yml # 0640 root\\:wheel · Site configuration",
         "| Component | HTML behavior | Print behavior | Markdown behavior | Runtime |",
         "| Full table | 100% | Horizontal scroll | Complete table |",
         "{.full-width}",
@@ -284,8 +282,8 @@ def check_rss_output(hugo: str) -> list[str]:
             '  {{< /field >}}\n'
             '{{< /fields >}}\n\n'
             '{{< filetree label="RSS tree" >}}\n'
-            '  {{< filetree/folder name="closed" comment="Archived & stable" owner="root" group="docs" mode="0750" >}}\n'
-            '    {{< filetree/file name="deep.md" link="/docs/deep/" icon="fa-solid fa-file-code" color="info" comment="Read me" owner="reader" mode="0440" >}}\n'
+            '  {{< filetree/folder name="closed" comment="0750 root:docs · Archived & stable" >}}\n'
+            '    {{< filetree/file name="deep.md" link="/docs/deep/" icon="fa-solid fa-file-code" color="info" comment="0440 reader · Read me" >}}\n'
             '  {{< /filetree/folder >}}\n'
             '  {{< filetree/file name="root.yml" >}}\n'
             '{{< /filetree >}}\n'
@@ -342,18 +340,17 @@ def check_rss_output(hugo: str) -> list[str]:
             '<code>false</code>',
             '<strong>RSS description</strong>',
             'class="td-filetree td-filetree--static"',
+            'class="td-filetree__chrome"',
+            'class="td-filetree__divider" aria-hidden="true"',
             '>RSS tree</p>',
             '>closed</span>',
-            'title="Archived &amp; stable"',
+            'title="0750 root:docs · Archived &amp; stable"',
             'class="td-filetree__comment-marker" aria-hidden="true">#</span>',
-            'title="mode: 0750" aria-label="mode: 0750"',
-            'title="owner: root; group: docs" aria-label="owner: root; group: docs"',
-            '>root:docs</span>',
+            '>0750 root:docs · Archived &amp; stable</span>',
             'class="fa-solid fa-file-code td-filetree__icon"',
             'td-filetree__icon-slot--color-info',
-            'title="Read me"',
-            'title="mode: 0440" aria-label="mode: 0440"',
-            'title="owner: reader" aria-label="owner: reader"',
+            'title="0440 reader · Read me"',
+            '>0440 reader · Read me</span>',
             'href="/docs/deep/"',
             '>deep.md</span>',
             '>root.yml</span>',
@@ -627,13 +624,9 @@ INVALID_CASES = (
     ("folder-color-value", '{{< filetree >}}{{< filetree/folder name="x" color="purple" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "color must be one of"),
     ("folder-comment-empty", '{{< filetree >}}{{< filetree/folder name="x" comment="" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "comment must not be empty"),
     ("folder-comment-type", '{{< filetree >}}{{< filetree/folder name="x" comment=true >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "comment must be a string"),
-    ("folder-owner-empty", '{{< filetree >}}{{< filetree/folder name="x" owner="" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "owner must not be empty"),
-    ("folder-owner-type", '{{< filetree >}}{{< filetree/folder name="x" owner=true >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "owner must be a string"),
-    ("folder-group-empty", '{{< filetree >}}{{< filetree/folder name="x" group="" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "group must not be empty"),
-    ("folder-group-type", '{{< filetree >}}{{< filetree/folder name="x" group=true >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "group must be a string"),
-    ("folder-group-without-owner", '{{< filetree >}}{{< filetree/folder name="x" group="docs" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "group requires owner"),
-    ("folder-mode-empty", '{{< filetree >}}{{< filetree/folder name="x" mode="" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "mode must not be empty"),
-    ("folder-mode-type", '{{< filetree >}}{{< filetree/folder name="x" mode=true >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "mode must be a string"),
+    ("folder-owner-removed", '{{< filetree >}}{{< filetree/folder name="x" owner="docs" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "unsupported parameter"),
+    ("folder-group-removed", '{{< filetree >}}{{< filetree/folder name="x" group="writers" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "unsupported parameter"),
+    ("folder-mode-removed", '{{< filetree >}}{{< filetree/folder name="x" mode="0755" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "unsupported parameter"),
     ("folder-unknown", '{{< filetree >}}{{< filetree/folder name="x" badge="new" >}}{{< /filetree/folder >}}{{< /filetree >}}\n', "unsupported parameter"),
     ("folder-text", '{{< filetree >}}{{< filetree/folder name="x" >}}not an entry{{< /filetree/folder >}}{{< /filetree >}}\n', "accepts filetree/folder and filetree/file children only"),
     ("file-outside", '{{< filetree/file name="x" >}}\n', "must be enclosed by filetree or filetree/folder"),
@@ -645,7 +638,9 @@ INVALID_CASES = (
     ("file-link-scheme", '{{< filetree >}}{{< filetree/file name="x" link="javascript:alert(1)" >}}{{< /filetree >}}\n', "unsupported link scheme"),
     ("file-link-type", '{{< filetree >}}{{< filetree/file name="x" link=true >}}{{< /filetree >}}\n', "link must be a string"),
     ("file-link-empty", '{{< filetree >}}{{< filetree/file name="x" link="" >}}{{< /filetree >}}\n', "link must not be empty"),
-    ("file-group-without-owner", '{{< filetree >}}{{< filetree/file name="x" group="docs" >}}{{< /filetree >}}\n', "group requires owner"),
+    ("file-owner-removed", '{{< filetree >}}{{< filetree/file name="x" owner="docs" >}}{{< /filetree >}}\n', "unsupported parameter"),
+    ("file-group-removed", '{{< filetree >}}{{< filetree/file name="x" group="writers" >}}{{< /filetree >}}\n', "unsupported parameter"),
+    ("file-mode-removed", '{{< filetree >}}{{< filetree/file name="x" mode="0644" >}}{{< /filetree >}}\n', "unsupported parameter"),
     ("file-unknown", '{{< filetree >}}{{< filetree/file name="x" badge="new" >}}{{< /filetree >}}\n', "unsupported parameter"),
 )
 
@@ -703,7 +698,8 @@ def check_template_contracts() -> list[str]:
         "layouts/_shortcodes/filetree/file.html",
     ):
         source = (ROOT / relative).read_text()
-        require("Page.Store.Set" not in source, f"{relative} sets a runtime flag", errors)
+        if relative != "layouts/_shortcodes/filetree.html":
+            require("Page.Store.Set" not in source, f"{relative} sets a runtime flag", errors)
         if relative not in (
             "layouts/_shortcodes/field.html",
             "layouts/_shortcodes/filetree/file.html",
@@ -730,8 +726,9 @@ def check_template_contracts() -> list[str]:
         errors,
     )
     require(
-        "Page.Store.Set" not in filetree_source + folder_source + file_source,
-        "FileTree sets a runtime flag",
+        '.Page.Store.Set "hasFileTree" true' in filetree_source
+        and "Page.Store.Set" not in folder_source + file_source,
+        "FileTree divider runtime flag is missing or set by a child",
         errors,
     )
     require(
@@ -749,7 +746,17 @@ def check_template_contracts() -> list[str]:
         "FileTree lacks validated Font Awesome defaults",
         errors,
     )
+    require(
+        'slice "icon" "color" "comment"' in node_params_source
+        and '"owner"' not in node_params_source
+        and '"group"' not in node_params_source
+        and '"mode"' not in node_params_source,
+        "FileTree retained dedicated owner/group/mode parameters",
+        errors,
+    )
     styles = (ROOT / "assets/scss/td/shortcodes/content-primitives.scss").read_text()
+    runtime = (ROOT / "assets/js/content-components.js").read_text()
+    scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("@media print" in styles, "content primitives lack print styles", errors)
     require(
         "@media (forced-colors: active)" in styles,
@@ -764,13 +771,28 @@ def check_template_contracts() -> list[str]:
     )
     require(
         "font-family: var(--td-code-font-family)" in styles
-        and ".td-filetree__metadata" in styles
-        and "--td-filetree-mode-width: 4ch" in styles
+        and "--td-filetree-row-height" in styles
+        and ".td-filetree__chrome" in styles
+        and ".td-filetree__divider-line" in styles
+        and ".td-filetree__comment-scroll" in styles
         and ".td-filetree__comment-marker" in styles
         and "grid-template-columns:" in styles
         and "text-overflow: ellipsis" in styles
         and "::-webkit-details-marker" in styles,
-        "FileTree lacks the filename, metadata, truncation, or marker presentation contract",
+        "FileTree lacks the terminal, equal-row, split-column, or truncation contract",
+        errors,
+    )
+    require(
+        "function initFileTree" in runtime
+        and "pointerdown" in runtime
+        and "ArrowLeft" in runtime
+        and "ResizeObserver" in runtime
+        and "data-overflow-end" in runtime
+        and "Math.abs(scroller.scrollLeft)" in runtime
+        and "or $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasFileTree"
+        in scripts
+        and "$hasKeyboardNav $hasFooterCollapse $hasFileTree | md5" in scripts,
+        "FileTree lacks its opt-in draggable-divider runtime",
         errors,
     )
     for relative, content_expr in (

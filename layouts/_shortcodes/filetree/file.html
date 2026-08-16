@@ -11,7 +11,7 @@
 {{- if and $hasParams (not .IsNamedParams) -}}
   {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
 {{- end -}}
-{{- $allowed := slice "name" "link" "icon" "color" "comment" "owner" "group" "mode" -}}
+{{- $allowed := slice "name" "link" "icon" "color" "comment" -}}
 {{- range $name, $_ := .Params -}}
   {{- if not (in $allowed $name) -}}
     {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
@@ -36,6 +36,7 @@
   ) -}}
 {{- end -}}
 {{- $node := partial "content/filetree-node-params.html" . -}}
+{{- $depth := partial "content/filetree-depth.html" . -}}
 {{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- "<!--td-filetree-child:start-->" | safeHTML -}}
 {{- if eq $outputFormat "markdown" -}}
@@ -49,7 +50,7 @@
 {{- else -}}
 <li class="td-filetree__item td-filetree__item--file">
   {{- partial "content/filetree-entry.html" (dict
-    "kind" "file" "name" $fileName "link" $link "node" $node
+    "kind" "file" "name" $fileName "link" $link "node" $node "depth" $depth
   ) -}}
 </li>
 {{- end -}}

@@ -542,6 +542,13 @@ a.td-badge {
   pointer-events: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .td-filetree,
+  .td-filetree__divider-line {
+    transition: none;
+  }
+}
+
 .td-imgproc {
   max-width: 100%;
   overflow: hidden;

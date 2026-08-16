@@ -21,6 +21,25 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
         errors.append(message)
 
 
+def enclosing_selectors(styles: str, position: int) -> list[str]:
+    """Return the selector text of every SCSS block that encloses ``position``."""
+    selectors: list[str] = []
+    depth = 0
+    index = position
+    while index > 0:
+        index -= 1
+        char = styles[index]
+        if char == "}":
+            depth += 1
+        elif char == "{":
+            if depth:
+                depth -= 1
+                continue
+            start = max(styles.rfind("}", 0, index), styles.rfind("{", 0, index), styles.rfind(";", 0, index))
+            selectors.append(styles[start + 1 : index].strip())
+    return selectors
+
+
 def run_hugo(hugo: str, *args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [hugo, *args],
@@ -329,7 +348,20 @@ def check_template_contracts() -> list[str]:
     for marker in ("forced-colors", "::backdrop", "@media print"):
         require(marker in styles, f"Zoom styles lack {marker}", errors)
     require(".td-image-zoom:not([open])" in styles, "Zoom lacks an unsupported-dialog closed fallback", errors)
-    require("transition:" not in styles and "animation:" not in styles, "Zoom adds motion without a reduction path", errors)
+    # Zoom itself must not animate. content-primitives.scss also hosts other
+    # primitives, so scope the motion assertion to rule blocks whose selector
+    # names the Zoom, and separately require a reduced-motion path for any
+    # motion the rest of the file declares.
+    for match in re.finditer(r"^\s*(?:transition|animation)\s*:", styles, re.M):
+        selectors = " ".join(enclosing_selectors(styles, match.start()))
+        require("td-image-zoom" not in selectors, "Zoom adds motion without a reduction path", errors)
+    if re.search(r"^\s*(?:transition|animation)\s*:", styles, re.M):
+        reduce_block = re.search(r"@media \(prefers-reduced-motion: reduce\)\s*\{(.*?)\n\}", styles, re.S)
+        require(
+            reduce_block is not None and "transition: none" in reduce_block.group(1),
+            "content primitives declare motion without a prefers-reduced-motion path",
+            errors,
+        )
     return errors
 
 

@@ -61,9 +61,6 @@ ui_toc_show: 顯示目錄
 ui_language_select: 選擇語言
 ui_language_switch: 切換語言
 ui_details: 詳情
-ui_doc_carousel: 文件輪播
-ui_carousel_previous: 上一張卡片
-ui_carousel_next: 下一張卡片
 
 # Used in sentences such as "Posted in News"
 ui_in: 發布於
@@ -151,7 +148,6 @@ ui_code_copied: 已複製
 ui_code_copy_error: 複製失敗
 ui_code_show_all: 顯示全部 {{ .Count }} 行
 ui_code_collapse: 收合程式碼
-ui_code_group_label: 程式碼範例
 ui_tabs_label: 分頁
 ui_pricing_featured: 推薦
 ui_pricing_included: 包含

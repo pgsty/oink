@@ -147,9 +147,9 @@
     img,
     svg,
     blockquote,
-    .alert,
+    .td-callout,
     .td-content-card,
-    .td-details {
+    .td-tabs {
       break-inside: avoid-page;
     }
 
@@ -186,7 +186,6 @@
   .td-page-actions,
   .td-code__copy,
   .td-code__expand,
-  .td-doc-carousel__button,
   .nav-tabs {
     display: none !important;
   }
@@ -236,47 +235,13 @@
     }
   }
 
-  .tab-content > .tab-pane,
   details:not([open]) > :not(summary) {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
   }
 
-  .td-code-group {
-    overflow: visible !important;
-    border: 0 !important;
-    box-shadow: none !important;
 
-    &__header {
-      display: none !important;
-    }
-
-    &__content > .tab-pane {
-      margin: 0 0 1rem !important;
-      border: 0 !important;
-    }
-
-    &__print-title {
-      display: block !important;
-      margin: 0 0 0.25rem;
-      color: #111 !important;
-      font-weight: 700;
-      break-after: avoid-page;
-    }
-
-    .td-code--embedded {
-      border: 0.6pt solid #c9ced4 !important;
-    }
-  }
-
-  .td-tabpane__print-title {
-    display: block !important;
-    margin: 0 0 0.25rem;
-    color: #111 !important;
-    font-weight: 700;
-    break-after: avoid-page;
-  }
 
   .td-content-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));

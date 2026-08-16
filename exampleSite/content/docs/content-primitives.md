@@ -82,40 +82,21 @@ contained overflow policy.
 
 ## FileTree
 
-{{< filetree label="Repository structure" >}}
-  {{< filetree/folder name="content" open=true comment="0755 docs-admin:writers · Site content & templates" >}}
-    {{< filetree/file name="_index.md" icon="fa-solid fa-file-code" color="primary" comment="0644 vonng:docs · Section landing page" >}}
-    {{< filetree/folder name="docs" >}}
-      {{< filetree/file name="index.md" link="/docs/" >}}
-      {{< filetree/file name="configuration.md" link="/docs/configuration/" icon="fa-solid fa-gears" color="info" comment="0644 docs-admin · Runtime settings" >}}
-      {{< filetree/folder name="level1" open=true >}}
-        {{< filetree/folder name="level2" >}}
-          {{< filetree/folder name="level3" open=true >}}
-            {{< filetree/folder name="level4" >}}
-              {{< filetree/folder name="level5" open=true >}}
-                {{< filetree/folder name="level6" >}}
-                  {{< filetree/folder name="level7" open=true >}}
-                    {{< filetree/folder name="level8" >}}
-                      {{< filetree/file name="deeply-nested.md" >}}
-                    {{< /filetree/folder >}}
-                  {{< /filetree/folder >}}
-                {{< /filetree/folder >}}
-              {{< /filetree/folder >}}
-            {{< /filetree/folder >}}
-          {{< /filetree/folder >}}
-        {{< /filetree/folder >}}
-      {{< /filetree/folder >}}
-    {{< /filetree/folder >}}
-  {{< /filetree/folder >}}
-  {{< filetree/folder name="static" icon="fa-solid fa-box-archive" color="success" comment="0750 release-engineering:documentation · Generated assets" >}}
-    {{< filetree/file name="index.md" comment="0555" >}}
-    {{< filetree/file name="a-deliberately-long-unbroken-filename-that-must-truncate-within-a-narrow-content-column.example.json" >}}
-  {{< /filetree/folder >}}
-  {{< filetree/folder name="本地化" open=true >}}
-    {{< filetree/file name="配置.md" >}}
-  {{< /filetree/folder >}}
-  {{< filetree/folder name="واجهة" >}}
-    {{< filetree/file name="دليل-الإعداد.md" >}}
-  {{< /filetree/folder >}}
-  {{< filetree/file name="hugo.yml" color="warning" comment="0640 root:wheel · Site configuration" >}}
-{{< /filetree >}}
+- content/ — 0755 docs-admin:writers · Site content & templates
+  - _index.md — 0644 vonng:docs · Section landing page
+  - docs/
+    - [index.md](/docs/)
+    - [configuration.md](/docs/configuration/) — 0644 docs-admin · Runtime settings
+    - level1/
+      - level2/
+        - level3/
+          - level4/
+            - level5/
+              - level6/
+                - level7/
+                  - level8/
+                    - deeply-nested.md
+- static/ — 0750 release-engineering:documentation · Generated assets
+  - `favicon.ico`
+- hugo.yaml — *root:root 0644*
+{.filetree}

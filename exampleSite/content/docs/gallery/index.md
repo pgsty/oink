@@ -8,9 +8,8 @@ params:
       enable: true
 ---
 
-{{< gallery columns=4 label="Console screenshots and architecture views" >}}
-  {{< gallery/image src="page.png" alt="Blue and gold local dashboard overview" caption="Local page resource with intrinsic dimensions." >}}
-  {{< gallery/image src="media/content-primitives-global.png" alt="Green and violet global dashboard detail" caption="A deliberately long caption that must wrap inside its own card without widening the page or covering the neighboring image." >}}
-  {{< gallery/image src="/media/content-primitives-tall.svg" alt="Tall static SVG settings overview" caption="واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي" >}}
-  {{< gallery/image src="https://example.invalid/gallery/remote.webp?view=full" alt="Remote deployment history view" caption="远程图片保持静态 URL，构建过程不会下载它。" >}}
-{{< /gallery >}}
+- ![Blue and gold local dashboard overview](page.png) — Local page resource with intrinsic dimensions.
+- ![Green and violet global dashboard detail](media/content-primitives-global.png) — A deliberately long caption that must wrap inside its own card without widening the page or covering the neighboring image.
+- ![Tall static SVG settings overview](/media/content-primitives-tall.svg) — واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي
+- ![Remote deployment history view](https://example.invalid/gallery/remote.webp?view=full) — 远程图片保持静态 URL，构建过程不会下载它。
+{.gallery}

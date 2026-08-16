@@ -73,7 +73,6 @@ ui_code_copied: 已复制
 ui_code_copy_error: 复制失败
 ui_code_show_all: 显示全部 {{ .Count }} 行
 ui_code_collapse: 收起代码
-ui_code_group_label: 代码示例
 ui_tabs_label: 选项卡
 ui_pricing_featured: 推荐
 ui_pricing_included: 包含
@@ -101,9 +100,6 @@ ui_image_zoom_close: 关闭图片预览
 ui_print_page: 打印此页面
 ui_sidebar_expand_section: 展开章节
 ui_sidebar_collapse_section: 收起章节
-ui_doc_carousel: 文档轮播
-ui_carousel_previous: 上一张卡片
-ui_carousel_next: 下一张卡片
 ui_asciinema_timer: 播放时间
 ui_release_view: 查看发布
 ui_release_source: 源码

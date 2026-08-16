@@ -117,9 +117,6 @@ ui_copy_error: Could not copy Markdown
 ui_print_page: Print this page
 ui_sidebar_expand_section: Expand section
 ui_sidebar_collapse_section: Collapse section
-ui_doc_carousel: Document carousel
-ui_carousel_previous: Previous card
-ui_carousel_next: Next card
 ui_asciinema_timer: Playback time
 
 # Used in sentences such as "Posted in News"
@@ -144,7 +141,6 @@ ui_code_copied: Copied
 ui_code_copy_error: Copy failed
 ui_code_show_all: Show all {{ .Count }} lines
 ui_code_collapse: Collapse code
-ui_code_group_label: Code examples
 ui_kbd_with: with
 ui_field_required: required
 ui_action_unavailable: unavailable

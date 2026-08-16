@@ -21,7 +21,6 @@
 {{ $hasFooterCollapse := and $interactiveOutput (or $footerData.brand $footerData.columns) -}}
 {{ $imageZoomConfig := partial "content/image-zoom-config.html" . -}}
 {{ $hasImageZoom := and $interactiveOutput $imageZoomConfig.enable (.Page.Store.Get "hasImageZoom" | default false) -}}
-{{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
 {{ $hasCodeRuntime := and $interactiveOutput (.Page.Store.Get "hasCodeRuntime" | default false) -}}
 {{ $hasAssetList := and $interactiveOutput (.Page.Store.Get "hasAssetList" | default false) -}}
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
@@ -134,7 +133,6 @@ window.markmap = {
 {{ $hasAsciinema := .Page.Store.Get "hasAsciinema" -}}
 {{ $hasEcharts := .Page.Store.Get "hasEcharts" -}}
 {{ $hasInfographic := .Page.Store.Get "hasInfographic" -}}
-{{ $hasDocCarousel := .Page.Store.Get "hasDocCarousel" -}}
 {{ if $hasAsciinema -}}
   {{ $asciinemaCSS := resources.Get "third_party/asciinema/asciinema-player.css" -}}
   {{ if hugo.IsProduction }}{{ $asciinemaCSS = $asciinemaCSS | minify | fingerprint }}{{ end -}}
@@ -158,7 +156,7 @@ window.markmap = {
   <script src="{{ $infographicJS.RelPermalink }}"
     {{- with $infographicJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
-{{ if or $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasFileTree -}}
+{{ if or $hasAsciinema $hasEcharts $hasInfographic -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/content-components.js") -}}
 {{ end -}}
 {{ if $shell -}}
@@ -244,12 +242,12 @@ window.markmap = {
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch $hasGoogleSearch .Site.Language.Lang $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
-  $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus $hasFeedback
+  $hasAsciinema $hasEcharts $hasInfographic $hasGiscus $hasFeedback
   $hasCodeRuntime $hasAssetList $hasLanding $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable"))
-  $hasKeyboardNav $hasFooterCollapse $hasFileTree | md5 -}}
+  $hasKeyboardNav $hasFooterCollapse | md5 -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
 {{ if hugo.IsProduction -}}

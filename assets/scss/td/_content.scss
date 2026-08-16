@@ -72,7 +72,11 @@
   }
 
   .footnotes,
-  > .alert,
+  > .td-callout,
+  > .td-tabs,
+  > .td-fields,
+  > ol.steps,
+  > .td-figure,
   > .highlight,
   > .katex-display,
   > .lead,
@@ -88,10 +92,6 @@
     @extend .td-max-width-on-larger-screens;
   }
 
-  .alert:not(:first-child) {
-    margin-top: 2 * $spacer;
-    margin-bottom: 2 * $spacer;
-  }
 
   details {
     &:not(:last-child) {

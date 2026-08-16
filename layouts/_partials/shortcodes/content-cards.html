@@ -1,7 +1,0 @@
-{{- $sc := .shortcode -}}
-{{- $cols := int ($sc.Get "cols" | default 3) -}}
-{{- if not (in (slice 1 2 3 4) $cols) }}{{ errorf "%s: card columns must be 1, 2, 3, or 4" $sc.Position }}{{ end -}}
-{{- $id := printf "td-%s-%s-%d" ($sc.Name | anchorize) (md5 $sc.Page.RelPermalink) $sc.Ordinal -}}
-<div id="{{ $id }}" class="td-content-cards" style="--td-card-columns: {{ $cols }}">
-  {{- .inner -}}
-</div>

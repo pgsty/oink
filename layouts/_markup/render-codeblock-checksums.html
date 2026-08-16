@@ -1,0 +1,49 @@
+{{- /* ```checksums {base="https://…/download/v1.7.0/" algo="sha256" group="auto"}
+       — sha*sum lines as a data fence: the native form of release-assets
+       (Release pack, v5 §3.10). Same parser and renderers as the shortcode;
+       `base` is required unless the page has release front matter. */ -}}
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "base" "algo" "group") "position" .Position "kind" "checksums") -}}
+{{- $algo := index $policy.consumed "algo" | default "" -}}
+{{- if and $algo (not (in (slice "md5" "sha1" "sha256" "sha512") $algo)) }}{{ errorf "checksums: algo must be md5, sha1, sha256, or sha512 at %s" .Position }}{{ end -}}
+{{- $grouped := false -}}
+{{- with index $policy.consumed "group" -}}
+  {{- if ne . "auto" }}{{ errorf "checksums: group must be auto at %s" $.Position }}{{ end -}}
+  {{- $grouped = true -}}
+{{- end -}}
+{{- $inner := printf "%s" .Inner -}}
+{{- if not (strings.ContainsNonSpace $inner) }}{{ errorf "checksums: the fence requires checksum lines at %s" .Position }}{{ end -}}
+{{- $base := "" -}}
+{{- $hasRelease := isset $page.Params "release" -}}
+{{- with index $policy.consumed "base" -}}
+  {{- $baseInput := strings.TrimSpace . -}}
+  {{- if $hasRelease }}{{ errorf "checksums: base is only valid without release front matter at %s" $.Position }}{{ end -}}
+  {{- if not $baseInput }}{{ errorf "checksums: base must not be empty at %s" $.Position }}{{ end -}}
+  {{- if findRE `[\x00-\x20\x7f]` $baseInput }}{{ errorf "checksums: base must not contain whitespace or control characters at %s" $.Position }}{{ end -}}
+  {{- if hasPrefix $baseInput "//" }}{{ errorf "checksums: base must not use a protocol-relative URL at %s" $.Position }}{{ end -}}
+  {{- $parsedResult := try (urls.Parse $baseInput) -}}
+  {{- with $parsedResult.Err }}{{ errorf "checksums: invalid base URL at %s: %s" $.Position . }}{{ end -}}
+  {{- $parsed := $parsedResult.Value -}}
+  {{- if and $parsed.Scheme (not (in (slice "http" "https") (lower $parsed.Scheme))) }}{{ errorf "checksums: base URL must use http or https at %s" $.Position }}{{ end -}}
+  {{- if and $parsed.Scheme (not $parsed.Host) }}{{ errorf "checksums: base URL requires a host at %s" $.Position }}{{ end -}}
+  {{- if or $parsed.RawQuery $parsed.Fragment }}{{ errorf "checksums: base URL must not contain a query or fragment at %s" $.Position }}{{ end -}}
+  {{- $base = $baseInput -}}
+  {{- if not $parsed.Scheme }}{{ $base = strings.TrimPrefix "/" $baseInput | relURL }}{{ end -}}
+{{- end -}}
+{{- if not $base -}}
+  {{- if $hasRelease -}}
+    {{- $meta := partial "release/meta.html" (dict "page" $page "position" .Position) -}}
+    {{- $base = printf "%s/releases/download/%s" $meta.repoURL (urls.PathEscape $meta.tag) -}}
+  {{- else -}}
+    {{- errorf "checksums: base is required unless the page has release front matter at %s" .Position -}}
+  {{- end -}}
+{{- end -}}
+{{- $entries := partial "release/assets-parse.html" (dict "content" $inner "position" .Position "base" $base "algo" $algo) -}}
+{{- if in (slice "markdown" "rss") $format -}}
+  {{- partial "release/assets-markdown.html" (dict "entries" $entries "grouped" $grouped) | safeHTML -}}
+{{- else -}}
+  {{- $interactive := eq $format "html" -}}
+  {{- if $interactive }}{{ $page.Store.Set "hasAssetList" true }}{{ end -}}
+  {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" $grouped "interactive" $interactive) -}}
+{{- end -}}

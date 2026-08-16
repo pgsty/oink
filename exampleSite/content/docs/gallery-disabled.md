@@ -7,7 +7,6 @@ params:
       enable: false
 ---
 
-{{< gallery columns=2 label="Static Gallery" >}}
-  {{< gallery/image src="/media/content-primitives-static.svg" alt="Static Gallery overview" caption="The first static figure remains readable without JavaScript." >}}
-  {{< gallery/image src="/media/content-primitives-tall.svg" alt="Static Gallery detail" caption="The second static figure keeps its caption and author order." >}}
-{{< /gallery >}}
+- ![Static Gallery overview](/media/content-primitives-static.svg) — The first static figure remains readable without JavaScript.
+- ![Static Gallery detail](/media/content-primitives-tall.svg) — The second static figure keeps its caption and author order.
+{.gallery}

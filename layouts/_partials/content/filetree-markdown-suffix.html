@@ -1,6 +1,0 @@
-{{- /* Preserve the author-controlled FileTree comment in Markdown output. */ -}}
-{{- $suffix := "" -}}
-{{- with .comment -}}
-  {{- $suffix = printf " # %s" (partial "content/markdown-escape.html" .) -}}
-{{- end -}}
-{{- return $suffix -}}

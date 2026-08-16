@@ -1,0 +1,34 @@
+{{- /* Renders the <table> for render-table.html: scroll wrapper, header/body
+       rows, optional matrix row headers, <caption>, id, generic attributes. */ -}}
+{{- $format := .format | default "html" -}}
+{{- $matrix := .matrix | default false -}}
+<div class="{{ delimit .wrapperClasses " " }}"{{ if eq $format "html" }} tabindex="0" role="region" aria-label="{{ T "ui_table_scroll" }}"{{ end }}>
+<table{{ with .id }} id="{{ . }}"{{ end }}{{ with .tableClasses }} class="{{ delimit . " " }}"{{ end }}
+  {{- range $key, $value := .generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
+  {{- with .caption }}
+  <caption class="td-table__caption">{{ . }}</caption>
+  {{- end }}
+  <thead>
+    {{- range .thead }}
+    <tr>
+      {{- range . }}
+      <th scope="col"{{ with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ .Text }}</th>
+      {{- end }}
+    </tr>
+    {{- end }}
+  </thead>
+  <tbody>
+    {{- range .tbody }}
+    <tr>
+      {{- range $i, $cell := . }}
+      {{- if and $matrix (eq $i 0) }}
+      <th scope="row"{{ with $cell.Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ $cell.Text }}</th>
+      {{- else }}
+      <td{{ with $cell.Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ $cell.Text }}</td>
+      {{- end }}
+      {{- end }}
+    </tr>
+    {{- end }}
+  </tbody>
+</table>
+</div>

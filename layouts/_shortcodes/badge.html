@@ -4,7 +4,7 @@
 {{- if and $hasParams (not .IsNamedParams) -}}
   {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
 {{- end -}}
-{{- $allowed := slice "text" "tone" "link" "outline" -}}
+{{- $allowed := slice "text" "tone" "link" -}}
 {{- range $name, $_ := .Params -}}
   {{- if not (in $allowed $name) -}}
     {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
@@ -35,15 +35,6 @@
   {{- errorf "shortcode %q: tone must be one of %s; got %q at %s" .Name (delimit $tones " | ") $tone .Position -}}
 {{- end -}}
 
-{{- $outline := true -}}
-{{- if isset .Params "outline" -}}
-  {{- $outlineParam := .Get "outline" -}}
-  {{- if ne (printf "%T" $outlineParam) "bool" -}}
-    {{- errorf "shortcode %q: outline must be boolean at %s" .Name .Position -}}
-  {{- end -}}
-  {{- $outline = $outlineParam -}}
-{{- end -}}
-
 {{- $link := false -}}
 {{- if isset .Params "link" -}}
   {{- $link = partial "content/url.html" (dict
@@ -59,8 +50,7 @@
     {{- printf "**%s**" $markdownText | safeHTML -}}
   {{- end -}}
 {{- else -}}
-  {{- $variant := cond $outline "outline" "filled" -}}
-  {{- $class := printf "td-badge td-badge--%s td-badge--%s" $tone $variant -}}
+  {{- $class := printf "td-badge td-badge--%s" $tone -}}
   {{- if $link -}}
 <a class="{{ $class }}" href="{{ $link.href }}">{{ $badgeText }}</a>
   {{- else -}}

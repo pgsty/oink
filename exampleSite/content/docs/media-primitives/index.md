@@ -1,6 +1,6 @@
 ---
 title: Media primitives
-description: Regression fixtures for shared image resolution and imgproc compatibility.
+description: Regression fixtures for shared image resolution and the processed image shortcode.
 outputs: [HTML, markdown]
 weight: 31
 resources:
@@ -12,22 +12,30 @@ resources:
 
 ## Named page resource
 
-{{< imgproc src="page.png" command="Fit" options="48x32" alt="Blue and gold page-resource test pattern" >}}
+{{< image src="page.png" command="Fit" options="48x32" alt="Blue and gold page-resource test pattern" >}}
 A **page resource** caption with `inline code`.
-{{< /imgproc >}}
+{{< /image >}}
 
 ## Named global resource
 
-{{< imgproc src="media/content-primitives-global.png" command="Resize" options="32x" alt="Green and violet global-resource test pattern" >}}
+{{< image src="media/content-primitives-global.png" command="Resize" options="32x" alt="Green and violet global-resource test pattern" >}}
 A global asset caption.
-{{< /imgproc >}}
+{{< /image >}}
 
 ## Explicit decorative image
 
-{{< imgproc src="page.png" command="Crop" options="24x24" decorative=true >}}{{< /imgproc >}}
+{{< image src="page.png" command="Crop" options="24x24" decorative=true >}}{{< /image >}}
 
-## Legacy positional form
+## Resource metadata alt and byline
 
-{{< imgproc "page" Fill "40x24" >}}
-Legacy **caption** retains resource metadata for alternative text and byline.
-{{< /imgproc >}}
+{{< image src="page.png" command="Fill" options="40x24" >}}
+The **caption** is Markdown; alt text and the byline come from the resource metadata.
+{{< /image >}}
+
+## Plain Markdown image (render hook)
+
+![Blue and gold page-resource test pattern](page.png "Advisory title")
+
+![Static preview](/media/content-primitives-static.svg)
+{caption="A static image with a caption becomes a figure"}
+

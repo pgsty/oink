@@ -17,4 +17,12 @@ cascade:
 
 ## Tables
 
-{{< book-figures kind="tbl" >}}
+{{< book-tables >}}
+
+## Equations
+
+{{< book-equations >}}
+
+## Examples
+
+{{< book-examples >}}

@@ -80,7 +80,7 @@
 {{- end -}}
 {{- $genericScratch := newScratch -}}
 {{- $genericScratch.Set "attributes" (dict) -}}
-{{- $reserved := slice "filename" "title" "copy" "wrap" "collapse" "label" "id" "class" "role" -}}
+{{- $reserved := slice "filename" "title" "copy" "wrap" "collapse" "label" "id" "class" "role" "tab" "group" "value" "num" "caption" -}}
 {{- range $name, $value := $attrs -}}
   {{- if not (findRE `^[A-Za-z_:][A-Za-z0-9:._-]*$` $name) -}}
     {{- errorf "code block: invalid generic attribute name %q at %s" $name $position -}}

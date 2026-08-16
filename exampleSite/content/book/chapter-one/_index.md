@@ -22,11 +22,17 @@ Cross-chapter heading: {{< xref page="../chapter-two" anchor="stable-heading" >}
 
 {{< eq num="1.1" caption="A direct ToMath escape hatch." >}}X \approx \frac{C}{R+Z}{{< /eq >}}
 
-{{< example num="1-1" id="example-query" caption="A labeled example stays out of the page outline." />}}
-
+{{< eg num="1-1" id="example-query" caption="A labeled example stays out of the page outline." >}}
 ```sql
 SELECT book_number FROM chapters ORDER BY weight;
 ```
+{{< /eg >}}
+
+```sql {num="1-2" caption="A native numbered example: one fence plus attributes." #example-native}
+SELECT title FROM chapters WHERE book_number = '1';
+```
+
+See {{< xref eg="1-1" anchor="example-query" />}} and {{< xref eg="1-2" anchor="example-native" />}}.
 
 {{< contributors data="contributors" >}}
 

@@ -1,12 +1,12 @@
 {{- /* Language-correct figure/table/equation or arbitrary fragment link. */ -}}
-{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "fig" "tbl" "eq" "page" "anchor")) -}}
+{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "fig" "tbl" "eq" "eg" "page" "anchor")) -}}
 {{- $params := dict -}}
 {{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- $kinds := slice -}}
-{{- range $kind := slice "fig" "tbl" "eq" -}}
+{{- range $kind := slice "fig" "tbl" "eq" "eg" -}}
   {{- if isset $params $kind }}{{ $kinds = $kinds | append $kind }}{{ end -}}
 {{- end -}}
-{{- if gt (len $kinds) 1 }}{{ errorf "shortcode %q accepts only one of fig, tbl, or eq at %s" .Name .Position }}{{ end -}}
+{{- if gt (len $kinds) 1 }}{{ errorf "shortcode %q accepts only one of fig, tbl, eq, or eg at %s" .Name .Position }}{{ end -}}
 {{- $kind := "" -}}
 {{- $num := "" -}}
 {{- if eq (len $kinds) 1 -}}
@@ -16,7 +16,7 @@
 {{- $hasAnchor := isset $params "anchor" -}}
 {{- $anchor := "" -}}
 {{- if $hasAnchor }}{{ $anchor = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "anchor") "position" .Position) }}{{ end -}}
-{{- if and (not $kind) (not $anchor) }}{{ errorf "shortcode %q requires fig, tbl, eq, or anchor at %s" .Name .Position }}{{ end -}}
+{{- if and (not $kind) (not $anchor) }}{{ errorf "shortcode %q requires fig, tbl, eq, eg, or anchor at %s" .Name .Position }}{{ end -}}
 {{- if not $anchor }}{{ $anchor = printf "%s-%s" $kind $num }}{{ end -}}
 {{- $pageRef := "" -}}
 {{- $targetPage := .Page -}}

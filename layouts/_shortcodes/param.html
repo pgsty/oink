@@ -1,4 +1,6 @@
-{{- /* Print a page parameter, falling back to site configuration. Positional: name. */ -}}
+{{- /* Print a page parameter, falling back to site configuration. Positional: name.
+       Strict: a missing value fails the build; only scalars (string / number /
+       bool) are allowed; output is HTML-escaped plain text (v5 §1.2). */ -}}
 {{- $name := .Get 0 -}}
 {{- if not $name -}}
   {{- errorf "%s: param requires a page or site parameter name" .Position -}}
@@ -7,4 +9,9 @@
 {{- if eq $value nil -}}
   {{- errorf "%s: param %q was not found in page front matter or site configuration" .Position $name -}}
 {{- end -}}
-{{- $value -}}
+{{- $type := printf "%T" $value -}}
+{{- $scalar := slice "string" "bool" "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float32" "float64" -}}
+{{- if not (in $scalar $type) -}}
+  {{- errorf "%s: param %q is a %s; only scalar values (string / number / bool) can be printed" .Position $name $type -}}
+{{- end -}}
+{{- printf "%v" $value | htmlEscape | safeHTML -}}

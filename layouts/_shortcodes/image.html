@@ -1,0 +1,42 @@
+{{- /* Processed image: named src / alt|decorative / command / options; the
+       body is the Markdown caption rendered with RenderString (v5 §3.7).
+       Replaces the positional imgproc form; plain images use `![alt](src)`. */ -}}
+{{- if and .Params (not .IsNamedParams) }}{{ errorf "shortcode %q accepts named parameters only (src, alt|decorative, command, options) at %s" .Name .Position }}{{ end -}}
+{{- $allowed := slice "src" "command" "options" "alt" "decorative" -}}
+{{- range $param, $_ := .Params -}}
+  {{- if not (in $allowed $param) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $param $.Position }}{{ end -}}
+{{- end -}}
+{{- range $required := slice "src" "command" "options" -}}
+  {{- if not (isset $.Params $required) }}{{ errorf "shortcode %q requires parameter %s at %s" $.Name $required $.Position }}{{ end -}}
+{{- end -}}
+{{- $hasAlt := isset .Params "alt" -}}
+{{- $decorative := false -}}
+{{- if isset .Params "decorative" -}}
+  {{- $decorative = .Get "decorative" -}}
+  {{- if ne (printf "%T" $decorative) "bool" }}{{ errorf "shortcode %q: decorative must be boolean at %s" .Name .Position }}{{ end -}}
+{{- end -}}
+{{- $caption := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- $resolved := partial "content/image-resolve.html" (dict
+  "name" .Name "position" .Position "page" .Page "src" (.Get "src") "matchMode" "exact"
+  "hasAlt" $hasAlt "alt" (cond $hasAlt (.Get "alt") "") "decorative" $decorative "requireAlt" true "caption" $caption
+) -}}
+{{- $image := partial "content/image-process.html" (dict
+  "name" .Name "position" .Position "image" $resolved "command" (.Get "command") "options" (.Get "options")
+) -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $format "markdown" -}}
+  {{- $markdown := printf "![%s](%s)" (partial "content/markdown-escape.html" $image.alt) $image.markdownSrc -}}
+  {{- with $caption }}{{ $markdown = printf "%s\n\n%s" $markdown . }}{{ end -}}
+  {{- with $image.byline }}{{ $markdown = printf "%s\n\n_%s_" $markdown (partial "content/markdown-escape.html" .) }}{{ end -}}
+  {{- $markdown | safeHTML -}}
+{{- else -}}
+<figure class="td-figure td-figure--processed" style="max-width: {{ add $image.width 2 }}px">
+<img class="td-figure__image" src="{{ $image.src }}"{{ if eq $format "html" }} data-zoom-src="{{ $image.fullSrc }}"{{ if $image.decorative }} data-no-zoom{{ end }}{{ end }} alt="{{ $image.alt }}" width="{{ $image.width }}" height="{{ $image.height }}" loading="lazy" decoding="async">
+{{- if or $caption $image.byline }}
+<figcaption>
+{{- with $caption }}{{ $.Page.RenderString (dict "display" "block") . }}{{ end -}}
+{{- with $image.byline }}<small class="td-figure__byline">{{ . }}</small>{{ end -}}
+</figcaption>
+{{- end }}
+</figure>
+{{- end -}}

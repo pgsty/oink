@@ -4,7 +4,16 @@
 {{- $kind := .kind -}}
 {{- $position := .position | default $page.Path -}}
 {{- $ordinal := .ordinal | default 0 -}}
+{{- /* Identity and document order come from the source position (file:line:col)
+       so shortcode targets and render-hook targets (native forms) share one
+       namespace and one ordering; ordinal is the fallback. */ -}}
 {{- $identity := printf "%s:%d" $page.Path $ordinal -}}
+{{- $orderKey := printf "%08d-00000" $ordinal -}}
+{{- with findRESubmatch `:(\d+):(\d+)$` (printf "%v" $position) -}}
+  {{- $m := index . 0 -}}
+  {{- $identity = printf "%s@%s:%s" $page.Path (index $m 1) (index $m 2) -}}
+  {{- $orderKey = printf "%08d-%05d" (int (index $m 1)) (int (index $m 2)) -}}
+{{- end -}}
 {{- $targets := $page.Store.Get "tdBookTargets" | default (dict) -}}
 {{- if isset $targets $id -}}
   {{- $existing := index $targets $id -}}
@@ -31,5 +40,5 @@
 -}}
 {{- $page.Store.SetInMap "tdBookTargets" $id $entry -}}
 {{- $page.Store.SetInMap "tdBookTargetNums" $numberKey $entry -}}
-{{- $page.Store.SetInMap "tdBookTargetOrder" (printf "%08d-%s" $ordinal $id) $entry -}}
+{{- $page.Store.SetInMap "tdBookTargetOrder" (printf "%s-%s" $orderKey $id) $entry -}}
 {{- end -}}

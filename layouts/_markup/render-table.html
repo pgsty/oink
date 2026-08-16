@@ -1,29 +1,109 @@
+{{- /*
+  Table family (plan/design/components.md v5 §3.11):
+
+    | … |                       default table (scroll wrapper, th scope=col)
+    {.full-width}               overflow the prose column
+    {.fields}                   reference table -> <dl> (positional rule)
+    {.matrix}                   row headers + sticky first column / header
+    {caption="…"}               <caption> (no number, not a Book target)
+    {#id num="9-1" caption="…"} Book numbered table (registers a `tbl` target)
+    {tab="…" group= value=}     adjacent tables become tabs
+
+  Any other class token passes through for site CSS; unknown keys / style /
+  on* are build errors (content/attributes.html).
+*/ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $classes := printf "%v" (.Attributes.class | default "") -}}
-{{- $full := in (split $classes " ") "full-width" -}}
-<div class="td-table-scroll{{ if $full }} td-table-scroll--full{{ end }}"{{ if eq $format "html" }} tabindex="0" role="region" aria-label="{{ T "ui_table_scroll" }}"{{ end }}>
-<table
-  {{- range $key, $value := .Attributes }}
-    {{- if $value }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}
-  {{- end }}>
-  <thead>
-    {{- range .THead }}
-    <tr>
-      {{- range . }}
-      <th scope="col"{{ with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ .Text }}</th>
-      {{- end }}
-    </tr>
-    {{- end }}
-  </thead>
-  <tbody>
-    {{- range .TBody }}
-    <tr>
-      {{- range . }}
-      <td{{ with .Alignment }}{{ printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}{{ end }}>{{ .Text }}</td>
-      {{- end }}
-    </tr>
-    {{- end }}
-  </tbody>
-</table>
-</div>
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "caption" "num" "tab" "group" "value") "position" .Position "kind" "table") -}}
+{{- $classes := $policy.classes -}}
+{{- $isFields := in $classes "fields" -}}
+{{- $isMatrix := in $classes "matrix" -}}
+{{- $isFull := in $classes "full-width" -}}
+{{- $caption := strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
+{{- $numRaw := index $policy.consumed "num" | default "" -}}
+{{- $idRaw := index $policy.consumed "id" | default "" -}}
+{{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
+{{- if and $isFields $isMatrix }}{{ errorf "table: .fields and .matrix are mutually exclusive at %s" .Position }}{{ end -}}
+{{- if and $isFields $isFull }}{{ errorf "table: .fields cannot be combined with .full-width at %s" .Position }}{{ end -}}
+{{- if and $numRaw $tab }}{{ errorf "table: num (Book target) and tab (tabs) are mutually exclusive at %s" .Position }}{{ end -}}
+{{- if and $isFields $numRaw }}{{ errorf "table: .fields cannot be a numbered Book table at %s" .Position }}{{ end -}}
+{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "table: group/value require tab at %s" .Position }}{{ end -}}
+{{- $siteClasses := slice -}}
+{{- range $classes }}{{ if not (in (slice "fields" "matrix" "full-width") .) }}{{ $siteClasses = $siteClasses | append . }}{{ end }}{{ end -}}
+{{- $header := index .THead 0 | default (slice) -}}
+{{- $columns := len $header -}}
+
+{{- /* ---------------------------------------------------------------- fields */ -}}
+{{- if $isFields -}}
+  {{- if lt $columns 2 }}{{ errorf "table .fields: at least two columns are required (name … description) at %s" .Position }}{{ end -}}
+  {{- $entries := slice -}}
+  {{- $seen := dict -}}
+  {{- range $row := .TBody -}}
+    {{- $nameHTML := "" -}}
+    {{- $meta := slice -}}
+    {{- $description := "" -}}
+    {{- range $i, $cell := $row -}}
+      {{- $text := printf "%s" $cell.Text -}}
+      {{- if eq $i 0 -}}
+        {{- $nameHTML = strings.TrimSpace $text -}}
+      {{- else if eq $i (sub $columns 1) -}}
+        {{- $description = $text -}}
+      {{- else if strings.TrimSpace $text -}}
+        {{- $label := printf "%s" (index $header $i).Text -}}
+        {{- $meta = $meta | append (dict "label" (strings.TrimSpace $label) "value" (strings.TrimSpace $text) "class" "td-field__meta") -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $key := $nameHTML | plainify | strings.TrimSpace -}}
+    {{- if not $key }}{{ errorf "table .fields: the first column (field name) must not be empty at %s" $.Position }}{{ end -}}
+    {{- if isset $seen $key }}{{ errorf "table .fields: duplicate field name %q at %s" $key $.Position }}{{ end -}}
+    {{- $seen = merge $seen (dict $key true) -}}
+    {{- /* A field name written as `code` keeps only its text; the <dt> supplies the code styling. */ -}}
+    {{- $nameInner := replaceRE `^<code>(.*)</code>$` "$1" $nameHTML -}}
+    {{- $entries = $entries | append (dict "name" $nameInner "meta" $meta "description" $description "descriptionMarkdown" false) -}}
+  {{- end -}}
+  {{- if not $entries }}{{ errorf "table .fields: at least one row is required at %s" .Position }}{{ end -}}
+  {{- $labelID := printf "td-fields-%s-t%d-label" (md5 $page.RelPermalink) .Ordinal -}}
+  {{- $html := partial "content/fields-list.html" (dict "label" $caption "labelID" $labelID "entries" $entries "id" $idRaw "class" (delimit $siteClasses " ") "generic" $policy.generic) -}}
+  {{- if $tab -}}
+    {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" (index $policy.consumed "group") "value" (index $policy.consumed "value") "kind" "table" "content" $html) -}}
+  {{- else -}}
+    {{- $html -}}
+  {{- end -}}
+{{- else -}}
+
+{{- /* ------------------------------------------------------- default / matrix */ -}}
+{{- $num := "" -}}
+{{- $id := $idRaw -}}
+{{- if $numRaw -}}
+  {{- $num = partial "book/validate-num.html" (dict "name" "table" "value" $numRaw "position" .Position) -}}
+  {{- if not $id }}{{ $id = printf "tbl-%s" $num }}{{ else }}{{ $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) }}{{ end -}}
+  {{- partial "book/register-target.html" (dict "page" $page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+{{- else if $id -}}
+  {{- $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) -}}
+{{- end -}}
+{{- $wrapperClasses := slice "td-table-scroll" -}}
+{{- if $isFull }}{{ $wrapperClasses = $wrapperClasses | append "td-table-scroll--full" }}{{ end -}}
+{{- if $isMatrix }}{{ $wrapperClasses = $wrapperClasses | append "td-table-scroll--matrix" }}{{ end -}}
+{{- $tableClasses := $siteClasses -}}
+{{- if $isMatrix }}{{ $tableClasses = $tableClasses | append "td-table--matrix" }}{{ end -}}
+{{- $table := printf "%s" (partial "content/table-body.html" (dict
+  "thead" .THead "tbody" .TBody "matrix" $isMatrix "format" $format
+  "wrapperClasses" $wrapperClasses "tableClasses" $tableClasses "generic" $policy.generic
+  "caption" (cond $numRaw "" $caption)
+  "id" (cond (and $id (not $numRaw)) $id "")
+)) -}}
+{{- $html := $table -}}
+{{- if $numRaw -}}
+  {{- $label := partial "book/label.html" (dict "kind" "tbl" "num" $num) -}}
+  {{- if in (slice "markdown" "rss") $format -}}
+    {{- $html = printf "<p><strong>%s.</strong>%s</p>\n%s" $label (cond (ne $caption "") (printf " %s" (htmlEscape $caption)) "") $table -}}
+  {{- else -}}
+    {{- $html = printf `<figure id="%s" class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num="%s">%s<figcaption><span class="td-tbl-label">%s</span>%s</figcaption></figure>` $id $num $table $label (cond (ne $caption "") (printf ` <span class="td-tbl-caption">%s</span>` (htmlEscape $caption)) "") -}}
+  {{- end -}}
+{{- end -}}
+{{- if $tab -}}
+  {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" (index $policy.consumed "group") "value" (index $policy.consumed "value") "kind" "table" "content" ($html | safeHTML)) -}}
+{{- else -}}
+  {{- $html | safeHTML -}}
+{{- end -}}
+{{- end -}}

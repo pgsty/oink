@@ -1,0 +1,59 @@
+{{- /* Include a page resource or a mounted file (v5 §1.2, replaces readfile).
+       Named parameters only: file (required), code (bool), lang (string, with code).
+       Resolution: page resource → assets → a file under content/ (leading / =
+       content root, else relative to the page directory); a missing file fails
+       the build; no draft placeholder output. Without code=true the file is Markdown
+       rendered in the page context. */ -}}
+{{- if or (not .IsNamedParams) (not (isset .Params "file")) -}}
+  {{- errorf "shortcode %q requires named parameter file at %s" .Name .Position -}}
+{{- end -}}
+{{- range $name, $_ := .Params -}}
+  {{- if not (in (slice "file" "code" "lang") $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
+{{- end -}}
+{{- $file := strings.TrimSpace (printf "%v" (.Get "file")) -}}
+{{- if not $file }}{{ errorf "shortcode %q: file must not be empty at %s" .Name .Position }}{{ end -}}
+{{- if strings.Contains $file ".." }}{{ errorf "shortcode %q: file must not contain ..; got %q at %s" .Name $file .Position }}{{ end -}}
+{{- $code := false -}}
+{{- if isset .Params "code" -}}
+  {{- $code = .Get "code" -}}
+  {{- if ne (printf "%T" $code) "bool" }}{{ errorf "shortcode %q: code must be boolean at %s" .Name .Position }}{{ end -}}
+{{- end -}}
+{{- $lang := "" -}}
+{{- if isset .Params "lang" -}}
+  {{- if not $code }}{{ errorf "shortcode %q: lang requires code=true at %s" .Name .Position }}{{ end -}}
+  {{- $lang = strings.TrimSpace (printf "%v" (.Get "lang")) -}}
+{{- end -}}
+{{- /* Resolution order: page resource → asset (mount) → file under content/
+       (leading "/" = content root, otherwise relative to the page's directory).
+       Never outside content/ or assets/. */ -}}
+{{- $content := "" -}}
+{{- $found := false -}}
+{{- if not (hasPrefix $file "/") -}}
+  {{- with .Page.Resources.Get $file }}{{ $content = .Content }}{{ $found = true }}{{ end -}}
+  {{- if not $found }}{{ with resources.Get $file }}{{ $content = .Content }}{{ $found = true }}{{ end }}{{ end -}}
+{{- end -}}
+{{- if not $found -}}
+  {{- $path := "" -}}
+  {{- if hasPrefix $file "/" -}}
+    {{- $path = path.Join "content" (strings.TrimPrefix "/" $file) -}}
+  {{- else if .Page.File -}}
+    {{- $path = path.Join "content" (path.Dir .Page.File.Path) $file -}}
+  {{- end -}}
+  {{- if fileExists $path -}}
+    {{- $content = os.ReadFile $path -}}
+    {{- $found = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $found }}{{ errorf "shortcode %q: file %q was not found (page resources, assets, or content/) at %s" .Name $file .Position }}{{ end -}}
+{{- if $code -}}
+  {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+  {{- if eq $format "markdown" -}}
+    {{- printf "```%s\n%s\n```" $lang (strings.TrimRight "\n" $content) | safeHTML -}}
+  {{- else -}}
+    {{- $config := partial "code/normalize.html" (dict "page" .Page "position" .Position "code" $content "language" $lang "attributes" (dict) "options" (dict) "key" (printf "include-%d" .Ordinal)) -}}
+    {{- $highlighted := partial "code/highlight.html" $config -}}
+    {{- partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
+  {{- end -}}
+{{- else -}}
+  {{- $content | .Page.RenderString (dict "display" "block") -}}
+{{- end -}}

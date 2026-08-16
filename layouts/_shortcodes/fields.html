@@ -1,4 +1,8 @@
-{{- /* Render ordered field definitions collected by field children. */ -}}
+{{- /* Render ordered field definitions collected by field children (`<`
+       collector: children keep raw Markdown descriptions, the parent renders
+       them with RenderString for HTML / print / RSS and emits the source
+       Markdown for the Markdown output). Shared <dl> renderer:
+       content/fields-list.html (also used by the `{.fields}` table hook). */ -}}
 {{- $hasParams := false -}}
 {{- with .Params }}{{ $hasParams = true }}{{ end -}}
 {{- if and $hasParams (not .IsNamedParams) -}}
@@ -64,29 +68,20 @@
   {{- $markdown | safeHTML -}}
 {{- else -}}
   {{- $labelID := printf "td-fields-%s-%d-label" (md5 .Page.RelPermalink) .Ordinal -}}
-<div class="td-fields">
-  {{- if $label }}
-  <p class="td-fields__label" id="{{ $labelID }}">{{ $label }}</p>
-  {{- end }}
-  <dl class="td-fields__list"{{ if $label }} aria-labelledby="{{ $labelID }}"{{ end }}>
-    {{- range $entries }}
-    <div class="td-field">
-      {{- /* required/default are untranslated API vocabulary; see the contract. */}}
-      <dt class="td-field__term">
-        <code class="td-field__name">{{ .name }}</code>
-        {{- with .type }}
-        <span class="visually-hidden">, </span><span class="td-field__type"><code>{{ . }}</code></span>
-        {{- end }}
-        {{- if .required }}
-        <span class="visually-hidden">, </span><span class="td-field__required">required</span>
-        {{- end }}
-        {{- if .hasDefault }}
-        <span class="visually-hidden">, </span><span class="td-field__default">default: <code>{{ .default }}</code></span>
-        {{- end }}
-      </dt>
-      <dd class="td-field__description">{{ $.Page.RenderString (dict "display" "block") .description }}</dd>
-    </div>
-    {{- end }}
-  </dl>
-</div>
+  {{- $items := slice -}}
+  {{- range $entries -}}
+    {{- $meta := slice -}}
+    {{- with .type -}}
+      {{- $meta = $meta | append (dict "label" "" "value" (printf "<code>%s</code>" (htmlEscape .)) "class" "td-field__type") -}}
+    {{- end -}}
+    {{- if .required -}}
+      {{- /* required/default are untranslated API vocabulary; see the contract. */ -}}
+      {{- $meta = $meta | append (dict "label" "required" "value" "" "class" "td-field__required") -}}
+    {{- end -}}
+    {{- if .hasDefault -}}
+      {{- $meta = $meta | append (dict "label" "default: " "value" (printf "<code>%s</code>" (htmlEscape .default)) "class" "td-field__default") -}}
+    {{- end -}}
+    {{- $items = $items | append (dict "name" (htmlEscape .name) "meta" $meta "description" ($.Page.RenderString (dict "display" "block") .description) "descriptionMarkdown" false) -}}
+  {{- end -}}
+  {{- partial "content/fields-list.html" (dict "label" $label "labelID" $labelID "entries" $items) -}}
 {{- end -}}

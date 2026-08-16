@@ -1,4 +1,0 @@
-{{- /* Render one documentation card. Supports title, link, image/alt, icon,
-       desc, accent, and badge; nested Markdown becomes the link list. */ -}}
-{{- $inner := .InnerDeindent -}}
-{{- partial "shortcodes/content-card.html" (dict "shortcode" . "inner" $inner) -}}

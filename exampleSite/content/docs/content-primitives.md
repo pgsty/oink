@@ -8,7 +8,7 @@ weight: 30
 Status {{< badge text="Beta" tone="warning" >}} remains inline with prose.
 
 Linked release {{< badge text="v0.3" tone="info" link="/release/" >}} and a
-filled state {{< badge text="Deprecated" tone="danger" outline=false >}}.
+filled state {{< badge text="Deprecated" tone="danger" >}}.
 
 Escaped text {{< badge text="R&D <Preview>" tone="success" >}} and long text
 {{< badge text="A-deliberately-long-unbroken-status-value-for-responsive-layout" >}}.

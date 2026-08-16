@@ -7,3 +7,88 @@
   // For details, see https://oink.pgsty.com/docs/content/lookandfeel/#tables
   display: block;
 }
+
+// ---------------------------------------------------------------------------
+// Table family markers (render-table.html): caption, matrix, tab blocks.
+// ---------------------------------------------------------------------------
+.td-content .td-table-scroll > table > .td-table__caption {
+  padding: 0 0 0.45rem;
+  caption-side: top;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-ui-font-family);
+  font-size: 0.85rem;
+  font-weight: $font-weight-semibold;
+  text-align: start;
+}
+
+.td-content .td-table-scroll--matrix {
+  // Sticky header + sticky first column inside the scroll region.
+  max-block-size: #{'min(70vh, 40rem)'};
+  overflow: auto;
+
+  > table {
+    border-collapse: separate;
+    border-spacing: 0;
+
+    thead th {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      background: var(--bs-tertiary-bg);
+      white-space: nowrap;
+    }
+
+    th[scope='row'] {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+      background: var(--bs-body-bg);
+      font-weight: $font-weight-semibold;
+      text-align: start;
+      white-space: nowrap;
+    }
+
+    thead th:first-child {
+      inset-inline-start: 0;
+      z-index: 3;
+    }
+
+    td {
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
+}
+
+// One block that carries a `tab` attribute; before the tabs runtime groups
+// adjacent blocks it is a titled block (also the print / no-JS rendering).
+.td-tab-block {
+  margin-block: 0 1rem;
+
+  &__title {
+    display: inline-block;
+    margin: 0;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--bs-border-color);
+    border-block-end: 0;
+    border-start-start-radius: 0.5rem;
+    border-start-end-radius: 0.5rem;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    font-family: var(--td-ui-font-family);
+    font-size: 0.82rem;
+    font-weight: $font-weight-semibold;
+    line-height: 1.4;
+  }
+
+  > .td-table-scroll,
+  > .td-code,
+  > .td-fields {
+    margin-block-start: 0;
+  }
+
+  // The title bar sits flush on the block below it.
+  &--table > .td-table-scroll > table {
+    border-block-start: 1px solid var(--bs-border-color);
+  }
+}

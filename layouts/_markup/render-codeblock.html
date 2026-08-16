@@ -6,15 +6,57 @@
   {{- if $useClasses }}{{ $options = merge (dict "noClasses" false) $options }}{{ end -}}
   {{- transform.Highlight (strings.TrimRight "\n" .Inner) .Type $options -}}
 {{- else -}}
+  {{- $page := .PageInner | default .Page -}}
+  {{- $attrs := .Attributes | default dict -}}
+  {{- /* Adjacent-block tabs (v5 §3.2) and the native Book example `eg` (v5 §3.12)
+         are consumed here; normalize.html treats the same keys as reserved. */ -}}
+  {{- $tab := "" -}}{{ with index $attrs "tab" }}{{ $tab = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- $group := "" -}}{{ with index $attrs "group" }}{{ $group = printf "%v" . }}{{ end -}}
+  {{- $value := "" -}}{{ with index $attrs "value" }}{{ $value = printf "%v" . }}{{ end -}}
+  {{- if and (or (isset $attrs "group") (isset $attrs "value")) (not $tab) }}{{ errorf "code block: group/value require tab at %s" .Position }}{{ end -}}
+  {{- $numRaw := "" -}}{{ with index $attrs "num" }}{{ $numRaw = printf "%v" . }}{{ end -}}
+  {{- $caption := "" -}}{{ with index $attrs "caption" }}{{ $caption = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- if and $numRaw $tab }}{{ errorf "code block: num (Book example) and tab (tabs) are mutually exclusive at %s" .Position }}{{ end -}}
+  {{- if and $caption (not $numRaw) }}{{ errorf "code block: caption requires num (numbered example) at %s" .Position }}{{ end -}}
+  {{- if and $numRaw (not $caption) }}{{ errorf "code block: a numbered example requires caption at %s" .Position }}{{ end -}}
+  {{- /* For a numbered example the author id names the <figure> (the Book
+         target), not the code block root, so it is not passed to normalize. */ -}}
+  {{- $egID := "" -}}
+  {{- $codeAttrs := $attrs -}}
+  {{- if $numRaw -}}
+    {{- with index $attrs "id" }}{{ $egID = printf "%v" . }}{{ end -}}
+    {{- $codeAttrs = dict -}}
+    {{- range $k, $v := $attrs }}{{ if ne $k "id" }}{{ $codeAttrs = merge $codeAttrs (dict $k $v) }}{{ end }}{{ end -}}
+  {{- end -}}
   {{- $config := partial "code/normalize.html" (dict
     "page" .Page
     "position" .Position
     "code" .Inner
     "language" .Type
-    "attributes" .Attributes
+    "attributes" $codeAttrs
     "options" .Options
     "key" (printf "fence-%d" .Ordinal)
   ) -}}
   {{- $highlighted := partial "code/highlight.html" $config -}}
-  {{- partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
+  {{- $html := partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
+  {{- if $tab -}}
+    {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" $group "value" $value "kind" "code" "content" $html) -}}
+  {{- else if $numRaw -}}
+    {{- $num := partial "book/validate-num.html" (dict "name" "code block" "value" $numRaw "position" .Position) -}}
+    {{- $id := printf "eg-%s" $num -}}
+    {{- if $egID }}{{ $id = partial "book/validate-id.html" (dict "name" "code block" "value" $egID "position" .Position) }}{{ end -}}
+    {{- partial "book/register-target.html" (dict "page" $page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+    {{- $label := partial "book/label.html" (dict "kind" "eg" "num" $num) -}}
+    {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+    {{- if in (slice "markdown" "rss") $format -}}
+      {{- printf "<p><strong>%s.</strong> %s</p>\n" $label (htmlEscape $caption) | safeHTML -}}{{ $html }}
+    {{- else -}}
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--eg" data-book-kind="eg" data-book-num="{{ $num }}">
+  <figcaption><span class="td-eg-label">{{ $label }}</span> <span class="td-eg-caption">{{ $caption }}</span></figcaption>
+  {{ $html }}
+</figure>
+    {{- end -}}
+  {{- else -}}
+    {{- $html -}}
+  {{- end -}}
 {{- end -}}

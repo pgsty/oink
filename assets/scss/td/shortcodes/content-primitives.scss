@@ -151,7 +151,8 @@ a.td-badge {
 }
 
 .td-field__type,
-.td-field__default {
+.td-field__default,
+.td-field__meta {
   padding: 0.1rem 0.5rem;
   border: 1px solid var(--bs-border-color);
   border-radius: 0.4rem;
@@ -171,6 +172,24 @@ a.td-badge {
     overflow-wrap: anywhere;
     word-break: break-word;
   }
+}
+
+.td-field__meta-label {
+  color: var(--bs-tertiary-color);
+  font-weight: 600;
+
+  &::after {
+    content: ': ';
+  }
+}
+
+.td-field__meta code,
+.td-field__meta-value code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--td-code-font-family);
+  font-size: 1em;
 }
 
 .td-field__required {

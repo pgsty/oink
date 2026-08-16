@@ -1,0 +1,52 @@
+{{- /*
+  Shared Fields renderer (<dl>) used by the `{{% fields %}}` shortcode and the
+  `{.fields}` table hook (plan/design/components.md v5 §3.5).
+
+  Input dict:
+    label        optional plain-text label above the list
+    labelID      id for the label element (required when label is set)
+    entries      slice of dicts:
+                   name          field name (already HTML-safe)
+                   meta          slice of {label, value, class}; value/label HTML-safe;
+                                 an empty value renders the label alone
+                   description   HTML (descriptionMarkdown=false) or raw Markdown
+                   descriptionMarkdown  when true the description is emitted as
+                                 Markdown surrounded by blank lines so Goldmark
+                                 renders it (only valid from `%` shortcodes)
+*/ -}}
+{{- $label := .label | default "" -}}
+{{- $labelID := .labelID | default "" -}}
+<div class="td-fields{{ with .class }} {{ . }}{{ end }}"{{ with .id }} id="{{ . }}"{{ end }}
+  {{- range $key, $value := (.generic | default dict) }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
+{{- if $label }}
+<p class="td-fields__label" id="{{ $labelID }}">{{ $label }}</p>
+{{- end }}
+<dl class="td-fields__list"{{ if $label }} aria-labelledby="{{ $labelID }}"{{ end }}>
+{{- range .entries }}
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">{{ .name | safeHTML }}</code>
+{{- range .meta }}
+{{- $class := .class | default "td-field__meta" }}
+<span class="visually-hidden">, </span><span class="{{ $class }}">
+  {{- if .value -}}
+    {{- with .label }}<span class="td-field__meta-label">{{ . | safeHTML }}</span>{{ end -}}
+    <span class="td-field__meta-value">{{ .value | safeHTML }}</span>
+  {{- else -}}
+    {{ .label | safeHTML }}
+  {{- end -}}
+</span>
+{{- end }}
+</dt>
+{{- if .descriptionMarkdown }}
+<dd class="td-field__description">
+
+{{ .description }}
+
+</dd>
+{{- else }}
+<dd class="td-field__description">{{ .description | safeHTML }}</dd>
+{{- end }}
+</div>
+{{- end }}
+</dl>
+</div>

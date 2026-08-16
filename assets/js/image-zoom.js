@@ -53,6 +53,8 @@
     const parent = image.parentElement;
     if (!parent) return false;
     if (parent.tagName === 'FIGURE') return true;
+    // Native Gallery lists (`{.gallery}`): every list image is a preview.
+    if (image.closest('ul.gallery > li')) return true;
     return (
       parent.tagName === 'P' &&
       parent.childElementCount === 1 &&

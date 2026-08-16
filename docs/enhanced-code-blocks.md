@@ -308,7 +308,7 @@ Both delimiters use standard `{{< >}}` notation.
             data-td-tabs-value="npm">npm</button>
     …
   </div>
-  <section class="td-tabs__panel" id="package-manager-npm" role="tabpanel"
+  <div class="td-tabs__panel" id="package-manager-npm" role="tabpanel"
            aria-labelledby="package-manager-npm-tab" tabindex="0" data-td-tabs-value="npm">
     <div class="td-tabs__panel-title" aria-hidden="true">npm</div>
     <div class="td-tabs__panel-body">…</div>

@@ -91,8 +91,8 @@ def check_outputs(public: Path) -> list[str]:
         '<div class="td-tabs__list" role="tablist" aria-label="MinIO settings">',
         '<button class="td-tabs__tab" type="button" role="tab" id="setting-env-tab" aria-controls="setting-env" aria-selected="false" tabindex="-1" data-td-tabs-value="env">Environment Variable</button>',
         '<button class="td-tabs__tab" type="button" role="tab" id="setting-conf-tab" aria-controls="setting-conf" aria-selected="true" tabindex="0" data-td-tabs-value="conf">Configuration Setting</button>',
-        '<section class="td-tabs__panel" id="setting-env" role="tabpanel" aria-labelledby="setting-env-tab" tabindex="0" data-td-tabs-value="env">',
-        '<section class="td-tabs__panel" id="setting-conf" role="tabpanel" aria-labelledby="setting-conf-tab" tabindex="0" data-td-tabs-value="conf" data-td-tabs-active>',
+        '<div class="td-tabs__panel" id="setting-env" role="tabpanel" aria-labelledby="setting-env-tab" tabindex="0" data-td-tabs-value="env">',
+        '<div class="td-tabs__panel" id="setting-conf" role="tabpanel" aria-labelledby="setting-conf-tab" tabindex="0" data-td-tabs-value="conf" data-td-tabs-active>',
         '<div class="td-tabs__panel-title" aria-hidden="true">Environment Variable</div>',
         # Headings inside a tab body keep their explicit IDs.
         'id="envvar-queue-dir"',
@@ -106,7 +106,7 @@ def check_outputs(public: Path) -> list[str]:
     ):
         require(marker in code_html, f"HTML fixture missing {marker}", errors)
 
-    require(re.search(r'<section class="td-tabs__panel"[^>]*\shidden(?:\s|>)', code_html) is None, "a tab panel is hidden before the runtime enhances the DOM", errors)
+    require(re.search(r'<div class="td-tabs__panel"[^>]*\shidden(?:\s|>)', code_html) is None, "a tab panel is hidden before the runtime enhances the DOM", errors)
     require(
         re.search(
             r'data-language="sh"[\s\S]*?class="td-code__language">BASH</span>',

@@ -126,6 +126,7 @@
       if (root.hasAttribute(READY)) return;
       var list = root.querySelector(':scope > .td-tabs__list');
       if (!list) return;
+      dedupeSetIDs(doc, root);
       list.addEventListener('click', function (event) {
         var tab = event.target && event.target.closest ? event.target.closest('[role="tab"]') : null;
         if (!tab || tab.parentNode !== list) return;
@@ -180,9 +181,13 @@
       var node = block.nextSibling;
       while (node) {
         if (node.nodeType === 3 && !node.textContent.trim()) { node = node.nextSibling; continue; }
-        if (node.nodeType === 8) { node = node.nextSibling; continue; }
+        // A comment node (e.g. <!-- prettier-ignore-end -->) separates runs;
+        // so does a block that declares its own group (only the first block of
+        // a run may carry `group`).
+        if (node.nodeType === 8) break;
         if (node.nodeType === 1 && node.matches && node.matches('.td-tab-block[data-td-tab]') &&
-            node.getAttribute('data-td-tab-kind') === block.getAttribute('data-td-tab-kind')) {
+            node.getAttribute('data-td-tab-kind') === block.getAttribute('data-td-tab-kind') &&
+            !node.hasAttribute('data-td-tab-group')) {
           run.push(node);
           seen.add(node);
           node = node.nextSibling;
@@ -221,7 +226,7 @@
       root.appendChild(list);
       run.forEach(function (block, i) {
         var value = values[i];
-        var panelID = group ? group + '-' + value : base + '-' + value;
+        var panelID = uniqueID(doc, group ? group + '-' + value : base + '-' + value);
         var label = block.getAttribute('data-td-tab') || value;
         var tab = doc.createElement('button');
         tab.type = 'button';
@@ -235,7 +240,7 @@
         tab.textContent = label;
         list.appendChild(tab);
 
-        var panel = doc.createElement('section');
+        var panel = doc.createElement('div');
         panel.className = 'td-tabs__panel';
         panel.id = panelID;
         panel.setAttribute('role', 'tabpanel');
@@ -244,6 +249,13 @@
         panel.setAttribute('data-td-tabs-value', value);
         var title = block.querySelector(':scope > [data-td-tab-title]');
         if (title) title.parentNode.removeChild(title);
+        // Keep a panel title for print / non-enhanced rendering (hidden by CSS
+        // once the set is ready), like the tabs shortcode emits.
+        var panelTitle = doc.createElement('div');
+        panelTitle.className = 'td-tabs__panel-title';
+        panelTitle.setAttribute('aria-hidden', 'true');
+        panelTitle.textContent = label;
+        panel.appendChild(panelTitle);
         // Move the block's remaining children into the panel body.
         var body = doc.createElement('div');
         body.className = 'td-tabs__panel-body';
@@ -260,6 +272,30 @@
       built.push(root);
     });
     return built;
+  }
+
+  // Peer sets of one group share `<group>-<value>` ids; keep ids unique in the
+  // document (the first occurrence keeps the plain id for deep links).
+  function uniqueID(doc, id) {
+    if (!doc.getElementById || !doc.getElementById(id)) return id;
+    var n = 2;
+    while (doc.getElementById(id + '-' + n)) n += 1;
+    return id + '-' + n;
+  }
+
+  function dedupeSetIDs(doc, root) {
+    tabsOf(root).forEach(function (tab) {
+      var panelID = tab.getAttribute('aria-controls');
+      var panel = panelID ? doc.getElementById(panelID) : null;
+      if (!panel || panel.parentNode === root) return; // first owner keeps its ids
+      var ownPanel = panelsOf(root).filter(function (p) { return valueOf(p) === valueOf(tab); })[0];
+      if (!ownPanel) return;
+      var next = uniqueID(doc, panelID);
+      ownPanel.id = next;
+      tab.id = next + '-tab';
+      tab.setAttribute('aria-controls', next);
+      ownPanel.setAttribute('aria-labelledby', next + '-tab');
+    });
   }
 
   function hashString(text) {

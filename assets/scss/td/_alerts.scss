@@ -4,7 +4,9 @@
 .td-callout {
   --td-callout-accent: var(--bs-primary);
   --td-callout-bg: color-mix(in srgb, var(--td-callout-accent) 7%, var(--bs-body-bg));
-  --td-callout-title: var(--td-callout-accent);
+  // Titles use the Bootstrap *-text-emphasis tokens (contrast-safe on the
+  // subtle tint in both colour modes), never the raw accent colour.
+  --td-callout-title: var(--bs-primary-text-emphasis);
 
   position: relative;
   margin: 1.5rem 0;
@@ -68,39 +70,44 @@
   // Type accents ---------------------------------------------------------
   &--note {
     --td-callout-accent: var(--bs-primary);
+    --td-callout-title: var(--bs-primary-text-emphasis);
   }
 
   &--tip,
   &--success {
     --td-callout-accent: var(--bs-success);
+    --td-callout-title: var(--bs-success-text-emphasis);
   }
 
   &--important {
     --td-callout-accent: var(--bs-purple, #6f42c1);
+    --td-callout-title: color-mix(in srgb, var(--bs-purple, #6f42c1) 60%, var(--bs-emphasis-color));
   }
 
   &--warning {
     --td-callout-accent: var(--bs-warning);
-    --td-callout-title: color-mix(in srgb, var(--bs-warning) 70%, var(--bs-body-color));
+    --td-callout-title: var(--bs-warning-text-emphasis);
   }
 
   &--caution,
   &--danger {
     --td-callout-accent: var(--bs-danger);
+    --td-callout-title: var(--bs-danger-text-emphasis);
   }
 
   &--question {
     --td-callout-accent: var(--bs-info);
-    --td-callout-title: color-mix(in srgb, var(--bs-info) 70%, var(--bs-body-color));
+    --td-callout-title: var(--bs-info-text-emphasis);
   }
 
   &--example {
     --td-callout-accent: var(--bs-indigo, #6610f2);
+    --td-callout-title: color-mix(in srgb, var(--bs-indigo, #6610f2) 60%, var(--bs-emphasis-color));
   }
 
   &--quote {
     --td-callout-accent: var(--bs-secondary-color);
-    --td-callout-title: var(--bs-secondary-color);
+    --td-callout-title: var(--bs-secondary-text-emphasis);
 
     .td-callout__body {
       color: var(--bs-secondary-color);

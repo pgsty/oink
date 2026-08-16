@@ -907,7 +907,7 @@ DOM contract shared by both forms:
     <button class="td-tabs__tab" type="button" role="tab" id="setting-conf-tab"
             aria-controls="setting-conf" aria-selected="true" tabindex="0" data-td-tabs-value="conf">…</button>
   </div>
-  <section class="td-tabs__panel" id="setting-conf" role="tabpanel"
+  <div class="td-tabs__panel" id="setting-conf" role="tabpanel"
            aria-labelledby="setting-conf-tab" tabindex="0" data-td-tabs-value="conf" data-td-tabs-active>
     <div class="td-tabs__panel-title" aria-hidden="true">…</div>
     <div class="td-tabs__panel-body">…</div>

@@ -59,24 +59,33 @@
   {{- delimit $chunks "\n\n" | safeHTML -}}
 {{- else -}}
   {{- $base := printf "td-tabs-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
-  {{- $idFor := printf "%s-%%s" $base -}}
+  {{- /* Peer sets of one group on the same page: the first keeps `<group>-<value>`
+         (deep-link target), later ones get a `-2`, `-3` … suffix so ids stay unique. */ -}}
+  {{- $idPrefix := $base -}}
+  {{- if $group -}}
+    {{- $seenKey := printf "tdTabsGroupSeen:%s:%s" $format $group -}}
+    {{- $seen := .Page.Store.Get $seenKey | default 0 -}}
+    {{- $seen = add $seen 1 -}}
+    {{- .Page.Store.Set $seenKey $seen -}}
+    {{- $idPrefix = cond (eq $seen 1) $group (printf "%s-%d" $group $seen) -}}
+  {{- end -}}
   {{- $interactive := eq $format "html" -}}
   {{- if $interactive }}{{ .Page.Store.Set "hasTabs" true }}{{ end -}}
 <div class="td-tabs td-tabs--shortcode" id="{{ $base }}"{{ if $interactive }} data-td-tabs{{ with $group }} data-td-tabs-group="{{ . }}"{{ end }} data-td-tabs-default="{{ $default }}"{{ end }}>
   {{- if $interactive }}
   <div class="td-tabs__list" role="tablist" aria-label="{{ $label | default (T "ui_tabs_label") }}">
     {{- range $tabs }}
-    {{- $panelID := cond (ne $group "") (printf "%s-%s" $group .value) (printf "%s-%s" $base .value) }}
+    {{- $panelID := printf "%s-%s" $idPrefix .value }}
     <button class="td-tabs__tab" type="button" role="tab" id="{{ $panelID }}-tab" aria-controls="{{ $panelID }}" aria-selected="{{ eq .value $default }}" tabindex="{{ cond (eq .value $default) "0" "-1" }}" data-td-tabs-value="{{ .value }}">{{ .label }}</button>
     {{- end }}
   </div>
   {{- end }}
   {{- range $tabs }}
-  {{- $panelID := cond (ne $group "") (printf "%s-%s" $group .value) (printf "%s-%s" $base .value) }}
-  <section class="td-tabs__panel" id="{{ $panelID }}"{{ if $interactive }} role="tabpanel" aria-labelledby="{{ $panelID }}-tab" tabindex="0"{{ end }} data-td-tabs-value="{{ .value }}"{{ if eq .value $default }} data-td-tabs-active{{ end }}>
+  {{- $panelID := printf "%s-%s" $idPrefix .value }}
+  <div class="td-tabs__panel" id="{{ $panelID }}"{{ if $interactive }} role="tabpanel" aria-labelledby="{{ $panelID }}-tab" tabindex="0"{{ end }} data-td-tabs-value="{{ .value }}"{{ if eq .value $default }} data-td-tabs-active{{ end }}>
     <div class="td-tabs__panel-title" aria-hidden="true">{{ .label }}</div>
     <div class="td-tabs__panel-body">{{ partial "content/render-block.html" (dict "page" $.Page "scope" (printf "tabs%d-%s" $.Ordinal .value) "content" .body) }}</div>
-  </section>
+  </div>
   {{- end }}
 </div>
 {{- end -}}

@@ -10,7 +10,10 @@ disableKinds: [sitemap, taxonomy, term]
 # themselves; OINK supplies the render hook and local KaTeX presentation.
 markup:
   goldmark:
+    renderer:
+      unsafe: true # `%` container shortcodes emit HTML that Goldmark must keep
     parser:
+      wrapStandAloneImageWithinParagraph: false # native Book figures need block image attributes
       attribute:
         block: true
     extensions:

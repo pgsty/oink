@@ -1,0 +1,52 @@
+{{- /*
+  Shared block-attribute policy for render hooks (table / image / codeblock /
+  passthrough / blockquote).
+
+  Input dict:
+    attributes  the hook's .Attributes map (Goldmark block attributes)
+    allowed     slice of attribute names this hook consumes
+    position    .Position for error messages
+    kind        hook name for error messages ("table", "image", ...)
+
+  Rules (plan/design/components.md v5 §1.4):
+    - allowed keys are returned under "consumed" (present keys only);
+    - "class" is token-validated and passed through (site CSS is legitimate);
+    - data-* and aria-* pass through unchanged;
+    - style, on*, and any other unknown key are build errors.
+
+  Output dict: consumed (map), class (string), classes (slice), generic (map).
+*/ -}}
+{{- $attrs := .attributes | default (dict) -}}
+{{- $allowed := .allowed | default (slice) -}}
+{{- $position := .position | default "" -}}
+{{- $kind := .kind | default "block" -}}
+{{- $consumed := dict -}}
+{{- $generic := dict -}}
+{{- $classes := slice -}}
+{{- range $name, $value := $attrs -}}
+  {{- $lower := lower $name -}}
+  {{- $text := printf "%v" $value -}}
+  {{- if eq $lower "class" -}}
+    {{- range $token := split (strings.TrimSpace $text) " " -}}
+      {{- $token = strings.TrimSpace $token -}}
+      {{- if $token -}}
+        {{- if not (findRE `^[A-Za-z0-9_-]+$` $token) -}}
+          {{- errorf "%s attributes: class token %q contains unsupported characters at %s" $kind $token $position -}}
+        {{- end -}}
+        {{- if not (in $classes $token) }}{{ $classes = $classes | append $token }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if in $allowed $lower -}}
+    {{- $consumed = merge $consumed (dict $lower $text) -}}
+  {{- else if or (strings.HasPrefix $lower "on") (eq $lower "style") (eq $lower "srcdoc") -}}
+    {{- errorf "%s attributes: unsafe attribute %q is not supported at %s" $kind $name $position -}}
+  {{- else if or (strings.HasPrefix $lower "data-") (strings.HasPrefix $lower "aria-") -}}
+    {{- if not (findRE `^[a-z][a-z0-9_:.-]*$` $lower) -}}
+      {{- errorf "%s attributes: invalid attribute name %q at %s" $kind $name $position -}}
+    {{- end -}}
+    {{- $generic = merge $generic (dict $lower $text) -}}
+  {{- else -}}
+    {{- errorf "%s attributes: unknown attribute %q at %s (allowed: %s, class, data-*, aria-*)" $kind $name $position (delimit $allowed ", ") -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "consumed" $consumed "class" (delimit $classes " ") "classes" $classes "generic" $generic) -}}

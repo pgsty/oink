@@ -281,3 +281,14 @@ feedback_change: Change response
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_page_annotation: Page information
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+success: Success
+danger: Danger
+question: Question
+example: Example
+quote: Quote
+details: Details
+
+# UI strings. Buttons and similar.

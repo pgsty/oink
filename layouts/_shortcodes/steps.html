@@ -1,13 +1,16 @@
 {{- /*
 
-A Markdown-first sequence of automatically numbered steps.
-
-Use Markdown shortcode delimiters (`{{% steps %}}`) and place direct child
-headings inside the block. CSS assigns the visible numbers, so authors never
-need to maintain them by hand.
+Heading-based steps: `{{% steps %}}` wraps direct child headings, each heading
+starts a step; CSS assigns the numbers. Keep this form for steps that contain
+`%` container shortcodes (tabs / cards / fields / image) or very long bodies —
+those cannot live inside the native `1. … {.steps}` list form (list items
+cannot host `%` containers). The blank lines around .Inner are required so
+Goldmark parses the body as Markdown instead of swallowing it into the HTML
+block (plan/design/components.md v5 §2).
 
 */ -}}
-
 <div class="td-steps td-max-width-on-larger-screens">
-  {{- .Inner -}}
+
+{{ .Inner }}
+
 </div>

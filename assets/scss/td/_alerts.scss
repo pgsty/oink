@@ -1,58 +1,195 @@
-// Bootstrap alert style adjustments:
+// Callout v2 (GFM / Obsidian style `> [!TYPE]± Title` blockquotes).
+// Rendered by layouts/_markup/render-blockquote-alert.html.
 
-.alert {
-  font-weight: $font-weight-medium;
-  color: inherit;
-  border-radius: 0;
+.td-callout {
+  --td-callout-accent: var(--bs-primary);
+  --td-callout-bg: color-mix(in srgb, var(--td-callout-accent) 7%, var(--bs-body-bg));
+  --td-callout-title: var(--td-callout-accent);
 
-  :last-child {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 0.85rem 1.1rem 0.9rem 1.15rem;
+  border: 1px solid color-mix(in srgb, var(--td-callout-accent) 22%, var(--bs-border-color));
+  border-inline-start: 4px solid var(--td-callout-accent);
+  border-radius: var(--bs-border-radius);
+  background: var(--td-callout-bg);
+  color: var(--bs-body-color);
+  break-inside: avoid-page;
+
+  > :last-child,
+  .td-callout__body > :last-child {
     margin-bottom: 0;
   }
 
-  .alert-heading {
-    color: var(--bs-alert-link-color);
+  .td-callout__body > :first-child {
+    margin-top: 0;
   }
 
-  @each $color, $value in $theme-colors {
-    &-#{$color} {
-      border-style: solid;
-      border-color: $value;
-      border-width: 0 0 0 4px;
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.45rem;
+    color: var(--td-callout-title);
+    font-family: var(--td-ui-font-family);
+    font-size: 0.95rem;
+    font-weight: $font-weight-semibold;
+    line-height: 1.35;
+
+    code {
+      font-size: 0.9em;
+    }
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    inline-size: 1.1em;
+    text-align: center;
+    font-size: 1em;
+  }
+
+  &__marker {
+    display: none;
+  }
+
+  &__body {
+    font-size: 0.95rem;
+
+    > p:last-child,
+    > ul:last-child,
+    > ol:last-child,
+    > pre:last-child,
+    > .td-code:last-child,
+    > table:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Type accents ---------------------------------------------------------
+  &--note {
+    --td-callout-accent: var(--bs-primary);
+  }
+
+  &--tip,
+  &--success {
+    --td-callout-accent: var(--bs-success);
+  }
+
+  &--important {
+    --td-callout-accent: var(--bs-purple, #6f42c1);
+  }
+
+  &--warning {
+    --td-callout-accent: var(--bs-warning);
+    --td-callout-title: color-mix(in srgb, var(--bs-warning) 70%, var(--bs-body-color));
+  }
+
+  &--caution,
+  &--danger {
+    --td-callout-accent: var(--bs-danger);
+  }
+
+  &--question {
+    --td-callout-accent: var(--bs-info);
+    --td-callout-title: color-mix(in srgb, var(--bs-info) 70%, var(--bs-body-color));
+  }
+
+  &--example {
+    --td-callout-accent: var(--bs-indigo, #6610f2);
+  }
+
+  &--quote {
+    --td-callout-accent: var(--bs-secondary-color);
+    --td-callout-title: var(--bs-secondary-color);
+
+    .td-callout__body {
+      color: var(--bs-secondary-color);
+      font-style: italic;
+    }
+  }
+
+  &--details {
+    --td-callout-accent: var(--bs-secondary-color);
+    --td-callout-title: var(--bs-body-color);
+    --td-callout-bg: var(--bs-tertiary-bg);
+
+    border-inline-start-width: 1px;
+  }
+
+  // Collapsible (native <details>) ---------------------------------------
+  &--collapsible {
+    padding: 0;
+
+    > summary {
+      margin: 0;
+      padding: 0.75rem 1.1rem 0.75rem 1.15rem;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--td-callout-accent);
+        outline-offset: -2px;
+        border-radius: var(--bs-border-radius);
+      }
+
+      .td-callout__label {
+        flex: 1 1 auto;
+      }
+
+      .td-callout__marker {
+        display: inline-block;
+        flex: 0 0 auto;
+        font-size: 0.75em;
+        transition: transform 0.15s ease;
+      }
+    }
+
+    &[open] > summary .td-callout__marker {
+      transform: rotate(180deg);
+    }
+
+    > .td-callout__body {
+      padding: 0 1.1rem 0.9rem 1.15rem;
+    }
+
+    // Static (print / rss) rendering of a collapsible callout keeps the chrome
+    // but has no summary element.
+    > .td-callout__title {
+      padding: 0.75rem 1.1rem 0 1.15rem;
+    }
+  }
+
+  &--details:not([open]) > summary .td-callout__icon {
+    transform: rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-callout--collapsible > summary .td-callout__marker {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-callout {
+    border-color: CanvasText;
+    background: Canvas;
+
+    &__title {
+      color: CanvasText;
     }
   }
 }
 
-// ------------------------------
-// Oink alert styles
-// ------------------------------
-
-// Placeholder class(es):
-// .td-alert {}
-// .td-alert--md {}
-// .td-alert-body {}
-
-.td-alert-heading {
-  @extend .h4;
-}
-
-// Styles for GFM blockquote-alert types
-.alert-caution {
-  @extend .alert-warning;
-}
-
-.alert-important {
-  @extend .alert-info;
-}
-
-.alert-note {
-  @extend .alert-primary;
-}
-
-.alert-tip {
-  @extend .alert-success;
-}
-
-// Oink custom alert type:
-.alert-nb {
-  @extend .alert-note;
+@media print {
+  .td-callout {
+    background: transparent;
+    border-color: #999;
+    break-inside: avoid-page;
+  }
 }

@@ -4,6 +4,12 @@ important: Important
 note: Note
 tip: Tip
 warning: Warning
+success: Success
+danger: Danger
+question: Question
+example: Example
+quote: Quote
+details: Details
 
 # UI strings. Buttons and similar.
 ui_pager_prev: Previous

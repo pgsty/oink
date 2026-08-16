@@ -1,42 +1,76 @@
-{{ $title := or
-  .AlertTitle
-  (and
-    .AlertType
-    (or (i18n .AlertType) (title .AlertType))
-  )
+{{- /*
+  Callout v2 (plan/design/components.md v5 §3.1).
+
+    > [!TYPE]± Title
+    > body
+    {icon="fa-solid fa-rocket"}
+
+  Canonical types: note tip important warning caution success danger question
+  example quote + details. Unknown types render as a plain blockquote with the
+  visible marker preserved. `-` collapses (default closed), `+` collapses
+  (default open); `details` collapses by default. Print / RSS render static,
+  expanded blocks. Attributes: icon (one Font Awesome class pair) + class.
+*/ -}}
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $type := lower (.AlertType | default "") -}}
+{{- $sign := .AlertSign | default "" -}}
+{{- $canonical := slice "note" "tip" "important" "warning" "caution" "success" "danger" "question" "example" "quote" "details" -}}
+{{- $icons := dict
+  "note" "fa-solid fa-circle-info"
+  "tip" "fa-solid fa-lightbulb"
+  "important" "fa-solid fa-circle-exclamation"
+  "warning" "fa-solid fa-triangle-exclamation"
+  "caution" "fa-solid fa-circle-xmark"
+  "success" "fa-solid fa-circle-check"
+  "danger" "fa-solid fa-fire"
+  "question" "fa-solid fa-circle-question"
+  "example" "fa-solid fa-flask"
+  "quote" "fa-solid fa-quote-left"
+  "details" ""
 -}}
-
-{{ $singleLineBody := eq .AlertType "nb" -}}
-{{/* For NB single-line alerts without a body, use the title as the body */ -}}
-{{ $body := .Text -}}
-{{ if and (not $body) .AlertTitle $singleLineBody -}}
-  {{ $body = .AlertTitle -}}
-  {{ $title = "" -}}
-{{ end -}}
-
-{{ $classes := printf "td-alert td-alert--md alert alert-%s" .AlertType -}}
-{{ with .Attributes.class }}
-  {{ $classes = printf "%s %s" $classes . -}}
-{{ end -}}
-
-<div class="{{ $classes }}" role="alert"
-  {{- range $key, $value := .Attributes -}}
-    {{ if eq $key "class" }}{{ continue -}}{{ end -}}
-    {{ printf " %s=%q" $key (string $value) | safeHTMLAttr -}}
-  {{ end -}}
->
-  {{- with $title -}}
-    <div class="td-alert-heading alert-heading" role="heading" aria-level="4">
-      {{- . -}}
-    </div>
-  {{- end }}
-  <div class="td-alert-body">
-    {{ if $singleLineBody -}}
-      {{/* The render hook doesn't add <p> for single-line bodies, so we do it to
-      ensure visual consistency */ -}}
-      <p>{{ $body }}</p>
-    {{ else -}}
-      {{ $body }}
-    {{ end -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "icon") "position" .Position "kind" "callout") -}}
+{{- $icon := index $icons $type | default "" -}}
+{{- with index $policy.consumed "icon" -}}
+  {{- $value := strings.TrimSpace . -}}
+  {{- if not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $value) -}}
+    {{- errorf "callout: icon must be one Font Awesome class pair such as \"fa-solid fa-rocket\"; got %q at %s" $value $.Position -}}
+  {{- end -}}
+  {{- $icon = $value -}}
+{{- end -}}
+{{- if not (in $canonical $type) -}}
+  {{- /* Unknown type: plain blockquote, marker kept visible so nothing is lost. */ -}}
+  {{- $marker := printf "[!%s]%s" (upper $type) $sign -}}
+<blockquote{{ with $policy.class }} class="{{ . }}"{{ end }}>
+<p>{{ $marker }}{{ with .AlertTitle }} {{ . }}{{ end }}</p>
+{{ .Text }}
+</blockquote>
+{{- else -}}
+  {{- $title := .AlertTitle -}}
+  {{- if not $title }}{{ $title = i18n $type | default (title $type) }}{{ end -}}
+  {{- $collapsible := or (eq $sign "-") (eq $sign "+") (eq $type "details") -}}
+  {{- $open := eq $sign "+" -}}
+  {{- $static := or (ne $format "html") (not $collapsible) -}}
+  {{- $classes := slice "td-callout" (printf "td-callout--%s" $type) -}}
+  {{- if $collapsible }}{{ $classes = $classes | append "td-callout--collapsible" }}{{ end -}}
+  {{- with $policy.class }}{{ $classes = $classes | append . }}{{ end -}}
+  {{- $iconHTML := "" -}}
+  {{- if $icon }}{{ $iconHTML = printf `<i class="td-callout__icon %s" aria-hidden="true"></i>` $icon | safeHTML }}{{ end -}}
+  {{- if $static -}}
+<div class="{{ delimit $classes " " }}" role="note"{{ if and $collapsible (ne $format "html") }} data-td-callout-collapsible{{ end }}
+  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  <div class="td-callout__title">{{ $iconHTML }}<span class="td-callout__label">{{ $title }}</span></div>
+  <div class="td-callout__body">
+{{ .Text }}
   </div>
 </div>
+  {{- else -}}
+<details class="{{ delimit $classes " " }}"{{ if $open }} open{{ end }}
+  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  <summary class="td-callout__title">{{ $iconHTML }}<span class="td-callout__label">{{ $title }}</span><i class="td-callout__marker fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+  <div class="td-callout__body">
+{{ .Text }}
+  </div>
+</details>
+  {{- end -}}
+{{- end -}}

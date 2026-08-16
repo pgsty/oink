@@ -56,8 +56,12 @@ python3 scripts/check-release-assets.py              # release facts/cards/check
 python3 scripts/check-download.py                    # download schema and publication states
 python3 scripts/check-landing.py                     # landing registry/runtime/output matrix
 python3 scripts/check-book.py                        # numbered targets/xrefs/Book assembly
-python3 scripts/check-prd5-migrations.py              # dry-run/idempotency Book migration profiles
-python3 scripts/check-prd5-misc.py                    # shared scenario fixes and compatibility
+python3 scripts/check-prd5-migrations.py             # dry-run/idempotency Book migration profiles
+python3 scripts/check-prd5-misc.py                   # shared scenario fixes and compatibility
+python3 scripts/check-prd6-keyboard.py               # keyboard navigation contract
+python3 scripts/check-prd7.py                        # navigation and page-end composition
+python3 scripts/check-output.py                      # HTML structure, duplicate IDs, bundle graph, output security (+ negative fixture)
+python3 scripts/check-goldens.py                     # four-state goldens (html / print / markdown / rss / llms) of exampleSite
 
 cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warning-free
 
@@ -71,6 +75,8 @@ python3 scripts/check-gallery.py            # gallery + zoom runtime reuse
 # Browser runtimes (plain assets, no install step)
 node --test 'tests/js/**/*.test.js'
 ```
+
+`check-output.py` and `check-goldens.py` also read `exampleSite/public` (or `--public`); `check-goldens.py --update` rewrites `tests/goldens/` — do it in the same commit as the behaviour change and say why. `scripts/check-output-security.py --public DIR --base-url URL [--third-party]` is the product-level trust check any site can run; `scripts/sites/build-all.py` builds the eleven sites strictly in isolation (`--ref <branch>`, `--keep`, `--baseline` for surface diffs).
 
 The output-checking scripts accept `--hugo /path/to/hugo` (to test the 0.160.1
 floor) and `--public DIR` (to reuse an existing build). Run a single one

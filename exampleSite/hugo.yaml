@@ -3,7 +3,7 @@ title: OINK Landing Example
 theme: oink
 defaultContentLanguage: en
 enableRobotsTXT: true
-disableKinds: [RSS, sitemap, taxonomy, term]
+disableKinds: [sitemap, taxonomy, term]
 
 # Hugo does not merge a theme module's Goldmark configuration into a consumer
 # site. Sites that author delimiter-style mathematics must enable passthrough
@@ -21,7 +21,8 @@ markup:
           inline: [['\(', '\)']]
 
 outputs:
-  section: [HTML, print]
+  home: [HTML, LLMS]
+  section: [HTML, print, RSS]
 
 params:
   description: A complete example of OINK's composable landing page.

@@ -1,0 +1,498 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+dir="ltr"
+lang="en"
+data-td-typography="technical" data-theme-init>
+<head>
+<meta name="generator" content="Hugo <version>">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#000000">
+<style>
+html { background: Canvas; color: CanvasText; }
+@media (prefers-color-scheme: dark) {
+html { background: #0b0d12; color: #e6e6e6; }
+}
+html[data-theme-init] * { transition: none !important; }
+[data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
+[data-td-theme-toggle] > [hidden] { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun { display: inline-block !important; }
+</style>
+<script>
+(function() {
+const themeKey = 'td-color-theme';
+let storedTheme = null;
+try {
+storedTheme = localStorage.getItem(themeKey);
+} catch (_) {
+}
+let theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+if (theme === 'auto') {
+theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+document.documentElement.setAttribute('data-bs-theme', theme);
+})();
+</script>
+<meta name="robots" content="index, follow">
+<title>OINK Landing Example</title>
+<meta name="description" content="A complete example of OINK&#39;s composable landing page.">
+<link rel="canonical" href="https://example.org/">
+<link rel="alternate" hreflang="en" href="https://example.org/">
+<meta property="og:url" content="https://example.org/">
+<meta property="og:site_name" content="OINK Landing Example">
+<meta property="og:title" content="OINK Landing Example">
+<meta property="og:description" content="A complete example of OINK&#39;s composable landing page.">
+<meta property="og:locale" content="en">
+<meta property="og:type" content="website">
+<meta itemprop="name" content="OINK Landing Example">
+<meta itemprop="description" content="A complete example of OINK&#39;s composable landing page.">
+<meta itemprop="datePublished" content="2026-08-13T00:00:00+00:00">
+<meta itemprop="dateModified" content="2026-08-13T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OINK Landing Example">
+<meta name="twitter:description" content="A complete example of OINK&#39;s composable landing page.">
+<link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
+<link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
+<script>
+(function () {
+var html = document.documentElement;
+try {
+if (sessionStorage.getItem('td-kbd-zen') === '1') {
+html.setAttribute('data-td-kbd-zen', '');
+}
+} catch (_) {}
+})();
+</script><script defer src="/js/third_party/lunr.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</head>
+<body class="td-home">
+<a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
+<header class="landing-header d-print-none" data-header>
+<div class="landing-container">
+<nav class="landing-nav" aria-label="Main navigation">
+<a href="/" class="nav-brand" data-td-navbar-route
+aria-label="OINK Landing Example — Home" aria-current="page">
+<img src="/icons/logo.svg" alt="" class="nav-logo" width="22" height="22">
+<span class="nav-title">OINK Landing Example</span>
+</a><div class="nav-links nav-menu-zone"><div class="nav-menu" data-td-navbar-menu>
+<a class="nav-link nav-menu__parent-link" href="/docs/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Documentation"
+data-td-navbar-region="desktop" data-td-navbar-label="Documentation"
+data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+<i class="fa-solid fa-book" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Documentation</span></a>
+<div class="nav-menu__panel nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="nav-menu__item-link" href="/docs/content-primitives/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Content primitives"
+data-td-navbar-region="desktop" data-td-navbar-label="Content primitives"
+data-td-navbar-external="false">
+<i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Content primitives</span><small class="td-navbar-entry__description">Semantic authoring components</small></a>
+<a class="nav-menu__item-link" href="/docs/typography/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Typography"
+data-td-navbar-region="desktop" data-td-navbar-label="Typography"
+data-td-navbar-external="false">
+<i class="fa-solid fa-font" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Typography</span><small class="td-navbar-entry__description">Theme typography roles</small></a>
+</div>
+</div><a class="nav-link" href="/blog/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Blog"
+data-td-navbar-region="desktop" data-td-navbar-label="Blog"
+data-td-navbar-external="false">
+<i class="fa-solid fa-blog" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Blog</span></a>
+<a class="nav-link" href="https://github.com/pgsty/oink"
+data-td-navbar-level="0" data-td-navbar-kind="link"
+aria-label="Source"
+data-td-navbar-region="desktop" data-td-navbar-label="Source"
+data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
+<i class="fa-brands fa-github" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Source</span><span class="td-navbar-entry__external"><svg class="td-shell-icon td-shell-icon--external-link" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span></a>
+</div><div class="nav-links nav-util-zone">
+<button type="button" class="nav-search-box" data-td-shell-search-open
+title="Search…" aria-label="Search…"
+aria-controls="td-shell-search" aria-expanded="false"><svg class="td-shell-icon td-shell-icon--search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="nav-search-box__hint">Search…</span>
+<kbd class="nav-search-box__kbd" aria-hidden="true">/</kbd>
+</button>
+<a class="nav-util nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
+title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="nav-hover-menu nav-theme-menu" data-td-nav-hover>
+<button type="button" class="nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><svg class="td-shell-icon td-shell-icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><svg class="td-shell-icon td-shell-icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+<div class="nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><svg class="td-shell-icon td-shell-icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span>Light</span>
+</button>
+<button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><svg class="td-shell-icon td-shell-icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>Dark</span>
+</button>
+<button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><svg class="td-shell-icon td-shell-icon--contrast" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12z" fill="currentColor" stroke="none"/></svg><span>System</span>
+</button>
+</div>
+</div>
+<a href="https://github.com/pgsty/oink" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><svg class="td-shell-icon td-shell-icon--github" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span class="nav-count" data-td-github-stars>2.2k</span></a>
+</div>
+</nav>
+</div>
+</header>
+<div class="container-fluid td-default td-outer">
+<main id="td-main-content" role="main" class="td-main" tabindex="-1">
+<div class="oink-landing" data-td-landing><section id="hero" class="oink-hero" aria-labelledby="hero-title">
+<div class="oink-hero__glow" aria-hidden="true"></div>
+<div class="landing-container">
+<div class="oink-hero__copy">
+<p class="oink-hero__eyebrow">
+<span class="oink-status-dot" aria-hidden="true"></span>
+<span>Composable · Local-first · Hugo-only</span>
+</p>
+<h1 class="oink-hero__title" id="hero-title">Build <strong>clearer</strong> documentation.</h1><p class="oink-hero__lead">OINK turns <code>data/home.yaml</code> into a landing page. Ordinary text fields support <a href="https://gohugo.io/content-management/data-sources/">Markdown links</a>.</p>
+<p class="oink-hero__note"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>No npm, CDN, or JavaScript framework required.</span></p>
+<div class="oink-hero__actions">
+<a class="oink-button oink-button--primary" href="/docs/"><i class="fa-solid fa-book-open" aria-hidden="true"></i>
+<span>Read the docs</span>
+</a>
+<a class="oink-button oink-button--ghost" href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>
+<span>View on GitHub</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section id="metrics" class="oink-section oink-metrics" aria-labelledby="metrics-title">
+<div class="landing-container"><header class="oink-section__head oink-section__head--compact">
+<p class="oink-section__eyebrow"><span>At a glance</span><i aria-hidden="true"></i></p>
+<h2 id="metrics-title">Small surface, broad reach</h2>
+<p class="oink-section__description">Metrics accept optional links and supporting text.</p>
+</header>
+<div class="oink-metric-grid" style="--oink-columns: 4">
+<div class="oink-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>12</strong><span>Section types</span>
+</div>
+<div class="oink-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>Data file</span>
+</div>
+<div class="oink-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>Runtime dependencies</span>
+</div>
+<div class="oink-metric"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong>100%</strong><span>Hugo-rendered</span>
+</div>
+</div>
+</div>
+</section>
+<section id="capabilities" class="oink-section oink-capabilities" aria-labelledby="capabilities-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Existing specialist section</span><i aria-hidden="true"></i></p>
+<h2 id="capabilities-title">Keep the expressive layouts</h2>
+<p class="oink-section__description">Complex feature rows remain configurable alongside the new generic sections.</p>
+</header>
+<article class="oink-module">
+<div class="oink-module__copy"><p class="oink-module__ref">01 / SECTION DISPATCH</p>
+<h3><a href="https://gohugo.io/templates/partial/" target="_blank" rel="noopener noreferrer">Reorder without editing HTML</a></h3><p class="oink-module__motto">◇ A small dispatcher, independent partials</p>
+<ul><li>Put Section names in the <code>sections</code> array.</li><li>Use <code>key</code> to reuse one type with different data.</li><li>Set <code>enabled: false</code> for temporary removal.</li></ul><p class="oink-module__value">Structure is data now, not a hard-coded template.</p>
+</div>
+<div class="oink-codeplate" aria-label="Landing page section configuration">
+<div class="oink-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home.yaml</b></div>
+<pre><code><span class="c"># </span>compose the page
+<span class="p">- </span>hero
+<span class="ok">- </span>logo_wall
+<span class="ok">- </span>faq
+</code></pre>
+</div>
+</article>
+</div>
+</section>
+<section id="cards" class="oink-section oink-cards-section" aria-labelledby="cards-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Generic cards</span><i aria-hidden="true"></i></p>
+<h2 id="cards-title">Configure the common case</h2>
+<p class="oink-section__description">Use cards for features, benefits, services, or any short collection.</p>
+</header>
+<div class="oink-card-grid" style="--oink-columns: 3">
+<article class="oink-card"><div class="oink-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="oink-card__meta">Rich text</p><h3>Markdown-aware</h3><div class="oink-card__description"><p>Descriptions can contain <strong>emphasis</strong>, <code>code</code>, and <a href="https://commonmark.org/">links</a>.</p>
+</div><a class="oink-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">Learn more
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="oink-card"><div class="oink-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="oink-card__meta">Robust data</p><h3>Link-optional</h3><div class="oink-card__description"><p>Leave out <code>url</code> and the card remains valid, readable content.</p>
+</div>
+</article>
+<article class="oink-card"><div class="oink-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="oink-card__meta">Multiple instances</p><h3>Reusable</h3><div class="oink-card__description"><p>Point two Section entries at different keys with the same <code>type</code>.</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="ecosystem" class="oink-section oink-logo-wall-section" aria-labelledby="ecosystem-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Logo wall</span><i aria-hidden="true"></i></p>
+<h2 id="ecosystem-title">Works with familiar tools</h2>
+<p class="oink-section__description"><code>icon</code> accepts a Font Awesome class, an image path, or a simple symbol.</p>
+</header>
+<div class="oink-logo-wall" style="--oink-columns: 4"><article class="oink-logo-card"><div class="oink-logo-card__media"><i class="fa-solid fa-bolt" aria-hidden="true"></i></div>
+<div class="oink-logo-card__copy"><h3>Hugo</h3><p>Static site generator</p>
+</div><a class="oink-card-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Hugo</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="oink-logo-card"><div class="oink-logo-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div>
+<div class="oink-logo-card__copy"><h3>Markdown</h3><p>Content format</p>
+</div><a class="oink-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Markdown</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="oink-logo-card"><div class="oink-logo-card__media"><i class="fa-brands fa-git-alt" aria-hidden="true"></i></div>
+<div class="oink-logo-card__copy"><h3>Git</h3><p>Version control</p>
+</div>
+</article>
+<article class="oink-logo-card"><div class="oink-logo-card__media"><span aria-hidden="true">◉</span></div>
+<div class="oink-logo-card__copy"><h3>Offline</h3><p>Everything local</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="gallery" class="oink-section oink-gallery-section" aria-labelledby="gallery-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Gallery</span><i aria-hidden="true"></i></p>
+<h2 id="gallery-title">Showcase pages, products, or examples</h2>
+<p class="oink-section__description">Supply screenshots through <code>image</code>, or use icons while the artwork is still being prepared.</p>
+</header>
+<div class="oink-gallery" style="--oink-columns: 3"><article class="oink-gallery-card">
+<div class="oink-gallery-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
+<div class="oink-gallery-card__body"><p class="oink-gallery-card__badge">Information architecture</p><h3>Documentation portal</h3><div class="oink-gallery-card__description"><p>Present a focused route into the <a href="/docs/">documentation</a>.</p>
+</div><a class="oink-card-link" href="/docs/">Open example
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</div>
+</article>
+<article class="oink-gallery-card">
+<div class="oink-gallery-card__media"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
+<div class="oink-gallery-card__body"><p class="oink-gallery-card__badge">OpenAPI</p><h3>API reference</h3><div class="oink-gallery-card__description"><p>Pair prose with generated reference material.</p>
+</div>
+</div>
+</article>
+<article class="oink-gallery-card">
+<div class="oink-gallery-card__media"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></div>
+<div class="oink-gallery-card__body"><p class="oink-gallery-card__badge">Updates</p><h3>Engineering blog</h3><div class="oink-gallery-card__description"><p>Publish releases, explanations, and decisions.</p>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="testimonials" class="oink-section oink-testimonials-section" aria-labelledby="testimonials-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Comment wall</span><i aria-hidden="true"></i></p>
+<h2 id="testimonials-title">Let users speak</h2>
+<p class="oink-section__description">Each quote supports a name, avatar or icon, role, source URL, and Markdown comment.</p>
+</header>
+<div class="oink-testimonial-grid" style="--oink-columns: 2"><figure class="oink-testimonial"><blockquote><p>“The configuration is readable enough that <strong>content owners</strong> can change the homepage themselves.”</p>
+</blockquote>
+<figcaption><div class="oink-testimonial__avatar"><span aria-hidden="true">A</span></div>
+<div><strong>Ada Example</strong><span>Documentation engineer</span></div><a class="oink-card-link" href="/" target="_blank" rel="noopener noreferrer">Source
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</figcaption>
+</figure>
+<figure class="oink-testimonial"><blockquote><p>“We reordered the Gallery and FAQ with a two-line YAML change.”</p>
+</blockquote>
+<figcaption><div class="oink-testimonial__avatar"><span aria-hidden="true">L</span></div>
+<div><strong>Lin Example</strong><span>Open-source maintainer</span></div>
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="contributors" class="oink-section oink-contributors-section" aria-labelledby="contributors-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Contributors</span><i aria-hidden="true"></i></p>
+<h2 id="contributors-title">Credit the people behind the work</h2>
+<p class="oink-section__description">Use image paths for avatars in production; symbols keep this example self-contained.</p>
+</header>
+<div class="oink-contributor-grid" style="--oink-columns: 3">
+<article class="oink-contributor"><div class="oink-contributor__avatar"><span aria-hidden="true">A</span></div>
+<div class="oink-contributor__copy"><h3>Alex</h3><p>Theme architecture</p>
+</div><a class="oink-card-link" href="https://github.com/"><span class="visually-hidden">Alex</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="oink-contributor"><div class="oink-contributor__avatar"><span aria-hidden="true">B</span></div>
+<div class="oink-contributor__copy"><h3>Bo</h3><p>Accessibility review</p>
+</div>
+</article>
+<article class="oink-contributor"><div class="oink-contributor__avatar"><span aria-hidden="true">C</span></div>
+<div class="oink-contributor__copy"><h3>Casey</h3><p>Documentation and examples</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="faq" class="oink-section oink-faq-section" aria-labelledby="faq-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>FAQ</span><i aria-hidden="true"></i></p>
+<h2 id="faq-title">Common questions</h2>
+<p class="oink-section__description">Answers use block Markdown, so lists and multiple paragraphs work as expected.</p>
+</header>
+<div class="oink-faq-list oink-faq-list--accordion">
+<details class="oink-faq" open>
+<summary>Can I use one <code>data/home.yaml</code> file?<i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="oink-faq__answer"><p>Yes. Single-language sites can use one file; multilingual sites can use <code>data/home/en.yaml</code>, <code>data/home/zh.yaml</code>, and so on.</p>
+</div>
+</details>
+<details class="oink-faq">
+<summary>Can I repeat a Section type?<i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="oink-faq__answer"><p>Yes. Give each entry a different <code>key</code>:</p>
+<ul>
+<li><code>{ type: gallery, key: products }</code></li>
+<li><code>{ type: gallery, key: case_studies }</code></li>
+</ul>
+</div>
+</details>
+<details class="oink-faq">
+<summary>What happens when <code>url</code> is missing?<i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="oink-faq__answer"><p>The item renders as normal content without an empty or broken link.</p>
+</div>
+</details>
+</div>
+</div>
+</section>
+<section id="markdown" class="oink-section oink-markdown-section" aria-labelledby="markdown-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Free-form Markdown</span><i aria-hidden="true"></i></p>
+<h2 id="markdown-title">An escape hatch for unique content</h2>
+<p class="oink-section__description">Use the Markdown Section when a predefined collection is unnecessary.</p>
+</header>
+<div class="oink-markdown"><p>This entire block is rendered from data. It supports paragraphs, <a href="https://gohugo.io/">links</a>, and lists:</p>
+<ul>
+<li>no custom template required;</li>
+<li>regular Goldmark rendering;</li>
+<li>the same landing-page width and visual rhythm.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="principles" class="oink-section oink-principles" aria-labelledby="principles-title">
+<div class="landing-container"><header class="oink-section__head">
+<p class="oink-section__eyebrow"><span>Principles</span><i aria-hidden="true"></i></p>
+<h2 id="principles-title">Predictable by design</h2>
+</header>
+<div class="oink-principle-grid" style="--oink-columns: 3">
+<article>
+<span>01</span>
+<div class="oink-principle__icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
+<h3>Content first</h3><p>Most changes are plain text in YAML.</p>
+</article>
+<article>
+<span>02</span>
+<div class="oink-principle__icon"><i class="fa-solid fa-universal-access" aria-hidden="true"></i></div>
+<h3>Accessible defaults</h3><p>Semantic sections, guarded links, and native FAQ disclosure controls.</p>
+</article>
+<article>
+<span>03</span>
+<div class="oink-principle__icon"><i class="fa-solid fa-code-branch" aria-hidden="true"></i></div>
+<h3>Backward compatible</h3><p>Existing home data keeps its previous order when <code>sections</code> is absent.</p>
+</article>
+</div>
+</div>
+</section>
+<section id="cta" class="oink-section oink-cta-section" aria-label="Assemble your landing page.">
+<div class="landing-container">
+<div class="oink-final-cta">
+<p><strong>Assemble your landing page.</strong><span>Copy this file, replace the sample content, and reorder the Section list.</span>
+</p>
+<div class="oink-final-cta__actions"><a class="oink-button oink-button--primary" href="/docs/">Get started <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="d-print-none" data-td-shell-footer>
+<div class="td-site-footer" id="td-site-footer">
+<div class="td-site-footer__container">
+<div class="td-site-footer__inner">
+<div class="td-site-footer__brand"><a class="td-site-footer__logo" href="/" aria-label="Oink">
+<img src="/icons/logo.svg" alt="" width="28" height="28">
+<span>Oink</span>
+</a><div class="td-site-footer__tagline">A Hugo documentation theme.</div>
+</div>
+<div class="td-site-footer__grid" style="--td-footer-cols: 2">
+<nav class="td-site-footer__column" aria-label="Documentation">
+<h2>Documentation</h2>
+<ul>
+<li><a href="/docs/">Docs</a></li>
+<li><a href="/blog/">Blog</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="Project">
+<h2>Project</h2>
+<ul>
+<li><a href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div class="td-shell-footline d-print-none">
+<div class="td-shell-footline__copy"><span class="td-footer__copyright">&copy; 2026
+<span class="td-footer__authors"><a href="https://oink.pgsty.com">OINK</a></span>
+</span><span class="td-footer__all_rights_reserved">All Rights Reserved</span></div>
+<div class="td-shell-footline__center">Powered by <a href="https://oink.pgsty.com">Oink</a></div>
+<div class="td-shell-footline__right">
+<div class="td-shell-footline__lang">
+<a class="td-shell-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer">Example 中文站</a>
+</div>
+<button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
+aria-expanded="true" aria-controls="td-site-footer"
+title="Hide footer links" aria-label="Hide footer links"
+data-label-collapse="Hide footer links"
+data-label-expand="Show footer links"><svg class="td-shell-icon td-shell-icon--chevron-down" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+</div>
+</div>
+</footer>
+</div>
+<div id="td-shell-search" class="td-shell-search" hidden
+data-index-src="/offline-search-index.en.fb1f44c5dada0f556cb7f40d1dbd01c3.json"
+data-max-results="10"
+data-t-empty="No results found"
+data-t-loading="Loading search index…"
+data-t-results="{count} results found"
+data-t-actions="Actions"
+data-t-page-actions="Page actions"
+data-t-preferences="Preferences"
+data-t-commands="Commands"
+data-t-quick-links="Quick links"
+data-t-no-commands="No matching commands"
+data-t-choice="Choose an option"
+data-t-action-failed="Action could not be completed"
+data-t-index-unavailable="Page index unavailable; actions still work"
+data-t-pages="Pages">
+<div class="td-shell-search__backdrop" data-td-shell-search-close></div>
+<div class="td-shell-search__panel" role="dialog" aria-modal="true" aria-label="Search…">
+<div class="td-shell-search__head">
+<svg class="td-shell-icon td-shell-icon--search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+<input type="search" class="td-shell-search__input" placeholder="Search…"
+autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
+aria-controls="td-shell-search-results" aria-expanded="false"
+aria-label="Search…" enterkeyhint="go">
+<button type="button" class="td-shell-search__esc" data-td-shell-search-close
+aria-label="Close">
+<kbd>esc</kbd>
+</button>
+</div>
+<div id="td-shell-search-results" class="td-shell-search__list" role="listbox"
+aria-label="Search…"></div>
+<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"
+data-td-shell-search-status></div>
+<div class="td-shell-search__foot" aria-hidden="true">
+<span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+<span><kbd>↵</kbd> Open</span>
+<span><kbd>esc</kbd> Close</span>
+</div>
+</div>
+</div>
+<script type="application/json" id="oink-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-regular fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-fork","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script><script src="/js/main-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</body>
+</html>

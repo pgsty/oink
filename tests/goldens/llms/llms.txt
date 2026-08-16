@@ -1,0 +1,10 @@
+# OINK Landing Example
+> A complete example of OINK's composable landing page.
+## Site index
+- [Home page](https://example.org/)
+- [Documentation](https://example.org/docs/)
+- [Blog](https://example.org/blog/)
+## Documentation index
+- [Nested guides](https://example.org/docs/guides/)
+## Site locales
+- [English](https://example.org/)

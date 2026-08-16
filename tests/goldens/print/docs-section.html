@@ -1,0 +1,1032 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+dir="ltr"
+lang="en"
+data-td-typography="technical" data-theme-init>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#000000">
+<style>
+html { background: Canvas; color: CanvasText; }
+@media (prefers-color-scheme: dark) {
+html { background: #0b0d12; color: #e6e6e6; }
+}
+html[data-theme-init] * { transition: none !important; }
+[data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
+[data-td-theme-toggle] > [hidden] { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun { display: inline-block !important; }
+</style>
+<script>
+(function() {
+const themeKey = 'td-color-theme';
+let storedTheme = null;
+try {
+storedTheme = localStorage.getItem(themeKey);
+} catch (_) {
+}
+let theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+if (theme === 'auto') {
+theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+document.documentElement.setAttribute('data-bs-theme', theme);
+})();
+</script>
+<link rel="canonical" type="text/html" href="https://example.org/docs/">
+<link rel="alternate" type="application/rss&#43;xml" href="https://example.org/docs/index.xml">
+<meta name="robots" content="noindex, nofollow">
+<title>Documentation | OINK Landing Example</title>
+<meta name="description" content="This section exercises OINK’s documentation shell and typography roles.">
+<link rel="canonical" href="https://example.org/docs/">
+<link rel="alternate" hreflang="en" href="https://example.org/docs/">
+<meta property="og:url" content="https://example.org/docs/">
+<meta property="og:site_name" content="OINK Landing Example">
+<meta property="og:title" content="Documentation">
+<meta property="og:description" content="This section exercises OINK’s documentation shell and typography roles.">
+<meta property="og:locale" content="en">
+<meta property="og:type" content="website">
+<meta itemprop="name" content="Documentation">
+<meta itemprop="description" content="This section exercises OINK’s documentation shell and typography roles.">
+<meta itemprop="wordCount" content="9">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Documentation">
+<meta name="twitter:description" content="This section exercises OINK’s documentation shell and typography roles.">
+<link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
+<link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
+</head>
+<body class="td-section td-print-view">
+<a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
+<header class="landing-header d-print-none" data-header>
+<div class="landing-container">
+<nav class="landing-nav" aria-label="Main navigation">
+<a href="/" class="nav-brand" data-td-navbar-route
+aria-label="OINK Landing Example — Home">
+<img src="/icons/logo.svg" alt="" class="nav-logo" width="22" height="22">
+<span class="nav-title">OINK Landing Example</span>
+</a><div class="nav-links nav-menu-zone"><div class="nav-menu" data-td-navbar-menu>
+<a class="nav-link nav-menu__parent-link active" href="/docs/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Documentation"
+data-td-navbar-region="desktop" data-td-navbar-label="Documentation"
+data-td-navbar-external="false" aria-current="page" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+<i class="fa-solid fa-book" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Documentation</span></a>
+<div class="nav-menu__panel nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="nav-menu__item-link" href="/docs/content-primitives/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Content primitives"
+data-td-navbar-region="desktop" data-td-navbar-label="Content primitives"
+data-td-navbar-external="false">
+<i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Content primitives</span><small class="td-navbar-entry__description">Semantic authoring components</small></a>
+<a class="nav-menu__item-link" href="/docs/typography/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Typography"
+data-td-navbar-region="desktop" data-td-navbar-label="Typography"
+data-td-navbar-external="false">
+<i class="fa-solid fa-font" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Typography</span><small class="td-navbar-entry__description">Theme typography roles</small></a>
+</div>
+</div><a class="nav-link" href="/blog/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Blog"
+data-td-navbar-region="desktop" data-td-navbar-label="Blog"
+data-td-navbar-external="false">
+<i class="fa-solid fa-blog" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Blog</span></a>
+<a class="nav-link" href="https://github.com/pgsty/oink"
+data-td-navbar-level="0" data-td-navbar-kind="link"
+aria-label="Source"
+data-td-navbar-region="desktop" data-td-navbar-label="Source"
+data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
+<i class="fa-brands fa-github" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Source</span><span class="td-navbar-entry__external"><svg class="td-shell-icon td-shell-icon--external-link" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span></a>
+</div><div class="nav-links nav-util-zone">
+<a class="nav-util nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
+title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="nav-hover-menu nav-theme-menu" data-td-nav-hover>
+<button type="button" class="nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><svg class="td-shell-icon td-shell-icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><svg class="td-shell-icon td-shell-icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
+<div class="nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><svg class="td-shell-icon td-shell-icon--sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span>Light</span>
+</button>
+<button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><svg class="td-shell-icon td-shell-icon--moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg><span>Dark</span>
+</button>
+<button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><svg class="td-shell-icon td-shell-icon--contrast" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 18a6 6 0 0 0 0-12z" fill="currentColor" stroke="none"/></svg><span>System</span>
+</button>
+</div>
+</div>
+<a href="https://github.com/pgsty/oink" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><svg class="td-shell-icon td-shell-icon--github" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span class="nav-count" data-td-github-stars>2.2k</span></a>
+</div>
+</nav>
+</div>
+</header>
+<div class="container-fluid td-print-shell">
+<main id="td-main-content" class="td-print-document" role="main" tabindex="-1">
+<div class="td-content">
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<button type="button" class="btn btn-link p-0 align-baseline" data-oink-action="print">Click here to print</button>.
+</p><p>
+<a href="/docs/">Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class="title">Documentation</h1>
+<ul>
+<li>
+1: <a href="#pg-744d9598a5dd81bcb963a12aadc7e515">Typography fixture</a>
+</li>
+<li>
+2: <a href="#pg-85b845b0311012c811e80902a1f1667d">Enhanced code blocks</a>
+</li>
+<li>
+3: <a href="#pg-bbf20488ad6677b7c13a86ee53ed3f3b">Math passthrough</a>
+</li>
+<li>
+4: <a href="#pg-7818d11d5535edbee5c251964c5a53aa">Content primitives</a>
+</li>
+<li>
+5: <a href="#pg-552dea60702201dc43257ec8ae421ff4">Media primitives</a>
+</li>
+<li>
+6: <a href="#pg-b844552ae7b40529af1fc755499c48ee">Image Zoom</a>
+</li>
+<li>
+7: <a href="#pg-1f5580fa96789d2779b1ecb82aa8d6b9">Image Zoom disabled</a>
+</li>
+<li>
+8: <a href="#pg-f889611bdd000b82b6e085507f2286ce">Image Zoom exclusions</a>
+</li>
+<li>
+9: <a href="#pg-d2c6535126cca927d2a9c893abde92a0">Nested guides</a>
+<ul>
+<li>
+9.1: <a href="#pg-e2a8af8903c871552ac3b4129c9d4cbb">First nested guide</a>
+</li>
+<li>
+9.2: <a href="#pg-86976708afc8cc498afe24f8097d4971">Pager opt-out</a>
+</li>
+</ul>
+</li>
+<li>
+10: <a href="#pg-3ffbeadcba3f7022aa29809fa27c07c3">Download data demo</a>
+</li>
+<li>
+11: <a href="#pg-cfcd62298cec2f4601fff40d93b864f8">Gallery</a>
+</li>
+<li>
+12: <a href="#pg-722c0a318290289d9016e61647e5d440">Gallery with Zoom disabled</a>
+</li>
+<li>
+13: <a href="#pg-8370e9ae29857f8d37fdbd3e6af8d315">Release assets with an explicit base</a>
+</li>
+<li>
+14: <a href="#pg-5c668cf19f9b781edeff7c1a1c346ea7">Unpublished download demo</a>
+</li>
+</ul>
+<div class="content">
+<p>This section exercises OINK&rsquo;s documentation shell and typography roles.</p>
+</div>
+</div>
+<div class="td-content" style="">
+<h1 id="pg-744d9598a5dd81bcb963a12aadc7e515">1 - Typography fixture</h1>
+<div class="lead">Representative prose, labels, and code for theme regression checks.</div>
+<p>OINK keeps interface text, article prose, headings, labels, and code in separate
+typography roles. 中文正文用于验证明确的 CJK 回退与换行行为。</p>
+<h2 id="configure-the-theme">Configure the theme</h2>
+<p>Inline <code>code</code> and the following block exercise Bootstrap&rsquo;s monospace bridge:</p>
+<div class="td-code td-code--untitled" id="td-code-8146c568-fence-0" data-td-code data-td-code-auto-id
+data-language="yaml" data-line-count="4"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">YAML</span>
+</div>
+<div class="td-code__viewport" id="td-code-8146c568-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">params</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ui</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">typography</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l">technical</span></span></span></code></pre></div></div>
+</div>
+<h3 id="build-the-site">Build the site</h3>
+<p>Run Hugo Extended without a frontend package manager.</p>
+<h3 id="inspect-the-result">Inspect the result</h3>
+<p>Check the documentation shell, print view, and locally hosted fonts.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI</td>
+<td>Navigation and controls</td>
+</tr>
+<tr>
+<td>Body</td>
+<td>Long-form documentation prose</td>
+</tr>
+<tr>
+<td>Mono</td>
+<td>Code and terminal output</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Typography presets change font roles without changing the page structure.</p>
+</blockquote>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-85b845b0311012c811e80902a1f1667d">2 - Enhanced code blocks</h1>
+<div class="lead">Regression fixtures for the shared Chroma shell and code groups.</div>
+<h2 id="titled-numbered-and-highlighted">Titled, numbered, and highlighted</h2>
+<div class="td-code td-code--titled" id="td-code-a874e6d7-fence-0" data-td-code data-td-code-auto-id
+data-language="yaml" data-line-count="5" role="group" aria-labelledby="td-code-a874e6d7-fence-0-title">
+<div class="td-code__header">
+<span class="td-code__filename" id="td-code-a874e6d7-fence-0-title" title="config/very-long-example-name-for-responsive-layout.yml">config/very-long-example-name-for-responsive-layout.yml</span><div class="td-code__utilities">
+<span class="td-code__language">YAML</span>
+</div>
+</div>
+<div class="td-code__viewport" id="td-code-a874e6d7-fence-0-viewport" data-td-code-viewport><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="hl"><span class="lnt">6
+</span></span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">params</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">offlineSearch</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ui</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line hl"><span class="cl"><span class="w">    </span><span class="nt">sidebar_menu_foldable</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">sidebar_menu_compact</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div>
+</div>
+<h2 id="escaped-generic-attributes">Escaped generic attributes</h2>
+<div class="td-code td-code--untitled code-fixture" id="generic-code" data-td-code
+data-language="text" data-line-count="1" data-note="a &#34;quoted&#34; &amp; value"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">TEXT</span>
+</div>
+<div class="td-code__viewport" id="generic-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">safe attributes</span></span></code></pre></div></div>
+</div>
+<h2 id="wrapped-and-collapsed">Wrapped and collapsed</h2>
+<div class="td-code td-code--untitled td-code--wrap" id="wrapped-example" data-td-code
+data-language="text" data-line-count="7" role="group" aria-label="Wrapped configuration example"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">TEXT</span>
+</div>
+<div class="td-code__viewport" id="wrapped-example-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">alpha = one
+</span></span><span class="line"><span class="cl">beta = two
+</span></span><span class="line"><span class="cl">gamma = this-is-a-deliberately-long-unbroken-value-that-tests-responsive-wrapping-without-changing-the-source
+</span></span><span class="line"><span class="cl">delta = four
+</span></span><span class="line"><span class="cl">epsilon = five
+</span></span><span class="line"><span class="cl">zeta = six
+</span></span><span class="line"><span class="cl">eta = seven</span></span></code></pre></div></div>
+</div>
+<h2 id="console-commands">Console commands</h2>
+<div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-3" data-td-code data-td-code-auto-id
+data-language="console" data-line-count="9"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">CONSOLE</span>
+</div>
+<div class="td-code__viewport" id="td-code-a874e6d7-fence-3-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">printf</span> <span class="s1">&#39;hello\n&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="go">hello
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">printf</span> <span class="s1">&#39;world\n&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="go">world
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">printf</span> <span class="s1">&#39;%s\n&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="gp">&gt;</span>   first <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="gp">&gt;</span>   second
+</span></span><span class="line"><span class="cl"><span class="go">first
+</span></span></span><span class="line"><span class="cl"><span class="go">second
+</span></span></span></code></pre></div></div>
+</div>
+<h2 id="shell-language-label">Shell language label</h2>
+<div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-4" data-td-code data-td-code-auto-id
+data-language="sh" data-line-count="1"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">BASH</span>
+</div>
+<div class="td-code__viewport" id="td-code-a874e6d7-fence-4-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;displayed as Bash&#34;</span></span></span></code></pre></div></div>
+</div>
+<h2 id="package-managers">Package managers</h2>
+<div class="td-code-group td-code-group--static" id="install-client">
+<section class="td-code-group__static-item" aria-labelledby="install-client-npm-title">
+<div class="td-code-group__static-title" id="install-client-npm-title">npm <span>BASH</span></div><div class="td-code td-code--untitled td-code--embedded" id="install-client-npm-code" data-td-code
+data-language="bash" data-line-count="1">
+<div class="td-code__viewport" id="install-client-npm-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install @example/client</span></span></code></pre></div></div>
+</div>
+</section>
+<section class="td-code-group__static-item" aria-labelledby="install-client-pnpm-title">
+<div class="td-code-group__static-title" id="install-client-pnpm-title">pnpm <span>BASH</span></div><div class="td-code td-code--untitled td-code--embedded" id="install-client-pnpm-code" data-td-code
+data-language="bash" data-line-count="1">
+<div class="td-code__viewport" id="install-client-pnpm-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm add @example/client</span></span></code></pre></div></div>
+</div>
+</section>
+<section class="td-code-group__static-item" aria-labelledby="install-client-yarn-title">
+<div class="td-code-group__static-title" id="install-client-yarn-title">yarn <span>BASH</span></div><div class="td-code td-code--untitled td-code--embedded" id="install-client-yarn-code" data-td-code
+data-language="bash" data-line-count="1">
+<div class="td-code__viewport" id="install-client-yarn-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yarn add @example/client</span></span></code></pre></div></div>
+</div>
+</section>
+</div>
+<h2 id="synchronized-peer">Synchronized peer</h2>
+<div class="td-code-group td-code-group--static" id="install-tool">
+<section class="td-code-group__static-item" aria-labelledby="install-tool-npm-title">
+<div class="td-code-group__static-title" id="install-tool-npm-title">npm <span>BASH</span></div><div class="td-code td-code--untitled td-code--embedded" id="install-tool-npm-code" data-td-code
+data-language="bash" data-line-count="1">
+<div class="td-code__viewport" id="install-tool-npm-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install --global @example/tool</span></span></code></pre></div></div>
+</div>
+</section>
+<section class="td-code-group__static-item" aria-labelledby="install-tool-pnpm-title">
+<div class="td-code-group__static-title" id="install-tool-pnpm-title">pnpm <span>BASH</span></div><div class="td-code td-code--untitled td-code--embedded" id="install-tool-pnpm-code" data-td-code
+data-language="bash" data-line-count="1">
+<div class="td-code__viewport" id="install-tool-pnpm-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm add --global @example/tool</span></span></code></pre></div></div>
+</div>
+</section>
+</div>
+<h2 id="plain-text-tab-titles">Plain-text tab titles</h2>
+<div class="td-code-group td-code-group--static" id="plain-titles">
+<section class="td-code-group__static-item" aria-labelledby="plain-titles-literal-title">
+<div class="td-code-group__static-title" id="plain-titles-literal-title">A **literal** [label] <span>TEXT</span></div><div class="td-code td-code--untitled td-code--embedded" id="plain-titles-literal-code" data-td-code
+data-language="text" data-line-count="1">
+<div class="td-code__viewport" id="plain-titles-literal-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">punctuation stays literal</span></span></code></pre></div></div>
+</div>
+</section>
+</div>
+<h2 id="legacy-tabpane">Legacy tabpane</h2>
+<ul class="nav nav-tabs" id="tabs-3" role="tablist"><li class="nav-item" role="presentation"><button class="nav-link active" id="tabs-03-00-tab" data-bs-toggle="tab" data-bs-target="#tabs-03-00" role="tab" data-td-tp-persist="yaml" aria-controls="tabs-03-00" aria-selected="true">YAML</button></li><li class="nav-item" role="presentation"><button class="nav-link" id="tabs-03-01-tab" data-bs-toggle="tab" data-bs-target="#tabs-03-01" role="tab" data-td-tp-persist="json" aria-controls="tabs-03-01" aria-selected="false">JSON</button></li></ul>
+<div class="tab-content" id="tabs-3-content"><div class="tab-pane fade show active" id="tabs-03-00" role="tabpanel" aria-labelledby="tabs-03-00-tab" tabindex="0">
+<div class="td-tabpane__print-title">YAML</div><div class="td-code td-code--untitled" id="td-code-a874e6d7-tabpane-3-00" data-td-code data-td-code-auto-id
+data-language="yaml" data-line-count="3"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">YAML</span>
+</div>
+<div class="td-code__viewport" id="td-code-a874e6d7-tabpane-3-00-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="l">legacy-compatible</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span></span></span></code></pre></div></div>
+</div>
+</div><div class="tab-pane fade" id="tabs-03-01" role="tabpanel" aria-labelledby="tabs-03-01-tab" tabindex="0">
+<div class="td-tabpane__print-title">JSON</div><div class="td-code td-code--untitled" id="td-code-a874e6d7-tabpane-3-01" data-td-code data-td-code-auto-id
+data-language="json" data-line-count="3"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">JSON</span>
+</div>
+<div class="td-code__viewport" id="td-code-a874e6d7-tabpane-3-01-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;message&#34;</span><span class="p">:</span><span class="s2">&#34;legacy-compatible&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">  </span></span></code></pre></div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-bbf20488ad6677b7c13a86ee53ed3f3b">3 - Math passthrough</h1>
+<div class="lead">Regression fixtures for delimiter-style server-rendered mathematics.</div>
+<p>Inline passthrough renders <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>=</mo><mi>m</mi><msup><mi>c</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">E = mc^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord mathnormal">m</span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> without a browser-side math runtime.</p>
+<p>The block form uses the same local server-side renderer:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mi mathvariant="normal">∞</mi></msubsup><msup><mi>e</mi><mrow><mo>−</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mtext> </mtext><mi>d</mi><mi>x</mi><mo>=</mo><msqrt><mi>π</mi></msqrt></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.3846em;vertical-align:-0.9703em;"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.44445em;position:relative;top:-0.0011em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4143em;"><span style="top:-1.7881em;margin-left:-0.4445em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">∞</span></span></span></span><span style="top:-3.8129em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∞</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9703em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0369em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913em;"><span style="top:-2.931em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.04em;vertical-align:-0.1908em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8492em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord mathnormal" style="margin-right:0.03588em;">π</span></span></span><span style="top:-2.8092em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.08em" viewBox="0 0 400000 1080" preserveAspectRatio="xMinYMin slice"><path d="M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1908em;"><span></span></span></span></span></span></span></span></span></span><p>The bracket form renders too:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>i</mi><mo>=</mo><mfrac><mrow><mi>n</mi><mo stretchy="false">(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\sum_{i=1}^{n} i = \frac{n(n+1)}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.9291em;vertical-align:-1.2777em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.2777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.113em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span><p>When a consuming site cannot enable Goldmark passthrough, the parameter-free
+<code>eq</code> shortcode is the explicit display-math escape hatch:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munder><mrow><mi>lim</mi><mo>⁡</mo></mrow><mrow><mi>n</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow></munder><msup><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><mo fence="true">)</mo></mrow><mi>n</mi></msup><mo>=</mo><mi>e</mi></mrow><annotation encoding="application/x-tex">\lim_{n \to \infty}\left(1 + \frac{1}{n}\right)^n = e</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.4543em;vertical-align:-0.95em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6944em;"><span style="top:-2.4em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mrel mtight">→</span><span class="mord mtight">∞</span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop">lim</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">n</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.5043em;"><span style="top:-3.9029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">e</span></span></span></span></span>
+<p>This deliberately long expression must scroll inside a narrow document column
+instead of widening the page:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><mfrac><msubsup><mi>x</mi><mi>k</mi><mn>2</mn></msubsup><mrow><mn>1</mn><mo>+</mo><msubsup><mi>x</mi><mi>k</mi><mn>2</mn></msubsup></mrow></mfrac><mo fence="true">)</mo></mrow><mo>+</mo><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>m</mi></munderover><mfrac><mrow><msub><mi>a</mi><mi>j</mi></msub><msub><mi>b</mi><mi>j</mi></msub><msub><mi>c</mi><mi>j</mi></msub><msub><mi>d</mi><mi>j</mi></msub></mrow><msqrt><mrow><mn>1</mn><mo>+</mo><msubsup><mi>a</mi><mi>j</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>b</mi><mi>j</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>c</mi><mi>j</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>d</mi><mi>j</mi><mn>2</mn></msubsup></mrow></msqrt></mfrac><mo>=</mo><mfrac><mrow><mi>α</mi><mo>+</mo><mi>β</mi><mo>+</mo><mi>γ</mi><mo>+</mo><mi>δ</mi><mo>+</mo><mi>ε</mi></mrow><mrow><mi>ζ</mi><mo>+</mo><mi>η</mi><mo>+</mo><mi>θ</mi><mo>+</mo><mi>ι</mi><mo>+</mo><mi>κ</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\prod_{k=1}^{n}\left(1 + \frac{x_k^2}{1 + x_k^2}\right) + \sum_{j=1}^{m}\frac{a_j b_j c_j d_j}{\sqrt{1 + a_j^2 + b_j^2 + c_j^2 + d_j^2}} = \frac{\alpha + \beta + \gamma + \delta + \varepsilon}{\zeta + \eta + \theta + \iota + \kappa}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.9535em;vertical-align:-1.3021em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8479em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∏</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.3021em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4911em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7959em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span><span style="top:-3.0448em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3013em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-2.4169em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2831em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9873em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:3.3814em;vertical-align:-1.73em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6514em;"><span style="top:-1.8723em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.05em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4138em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.11em;"><span class="pstrut" style="height:3.1765em;"></span><span class="mord"><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.1765em;"><span class="svg-align" style="top:-3.8em;"><span class="pstrut" style="height:3.8em;"></span><span class="mord" style="padding-left:1em;"><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7959em;"><span style="top:-2.4231em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span><span style="top:-3.0448em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.413em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7959em;"><span style="top:-2.4231em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span><span style="top:-3.0448em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.413em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7959em;"><span style="top:-2.4231em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span><span style="top:-3.0448em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.413em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7959em;"><span style="top:-2.4231em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span><span style="top:-3.0448em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.413em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.1365em;"><span class="pstrut" style="height:3.8em;"></span><span class="hide-tail" style="min-width:1.02em;height:1.88em;"><svg xmlns="http://www.w3.org/2000/svg" width="400em" height="1.88em" viewBox="0 0 400000 1944" preserveAspectRatio="xMinYMin slice"><path d="M983 90
+l0 -0
+c4,-6.7,10,-10,18,-10 H400000v40
+H1013.1s-83.4,268,-264.1,840c-180.7,572,-277,876.3,-289,913c-4.7,4.7,-12.7,7,-24,7
+s-12,0,-12,0c-1.3,-3.3,-3.7,-11.7,-7,-25c-35.3,-125.3,-106.7,-373.3,-214,-744
+c-10,12,-21,25,-33,39s-32,39,-32,39c-6,-5.3,-15,-14,-27,-26s25,-30,25,-30
+c26.7,-32.7,52,-63,76,-91s52,-60,52,-60s208,722,208,722
+c56,-175.3,126.3,-397.3,211,-666c84.7,-268.7,153.8,-488.2,207.5,-658.5
+c53.7,-170.3,84.5,-266.8,92.5,-289.5z
+M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.6635em;"><span></span></span></span></span></span></span></span><span style="top:-3.4065em;"><span class="pstrut" style="height:3.1765em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.8535em;"><span class="pstrut" style="height:3.1765em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.73em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.2519em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07378em;">ζ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">η</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">ι</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">κ</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05278em;">β</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.05556em;">γ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.03785em;">δ</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal">ε</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-7818d11d5535edbee5c251964c5a53aa">4 - Content primitives</h1>
+<div class="lead">Regression fixtures for inline everyday content primitives.</div>
+<p>Status <span class="td-badge td-badge--warning td-badge--outline">Beta</span> remains inline with prose.</p>
+<p>Linked release <a class="td-badge td-badge--info td-badge--outline" href="/release/">v0.3</a> and a
+filled state <span class="td-badge td-badge--danger td-badge--filled">Deprecated</span>.</p>
+<p>Escaped text <span class="td-badge td-badge--success td-badge--outline">R&amp;D &lt;Preview&gt;</span> and long text
+<span class="td-badge td-badge--neutral td-badge--outline">A-deliberately-long-unbroken-status-value-for-responsive-layout</span>.</p>
+<p>CJK <span class="td-badge td-badge--info td-badge--outline">实验功能</span> and RTL text
+<span class="td-badge td-badge--warning td-badge--outline">ميزة تجريبية</span>.</p>
+<p>Open search with <span class="td-kbd-sequence"><kbd>Ctrl</kbd><span class="td-kbd-sequence__separator" aria-hidden="true">+</span><span class="visually-hidden"> with </span><kbd>K</kbd></span> or the command palette with
+<span class="td-kbd-sequence"><kbd>⌘</kbd><span class="td-kbd-sequence__separator" aria-hidden="true">+</span><span class="visually-hidden"> with </span><kbd>Shift</kbd><span class="td-kbd-sequence__separator" aria-hidden="true">+</span><span class="visually-hidden"> with </span><kbd>P</kbd></span>.</p>
+<p>Escaped keys remain readable: <span class="td-kbd-sequence"><kbd>[</kbd><span class="td-kbd-sequence__separator" aria-hidden="true">+</span><span class="visually-hidden"> with </span><kbd>A&#43;B</kbd><span class="td-kbd-sequence__separator" aria-hidden="true">+</span><span class="visually-hidden"> with </span><kbd>&gt;</kbd></span>.</p>
+<h2 id="fields">Fields</h2>
+<div class="td-fields">
+<p class="td-fields__label" id="td-fields-a0c0e0b1b3bfbfd6304c44d62b36df9a-10-label">Configuration fields</p>
+<dl class="td-fields__list" aria-labelledby="td-fields-a0c0e0b1b3bfbfd6304c44d62b36df9a-10-label">
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">offlineSearch</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>boolean</code></span>
+<span class="visually-hidden">, </span><span class="td-field__required">required</span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>true</code></span>
+</dt>
+<dd class="td-field__description"><p>Enables the local search index and links to the <a href="/docs/">documentation</a>.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">offlineSearchMaxResults</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>integer</code></span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>10</code></span>
+</dt>
+<dd class="td-field__description"><p>Maximum number of visible results.</p>
+<p>A second paragraph preserves multiline description Markdown and <code>inline code</code>.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">explicitFalse</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>boolean</code></span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>false</code></span>
+</dt>
+<dd class="td-field__description"><p>Proves that an explicit false value is not treated as an absent default.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">zeroLimit</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>integer</code></span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>0</code></span>
+</dt>
+<dd class="td-field__description"><p>Proves that an explicit zero value remains visible.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">emptyPrefix</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>string</code></span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>&#34;&#34;</code></span>
+</dt>
+<dd class="td-field__description"><p>Proves that an explicit empty string remains distinct from no default.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">resolverOutput</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>Array&lt;string&gt; | map[string]any</code></span>
+</dt>
+<dd class="td-field__description"><p>Exercises angle brackets, brackets, and a union in a type value.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">aDeliberatelyLongUnbrokenConfigurationFieldNameForResponsiveLayout</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>namespace.ReallyLongGenericType&lt;FirstArgument,SecondArgument&gt;</code></span>
+</dt>
+<dd class="td-field__description"><p>A long field name and type must stay within the component at narrow widths.</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">搜索模式</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>字符串</code></span>
+<span class="visually-hidden">, </span><span class="td-field__required">required</span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>本地</code></span>
+</dt>
+<dd class="td-field__description"><p>控制搜索是在浏览器本地执行，还是交给远程服务。</p>
+</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term">
+<code class="td-field__name">وضع_البحث</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><code>سلسلة</code></span>
+<span class="visually-hidden">, </span><span class="td-field__default">default: <code>محلي</code></span>
+</dt>
+<dd class="td-field__description"><p>يختبر النص من اليمين إلى اليسار داخل تعريف الحقل.</p>
+</dd>
+</div>
+</dl>
+</div>
+<h2 id="tables">Tables</h2>
+<p>Ordinary wide tables scroll inside a keyboard-focusable viewport instead of
+widening the page.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>HTML behavior</th>
+<th>Print behavior</th>
+<th>Markdown behavior</th>
+<th>Runtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Table</td>
+<td>Scrolls within its own region</td>
+<td>Expands at full width</td>
+<td>Retains source table</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>full-width</code> modifier opts out of the prose measure while keeping the same
+contained overflow policy.</p>
+<table class="full-width">
+<thead>
+<tr>
+<th>Surface</th>
+<th style="text-align: right">Width</th>
+<th>Narrow viewport</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full table</td>
+<td style="text-align: right">100%</td>
+<td>Horizontal scroll</td>
+<td>Complete table</td>
+</tr>
+</tbody>
+</table>
+<h2 id="filetree">FileTree</h2>
+<div class="td-filetree td-filetree--static">
+<div class="td-filetree__chrome">
+<p class="td-filetree__label" id="td-filetree-a0c0e0b1b3bfbfd6304c44d62b36df9a-11-label" dir="auto">Repository structure</p>
+</div>
+<div class="td-filetree__body">
+<span class="td-filetree__divider" aria-hidden="true"><span class="td-filetree__divider-line"></span></span>
+<ul class="td-filetree__list td-filetree__list--root" aria-labelledby="td-filetree-a0c0e0b1b3bfbfd6304c44d62b36df9a-11-label"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 0px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">content</span></span>
+<span class="td-filetree__comment" title="0755 docs-admin:writers · Site content &amp; templates"><span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0755 docs-admin:writers · Site content &amp; templates</span></span>
+<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 18px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file td-filetree__icon-slot--color-primary" aria-hidden="true"><i class="fa-solid fa-file-code td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">_index.md</span></span>
+<span class="td-filetree__comment" title="0644 vonng:docs · Section landing page"><span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0644 vonng:docs · Section landing page</span></span>
+<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
+</span>
+</span>
+</li>
+<li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 18px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">docs</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 36px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<a class="td-filetree__link" href="/docs/"><span class="td-filetree__name" dir="auto">index.md</span></a></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+</li>
+<li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 36px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file td-filetree__icon-slot--color-info" aria-hidden="true"><i class="fa-solid fa-gears td-filetree__icon"></i>
+</span>
+<a class="td-filetree__link" href="/docs/configuration/"><span class="td-filetree__name" dir="auto">configuration.md</span></a></span>
+<span class="td-filetree__comment" title="0644 docs-admin · Runtime settings"><span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0644 docs-admin · Runtime settings</span></span>
+<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
+</span>
+</span>
+</li>
+<li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 36px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level1</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 54px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level2</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 72px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level3</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 90px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level4</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 108px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level5</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 126px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level6</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 144px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level7</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 162px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">level8</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 180px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">deeply-nested.md</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li></ul>
+</li>
+<li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 0px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder td-filetree__icon-slot--color-success" aria-hidden="true"><i class="fa-solid fa-box-archive td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">static</span></span>
+<span class="td-filetree__comment" title="0750 release-engineering:documentation · Generated assets"><span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0750 release-engineering:documentation · Generated assets</span></span>
+<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 18px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">index.md</span></span>
+<span class="td-filetree__comment" title="0555"><span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0555</span></span>
+<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
+</span>
+</span>
+</li>
+<li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 18px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">a-deliberately-long-unbroken-filename-that-must-truncate-within-a-narrow-content-column.example.json</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+</li></ul>
+</li>
+<li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 0px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">本地化</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 18px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">配置.md</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+</li></ul>
+</li>
+<li class="td-filetree__item td-filetree__item--folder"><span class="td-filetree__entry td-filetree__entry--folder" style="--td-filetree-indent: 0px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--folder" aria-hidden="true"><i class="fa-regular fa-folder-open td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">واجهة</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+<ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 18px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">دليل-الإعداد.md</span></span>
+<span class="td-filetree__comment">
+</span>
+</span>
+</li></ul>
+</li>
+<li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__entry td-filetree__entry--file" style="--td-filetree-indent: 0px">
+<span class="td-filetree__name-cell"><span class="td-filetree__icon-slot td-filetree__icon-slot--file td-filetree__icon-slot--color-warning" aria-hidden="true"><i class="fa-regular fa-file td-filetree__icon"></i>
+</span>
+<span class="td-filetree__name" dir="auto">hugo.yml</span></span>
+<span class="td-filetree__comment" title="0640 root:wheel · Site configuration"><span class="td-filetree__comment-marker" aria-hidden="true">#</span>
+<span class="td-filetree__comment-scroll" dir="auto" tabindex="0"><span class="td-filetree__comment-text">0640 root:wheel · Site configuration</span></span>
+<span class="td-filetree__comment-ellipsis" aria-hidden="true">…</span>
+</span>
+</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-552dea60702201dc43257ec8ae421ff4">5 - Media primitives</h1>
+<div class="lead">Regression fixtures for shared image resolution and imgproc compatibility.</div>
+<h2 id="named-page-resource">Named page resource</h2>
+<figure class="card rounded p-2 td-post-card td-imgproc mb-4 mt-4" style="max-width: 58px">
+<img class="card-img-top td-imgproc__image" src="/docs/media-primitives/page_hu_<hash>.png" alt="Blue and gold page-resource test pattern" width="48" height="30" loading="lazy" decoding="async">
+<figcaption class="card-body px-0 pt-2 pb-0 td-imgproc__caption"><div class="card-text"><p>A <strong>page resource</strong> caption with <code>inline code</code>.</p>
+</div><small class="text-body-secondary td-imgproc__byline">OINK fixture byline</small></figcaption>
+</figure>
+<h2 id="named-global-resource">Named global resource</h2>
+<figure class="card rounded p-2 td-post-card td-imgproc mb-4 mt-4" style="max-width: 42px">
+<img class="card-img-top td-imgproc__image" src="/media/content-primitives-global_hu_<hash>.png" alt="Green and violet global-resource test pattern" width="32" height="20" loading="lazy" decoding="async">
+<figcaption class="card-body px-0 pt-2 pb-0 td-imgproc__caption"><div class="card-text"><p>A global asset caption.</p>
+</div></figcaption>
+</figure>
+<h2 id="explicit-decorative-image">Explicit decorative image</h2>
+<figure class="card rounded p-2 td-post-card td-imgproc mb-4 mt-4" style="max-width: 34px">
+<img class="card-img-top td-imgproc__image" src="/docs/media-primitives/page_hu_<hash>.png" alt="" width="24" height="24" loading="lazy" decoding="async">
+<figcaption class="card-body px-0 pt-2 pb-0 td-imgproc__caption"><small class="text-body-secondary td-imgproc__byline">OINK fixture byline</small></figcaption>
+</figure>
+<h2 id="legacy-positional-form">Legacy positional form</h2>
+<figure class="card rounded p-2 td-post-card td-imgproc mb-4 mt-4" style="max-width: 50px">
+<img class="card-img-top td-imgproc__image" src="/docs/media-primitives/page_hu_<hash>.png" alt="Page resource metadata alternative" width="40" height="24" loading="lazy" decoding="async">
+<figcaption class="card-body px-0 pt-2 pb-0 td-imgproc__caption">
+<p class="card-text">
+Legacy **caption** retains resource metadata for alternative text and byline.<small class="text-body-secondary td-imgproc__byline"><br>OINK fixture byline</small>
+</p>
+</figcaption>
+</figure>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-b844552ae7b40529af1fc755499c48ee">6 - Image Zoom</h1>
+<div class="lead">Regression fixtures for opt-in native image preview.</div>
+<h2 id="standalone-markdown-image">Standalone Markdown image</h2>
+<p><img src="/media/content-primitives-static.svg" alt="Blue and gold standalone preview"></p>
+<h2 id="processed-image-with-a-long-caption">Processed image with a long caption</h2>
+<figure class="card rounded p-2 td-post-card td-imgproc mb-4 mt-4" style="max-width: 66px">
+<img class="card-img-top td-imgproc__image" src="/media/content-primitives-global_hu_<hash>.png" alt="Green and violet processed preview" width="56" height="35" loading="lazy" decoding="async">
+<figcaption class="card-body px-0 pt-2 pb-0 td-imgproc__caption"><div class="card-text"><p>This intentionally long caption verifies that the shared preview remains readable on narrow screens, preserves its accessible image name, and wraps without introducing page-level horizontal overflow.</p>
+</div></figcaption>
+</figure>
+<h2 id="legacy-image-without-alternative-metadata">Legacy image without alternative metadata</h2>
+<figure class="card rounded p-2 td-post-card td-imgproc mb-4 mt-4" style="max-width: 58px">
+<img class="card-img-top td-imgproc__image" src="/docs/image-zoom/legacy-empty_hu_<hash>.png" alt="" width="48" height="30" loading="lazy" decoding="async">
+<figcaption class="card-body px-0 pt-2 pb-0 td-imgproc__caption">
+<p class="card-text">
+Legacy content without resource alt metadata remains previewable because its standalone caption still supplies visible context.
+</p>
+</figcaption>
+</figure>
+<h2 id="linked-image-exclusion">Linked image exclusion</h2>
+<p><a href="/docs/"><img src="/media/content-primitives-static.svg" alt="Linked image remains a link"></a></p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-1f5580fa96789d2779b1ecb82aa8d6b9">7 - Image Zoom disabled</h1>
+<div class="lead">A page-level false value wins over the enabled example site.</div>
+<p><img src="/media/content-primitives-static.svg" alt="Disabled page candidate"></p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-f889611bdd000b82b6e085507f2286ce">8 - Image Zoom exclusions</h1>
+<div class="lead">A page with only ineligible images must not load the runtime.</div>
+<div class="image-zoom-exclusion-fixtures">
+<p><a href="/docs/"><img src="/media/content-primitives-static.svg" alt="Linked image exclusion" width="64" height="40"></a></p>
+<p><button type="button"><img src="/media/content-primitives-static.svg" alt="Button image exclusion" width="64" height="40"></button></p>
+<figure><img src="/media/content-primitives-static.svg" alt="Explicit no zoom exclusion" width="64" height="40"></figure>
+<p>Inline decorative icon <img src="/media/content-primitives-static.svg" alt="" width="16" height="10"> remains inline.</p>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-d2c6535126cca927d2a9c893abde92a0">9 - Nested guides</h1>
+<div class="lead">A section fixture that proves tree-order navigation across levels.</div>
+<p>The section index participates in the same sequence as its children.</p>
+</div>
+<div class="td-content" style="">
+<h1 id="pg-e2a8af8903c871552ac3b4129c9d4cbb">9.1 - First nested guide</h1>
+<div class="lead">The first leaf below a section index.</div>
+<p>This page follows its parent section in the flattened navigation tree.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-86976708afc8cc498afe24f8097d4971">9.2 - Pager opt-out</h1>
+<div class="lead">A page-level fixture for disabling sequential navigation.</div>
+<p>This page remains in the sidebar but emits no pager cards or head relations.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-3ffbeadcba3f7022aa29809fa27c07c3">10 - Download data demo</h1>
+<div class="lead">Rolling and pinned channels render from one validated data record.</div>
+<div class="td-download td-download--static" data-download-key="demo">
+<section class="td-download__channel" id="download-demo-script" data-download-kind="rolling">
+<header class="td-download__heading">
+<h2><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>Install script</span></h2>
+</header><div class="td-download__note"><p>Mirrors track the rolling stable channel and may lag the GitHub release.</p>
+</div><div class="td-code td-code--titled" id="td-code-d7b66756-download-0-0-0" data-td-code data-td-code-auto-id
+data-language="bash" data-line-count="1" role="group" aria-labelledby="td-code-d7b66756-download-0-0-0-title">
+<div class="td-code__header">
+<span class="td-code__filename" id="td-code-d7b66756-download-0-0-0-title" title="Install">Install</span><div class="td-code__utilities">
+<span class="td-code__language">BASH</span>
+</div>
+</div>
+<div class="td-code__viewport" id="td-code-d7b66756-download-0-0-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://repo.example.org/demo <span class="p">|</span> bash</span></span></code></pre></div></div>
+</div>
+</section>
+<section class="td-download__channel" id="download-demo-source" data-download-kind="pinned">
+<header class="td-download__heading">
+<h2><i class="fa-solid fa-code-branch" aria-hidden="true"></i><span>Source archive</span></h2>
+</header><a class="td-download__action" href="https://github.com/pgsty/oink/archive/refs/tags/v2.4.1.tar.gz">Source archive</a><div class="td-code td-code--titled" id="td-code-d7b66756-download-0-1-0" data-td-code data-td-code-auto-id
+data-language="bash" data-line-count="1" role="group" aria-labelledby="td-code-d7b66756-download-0-1-0-title">
+<div class="td-code__header">
+<span class="td-code__filename" id="td-code-d7b66756-download-0-1-0-title" title="Build source">Build source</span><div class="td-code__utilities">
+<span class="td-code__language">BASH</span>
+</div>
+</div>
+<div class="td-code__viewport" id="td-code-d7b66756-download-0-1-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone --branch v2.4.1 https://github.com/pgsty/oink.git</span></span></code></pre></div></div>
+</div>
+</section>
+<section class="td-download__channel" id="download-demo-assets" data-download-kind="pinned">
+<header class="td-download__heading">
+<h2><i class="fa-solid fa-box-open" aria-hidden="true"></i><span>Release assets</span></h2>
+</header><div class="td-asset-list td-asset-list--static">
+<div class="td-asset-list__table-wrap" tabindex="0" role="region" aria-label="Download asset">
+<table class="td-asset-list__table">
+<caption class="visually-hidden">Download asset</caption>
+<thead><tr><th scope="col">File</th><th scope="col">Checksum</th></tr></thead>
+<tbody>
+<tr>
+<td class="td-asset-list__file">
+<i class="fa-regular fa-file-zipper td-asset-list__icon" aria-hidden="true"></i><a href="https://github.com/pgsty/oink/releases/download/v2.4.1/demo-2.4.1-linux-amd64.tar.gz" aria-label="Download asset: demo-2.4.1-linux-amd64.tar.gz" dir="auto">demo-2.4.1-linux-amd64.tar.gz</a>
+<span class="td-asset-list__badges"><span class="td-badge td-badge--neutral td-badge--outline">Linux</span><span class="td-badge td-badge--neutral td-badge--outline">amd64</span><span class="td-badge td-badge--info td-badge--outline">SHA-256</span>
+</span>
+</td>
+<td class="td-asset-list__checksum"><code>cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc</code></td>
+</tr>
+<tr>
+<td class="td-asset-list__file">
+<i class="fa-regular fa-file-zipper td-asset-list__icon" aria-hidden="true"></i><a href="https://github.com/pgsty/oink/releases/download/v2.4.1/demo-2.4.1-darwin-arm64.zip" aria-label="Download asset: demo-2.4.1-darwin-arm64.zip" dir="auto">demo-2.4.1-darwin-arm64.zip</a>
+<span class="td-asset-list__badges"><span class="td-badge td-badge--neutral td-badge--outline">macOS</span><span class="td-badge td-badge--neutral td-badge--outline">arm64</span><span class="td-badge td-badge--info td-badge--outline">SHA-256</span>
+</span>
+</td>
+<td class="td-asset-list__checksum"><code>dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-cfcd62298cec2f4601fff40d93b864f8">11 - Gallery</h1>
+<div class="lead">Regression fixtures for a static-first responsive image Gallery.</div>
+<div class="td-gallery td-gallery--columns-4">
+<p class="td-gallery__label" id="td-gallery-30e04f40337df12f40b282d3482a5fe3-0-label" dir="auto">Console screenshots and architecture views</p>
+<ul class="td-gallery__grid" aria-labelledby="td-gallery-30e04f40337df12f40b282d3482a5fe3-0-label">
+<li class="td-gallery__item">
+<figure class="td-gallery__figure">
+<img class="td-gallery__image" src="/docs/gallery/page.png" alt="Blue and gold local dashboard overview" width="64" height="40" loading="lazy" decoding="async">
+<figcaption class="td-gallery__caption" dir="auto">Local page resource with intrinsic dimensions.</figcaption>
+</figure>
+</li>
+<li class="td-gallery__item">
+<figure class="td-gallery__figure">
+<img class="td-gallery__image" src="/media/content-primitives-global.png" alt="Green and violet global dashboard detail" width="64" height="40" loading="lazy" decoding="async">
+<figcaption class="td-gallery__caption" dir="auto">A deliberately long caption that must wrap inside its own card without widening the page or covering the neighboring image.</figcaption>
+</figure>
+</li>
+<li class="td-gallery__item">
+<figure class="td-gallery__figure">
+<img class="td-gallery__image" src="/media/content-primitives-tall.svg" alt="Tall static SVG settings overview" loading="lazy" decoding="async">
+<figcaption class="td-gallery__caption" dir="auto">واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي</figcaption>
+</figure>
+</li>
+<li class="td-gallery__item">
+<figure class="td-gallery__figure">
+<img class="td-gallery__image" src="https://example.invalid/gallery/remote.webp?view=full" alt="Remote deployment history view" loading="lazy" decoding="async">
+<figcaption class="td-gallery__caption" dir="auto">远程图片保持静态 URL，构建过程不会下载它。</figcaption>
+</figure>
+</li>
+</ul>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-722c0a318290289d9016e61647e5d440">12 - Gallery with Zoom disabled</h1>
+<div class="lead">Gallery remains complete when page-level Image Zoom is disabled.</div>
+<div class="td-gallery td-gallery--columns-2">
+<p class="td-gallery__label" id="td-gallery-71970bb5006ce7762f9468248da9e04e-0-label" dir="auto">Static Gallery</p>
+<ul class="td-gallery__grid" aria-labelledby="td-gallery-71970bb5006ce7762f9468248da9e04e-0-label">
+<li class="td-gallery__item">
+<figure class="td-gallery__figure">
+<img class="td-gallery__image" src="/media/content-primitives-static.svg" alt="Static Gallery overview" loading="lazy" decoding="async">
+<figcaption class="td-gallery__caption" dir="auto">The first static figure remains readable without JavaScript.</figcaption>
+</figure>
+</li>
+<li class="td-gallery__item">
+<figure class="td-gallery__figure">
+<img class="td-gallery__image" src="/media/content-primitives-tall.svg" alt="Static Gallery detail" loading="lazy" decoding="async">
+<figcaption class="td-gallery__caption" dir="auto">The second static figure keeps its caption and author order.</figcaption>
+</figure>
+</li>
+</ul>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-8370e9ae29857f8d37fdbd3e6af8d315">13 - Release assets with an explicit base</h1>
+<div class="lead">Asset tables can remain useful outside release pages without inventing version facts.</div>
+<div class="td-asset-list td-asset-list--static">
+<div class="td-asset-list__table-wrap" tabindex="0" role="region" aria-label="Download asset">
+<table class="td-asset-list__table">
+<caption class="visually-hidden">Download asset</caption>
+<thead><tr><th scope="col">File</th><th scope="col">Checksum</th></tr></thead>
+<tbody>
+<tr>
+<td class="td-asset-list__file">
+<i class="fa-regular fa-file-zipper td-asset-list__icon" aria-hidden="true"></i><a href="https://downloads.example.org/releases/stable/oink-linux-amd64.tar.gz" aria-label="Download asset: oink-linux-amd64.tar.gz" dir="auto">oink-linux-amd64.tar.gz</a>
+<span class="td-asset-list__badges"><span class="td-badge td-badge--neutral td-badge--outline">Linux</span><span class="td-badge td-badge--neutral td-badge--outline">amd64</span><span class="td-badge td-badge--info td-badge--outline">SHA-256</span>
+</span>
+</td>
+<td class="td-asset-list__checksum"><code>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</code></td>
+</tr>
+<tr>
+<td class="td-asset-list__file">
+<i class="fa-regular fa-file-zipper td-asset-list__icon" aria-hidden="true"></i><a href="https://downloads.example.org/releases/stable/OINK%20manual%20%28final%29.zip" aria-label="Download asset: OINK manual (final).zip" dir="auto">OINK manual (final).zip</a>
+<span class="td-asset-list__badges"><span class="td-badge td-badge--info td-badge--outline">SHA-256</span>
+</span>
+</td>
+<td class="td-asset-list__checksum"><code>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-5c668cf19f9b781edeff7c1a1c346ea7">14 - Unpublished download demo</h1>
+<div class="lead">Pinned release facts remain visible without exposing download actions.</div>
+<div class="td-download td-download--static" data-download-key="pending">
+<section class="td-download__channel" id="download-pending-repository" data-download-kind="rolling">
+<header class="td-download__heading">
+<h2><span>Package repository</span></h2>
+</header><div class="td-download__note"><p>The rolling repository remains available while the pinned candidate is unpublished.</p>
+</div><a class="td-download__action" href="https://repo.example.org/oink/">Package repository</a><div class="td-code td-code--untitled" id="td-code-20d7b3a3-download-0-0-0" data-td-code data-td-code-auto-id
+data-language="bash" data-line-count="1"><div class="td-code__utilities td-code__utilities--compact">
+<span class="td-code__language">BASH</span>
+</div>
+<div class="td-code__viewport" id="td-code-20d7b3a3-download-0-0-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://repo.example.org/oink/install <span class="p">|</span> bash</span></span></code></pre></div></div>
+</div>
+</section>
+<section class="td-download__channel" id="download-pending-candidate" data-download-kind="pinned">
+<header class="td-download__heading">
+<h2><span>Release candidate</span></h2><span class="td-download__state" aria-disabled="true">Pending release</span>
+</header><span class="td-download__action is-disabled" aria-disabled="true">Release candidate</span><div class="td-asset-list td-asset-list--static">
+<div class="td-asset-list__table-wrap" tabindex="0" role="region" aria-label="Download asset">
+<table class="td-asset-list__table">
+<caption class="visually-hidden">Download asset</caption>
+<thead><tr><th scope="col">File</th><th scope="col">Checksum</th></tr></thead>
+<tbody>
+<tr>
+<td class="td-asset-list__file">
+<i class="fa-regular fa-file-zipper td-asset-list__icon" aria-hidden="true"></i><span class="td-asset-list__disabled" aria-disabled="true" dir="auto">oink-3.0.0-rc.1.tar.gz</span>
+<span class="td-asset-list__badges"><span class="td-badge td-badge--info td-badge--outline">SHA-256</span>
+</span>
+</td>
+<td class="td-asset-list__checksum"><code>eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+<script type="application/json" id="oink-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-regular fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-fork","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/docs/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script><script src="/js/main-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</body>
+</html>

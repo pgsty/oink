@@ -1,0 +1,14 @@
+{
+  "description": "Four-state output goldens of the theme fixture (scripts/check-goldens.py). Keys are golden files under tests/goldens/, values are exampleSite output paths.",
+  "pages": {
+    "html/docs-code-blocks.html": "docs/code-blocks/index.html",
+    "html/docs-content-primitives.html": "docs/content-primitives/index.html",
+    "html/blog-list.html": "blog/index.html",
+    "html/book-chapter-two.html": "book/chapter-two/index.html",
+    "html/home-landing.html": "index.html",
+    "print/docs-section.html": "_print/docs/index.html",
+    "markdown/docs-content-primitives.md": "docs/content-primitives/index.md",
+    "rss/blog.xml": "blog/index.xml",
+    "llms/llms.txt": "llms.txt"
+  }
+}

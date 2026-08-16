@@ -131,6 +131,12 @@ jobs:
       - name: Check Gallery output and Zoom reuse
         run: python3 scripts/check-gallery.py
 
+      - name: Check output structure and security
+        run: python3 scripts/check-output.py
+
+      - name: Check four-state goldens
+        run: python3 scripts/check-goldens.py --public exampleSite/public
+
       - name: Build the system typography preset
         working-directory: exampleSite
         env:

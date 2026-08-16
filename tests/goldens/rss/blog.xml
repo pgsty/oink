@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Blog on OINK Landing Example</title>
+<link>https://example.org/blog/</link>
+<description>Recent content in Blog on OINK Landing Example</description>
+<generator>Hugo</generator>
+<language>en</language>
+<lastBuildDate>Thu, 13 Aug 2026 00:00:00 +0000</lastBuildDate>
+<atom:link href="https://example.org/blog/index.xml" rel="self" type="application/rss+xml" />
+<item>
+<title>Pig 1.9.0</title>
+<link>https://example.org/blog/release/pig-1.9.0/</link>
+<pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/release/pig-1.9.0/</guid>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.9.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.9.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.9.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.9.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
+</item>
+<item>
+<title>Shorthand release metadata</title>
+<link>https://example.org/blog/release/shorthand/</link>
+<pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/release/shorthand/</guid>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-11&#34;&gt;2026-08-11&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
+</item>
+<item>
+<title>MCLI 20260813</title>
+<link>https://example.org/blog/release/mcli-20260813/</link>
+<pubDate>Thu, 13 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/release/mcli-20260813/</guid>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;RELEASE.2026-08-13T00-00-00Z&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-13&#34;&gt;2026-08-13&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli/releases/tag/RELEASE.2026-08-13T00-00-00Z&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli/archive/refs/tags/RELEASE.2026-08-13T00-00-00Z.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli/archive/refs/tags/RELEASE.2026-08-13T00-00-00Z.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli&#34;&gt;pgsty/mcli&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
+</item>
+<item>
+<title>A typography regression article</title>
+<link>https://example.org/blog/typography/</link>
+<pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/typography/</guid>
+<description>&lt;p&gt;Good documentation typography separates reading comfort from interface density.&#xA;The theme can evolve article prose without forcing the sidebar, search dialog,&#xA;or terminal components to use the same font. 中文博客正文也应保持稳定、清晰的回退。&lt;/p&gt;&#xA;&lt;h2 id=&#34;a-stable-foundation&#34;&gt;A stable foundation&lt;/h2&gt;&#xA;&lt;p&gt;Semantic roles reduce selector-level overrides and keep future editorial work&#xA;bounded. Code such as &lt;code&gt;hugo --minify&lt;/code&gt; remains visually distinct from prose.&lt;/p&gt;</description>
+</item>
+<item>
+<title>An older regression article</title>
+<link>https://example.org/blog/older/</link>
+<pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/older/</guid>
+<description>&lt;p&gt;Blog navigation keeps Hugo&amp;rsquo;s existing time order instead of using the docs tree.&lt;/p&gt;</description>
+</item>
+<item>
+<title>Expanded release metadata</title>
+<link>https://example.org/blog/release/expanded/</link>
+<pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/release/expanded/</guid>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-11&#34;&gt;2026-08-11&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
+</item>
+<item>
+<title>Pig 1.10.0</title>
+<link>https://example.org/blog/release/pig-1.10.0/</link>
+<pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/release/pig-1.10.0/</guid>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/download/v1.10.0/checksums.txt&#34;&gt;Checksums&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/compare/v1.9.0...v1.10.0&#34;&gt;Compare changes&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;h2 id=&#34;release-assets&#34;&gt;Release assets&lt;/h2&gt;&#xA;### `.rpm`&#xA;&#xA;| File | Checksum |&#xA;| --- | --- |&#xA;| [pig\-1\.10\.0\-1\.aarch64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.aarch64.rpm) | SHA-256 · `e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1` |&#xA;| [pig\-1\.10\.0\-1\.x86\_64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.x86_64.rpm) | SHA-256 · `34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8` |</description>
+</item>
+</channel>
+</rss>

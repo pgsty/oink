@@ -1,0 +1,14 @@
+# The eleven in-house OINK consumer sites (docs/design/DESIGN-GUIDE.md §0 "11 站").
+# One path per line, relative to this repository's parent directory (~/pgsty).
+# `exp.pgsty.com-oink` and `sow-oink` are checkout variants of listed sites, not sites.
+caps.vonng.com
+exp.pgsty.com
+oink.pgsty.com
+pgsql.cc
+pgsty.com
+pgsty.pro
+pig.pgsty.com
+pigsty.cc
+pigsty.io
+silo.pgsty.com
+sow.pgsty.com

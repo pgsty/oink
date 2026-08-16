@@ -5,6 +5,8 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-08-16
+
 ### Added
 
 - Refine FileTree with validated Font Awesome icon overrides, semantic colors,
@@ -510,7 +512,8 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/pgsty/oink/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/pgsty/oink/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/pgsty/oink/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pgsty/oink/compare/v0.2.1...v0.3.0

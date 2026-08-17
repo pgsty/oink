@@ -30,11 +30,21 @@
     margin-bottom: 0;
   }
 
+  // Card mode reuses the content-card grid: the index becomes a grid of
+  // link cards (icon, title, one-line description), no rule above it.
   &--cards {
-    padding-top: 1.25rem;
+    display: grid;
+    gap: 1rem;
+    padding-top: 0;
+    border-top: 0;
   }
 
   &__card {
     padding: 0;
+  }
+
+  &__card .td-content-card__description {
+    // The page description is one line of context, not a paragraph.
+    margin-block-start: 0.3rem;
   }
 }

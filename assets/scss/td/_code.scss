@@ -91,9 +91,11 @@
     color: var(--bs-tertiary-color);
 
     // Untitled block: the actions float over the first line and appear only
-    // while the block is hovered or holds focus. Touch devices cannot hover,
-    // so they always see the control; a fresh success/error state stays
-    // visible even after the pointer leaves.
+    // while the block is hovered or holds *keyboard* focus (a mouse click
+    // focuses the button too, and must not pin the control open). Touch
+    // devices cannot hover, so they always see the control; a fresh
+    // success/error state stays visible after the pointer leaves, and the
+    // runtime restores the idle glyph only once the control has faded.
     &--compact {
       position: absolute;
       z-index: 3;
@@ -104,10 +106,25 @@
     }
   }
 
-  .td-code:hover > .td-code__utilities--compact,
-  .td-code:focus-within > .td-code__utilities--compact,
+  // Kept as separate rules: an unsupported `:has()` must drop only its own
+  // rule, not the hover reveal.
+  .td-code:hover > .td-code__utilities--compact {
+    opacity: 1;
+  }
+
+  .td-code:has(:focus-visible) > .td-code__utilities--compact {
+    opacity: 1;
+  }
+
   .td-code__utilities--compact:has([data-state='success'], [data-state='error']) {
     opacity: 1;
+  }
+
+  // Interpolated: libsass cannot parse a `selector()` condition itself.
+  @supports not #{'selector(:has(a))'} {
+    .td-code:focus-within > .td-code__utilities--compact {
+      opacity: 1;
+    }
   }
 
   @media (hover: none) {

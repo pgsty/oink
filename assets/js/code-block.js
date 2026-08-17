@@ -107,12 +107,41 @@
     }
   };
 
+  // A floating control (untitled block) is only visible while the block is
+  // hovered / keyboard-focused or while it shows a result. Reset must not swap
+  // the glyph back to "copy" in front of the reader: if nothing else keeps the
+  // control visible, drop the result state first so it fades out still showing
+  // the check, and restore the idle glyph once it is gone.
+  const controlStaysVisible = (button) => {
+    const root = resolveRoot(button);
+    if (!root || !button.closest('.td-code__utilities--compact')) return true;
+    if (window.matchMedia?.('(hover: none)').matches) return true;
+    try {
+      return root.matches(':hover') || root.matches(':has(:focus-visible)');
+    } catch (_) {
+      return root.matches(':hover') || root.matches(':focus-within');
+    }
+  };
+
   const resetCopyControl = (button) => {
     const timer = resetTimers.get(button);
     if (timer) window.clearTimeout(timer);
     const label = button.dataset.labelCopy || 'Copy code';
-    updateCopyControl(button, 'idle', label);
     button.disabled = false;
+    if (controlStaysVisible(button)) {
+      updateCopyControl(button, 'idle', label);
+      return;
+    }
+    button.dataset.state = 'idle';
+    resetTimers.set(
+      button,
+      window.setTimeout(() => {
+        // A new copy may have started during the fade; leave its state alone.
+        if (button.dataset.state === 'idle') {
+          updateCopyControl(button, 'idle', label);
+        }
+      }, 240),
+    );
   };
 
   const handleCopy = async (button) => {

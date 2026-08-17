@@ -28,6 +28,8 @@
     "markdown/docs-components-data-fences.md": "docs/components/data-fences/index.md",
     "markdown/docs-media-primitives.md": "docs/media-primitives/index.md",
     "markdown/docs-gallery.md": "docs/gallery/index.md",
-    "markdown/book-chapter-one.md": "book/chapter-one/index.md"
+    "markdown/book-chapter-one.md": "book/chapter-one/index.md",
+    "html/docs-index.html": "docs/index.html",
+    "html/docs-guides.html": "docs/guides/index.html"
   }
 }

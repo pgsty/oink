@@ -248,6 +248,9 @@
   }
 }
 
+// One card: an elevated surface whose whole face is the link (the title's
+// ::after overlay), with the icon in the accent colour and a quiet
+// description. Shared by `{{< cards >}}` and the section index.
 .td-content-card {
   --td-card-accent: var(--bs-link-color);
   position: relative;
@@ -256,22 +259,21 @@
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--bs-border-color);
-  border-radius: 0.6rem;
+  border-radius: var(--td-code-radius, 0.75rem);
   background: var(--td-brand-elev, var(--bs-tertiary-bg));
   color: var(--bs-body-color);
   transition:
-    transform 160ms ease,
     border-color 160ms ease,
     box-shadow 160ms ease;
 
-  &:hover {
-    transform: translateY(-1px);
+  &:hover,
+  &:focus-within {
     border-color: color-mix(
       in srgb,
       var(--td-card-accent) 45%,
       var(--bs-border-color)
     );
-    box-shadow: var(--bs-box-shadow);
+    box-shadow: 0 2px 10px rgba($black, 0.06);
   }
 }
 
@@ -302,11 +304,13 @@
 }
 
 .td-content-card__title {
-  font-family: var(--td-display-font-family);
-  letter-spacing: 0.04em;
   color: var(--bs-emphasis-color);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-family: var(--td-heading-font-family);
+  font-size: 1rem;
+  font-weight: $font-weight-semibold;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  text-decoration: none;
 
   &::after {
     position: absolute;
@@ -314,6 +318,15 @@
     z-index: 1;
     content: '';
   }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.td-content-card:has(.td-content-card__title:focus-visible) {
+  outline: 2px solid var(--bs-focus-ring-color);
+  outline-offset: 2px;
 }
 
 .td-content-card__badge {
@@ -325,8 +338,10 @@
 }
 
 .td-content-card__description {
-  margin-block: 0.6rem 0;
+  margin-block: 0.4rem 0;
   color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+  line-height: 1.55;
 
   > :last-child {
     margin-block-end: 0;

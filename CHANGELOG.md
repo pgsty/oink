@@ -5,7 +5,7 @@ All notable changes to OINK are documented here. The project follows
 
 ## [0.5.0] - 2026-08-18
 
-Draft: the tag is not created yet. The component API v5 release. Content written for 0.4 needs migration:
+The component API v5 release. Content written for 0.4 needs migration:
 `scripts/migrations/oink06.py report --sites <dir>` inventories a site and
 `… migrate --site <dir> --write` rewrites it. Configuration keys renamed here
 fail the build with the new name rather than being silently ignored.

@@ -490,7 +490,13 @@ The result records the rendered URL, canonical full-size URL, media type,
 intrinsic width and height when Hugo knows them, alt text, caption, and whether
 the source can be processed. Missing page/global resources and invalid image
 operations fail with the caller's position. A static or remote image may omit
-dimensions when the build cannot know them without I/O.
+dimensions when the build cannot know them without I/O. An SVG resolves as an
+image resource but reports no intrinsic dimensions.
+
+Every theme path that takes an image source uses this resolver: the image
+render hook, the `image` shortcode, the `card` shortcode's `image`, and the
+Book `fig` shortcode's `src`. Landing sections are the documented exception
+and are tracked separately.
 
 **Image render hook** (`layouts/_markup/render-image.html`). Every Markdown
 image `![alt](src "title")` resolves through the shared resolver:

@@ -5,6 +5,10 @@ book_kind: chapter
 book_number: 1
 weight: 10
 outputs: [HTML, print, markdown]
+resources:
+  - src: diagram.png
+    params:
+      alt: A resolved page-resource bitmap
 ---
 
 Forward reference: {{< xref fig="1-1" anchor="office_2003" />}}.
@@ -12,6 +16,10 @@ Forward reference: {{< xref fig="1-1" anchor="office_2003" />}}.
 Cross-chapter heading: {{< xref page="../chapter-two" anchor="stable-heading" >}}the stable heading{{< /xref >}}.
 
 {{< fig num="1-1" id="office_2003" src="/icons/logo.svg" alt="OINK mark used as a fixture" caption="A stable, manually numbered figure." class="fixture-figure" width="120" height="120" />}}
+
+{{< fig num="1-2" id="resolved_bitmap" src="diagram.png" caption="A page-resource bitmap: the shared resolver supplies intrinsic dimensions and the resource alt." />}}
+
+{{< fig num="1-3" id="resolved_vector" src="vector.svg" caption="A page-resource SVG: it resolves without error and claims no intrinsic size." />}}
 
 {{< tbl num="1-1" caption="Output behavior by surface." >}}
 | Surface | Label | Anchor |

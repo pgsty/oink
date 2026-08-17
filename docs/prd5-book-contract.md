@@ -90,9 +90,23 @@ the attribute line attaches to the paragraph and is ignored).
 `height`, in addition to `num`. `title` is a caption alias for mechanical
 migration and is mutually exclusive with `caption`. `src` and inner content
 are mutually exclusive. Width and height are positive integers; class tokens
-and every URL are validated. When legacy source has no explicit `alt`, the
-plain caption becomes its migration fallback. New content should state a
-meaningful `alt` explicitly. The native figure takes its alt text from the
+and every URL are validated.
+
+`src` resolves through the shared image resolver (contract
+`content-primitives.md` section 3.5), so a Book figure has the same source
+precedence as `![alt](src)` and the `image` shortcode: page resource, then
+enclosing-section resource, then global asset, then static or remote path. A
+resolved raster resource supplies intrinsic `width`/`height`; explicit `width`
+and `height` parameters still win. An SVG resource resolves without error but
+carries no intrinsic size, so such figures state their box explicitly or go
+without one. A `src` that resolves to a non-image resource fails the build.
+
+Alt precedence is: an explicit `alt` parameter (including an explicit empty
+one), then the resource's `params.alt` metadata, then the plain caption as the
+migration fallback for legacy source. New content should state a meaningful
+`alt` explicitly. The resource's `params.byline` is resolved but not rendered
+by `fig`; only the `image` shortcode emits a byline. The native figure takes
+its alt text from the
 Markdown image, accepts `width`/`height` attributes for static or remote
 images (they never turn alt text into a caption), and passes `class` tokens
 through; a `link` needs the shortcode form.

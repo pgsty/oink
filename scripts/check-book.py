@@ -306,7 +306,20 @@ def check_example(public: Path) -> list[str]:
         require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
         require(two.pager == {"prev": "/book/chapter-one/"}, "last Book page pager is wrong", errors)
         require(two.has_sidebar_headings, "active Book page has no sidebar heading branch", errors)
-        require(set(one.targets) == {"office_2003", "tbl-1-1", "eq-1.1", "example-query", "example-native"}, f"numbered target registry changed: {sorted(one.targets)}", errors)
+        require(
+            set(one.targets)
+            == {
+                "office_2003",
+                "resolved_bitmap",
+                "resolved_vector",
+                "tbl-1-1",
+                "eq-1.1",
+                "example-query",
+                "example-native",
+            },
+            f"numbered target registry changed: {sorted(one.targets)}",
+            errors,
+        )
         figure = one.targets.get("office_2003")
         if figure:
             images = figure["images"]
@@ -315,6 +328,52 @@ def check_example(public: Path) -> list[str]:
                 image = images[0]
                 require(image.get("src") == "/icons/logo.svg", "fixture figure src changed", errors)
                 require(image.get("width") == "120" and image.get("height") == "120", "figure dimensions were lost", errors)
+
+        # `fig src=` resolves through the shared image resolver: a bare page-resource
+        # name becomes the resource permalink (it used to be relURL'd to the site
+        # root), intrinsic dimensions are supplied, and resource `params.alt` fills
+        # in when the shortcode declares no alt.
+        bitmap = one.targets.get("resolved_bitmap")
+        if bitmap:
+            images = bitmap["images"]
+            require(len(images) == 1, "resolved bitmap figure image is missing", errors)
+            if images:
+                image = images[0]
+                require(
+                    image.get("src") == "/book/chapter-one/diagram.png",
+                    f"fig src did not resolve as a page resource: {image.get('src')!r}",
+                    errors,
+                )
+                require(
+                    image.get("width") == "48" and image.get("height") == "24",
+                    "fig did not inherit intrinsic dimensions from the resource",
+                    errors,
+                )
+                require(
+                    image.get("alt") == "A resolved page-resource bitmap",
+                    f"fig did not use the resource alt metadata: {image.get('alt')!r}",
+                    errors,
+                )
+
+        # An SVG page resource resolves without error but has no intrinsic size:
+        # Hugo reports it as an image resource without metadata, so the figure must
+        # not invent width/height.
+        vector = one.targets.get("resolved_vector")
+        if vector:
+            images = vector["images"]
+            require(len(images) == 1, "resolved vector figure image is missing", errors)
+            if images:
+                image = images[0]
+                require(
+                    image.get("src") == "/book/chapter-one/vector.svg",
+                    f"SVG fig src did not resolve as a page resource: {image.get('src')!r}",
+                    errors,
+                )
+                require(
+                    "width" not in image and "height" not in image,
+                    "SVG figure claimed intrinsic dimensions it cannot have",
+                    errors,
+                )
 
     toc = re.search(r'<nav class="td-book-toc[\s\S]*?</nav>', source["root"])
     require(toc is not None, "Book table of contents is missing", errors)

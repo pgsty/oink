@@ -7,6 +7,10 @@ Forward reference: [Figure 1-1](#office_2003).
 Cross-chapter heading: [the stable heading](/book/chapter-two/#stable-heading).
 **Figure 1-1.** A stable\, manually numbered figure\.
 ![OINK mark used as a fixture](/icons/logo.svg)
+**Figure 1-2.** A page\-resource bitmap\: the shared resolver supplies intrinsic dimensions and the resource alt\.
+![A resolved page\-resource bitmap](/book/chapter-one/diagram.png)
+**Figure 1-3.** A page\-resource SVG\: it resolves without error and claims no intrinsic size\.
+![A page\-resource SVG\: it resolves without error and claims no intrinsic size\.](/book/chapter-one/vector.svg)
 **Table 1-1.** Output behavior by surface\.
 | Surface | Label | Anchor |
 | --- | --- | --- |

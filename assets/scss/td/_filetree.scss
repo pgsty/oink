@@ -1,0 +1,402 @@
+// FileTree — the ```filetree data fence (docs/content-primitives.md §3).
+//
+// render-codeblock-filetree.html emits a panel of rows; each row is a two-column
+// grid (name cell | comment cell) that shares one name-column width computed at
+// build time from the longest entry (`--td-filetree-name-col`, in ch), so the
+// `#` comments align without JavaScript. The split is clamped to 50–70% of the
+// row: the comment column never takes more than the right half, and long names
+// never squeeze it below 30%. assets/js/filetree.js (loaded on `hasFileTree`)
+// makes the split draggable by rewriting the same variable in px. Directories
+// with children are native <details>. `--td-filetree-indent` (2.5ch) is the
+// per-level indent and must stay in step with content/filetree-parse.html.
+
+.td-filetree {
+  --td-filetree-surface: var(--td-brand-elev, var(--bs-tertiary-bg));
+  --td-filetree-chrome: var(--bs-secondary-bg);
+  --td-filetree-line: var(--bs-border-color);
+  --td-filetree-muted: var(--bs-secondary-color);
+  --td-filetree-accent: var(--bs-link-color);
+  --td-filetree-folder: #c58f1c;
+  --td-filetree-hover: color-mix(in srgb, var(--bs-link-color) 8%, transparent);
+  --td-filetree-indent: 2.5ch;
+  --td-filetree-row: 1.9rem;
+  --td-filetree-gutter: 0.75rem;
+  --td-filetree-name-col: 40ch; // overridden inline by the render hook
+  --td-filetree-split: #{'clamp(50%, var(--td-filetree-name-col), 70%)'};
+
+  margin-block: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--td-filetree-line);
+  border-radius: 0.6rem;
+  background: var(--td-filetree-surface);
+  color: var(--bs-body-color);
+  font-family: var(--td-code-font-family);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+[data-bs-theme='dark'] .td-filetree {
+  --td-filetree-folder: #e3b341;
+}
+
+.td-filetree[data-td-filetree-dragging] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.td-filetree__chrome {
+  display: grid;
+  min-block-size: 2.1rem;
+  padding: 0.35rem 0.85rem;
+  border-block-end: 1px solid var(--td-filetree-line);
+  background: var(--td-filetree-chrome);
+  place-items: center;
+}
+
+.td-filetree__title {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--bs-body-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-filetree__body {
+  position: relative;
+  padding-block: 0.4rem;
+}
+
+// Drag handle over the dashed comment border. Its position must equal the
+// grid split: gutter + name column, clamped to the same 50–70% of the row
+// content box (50% of the row content box + gutter == 50% of the body).
+.td-filetree__divider {
+  position: absolute;
+  z-index: 2;
+  inset-block: 0;
+  inset-inline-start: #{'clamp(50%, calc(var(--td-filetree-gutter) + var(--td-filetree-name-col)), calc(70% - 0.4 * var(--td-filetree-gutter)))'};
+  inline-size: 0.75rem;
+  cursor: col-resize;
+  touch-action: none;
+  translate: -50% 0;
+
+  &::before {
+    position: absolute;
+    inset-block: 0.4rem;
+    inset-inline-start: 50%;
+    inline-size: 2px;
+    border-radius: 1px;
+    background: transparent;
+    content: '';
+    translate: -50% 0;
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    background: var(--td-filetree-accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+[dir='rtl'] .td-filetree__divider {
+  translate: 50% 0;
+
+  &::before {
+    translate: 50% 0;
+  }
+}
+
+.td-filetree__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.td-filetree__item {
+  margin: 0;
+  padding: 0;
+}
+
+.td-filetree__details {
+  min-width: 0;
+}
+
+.td-filetree__summary {
+  display: block;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::marker {
+    content: '';
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--td-filetree-accent);
+    outline-offset: -2px;
+  }
+}
+
+.td-filetree__row {
+  display: grid;
+  grid-template-columns: minmax(0, var(--td-filetree-split)) minmax(0, 1fr);
+  align-items: center;
+  block-size: var(--td-filetree-row);
+  padding-inline: var(--td-filetree-gutter);
+  // Indent guides: one hairline per ancestor level, ending under the parent
+  // entry's icon centre. Physical direction; the RTL block below flips it.
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0 calc(var(--td-filetree-indent) - 1px),
+    var(--td-filetree-line) calc(var(--td-filetree-indent) - 1px) var(--td-filetree-indent)
+  );
+  background-repeat: no-repeat;
+  background-position: calc(var(--td-filetree-gutter) + 1ch - var(--td-filetree-indent) + 1px) 0;
+  background-size: calc(var(--td-filetree-depth, 0) * var(--td-filetree-indent)) 100%;
+
+  &:hover {
+    background-color: var(--td-filetree-hover);
+  }
+}
+
+[dir='rtl'] .td-filetree__row {
+  background-image: repeating-linear-gradient(
+    to left,
+    transparent 0 calc(var(--td-filetree-indent) - 1px),
+    var(--td-filetree-line) calc(var(--td-filetree-indent) - 1px) var(--td-filetree-indent)
+  );
+  background-position: right calc(var(--td-filetree-gutter) + 1ch - var(--td-filetree-indent) + 1px) top 0;
+}
+
+.td-filetree--plain .td-filetree__row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.td-filetree__name-cell {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  padding-inline: calc(var(--td-filetree-depth, 0) * var(--td-filetree-indent)) 2ch;
+  gap: 0.75ch;
+}
+
+.td-filetree__icon {
+  flex: none;
+  inline-size: 2ch;
+  color: var(--td-filetree-muted);
+  font-size: 0.95em;
+  text-align: center;
+
+  &--dir {
+    color: var(--td-filetree-folder);
+  }
+
+  &--neutral {
+    color: var(--td-filetree-muted);
+  }
+
+  &--info {
+    color: var(--bs-info-text-emphasis);
+  }
+
+  &--success {
+    color: var(--bs-success-text-emphasis);
+  }
+
+  &--warning {
+    color: var(--bs-warning-text-emphasis);
+  }
+
+  &--danger {
+    color: var(--bs-danger-text-emphasis);
+  }
+}
+
+.td-filetree__glyph {
+  display: inline-block;
+  inline-size: 2ch;
+  text-align: center;
+
+  &--open {
+    display: none;
+  }
+}
+
+.td-filetree__glyph,
+.td-filetree__icon {
+  line-height: 1;
+}
+
+.td-filetree__details[open] > .td-filetree__summary .td-filetree__glyph--closed,
+.td-filetree--static .td-filetree__item--parent > .td-filetree__row .td-filetree__glyph--closed {
+  display: none;
+}
+
+.td-filetree__details[open] > .td-filetree__summary .td-filetree__glyph--open,
+.td-filetree--static .td-filetree__item--parent > .td-filetree__row .td-filetree__glyph--open {
+  display: inline-block;
+}
+
+.td-filetree__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  a {
+    color: var(--td-filetree-accent);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+}
+
+.td-filetree__item--dir > .td-filetree__row .td-filetree__name,
+.td-filetree__item--dir > .td-filetree__details > .td-filetree__summary .td-filetree__name {
+  font-weight: $font-weight-semibold;
+}
+
+.td-filetree__comment {
+  display: flex;
+  min-width: 0;
+  block-size: 100%;
+  align-items: center;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px dashed var(--td-filetree-line);
+  color: var(--td-filetree-muted);
+  font-size: 0.86em;
+  gap: 0.75ch;
+  white-space: nowrap;
+}
+
+.td-filetree__hash {
+  flex: none;
+  color: color-mix(in srgb, var(--td-filetree-muted) 60%, transparent);
+}
+
+.td-filetree__comment-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Narrow viewports: the comment drops under the name instead of truncating.
+@include media-breakpoint-down(sm) {
+  .td-filetree__row {
+    grid-template-columns: minmax(0, 1fr);
+    block-size: auto;
+    padding-block: 0.3rem;
+    row-gap: 0.2rem;
+  }
+
+  .td-filetree__comment {
+    padding-inline-start: calc(var(--td-filetree-depth, 0) * var(--td-filetree-indent) + 2.75ch);
+    border: 0;
+    line-height: 1.35;
+    white-space: normal;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .td-filetree__divider {
+    display: none;
+  }
+
+  .td-filetree__comment-text {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
+
+// RSS carries the fence source verbatim.
+.td-filetree-source {
+  overflow-x: auto;
+  font-family: var(--td-code-font-family);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+@media (forced-colors: active) {
+  .td-filetree {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .td-filetree__chrome,
+  .td-filetree__comment {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+
+  .td-filetree__icon,
+  .td-filetree__hash,
+  .td-filetree__comment,
+  .td-filetree__title {
+    color: CanvasText;
+  }
+
+  .td-filetree__name a {
+    color: LinkText;
+  }
+
+  .td-filetree__row:hover {
+    background-color: Canvas;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .td-filetree__divider:hover::before,
+  .td-filetree__divider:focus-visible::before {
+    background: Highlight;
+  }
+}
+
+@media print {
+  .td-filetree {
+    overflow: visible;
+    background: transparent;
+    break-inside: avoid-page;
+  }
+
+  .td-filetree__row {
+    block-size: auto;
+    min-block-size: var(--td-filetree-row);
+    background-color: transparent;
+    break-inside: avoid;
+  }
+
+  .td-filetree__name,
+  .td-filetree__comment,
+  .td-filetree__comment-text {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .td-filetree__summary {
+    cursor: default;
+  }
+
+  .td-filetree__divider {
+    display: none;
+  }
+}

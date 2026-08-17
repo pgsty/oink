@@ -1,0 +1,207 @@
+{{- /*
+  Parse the body of a ```filetree fence into a flat, ordered list of nodes.
+
+  Input dict:
+    source    the fence body (.Inner)
+    position  .Position for error messages
+
+  Line grammar (docs/content-primitives.md §3 FileTree):
+
+    <indent> [- | * | + | ├── | └── | |-- | `--] name[/] [# comment] [{key=value …}]
+
+  - Depth comes from an indent stack, so two spaces, four spaces, tabs (= 4
+    columns) and `tree` output (`│   ` groups + a 4-column connector) all work
+    as long as a dedent returns to a level that is open. A bare first line
+    (the `.` or path root that `tree` prints) is a node too.
+  - `[name](url)` is a linked entry; the URL goes through content/url.html.
+  - Everything after the first whitespace-preceded `#` is the comment; `\#`
+    is a literal hash.
+  - A trailing `{…}` block is attributes: icon (one Font Awesome class pair),
+    tone (neutral | info | success | warning | danger), open (true | false,
+    directories only), type (dir | file).
+  - The `N directories, M files` summary line that `tree` prints is skipped.
+
+  Output dict:
+    nodes        slice of dicts: line depth name href external comment icon
+                 tone open type kind children width
+    hasComments  bool
+    nameWidth    max row width in ch (indent + icon slot + name), for the
+                 build-time name column
+*/ -}}
+{{- $position := .position | default "unknown position" -}}
+{{- $source := replace (printf "%s" .source) "\r" "" -}}
+{{- $lines := split (strings.TrimRight "\n" $source) "\n" -}}
+{{- $hashEscape := "\u0001" -}}
+{{- $indentCh := 2.5 -}}
+{{- $iconCh := 5 -}}
+{{- $tones := slice "neutral" "info" "success" "warning" "danger" -}}
+{{- $nodes := slice -}}
+{{- $stack := slice -}}
+{{- $lineNo := 0 -}}
+{{- range $raw := $lines -}}
+  {{- $lineNo = add $lineNo 1 -}}
+  {{- $line := strings.TrimRight " \t" $raw -}}
+  {{- if not (strings.TrimSpace $line) -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- if findRE `^\s*\d+ director(?:y|ies)(?:, \d+ files?)?\s*$` $line -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $width := 0 -}}
+  {{- $rest := "" -}}
+  {{- $tree := findRESubmatch "^((?:(?:│|\\|)   |    )*)(?:├──|└──|\\|--|`--) ?(.*)$" $line -}}
+  {{- if $tree -}}
+    {{- $prefix := index (index $tree 0) 1 -}}
+    {{- $width = add (strings.RuneCount $prefix) 4 -}}
+    {{- $rest = index (index $tree 0) 2 -}}
+  {{- else -}}
+    {{- $bullet := findRESubmatch `^(\s*)(?:[-*+]\s+)?(\S.*)$` $line -}}
+    {{- if not $bullet -}}
+      {{- errorf "filetree: line %d is not a tree entry at %s" $lineNo $position -}}
+    {{- end -}}
+    {{- $indent := replace (index (index $bullet 0) 1) "\t" "    " -}}
+    {{- $width = strings.RuneCount $indent -}}
+    {{- $rest = index (index $bullet 0) 2 -}}
+  {{- end -}}
+
+  {{- /* depth from the indent stack */ -}}
+  {{- if not $stack -}}
+    {{- $stack = slice $width -}}
+  {{- else if gt $width (index $stack (sub (len $stack) 1)) -}}
+    {{- $stack = $stack | append $width -}}
+  {{- else -}}
+    {{- range seq (len $stack) -}}
+      {{- if and $stack (lt $width (index $stack (sub (len $stack) 1))) -}}
+        {{- $stack = first (sub (len $stack) 1) $stack -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if or (not $stack) (ne $width (index $stack (sub (len $stack) 1))) -}}
+      {{- errorf "filetree: line %d dedents to an indentation level that was never opened at %s" $lineNo $position -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $depth := sub (len $stack) 1 -}}
+
+  {{- /* trailing attributes */ -}}
+  {{- $attrs := dict -}}
+  {{- $attrMatch := findRESubmatch `^(.*?)\s*\{([^{}]*)\}\s*$` $rest -}}
+  {{- if $attrMatch -}}
+    {{- $rest = index (index $attrMatch 0) 1 -}}
+    {{- $attrText := index (index $attrMatch 0) 2 -}}
+    {{- $pairRE := `([A-Za-z][A-Za-z0-9_-]*)=(?:"([^"]*)"|'([^']*)'|([^\s"']+))` -}}
+    {{- $leftover := strings.TrimSpace (replaceRE $pairRE "" $attrText) -}}
+    {{- if $leftover -}}
+      {{- errorf "filetree: line %d: malformed attributes {%s} (expected key=value pairs) at %s" $lineNo $attrText $position -}}
+    {{- end -}}
+    {{- range $pair := findRESubmatch $pairRE $attrText -}}
+      {{- $key := index $pair 1 -}}
+      {{- $value := or (index $pair 2) (index $pair 3) (index $pair 4) -}}
+      {{- if not (in (slice "icon" "tone" "open" "type") $key) -}}
+        {{- errorf "filetree: line %d: unknown attribute %q (allowed: icon, tone, open, type) at %s" $lineNo $key $position -}}
+      {{- end -}}
+      {{- if isset $attrs $key -}}
+        {{- errorf "filetree: line %d: attribute %q is set twice at %s" $lineNo $key $position -}}
+      {{- end -}}
+      {{- if not (strings.TrimSpace $value) -}}
+        {{- errorf "filetree: line %d: attribute %q must not be empty at %s" $lineNo $key $position -}}
+      {{- end -}}
+      {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* comment */ -}}
+  {{- $comment := "" -}}
+  {{- $escaped := replace $rest "\\#" $hashEscape -}}
+  {{- $commentMatch := findRESubmatch `^(.*?)(?:^|\s+)#\s*(.*)$` $escaped -}}
+  {{- if $commentMatch -}}
+    {{- $escaped = index (index $commentMatch 0) 1 -}}
+    {{- $comment = strings.TrimSpace (replace (index (index $commentMatch 0) 2) $hashEscape "#") -}}
+  {{- end -}}
+  {{- $name := strings.TrimSpace (replace $escaped $hashEscape "#") -}}
+  {{- if not $name -}}
+    {{- errorf "filetree: line %d has no entry name at %s" $lineNo $position -}}
+  {{- end -}}
+
+  {{- /* link */ -}}
+  {{- $href := "" -}}
+  {{- $external := false -}}
+  {{- $linkMatch := findRESubmatch `^\[([^\]]+)\]\(([^)\s]+)\)$` $name -}}
+  {{- if $linkMatch -}}
+    {{- $name = strings.TrimSpace (index (index $linkMatch 0) 1) -}}
+    {{- $url := partial "content/url.html" (dict
+      "name" "filetree" "parameter" (printf "link on line %d" $lineNo) "position" $position
+      "value" (index (index $linkMatch 0) 2)
+    ) -}}
+    {{- $href = $url.href -}}
+    {{- $external = $url.external -}}
+  {{- end -}}
+
+  {{- /* attribute validation */ -}}
+  {{- $icon := index $attrs "icon" | default "" -}}
+  {{- if and $icon (not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $icon)) -}}
+    {{- errorf "filetree: line %d: icon must be one Font Awesome class pair such as %q; got %q at %s" $lineNo "fa-solid fa-file-code" $icon $position -}}
+  {{- end -}}
+  {{- $tone := index $attrs "tone" | default "" -}}
+  {{- if and $tone (not (in $tones $tone)) -}}
+    {{- errorf "filetree: line %d: tone must be one of %s; got %q at %s" $lineNo (delimit $tones " | ") $tone $position -}}
+  {{- end -}}
+  {{- $type := index $attrs "type" | default "" -}}
+  {{- if and $type (not (in (slice "dir" "file") $type)) -}}
+    {{- errorf "filetree: line %d: type must be dir or file; got %q at %s" $lineNo $type $position -}}
+  {{- end -}}
+  {{- $open := true -}}
+  {{- $openSet := isset $attrs "open" -}}
+  {{- if $openSet -}}
+    {{- $openValue := index $attrs "open" -}}
+    {{- if not (in (slice "true" "false") $openValue) -}}
+      {{- errorf "filetree: line %d: open must be true or false; got %q at %s" $lineNo $openValue $position -}}
+    {{- end -}}
+    {{- $open = eq $openValue "true" -}}
+  {{- end -}}
+
+  {{- $nodes = $nodes | append (dict
+    "line" $lineNo
+    "depth" $depth
+    "name" $name
+    "href" $href
+    "external" $external
+    "comment" $comment
+    "icon" $icon
+    "tone" $tone
+    "open" $open
+    "openSet" $openSet
+    "type" $type
+  ) -}}
+{{- end -}}
+
+{{- if not $nodes -}}
+  {{- errorf "filetree: the fence has no entries at %s" $position -}}
+{{- end -}}
+
+{{- /* second pass: children, kind, row width */ -}}
+{{- $out := slice -}}
+{{- $hasComments := false -}}
+{{- $nameWidth := 0.0 -}}
+{{- $count := len $nodes -}}
+{{- range $i, $node := $nodes -}}
+  {{- $children := false -}}
+  {{- if lt (add $i 1) $count -}}
+    {{- $children = gt (index (index $nodes (add $i 1)) "depth") $node.depth -}}
+  {{- end -}}
+  {{- $kind := $node.type -}}
+  {{- if not $kind -}}
+    {{- if or $children (hasSuffix $node.name "/") -}}
+      {{- $kind = "dir" -}}
+    {{- else -}}
+      {{- $kind = "file" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and $node.openSet (ne $kind "dir") -}}
+    {{- errorf "filetree: line %d: open is only valid on directories at %s" $node.line $position -}}
+  {{- end -}}
+  {{- if $node.comment }}{{ $hasComments = true }}{{ end -}}
+  {{- $width := add (add (mul $indentCh $node.depth) (strings.RuneCount $node.name)) $iconCh -}}
+  {{- if gt $width $nameWidth }}{{ $nameWidth = $width }}{{ end -}}
+  {{- $out = $out | append (merge $node (dict "kind" $kind "children" $children)) -}}
+{{- end -}}
+
+{{- return (dict "nodes" $out "hasComments" $hasComments "nameWidth" $nameWidth) -}}

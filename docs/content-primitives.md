@@ -25,15 +25,15 @@ The public interfaces in this document are the version-two contract for:
 
 - inline leaves: Badge, Kbd, Param, Comment, Include;
 - Fields (table form and shortcode form);
-- FileTree, Gallery, Steps, and Cards native list forms (+ the `cards`/`card`
-  shortcode);
+- the `filetree` data fence; Gallery, Steps, and Cards native list forms
+  (+ the `cards`/`card` shortcode);
 - the image render hook and the `image` shortcode; Image Zoom;
 - Release Assets and the `checksums` fence;
 - the table family (`full-width`, `fields`, `matrix`, `caption`, numbered,
   tabbed);
 - Callouts (blockquote render hook);
 - Tabs (adjacent blocks and the `tabs`/`tab` shortcode);
-- data fences (`echarts`, `infographic`, `checksums`);
+- data fences (`echarts`, `infographic`, `checksums`, `filetree`);
 - the numbered Book components (`fig`, `tbl`, `eq`, `eg`, `xref`, Book
   indexes) in their shortcode and native forms.
 
@@ -92,11 +92,11 @@ true` (for `%`/RenderString output and raw HTML), and, for the block image
 forms, `markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false`.
 
 The public marker vocabulary is fixed and unprefixed: `{.steps}` (ordered
-list), `{.cards}` (link list), `{.filetree}` (nested unordered list),
-`{.gallery}` (image list), `{.fields}`, `{.matrix}`, `{.full-width}` (tables),
-and `> [!TYPE]` callouts. Because lists have no render hook, a list marker is
-also the CSS selector (`ol.steps`, `ul.cards`, …); everything the theme
-generates keeps the `td-` prefix.
+list), `{.cards}` (link list), `{.gallery}` (image list), `{.fields}`,
+`{.matrix}`, `{.full-width}` (tables), and `> [!TYPE]` callouts. Because
+lists have no render hook, a list marker is also the CSS selector
+(`ol.steps`, `ul.cards`, …); everything the theme generates keeps the `td-`
+prefix.
 
 ### 2.2 Parameter validation
 
@@ -238,9 +238,12 @@ candidate.
 
 ### 2.7 Runtime loading
 
-Badge, Kbd, Fields, FileTree, Steps, Cards, Callouts, Tables, and the numbered
-Book components never load JavaScript. Tabs (both forms) load one local runtime
-(`assets/js/tabs.js`) keyed by `hasTabs`; it has no Bootstrap dependency.
+Badge, Kbd, Fields, Steps, Cards, Callouts, Tables, and the numbered Book
+components never load JavaScript. FileTree folds natively and loads one local
+runtime (`assets/js/filetree.js`, keyed by `hasFileTree`) only for the
+draggable comment split of trees that have comments. Tabs (both forms) load one
+local runtime (`assets/js/tabs.js`) keyed by `hasTabs`; it has no Bootstrap
+dependency.
 Image Zoom owns one opt-in dialog runtime and Gallery images may request that
 same runtime without adding another bundle. Release Assets and the `checksums`
 fence own a separate opt-in copy runtime keyed by `hasAssetList`. Data fences
@@ -318,7 +321,8 @@ HTML uses an inline `<span class="td-badge td-badge--<tone>">` when `link` is
 absent and an `<a>` when it is present. Tone maps to semantic tokens and is not
 the only carrier of meaning: the author-provided text remains visible in all
 modes. The former `outline` parameter was a purely visual switch and is
-removed; there is one badge appearance.
+removed; there is one badge appearance. The same five-value `tone` vocabulary
+is used by FileTree (section 3.4).
 
 There is no public Badge `icon`, `class`, or color parameter. Markdown
 fallback:
@@ -450,32 +454,97 @@ extraction.
 
 ### 3.4 FileTree
 
-FileTree has exactly one form: a nested unordered list followed by
-`{.filetree}`.
+FileTree has exactly one form: the `filetree` data fence. The body is a
+directory listing; the code block render hook
+(`layouts/_markup/render-codeblock-filetree.html`) parses it and renders the
+panel. There is no list marker (`{.filetree}` was removed in 0.6) and no
+shortcode.
 
-```markdown
-- content/
-  - _index.md — site home page
-  - docs/
-    - [getting-started.md](/docs/getting-started/) — linked entry
-    - configuration.md
-  - logs/
-- hugo.yaml — *root:root 0644*
-{.filetree}
+````markdown
+```filetree {title="Deployment filesystem"}
+- /srv/atlas/                  # 0755 root:root · Application root   {icon="fa-solid fa-server" tone=info}
+  - releases/                  # 0750 deploy:release · Immutable builds
+    - 2026.08.16/              # 0750 deploy:release · Active release
+      - atlas-server           # 0555 deploy:atlas · Executable
+      - [app.toml](/docs/config/)   # 0640 root:atlas · Runtime configuration
+  - secrets/                   # 0700 root:security · Restricted      {open=false tone=danger}
+    - production.env           # 0600 root:security
+```
+````
+
+Fence attributes (`content/attributes.html` policy: `class`, `data-*`, and
+`aria-*` pass through; anything else fails the build):
+
+| Attribute | Required | Accepted values | Effect |
+| --- | --- | --- | --- |
+| `title` | no | non-empty plain string | title bar above the tree; without it no bar is drawn |
+| `tab`, `group`, `value` | no | as for code fences (section 3.13) | the tree becomes one adjacent-block tab of kind `code` |
+
+Line grammar — every non-blank line is one entry:
+
+```text
+<indent> [- | * | + | ├── | └── | |-- | `--] name[/] [# comment] [{key=value …}]
 ```
 
-- Indentation is the hierarchy; `-` is a node; a trailing `/` marks a
-  directory (an item with a nested list is a directory too); everything after
-  ` — ` is the description **by convention** (CSS cannot parse text, so the
-  separator is not a syntax); links, emphasis, and code spans are ordinary
-  Markdown.
-- Rendering is CSS only: monospace panel, `li:has(> ul)` shows a folder icon,
-  every other item a file icon; static and fully expanded; no per-node `icon`,
-  `color`, `comment`, `open`, or `label` parameters and no runtime. An empty
-  directory written with a trailing `/` keeps the generic file icon.
-- The Markdown output is the source list; print and RSS render the same
-  expanded list. Pasting `tree` output into an ordinary fence remains the
-  zero-component alternative.
+- **Depth** comes from an indent stack: two spaces, four spaces, tabs (four
+  columns), and the `│   `/`├── `/`└── ` drawing that `tree` prints all work,
+  as long as a dedent returns to a level that is already open (otherwise the
+  build fails with the fence line number). A bare first line (`.` or a path,
+  as `tree` prints it) is an entry; the `N directories, M files` summary line
+  is skipped. Bullets are optional.
+- **Directory or file**: `type=dir` / `type=file` decides explicitly;
+  otherwise an entry with children is a directory, an entry whose name ends
+  in `/` is a directory, and everything else is a file. Names render as
+  written (the trailing `/` is kept).
+- **Link**: `[name](url)`; the URL goes through the section 2.4 policy.
+- **Comment**: everything after the first whitespace-preceded `#`, plain
+  text; `\#` is a literal hash. The comment is the second, aligned column.
+- **Attributes** (trailing `{…}`, `key=value` pairs, bare or quoted values,
+  unknown keys and empty values fail the build): `icon` = one Font Awesome
+  class pair (`fa-solid fa-lock`); `tone` = `neutral | info | success |
+  warning | danger` (the Badge vocabulary, section 3.1) and colours the icon;
+  `open=false` collapses a directory (directories only; default open);
+  `type` as above.
+- **Default icons**: directories use `fa-regular fa-folder` /
+  `fa-folder-open` (the disclosure state picks one; an authored `icon`
+  replaces both). Files are matched by whole name (`LICENSE`, `Makefile`,
+  `Dockerfile`, `.gitignore`, `go.mod`, `package.json`, …) then by extension
+  (`md yml yaml toml json sh py go js rs sql html css png svg pdf zip tar gz
+  lock env …`) in `content/filetree-icon.html`; anything else is
+  `fa-regular fa-file`. The table is a rendering default, not a registry:
+  every icon is still a Font Awesome class pair and `icon=` overrides it.
+
+Rendering:
+
+- HTML: `<div class="td-filetree">` with an optional `td-filetree__chrome`
+  title bar (`role="group"` + `aria-labelledby` when a title is present) and
+  a nested `<ul>`; a directory with children is `<li><details open?><summary>`
+  (native disclosure, no JavaScript, keyboard-operable); each entry is a
+  two-column `td-filetree__row` grid (name cell | comment cell). The comment
+  column is aligned without JavaScript: the hook computes the widest
+  `depth × 2.5ch + name + icon slot` and writes it as
+  `--td-filetree-name-col`; CSS clamps the split to 50–70% of the row, so the
+  comment column never takes more than the right half and is never squeezed
+  below 30%. A fence with no comments gets `td-filetree--plain` (single
+  column). Long names and comments truncate with an ellipsis and carry `title`
+  tooltips; below the `sm` breakpoint the comment drops under the name and
+  wraps.
+- Draggable split: a fence with comments also renders
+  `<span class="td-filetree__divider" role="separator" aria-orientation="vertical"
+  aria-valuemin="50" aria-valuemax="70" tabindex="0" data-td-filetree-divider>`
+  (label `ui_filetree_divider`) and sets `hasFileTree`; `assets/js/filetree.js`
+  (`window.OinkFileTree`, in the page bundle only when the flag is set) makes it
+  drag with pointer events and step with Left/Right/Home/End (RTL aware) by
+  rewriting `--td-filetree-name-col` in pixels; nothing is persisted and the
+  CSS clamp still bounds the value. Without JavaScript the tree is complete
+  and the split stays at the build-time width.
+- Print: the same tree with `td-filetree--static`, no `<details>`, no
+  divider, every directory expanded, comments wrap. RSS: the source in
+  `<pre class="td-filetree-source">`. Markdown: the fence itself (the
+  Markdown output format renders shortcodes, not render hooks, so the fence
+  reaches the reader verbatim; inside a shortcode body the hook re-emits it).
+- Styles live in `assets/scss/td/_filetree.scss`; folding is native
+  `<details>`; the only runtime is the optional divider above.
 
 ### 3.5 Shared images and the image shortcode
 
@@ -1016,9 +1085,12 @@ e3a339fe…47d1  pig-1.7.0-1.aarch64.rpm
 - `infographic`: attributes `height` (`auto` or a safe CSS length), `full`;
   sets `hasInfographic`.
 - `checksums`: section 3.8.
+- `filetree`: section 3.4 (`hasFileTree` loads the divider runtime only when
+  the tree has comments).
 - Unknown attributes, `style`, and `on*` fail the build; `class` passes
   through. Print, Markdown, and RSS show the source in a `<pre>` (`echarts`,
-  `infographic`) or the static asset table (`checksums`).
+  `infographic`), the static asset table (`checksums`), or the static tree
+  (`filetree`, section 3.4).
 - The existing `mermaid`, `plantuml`, `markmap`, `math`, and `chem` fences are
   unchanged.
 
@@ -1044,7 +1116,7 @@ e3a339fe…47d1  pig-1.7.0-1.aarch64.rpm
 | Badge | semantic `<span>` or `<a>` | monochrome inline badge | emphasized text or link | static inline HTML | identical content | none |
 | Kbd | nested `<kbd>` sequence | visible key boundaries | `Ctrl + K` | static inline HTML | identical content | none |
 | Fields | responsive semantic `<dl>` (both forms) | complete definition list | source table / metadata bullet list | complete static `<dl>` | identical content | none |
-| FileTree | monospace nested list with folder/file icons | fully expanded list | source nested list | fully expanded list | identical content | none |
+| FileTree | monospace panel, aligned `#` comment column, native `<details>` directories, draggable split | same panel, static and fully expanded | the `filetree` fence source | source in `<pre>` | identical content (disclosure is native; split stays at the build-time width) | one local split runtime, only with comments |
 | Shared image | `<img>`, `<p class="td-image">`, or `<figure>` with caption | image/figure and caption | source image (+ attribute line) | absolute-URL image | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
 | Gallery | responsive image-list grid | sequential list | source image list | sequential list | complete static grid | reuses Image Zoom only |
@@ -1106,11 +1178,12 @@ compatibility guidance in the same review. Additive parameters remain deferred
 until their behavior is specified across the full output matrix.
 
 Version two (OINK 0.5/0.6) changes from version one: Badge lost `outline`;
-Fields gained the `{.fields}` table form; FileTree and Gallery became native
-lists (the `filetree`, `filetree/folder`, `filetree/file`, `gallery`,
-`gallery/image` shortcodes were removed); `imgproc` became the named-only
-`image` shortcode and Markdown images gained a render hook; the table family,
-Callouts, Tabs, Steps, Cards, data fences, `include`, strict `param`, and the
+Fields gained the `{.fields}` table form;
+FileTree became the `filetree` data fence and Gallery a native list (the
+`filetree`, `filetree/folder`, `filetree/file`, `gallery`, `gallery/image`
+shortcodes and the interim `{.filetree}` list marker were removed); `imgproc`
+became the named-only `image` shortcode and Markdown images gained a render
+hook; the table family, Callouts, Tabs, Steps, Cards, data fences, `include`, strict `param`, and the
 Book `eg`/native forms/`book-*` indexes were added; `alert`, `details`,
 `pageinfo`, `tabpane`/`tab` (legacy), `code-group`/`code-tab`, the card family,
 `doc-carousel`, `echarts`/`infographic` shortcodes, `readfile`, `iframe`,

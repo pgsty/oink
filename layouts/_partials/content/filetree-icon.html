@@ -1,0 +1,160 @@
+{{- /*
+  Default icon for one FileTree entry (docs/content-primitives.md §3 FileTree).
+
+  Input dict: name, kind (dir | file), icon (author override, may be empty).
+  Returns a slice of Font Awesome class pairs: two for a default directory
+  (closed, open — the <details> state picks one), one otherwise. The file
+  table is keyed by lower-cased extension or by whole file name; anything
+  else is the plain file glyph. Icons stay Font Awesome class pairs — there
+  is no icon registry.
+*/ -}}
+{{- $name := .name -}}
+{{- $kind := .kind -}}
+{{- $result := slice -}}
+{{- if .icon -}}
+  {{- $result = slice .icon -}}
+{{- else if eq $kind "dir" -}}
+  {{- $result = slice "fa-regular fa-folder" "fa-regular fa-folder-open" -}}
+{{- end -}}
+{{- $byName := dict
+  "license" "fa-solid fa-scale-balanced"
+  "license.md" "fa-solid fa-scale-balanced"
+  "license.txt" "fa-solid fa-scale-balanced"
+  "copying" "fa-solid fa-scale-balanced"
+  "notice" "fa-solid fa-scale-balanced"
+  "makefile" "fa-solid fa-hammer"
+  "dockerfile" "fa-brands fa-docker"
+  "docker-compose.yml" "fa-brands fa-docker"
+  "docker-compose.yaml" "fa-brands fa-docker"
+  "compose.yml" "fa-brands fa-docker"
+  "compose.yaml" "fa-brands fa-docker"
+  ".gitignore" "fa-brands fa-git-alt"
+  ".gitattributes" "fa-brands fa-git-alt"
+  ".gitmodules" "fa-brands fa-git-alt"
+  "go.mod" "fa-brands fa-golang"
+  "go.sum" "fa-brands fa-golang"
+  "go.work" "fa-brands fa-golang"
+  "package.json" "fa-brands fa-npm"
+  "package-lock.json" "fa-brands fa-npm"
+  "cargo.toml" "fa-brands fa-rust"
+  "cargo.lock" "fa-brands fa-rust"
+  ".env" "fa-solid fa-key"
+-}}
+{{- $byExt := dict
+  "md" "fa-brands fa-markdown"
+  "mdx" "fa-brands fa-markdown"
+  "markdown" "fa-brands fa-markdown"
+  "yml" "fa-solid fa-gear"
+  "yaml" "fa-solid fa-gear"
+  "toml" "fa-solid fa-gear"
+  "json" "fa-solid fa-gear"
+  "json5" "fa-solid fa-gear"
+  "ini" "fa-solid fa-gear"
+  "conf" "fa-solid fa-gear"
+  "cfg" "fa-solid fa-gear"
+  "properties" "fa-solid fa-gear"
+  "env" "fa-solid fa-key"
+  "key" "fa-solid fa-key"
+  "pem" "fa-solid fa-key"
+  "crt" "fa-solid fa-key"
+  "cer" "fa-solid fa-key"
+  "lock" "fa-solid fa-lock"
+  "sh" "fa-solid fa-terminal"
+  "bash" "fa-solid fa-terminal"
+  "zsh" "fa-solid fa-terminal"
+  "fish" "fa-solid fa-terminal"
+  "ps1" "fa-solid fa-terminal"
+  "bat" "fa-solid fa-terminal"
+  "cmd" "fa-solid fa-terminal"
+  "py" "fa-brands fa-python"
+  "go" "fa-brands fa-golang"
+  "js" "fa-brands fa-js"
+  "mjs" "fa-brands fa-js"
+  "cjs" "fa-brands fa-js"
+  "rs" "fa-brands fa-rust"
+  "java" "fa-brands fa-java"
+  "php" "fa-brands fa-php"
+  "swift" "fa-brands fa-swift"
+  "rb" "fa-solid fa-gem"
+  "ts" "fa-solid fa-code"
+  "tsx" "fa-solid fa-code"
+  "jsx" "fa-solid fa-code"
+  "c" "fa-solid fa-code"
+  "h" "fa-solid fa-code"
+  "cc" "fa-solid fa-code"
+  "cpp" "fa-solid fa-code"
+  "hpp" "fa-solid fa-code"
+  "cs" "fa-solid fa-code"
+  "kt" "fa-solid fa-code"
+  "lua" "fa-solid fa-code"
+  "pl" "fa-solid fa-code"
+  "scala" "fa-solid fa-code"
+  "html" "fa-brands fa-html5"
+  "htm" "fa-brands fa-html5"
+  "css" "fa-brands fa-css3-alt"
+  "scss" "fa-brands fa-css3-alt"
+  "sass" "fa-brands fa-css3-alt"
+  "less" "fa-brands fa-css3-alt"
+  "sql" "fa-solid fa-database"
+  "db" "fa-solid fa-database"
+  "sqlite" "fa-solid fa-database"
+  "png" "fa-regular fa-image"
+  "jpg" "fa-regular fa-image"
+  "jpeg" "fa-regular fa-image"
+  "gif" "fa-regular fa-image"
+  "svg" "fa-regular fa-image"
+  "webp" "fa-regular fa-image"
+  "avif" "fa-regular fa-image"
+  "ico" "fa-regular fa-image"
+  "bmp" "fa-regular fa-image"
+  "pdf" "fa-regular fa-file-pdf"
+  "zip" "fa-regular fa-file-zipper"
+  "tar" "fa-regular fa-file-zipper"
+  "gz" "fa-regular fa-file-zipper"
+  "tgz" "fa-regular fa-file-zipper"
+  "bz2" "fa-regular fa-file-zipper"
+  "xz" "fa-regular fa-file-zipper"
+  "zst" "fa-regular fa-file-zipper"
+  "7z" "fa-regular fa-file-zipper"
+  "rar" "fa-regular fa-file-zipper"
+  "doc" "fa-regular fa-file-word"
+  "docx" "fa-regular fa-file-word"
+  "xls" "fa-regular fa-file-excel"
+  "xlsx" "fa-regular fa-file-excel"
+  "csv" "fa-solid fa-file-csv"
+  "ppt" "fa-regular fa-file-powerpoint"
+  "pptx" "fa-regular fa-file-powerpoint"
+  "mp3" "fa-regular fa-file-audio"
+  "wav" "fa-regular fa-file-audio"
+  "ogg" "fa-regular fa-file-audio"
+  "flac" "fa-regular fa-file-audio"
+  "mp4" "fa-regular fa-file-video"
+  "mkv" "fa-regular fa-file-video"
+  "webm" "fa-regular fa-file-video"
+  "mov" "fa-regular fa-file-video"
+  "txt" "fa-regular fa-file-lines"
+  "log" "fa-regular fa-file-lines"
+  "rst" "fa-regular fa-file-lines"
+  "adoc" "fa-regular fa-file-lines"
+-}}
+{{- if not $result -}}
+  {{- $lower := lower (strings.TrimSuffix "/" $name) -}}
+  {{- $base := $lower -}}
+  {{- if strings.Contains $lower "/" -}}
+    {{- $base = index (last 1 (split $lower "/")) 0 -}}
+  {{- end -}}
+  {{- $ext := "" -}}
+  {{- if strings.Contains $base "." -}}
+    {{- $ext = index (last 1 (split $base ".")) 0 -}}
+  {{- end -}}
+  {{- $named := index $byName $base -}}
+  {{- $byExtension := index $byExt $ext -}}
+  {{- if $named -}}
+    {{- $result = slice $named -}}
+  {{- else if $byExtension -}}
+    {{- $result = slice $byExtension -}}
+  {{- else -}}
+    {{- $result = slice "fa-regular fa-file" -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

@@ -294,3 +294,7 @@ details: Details
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_tabs_label: Tabs
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_filetree_divider: "Resize the file tree comment column"

@@ -25,6 +25,7 @@
 {{ $hasAssetList := and $interactiveOutput (.Page.Store.Get "hasAssetList" | default false) -}}
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
 {{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
+{{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
 
 {{ if $hasMarkmap -}}
 {{ range resources.Match "third_party/katex/fonts/*" -}}
@@ -236,18 +237,21 @@ window.markmap = {
 {{ if $hasImageZoom -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/image-zoom.js") -}}
 {{ end -}}
+{{ if $hasFileTree -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/filetree.js") -}}
+{{ end -}}
 
 {{ if not (.Param "ui.scrollSpy.disable") -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch $hasGoogleSearch .Site.Language.Lang $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
   $hasAsciinema $hasEcharts $hasInfographic $hasGiscus $hasFeedback
   $hasCodeRuntime $hasAssetList $hasLanding $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable"))
-  $hasKeyboardNav $hasFooterCollapse | md5 -}}
+  $hasKeyboardNav $hasFooterCollapse $hasFileTree | md5 -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
 {{ if hugo.IsProduction -}}

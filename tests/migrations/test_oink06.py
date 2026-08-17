@@ -261,10 +261,11 @@ class TransformationCase(unittest.TestCase):
             >
             > * item
 
+            ```filetree
             - content/
-              - pkg/
+              - pkg/   {open=false}
               - a.md
-            {.filetree}
+            ```
 
             ```yaml {tab="hugo.yaml" group="hugoyaml-hugotoml" value="hugoyaml"}
             a: 1
@@ -526,7 +527,7 @@ class TransformationCase(unittest.TestCase):
         )
 
     # -- filetree / gallery ------------------------------------------------------
-    def test_filetree_to_list(self):
+    def test_filetree_to_fence(self):
         counts, _ = self.assertMigrates(
             """\
             {{< filetree label="Files" >}}
@@ -540,17 +541,80 @@ class TransformationCase(unittest.TestCase):
             {{< /filetree >}}
             """,
             """\
-            - content/ — 0755
-              - _index.md — landing
-              - docs/
+            ```filetree {title="Files"}
+            - content/      # 0755
+              - _index.md   # landing   {icon="fa-solid fa-file" tone=info}
+              - docs/   {open=false}
                 - [a.md](/docs/a/)
             - hugo.yaml
-            {.filetree}
+            ```
             """,
             ["filetree"],
         )
-        self.assertEqual(counts["filetree.label_dropped"], 1)
+        self.assertEqual(counts["filetree.title"], 1)
         self.assertEqual(counts["filetree.nodes"], 5)
+        self.assertEqual(counts["filetree.open"], 1)
+        self.assertEqual(counts["filetree.icon"], 1)
+        self.assertEqual(counts["filetree.tone"], 1)
+        self.assertEqual(counts["filetree.tone_mapped"], 1)
+        self.assertEqual(counts["filetree.link"], 1)
+        self.assertEqual(counts["filetree.comment"], 2)
+
+    def test_filetree_list_to_fence(self):
+        counts, _ = self.assertMigrates(
+            """\
+            Intro.
+
+            - content/ — 0755 root:root · Site content
+              - _index.md — *landing*
+              - docs/
+                - [`a.md`](/docs/a/) — 0644
+              - logs/
+            - hugo.yaml — **root:root 0644**
+            - `README.md`
+            - \\*.yml
+            {.filetree}
+            After.
+            """,
+            """\
+            Intro.
+
+            ```filetree
+            - content/               # 0755 root:root · Site content
+              - _index.md            # landing
+              - docs/
+                - [a.md](/docs/a/)   # 0644
+              - logs/
+            - hugo.yaml              # root:root 0644
+            - README.md
+            - *.yml
+            ```
+
+            After.
+            """,
+            ["filetree"],
+        )
+        self.assertEqual(counts["filetree.list"], 1)
+        self.assertEqual(counts["filetree.nodes"], 8)
+
+    def test_filetree_list_inside_list_item_and_odd_dedent(self):
+        _, found = self.assertMigrates(
+            """\
+            - a/
+                - deep
+              - odd
+            {.filetree}
+            """,
+            """\
+            - a/
+                - deep
+              - odd
+            {.filetree}
+            """,
+            ["filetree"],
+            findings=1,
+        )
+        self.assertIn("unknown level", found[0].reason)
 
     def test_gallery_to_list(self):
         self.assertMigrates(
@@ -873,6 +937,9 @@ class TransformationCase(unittest.TestCase):
                 ```yaml {filename="x"}
                 ```
                 {{< badge text="a" outline=true >}}
+                - a/
+                  - b
+                {.filetree}
                 """
             ),
         )
@@ -883,6 +950,7 @@ class TransformationCase(unittest.TestCase):
         self.assertTrue(any("Bootstrap card" in r for r in reasons))
         self.assertTrue(any("filename" in r for r in reasons))
         self.assertTrue(any("outline" in r for r in reasons))
+        self.assertTrue(any("filetree" in r for r in reasons))
         # withdrawn % forms of the new containers are flagged
         for wrong in ('{{% tabs %}}', '{{% cards %}}', '{{% image', '{{% fields %}}'):
             self.assertTrue(any(wrong in src for src in sources), wrong)

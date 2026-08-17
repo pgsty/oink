@@ -204,6 +204,7 @@ comments_noscript_link: 在 GitHub 上檢視討論。
 ui_open_in_prompt_label: 就本頁提問
 ui_view_history: 檢視編輯歷史
 ui_table_scroll: "可橫向捲動的表格"
+ui_filetree_divider: "拖曳以調整目錄樹備註欄寬度"
 book_figure: 圖
 book_table: 表
 book_equation: 公式

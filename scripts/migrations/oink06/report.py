@@ -62,7 +62,7 @@ def render_markdown(report: dict) -> str:
     # summary ------------------------------------------------------------------
     columns = [
         ("alert", "alert"), ("details", "details"), ("pageinfo", "pageinfo"), ("rawdetails", "raw <details>"),
-        ("tabpane", "tabpane"), ("codegroup", "code-group"), ("filetree", "filetree"), ("gallery", "gallery"),
+        ("tabpane", "tabpane"), ("codegroup", "code-group"), ("filetree", "filetree"), ("filetree.list", "{.filetree} list"), ("gallery", "gallery"),
         ("echarts", "echarts"), ("infographic", "infographic"), ("cards", "cards"), ("imgproc", "imgproc"),
         ("readfile", "readfile"), ("fencetitle", "filename="), ("badge.outline_dropped", "badge outline"),
         ("example", "example"), ("xref.kindless", "xref (no kind)"),

@@ -1,0 +1,107 @@
+{{- /* ```filetree {title="…"} — annotated directory tree as a data fence
+       (docs/content-primitives.md §3 FileTree). The body is parsed by
+       content/filetree-parse.html; rendering is CSS + native <details>.
+       Interactive HTML gets collapsible directories, a build-time aligned
+       comment column and — when there are comments — a draggable split
+       (`hasFileTree` loads assets/js/filetree.js); print gets the same tree
+       fully expanded and static; Markdown re-emits the fence; RSS gets the
+       source as <pre>. */ -}}
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $policy := partial "content/attributes.html" (dict
+  "attributes" .Attributes "allowed" (slice "title" "tab" "group" "value")
+  "position" .Position "kind" "filetree"
+) -}}
+{{- $title := strings.TrimSpace (index $policy.consumed "title" | default "") -}}
+{{- if and (isset $policy.consumed "title") (not $title) }}{{ errorf "filetree: title must not be empty at %s" .Position }}{{ end -}}
+{{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
+{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ errorf "filetree: tab label must not be empty at %s" .Position }}{{ end -}}
+{{- $group := index $policy.consumed "group" | default "" -}}
+{{- $value := index $policy.consumed "value" | default "" -}}
+{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "filetree: group/value require tab at %s" .Position }}{{ end -}}
+{{- $inner := replace (printf "%s" .Inner) "\r" "" -}}
+{{- if not (strings.ContainsNonSpace $inner) }}{{ errorf "filetree: the fence requires tree entries at %s" .Position }}{{ end -}}
+{{- $parsed := partial "content/filetree-parse.html" (dict "source" $inner "position" .Position) -}}
+{{- $nodes := $parsed.nodes -}}
+{{- $static := in (slice "print" "rss") $format -}}
+{{- $html := "" -}}
+
+{{- if eq $format "markdown" -}}
+  {{- /* re-emit the fence so the Markdown output stays valid source */ -}}
+  {{- $attrText := "" -}}
+  {{- with $title }}{{ $attrText = printf ` {title=%q}` . }}{{ end -}}
+  {{- $html = printf "```filetree%s\n%s```\n" $attrText (strings.TrimRight "\n" $inner | printf "%s\n") -}}
+{{- else if eq $format "rss" -}}
+  {{- $html = printf `<pre class="td-filetree-source"><code class="language-filetree">%s</code></pre>` (htmlEscape (strings.TrimRight "\n" $inner)) -}}
+{{- else -}}
+  {{- $id := printf "td-filetree-%s-f%d" (md5 $page.RelPermalink) .Ordinal -}}
+  {{- $classes := slice "td-filetree" -}}
+  {{- if $static }}{{ $classes = $classes | append "td-filetree--static" }}{{ end -}}
+  {{- if not $parsed.hasComments }}{{ $classes = $classes | append "td-filetree--plain" }}{{ end -}}
+  {{- with $policy.class }}{{ $classes = $classes | append . }}{{ end -}}
+  {{- $count := len $nodes -}}
+  {{- $rows := slice -}}
+  {{- range $i, $node := $nodes -}}
+    {{- $icons := partial "content/filetree-icon.html" (dict "name" $node.name "kind" $node.kind "icon" $node.icon) -}}
+    {{- $iconClass := printf "td-filetree__icon td-filetree__icon--%s" $node.kind -}}
+    {{- with $node.tone }}{{ $iconClass = printf "%s td-filetree__icon--%s" $iconClass . }}{{ end -}}
+    {{- $iconHTML := "" -}}
+    {{- if eq (len $icons) 2 -}}
+      {{- $iconHTML = printf `<span class="%s" aria-hidden="true"><i class="%s td-filetree__glyph td-filetree__glyph--closed"></i><i class="%s td-filetree__glyph td-filetree__glyph--open"></i></span>` $iconClass (index $icons 0) (index $icons 1) -}}
+    {{- else -}}
+      {{- $iconHTML = printf `<span class="%s" aria-hidden="true"><i class="%s td-filetree__glyph"></i></span>` $iconClass (index $icons 0) -}}
+    {{- end -}}
+    {{- $nameHTML := htmlEscape $node.name -}}
+    {{- if $node.href -}}
+      {{- $nameHTML = printf `<a href="%s"%s>%s</a>` (htmlEscape $node.href) (cond $node.external ` rel="external"` "") $nameHTML -}}
+    {{- end -}}
+    {{- $commentHTML := "" -}}
+    {{- if $parsed.hasComments -}}
+      {{- if $node.comment -}}
+        {{- $commentHTML = printf `<span class="td-filetree__comment" title="%s"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">%s</span></span>` (htmlEscape $node.comment) (htmlEscape $node.comment) -}}
+      {{- else -}}
+        {{- $commentHTML = `<span class="td-filetree__comment" aria-hidden="true"></span>` -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $row := printf `<span class="td-filetree__row" style="--td-filetree-depth:%d"><span class="td-filetree__name-cell">%s<span class="td-filetree__name" title="%s">%s</span></span>%s</span>` $node.depth $iconHTML (htmlEscape $node.name) $nameHTML $commentHTML -}}
+    {{- $nextDepth := 0 -}}
+    {{- if lt (add $i 1) $count }}{{ $nextDepth = index (index $nodes (add $i 1)) "depth" }}{{ end -}}
+    {{- $li := "" -}}
+    {{- if $node.children -}}
+      {{- if $static -}}
+        {{- $li = printf `<li class="td-filetree__item td-filetree__item--%s td-filetree__item--parent">%s<ul class="td-filetree__list">` $node.kind $row -}}
+      {{- else -}}
+        {{- $li = printf `<li class="td-filetree__item td-filetree__item--%s td-filetree__item--parent"><details class="td-filetree__details"%s><summary class="td-filetree__summary">%s</summary><ul class="td-filetree__list">` $node.kind (cond $node.open " open" "") $row -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $li = printf `<li class="td-filetree__item td-filetree__item--%s">%s</li>` $node.kind $row -}}
+    {{- end -}}
+    {{- /* close every level the next entry steps out of */ -}}
+    {{- $closes := sub $node.depth $nextDepth -}}
+    {{- if $node.children }}{{ $closes = sub (add $node.depth 1) $nextDepth }}{{ end -}}
+    {{- if gt $closes 0 -}}
+      {{- range seq $closes -}}
+        {{- if $static }}{{ $li = printf "%s</ul></li>" $li }}{{ else }}{{ $li = printf "%s</ul></details></li>" $li }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $rows = $rows | append $li -}}
+  {{- end -}}
+  {{- $nameCol := printf "%.1fch" $parsed.nameWidth -}}
+  {{- $resizable := and (not $static) $parsed.hasComments -}}
+  {{- $html = printf `<div class="%s" style="--td-filetree-name-col:%s"%s%s>` (delimit $classes " ") $nameCol (cond (ne $title "") (printf ` role="group" aria-labelledby="%s-title"` $id) "") (cond $resizable " data-td-filetree" "") -}}
+  {{- with $title -}}
+    {{- $html = printf `%s<div class="td-filetree__chrome"><p class="td-filetree__title" id="%s-title" dir="auto">%s</p></div>` $html $id (htmlEscape .) -}}
+  {{- end -}}
+  {{- $divider := "" -}}
+  {{- if $resizable -}}
+    {{- $page.Store.Set "hasFileTree" true -}}
+    {{- $divider = printf `<span class="td-filetree__divider" role="separator" aria-orientation="vertical" aria-valuemin="50" aria-valuemax="70" aria-valuenow="50" aria-label="%s" tabindex="0" data-td-filetree-divider></span>` (htmlEscape (T "ui_filetree_divider")) -}}
+  {{- end -}}
+  {{- $html = printf `%s<div class="td-filetree__body">%s<ul class="td-filetree__list td-filetree__list--root">%s</ul></div></div>` $html $divider (delimit $rows "") -}}
+{{- end -}}
+
+{{- if $tab -}}
+  {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" $group "value" $value "kind" "code" "content" ($html | safeHTML)) -}}
+{{- else -}}
+  {{- $html | safeHTML -}}
+{{- end -}}

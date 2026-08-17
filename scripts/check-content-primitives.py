@@ -2,7 +2,7 @@
 """Validate everyday content primitive output and strict author failures.
 
 Covers Badge, Kbd, Fields (shortcode and `{.fields}` table), the native list
-forms (`{.steps}`, `{.cards}`, `{.filetree}`), the table family (`.matrix`,
+forms (`{.steps}`, `{.cards}`), the `filetree` fence, the table family (`.matrix`,
 `caption`, numbered `num`, class pass-through, attribute policy) and the
 `include` / `param` leaves.
 """
@@ -85,26 +85,37 @@ def check_outputs(public: Path) -> list[str]:
         'aria-label="Scrollable table"',
         'class="td-table-scroll td-table-scroll--full"',
         '<table class="full-width">',
-        # Native FileTree list: the marker is the class, nesting is the list.
-        '<ul class="filetree">',
-        '<li>content/ — 0755 docs-admin:writers · Site content &amp; templates\n<ul>',
-        '<li><a href="/docs/">index.md</a></li>',
-        '<li><a href="/docs/configuration/">configuration.md</a> — 0644 docs-admin · Runtime settings</li>',
-        '<li>deeply-nested.md</li>',
-        '<li><code>favicon.ico</code></li>',
-        '<li>hugo.yaml — <em>root:root 0644</em></li>',
+        # FileTree fence: panel with title bar, native <details>, aligned comments.
+        '<div class="td-filetree" style="--td-filetree-name-col:',
+        '<p class="td-filetree__title" id="td-filetree-',
+        '>Site tree</p>',
+        '<li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><details class="td-filetree__details" open><summary class="td-filetree__summary"><span class="td-filetree__row" style="--td-filetree-depth:0">',
+        '<span class="td-filetree__name" title="content/">content/</span>',
+        '<span class="td-filetree__comment" title="0755 docs-admin:writers · Site content &amp; templates"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">0755 docs-admin:writers · Site content &amp; templates</span></span>',
+        '<span class="td-filetree__name" title="index.md"><a href="/docs/">index.md</a></span>',
+        '<span class="td-filetree__name" title="configuration.md"><a href="/docs/configuration/">configuration.md</a></span>',
+        '<span class="td-filetree__row" style="--td-filetree-depth:10"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-brands fa-markdown td-filetree__glyph"></i></span><span class="td-filetree__name" title="deeply-nested.md">deeply-nested.md</span></span>',
+        '<i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i>',
+        '<span class="td-filetree__name" title="favicon.ico">favicon.ico</span>',
+        '<i class="fa-solid fa-gear td-filetree__glyph"></i></span><span class="td-filetree__name" title="hugo.yaml">hugo.yaml</span>',
     ):
         require(marker in page, f"HTML fixture missing {marker}", errors)
     require("td-badge--outline" not in page and "td-badge--filled" not in page, "badge still emits the removed outline/filled variants", errors)
     require("javascript:" not in page, "HTML contains an unsafe URL", errors)
     require('<dl class="td-fields__list"' in page, "Fields no longer render as a definition list", errors)
     require(page.count('class="td-field"') == 9, "Fields lost author order or entries", errors)
-    for legacy in ("td-filetree", "data-td-filetree", 'role="tree"', "<details"):
-        require(legacy not in page, f"FileTree fixture still emits legacy markup {legacy}", errors)
-    filetree = re.search(r'<ul class="filetree">[\s\S]*?</ul>\n</li>\n</ul>', page)
-    require(filetree is not None, "FileTree list is not a nested list", errors)
+    for legacy in ('<ul class="filetree">', 'role="tree"', "td-filetree__entry", "data-td-filetree-body", "td-filetree__comment-scroll"):
+        require(legacy not in page, f"FileTree fixture still emits removed markup {legacy}", errors)
+    require('data-td-filetree>' in page and page.count('<span class="td-filetree__divider" role="separator" aria-orientation="vertical" aria-valuemin="50" aria-valuemax="70" aria-valuenow="50" aria-label="Resize the file tree comment column" tabindex="0" data-td-filetree-divider></span>') == 1, "FileTree with comments did not render exactly one split divider", errors)
+    filetree = re.search(r'<div class="td-filetree"[\s\S]*?</ul></div></div>', page)
+    require(filetree is not None, "FileTree fence did not render a panel", errors)
     if filetree:
-        require(filetree.group(0).count("<ul>") >= 10, "FileTree lost its nested folders", errors)
+        block = filetree.group(0)
+        require(block.count("<details") == 11 and block.count("</details>") == 11, "FileTree lost its nested directories", errors)
+        require(block.count("<li ") == 17, "FileTree rendered a wrong number of entries", errors)
+        require(block.count('<span class="td-filetree__comment"') == 17, "FileTree comment column is not present on every row", errors)
+        require("</ul></details></li></ul></details></li>" in block, "FileTree nesting is not closed level by level", errors)
+        require(block.count("<ul") == block.count("</ul>") and block.count("<li ") == block.count("</li>"), "FileTree markup is unbalanced", errors)
 
     for marker in (
         "**Beta**",
@@ -119,19 +130,19 @@ def check_outputs(public: Path) -> list[str]:
         "- `resolverOutput` — `Array<string> | map[string]any`",
         "[documentation](/docs/)",
         "A second paragraph preserves multiline description Markdown and `inline code`.",
-        # The native list is its own Markdown output (source = fallback).
-        "- content/ — 0755 docs-admin:writers · Site content & templates",
-        "  - _index.md — 0644 vonng:docs · Section landing page",
-        "    - [configuration.md](/docs/configuration/) — 0644 docs-admin · Runtime settings",
+        # The fence is its own Markdown output (source = fallback).
+        '```filetree {title="Site tree"}',
+        "- content/                     # 0755 docs-admin:writers · Site content & templates",
+        "  - _index.md                  # 0644 vonng:docs · Section landing page",
+        "    - [configuration.md](/docs/configuration/)   # 0644 docs-admin · Runtime settings",
         "                    - deeply-nested.md",
-        "- hugo.yaml — *root:root 0644*",
-        "{.filetree}",
+        "- hugo.yaml                    # root:root 0644",
         "| Component | HTML behavior | Print behavior | Markdown behavior | Runtime |",
         "| Full table | 100% | Horizontal scroll | Complete table |",
         "{.full-width}",
     ):
         require(marker in markdown, f"Markdown fixture missing {marker}", errors)
-    for marker in ("td-badge", "td-kbd-sequence", "td-field", "td-filetree", "<kbd", "<span", "<dl", "<details", "<ul"):
+    for marker in ("td-badge", "td-kbd-sequence", "td-field", "td-filetree", "{.filetree}", "<kbd", "<span", "<dl", "<details", "<ul"):
         require(marker not in markdown, f"Markdown contains runtime HTML {marker}", errors)
 
     for marker in (
@@ -145,7 +156,8 @@ def check_outputs(public: Path) -> list[str]:
         "<code>false</code>",
         "<code>0</code>",
         "<code>&#34;&#34;</code>",
-        '<ul class="filetree">',
+        '<div class="td-filetree td-filetree--static"',
+        '<li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:0">',
         "deeply-nested.md",
         "configuration.md",
         'class="td-fields"',
@@ -153,22 +165,43 @@ def check_outputs(public: Path) -> list[str]:
     ):
         require(marker in print_page, f"print fixture missing {marker}", errors)
     require("td-table-scroll" not in print_page, "print kept a table scroll viewport", errors)
+    print_trees = re.findall(r'<div class="td-filetree td-filetree--static"[\s\S]*?</ul></div></div>', print_page)
+    require(any(">Site tree</p>" in tree and "<details" not in tree and tree.count("<li ") == 17 for tree in print_trees), "print FileTree is not the static, fully expanded tree", errors)
+    require(print_trees and all("<details" not in tree for tree in print_trees), "print FileTree still uses <details>", errors)
 
-    # --- Native list forms: cards / filetree (lists fixture) -------------------
+    # --- Native list forms: cards / gallery + filetree fences (lists fixture) --
     for marker in (
         '<ul class="cards">',
         '<li><a href="/docs/">Install</a> — Deploy from scratch in five minutes.</li>',
         '<li><a href="/docs/typography/">Reference</a></li>',
         '<li>\n<p><a href="/docs/">Install</a></p>\n<p>Deploy from scratch in five minutes.</p>\n</li>',
-        '<ul class="filetree">',
-        '<li>logs/</li>',
         '<ul class="gallery">',
+        # 2-space bullets with title, comments, open=false, icon/tone override
+        '>Repository layout</p>',
+        '<li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><details class="td-filetree__details"><summary class="td-filetree__summary"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true">',
+        '<li class="td-filetree__item td-filetree__item--dir"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="logs/">logs/</span></span>',
+        '<span class="td-filetree__icon td-filetree__icon--file td-filetree__icon--warning" aria-hidden="true"><i class="fa-solid fa-scale-balanced td-filetree__glyph"></i></span><span class="td-filetree__name" title="LICENSE">LICENSE</span>',
+        # 4-space bare listing, no comments -> plain, type=dir override
+        '<div class="td-filetree td-filetree--plain" style="--td-filetree-name-col:',
+        '<span class="td-filetree__name" title="build">build</span></span></span></li>',
+        '<i class="fa-brands fa-golang td-filetree__glyph"></i></span><span class="td-filetree__name" title="main.go">main.go</span>',
+        # pasted `tree` output: root ".", connectors, summary line skipped
+        '<span class="td-filetree__name" title=".">.</span>',
+        '<span class="td-filetree__row" style="--td-filetree-depth:2"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-regular fa-file td-filetree__glyph"></i></span><span class="td-filetree__name" title="pig">pig</span>',
     ):
         require(marker in lists, f"lists fixture missing {marker}", errors)
     require(lists.count('<ul class="cards">') == 2, "cards fixture lost a list", errors)
-    for marker in ("- [Install](/docs/) — Deploy from scratch in five minutes.", "{.cards}", "{.filetree}", "{.gallery}"):
+    require(lists.count("--td-filetree-name-col:") == 3, "lists fixture lost a filetree fence", errors)
+    require(lists.count("data-td-filetree-divider") == 1 and lists.count("data-td-filetree>") == 1, "only the commented filetree fence should carry the split divider", errors)
+    require("data-td-filetree-divider" not in print_page, "print FileTree must not render the split divider", errors)
+    require("2 directories, 3 files" not in lists, "filetree rendered the tree summary line", errors)
+    require(lists.count("td-filetree__chrome") == 1, "filetree drew a title bar without a title", errors)
+    for block in re.findall(r'<div class="td-filetree[\s\S]*?</ul></div></div>', lists):
+        require(block.count("<ul") == block.count("</ul>") and block.count("<li ") == block.count("</li>") and block.count("<details") == block.count("</details>"), "filetree markup is unbalanced", errors)
+    require('<span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="build">build</span>' in lists, "type=dir did not override the file kind", errors)
+    for marker in ("- [Install](/docs/) — Deploy from scratch in five minutes.", "{.cards}", "{.gallery}", '```filetree {title="Repository layout"}', "├── bin", "    build {type=dir}"):
         require(marker in lists_markdown, f"lists Markdown missing {marker}", errors)
-    require("<ul" not in lists_markdown and "td-" not in lists_markdown, "lists Markdown contains HTML", errors)
+    require("<ul" not in lists_markdown and "td-" not in lists_markdown and "{.filetree}" not in lists_markdown, "lists Markdown contains HTML or the removed marker", errors)
 
     # --- Steps ---------------------------------------------------------------
     for marker in (
@@ -259,10 +292,11 @@ def check_rss_output(hugo: str) -> list[str]:
             '  Static **RSS description**.\n'
             '  {{< /field >}}\n'
             '{{< /fields >}}\n\n'
-            "- closed/ — 0750 root:docs · Archived & stable\n"
-            "  - [deep.md](/docs/deep/) — 0440 reader · Read me\n"
+            "```filetree\n"
+            "- closed/            # 0750 root:docs · Archived & stable\n"
+            "  - [deep.md](/docs/deep/)   # 0440 reader · Read me\n"
             "- root.yml\n"
-            "{.filetree}\n"
+            "```\n"
         )
         (layouts / "single.rss.xml").write_text(
             '{{- .Store.Set "tdOutputFormat" "rss" -}}\n'
@@ -295,9 +329,9 @@ def check_rss_output(hugo: str) -> list[str]:
             '<span class="td-field__required">required</span>',
             '<code>false</code>',
             '<strong>RSS description</strong>',
-            # RenderShortcodes keeps the native list as source Markdown.
-            "- closed/ — 0750 root:docs · Archived & stable",
-            "{.filetree}",
+            # RenderShortcodes keeps the fence as source Markdown.
+            "```filetree",
+            "- closed/            # 0750 root:docs · Archived & stable",
         ):
             require(marker in source, f"RSS fixture missing {marker}", errors)
         require("**Beta**" not in source, "RSS used the Markdown Badge fallback", errors)
@@ -315,7 +349,7 @@ def check_generic_rss_output(hugo: str) -> list[str]:
         (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
         (content / "item.md").write_text(
             "---\ntitle: Primitive feed\ndate: 2026-08-11\n---\n\n"
-            "- closed/\n  - nested.md\n{.filetree}\n\n"
+            "```filetree\n- closed/\n  - nested.md\n```\n\n"
             "1. first\n1. second\n{.steps}\n\n"
             "```go-html-template\n"
             '{{</* badge text="Example only" */>}}\n'
@@ -351,8 +385,10 @@ def check_generic_rss_output(hugo: str) -> list[str]:
         source = output.read_text()
         home_source = (destination / "index.xml").read_text()
         require("<title>Generic primitive feed</title>" in home_source, "generic RSS home title repeats the site title", errors)
-        for marker in ('&lt;ul class=&#34;filetree&#34;&gt;', "nested.md", '&lt;ol class=&#34;steps&#34;&gt;', "Example only"):
+        for marker in ('&lt;pre class=&#34;td-filetree-source&#34;&gt;', "nested.md", '&lt;ol class=&#34;steps&#34;&gt;', "Example only"):
             require(marker in source, f"generic RSS primitive fixture missing {marker}", errors)
+        for marker in ("td-filetree__row", "&lt;details"):
+            require(marker not in source, f"generic RSS primitive fixture leaked interactive FileTree markup {marker}", errors)
         require("td-badge td-badge" not in source, "generic RSS primitive fixture rendered the escaped example", errors)
         require("Nested child must not enter" not in source, "generic section RSS recursively included a nested section page", errors)
     return errors
@@ -542,6 +578,23 @@ INVALID_CASES = (
     ("table-style", TABLE + '{style="color:red"}\n', "unsafe attribute"),
     ("table-bad-class", TABLE + '{class="bad!"}\n', "unsupported characters"),
     ("table-id-bad", TABLE + '{#1bad num="1"}\n', "id must match"),
+    # FileTree fence
+    ("filetree-empty", "```filetree\n\n```\n", "requires tree entries"),
+    ("filetree-unknown-attr", "```filetree {label=\"x\"}\n- a\n```\n", "unknown attribute"),
+    ("filetree-empty-title", "```filetree {title=\"\"}\n- a\n```\n", "title must not be empty"),
+    ("filetree-bad-dedent", "```filetree\n- a/\n    - b\n  - c\n```\n", "dedents to an indentation level that was never opened"),
+    ("filetree-unknown-key", "```filetree\n- a {label=x}\n```\n", "unknown attribute \"label\""),
+    ("filetree-malformed-attrs", "```filetree\n- a {icon}\n```\n", "malformed attributes"),
+    ("filetree-bad-icon", "```filetree\n- a {icon=rocket}\n```\n", "icon must be one Font Awesome class pair"),
+    ("filetree-bad-tone", "```filetree\n- a {tone=primary}\n```\n", "tone must be one of"),
+    ("filetree-bad-type", "```filetree\n- a {type=folder}\n```\n", "type must be dir or file"),
+    ("filetree-open-on-file", "```filetree\n- a.md {open=false}\n```\n", "open is only valid on directories"),
+    ("filetree-open-value", "```filetree\n- a/ {open=no}\n```\n", "open must be true or false"),
+    ("filetree-duplicate-key", "```filetree\n- a/ {open=false open=true}\n```\n", "is set twice"),
+    ("filetree-empty-value", "```filetree\n- a {tone=\"\"}\n```\n", "must not be empty"),
+    ("filetree-no-name", "```filetree\n- a/\n  - # only a comment\n```\n", "line 2 has no entry name"),
+    ("filetree-bad-link", "```filetree\n- [a](javascript:alert)\n```\n", "unsupported link on line 1 scheme"),
+    ("filetree-group-without-tab", "```filetree {group=\"g\"}\n- a\n```\n", "group/value require tab"),
     # Leaves
     ("param-missing", "{{< param does_not_exist >}}\n", "was not found"),
     ("include-missing-file", '{{< include file="nope.md" >}}\n', "was not found"),
@@ -641,15 +694,30 @@ def check_template_contracts() -> list[str]:
         require(not (ROOT / relative).exists(), f"{relative} must stay deleted", errors)
 
     markers = (ROOT / "assets/scss/td/_markers.scss").read_text()
-    for marker in ("ol.steps", "ul.cards", "ul.filetree", "ul.gallery", "counter-reset: td-step", "ol.steps[start=", ":has(> ul)", "@media print", "forced-colors", "prefers-reduced-motion"):
+    for marker in ("ol.steps", "ul.cards", "ul.gallery", "counter-reset: td-step", "ol.steps[start=", "@media print", "forced-colors", "prefers-reduced-motion"):
         require(marker in markers, f"_markers.scss lacks {marker}", errors)
+    require("filetree" not in markers, "_markers.scss keeps the removed {.filetree} list marker", errors)
+    filetree_styles = (ROOT / "assets/scss/td/_filetree.scss").read_text()
+    for marker in (".td-filetree", "--td-filetree-name-col", "--td-filetree-indent: 2.5ch", "clamp(50%, var(--td-filetree-name-col), 70%)", ".td-filetree__divider", ".td-filetree__details[open]", ".td-filetree--static", ".td-filetree--plain", "@media print", "@media (forced-colors: active)", "[dir='rtl']", "media-breakpoint-down(sm)"):
+        require(marker in filetree_styles, f"_filetree.scss lacks {marker}", errors)
+    filetree_hook = (ROOT / "layouts/_markup/render-codeblock-filetree.html").read_text()
+    for marker in ('partial "content/attributes.html"', 'partial "content/filetree-parse.html"', 'partial "content/filetree-icon.html"', 'partial "content/tab-block.html"', "td-filetree--static", "td-filetree-source", "```filetree", '$page.Store.Set "hasFileTree" true', 'role="separator"', 'T "ui_filetree_divider"'):
+        require(marker in filetree_hook, f"render-codeblock-filetree.html lacks {marker}", errors)
+    scripts_html = (ROOT / "layouts/_partials/scripts.html").read_text()
+    require('.Page.Store.Get "hasFileTree"' in scripts_html and 'resources.Get "js/filetree.js"' in scripts_html and "$hasFileTree | md5" in scripts_html, "scripts.html does not load filetree.js on hasFileTree (and key the bundle on it)", errors)
+    filetree_runtime = (ROOT / "assets/js/filetree.js").read_text()
+    for marker in ("OinkFileTree", "module.exports", "data-td-filetree-divider", "pointerdown", "'ArrowRight'", "'Home'", "'End'", "--td-filetree-name-col"):
+        require(marker in filetree_runtime, f"filetree.js lacks {marker}", errors)
+    filetree_parse = (ROOT / "layouts/_partials/content/filetree-parse.html").read_text()
+    for marker in ("$indentCh := 2.5", '"icon" "tone" "open" "type"', "├──|└──", "director(?:y|ies)", 'partial "content/url.html"'):
+        require(marker in filetree_parse, f"filetree-parse.html lacks {marker}", errors)
     styles = (ROOT / "assets/scss/td/shortcodes/content-primitives.scss").read_text()
     require("@media print" in styles and "@media (forced-colors: active)" in styles, "content primitives lack print / forced-colors styles", errors)
     require(".td-filetree" not in styles and ".td-gallery" not in styles and ".td-imgproc" not in styles, "content primitives styles keep removed component selectors", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("initFileTree" not in runtime and "initCarousel" not in runtime, "content-components.js keeps removed runtimes", errors)
-    require("hasFileTree" not in scripts and "hasDocCarousel" not in scripts, "scripts.html keeps removed runtime flags", errors)
+    require("hasDocCarousel" not in scripts, "scripts.html keeps removed runtime flags", errors)
     for relative, content_expr in (
         ("layouts/_partials/print/content.html", ".Page.RawContent"),
         ("layouts/_partials/print/render.html", ".RawContent"),

@@ -47,11 +47,12 @@ contained overflow policy.
 | Full table | 100% | Horizontal scroll | Complete table |
 {.full-width}
 ## FileTree
-- content/ — 0755 docs-admin:writers · Site content & templates
-- _index.md — 0644 vonng:docs · Section landing page
+```filetree {title="Site tree"}
+- content/                     # 0755 docs-admin:writers · Site content & templates
+- _index.md                  # 0644 vonng:docs · Section landing page
 - docs/
 - [index.md](/docs/)
-- [configuration.md](/docs/configuration/) — 0644 docs-admin · Runtime settings
+- [configuration.md](/docs/configuration/)   # 0644 docs-admin · Runtime settings
 - level1/
 - level2/
 - level3/
@@ -61,7 +62,7 @@ contained overflow policy.
 - level7/
 - level8/
 - deeply-nested.md
-- static/ — 0750 release-engineering:documentation · Generated assets
-- `favicon.ico`
-- hugo.yaml — *root:root 0644*
-{.filetree}
+- static/                      # 0750 release-engineering:documentation · Generated assets
+- favicon.ico
+- hugo.yaml                    # root:root 0644
+```

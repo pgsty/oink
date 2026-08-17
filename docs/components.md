@@ -36,8 +36,8 @@ this way:
   HTML on Hugo 0.160–0.164, so `%` collectors cannot exist; a `%` block inside a
   list item truncates the list. Both facts are verified and drive this rule.)
 - Data fences (`mermaid`, `plantuml`, `markmap`, `math`, `chem`, `echarts`,
-  `infographic`, `checksums`) are native because the fenced source *is* the
-  content.
+  `infographic`, `checksums`, `filetree`) are native because the fenced source
+  *is* the content.
 - Authors do not control presentation: no `class`, `style`, color, or `cols`
   parameters; icons are exactly one Font Awesome class pair; site CSS may still
   attach classes through block attributes (they pass through).
@@ -56,7 +56,7 @@ Passthrough math needs the site's `passthrough` extension.
 | Steps | `1.` list + `{.steps}` | `{{% steps %}}` + headings | list items hold any block except `%` containers |
 | Cards | link list + `{.cards}` | `{{< cards >}}` `{{< card title= link= icon= badge= image= image_alt=\|decorative= >}}body{{< /card >}}` `{{< /cards >}}` | |
 | Fields | table + `{.fields [caption=]}` (first column name, last column description, middle columns metadata) | `{{< fields label= >}}` `{{< field name= type= required= default= >}}…{{< /field >}}` `{{< /fields >}}` | typed `required`/`default` only in the shortcode |
-| FileTree | nested `-` list + `{.filetree}`; trailing `/` = directory; ` — ` description | — | CSS only |
+| FileTree | ```` ```filetree {title=} ```` fence: `- name[/]  # comment  {icon= tone= open= type=}` per line; 2/4-space, tab, or `tree` indentation | — | CSS + native `<details>`; comment column aligned at build time, split clamped 50–70% and draggable (`hasFileTree` → `assets/js/filetree.js`) |
 | Gallery | image list + `{.gallery}` | — | alt required; Zoom reuse |
 | Image | `![alt](src "title")` (render hook; block image + `{#id num= caption= width= height=}` → figure) | `{{< image src= command= options= alt=\|decorative= >}}caption{{< /image >}}` | processed images only in the shortcode |
 | Table family | `{.full-width}` `{.fields}` `{.matrix}` `{caption=}` `{#id}` `{#id num= caption=}` `{tab= group= value=}` | — | site classes pass through; exclusivity: fields ⟂ matrix/full-width/num, num ⟂ tab |
@@ -64,7 +64,7 @@ Passthrough math needs the site's `passthrough` extension.
 | Xref | plain Markdown links (kind-less) | `{{< xref fig\|tbl\|eq\|eg="…" [page=] [anchor=] >}}` | |
 | Book indexes | — | `book-toc` `book-figures` `book-tables` `book-equations` `book-examples` | no `kind` parameter |
 | Fences | `{title copy wrap collapse label id tab group value num caption lineNos hl_lines lineNoStart anchorLineNos tabWidth}` | — | Prism mode unchanged |
-| Data fences | `mermaid plantuml markmap math chem echarts infographic checksums` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.tdEchartsFunctions` |
+| Data fences | `mermaid plantuml markmap math chem echarts infographic checksums filetree` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.tdEchartsFunctions` |
 | Leaves | raw `<kbd>` | `kbd` `badge` `param` `include` `comment` `contributors` `asciinema` | `badge` has no `outline`; `param` scalar only |
 | Release / OpenAPI | `checksums` fence | `release-card` `release-assets` `download` / `swaggerui` `redoc` | |
 
@@ -111,18 +111,12 @@ Steps:
 {.steps}
 ```
 
-Cards, FileTree, Gallery, Fields:
+Cards, Gallery, Fields:
 
 ```markdown
 - [Install](/docs/install/) — Deploy from scratch.
 - [Configure](/docs/configure/) — Tune the runtime.
 {.cards}
-
-- content/
-  - _index.md — site home
-  - docs/
-    - [getting-started.md](/docs/getting-started/)
-{.filetree}
 
 - ![Overview](overview.webp)
 - ![Detail](detail.webp) — Request details
@@ -165,6 +159,15 @@ See {{< xref fig="2-1" anchor="office_2003" />}} and {{< xref eg="4-1" anchor="e
 Data fences and leaves:
 
 ````markdown
+```filetree {title="Repository layout"}
+- content/                        # site content
+  - _index.md                     # site home
+  - docs/                         # guides            {open=false}
+    - [getting-started.md](/docs/getting-started/)
+- hugo.yaml                       # root:root 0644
+- LICENSE                         # {icon="fa-solid fa-scale-balanced" tone=warning}
+```
+
 ```echarts {height="320px"}
 series: [{type: bar, data: [12, 9, 4]}]
 ```
@@ -190,7 +193,7 @@ Every render hook that reads block attributes goes through
 | `style`, `on*`, unknown | build error | build error | build error (`style`/`on*`/`srcdoc`/reserved `data-td-code*` and any unknown key; enhanced-code-blocks §5.5) | build error | build error |
 
 The theme never accepts author `style` or event handlers anywhere. Markers
-(`steps cards filetree gallery fields matrix full-width`) are fixed vocabulary;
+(`steps cards gallery fields matrix full-width`) are fixed vocabulary;
 any other class on a table, image, blockquote, or figure is site CSS and is
 passed through untouched.
 
@@ -202,8 +205,9 @@ covers what Goldmark cannot report:
 
 - an attribute line separated from its block by a blank line (it silently
   disappears);
-- a marker on the wrong block type (`{.steps}` on a `ul`, `{.filetree}` on
-  an `ol`, `{.fields}`/`{.matrix}`/`{.full-width}` off a table);
+- a marker on the wrong block type (`{.steps}` on a `ul`, `{.cards}` on an
+  `ol`, `{.fields}`/`{.matrix}`/`{.full-width}` off a table), and the removed
+  `{.filetree}` marker (write a `filetree` fence);
 - `{{% … %}}` shortcodes written inside a list item (the list truncates);
 - Gallery images without alt text;
 - Font Awesome icon values that are not one `fa-<style> fa-<name>` pair;
@@ -215,7 +219,7 @@ covers what Goldmark cannot report:
 | --- | --- | --- |
 | `{{% alert color=… title=… %}}`, `{{% details %}}`, `{{% pageinfo %}}`, raw `<details><summary>` | `> [!TYPE] title` / `> [!DETAILS]-` | `callout` |
 | `{{< tabpane >}}{{% tab header=… %}}`, `{{< code-group >}}{{< code-tab >}}` | adjacent fences `{tab= group= value=}` (code-only panes) or `{{< tabs >}}{{< tab >}}` | `tabs` |
-| `{{< filetree >}}` `filetree/folder` `filetree/file` | nested list + `{.filetree}` | `filetree` |
+| `{{< filetree >}}` `filetree/folder` `filetree/file`, interim `{.filetree}` lists | ```` ```filetree ```` fence (`label`→`title`, `open`/`icon`/`color`/`comment`/`link` kept) | `filetree` |
 | `{{< gallery >}}` `gallery/image` | image list + `{.gallery}` | `gallery` |
 | `{{< echarts >}}` `{{< infographic >}}` | same-named fences (`$fn:` unchanged; `js` sub-fences must move to `window.tdEchartsFunctions`) | `datafence` |
 | `doc-cards`/`doc-card`, `nav-cards`/`nav-card`, `card`/`cardpane`, `doc-carousel` | `{{< cards >}}{{< card >}}` or link list + `{.cards}` | `cards` |

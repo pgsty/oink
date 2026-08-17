@@ -205,6 +205,7 @@ comments_noscript_link: View discussions on GitHub.
 ui_open_in_prompt_label: Ask about this page
 ui_view_history: View edit history
 ui_table_scroll: "Scrollable table"
+ui_filetree_divider: "Resize the file tree comment column"
 book_figure: Figure
 book_table: Table
 book_equation: Equation

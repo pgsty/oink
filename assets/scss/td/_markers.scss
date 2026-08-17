@@ -1,8 +1,8 @@
 // Native (CSS-only) component forms selected by Goldmark block-attribute
 // markers on ordinary Markdown lists (plan/design/components.md v5 §1.4):
 //
-//   1. …          - [Title](/x/) — desc     - dir/            - ![alt](a.png)
-//   {.steps}      {.cards}                  {.filetree}       {.gallery}
+//   1. …          - [Title](/x/) — desc     - ![alt](a.png)
+//   {.steps}      {.cards}                  {.gallery}
 //
 // The marker is the class on the list element itself (there is no list render
 // hook), so these selectors are the authoring API. Everything else the theme
@@ -184,85 +184,6 @@ ul.cards {
 }
 
 // ---------------------------------------------------------------------------
-// FileTree — nested unordered list
-// ---------------------------------------------------------------------------
-ul.filetree {
-  --td-filetree-surface: var(--td-brand-elev, var(--bs-tertiary-bg));
-  --td-filetree-line: var(--bs-border-color);
-  --td-filetree-muted: var(--bs-secondary-color);
-  --td-filetree-accent: var(--bs-link-color);
-  --td-filetree-indent: 1.35rem;
-
-  margin-block: 1.5rem;
-  padding: 0.7rem 1rem 0.75rem;
-  overflow-x: auto;
-  border: 1px solid var(--td-filetree-line);
-  border-radius: 0.6rem;
-  background: var(--td-filetree-surface);
-  color: var(--bs-body-color);
-  font-family: var(--td-code-font-family);
-  font-size: 0.86rem;
-  line-height: 1.75;
-  list-style: none;
-
-  ul {
-    margin: 0;
-    padding-inline-start: var(--td-filetree-indent);
-    border-inline-start: 1px dotted var(--td-filetree-line);
-    margin-inline-start: 0.5rem;
-    list-style: none;
-  }
-
-  li {
-    position: relative;
-    margin: 0;
-    padding-inline-start: 1.55rem;
-    white-space: nowrap;
-
-    &::before {
-      position: absolute;
-      inset-inline-start: 0.1rem;
-      inset-block-start: 0;
-      inline-size: 1.1rem;
-      color: var(--td-filetree-muted);
-      font-family: $td-font-awesome-font-name;
-      font-size: 0.85em;
-      font-weight: 400;
-      text-align: center;
-      content: '\f15b'; // fa-regular fa-file
-    }
-
-    // Folders: any item that owns a nested list.
-    &:has(> ul)::before {
-      color: var(--td-filetree-accent);
-      font-weight: 900;
-      content: '\f07b'; // fa-solid fa-folder
-    }
-
-    a {
-      color: var(--td-filetree-accent);
-      text-decoration: underline;
-      text-decoration-color: color-mix(in srgb, var(--td-filetree-accent) 45%, transparent);
-      text-underline-offset: 0.18em;
-
-      &:hover {
-        text-decoration-color: currentColor;
-      }
-    }
-
-    em {
-      color: var(--td-filetree-muted);
-    }
-
-    code {
-      padding: 0;
-      background: transparent;
-      font-size: 1em;
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Gallery — image list
 // ---------------------------------------------------------------------------
 ul.gallery {
@@ -319,7 +240,6 @@ ul.gallery {
 @media (forced-colors: active) {
   ol.steps > li::before,
   ul.cards > li,
-  ul.filetree,
   ul.gallery > li {
     border: 1px solid CanvasText;
     background: Canvas;
@@ -336,10 +256,5 @@ ul.gallery {
       margin-block-end: 0.75rem;
       break-inside: avoid-page;
     }
-  }
-
-  ul.filetree {
-    overflow: visible;
-    background: transparent;
   }
 }

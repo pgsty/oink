@@ -25,17 +25,42 @@ Loose form (description as its own paragraph):
   Tune the runtime parameters, *with Markdown*.
 {.cards}
 
-## FileTree — nested list `{.filetree}`
+## FileTree — `filetree` fence
 
-- content/
-  - _index.md — site home page
-  - docs/
-    - [getting-started.md](/docs/) — linked entry
+```filetree {title="Repository layout"}
+- content/                                # site content
+  - _index.md                             # site home page
+  - docs/                                 # product guides   {open=false}
+    - [getting-started.md](/docs/)        # linked entry
     - configuration.md
   - logs/
-- hugo.yaml — *root:root 0644*
-- `README.md`
-{.filetree}
+- hugo.yaml                               # root:root 0644
+- README.md
+- LICENSE                                 # {icon="fa-solid fa-scale-balanced" tone=warning}
+```
+
+Four-space indent, no title, no comments (single column):
+
+```filetree
+src
+    main.go
+    internal
+        server.go
+    build {type=dir}
+```
+
+Pasted `tree` output:
+
+```filetree
+.
+├── bin
+│   └── pig
+├── etc
+│   └── pig.yml
+└── README.md
+
+2 directories, 3 files
+```
 
 ## Gallery — image list `{.gallery}`
 

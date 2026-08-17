@@ -202,6 +202,7 @@ comments_noscript_link: 在 GitHub 上查看讨论。
 ui_open_in_prompt_label: 就本页提问
 ui_view_history: 查阅编辑历史
 ui_table_scroll: "可横向滚动的表格"
+ui_filetree_divider: "拖动以调整目录树备注列宽度"
 book_figure: 图
 book_table: 表
 book_equation: 公式

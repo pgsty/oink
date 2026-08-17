@@ -799,14 +799,10 @@ def check_template_contracts() -> list[str]:
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("initFileTree" not in runtime and "initCarousel" not in runtime, "content-components.js keeps removed runtimes", errors)
     require("hasDocCarousel" not in scripts, "scripts.html keeps removed runtime flags", errors)
-    for relative, content_expr in (
-        ("layouts/_partials/print/content.html", ".Page.RawContent"),
-        ("layouts/_partials/print/render.html", ".RawContent"),
-    ):
-        source = (ROOT / relative).read_text()
-        store = source.find('.Store.Set "tdOutputFormat" "print"')
-        content = source.find(content_expr, store)
-        require(store >= 0 and content > store, f"{relative} does not reset Page Store before rendering print content", errors)
+    source = (ROOT / "layouts/_partials/print/page-content.html").read_text()
+    store = source.find('.Store.Set "tdOutputFormat" "print"')
+    content = source.find("$page.RawContent", store)
+    require(store >= 0 and content > store, "print/page-content.html does not reset Page Store before rendering print content", errors)
     return errors
 
 

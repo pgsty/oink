@@ -1,0 +1,21 @@
+{{- /* Render one page's content for a print aggregate — exactly once per
+       build. Hugo renders every print output in one pass and nested sections
+       each aggregate the same descendants, so two print pages would otherwise
+       call RenderString on the same page concurrently and race on its Store
+       (render scope, code-block id registry, feature flags). partialCached
+       serialises the render per page and reuses the result.
+       Input: page, book (bool). Returns HTML. Call through partialCached
+       keyed by .RelPermalink (plus "book" for Book aggregates, whose xrefs
+       and lists resolve inside the aggregate; a site that also enables the
+       print output for single Book pages renders those once more under the
+       plain key). */ -}}
+{{- $page := .page -}}
+{{- $page.Store.Set "tdOutputFormat" "print" -}}
+{{- if .book }}{{ $page.Store.Set "tdBookAggregate" true }}{{ end -}}
+{{- $content := $page.RenderString (dict "display" "block") $page.RawContent -}}
+{{- $content = partial "content/static-image-output.html" $content -}}
+{{- if .book -}}
+  {{- $content = partial "book/namespace-print-headings.html" (dict "page" $page "content" $content) -}}
+  {{- $page.Store.Delete "tdBookAggregate" -}}
+{{- end -}}
+{{- return $content -}}

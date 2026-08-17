@@ -399,8 +399,12 @@ def check_template_contracts() -> list[str]:
     for relative in ("layouts/_default/rss.xml", "layouts/blog/rss.xml"):
         require(rss_description in (ROOT / relative).read_text(), f"{relative} does not use the shared RSS description renderer", errors)
     require(static_output in (ROOT / "layouts/_partials/content/rss-description.html").read_text(), "RSS description renderer does not remove interaction-only image attributes", errors)
-    for relative in ("layouts/_partials/print/content.html", "layouts/_partials/print/render.html"):
-        require(static_output in (ROOT / relative).read_text(), f"{relative} does not remove interaction-only image attributes", errors)
+    # Every print aggregate renders page content through one cached partial,
+    # which is where the static-image filter runs.
+    require(static_output in (ROOT / "layouts/_partials/print/page-content.html").read_text(), "print/page-content.html does not remove interaction-only image attributes", errors)
+    for relative in ("layouts/_partials/print/content.html", "layouts/_partials/print/render.html", "layouts/_partials/book/print.html", "layouts/docs/single.print.html", "layouts/blog/single.print.html", "layouts/book/single.print.html"):
+        source = (ROOT / relative).read_text()
+        require('partialCached "print/page-content.html"' in source and "RenderString" not in source, f"{relative} must render page content through the cached print/page-content.html partial", errors)
     return errors
 
 

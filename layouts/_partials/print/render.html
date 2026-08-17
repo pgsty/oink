@@ -61,9 +61,7 @@
     </ul>
 {{ end }}
 
-{{- .Store.Set "tdOutputFormat" "print" -}}
-{{- $content := .RenderString (dict "display" "block") .RawContent -}}
-{{- $content = partial "content/static-image-output.html" $content -}}
+{{- $content := partialCached "print/page-content.html" (dict "page" .) .RelPermalink -}}
 <div class="content">
       {{ $content }}
 </div>

@@ -20,12 +20,7 @@
   </nav>
 </div>
 {{- range $pages -}}
-  {{- .Store.Set "tdOutputFormat" "print" -}}
-  {{- .Store.Set "tdBookAggregate" true -}}
-  {{- $content := .RenderString (dict "display" "block") .RawContent -}}
-  {{- $content = partial "content/static-image-output.html" $content -}}
-  {{- $content = partial "book/namespace-print-headings.html" (dict "page" . "content" $content) -}}
-  {{- .Store.Delete "tdBookAggregate" -}}
+  {{- $content := partialCached "print/page-content.html" (dict "page" . "book" true) .RelPermalink "book" -}}
 <section class="td-content td-book-print-page" id="pg-{{ .File.UniqueID }}" data-td-book-page="{{ .Path }}">
   <h1>{{ with .Params.book_number }}<span class="td-book-number">{{ . }}</span> {{ end }}{{ .Title }}</h1>
   {{ with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}

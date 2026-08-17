@@ -1,9 +1,7 @@
 {{ define "main" -}}
-{{- .Store.Set "tdOutputFormat" "print" -}}
 <div class="td-content td-book-print-page">
   {{ partial "print/page-heading.html" . }}
-  {{ $content := .RenderString (dict "display" "block") .RawContent -}}
-  {{ $content = partial "content/static-image-output.html" $content -}}
+  {{ $content := partialCached "print/page-content.html" (dict "page" .) .RelPermalink -}}
   {{ $content }}
 </div>
 {{- end }}

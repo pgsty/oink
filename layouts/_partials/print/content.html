@@ -3,9 +3,7 @@
 {{ if templates.Exists (printf "_partials/%s" $tpl) }}
   {{ partial $tpl . }}
 {{ else -}}
-{{- .Page.Store.Set "tdOutputFormat" "print" -}}
-{{- $content := .Page.RenderString (dict "display" "block") .Page.RawContent -}}
-{{- $content = partial "content/static-image-output.html" $content -}}
+{{- $content := partialCached "print/page-content.html" (dict "page" .Page) .Page.RelPermalink -}}
 {{ $break := cond .DoPageBreak "page-break-before: always" "" -}}
 <div class="td-content" style="{{ $break }}">
     {{ $break := cond .DoPageBreak "page-break-before: always" "" }}

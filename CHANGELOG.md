@@ -36,6 +36,26 @@ fail the build with the new name rather than being silently ignored.
 - **Breaking.** `{{< badge outline= >}}`. There is one badge appearance.
 - **Breaking.** `{{< book-figures kind= >}}` in favour of `book-tables`,
   `book-equations`, and `book-examples`.
+- **Breaking.** The 0.x compatibility layer and the Docsy leftovers no site
+  used. Gone: the 18 `_partials/home/**` adapters, `home-data.html`, and
+  `outputformat.html` (call `landing/**` and read `tdOutputFormat` from the
+  page store); the `td/code-dark`, `td/color-adjustments-dark`, and
+  `td/gcs-search-dark` Sass shims and the never-imported `td/extra/` files;
+  the Docsy community page (`layouts/community/`, `docs/community.html`,
+  `community_links.html`, `params.links`, front matter `contributingUrl`, the
+  `community_*` i18n keys) together with the `.td-box` box variants
+  (`td/_boxes.scss`) and the paint-by-number palette classes (`td/_colors.scss`,
+  `$td-box-colors`); the dead partials `taxonomy_terms_clouds.html`,
+  `code/markdown-escape.html`, and `td/render-heading.html` (the remaining
+  `taxonomy_terms_*` partials are `taxonomy-terms-*`); `params.algolia_docsearch`
+  (fails the build naming `params.search.algolia`); the `home` data `footer`
+  key as a footer source (fails the build naming `data/footer/<lang>.yaml`);
+  the implicit `hero → metrics → capabilities → principles → cta` landing order
+  when `data/home` has no `sections` (fails the build asking for `sections`);
+  and `body_class: td-no-left-sidebar` as a second way to hide the sidebar
+  (fails the build naming `ui.sidebar_enabled: false`). Build errors and
+  `warnf` messages no longer point at documentation URLs of the old site
+  information architecture.
 
 ### Added
 

@@ -2,7 +2,7 @@
 <div class="td-content">
   {{ partial "page-title.html" . }}
   {{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
-  <header class="td-article-meta">{{ partial "taxonomy_terms_article_wrapper.html" . }}</header>
+  <header class="td-article-meta">{{ partial "taxonomy-terms-article-wrapper.html" . }}</header>
   {{ .Render "_td-content-after-header" -}}
   {{ partial "content/render.html" . }}
   {{ partial "section-index.html" . -}}

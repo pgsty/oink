@@ -295,7 +295,7 @@ def check_template_contracts() -> list[str]:
     candidate = (ROOT / "layouts/_partials/content/image-zoom-candidate.html").read_text()
     dialog = (ROOT / "layouts/_partials/content/image-zoom-dialog.html").read_text()
     runtime = (ROOT / "assets/js/image-zoom.js").read_text()
-    styles = (ROOT / "assets/scss/td/shortcodes/content-primitives.scss").read_text()
+    styles = (ROOT / "assets/scss/td/shortcodes/_content-primitives.scss").read_text()
 
     for path in (ROOT / "layouts").rglob("*.html"):
         relative = path.relative_to(ROOT).as_posix()

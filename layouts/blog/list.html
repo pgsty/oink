@@ -24,7 +24,7 @@
           {{- .Date.Format ($.Param "time_format_blog") }} {{ T "ui_in"}} <a class="td-blog-posts-list__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>
         </small></p>
         <header class="td-article-meta">
-          {{- partial "taxonomy_terms_article_wrapper.html" . -}}
+          {{- partial "taxonomy-terms-article-wrapper.html" . -}}
           {{ if partial "reading-time-enabled.html" . -}}
             {{- partial "reading-time.html" . -}}
           {{ end -}}

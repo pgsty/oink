@@ -21,6 +21,10 @@
   {{- end -}}
 {{- end -}}
 
+{{- if in (printf "%v" ($params.body_class | default "")) "td-no-left-sidebar" -}}
+  {{- errorf "front matter body_class td-no-left-sidebar was removed: use ui.sidebar_enabled: false at %s" $path -}}
+{{- end -}}
+
 {{- if and (isset $params "annotation") (reflect.IsMap $params.annotation) -}}
   {{- errorf "front matter annotation.enable was flattened: use annotation: true | false at %s" $path -}}
 {{- end -}}

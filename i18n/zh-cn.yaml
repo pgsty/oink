@@ -150,18 +150,6 @@ print_show_regular: 返回本页常规视图
 print_entire_section: 打印完整章节
 
 # Community
-community_join: 加入 {{ .Site.Title }}社区
-community_introduce: >-
-  {{ .Site.Title
-  }}是由社区共同建设的开源项目，欢迎任何人使用、改进并分享成果。期待你的加入！你可以通过以下渠道了解项目动态、交流使用经验或参与贡献。
-community_learn: 学习与交流
-community_using: 正在使用或准备使用 {{ .Site.Title }}？你可以从这些入口开始：
-community_develop: 开发与贡献
-community_contribute: >-
-  希望进一步参与 {{ .Site.Title }}的建设？欢迎从以下入口加入：
-community_how_to: 关于为 {{ .Site.Title }}贡献代码或文档的方法，请参阅
-community_guideline: >-
-  贡献指南
 
 # Feedback
 feedback_title: 意见反馈

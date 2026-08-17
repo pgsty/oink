@@ -6,7 +6,7 @@
 		<time datetime="{{  $.Date.Format "2006-01-02" }}" class="text-body-secondary">{{ $.Date.Format $.Site.Params.time_format_blog  }}</time>
 	</div>
 	<header class="td-article-meta">
-		{{ partial "taxonomy_terms_article_wrapper.html" . -}}
+		{{ partial "taxonomy-terms-article-wrapper.html" . -}}
 		{{ if partial "reading-time-enabled.html" . -}}
 			{{ partial "reading-time.html" . -}}
 		{{ end -}}

@@ -33,13 +33,9 @@ def main() -> int:
         base = read("assets/js/base.js")
 
         # The predicate must combine the site opt-in, the shell surface, and a
-        # print exclusion. How the active format is obtained is an
-        # implementation detail: either the deprecated outputformat partial or
-        # the tdOutputFormat page-store key that every baseof template sets.
-        resolves_format = (
-            'partial "outputformat.html"' in search_enabled
-            or '"tdOutputFormat"' in search_enabled
-        )
+        # print exclusion, reading the active format from the tdOutputFormat
+        # page-store key that every baseof template sets.
+        resolves_format = '"tdOutputFormat"' in search_enabled
         require(
             '.Site.Params.offline_search' in search_enabled
             and '.Site.Params.offline_search_on_serve' in search_enabled

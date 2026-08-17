@@ -35,24 +35,6 @@ print_show_regular: Bu səhifənin adi görünüşünə qayıdın
 print_entire_section: Bütün bölməni çap edin
 
 # Community
-community_join: >-
-  {{ .Site.Title }} icmasına qoşulun
-community_introduce: >-
-  {{ .Site.Title }} hər kəsin istifadə edə biləcəyi, inkişaf etdirə biləcəyi və
-  zövq ala biləcəyi açıq mənbəli bir layihədir. Bizə qoşulmağınızı çox istərdik!
-  Budur iştirak etməyin və layihə haqqında məlumat əldə etməyin bir neçə yolu.
-community_learn: Öyrənin və Bağlanın
-community_using: >-
-  {{ .Site.Title }} istifadə edirsiniz və ya istifadə etmək fikrindəsiniz? Daha
-  çox məlumatı buradan əldə edə bilərsiniz:
-community_develop: İnkişaf etdirin və Töhfə verin
-community_contribute: >-
-  Əgər {{ .Site.Title }}-a daha çox töhfə vermək istəyirsinizsə, bizə burada
-  qoşulun:
-community_how_to: >-
-  {{ .Site.Title }}-a necə töhfə verməyi bizim
-community_guideline: >-
-  Töhfə Təlimatlarımız
 
 # Feedback
 feedback_title: Rəy

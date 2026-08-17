@@ -792,7 +792,7 @@ def check_template_contracts() -> list[str]:
     filetree_parse = (ROOT / "layouts/_partials/content/filetree-parse.html").read_text()
     for marker in ("$indentCh := 2.5", '"icon" "tone" "open" "type"', "├──|└──", "director(?:y|ies)", 'partial "content/url.html"'):
         require(marker in filetree_parse, f"filetree-parse.html lacks {marker}", errors)
-    styles = (ROOT / "assets/scss/td/shortcodes/content-primitives.scss").read_text()
+    styles = (ROOT / "assets/scss/td/shortcodes/_content-primitives.scss").read_text()
     require("@media print" in styles and "@media (forced-colors: active)" in styles, "content primitives lack print / forced-colors styles", errors)
     require(".td-filetree" not in styles and ".td-gallery" not in styles and ".td-imgproc" not in styles, "content primitives styles keep removed component selectors", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()

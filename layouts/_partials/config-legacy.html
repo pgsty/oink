@@ -37,6 +37,7 @@
 {{- $removed := slice
   (slice "prism_syntax_highlighting"  "the Prism path is gone; Chroma with params.highlight_classes is the only highlighter")
   (slice "rss_sections"               "the key was never read; delete it")
+  (slice "algolia_docsearch"          "params.search.algolia with appId, apiKey, and indexName is the only Algolia configuration")
 -}}
 {{- range $removed -}}
   {{- $old := index . 0 -}}

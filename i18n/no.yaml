@@ -43,23 +43,6 @@ print_show_regular: Gå tilbake til vanlig sidevisning
 print_entire_section: Skriv ut hele seksjonen
 
 # Community
-community_join: >-
-  Bli med i {{ .Site.Title }} fellesskapet
-community_introduce: >-
-  {{ .Site.Title }} er et åpen kildekodeprosjekt som alle kan bruke, forbedre og
-  glede seg over. Bli med - her er noen måter du kan holde deg oppdatert på og
-  bidra.
-community_learn: Lær og få kontakt
-community_using: >-
-  Bruker du, eller har du lyst til å bruke {{ .Site.Title }}? Lær mer her:
-community_develop: Bidra og videreutvikle
-community_contribute: >-
-  Dersom du vil involvere deg mer ved å bidra til {{ .Site.Title }}, bli med oss
-  her:
-community_how_to: >-
-  Du kan finne ut hvordan du bidrar til {{ .Site.Title }} i våre
-community_guideline: >-
-  Retningslinjer for bidrag
 
 # Feedback
 feedback_title: Tilbakemelding

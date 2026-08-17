@@ -1,7 +1,5 @@
 {{- /* Data for the fat footer: data/footer/<lang>.yaml, then data/footer.yaml
-       for single-language sites (recognized by its brand/columns keys), then
-       the legacy home-data `footer` key so sites configured before the footer
-       became site-wide keep working. */ -}}
+       for single-language sites (recognized by its brand/columns keys). */ -}}
 {{- $footer := dict -}}
 {{- with index hugo.Data "footer" -}}
   {{- with index . $.Site.Language.Lang -}}
@@ -14,7 +12,7 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if not (or $footer.brand $footer.columns) -}}
-  {{- with (partial "landing/home-data.html" .).footer }}{{ $footer = . }}{{ end -}}
+{{- with (partial "landing/home-data.html" .).footer -}}
+  {{- errorf "data/home footer was moved: put the brand/columns map in data/footer/<lang>.yaml (or data/footer.yaml)" -}}
 {{- end -}}
 {{- return $footer -}}

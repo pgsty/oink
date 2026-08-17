@@ -42,23 +42,6 @@ print_show_regular: Volver a la vista normal de esta página
 print_entire_section: Imprimir la sección entera
 
 # Community
-community_join: Únete a la comunidad {{ .Site.Title }}
-community_introduce: >-
-  {{ .Site.Title }} es un proyecto de código abierto que cualquiera en la
-  comunidad puede usar, mejorar y disfrutar. ¡Nos encantaría que te unas a
-  nosotros! Aquí hay algunas maneras de averiguar lo que está sucediendo y
-  participar.
-community_learn: Aprende y Conéctate
-community_using: >-
-  ¿Usas o quieres usar {{ .Site.Title }}? Encuentra más información aquí:
-community_develop: Desarrollar y Contribuir
-community_contribute: >-
-  Si deseas involucrarte más contribuyendo a {{ .Site.Title }}, únete a nosotros
-  aquí:
-community_how_to: >-
-  Puedes averiguar cómo contribuir a {{ .Site.Title }} en nuestras
-community_guideline: >-
-  Guias de Contribución
 
 # Feedback
 feedback_title: Comentarios

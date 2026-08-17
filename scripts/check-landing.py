@@ -236,45 +236,10 @@ def check_sources() -> list[str]:
 
     for name in ("cover", "feature", "lead", "link-down", "section"):
         require(not (ROOT / f"layouts/_shortcodes/blocks/{name}.html").exists(), f"blocks/{name} must stay deleted (v5 §1.1: layout: landing replaces the Docsy blocks)", errors)
-    compatibility = {
-        "action.html": "landing/action.html",
-        "heading.html": "landing/heading.html",
-        "markdown-block.html": "landing/markdown-block.html",
-        "markdown.html": "landing/markdown.html",
-        "media.html": "landing/media.html",
-        "section.html": "landing/section.html",
-        **{
-            f"sections/{name}.html": f"landing/sections/{name}.html"
-            for name in (
-                "capabilities", "cards", "contributors", "cta", "faq",
-                "gallery", "hero", "logo-wall", "markdown", "metrics",
-                "principles", "testimonials",
-            )
-        },
-    }
-    home_root = ROOT / "layouts/_partials/home"
-    actual = {
-        str(path.relative_to(home_root))
-        for path in home_root.rglob("*.html")
-    }
-    require(actual == set(compatibility), "legacy home adapter set drifted", errors)
-    for name, target in compatibility.items():
-        source = (home_root / name).read_text()
-        require(
-            "Deprecated compatibility adapter" in source
-            and f'partial "{target}" .' in source
-            and len(source.splitlines()) == 2,
-            f"legacy adapter {name} is not a thin landing wrapper",
-            errors,
-        )
-    home_data = (ROOT / "layouts/_partials/home-data.html").read_text()
-    require(
-        "Deprecated compatibility adapter" in home_data
-        and 'partial "landing/home-data.html" .' in home_data
-        and len(home_data.splitlines()) == 2,
-        "legacy home-data adapter is not a thin landing wrapper",
-        errors,
-    )
+    # 1.0 removed the 0.x `home/**` adapter partials; the landing partials are
+    # the only implementation.
+    require(not (ROOT / "layouts/_partials/home").exists(), "layouts/_partials/home/ adapters must stay deleted", errors)
+    require(not (ROOT / "layouts/_partials/home-data.html").exists(), "home-data.html adapter must stay deleted", errors)
     return errors
 
 

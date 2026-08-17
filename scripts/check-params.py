@@ -56,8 +56,6 @@ KEPT_MAPS = {
     "copyright",
     "ui.taxonomy_icons",
 }
-# Docsy structures that are lists of records rather than feature maps.
-DOCSY_STRUCTURES = {"links"}
 
 # Values handed to an external runtime keep that runtime's key names.
 PASSTHROUGH_PREFIXES = ("comments.giscus.", "mermaid.")
@@ -67,7 +65,6 @@ DOCSY_CAMEL_PAGE_KEYS = {
     "manualLinkTitle",
     "manualLinkTarget",
     "manualLinkRelref",
-    "contributingUrl",
 }
 
 # The `_enabled` suffix is allowed only where the bare name is taken by a
@@ -119,6 +116,7 @@ LEGACY_SITE_CASES = [
     ("prism_syntax_highlighting: true", "params.prism_syntax_highlighting was removed"),
     ("content_width: norm", "params.reading_width"),
     ("rss_sections: [blog]", "params.rss_sections was removed"),
+    ("algolia_docsearch: true", "params.search.algolia"),
     ("github_url: https://example.org/edit", "params.github_repo"),
     ("Taxonomy:\n  taxonomyCloud: [tags]", "params.taxonomy.cloud"),
     ("Taxonomy:\n  taxonomyCloudTitle: [Tags]", "params.taxonomy.cloud_title"),
@@ -258,7 +256,7 @@ def check_shapes(site: dict[str, set[str]], page: dict[str, set[str]]) -> list[s
             if segments[0] == "ui" and len(segments) == 2:
                 continue  # params.ui.<flat key>
             require(
-                head in KEPT_MAPS or head in DOCSY_STRUCTURES,
+                head in KEPT_MAPS,
                 f"params.{key}: {head} is not a kept map — flatten it (rule 2) or add it to KEPT_MAPS with a reason",
                 errors,
             )

@@ -194,6 +194,11 @@ fail the build with the new name rather than being silently ignored.
   `docs-shell-contract.zh.md`, and `migration-{navigation,components,docs-shell}.md`.
   The check scripts and JavaScript tests are renamed to match. One-time
   site-specific migration work orders are no longer published with the theme.
+- **Breaking.** Open Sans is gone (18 woff2 subsets, 652 KB, published to
+  every site for a print-only body face). `--td-print-font-family` keeps its
+  role but follows the body role in both presets; `$td-print-font-name` and
+  `$td-enable-webfonts` no longer exist. A site that wants a different face
+  on paper sets the role in its own stylesheet.
 - The giscus palettes ship as `assets/css/giscus-{light,dark}.css` and are
   published only on pages that render comments; they are also the default
   `comments.giscus.lightTheme` / `darkTheme`, so a site no longer points at

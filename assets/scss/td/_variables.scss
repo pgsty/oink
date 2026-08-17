@@ -9,23 +9,11 @@
 
 // Fonts
 
-// Puts the bundled local serif in front of the sans-serif stack. Nothing here
-// reaches a font service; every face the theme uses ships with it.
-$td-enable-webfonts: false !default;
-
+// Nothing here reaches a font service; every face the theme uses ships with it.
 $td-font-awesome-font-name: 'Font Awesome 7 Free' !default;
-// The print stylesheet's body face (see --td-print-font-family).
-$td-print-font-name: 'Open Sans' !default;
-
-@if $td-enable-webfonts {
-  $td-fonts-serif: join('#{$td-print-font-name}', $td-fonts-serif);
-}
 
 $font-family-sans-serif: $td-fonts-serif !default;
 $font-family-monospace: $td-font-family-monospace !default;
-@if $td-enable-webfonts {
-  $font-family-sans-serif: $td-fonts-serif;
-}
 
 $td-font-weight-body-text: $font-weight-normal !default;
 $line-height-base: 1.7 !default;

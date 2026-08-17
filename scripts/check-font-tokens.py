@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCSS_ROOT = ROOT / "assets" / "scss"
 TD_ROOT = SCSS_ROOT / "td"
 LAYOUT_ROOT = ROOT / "layouts"
-FAMILIES = ("Chakra Petch", "IBM Plex Mono", "Open Sans")
+FAMILIES = ("Chakra Petch", "IBM Plex Mono")
 # Inter is matched only as a quoted family literal: the bare word is ordinary
 # English ("interactive", "internal") in comments and selectors.
 FAMILY_PATTERN = re.compile(
@@ -21,7 +21,7 @@ FAMILY_NAME_ALLOWLIST = {
     TD_ROOT / "_brand.scss",  # Local @font-face declarations.
     TD_ROOT / "_tokens-typography.scss",  # Public role defaults.
     TD_ROOT / "_variables_forward.scss",  # Bootstrap mono compatibility.
-    TD_ROOT / "_variables.scss",  # Legacy local Open Sans settings.
+    TD_ROOT / "_variables.scss",
 }
 PUBLIC_ROLES = (
     "ui-font-family",
@@ -120,7 +120,7 @@ def main() -> int:
     legacy_seeds = (
         ("--td-heading-font-family", "$headings-font-family"),
         ("--td-code-font-family", "$font-family-code"),
-        ("--td-print-font-family", "$td-print-font-name"),
+        ("--td-print-font-family", "var(--td-body-font-family)"),
     )
     for token, variable in legacy_seeds:
         if token not in token_source or variable not in token_source:

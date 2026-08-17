@@ -26,10 +26,10 @@ params:
   by `unicode-range`; CJK and emoji fall through to the platform stack behind
   it), keeps the Chakra Petch and IBM Plex Mono treatment, and uses only
   locally bundled font files.
-- `system` resets the UI, display, metadata, print, and Bootstrap monospace
-  roles to platform stacks; body and heading roles follow the UI role. OINK's
-  Inter, brand, and Open Sans files remain static theme assets, but the browser
-  does not request them with the stock configuration.
+- `system` resets the UI, display, metadata, and Bootstrap monospace roles to
+  platform stacks; body, heading, and print roles follow the UI role. OINK's
+  Inter and brand font files remain static theme assets, but the browser does
+  not request them with the stock configuration.
 
 OINK emits the selected value as `data-td-typography` on `<html>`. Unsupported
 values fail the Hugo build instead of silently changing the site.
@@ -44,7 +44,7 @@ values fail the Hugo build instead of silently changing the site.
 | `--td-code-font-family` | Code and terminal content | `$font-family-code` |
 | `--td-display-font-family` | Wordmarks and display titles | Chakra Petch, then UI role |
 | `--td-meta-font-family` | Technical labels and metadata | IBM Plex Mono, then code role |
-| `--td-print-font-family` | Print-only body copy | `$td-print-font-name`, then Bootstrap body |
+| `--td-print-font-family` | Print-only body copy | The body role (the theme ships no print-only face; a site may point the role elsewhere) |
 
 Components consume these roles or a component alias such as
 `--td-asciinema-font-family`; they must not name OINK's bundled text faces
@@ -65,7 +65,6 @@ reuses these established variables instead of introducing parallel Sass knobs:
 | `$headings-font-family` | Heading role when explicitly configured |
 | `$td-font-family-monospace` / `$font-family-monospace` | Bootstrap monospace base; an explicit project value also survives `system` |
 | `$font-family-code` | Code role and ordinary `code`, `pre`, `kbd`, and `samp` |
-| `$td-print-font-name` | Default print face |
 
 Declare legacy Sass overrides in `assets/scss/_variables_project.scss`, as in
 Docsy. They are compiled into the role defaults. CSS custom-property overrides

@@ -24,8 +24,9 @@
   --td-code-font-family: #{inspect($font-family-code)};
   --td-display-font-family: 'Chakra Petch', var(--td-ui-font-family);
   --td-meta-font-family: 'IBM Plex Mono', var(--td-code-font-family);
-  --td-print-font-family:
-    #{inspect($td-print-font-name)}, var(--bs-body-font-family);
+  // Print keeps its own role so a site can give paper a different face, but
+  // the theme ships no print-only font: it follows the body role.
+  --td-print-font-family: var(--td-body-font-family);
 }
 
 [data-td-typography='system'] {
@@ -43,7 +44,7 @@
   --td-ui-font-family: var(--bs-body-font-family);
   --td-display-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
-  --td-print-font-family: var(--bs-body-font-family);
+  --td-print-font-family: var(--td-body-font-family);
 }
 
 body {

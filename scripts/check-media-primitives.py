@@ -37,8 +37,6 @@ def check_outputs(public: Path) -> list[str]:
         '<figure class="td-figure">',
         '<img src="/docs/media-primitives/page_hu_9fe7555f90baf6dd.png" alt="Blue and gold page-resource test pattern" width="48" height="30" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async">',
         '<img src="/media/content-primitives-global_hu_aaa8925533bfdda.png" alt="Green and violet global-resource test pattern" width="32" height="20" data-td-image-zoom="/media/content-primitives-global.png" loading="lazy" decoding="async">',
-        # a decorative processed image stays a bare block image: no alt, no marker
-        '<img class="td-image" src="/docs/media-primitives/page_hu_a5a83bb1be25f19d.png" alt="" width="24" height="24" loading="lazy" decoding="async">',
         # resource metadata: alt from params.alt, byline inside the figcaption
         '<span class="td-fig-caption">Alt text and the byline come from the resource metadata.</span>',
         '<small class="td-figure__byline">OINK fixture byline</small>',
@@ -53,6 +51,18 @@ def check_outputs(public: Path) -> list[str]:
         '<span class="td-fig-caption">The attribute line can process too</span>',
     ):
         require(marker in page, f"HTML media fixture missing {marker}", errors)
+    # Hugo's image-processing cache key changed between supported releases for
+    # Crop. Assert the generated-resource shape and semantics, not one Hugo
+    # version's opaque hash.
+    require(
+        re.search(
+            r'<img class="td-image" src="/docs/media-primitives/page_hu_[0-9a-f]+\.png" alt="" width="24" height="24" loading="lazy" decoding="async">',
+            page,
+        )
+        is not None,
+        "HTML media fixture lacks the decorative processed image",
+        errors,
+    )
     # The retired shortcode owned this class; nothing emits it any more.
     require("td-figure--processed" not in page, "the retired processed-figure class survived", errors)
     # The byline belongs to the resource, so every captioned figure built from

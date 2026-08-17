@@ -92,7 +92,9 @@ def check_example(public: Path) -> list[str]:
     ):
         require(marker in page, f"table output lost {marker}", errors)
     require('<table class="full-width">' in print_page, "print output lost the full-width table", errors)
-    require("td-table-scroll" not in print_page, "print table kept its scroll viewport", errors)
+    # The wrapper survives in print, marked static; only the focusable viewport goes.
+    require("td-table-scroll--static" in print_page, "print table wrapper is not marked static", errors)
+    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', print_page) is None, "print table kept an interactive scroll viewport", errors)
     require(
         "| Full table | 100% | Horizontal scroll | Complete table |" in markdown
         and "{.full-width}" in markdown,
@@ -156,7 +158,7 @@ def check_sources() -> list[str]:
     errors: list[str] = []
     sources = {
         "robots": (ROOT / "layouts/robots.txt").read_text(encoding="utf-8"),
-        "table": (ROOT / "layouts/_markup/render-table.html").read_text(encoding="utf-8")
+        "table": (ROOT / "layouts/_partials/content/table-render.html").read_text(encoding="utf-8")
         + (ROOT / "layouts/_partials/content/table-body.html").read_text(encoding="utf-8"),
         "section": (ROOT / "layouts/_partials/section-index.html").read_text(encoding="utf-8"),
         "lastmod": (ROOT / "layouts/_partials/page-meta-lastmod.html").read_text(encoding="utf-8"),

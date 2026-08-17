@@ -302,11 +302,12 @@ data-language="bash" data-line-count="1"><div class="td-code__utilities td-code_
 <li>An ordered list</li>
 <li>inside a callout</li>
 </ol>
+<div class="td-table-scroll td-table-scroll--static">
 <table>
 <thead>
 <tr>
-<th>A</th>
-<th>B</th>
+<th scope="col">A</th>
+<th scope="col">B</th>
 </tr>
 </thead>
 <tbody>
@@ -316,6 +317,7 @@ data-language="bash" data-line-count="1"><div class="td-code__utilities td-code_
 </tr>
 </tbody>
 </table>
+</div>
 <div class="td-callout td-callout--note" role="note">
 <div class="td-callout__title"><i class="td-callout__icon fa-solid fa-circle-info" aria-hidden="true"></i><span class="td-callout__label">Note</span></div>
 <div class="td-callout__body">
@@ -349,11 +351,12 @@ data-language="yaml" data-line-count="4"><div class="td-code__utilities td-code_
 <p>Run Hugo Extended without a frontend package manager.</p>
 <h3 id="inspect-the-result">Inspect the result</h3>
 <p>Check the documentation shell, print view, and locally hosted fonts.</p>
+<div class="td-table-scroll td-table-scroll--static">
 <table>
 <thead>
 <tr>
-<th>Role</th>
-<th>Purpose</th>
+<th scope="col">Role</th>
+<th scope="col">Purpose</th>
 </tr>
 </thead>
 <tbody>
@@ -371,6 +374,7 @@ data-language="yaml" data-line-count="4"><div class="td-code__utilities td-code_
 </tr>
 </tbody>
 </table>
+</div>
 <blockquote>
 <p>Typography presets change font roles without changing the page structure.</p>
 </blockquote>
@@ -546,11 +550,12 @@ data-language="bash" data-line-count="1"><div class="td-code__utilities td-code_
 <div class="td-tabs__panel" id="td-tabs-a874e6d7-1-tab1" data-td-tabs-value="tab1" data-td-tabs-active>
 <div class="td-tabs__panel-title" aria-hidden="true">First</div>
 <div class="td-tabs__panel-body"><p>First body with a table:</p>
+<div class="td-table-scroll td-table-scroll--static">
 <table>
 <thead>
 <tr>
-<th>A</th>
-<th>B</th>
+<th scope="col">A</th>
+<th scope="col">B</th>
 </tr>
 </thead>
 <tbody>
@@ -560,6 +565,7 @@ data-language="bash" data-line-count="1"><div class="td-code__utilities td-code_
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 <div class="td-tabs__panel" id="td-tabs-a874e6d7-1-tab2" data-td-tabs-value="tab2">
@@ -790,14 +796,15 @@ filled state <span class="td-badge td-badge--danger">Deprecated</span>.</p>
 <h2 id="tables">Tables</h2>
 <p>Ordinary wide tables scroll inside a keyboard-focusable viewport instead of
 widening the page.</p>
+<div class="td-table-scroll td-table-scroll--static">
 <table>
 <thead>
 <tr>
-<th>Component</th>
-<th>HTML behavior</th>
-<th>Print behavior</th>
-<th>Markdown behavior</th>
-<th>Runtime</th>
+<th scope="col">Component</th>
+<th scope="col">HTML behavior</th>
+<th scope="col">Print behavior</th>
+<th scope="col">Markdown behavior</th>
+<th scope="col">Runtime</th>
 </tr>
 </thead>
 <tbody>
@@ -810,15 +817,17 @@ widening the page.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>The <code>full-width</code> modifier opts out of the prose measure while keeping the same
 contained overflow policy.</p>
+<div class="td-table-scroll td-table-scroll--full td-table-scroll--static">
 <table class="full-width">
 <thead>
 <tr>
-<th>Surface</th>
-<th style="text-align: right">Width</th>
-<th>Narrow viewport</th>
-<th>Print</th>
+<th scope="col">Surface</th>
+<th scope="col" style="text-align: right">Width</th>
+<th scope="col">Narrow viewport</th>
+<th scope="col">Print</th>
 </tr>
 </thead>
 <tbody>
@@ -830,6 +839,7 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="filetree">FileTree</h2>
 <div class="td-filetree td-filetree--static" style="--td-filetree-name-col:46.0ch" role="group" aria-labelledby="td-filetree-a0c0e0b1b3bfbfd6304c44d62b36df9a-f0-title"><div class="td-filetree__chrome"><p class="td-filetree__title" id="td-filetree-a0c0e0b1b3bfbfd6304c44d62b36df9a-f0-title" dir="auto">Site tree</p></div><div class="td-filetree__body"><ul class="td-filetree__list td-filetree__list--root"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:0"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="content/">content/</span></span><span class="td-filetree__comment" title="0755 docs-admin:writers · Site content &amp; templates"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">0755 docs-admin:writers · Site content &amp; templates</span></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-brands fa-markdown td-filetree__glyph"></i></span><span class="td-filetree__name" title="_index.md">_index.md</span></span><span class="td-filetree__comment" title="0644 vonng:docs · Section landing page"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">0644 vonng:docs · Section landing page</span></span></span></li><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="docs/">docs/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__row" style="--td-filetree-depth:2"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-brands fa-markdown td-filetree__glyph"></i></span><span class="td-filetree__name" title="index.md"><a href="/docs/">index.md</a></span></span><span class="td-filetree__comment" aria-hidden="true"></span></span></li><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__row" style="--td-filetree-depth:2"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-brands fa-markdown td-filetree__glyph"></i></span><span class="td-filetree__name" title="configuration.md"><a href="/docs/configuration/">configuration.md</a></span></span><span class="td-filetree__comment" title="0644 docs-admin · Runtime settings"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">0644 docs-admin · Runtime settings</span></span></span></li><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:2"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level1/">level1/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:3"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level2/">level2/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:4"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level3/">level3/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:5"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level4/">level4/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:6"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level5/">level5/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:7"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level6/">level6/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:8"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level7/">level7/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:9"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="level8/">level8/</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__row" style="--td-filetree-depth:10"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-brands fa-markdown td-filetree__glyph"></i></span><span class="td-filetree__name" title="deeply-nested.md">deeply-nested.md</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><span class="td-filetree__row" style="--td-filetree-depth:0"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="static/">static/</span></span><span class="td-filetree__comment" title="0750 release-engineering:documentation · Generated assets"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">0750 release-engineering:documentation · Generated assets</span></span></span><ul class="td-filetree__list"><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-regular fa-image td-filetree__glyph"></i></span><span class="td-filetree__name" title="favicon.ico">favicon.ico</span></span><span class="td-filetree__comment" aria-hidden="true"></span></span></li></ul></li><li class="td-filetree__item td-filetree__item--file"><span class="td-filetree__row" style="--td-filetree-depth:0"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--file" aria-hidden="true"><i class="fa-solid fa-gear td-filetree__glyph"></i></span><span class="td-filetree__name" title="hugo.yaml">hugo.yaml</span></span><span class="td-filetree__comment" title="root:root 0644"><span class="td-filetree__hash" aria-hidden="true">#</span><span class="td-filetree__comment-text">root:root 0644</span></span></span></li></ul></div></div>
 </div>
@@ -940,12 +950,13 @@ contained overflow policy.</p>
 <h1 id="pg-9283f9ce75711a1aec23b2d8eb65729a">14 - Tables</h1>
 <div class="lead">Table family — fields, matrix, caption, numbered, tabs, full-width.</div>
 <h2 id="default-table">Default table</h2>
+<div class="td-table-scroll td-table-scroll--static">
 <table>
 <thead>
 <tr>
-<th>Column A</th>
-<th>Column B</th>
-<th style="text-align: right">Column C</th>
+<th scope="col">Column A</th>
+<th scope="col">Column B</th>
+<th scope="col" style="text-align: right">Column C</th>
 </tr>
 </thead>
 <tbody>
@@ -961,102 +972,85 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="reference-table-fields">Reference table <code>{.fields}</code></h2>
-<table caption="搜索参数" class="fields">
-<thead>
-<tr>
-<th>参数</th>
-<th>类型</th>
-<th>默认值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>offlineSearch</code></td>
-<td>boolean</td>
-<td><code>false</code></td>
-<td>开启本地索引与命令面板</td>
-</tr>
-<tr>
-<td><code>offlineSearchMaxResults</code></td>
-<td>integer</td>
-<td><code>10</code></td>
-<td>结果上限，<em>支持行内 Markdown</em> 与 <a href="/docs/">链接</a></td>
-</tr>
-<tr>
-<td><code>offlineSearchSummaryLength</code></td>
-<td>integer</td>
-<td></td>
-<td>摘要长度（空的中间列被省略）</td>
-</tr>
-</tbody>
-</table>
+<div class="td-fields">
+<p class="td-fields__label" id="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t1-label">搜索参数</p>
+<dl class="td-fields__list" aria-labelledby="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t1-label">
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">boolean</span></span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>false</code></span></span>
+</dt>
+<dd class="td-field__description">开启本地索引与命令面板</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">offlineSearchMaxResults</code>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>10</code></span></span>
+</dt>
+<dd class="td-field__description">结果上限，<em>支持行内 Markdown</em> 与 <a href="/docs/">链接</a></dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">offlineSearchSummaryLength</code>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span>
+</dt>
+<dd class="td-field__description">摘要长度（空的中间列被省略）</dd>
+</div>
+</dl>
+</div>
 <p>Two columns (glossary):</p>
-<table class="fields">
-<thead>
-<tr>
-<th>Function</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>now()</code></td>
-<td>Current timestamp</td>
-</tr>
-<tr>
-<td><code>random()</code></td>
-<td>A random number</td>
-</tr>
-</tbody>
-</table>
+<div class="td-fields">
+<dl class="td-fields__list">
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">now()</code>
+</dt>
+<dd class="td-field__description">Current timestamp</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">random()</code>
+</dt>
+<dd class="td-field__description">A random number</dd>
+</div>
+</dl>
+</div>
 <p>Semantic columns (<code>meta=</code>) render the same chips as the shortcode form:</p>
-<table caption="Semantic columns" class="fields" meta="type required default -">
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Note</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>baseURL</code></td>
-<td>string</td>
-<td>yes</td>
-<td></td>
-<td>部署地址</td>
-<td>Must include the subpath</td>
-</tr>
-<tr>
-<td><code>offlineSearch</code></td>
-<td>boolean</td>
-<td></td>
-<td><code>false</code></td>
-<td></td>
-<td>Builds the local index</td>
-</tr>
-</tbody>
-</table>
+<div class="td-fields">
+<p class="td-fields__label" id="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t3-label">Semantic columns</p>
+<dl class="td-fields__list" aria-labelledby="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t3-label">
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">baseURL</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>string</code></span></span>
+<span class="visually-hidden">, </span><span class="td-field__required">required</span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">Note</span><span class="td-field__meta-value">部署地址</span></span>
+</dt>
+<dd class="td-field__description">Must include the subpath</dd>
+</div>
+<div class="td-field">
+<dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>boolean</code></span></span>
+<span class="visually-hidden">, </span><span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>false</code></span></span>
+</dt>
+<dd class="td-field__description">Builds the local index</dd>
+</div>
+</dl>
+</div>
 <h2 id="matrix-matrix">Matrix <code>{.matrix}</code></h2>
-<table class="matrix">
+<div class="td-table-scroll td-table-scroll--matrix td-table-scroll--static">
+<table class="matrix td-table--matrix">
 <thead>
 <tr>
-<th>OS / PG</th>
-<th style="text-align: center">PG18</th>
-<th style="text-align: center">PG17</th>
-<th style="text-align: center">PG16</th>
-<th style="text-align: center">PG15</th>
-<th style="text-align: center">PG14</th>
+<th scope="col">OS / PG</th>
+<th scope="col" style="text-align: center">PG18</th>
+<th scope="col" style="text-align: center">PG17</th>
+<th scope="col" style="text-align: center">PG16</th>
+<th scope="col" style="text-align: center">PG15</th>
+<th scope="col" style="text-align: center">PG14</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>EL 9</td>
+<th scope="row">EL 9</th>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
@@ -1064,7 +1058,7 @@ contained overflow policy.</p>
 <td style="text-align: center">✅</td>
 </tr>
 <tr>
-<td>EL 8</td>
+<th scope="row">EL 8</th>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
@@ -1072,7 +1066,7 @@ contained overflow policy.</p>
 <td style="text-align: center">❌</td>
 </tr>
 <tr>
-<td>Debian 12</td>
+<th scope="row">Debian 12</th>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
@@ -1080,7 +1074,7 @@ contained overflow policy.</p>
 <td style="text-align: center">✅</td>
 </tr>
 <tr>
-<td>Ubuntu 24.04</td>
+<th scope="row">Ubuntu 24.04</th>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
 <td style="text-align: center">✅</td>
@@ -1089,12 +1083,15 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="caption-caption">Caption <code>{caption=&quot;…&quot;}</code></h2>
-<table caption="Release facts">
+<div class="td-table-scroll td-table-scroll--static">
+<table>
+<caption class="td-table__caption">Release facts</caption>
 <thead>
 <tr>
-<th>Item</th>
-<th>Value</th>
+<th scope="col">Item</th>
+<th scope="col">Value</th>
 </tr>
 </thead>
 <tbody>
@@ -1108,13 +1105,15 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="numbered-book-table-id-num-caption">Numbered Book table <code>{#id num= caption=}</code></h2>
-<table caption="Anomalies allowed by isolation level" id="tab_iso" num="9-1">
+<figure id="tab_iso" class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num="9-1"><div class="td-book-figure__body"><div class="td-table-scroll td-table-scroll--static">
+<table>
 <thead>
 <tr>
-<th>Isolation</th>
-<th>Dirty read</th>
-<th>Lost update</th>
+<th scope="col">Isolation</th>
+<th scope="col">Dirty read</th>
+<th scope="col">Lost update</th>
 </tr>
 </thead>
 <tbody>
@@ -1130,13 +1129,18 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
+</div><figcaption><span class="td-tbl-label">Table 9-1</span> <span class="td-tbl-caption">Anomalies allowed by isolation level</span></figcaption></figure>
 <p>See <a class="td-book-xref td-book-xref--tbl" href="#tab_iso" data-book-kind="tbl" data-book-num="9-1">Table 9-1</a>.</p>
 <h2 id="adjacent-tables-with-tab">Adjacent tables with <code>{tab=}</code></h2>
-<table group="pgver" tab="PG 17" value="pg17">
+<div class="td-tab-block td-tab-block--table" data-td-tab="PG 17" data-td-tab-group="pgver" data-td-tab-value="pg17" data-td-tab-kind="table">
+<div class="td-tab-block__title" data-td-tab-title>PG 17</div>
+<div class="td-table-scroll td-table-scroll--static">
+<table>
 <thead>
 <tr>
-<th>Parameter</th>
-<th>Value</th>
+<th scope="col">Parameter</th>
+<th scope="col">Value</th>
 </tr>
 </thead>
 <tbody>
@@ -1146,11 +1150,16 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
-<table tab="PG 16" value="pg16">
+</div>
+</div>
+<div class="td-tab-block td-tab-block--table" data-td-tab="PG 16" data-td-tab-value="pg16" data-td-tab-kind="table">
+<div class="td-tab-block__title" data-td-tab-title>PG 16</div>
+<div class="td-table-scroll td-table-scroll--static">
+<table>
 <thead>
 <tr>
-<th>Parameter</th>
-<th>Value</th>
+<th scope="col">Parameter</th>
+<th scope="col">Value</th>
 </tr>
 </thead>
 <tbody>
@@ -1160,16 +1169,19 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 <h2 id="full-width-full-width">Full width <code>{.full-width}</code></h2>
+<div class="td-table-scroll td-table-scroll--full td-table-scroll--static">
 <table class="full-width">
 <thead>
 <tr>
-<th>A</th>
-<th>B</th>
-<th>C</th>
-<th>D</th>
-<th>E</th>
-<th>F</th>
+<th scope="col">A</th>
+<th scope="col">B</th>
+<th scope="col">C</th>
+<th scope="col">D</th>
+<th scope="col">E</th>
+<th scope="col">F</th>
 </tr>
 </thead>
 <tbody>
@@ -1183,6 +1195,7 @@ contained overflow policy.</p>
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 <div class="td-content" style="page-break-before: always">
 <h1 id="pg-403c28964b8402fe66a43df5cf4a378a">15 - Data fences</h1>

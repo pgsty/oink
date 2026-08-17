@@ -164,7 +164,10 @@ def check_outputs(public: Path) -> list[str]:
         '<table class="full-width">',
     ):
         require(marker in print_page, f"print fixture missing {marker}", errors)
-    require("td-table-scroll" not in print_page, "print kept a table scroll viewport", errors)
+    # The wrapper stays in print so the caption, matrix, and figure selectors keep
+    # working, but it must be marked static and must never be a focusable viewport.
+    require("td-table-scroll--static" in print_page, "print table wrapper is not marked static", errors)
+    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', print_page) is None, "print kept an interactive table scroll viewport", errors)
     print_trees = re.findall(r'<div class="td-filetree td-filetree--static"[\s\S]*?</ul></div></div>', print_page)
     require(any(">Site tree</p>" in tree and "<details" not in tree and tree.count("<li ") == 17 for tree in print_trees), "print FileTree is not the static, fully expanded tree", errors)
     require(print_trees and all("<details" not in tree for tree in print_trees), "print FileTree still uses <details>", errors)
@@ -740,11 +743,16 @@ def check_template_contracts() -> list[str]:
         require(marker in include, f"include lacks {marker}", errors)
     require("draft" not in include.replace("no draft placeholder output", ""), "include kept the readfile draft placeholder", errors)
 
-    table = (ROOT / "layouts/_markup/render-table.html").read_text()
+    # Hugo does not fall back to the base table hook for a custom output format,
+    # so the implementation lives in a partial and every format gets a delegate.
+    table = (ROOT / "layouts/_partials/content/table-render.html").read_text()
+    for variant in ("render-table.html", "render-table.print.html", "render-table.rss.xml"):
+        delegate = (ROOT / "layouts/_markup" / variant).read_text()
+        require('partial "content/table-render.html"' in delegate, f"{variant} does not delegate to content/table-render.html", errors)
     table_body = (ROOT / "layouts/_partials/content/table-body.html").read_text()
     attributes = (ROOT / "layouts/_partials/content/attributes.html").read_text()
     for marker in ('partial "content/attributes.html"', '"fields"', '"matrix"', '"full-width"', "mutually exclusive", 'partial "content/fields-list.html"', 'partial "content/tab-block.html"', 'partial "book/register-target.html"', "td-book-figure--tbl"):
-        require(marker in table, f"render-table.html lacks {marker}", errors)
+        require(marker in table, f"table-render.html lacks {marker}", errors)
     for marker in ('<th scope="row"', '<th scope="col"', "td-table__caption", 'T "ui_table_scroll"'):
         require(marker in table_body, f"table-body.html lacks {marker}", errors)
     for marker in ("unsafe attribute", "unknown attribute", "data-", "aria-", "^[A-Za-z0-9_-]+$"):

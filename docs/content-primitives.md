@@ -881,9 +881,15 @@ requires `.fields`. Allowed keys are `id caption num tab group value meta` plus
 `class`, `data-*`, `aria-*`; `style`, `on*`, and unknown keys fail the build
 (section 2.2).
 
-Print removes the scroll viewport and renders the complete table at page
-width; Markdown and RSS preserve the table data without interactive
-attributes.
+Print and RSS render the complete table. The wrapper element stays — the
+caption, matrix, and Book figure selectors hang off it — but it carries
+`td-table-scroll--static` instead of the focusable viewport's `tabindex`,
+`role`, and accessible name, so the static rendering is declared in the markup
+rather than left to a media query. Markdown keeps the source table.
+
+A numbered table emits `<div class="td-book-figure__body">` inside its
+`<figure>` in both the native and the shortcode form, so the two are styled
+identically (section 3.10).
 
 The hook itself lives in `layouts/_partials/content/table-render.html`, and
 `layouts/_markup/render-table.{html,print.html,rss.xml}` are one-line delegates

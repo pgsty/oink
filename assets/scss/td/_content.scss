@@ -146,6 +146,14 @@
       width: 100%;
       max-width: none;
     }
+
+    // Print and RSS get the same box without the viewport: the render hook
+    // marks it rather than leaving the behavior to a media query, so a feed or
+    // a consumer stylesheet sees the intent in the markup.
+    &--static {
+      max-width: none;
+      overflow: visible;
+    }
   }
 }
 

@@ -434,7 +434,8 @@ def check_example(public: Path) -> list[str]:
     for marker in ("- [1 Numbered evidence]", "  - [Chapter details]", "- [Figure 1-1]", "- [Table 1-1]", "- [Example 1-1]", "- [Example 1-2]", "- [Equation 1.1]"):
         require(marker in source["root_md"], f"Markdown Book index lost {marker}", errors)
 
-    require("td-table-scroll" not in source["one_print"], "print Book table retained its scroll wrapper", errors)
+    require("td-table-scroll--static" in source["one_print"], "print Book table wrapper is not marked static", errors)
+    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', source["one_print"]) is None, "print Book table kept an interactive scroll viewport", errors)
     for marker in (
         'id="office_2003"',
         'id="tbl-1-1"',
@@ -459,8 +460,12 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["book_print"], f"whole-Book print did not localize {marker}", errors)
     for marker in ('id="stable-heading"', 'id="shared-heading"', 'href="#stable-heading"', 'href="#shared-heading"'):
         require(marker not in source["book_print"], f"whole-Book print retained unscoped heading marker {marker}", errors)
-    for marker in ("td-pager", "data-td-pager-prev", "data-td-pager-next", "td-table-scroll"):
+    for marker in ("td-pager", "data-td-pager-prev", "data-td-pager-next"):
         require(marker not in source["book_print"], f"whole-Book print retained interactive marker {marker}", errors)
+    # The table wrapper stays in print (the caption/matrix/figure selectors hang
+    # off it) but must be marked static; the focusable viewport must not survive.
+    require("td-table-scroll--static" in source["book_print"], "whole-Book print table wrapper is not marked static", errors)
+    require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', source["book_print"]) is None, "whole-Book print kept an interactive table scroll viewport", errors)
     return errors
 
 
@@ -713,7 +718,7 @@ def check_sources() -> list[str]:
         "layouts/_shortcodes/book-tables.html": ('"kind" "tbl"',),
         "layouts/_shortcodes/book-equations.html": ('"kind" "eq"',),
         "layouts/_shortcodes/book-examples.html": ('"kind" "eg"',),
-        "layouts/_markup/render-table.html": ("register-target.html", '"kind" "tbl"', "data-book-kind"),
+        "layouts/_partials/content/table-render.html": ("register-target.html", '"kind" "tbl"', "data-book-kind"),
         "layouts/_markup/render-image.html": ("register-target.html", '"kind" "fig"', "data-book-kind", "wrapStandAloneImageWithinParagraph"),
         "layouts/_markup/render-passthrough.html": ("register-target.html", '"kind" "eq"', "data-book-kind"),
         "layouts/_markup/render-codeblock.html": ("register-target.html", '"kind" "eg"', "data-book-kind"),

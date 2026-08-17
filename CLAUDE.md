@@ -130,7 +130,6 @@ npm run test:alt-site     # alternate-config builds from tests/fixtures/*.yml
 npm run test:favicons     # golden head output (update: npm run update:favicon-goldens)
 npm run test:browser      # all Playwright suites
 npx playwright test tests/browser/code-blocks.spec.mjs   # one browser spec
-npm run check:format      # prettier; fix with npm run fix:format
 node scripts/check-doc-translations.mjs --public public  # rendered heading-ID parity
 ```
 

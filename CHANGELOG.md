@@ -5,6 +5,12 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Give folded (`[!TYPE]-` / `[!DETAILS]`) callouts symmetric summary padding:
+  the print-only static title rule no longer zeroes the `<summary>` bottom
+  padding, and the open state keeps the static callout's title-to-body rhythm.
+
 ## [0.4.2] - 2026-08-16
 
 ### Added

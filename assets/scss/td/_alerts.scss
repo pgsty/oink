@@ -162,11 +162,18 @@
 
     > .td-callout__body {
       padding: 0 1.1rem 0.9rem 1.15rem;
+      // The summary keeps symmetric 0.75rem padding so its box does not jump
+      // on toggle; pull the body up so title -> body reads as the same
+      // 0.45rem rhythm the static callout uses.
+      margin-block-start: -0.3rem;
     }
 
     // Static (print / rss) rendering of a collapsible callout keeps the chrome
-    // but has no summary element.
-    > .td-callout__title {
+    // but has no summary element. The interactive <summary> carries the same
+    // class, so scope this rule away from it: `> .td-callout__title` (0,2,0)
+    // would otherwise beat `> summary` (0,1,1) and zero the summary's
+    // bottom padding.
+    > .td-callout__title:not(summary) {
       padding: 0.75rem 1.1rem 0 1.15rem;
     }
   }

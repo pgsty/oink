@@ -114,11 +114,23 @@ body.td-book .td-shell-tree__link {
   }
 }
 
-// Every figure image is the same centered block. Declared once; the
-// `td-figure__image` / `td-book-figure__image` class names stay in the markup
-// for one major version so downstream site CSS keeps matching.
+// A `{link=…}` figure wraps its image in an anchor. The anchor shrinks to the
+// image so the click target is the picture, not the whole column.
+.td-figure__link,
+.td-book-figure__link {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+// Every figure image is the same centered block, whether it sits directly in
+// the figure or inside that anchor. Declared once; the `td-figure__image` /
+// `td-book-figure__image` class names stay in the markup for one major version
+// so downstream site CSS keeps matching.
 .td-figure > img,
 .td-figure > .td-figure__image,
+.td-figure__link > img,
 .td-book-figure__image {
   display: block;
   width: auto;
@@ -139,13 +151,6 @@ body.td-book .td-shell-tree__link {
   &__body {
     min-width: 0;
     text-align: start;
-  }
-
-  &__link {
-    display: block;
-    width: fit-content;
-    max-width: 100%;
-    margin-inline: auto;
   }
 
   figcaption {

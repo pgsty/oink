@@ -30,13 +30,15 @@
 {{- $width := $image.width -}}
 {{- $height := $image.height -}}
 {{- $figure := false -}}
+{{- $href := "" -}}
+{{- $external := false -}}
 {{- $num := "" -}}
 {{- $id := "" -}}
 {{- $caption := "" -}}
 {{- $classes := slice -}}
 {{- $generic := dict -}}
 {{- if $isBlock -}}
-  {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "num" "caption" "width" "height") "position" .Position "kind" "image") -}}
+  {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "num" "caption" "width" "height" "link") "position" .Position "kind" "image") -}}
   {{- $classes = $policy.classes -}}
   {{- $generic = $policy.generic -}}
   {{- $caption = strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
@@ -59,12 +61,29 @@
     {{- partial "book/register-target.html" (dict "page" $page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
   {{- end -}}
   {{- $figure = or $num $caption -}}
+  {{- /* A caption and a link together need the anchor *inside* the figure;
+         Goldmark hands the hook only the image, so `[![alt](src)](href)` can
+         never produce one. That is why `link` exists here — and why it is
+         refused on a bare block image, where the native linked form already
+         works and a second spelling would just be a duplicate path. */ -}}
+  {{- with index $policy.consumed "link" -}}
+    {{- if not $figure -}}
+      {{- errorf "image: link requires caption or num; a linked image without a caption is written [![alt](src)](%s) at %s" . $.Position -}}
+    {{- end -}}
+    {{- $linkURL := partial "content/url.html" (dict
+      "name" "image" "parameter" "link" "position" $.Position "value" . "kind" "link"
+    ) -}}
+    {{- $href = $linkURL.href -}}
+    {{- $external = $linkURL.external -}}
+  {{- end -}}
 {{- end -}}
 {{- $plainBlock := and $isBlock (not $figure) -}}
 {{- /* Every block image the hook renders — bare or wrapped in a <figure> —
        declares its own Zoom eligibility, so neither the build-time scan nor the
        runtime has to infer it from the surrounding markup. */ -}}
-{{- $zoomable := and $isBlock (eq $format "html") (ne $image.alt "") -}}
+{{- /* A linked figure image is not zoomable: the runtime skips images inside
+       anchors, so declaring a marker would only load the runtime for nothing. */ -}}
+{{- $zoomable := and $isBlock (eq $format "html") (ne $image.alt "") (eq $href "") -}}
 {{- $genericAttrs := "" -}}
 {{- if $plainBlock -}}
   {{- range $key, $value := $generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $key (htmlEscape $value) }}{{ end -}}
@@ -91,7 +110,7 @@
   {{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "fig" "num" $num) }}{{ end -}}
 <figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ delimit $figureClasses " " }}"{{ if $num }} data-book-kind="fig" data-book-num="{{ $num }}"{{ end }}
   {{- range $key, $value := $generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
-  {{ $img | safeHTML }}
+  {{ if $href }}<a class="td-figure__link" href="{{ $href }}"{{ if $external }} rel="external"{{ end }}>{{ $img | safeHTML }}</a>{{ else }}{{ $img | safeHTML }}{{ end }}
   <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
 {{- end -}}

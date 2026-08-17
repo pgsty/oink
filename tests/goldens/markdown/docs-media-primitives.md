@@ -21,3 +21,6 @@ _OINK fixture byline_
 ![Blue and gold page-resource test pattern](page.png "Advisory title")
 ![Static preview](/media/content-primitives-static.svg)
 {caption="A static image with a caption becomes a figure"}
+## Linked figure {#linked-figure}
+![Blue and gold page-resource test pattern](page.png)
+{caption="A linked figure keeps the anchor inside the figure" link="/docs/"}

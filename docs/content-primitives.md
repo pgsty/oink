@@ -585,8 +585,15 @@ image `![alt](src "title")` resolves through the shared resolver:
   figures are styled identically whichever form produced them;
 - allowed attributes: `id`, `num`, `caption` (plain text), `width`, `height`
   (positive integers; they override the resource dimensions and give static
-  or remote images their box), plus `class`, `data-*`, `aria-*`; anything else
-  fails the build;
+  or remote images their box), `link`, plus `class`, `data-*`, `aria-*`;
+  anything else fails the build;
+- `link` wraps the image in `<a class="td-figure__link">` *inside* the figure
+  and requires `caption` or `num`. A linked image without a caption is written
+  `[![alt](src)](href)`, which the hook cannot turn into a figure because
+  Goldmark hands it only the image; offering `link` there as well would be a
+  second spelling of a form that already works, so it fails the build with
+  that advice. A linked image is never zoomable — the runtime skips images
+  inside anchors — so it carries no Zoom marker;
 - `title` keeps its Markdown meaning (advisory `title` attribute); it never
   becomes a caption; an empty alt marks the image decorative for Zoom;
 - RSS uses absolute `src`.

@@ -39,3 +39,8 @@ The **caption** is Markdown; alt text and the byline come from the resource meta
 ![Static preview](/media/content-primitives-static.svg)
 {caption="A static image with a caption becomes a figure"}
 
+
+## Linked figure {#linked-figure}
+
+![Blue and gold page-resource test pattern](page.png)
+{caption="A linked figure keeps the anchor inside the figure" link="/docs/"}

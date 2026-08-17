@@ -6,7 +6,7 @@
      see is emitted by shell/sidebar-node.html, which the data/docs_nav.json
      walker shares.
 
-     cSpell:ignore manuallink manuallinkrelref manuallinktitle */ -}}
+     cSpell:ignore relref */ -}}
 {{- $s := .section -}}
 {{- $p := .page -}}
 {{- $shouldDelayActive := .shouldDelayActive -}}
@@ -30,7 +30,7 @@
         $activePath
         (and (not $shouldDelayActive) (eq $s.Parent $p.Parent))
         (and (not $shouldDelayActive) (eq $s.Parent $p))
-        (not ($p.Param "ui.sidebar_menu_compact"))
+        (not (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_compact")))
         (and (not $shouldDelayActive) ($p.IsDescendant $s.Parent))
       )
       true false
@@ -49,7 +49,7 @@
 {{- end -}}
 
 {{- $withChild := gt (len $pages) 0 -}}
-{{- $foldable := and ($p.Param "ui.sidebar_menu_foldable") (ge $ulNr 1) $withChild -}}
+{{- $foldable := and (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) (ge $ulNr 1) $withChild -}}
 
 {{- $childMarkup := "" -}}
 {{- if $withChild -}}

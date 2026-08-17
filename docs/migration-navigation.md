@@ -299,7 +299,8 @@ set remain separate compatibility features, now listed in the same disclosure.
 Assistant links are disabled by default because activation sends the full
 browser URL to a third party. A site that opts in must avoid secrets in query
 strings and fragments, disclose the outbound boundary, and may override the
-choice per page with boolean `assistant_links` front matter.
+choice per page through the same key in front matter
+(`page_context_menu: { assistant_links: false }`).
 
 ```yaml
 params:
@@ -309,7 +310,9 @@ params:
 ```
 
 To disable the handoff on a sensitive page while leaving the site-wide opt-in
-enabled, set `assistant_links: false` in that page's front matter.
+enabled, set `page_context_menu: { assistant_links: false }` in that page's
+front matter (a bare `page_context_menu: false` hides the whole menu). A
+page cannot opt in when the site has not.
 
 ### Custom commands and localization {#custom-commands-and-localization}
 

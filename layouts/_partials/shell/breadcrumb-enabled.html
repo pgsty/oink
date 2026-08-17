@@ -2,7 +2,7 @@
      page heading. Hide that redundant one-item trail while leaving leaf pages
      and nested sections unchanged. The caller still owns the surrounding
      topline, so page actions keep the same position. */ -}}
-{{- $enabled := .Param "ui.breadcrumb" -}}
+{{- $enabled := (partial "ui-param.html" (dict "page" . "key" "breadcrumb")) -}}
 {{- if eq $enabled nil }}{{ $enabled = true }}{{ end -}}
 {{- if ne (printf "%T" $enabled) "bool" -}}
   {{- errorf "params.ui.breadcrumb must be a boolean; got %v at %s" $enabled .Path -}}

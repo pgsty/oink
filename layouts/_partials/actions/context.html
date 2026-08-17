@@ -3,39 +3,39 @@
 {{- $p := . -}}
 {{- $pagePlacement := true -}}
 {{- $assistantLinks := false -}}
-{{- with $p.Site.Params.ui.page_context_menu -}}
-  {{- if reflect.IsMap . -}}
-    {{- if isset . "enable" -}}
-      {{- if ne (printf "%T" .enable) "bool" -}}
-        {{- errorf "params.ui.page_context_menu.enable must be a boolean; got %v" .enable -}}
-      {{- end -}}
-      {{- $pagePlacement = .enable -}}
-    {{- end -}}
-    {{- if isset . "assistant_links" -}}
-      {{- if ne (printf "%T" .assistant_links) "bool" -}}
-        {{- errorf "params.ui.page_context_menu.assistant_links must be a boolean" -}}
-      {{- end -}}
-      {{- $assistantLinks = .assistant_links -}}
-    {{- end -}}
-  {{- else if eq (printf "%T" .) "bool" -}}
-    {{- $pagePlacement = . -}}
+{{- /* params.ui.page_context_menu and its front matter override share one
+       shape: a bare boolean, or a map with enable and assistant_links (the
+       site map also carries links). A page may narrow the site's assistant
+       policy for sensitive URLs but cannot opt a site into a third-party
+       handoff on its own. */ -}}
+{{- range $level := slice "site" "page" -}}
+  {{- $set := false -}}
+  {{- $raw := false -}}
+  {{- $where := "params.ui.page_context_menu" -}}
+  {{- if eq $level "site" -}}
+    {{- if isset $p.Site.Params.ui "page_context_menu" }}{{ $set = true }}{{ $raw = index $p.Site.Params.ui "page_context_menu" }}{{ end -}}
   {{- else -}}
-    {{- errorf "params.ui.page_context_menu must be a boolean or a map with enable, assistant_links, and links; got %v" . -}}
+    {{- $where = printf "front matter page_context_menu at %s" $p.Path -}}
+    {{- if isset $p.Params "page_context_menu" }}{{ $set = true }}{{ $raw = index $p.Params "page_context_menu" }}{{ end -}}
   {{- end -}}
-{{- end -}}
-{{- if isset $p.Params "page_context_menu" -}}
-  {{- if ne (printf "%T" $p.Params.page_context_menu) "bool" -}}
-    {{- errorf "front matter page_context_menu must be a boolean; got %v at %s" $p.Params.page_context_menu $p.Path -}}
+  {{- if $set -}}
+    {{- if reflect.IsMap $raw -}}
+      {{- if isset $raw "enable" -}}
+        {{- $enable := index $raw "enable" -}}
+        {{- if ne (printf "%T" $enable) "bool" }}{{ errorf "%s.enable must be a boolean; got %v" $where $enable }}{{ end -}}
+        {{- $pagePlacement = $enable -}}
+      {{- end -}}
+      {{- if isset $raw "assistant_links" -}}
+        {{- $assistant := index $raw "assistant_links" -}}
+        {{- if ne (printf "%T" $assistant) "bool" }}{{ errorf "%s.assistant_links must be a boolean; got %v" $where $assistant }}{{ end -}}
+        {{- if eq $level "site" }}{{ $assistantLinks = $assistant }}{{ else }}{{ $assistantLinks = and $assistantLinks $assistant }}{{ end -}}
+      {{- end -}}
+    {{- else if eq (printf "%T" $raw) "bool" -}}
+      {{- $pagePlacement = $raw -}}
+    {{- else -}}
+      {{- errorf "%s must be a boolean or a map with enable and assistant_links; got %v" $where $raw -}}
+    {{- end -}}
   {{- end -}}
-  {{- $pagePlacement = $p.Params.page_context_menu -}}
-{{- end -}}
-{{- if isset $p.Params "assistant_links" -}}
-  {{- if ne (printf "%T" $p.Params.assistant_links) "bool" -}}
-    {{- errorf "front matter assistant_links must be a boolean at %s" $p.Path -}}
-  {{- end -}}
-  {{- /* Page front matter may narrow the site policy for sensitive URLs, but
-         it cannot opt a site into a third-party handoff on its own. */ -}}
-  {{- $assistantLinks = and $assistantLinks $p.Params.assistant_links -}}
 {{- end -}}
 
 {{- $urls := partial "actions/page-urls.html" $p -}}

@@ -23,7 +23,7 @@
       {{ $navRoot = $sidebarRoot -}}
     {{ end -}}
     {{ $ulNr := 0 -}}
-    {{ $ulShow := .Param "ui.sidebar_expand_levels" | default 2 -}}
+    {{ $ulShow := (partial "ui-param.html" (dict "page" . "key" "sidebar_expand_levels")) | default 2 -}}
     {{ $sidebarMenuTruncate := .Site.Params.ui.sidebar_menu_truncate | default 2000 -}}
     <ul class="td-shell-tree__list td-shell-tree__list--{{ $ulNr }}">
       {{ partial "shell/sidebar-tree-node.html" (dict "page" . "section" $navRoot "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $ulNr "ulShow" (add $ulShow 1) "iconPolicy" $iconPolicy) }}

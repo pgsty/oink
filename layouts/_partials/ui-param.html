@@ -1,0 +1,16 @@
+{{- /* Resolve a params.ui.* setting together with its front matter override.
+
+     The page key is the site key without its `ui.` prefix: front matter
+     `sidebar_menu_compact: false` overrides `params.ui.sidebar_menu_compact`,
+     and a section cascade carries it the same way. Front matter never needs
+     a `ui:` block (front-matter-legacy.html rejects one).
+
+     Input: dict "page" <page> "key" "<name>" ["default" <value>].
+     Returns the page value when the page sets it, else the site value, else
+     the default (nil when none is given). Callers validate the type. */ -}}
+{{- $page := .page -}}
+{{- $key := .key -}}
+{{- $value := .default -}}
+{{- if isset $page.Site.Params.ui $key }}{{ $value = index $page.Site.Params.ui $key }}{{ end -}}
+{{- if isset $page.Params $key }}{{ $value = index $page.Params $key }}{{ end -}}
+{{- return $value -}}

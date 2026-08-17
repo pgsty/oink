@@ -1,7 +1,7 @@
 {{- /* Context-aware shortcut cheat sheet shared by the desktop sidebar and
        its mobile drawer. The keycaps deliberately reuse the KBD component's
        .td-kbd-sequence markup and presentation. */ -}}
-{{- $keyboardNav := ne (.Param "ui.keyboard_nav") false -}}
+{{- $keyboardNav := ne (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) false -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- if or $keyboardNav $localSearch -}}
 {{- $targets := partial "language-targets.html" . -}}

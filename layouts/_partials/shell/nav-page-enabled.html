@@ -5,8 +5,8 @@
 {{- $enabled := not ($page.Params.toc_hide | default false) -}}
 {{- if or
       ($page.Params.sidebar_divider | default false)
-      (isset $page.Params "manuallink")
-      (isset $page.Params "manuallinkrelref")
+      (isset $page.Params "manual_link")
+      (isset $page.Params "manual_link_relref")
   -}}
   {{- $enabled = false -}}
 {{- end -}}

@@ -52,7 +52,12 @@ cascade:
 ```
 
 Page-level `feedback`, `annotation`, `comments`, and `navbar_autohide` values
-override the inherited policy. These switches must be booleans. Pager keeps
+override the inherited policy. These switches must be booleans. The rule is
+general: every `params.ui.*` setting can be overridden per page or per
+section cascade by the same key without its `ui.` prefix
+(`section_index: cards`, `sidebar_menu_compact: false`, `keyboard_nav: false`);
+front matter never carries a `ui:` block, and one that does fails the build
+naming the bare key. Pager keeps
 the established reading contract: `params.ui.pager_types` selects the enabled
 content types, while page or cascaded `pager: false` opts a page out.
 `params.ui.feedback.reasons: false` keeps the two primary choices but hides the

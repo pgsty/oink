@@ -61,7 +61,7 @@ params:
 resolved root drives both the visible tree and pager order.
 
 When a site has `data/docs_nav.json`, that explicit tree is also pager order.
-Keep `manualLink` link-only pages and `sidebar_divider` labels in the tree;
+Keep `manual_link` link-only pages and `sidebar_divider` labels in the tree;
 they remain visible navigation but are skipped as reading destinations.
 
 Delimiter mathematics requires consumer Goldmark configuration because Hugo

@@ -273,7 +273,7 @@ def check_sources() -> list[str]:
             f"navbar auto-hide styles lack {marker}",
             errors,
         )
-    for marker in ("data/docs_nav.json", "manualLink", "build.render: link", "sidebar_divider"):
+    for marker in ("data/docs_nav.json", "manual_link", "build.render: link", "sidebar_divider"):
         require(marker in sources["contract"], f"reading contract lacks {marker}", errors)
     hook = ROOT / "layouts/_partials/hooks/search-keywords-extra.html"
     require(hook.exists() and "return (slice)" in hook.read_text(), "empty search hook default is missing", errors)

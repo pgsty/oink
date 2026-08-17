@@ -1,7 +1,7 @@
 {{ $upstream := .Params.upstream_attribution -}}
 {{ $modified := .Params.downstream_modified -}}
 {{ $showLastmod := not .Lastmod.IsZero -}}
-{{ $commitMode := .Param "ui.lastmod_commit" | default "subject" -}}
+{{ $commitMode := (partial "ui-param.html" (dict "page" . "key" "lastmod_commit")) | default "subject" -}}
 {{ if not (in (slice "subject" "hash" "none") $commitMode) -}}
   {{ errorf "invalid params.ui.lastmod_commit %q (allowed: subject | hash | none)" $commitMode -}}
 {{ end -}}

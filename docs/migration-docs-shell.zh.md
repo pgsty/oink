@@ -49,7 +49,10 @@ cascade:
 ```
 
 页面级 `feedback`、`annotation`、`comments` 与 `navbar_autohide` 会覆盖继承
-策略，并且必须是布尔值。Pager 继续遵循阅读契约的既有约定：
+策略，并且必须是布尔值。这条规则是通用的：任何 `params.ui.*` 设置都可以在页面
+或栏目 cascade 里用去掉 `ui.` 前缀的同名键覆盖（`section_index: cards`、
+`sidebar_menu_compact: false`、`keyboard_nav: false`）；front matter 里不再有
+`ui:` 块，写了会构建失败并提示裸键名。Pager 继续遵循阅读契约的既有约定：
 `params.ui.pager_types` 决定在哪些内容类型中启用，页面或 cascade 中的
 `pager: false` 用于单独退出。`params.ui.feedback.reasons: false` 只隐藏可选
 原因，不影响两个主选项。

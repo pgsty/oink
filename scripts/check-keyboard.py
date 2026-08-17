@@ -267,7 +267,7 @@ def main() -> int:
                 workspace,
                 "kbd-page-off",
                 config,
-                page_front_matter="ui:\n  keyboard_nav: false",
+                page_front_matter="keyboard_nav: false",
             )
             html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(
                 encoding="utf-8"

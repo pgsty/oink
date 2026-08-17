@@ -567,7 +567,7 @@ def main() -> int:
                 workspace,
                 "assistant-page-cannot-opt-in",
                 assistant_off_config,
-                "assistant_links: true",
+                "page_context_menu:\n  assistant_links: true",
             )
             validate_assistant_off(
                 output,
@@ -579,7 +579,7 @@ def main() -> int:
                 workspace,
                 "assistant-page-opt-out",
                 action_config(helper, True),
-                "assistant_links: false",
+                "page_context_menu:\n  assistant_links: false",
             )
             validate_assistant_off(output, "page assistant opt-out")
 

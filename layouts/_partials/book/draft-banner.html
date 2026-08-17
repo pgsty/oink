@@ -1,4 +1,4 @@
-{{- $enabled := .Param "ui.book_draft_banner" -}}
+{{- $enabled := (partial "ui-param.html" (dict "page" . "key" "book_draft_banner")) -}}
 {{- if and (ne $enabled nil) (ne (printf "%T" $enabled) "bool") }}{{ errorf "params.ui.book_draft_banner must be a boolean at %s" .Path }}{{ end -}}
 {{- if and (eq .Type "book") (eq .Params.book_status "draft") $enabled -}}
 <aside class="td-book-draft" role="status">

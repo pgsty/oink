@@ -1,7 +1,7 @@
 {{- $page := .page -}}
 {{- $current := .current -}}
 {{- if eq $page $current -}}
-  {{- $depthValue := $current.Param "ui.sidebar_headings" -}}
+  {{- $depthValue := (partial "ui-param.html" (dict "page" $current "key" "sidebar_headings")) -}}
   {{- if ne $depthValue nil -}}
     {{- $valueType := printf "%T" $depthValue -}}
     {{- $integerTypes := slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float64" -}}

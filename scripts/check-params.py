@@ -59,13 +59,6 @@ KEPT_MAPS = {
 
 # Values handed to an external runtime keep that runtime's key names.
 PASSTHROUGH_PREFIXES = ("comments.giscus.", "mermaid.")
-# Docsy front matter keys that predate OINK and are kept as they are.
-DOCSY_CAMEL_PAGE_KEYS = {
-    "manualLink",
-    "manualLinkTitle",
-    "manualLinkTarget",
-    "manualLinkRelref",
-}
 
 # The `_enabled` suffix is allowed only where the bare name is taken by a
 # sibling family: navbar_* / sidebar_* / sidebar_root_*.
@@ -76,9 +69,8 @@ ENABLED_SUFFIX_ALLOWED = {
 }
 
 # Front matter overrides of a site key: the page key is the site key without
-# its `ui.` prefix. `assistant_links` is the one documented exception: it
-# narrows a member of the kept `ui.page_context_menu` map and keeps that
-# member's name.
+# its `ui.` prefix (`.Param`-style keys such as page_width and the ui-param
+# helper's keys resolve the same way; the table pins the explicit resolvers).
 PAGE_OVERRIDES = {
     "navbar_enabled": "ui.navbar_enabled",
     "navbar_autohide": "ui.navbar_autohide",
@@ -92,7 +84,6 @@ PAGE_OVERRIDES = {
     "page_width": "page_width",
     "reading_width": "reading_width",
 }
-PAGE_OVERRIDE_EXCEPTIONS = {"assistant_links": "ui.page_context_menu.assistant_links"}
 
 # Old page keys that must never be read again.
 LEGACY_PAGE_KEYS = {
@@ -102,6 +93,15 @@ LEGACY_PAGE_KEYS = {
     "exclude_search",
     "excludeSearch",
     "content_width",
+    "assistant_links",
+    "manualLink",
+    "manualLinkTitle",
+    "manualLinkTarget",
+    "manualLinkRelref",
+    "manuallink",
+    "manuallinktitle",
+    "manuallinktarget",
+    "manuallinkrelref",
 }
 
 # Legacy site configuration: (YAML fragment under `params:`, expected message
@@ -153,11 +153,19 @@ LEGACY_PAGE_CASES = [
     ("annotation:\n  enable: false", "annotation: true | false"),
     ("params:\n  ui:\n    image_zoom:\n      enable: false", "image_zoom: true | false"),
     ("params:\n  ui:\n    image_zoom: false", "image_zoom: true | false"),
-    ("params:\n  ui:\n    breadcrumb_disable: true", "ui.breadcrumb"),
-    ("params:\n  ui:\n    keyboard_nav:\n      enable: false", "ui.keyboard_nav was flattened"),
+    ("params:\n  ui:\n    breadcrumb_disable: true", "breadcrumb: false"),
+    ("params:\n  ui:\n    keyboard_nav:\n      enable: false", "keyboard_nav: true | false"),
     ("params:\n  ui:\n    reading_time: false", "reading_time: true | false"),
     ("params:\n  ui:\n    pager:\n      types: [docs]", "pager: false"),
+    ("params:\n  ui:\n    section_index: cards", "section_index: <value> (the site key without ui.)"),
+    ("params:\n  ui:\n    sidebar_menu_compact: false", "sidebar_menu_compact: <value> (the site key without ui.)"),
     ("params:\n  print:\n    disable_toc: true", "print.toc"),
+    ("assistant_links: false", "page_context_menu: { assistant_links"),
+    ("manualLink: https://example.org/", "manual_link"),
+    ("manualLinkTitle: Example", "manual_link_title"),
+    ("manualLinkTarget: _blank", "manual_link_target"),
+    ("manualLinkRelref: /docs/", "manual_link_relref"),
+    ("body_class: td-no-left-sidebar", "ui.sidebar_enabled: false"),
 ]
 
 # The converged shapes must build; the bare-boolean shorthand of every kept
@@ -169,6 +177,7 @@ ACCEPTED_SITE_CASES = [
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide",
+    "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
 ]
 
 
@@ -176,6 +185,7 @@ SITE_READ = re.compile(
     r"(?:\.Site\.Params|\bsite\.Params|\$\.Site\.Params|\$[A-Za-z]+\.Site\.Params)\.([A-Za-z_][A-Za-z0-9_.]*)"
 )
 PARAM_READ = re.compile(r'\.Param\s+"([^"]+)"')
+UI_PARAM_READ = re.compile(r'partial "ui-param\.html" \(dict "page" [^ ]+ "key" "([a-z_]+)"')
 SITE_MAP_READ = re.compile(
     r'(?:isset|index)\s+((?:\.Site\.Params|\bsite\.Params|\$[A-Za-z]+\.Site\.Params)(?:\.[A-Za-z0-9_]+)*)\s+"([^"]+)"'
 )
@@ -211,6 +221,10 @@ def scan_read_points() -> tuple[dict[str, set[str]], dict[str, set[str]], set[st
         for match in PARAM_READ.finditer(text):
             site.setdefault(match.group(1), set()).add(rel)
             param_reads.add(match.group(1))
+        for match in UI_PARAM_READ.finditer(text):
+            # ui-param.html resolves params.ui.<key> with the bare front matter key.
+            site.setdefault(f"ui.{match.group(1)}", set()).add(rel)
+            page.setdefault(match.group(1), set()).add(rel)
         for match in SITE_MAP_READ.finditer(text):
             base = re.sub(r"^(?:\.Site\.Params|site\.Params|\$[A-Za-z]+\.Site\.Params)\.?", "", match.group(1))
             key = f"{base}.{match.group(2)}".strip(".")
@@ -267,8 +281,6 @@ def check_shapes(site: dict[str, set[str]], page: dict[str, set[str]]) -> list[s
             )
     for key, files in sorted(page.items()):
         first = key.split(".")[0]
-        if first in DOCSY_CAMEL_PAGE_KEYS or first.lower() in {k.lower() for k in DOCSY_CAMEL_PAGE_KEYS}:
-            continue
         for segment in key.split("."):
             require(
                 KEY_SHAPE.match(segment) is not None,
@@ -299,13 +311,6 @@ def check_page_parity(site: dict[str, set[str]], page: dict[str, set[str]], para
             errors,
         )
         require(site_key in site, f"params.{site_key} is documented as page-overridable but no template reads it", errors)
-    for page_key, site_key in sorted(PAGE_OVERRIDE_EXCEPTIONS.items()):
-        parent = site_key.rsplit(".", 1)[0]
-        require(
-            page_key in page and (site_key in site or parent in site),
-            f"documented exception {page_key} ↔ {site_key} no longer matches the templates",
-            errors,
-        )
     return errors
 
 
@@ -376,6 +381,8 @@ def check_legacy_registries() -> list[str]:
         key = legacy_key(fragment)
         require(re.search(rf"\b{key}\b", site_registry) is not None, f"config-legacy.html does not register {key}", errors)
     for fragment, _expected in LEGACY_PAGE_CASES:
+        if re.search(r"^\s*ui:", fragment, re.MULTILINE):
+            continue  # every ui.* front matter key is rejected generically
         key = legacy_key(fragment)
         require(re.search(rf"\b{key}\b", page_registry) is not None, f"front-matter-legacy.html does not register {key}", errors)
     require('partialCached "config-legacy.html"' in (ROOT / "layouts/_partials/head.html").read_text(), "head.html no longer runs config-legacy.html", errors)

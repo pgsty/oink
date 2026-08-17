@@ -15,6 +15,11 @@
   (slice "exclude_search"  "search_exclude")
   (slice "excludeSearch"   "search_exclude")
   (slice "content_width"   "reading_width (slim | normal | wide)")
+  (slice "assistant_links" "page_context_menu: { assistant_links: … }")
+  (slice "manualLink"      "manual_link")
+  (slice "manualLinkTitle" "manual_link_title")
+  (slice "manualLinkTarget" "manual_link_target")
+  (slice "manualLinkRelref" "manual_link_relref")
 -}}
   {{- if isset $params (lower (index . 0)) -}}
     {{- errorf "front matter %s was renamed: use %s at %s" (index . 0) (index . 1) $path -}}
@@ -29,35 +34,37 @@
   {{- errorf "front matter annotation.enable was flattened: use annotation: true | false at %s" $path -}}
 {{- end -}}
 
-{{/* A `ui:` block in front matter (or a section cascade) may still carry the
-     old site-level shapes. */ -}}
+{{/* Front matter never carries a `ui:` block: a page override is the site
+     key without its `ui.` prefix (`section_index: cards`, not
+     `params.ui.section_index`), and the switches that changed shape are
+     named explicitly so the message says what to write. */ -}}
 {{- with $params.ui -}}
-  {{- if reflect.IsMap . -}}
-    {{- $ui := . -}}
-    {{- if isset $ui "image_zoom" -}}
-      {{- errorf "front matter ui.image_zoom was renamed: use image_zoom: true | false at %s" $path -}}
+  {{- $ui := . -}}
+  {{- if not (reflect.IsMap $ui) -}}
+    {{- errorf "front matter ui is not a page key: page overrides are the site key without ui. at %s" $path -}}
+  {{- end -}}
+  {{- $renamed := dict
+    "image_zoom"         "image_zoom: true | false"
+    "annotation"         "annotation: true | false"
+    "keyboard_nav"       "keyboard_nav: true | false"
+    "reading_time"       "reading_time: true | false"
+    "readingtime"        "reading_time: true | false"
+    "typography"         "nothing — params.ui.typography is site-wide"
+    "pager"              "pager: false"
+    "breadcrumb_disable" "breadcrumb: false"
+    "breadcrumb_enabled" "breadcrumb: true | false"
+    "scrollSpy"          "scroll_spy: true | false"
+    "scroll_spy_enabled" "scroll_spy: true | false"
+    "code_copy_enabled"  "code_copy: true | false"
+    "no_left_sidebar"    "sidebar_enabled: false"
+    "ul_show"            "sidebar_expand_levels: <n>"
+  -}}
+  {{- range $key, $_ := $ui -}}
+    {{- $hint := printf "%s: <value> (the site key without ui.)" $key -}}
+    {{- range $old, $new := $renamed -}}
+      {{- if eq (lower $old) $key }}{{ $hint = $new }}{{ end -}}
     {{- end -}}
-    {{- range slice
-      (slice "breadcrumb_disable" "ui.breadcrumb (inverted)")
-      (slice "breadcrumb_enabled" "ui.breadcrumb")
-      (slice "scrollSpy"          "ui.scroll_spy (inverted)")
-      (slice "scroll_spy_enabled" "ui.scroll_spy")
-      (slice "code_copy_enabled"  "ui.code_copy")
-      (slice "no_left_sidebar"    "ui.sidebar_enabled (inverted)")
-      (slice "readingtime"        "reading_time: true | false")
-      (slice "reading_time"       "reading_time: true | false (a top-level front matter key)")
-      (slice "ul_show"            "ui.sidebar_expand_levels")
-      (slice "pager"              "pager: false (a top-level front matter key)")
-    -}}
-      {{- if isset $ui (lower (index . 0)) -}}
-        {{- errorf "front matter ui.%s was renamed: use %s at %s" (index . 0) (index . 1) $path -}}
-      {{- end -}}
-    {{- end -}}
-    {{- range slice "annotation" "keyboard_nav" "typography" -}}
-      {{- if and (isset $ui .) (reflect.IsMap (index $ui .)) -}}
-        {{- errorf "front matter ui.%s was flattened: use a bare value at %s" . $path -}}
-      {{- end -}}
-    {{- end -}}
+    {{- errorf "front matter ui.%s is not a page key: use %s at %s" $key $hint $path -}}
   {{- end -}}
 {{- end -}}
 

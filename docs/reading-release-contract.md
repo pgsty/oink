@@ -29,7 +29,7 @@ and Book children use weight order, and a `data/docs_nav.json` tree is
 authoritative when the docs sidebar uses one. Blog children share the sidebar's
 ordering helper: explicitly weighted entries come first, then unweighted
 entries in reverse chronological order. Pages hidden with `toc_hide`, link-only
-placeholders using `manualLink`/`manualLinkRelref`, and `sidebar_divider` rows
+placeholders using `manual_link`/`manual_link_relref`, and `sidebar_divider` rows
 are not pager destinations.
 
 The docs navigation root defaults to the configured docs section. A site whose
@@ -141,10 +141,10 @@ remains an explicit page-level compatibility override.
 
 `data/docs_nav.json` is an authoritative explicit docs tree. Every node names
 a Hugo page and may provide children; missing pages fail the build. Front
-matter `manualLink` or `manualLinkRelref` creates a visible link-only ghost
+matter `manual_link` or `manual_link_relref` creates a visible link-only ghost
 page, normally paired with `build.render: link`, whose title remains in the
-sidebar but whose content page is not a pager destination. `manualLinkTitle`
-and `manualLinkTarget` customize link metadata.
+sidebar but whose content page is not a pager destination. `manual_link_title`
+and `manual_link_target` customize link metadata.
 
 Sites may override `hooks/search-keywords-extra.html` and return an array of
 page-specific strings. OINK appends, trims, and filters those strings through

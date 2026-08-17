@@ -275,7 +275,7 @@ theme apply 函数。助手 actions 先提供无 JavaScript 可用的真实 fall
 
 助手链接默认关闭，因为激活会把完整浏览器 URL 发送给第三方。站点选择启用时，
 必须避免在 query string 与 fragment 中放置秘密信息、披露该出站边界，并可用布尔型
-`assistant_links` front matter 按页面覆盖。
+front matter 里同名键 `page_context_menu: { assistant_links: false }` 按页面收窄。
 
 ```yaml
 params:
@@ -285,7 +285,8 @@ params:
 ```
 
 如果站点已经全局启用，但某个页面包含敏感 URL，请在该页 front matter 中设置
-`assistant_links: false`，单独关闭助手入口。
+`page_context_menu: { assistant_links: false }`，单独关闭助手入口（裸的
+`page_context_menu: false` 会隐藏整个菜单）；站点未开启时页面无法自行开启。
 
 ### 自定义命令与本地化 {#custom-commands-and-localization}
 

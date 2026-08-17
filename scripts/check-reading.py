@@ -310,7 +310,7 @@ def check_explicit_navigation(hugo: str) -> list[str]:
             source / "content/docs/ghost.md",
             """---
 title: Link-only ghost
-manualLink: /release/
+manual_link: /release/
 build:
   render: link
   list: local

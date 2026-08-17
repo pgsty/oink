@@ -1,5 +1,5 @@
 {{- /* `ui.sidebar_enabled` is the site/section/page switch. */ -}}
-{{- $enabled := .Param "ui.sidebar_enabled" -}}
+{{- $enabled := (partial "ui-param.html" (dict "page" . "key" "sidebar_enabled")) -}}
 {{- if eq $enabled nil }}{{ $enabled = true }}{{ end -}}
 {{- if ne (printf "%T" $enabled) "bool" -}}
   {{- errorf "params.ui.sidebar_enabled must be a boolean; got %v at %s" $enabled .Path -}}

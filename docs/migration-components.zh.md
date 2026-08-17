@@ -57,7 +57,7 @@ params:
 顺序共同使用同一个解析结果。
 
 站点存在 `data/docs_nav.json` 时，这棵显式树同时定义 Pager 顺序。
-`manualLink` 幽灵页与 `sidebar_divider` 分组仍显示在导航里，但不会成为阅读
+`manual_link` 幽灵页与 `sidebar_divider` 分组仍显示在导航里，但不会成为阅读
 跳转目标。
 
 分隔符数学需要消费站开启 Goldmark；Hugo 不会合并主题里的 `markup` 配置：

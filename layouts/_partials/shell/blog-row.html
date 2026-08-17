@@ -1,5 +1,5 @@
-{{- $manualLink := cond (isset .Params "manuallink") .Params.manualLink .RelPermalink -}}
-{{- $isExternal := isset .Params "manuallink" -}}
+{{- $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
+{{- $isExternal := isset .Params "manual_link" -}}
 <li class="td-blog-posts-list__item">
   <div class="td-blog-posts-list__body">
     <h2 class="h5 mt-0 mb-1">

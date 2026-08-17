@@ -6,7 +6,7 @@
      itself is emitted by shell/sidebar-node.html, shared with the content-tree
      walker.
 
-     cSpell:ignore manuallink manuallinkrelref manuallinktitle */ -}}
+     cSpell:ignore relref */ -}}
 {{- $p := .page -}}
 {{- $node := .node -}}
 {{- $currentURL := .currentURL -}}
@@ -23,7 +23,7 @@
   {{- $forceExpanded := $s.Params.sidebar_expanded | default false -}}
   {{- $shouldExpand := or $activePath $forceExpanded -}}
   {{- $withChild := gt (len $node.children) 0 -}}
-  {{- $foldable := and ($p.Param "ui.sidebar_menu_foldable") $withChild -}}
+  {{- $foldable := and (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) $withChild -}}
 
   {{- $childMarkup := "" -}}
   {{- if $withChild -}}

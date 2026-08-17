@@ -141,7 +141,7 @@
   {{- errorf "code block: copy=command requires language console or shell-session; got %q at %s" $language $position -}}
 {{- end -}}
 {{- /* Site-wide default only: a fence that names `copy` explicitly wins. */ -}}
-{{- if and (eq ($page.Param "ui.code_copy") false) (not (isset $attrs "copy")) -}}
+{{- if and (eq (partial "ui-param.html" (dict "page" $page "key" "code_copy")) false) (not (isset $attrs "copy")) -}}
   {{- $copyMode = "false" -}}
 {{- end -}}
 

@@ -126,6 +126,9 @@ fail the build with the new name rather than being silently ignored.
   | front matter `hide_readingtime: true` | `reading_time: false` |
   | front matter `hide_feedback: true` | `feedback: false` |
   | front matter `exclude_search`, `excludeSearch` | `search_exclude` |
+  | front matter `assistant_links` | `page_context_menu: { assistant_links: … }` |
+  | front matter `manualLink`, `manualLinkTitle`, `manualLinkTarget`, `manualLinkRelref` | `manual_link`, `manual_link_title`, `manual_link_target`, `manual_link_relref` |
+  | front matter `params.ui.<key>` (any) | `<key>` |
   | `github_url` | `github_repo` (the edit, history, and issue links are derived from it) |
   | `rss_sections` | removed; it was never read |
 
@@ -143,6 +146,23 @@ fail the build with the new name rather than being silently ignored.
   `ui.sidebar_menu_truncate` (2000) now match the declared values. The
   unloaded Docsy `click-to-copy.js` runtime and its styles are gone.
   `scripts/check-params.py` enforces the key rules and the legacy-key errors.
+
+  Rule 3 has no exceptions any more. Every `params.ui.*` setting that a page
+  may override — the Docsy sidebar family (`sidebar_menu_compact`,
+  `sidebar_menu_foldable`, `sidebar_expand_levels`, `sidebar_width_*`,
+  `sidebar_item_overflow`, `sidebar_headings`, `sidebar_enabled`),
+  `section_index`, `section_index_columns`, `lastmod_commit`, `breadcrumb`,
+  `scroll_spy`, `code_copy`, `keyboard_nav`, `book_draft_banner` — is read
+  through one helper (`ui-param.html`) that takes the bare key from front
+  matter or a cascade (`section_index: cards`), not `params.ui.section_index`.
+  Front matter never carries a `ui:` block; one that does fails the build
+  naming the bare key. Front matter `page_context_menu` mirrors the site key
+  (a boolean, or `{ enable, assistant_links }`), replacing the top-level
+  `assistant_links` page key. The last camelCase front matter keys,
+  `manualLink`, `manualLinkTitle`, `manualLinkTarget`, and `manualLinkRelref`,
+  are `manual_link`, `manual_link_title`, `manual_link_target`, and
+  `manual_link_relref`; `scripts/migrations/oink06.py migrate --only
+  frontmatter` rewrites all of these page keys.
 - **Breaking.** One naming namespace. Classes the theme generates are `td-`
   prefixed (`leaf`, `has-child`, `active-path`, `is-open`, `is-active`,
   `is-hidden`, `is-disabled`, `landing-header`, `landing-nav`,

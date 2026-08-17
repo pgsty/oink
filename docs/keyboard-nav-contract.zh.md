@@ -383,11 +383,11 @@ params:
     keyboard_nav: true # 主题默认开启；false 时 JS 不装配
 ```
 
-- 读取用 `.Param "ui.keyboard_nav"`（页面级 lookup）——
+- 读取用 `partial "ui-param.html" (dict "page" . "key" "keyboard_nav")`（站点 `params.ui.keyboard_nav`，页面 front matter 同名裸键 `keyboard_nav`）——
   免费获得 front-matter / cascade 按页、按节关闭能力（比如某个
   交互密集的演示页）。
 - `_partials/scripts.html`：
-  `$hasKeyboardNav := and $interactiveOutput (ne (.Param "ui.keyboard_nav") false)`；
+  `$hasKeyboardNav := and $interactiveOutput (ne $keyboardNavParam false)`；
   命中则 `$jsArray | append (resources.Get "js/keyboard-nav.js")`，
   并把 `$hasKeyboardNav` 加入 `$bundleKey`（红线 4）。
   所有交互式 HTML 页面都装配；运行时用 `body.td-shell-chrome` 将

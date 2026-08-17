@@ -9,9 +9,9 @@
   <head>{{ partial "head.html" . }}</head>
   {{ $toc := .TableOfContents -}}
   {{ $hasToc := and (not .Params.notoc) $toc (ne $toc `<nav id="TableOfContents"></nav>`) -}}
-  {{ $sidebarMin := .Param "ui.sidebar_width_min" | default 220 -}}
-  {{ $sidebarMax := .Param "ui.sidebar_width_max" | default 480 -}}
-  {{ $navWrap := eq (.Param "ui.sidebar_item_overflow") "wrap" -}}
+  {{ $sidebarMin := (partial "ui-param.html" (dict "page" . "key" "sidebar_width_min")) | default 220 -}}
+  {{ $sidebarMax := (partial "ui-param.html" (dict "page" . "key" "sidebar_width_max")) | default 480 -}}
+  {{ $navWrap := eq (partial "ui-param.html" (dict "page" . "key" "sidebar_item_overflow")) "wrap" -}}
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
   {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ $pageWidth := .Param "page_width" | default "normal" -}}

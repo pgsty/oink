@@ -12,7 +12,7 @@
 {{ $hasPlantuml := and $plantumlEnabled (.Page.Store.Get "hasPlantuml") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{ $keyboardNavParam := .Param "ui.keyboard_nav" -}}
+{{ $keyboardNavParam := (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) -}}
 {{ if and (ne $keyboardNavParam nil) (ne (printf "%T" $keyboardNavParam) "bool") -}}
   {{ errorf "params.ui.keyboard_nav must be a boolean; got %v" $keyboardNavParam -}}
 {{ end -}}
@@ -293,7 +293,7 @@ window.markmap = {
   {{ $jsArray = $jsArray | append (resources.Get "js/filetree.js") -}}
 {{ end -}}
 
-{{ if and $interactiveOutput (eq (.Param "ui.scroll_spy") true) -}}
+{{ if and $interactiveOutput (eq (partial "ui-param.html" (dict "page" . "key" "scroll_spy")) true) -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}

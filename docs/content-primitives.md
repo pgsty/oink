@@ -565,8 +565,15 @@ image resource but reports no intrinsic dimensions.
 
 Every theme path that takes an image source uses this resolver: the image
 render hook, the `image` shortcode, the `card` shortcode's `image`, and the
-Book `fig` shortcode's `src`. Landing sections are the documented exception
-and are tracked separately.
+Book `fig` shortcode's `src`.
+
+Sources that come from site configuration rather than content — landing
+sections, the blog featured image, the footer logo — do not use the resolver,
+because it fails the build when a source resolves to a non-image resource and
+configuration is not page-scoped. They do go through the shared URL policy, so
+no `<img>` the theme emits escapes the trust boundary that
+`scripts/check-output-security.py` enforces. Intrinsic dimensions for those
+paths remain out of scope.
 
 **Image render hook** (`layouts/_markup/render-image.html`). Every Markdown
 image `![alt](src "title")` resolves through the shared resolver:

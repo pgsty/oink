@@ -1,16 +1,33 @@
+{{- /* One landing item's visual: a configured image, a Font Awesome pair, an
+       image used as an icon, or a literal glyph.
+
+       Every image source goes through the shared URL policy, so a landing
+       image is held to the same trust boundary as an image in content —
+       scripts/check-output-security.py treats <img> as a remote element, and
+       this partial used to bypass the policy entirely with a bare relURL.
+       The full resolver (intrinsic dimensions) is deliberately not used here:
+       it fails the build when a source resolves to a non-image resource, and
+       landing sources come from site configuration rather than page bundles. */ -}}
 {{- $item := .item -}}
 {{- $label := $item.name | default $item.title | default "" -}}
 {{- $alt := $item.alt | default ($label | markdownify | plainify) -}}
 {{- $asset := $item.image | default $item.logo -}}
+{{- $where := printf "landing item %q" ($label | default "(untitled)") -}}
 {{- with $asset -}}
-<img src="{{ . | relURL }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
+  {{- $url := partial "content/url.html" (dict
+    "name" "landing" "parameter" "image" "position" $where "value" (printf "%v" .) "kind" "image"
+  ) -}}
+<img src="{{ $url.href }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
 {{- else -}}
   {{- with $item.icon -}}
     {{- $icon := printf "%v" . -}}
     {{- if or (hasPrefix $icon "fa-") (in $icon " fa-") -}}
 <i class="{{ $icon }}" aria-hidden="true"></i>
     {{- else if or (hasPrefix $icon "http://") (hasPrefix $icon "https://") (hasPrefix $icon "/") (in $icon "/") (in $icon ".svg") (in $icon ".png") (in $icon ".webp") (in $icon ".jpg") (in $icon ".jpeg") -}}
-<img src="{{ $icon | relURL }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
+      {{- $url := partial "content/url.html" (dict
+        "name" "landing" "parameter" "icon" "position" $where "value" $icon "kind" "image"
+      ) -}}
+<img src="{{ $url.href }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
     {{- else -}}
 <span aria-hidden="true">{{ $icon }}</span>
     {{- end -}}

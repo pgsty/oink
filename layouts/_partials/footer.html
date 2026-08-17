@@ -25,7 +25,9 @@
             {{- if $useWordmark }}
             <img src="{{ $config.wordmarkURL }}" alt="" width="100" height="40">
             {{- else }}
-            <img src="{{ $brand.logo | default $config.logoURL | relURL }}" alt="" width="28" height="28">
+            {{- /* Shell chrome is configuration, but an <img> src is an <img> src:
+                   hold it to the same URL policy as content and landing. */}}
+            <img src="{{ (partial "content/url.html" (dict "name" "footer" "parameter" "logo" "position" "site configuration" "value" (printf "%v" ($brand.logo | default $config.logoURL)) "kind" "image")).href }}" alt="" width="28" height="28">
             <span>{{ $brand.name | default $config.brandName }}</span>
             {{- end }}
           </a>

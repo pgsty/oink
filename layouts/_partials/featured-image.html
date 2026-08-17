@@ -22,8 +22,11 @@
 {{ end }}
 {{ else }}
 {{ with $src }}
+{{/* A front-matter or default URL is used as-is, but still held to the shared
+     image URL policy rather than trusted straight from configuration. */}}
+{{ $url := partial "content/url.html" (dict "name" "featured-image" "parameter" "src" "position" $p.Path "value" . "kind" "image") }}
 <figure class="{{ $class }}" style="width: {{ $w }}px">
-<img src="{{ . }}" alt="Featured Image for {{ $p.Title }}" width="{{ $w }}" height="{{ $h }}" style="object-fit: cover;" loading="lazy">
+<img src="{{ $url.href }}" alt="Featured Image for {{ $p.Title }}" width="{{ $w }}" height="{{ $h }}" style="object-fit: cover;" loading="lazy">
 </figure>
 {{ end }}
 {{ end }}

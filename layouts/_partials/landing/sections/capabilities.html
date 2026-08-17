@@ -72,9 +72,14 @@
           {{- if not $alt }}{{ errorf "%s: capabilities item %d image visual requires alt" $page.Path (add $index 1) }}{{ end -}}
           {{- $dark := strings.TrimSpace (printf "%v" (.src_dark | default $src)) -}}
           {{- if and $interactive (ne $dark $src) }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
+          {{- /* Same trust boundary as an image in content (see landing/media.html). */ -}}
+          {{- $where := printf "%s capabilities item %d" $page.Path (add $index 1) -}}
+          {{- $srcURL := (partial "content/url.html" (dict "name" "landing" "parameter" "src" "position" $where "value" $src "kind" "image")).href -}}
+          {{- $darkURL := $srcURL -}}
+          {{- if ne $dark $src }}{{ $darkURL = (partial "content/url.html" (dict "name" "landing" "parameter" "src_dark" "position" $where "value" $dark "kind" "image")).href }}{{ end -}}
       <figure class="oink-module-image">
-        <img src="{{ $src | relURL }}" alt="{{ $alt }}" loading="lazy"
-             {{- if and $interactive (ne $dark $src) }} data-theme-src-light="{{ $src | relURL }}" data-theme-src-dark="{{ $dark | relURL }}"{{ end }}
+        <img src="{{ $srcURL }}" alt="{{ $alt }}" loading="lazy"
+             {{- if and $interactive (ne $dark $src) }} data-theme-src-light="{{ $srcURL }}" data-theme-src-dark="{{ $darkURL }}"{{ end }}
              {{- with .width }} width="{{ . }}"{{ end }}{{ with .height }} height="{{ . }}"{{ end }}>
       </figure>
         {{- else if eq $visualType "card" }}

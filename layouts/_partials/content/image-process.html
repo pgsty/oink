@@ -1,26 +1,30 @@
 {{- /* Apply a validated Hugo image operation while preserving the full-size URL. */ -}}
 {{- $name := .name | default "image" -}}
+{{- /* Error label: the Markdown image hook and the gallery fence are not
+       shortcodes, so their messages must not send authors looking for one. */ -}}
+{{- $label := printf "shortcode %q" $name -}}
+{{- if eq $name "image" }}{{ $label = "image" }}{{ else if eq $name "gallery" }}{{ $label = "gallery fence" }}{{ end -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $image := .image -}}
 {{- $commandValue := .command -}}
 {{- if ne (printf "%T" $commandValue) "string" -}}
-  {{- errorf "shortcode %q: command must be a string at %s" $name $position -}}
+  {{- errorf "%s: command must be a string at %s" $label $position -}}
 {{- end -}}
 {{- $command := strings.TrimSpace $commandValue -}}
 {{- $commands := slice "Fit" "Resize" "Fill" "Crop" -}}
 {{- if not (in $commands $command) -}}
-  {{- errorf "shortcode %q: command must be one of %s; got %q at %s" $name (delimit $commands " | ") $command $position -}}
+  {{- errorf "%s: command must be one of %s; got %q at %s" $label (delimit $commands " | ") $command $position -}}
 {{- end -}}
 {{- $optionsValue := .options -}}
 {{- if ne (printf "%T" $optionsValue) "string" -}}
-  {{- errorf "shortcode %q: options must be a string at %s" $name $position -}}
+  {{- errorf "%s: options must be a string at %s" $label $position -}}
 {{- end -}}
 {{- $options := strings.TrimSpace $optionsValue -}}
 {{- if not $options -}}
-  {{- errorf "shortcode %q: options must not be empty at %s" $name $position -}}
+  {{- errorf "%s: options must not be empty at %s" $label $position -}}
 {{- end -}}
 {{- if not $image.processable -}}
-  {{- errorf "shortcode %q: src %q resolved as %s and cannot be processed at %s" $name $image.source $image.kind $position -}}
+  {{- errorf "%s: src %q resolved as %s and cannot be processed at %s" $label $image.source $image.kind $position -}}
 {{- end -}}
 
 {{- $result := false -}}
@@ -34,7 +38,7 @@
   {{- $result = try ($image.resource.Crop $options) -}}
 {{- end -}}
 {{- with $result.Err -}}
-  {{- errorf "shortcode %q: %s %q failed for src %q at %s: %s" $name $command $options $image.source $position . -}}
+  {{- errorf "%s: %s %q failed for src %q at %s: %s" $label $command $options $image.source $position . -}}
 {{- end -}}
 {{- $rendered := $result.Value -}}
 {{- return (dict

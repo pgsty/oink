@@ -1,21 +1,25 @@
 {{- /* Resolve image metadata without fetching remote sources. */ -}}
 {{- $name := .name | default "image" -}}
+{{- /* Error label: the Markdown image hook and the gallery fence are not
+       shortcodes, so their messages must not send authors looking for one. */ -}}
+{{- $label := printf "shortcode %q" $name -}}
+{{- if eq $name "image" }}{{ $label = "image" }}{{ else if eq $name "gallery" }}{{ $label = "gallery fence" }}{{ end -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $page := .page -}}
 {{- $sourceValue := .src -}}
 {{- if ne (printf "%T" $sourceValue) "string" -}}
-  {{- errorf "shortcode %q: src must be a string at %s" $name $position -}}
+  {{- errorf "%s: src must be a string at %s" $label $position -}}
 {{- end -}}
 {{- $source := strings.TrimSpace $sourceValue -}}
 {{- if not $source -}}
-  {{- errorf "shortcode %q: src must not be empty at %s" $name $position -}}
+  {{- errorf "%s: src must not be empty at %s" $label $position -}}
 {{- end -}}
 {{- $validated := partial "content/url.html" (dict
   "name" $name "parameter" "src" "position" $position "value" $source "kind" "image"
 ) -}}
 {{- $parsedResult := try (urls.Parse $source) -}}
 {{- with $parsedResult.Err -}}
-  {{- errorf "shortcode %q: invalid src %q at %s: %s" $name $source $position . -}}
+  {{- errorf "%s: invalid src %q at %s: %s" $label $source $position . -}}
 {{- end -}}
 {{- $parsed := $parsedResult.Value -}}
 {{- $scheme := lower $parsed.Scheme -}}
@@ -59,7 +63,7 @@
 {{- $byline := "" -}}
 {{- if $resource -}}
   {{- if not (reflect.IsImageResource $resource) -}}
-    {{- errorf "shortcode %q: src %q resolved to a non-image %s resource at %s" $name $source $kind $position -}}
+    {{- errorf "%s: src %q resolved to a non-image %s resource at %s" $label $source $kind $position -}}
   {{- end -}}
   {{- $src = $resource.RelPermalink -}}
   {{- $fullSrc = $resource.RelPermalink -}}
@@ -73,7 +77,7 @@
     {{- if isset . "alt" -}}
       {{- $metadataAlt := index . "alt" -}}
       {{- if ne (printf "%T" $metadataAlt) "string" -}}
-        {{- errorf "shortcode %q: image resource alt metadata must be a string at %s" $name $position -}}
+        {{- errorf "%s: image resource alt metadata must be a string at %s" $label $position -}}
       {{- end -}}
       {{- $resourceAlt = strings.TrimSpace $metadataAlt -}}
     {{- end -}}
@@ -96,20 +100,20 @@
 {{- if $hasAlt -}}
   {{- $altValue := .alt -}}
   {{- if ne (printf "%T" $altValue) "string" -}}
-    {{- errorf "shortcode %q: alt must be a string at %s" $name $position -}}
+    {{- errorf "%s: alt must be a string at %s" $label $position -}}
   {{- end -}}
   {{- $alt = strings.TrimSpace $altValue -}}
 {{- end -}}
 {{- $decorative := .decorative | default false -}}
 {{- if ne (printf "%T" $decorative) "bool" -}}
-  {{- errorf "shortcode %q: decorative must be boolean at %s" $name $position -}}
+  {{- errorf "%s: decorative must be boolean at %s" $label $position -}}
 {{- end -}}
 {{- if and $decorative $hasAlt $alt -}}
-  {{- errorf "shortcode %q: decorative images must not define alt text at %s" $name $position -}}
+  {{- errorf "%s: decorative images must not define alt text at %s" $label $position -}}
 {{- end -}}
 {{- if $decorative }}{{ $alt = "" }}{{ end -}}
 {{- if and (.requireAlt | default false) (not $decorative) (not $alt) -}}
-  {{- errorf "shortcode %q requires meaningful alt text or decorative=true at %s" $name $position -}}
+  {{- errorf "%s requires meaningful alt text or decorative=true at %s" $label $position -}}
 {{- end -}}
 
 {{- return (dict

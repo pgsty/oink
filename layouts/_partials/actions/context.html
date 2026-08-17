@@ -131,7 +131,7 @@
     "kind" "url" "available" (ne $childURL "") "disabledReason" (cond (ne $childURL "") "" (printf "%s: %s" $childTitle $unavailable)) "url" $childURL
     "target" "blank" "placements" $pageOnly "options" (slice))
   (dict "id" "create_issue" "title" $issueTitle "description" $issueTitle
-    "icon" "fa-regular fa-circle-question" "keywords" (slice $issueTitle "issue" "github")
+    "icon" "fa-solid fa-circle-question" "keywords" (slice $issueTitle "issue" "github")
     "kind" "url" "available" (ne $issueURL "") "disabledReason" (cond (ne $issueURL "") "" (printf "%s: %s" $issueTitle $unavailable)) "url" $issueURL
     "target" "blank" "placements" $pageOnly "options" (slice))
   (dict "id" "create_project_issue" "title" $projectIssueTitle "description" $projectIssueTitle

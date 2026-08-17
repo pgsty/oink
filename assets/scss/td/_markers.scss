@@ -1,12 +1,17 @@
 // Native (CSS-only) component forms selected by Goldmark block-attribute
 // markers on ordinary Markdown lists (plan/design/components.md v5 §1.4):
 //
-//   1. …          - [Title](/x/) — desc     - ![alt](a.png)
-//   {.steps}      {.cards}                  {.gallery}
+//   1. …          - [Title](/x/) — desc
+//   {.steps}      {.cards}
 //
 // The marker is the class on the list element itself (there is no list render
 // hook), so these selectors are the authoring API. Everything else the theme
 // generates keeps the td- prefix.
+//
+// FileTree and Gallery used to live here too. Both became data fences
+// (```filetree, ```gallery) because a list marker is CSS-only: with no list
+// render hook the theme cannot see the items, so it can give them neither
+// per-item attributes nor — in Gallery's case — an Image Zoom marker.
 
 // ---------------------------------------------------------------------------
 // Steps — ordered list
@@ -184,46 +189,6 @@ ul.cards {
 }
 
 // ---------------------------------------------------------------------------
-// Gallery — image list
-// ---------------------------------------------------------------------------
-ul.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(#{'min(100%, 16rem)'}, 1fr));
-  gap: 1rem;
-  margin-block: 1.25rem 1.5rem;
-  padding: 0;
-  list-style: none;
-
-  > li {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 0.4rem;
-    margin: 0;
-    padding: 0.5rem;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.6rem;
-    background: var(--td-brand-elev, var(--bs-tertiary-bg));
-    color: var(--bs-secondary-color);
-    font-size: 0.85rem;
-    line-height: 1.45;
-    text-align: center;
-
-    img {
-      display: block;
-      inline-size: 100%;
-      block-size: auto;
-      border-radius: 0.35rem;
-      object-fit: contain;
-    }
-
-    > p {
-      margin: 0;
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Reduced motion / forced colours / print
 // ---------------------------------------------------------------------------
 @media (prefers-reduced-motion: reduce) {
@@ -239,8 +204,7 @@ ul.gallery {
 
 @media (forced-colors: active) {
   ol.steps > li::before,
-  ul.cards > li,
-  ul.gallery > li {
+  ul.cards > li {
     border: 1px solid CanvasText;
     background: Canvas;
     color: CanvasText;
@@ -248,8 +212,7 @@ ul.gallery {
 }
 
 @media print {
-  ul.cards,
-  ul.gallery {
+  ul.cards {
     display: block;
 
     > li {

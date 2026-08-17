@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-bs-theme', theme);
 <meta property="article:section" content="docs">
 <meta itemprop="name" content="Gallery">
 <meta itemprop="description" content="Regression fixtures for a static-first responsive image Gallery.">
-<meta itemprop="wordCount" content="40">
+<meta itemprop="wordCount" content="36">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Gallery">
 <meta name="twitter:description" content="Regression fixtures for a static-first responsive image Gallery.">
@@ -546,12 +546,7 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fdocs
 <div class="lead">Regression fixtures for a static-first responsive image Gallery.</div>
 <header class="article-meta">
 </header>
-<ul class="gallery">
-<li><img src="/docs/gallery/page.png" alt="Blue and gold local dashboard overview" width="64" height="40" loading="lazy" decoding="async"> — Local page resource with intrinsic dimensions.</li>
-<li><img src="/media/content-primitives-global.png" alt="Green and violet global dashboard detail" width="64" height="40" loading="lazy" decoding="async"> — A deliberately long caption that must wrap inside its own card without widening the page or covering the neighboring image.</li>
-<li><img src="/media/content-primitives-tall.svg" alt="Tall static SVG settings overview" loading="lazy" decoding="async"> — واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي</li>
-<li><img src="https://example.invalid/gallery/remote.webp?view=full" alt="Remote deployment history view" loading="lazy" decoding="async"> — 远程图片保持静态 URL，构建过程不会下载它。</li>
-</ul>
+<ul class="td-gallery td-gallery--described"><li class="td-gallery__item"><img class="td-gallery__image" src="/docs/gallery/page.png" alt="Blue and gold local dashboard overview" width="64" height="40" loading="lazy" decoding="async" data-td-image-zoom><p class="td-gallery__description">Local page resource with intrinsic dimensions.</p></li><li class="td-gallery__item"><img class="td-gallery__image" src="/media/content-primitives-global.png" alt="Green and violet global dashboard detail" width="64" height="40" loading="lazy" decoding="async" data-td-image-zoom><p class="td-gallery__description">A deliberately long caption that must wrap inside its own card without widening the page or covering the neighboring image.</p></li><li class="td-gallery__item"><img class="td-gallery__image" src="/media/content-primitives-tall.svg" alt="Tall static SVG settings overview" loading="lazy" decoding="async" data-td-image-zoom><p class="td-gallery__description">واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي</p></li><li class="td-gallery__item"><a class="td-gallery__link" href="/docs/gallery/"><img class="td-gallery__image" src="https://example.invalid/gallery/remote.webp?view=full" alt="Remote deployment history view" loading="lazy" decoding="async"></a><p class="td-gallery__description">远程图片保持静态 URL，构建过程不会下载它。</p></li></ul>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next"><a class="td-pager__card td-pager__card--prev" href="/docs/download-demo/"

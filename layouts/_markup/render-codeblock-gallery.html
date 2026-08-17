@@ -1,0 +1,61 @@
+{{- /* ```gallery — a responsive grid of related images as a data fence
+     (docs/content-primitives.md §3 Gallery). The body is parsed by
+     content/gallery-parse.html, one `![alt](src) # description {…}` per line.
+
+     Because the theme now renders the images itself, every eligible image
+     carries the explicit Image Zoom marker at emit time; Zoom needs no
+     structural exception for galleries any more.
+
+     Outputs: interactive HTML gets the grid with zoom markers; print and RSS
+     get the same grid stacked and without the markers. Markdown output needs
+     no branch here — layouts/all.md emits `.RenderShortcodes`, which expands
+     shortcodes but does not run render hooks, so the fence reaches that
+     output as its own source, exactly like every other data fence. */ -}}
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $policy := partial "content/attributes.html" (dict
+  "attributes" .Attributes "allowed" (slice "tab" "group" "value")
+  "position" .Position "kind" "gallery"
+) -}}
+{{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
+{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ errorf "gallery: tab label must not be empty at %s" .Position }}{{ end -}}
+{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "gallery: group/value require tab at %s" .Position }}{{ end -}}
+{{- $inner := replace (printf "%s" .Inner) "\r" "" -}}
+{{- if not (strings.ContainsNonSpace $inner) }}{{ errorf "gallery: the fence requires at least one image at %s" .Position }}{{ end -}}
+{{- $parsed := partial "content/gallery-parse.html" (dict "source" $inner "position" .Position "page" $page) -}}
+
+{{- $classes := slice "td-gallery" -}}
+{{- if in (slice "print" "rss") $format }}{{ $classes = $classes | append "td-gallery--static" }}{{ end -}}
+{{- if $parsed.hasDescription }}{{ $classes = $classes | append "td-gallery--described" }}{{ end -}}
+{{- with $policy.class }}{{ $classes = $classes | append . }}{{ end -}}
+{{- $rows := slice -}}
+{{- range $item := $parsed.items -}}
+  {{- $img := printf `<img class="td-gallery__image" src="%s" alt="%s"%s%s loading="lazy" decoding="async"%s>`
+    ($item.src | safeURL) (htmlEscape $item.alt)
+    (cond (gt $item.width 0) (printf ` width="%d"` $item.width) "")
+    (cond (gt $item.height 0) (printf ` height="%d"` $item.height) "")
+    (cond (and $item.zoomable (eq $format "html")) " data-td-image-zoom" "")
+    -}}
+  {{- with $item.href -}}
+    {{- $img = printf `<a class="td-gallery__link" href="%s"%s>%s</a>` (htmlEscape .) (cond $item.external ` rel="external"` "") $img -}}
+  {{- end -}}
+  {{- $itemClasses := slice "td-gallery__item" -}}
+  {{- with $item.class }}{{ $itemClasses = $itemClasses | append . }}{{ end -}}
+  {{- $body := $img -}}
+  {{- with $item.description -}}
+    {{- $body = printf `%s<p class="td-gallery__description">%s</p>` $body (htmlEscape .) -}}
+  {{- end -}}
+  {{- $rows = $rows | append (printf `<li class="%s">%s</li>` (delimit $itemClasses " ") $body) -}}
+{{- end -}}
+{{- $html := printf `<ul class="%s">%s</ul>` (delimit $classes " ") (delimit $rows "") -}}
+
+{{- if $tab -}}
+  {{- partial "content/tab-block.html" (dict
+    "page" $page "position" .Position "tab" $tab
+    "group" (index $policy.consumed "group" | default "")
+    "value" (index $policy.consumed "value" | default "")
+    "kind" "code" "content" ($html | safeHTML)
+  ) -}}
+{{- else -}}
+  {{- $html | safeHTML -}}
+{{- end -}}

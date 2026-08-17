@@ -62,8 +62,9 @@ Pasted `tree` output:
 2 directories, 3 files
 ```
 
-## Gallery — image list `{.gallery}`
+## Gallery — the `gallery` fence
 
-- ![Overview page](shot-a.png)
-- ![Detail page](shot-b.png) — Request details
-{.gallery}
+```gallery
+![Overview page](shot-a.png)
+![Detail page](shot-b.png) # Request details
+```

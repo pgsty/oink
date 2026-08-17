@@ -616,7 +616,7 @@ class TransformationCase(unittest.TestCase):
         )
         self.assertIn("unknown level", found[0].reason)
 
-    def test_gallery_to_list(self):
+    def test_gallery_to_fence(self):
         self.assertMigrates(
             """\
             {{< gallery columns=3 label="x" >}}
@@ -625,12 +625,41 @@ class TransformationCase(unittest.TestCase):
             {{< /gallery >}}
             """,
             """\
-            - ![A](a.webp) — cap a
-            - ![B](/b.png)
-            {.gallery}
+            ```gallery
+            ![A](a.webp) # cap a
+            ![B](/b.png)
+            ```
             """,
             ["gallery"],
         )
+
+    def test_gallery_list_marker_to_fence(self):
+        """The interim {.gallery} list becomes the fence; ` — ` becomes `#`."""
+        self.assertMigrates(
+            """\
+            - ![A](a.webp) — cap a
+            - ![B](/b.png)
+            - ![C](c.png) — issue #42
+            {.gallery}
+            """,
+            """\
+            ```gallery
+            ![A](a.webp) # cap a
+            ![B](/b.png)
+            ![C](c.png) # issue \\#42
+            ```
+            """,
+            ["gallery"],
+        )
+
+    def test_gallery_list_without_alt_is_reported(self):
+        source = """\
+            - ![](a.webp) — no alt
+            {.gallery}
+            """
+        final, _, findings = run(source, ["gallery"])
+        self.assertEqual(final, textwrap.dedent(source))
+        self.assertEqual(len(findings), 1)
 
     def test_gallery_without_alt_is_reported(self):
         source = """\

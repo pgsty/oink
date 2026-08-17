@@ -45,7 +45,8 @@ Pasted `tree` output:
 └── README.md
 2 directories, 3 files
 ```
-## Gallery — image list `{.gallery}`
-- ![Overview page](shot-a.png)
-- ![Detail page](shot-b.png) — Request details
-{.gallery}
+## Gallery — the `gallery` fence
+```gallery
+![Overview page](shot-a.png)
+![Detail page](shot-b.png) # Request details
+```

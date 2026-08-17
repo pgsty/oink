@@ -33,7 +33,7 @@ def check_outputs(public: Path) -> list[str]:
 
     for marker in (
         # image shortcode: processed figure with a Markdown caption
-        '<figure class="td-figure td-figure--processed" style="max-width: 50px">',
+        '<figure class="td-figure td-figure--processed" style="--td-figure-max: 50px">',
         'data-zoom-src="/docs/media-primitives/page.png"',
         'alt="Blue and gold page-resource test pattern" width="48" height="30"',
         'data-zoom-src="/media/content-primitives-global.png"',

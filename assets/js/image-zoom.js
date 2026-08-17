@@ -49,12 +49,13 @@
     const source = image.dataset.zoomSrc?.trim() || image.currentSrc || image.src;
     if (!alt?.trim() || !source) return false;
 
+    // The theme marks everything it renders itself, Gallery fence items
+    // included; the structural checks below only cover images a site wrote as
+    // raw HTML.
     if (image.hasAttribute('data-td-image-zoom')) return true;
     const parent = image.parentElement;
     if (!parent) return false;
     if (parent.tagName === 'FIGURE') return true;
-    // Native Gallery lists (`{.gallery}`): every list image is a preview.
-    if (image.closest('ul.gallery > li')) return true;
     return (
       parent.tagName === 'P' &&
       parent.childElementCount === 1 &&

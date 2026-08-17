@@ -25,7 +25,7 @@ The public interfaces in this document are the version-two contract for:
 
 - inline leaves: Badge, Kbd, Param, Comment, Include;
 - Fields (table form and shortcode form);
-- the `filetree` data fence; Gallery, Steps, and Cards native list forms
+- the `filetree` and `gallery` data fences; Steps and Cards native list forms
   (+ the `cards`/`card` shortcode);
 - the image render hook and the `image` shortcode; Image Zoom;
 - Release Assets and the `checksums` fence;
@@ -33,7 +33,7 @@ The public interfaces in this document are the version-two contract for:
   tabbed);
 - Callouts (blockquote render hook);
 - Tabs (adjacent blocks and the `tabs`/`tab` shortcode);
-- data fences (`echarts`, `infographic`, `checksums`, `filetree`);
+- data fences (`echarts`, `infographic`, `checksums`, `filetree`, `gallery`);
 - the numbered Book components (`fig`, `tbl`, `eq`, `eg`, `xref`, Book
   indexes) in their shortcode and native forms.
 
@@ -92,11 +92,12 @@ true` (for `%`/RenderString output and raw HTML), and, for the block image
 forms, `markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false`.
 
 The public marker vocabulary is fixed and unprefixed: `{.steps}` (ordered
-list), `{.cards}` (link list), `{.gallery}` (image list), `{.fields}`,
-`{.matrix}`, `{.full-width}` (tables), and `> [!TYPE]` callouts. Because
-lists have no render hook, a list marker is also the CSS selector
-(`ol.steps`, `ul.cards`, …); everything the theme generates keeps the `td-`
-prefix.
+list), `{.cards}` (link list), `{.fields}`, `{.matrix}`, `{.full-width}`
+(tables), and `> [!TYPE]` callouts. Because lists have no render hook, a list
+marker is also the CSS selector (`ol.steps`, `ul.cards`); everything the theme
+generates keeps the `td-` prefix. That limitation is why FileTree and Gallery
+are data fences instead of list markers: a component whose items need
+attributes, or which the theme must mark for a runtime, cannot be CSS-only.
 
 ### 2.2 Parameter validation
 
@@ -667,26 +668,59 @@ lightbox runtimes are deferred.
 
 ### 3.7 Gallery
 
-Gallery has exactly one form: an image list followed by `{.gallery}`.
+Gallery has exactly one form: a `gallery` data fence, one image per line.
 
-```markdown
-- ![Overview page](overview.webp)
-- ![Detail page](detail.webp) — Request details
-{.gallery}
+````markdown
+```gallery
+![Overview page](overview.webp)
+![Detail page](detail.webp) # Request details
+![Metrics page](metrics.webp) # Live counters {link=/docs/metrics/}
 ```
+````
 
-Each item is one Markdown image, optionally followed by description text (the
-` — ` separator is a convention, not syntax). Images resolve through the image
-render hook (an image alone in its item is a block image; one followed by text
-is inline), so page resources get intrinsic dimensions and lazy loading, and
-Zoom eligibility follows section 3.6. Rendering is CSS only: a responsive grid
-of `li` cards with the image on top and the description below. Every image
-needs meaningful alt text; the source linter enforces it (an empty alt is
-decorative and therefore never zoomable).
+Line grammar, mirroring the `filetree` fence:
 
-Markdown output is the source list; print and RSS render the same list
-statically. Reordering, uploads, filtering, fullscreen slideshows, carousels,
-and remote build-time image fetching are deferred.
+    ![alt](src) [# description] [{key=value …}]
+
+- The image is anchored at the start of the line, so alt text stays a
+  first-class field rather than an attribute an author can forget. It doubles
+  as the item's title. An empty alt marks the image decorative: never zoomed,
+  no title.
+- `#` starts the description. Because the image is parsed first, a `#` inside
+  the alt text or the source needs no escaping; `\#` is a literal hash inside
+  the description. The description is plain text, like every other public
+  string parameter (section 2.3).
+- Trailing attributes are `link` (the item becomes an anchor, and therefore is
+  not zoomable) and `class` (site CSS tokens). Any other key fails the build,
+  as does a line that does not start with an image or that carries text
+  without the `#` marker.
+- Fence attributes are `tab`, `group`, `value` (adjacent-block tabs) plus
+  `class`. There is no `columns`: the grid is responsive.
+
+Sources resolve through the shared image resolver (section 3.5), so page
+resources, global assets, static paths and remote URLs behave exactly as they
+do for `![alt](src)`, and local resources contribute intrinsic dimensions.
+
+Because the theme renders the grid itself, every eligible image carries the
+explicit Image Zoom marker at emit time; Zoom needs no gallery-shaped
+structural exception in either the build-time scan or the runtime
+(section 3.6).
+
+HTML is `<ul class="td-gallery">` with one `<li class="td-gallery__item">` per
+image. Markdown output is the fence source, as it is for every data fence,
+because `layouts/all.md` emits `.RenderShortcodes` and therefore does not run
+render hooks. Print and RSS render the same grid stacked and without the zoom
+markers.
+
+Gallery was an image list with a `{.gallery}` marker in contract version two's
+first draft. A list marker is CSS-only — lists have no render hook — so the
+theme could not see the items, and could give them neither per-item attributes
+nor a Zoom marker. The cost of the fence is that the source no longer renders
+as images on GitHub; the benefit is that all four outputs and Zoom are the
+theme's to guarantee.
+
+Reordering, uploads, filtering, fullscreen slideshows, carousels, and remote
+build-time image fetching are deferred.
 
 ### 3.8 Release Assets
 
@@ -1123,7 +1157,7 @@ e3a339fe…47d1  pig-1.7.0-1.aarch64.rpm
 | FileTree | monospace panel, aligned `#` comment column, native `<details>` directories, draggable split | same panel, static and fully expanded | the `filetree` fence source | source in `<pre>` | identical content (disclosure is native; split stays at the build-time width) | one local split runtime, only with comments |
 | Shared image | `<img>`, `<img class="td-image">`, or `<figure>` with caption | image/figure and caption | source image (+ attribute line) | absolute-URL image | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
-| Gallery | responsive image-list grid | sequential list | source image list | sequential list | complete static grid | reuses Image Zoom only |
+| Gallery | responsive image grid | stacked grid | fence source | stacked grid | complete static grid | reuses Image Zoom only |
 | Release Assets | linked table with copy controls | linked static table with full hashes | pipe table (shortcode) / source fence (`checksums`) | pipe table with full hashes | complete linked table | one opt-in local copy runtime |
 | Table | keyboard-focusable contained scroll region; family markers | complete table at page width | source pipe table | static table | complete table remains readable | none |
 | Eq escape | display KaTeX/MathML | static display KaTeX/MathML | plain `$$` TeX block | plain `$$` TeX block | identical static formula | none |
@@ -1183,9 +1217,10 @@ until their behavior is specified across the full output matrix.
 
 Version two (OINK 0.5/0.6) changes from version one: Badge lost `outline`;
 Fields gained the `{.fields}` table form;
-FileTree became the `filetree` data fence and Gallery a native list (the
+FileTree and Gallery became the `filetree` and `gallery` data fences (the
 `filetree`, `filetree/folder`, `filetree/file`, `gallery`, `gallery/image`
-shortcodes and the interim `{.filetree}` list marker were removed); `imgproc`
+shortcodes and the interim `{.filetree}` / `{.gallery}` list markers were
+removed); `imgproc`
 became the named-only `image` shortcode and Markdown images gained a render
 hook; the table family, Callouts, Tabs, Steps, Cards, data fences, `include`, strict `param`, and the
 Book `eg`/native forms/`book-*` indexes were added; `alert`, `details`,

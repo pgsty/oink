@@ -1,0 +1,139 @@
+{{- /*
+  Parse the body of a ```gallery fence into an ordered list of items.
+
+  Input dict:
+    source    the fence body (.Inner)
+    position  .Position for error messages
+    page      the page, for the shared image resolver
+
+  Line grammar (docs/content-primitives.md §3 Gallery), one item per line:
+
+    ![alt](src) [# description] [{key=value …}]
+
+  - `![alt](src)` is required and anchored at the start of the line, so the alt
+    text stays a first-class field rather than an attribute that is easy to
+    forget. It doubles as the item's title. An empty alt marks the image
+    decorative: it is never zoomed and carries no title.
+  - Everything after a whitespace-preceded `#` is the description; `\#` is a
+    literal hash. Because the image is parsed first, a `#` inside the alt text
+    or the source needs no escaping.
+  - A trailing `{…}` block is attributes: link (the item becomes a link, which
+    also makes it non-zoomable) and class (site CSS tokens).
+  - Sources resolve through content/image-resolve.html, so page resources,
+    global assets, static paths and remote URLs behave exactly as they do for
+    `![alt](src)` in ordinary content.
+
+  Output dict:
+    items          slice of dicts: line src alt description href external class
+                   decorative width height markdownSrc zoomable
+    hasDescription bool
+*/ -}}
+{{- $position := .position | default "unknown position" -}}
+{{- $page := .page -}}
+{{- $source := replace (printf "%s" .source) "\r" "" -}}
+{{- $lines := split (strings.TrimRight "\n" $source) "\n" -}}
+{{- $hashEscape := "\u0001" -}}
+{{- $items := slice -}}
+{{- $hasDescription := false -}}
+{{- $lineNo := 0 -}}
+{{- range $raw := $lines -}}
+  {{- $lineNo = add $lineNo 1 -}}
+  {{- $line := strings.TrimSpace $raw -}}
+  {{- if not $line -}}
+    {{- continue -}}
+  {{- end -}}
+
+  {{- /* the image, anchored at the start of the line */ -}}
+  {{- $imageMatch := findRESubmatch `^!\[([^\]]*)\]\(([^)\s]+)\)\s*(.*)$` $line -}}
+  {{- if not $imageMatch -}}
+    {{- errorf "gallery: line %d must start with a Markdown image such as %s; got %q at %s" $lineNo "![alt](src.png)" $line $position -}}
+  {{- end -}}
+  {{- $alt := strings.TrimSpace (index (index $imageMatch 0) 1) -}}
+  {{- $src := index (index $imageMatch 0) 2 -}}
+  {{- $rest := strings.TrimSpace (index (index $imageMatch 0) 3) -}}
+
+  {{- /* trailing attributes */ -}}
+  {{- $attrs := dict -}}
+  {{- $attrMatch := findRESubmatch `^(.*?)\s*\{([^{}]*)\}\s*$` $rest -}}
+  {{- if $attrMatch -}}
+    {{- $rest = strings.TrimSpace (index (index $attrMatch 0) 1) -}}
+    {{- $attrText := index (index $attrMatch 0) 2 -}}
+    {{- $pairRE := `([A-Za-z][A-Za-z0-9_-]*)=(?:"([^"]*)"|'([^']*)'|([^\s"']+))` -}}
+    {{- $leftover := strings.TrimSpace (replaceRE $pairRE "" $attrText) -}}
+    {{- if $leftover -}}
+      {{- errorf "gallery: line %d: malformed attributes {%s} (expected key=value pairs) at %s" $lineNo $attrText $position -}}
+    {{- end -}}
+    {{- range $pair := findRESubmatch $pairRE $attrText -}}
+      {{- $key := index $pair 1 -}}
+      {{- $value := or (index $pair 2) (index $pair 3) (index $pair 4) -}}
+      {{- if not (in (slice "link" "class") $key) -}}
+        {{- errorf "gallery: line %d: unknown attribute %q (allowed: link, class) at %s" $lineNo $key $position -}}
+      {{- end -}}
+      {{- if isset $attrs $key -}}
+        {{- errorf "gallery: line %d: attribute %q is set twice at %s" $lineNo $key $position -}}
+      {{- end -}}
+      {{- if not (strings.TrimSpace $value) -}}
+        {{- errorf "gallery: line %d: attribute %q must not be empty at %s" $lineNo $key $position -}}
+      {{- end -}}
+      {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* description */ -}}
+  {{- $description := "" -}}
+  {{- if $rest -}}
+    {{- $escaped := replace $rest "\\#" $hashEscape -}}
+    {{- $descMatch := findRESubmatch `^#\s*(.*)$` $escaped -}}
+    {{- if not $descMatch -}}
+      {{- errorf "gallery: line %d: text after the image must start with # (the description marker); got %q at %s" $lineNo $rest $position -}}
+    {{- end -}}
+    {{- $description = strings.TrimSpace (replace (index (index $descMatch 0) 1) $hashEscape "#") -}}
+    {{- if not $description -}}
+      {{- errorf "gallery: line %d: the description after # must not be empty at %s" $lineNo $position -}}
+    {{- end -}}
+    {{- $hasDescription = true -}}
+  {{- end -}}
+
+  {{- /* attributes */ -}}
+  {{- $class := index $attrs "class" | default "" -}}
+  {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) -}}
+    {{- errorf "gallery: line %d: class contains unsafe characters at %s" $lineNo $position -}}
+  {{- end -}}
+  {{- $href := "" -}}
+  {{- $external := false -}}
+  {{- with index $attrs "link" -}}
+    {{- $url := partial "content/url.html" (dict
+      "name" "gallery" "parameter" (printf "link on line %d" $lineNo) "position" $position
+      "value" . "kind" "link"
+    ) -}}
+    {{- $href = $url.href -}}
+    {{- $external = $url.external -}}
+  {{- end -}}
+
+  {{- /* the shared resolver owns source precedence and intrinsic dimensions */ -}}
+  {{- $image := partial "content/image-resolve.html" (dict
+    "name" "gallery" "position" $position "page" $page "src" $src
+    "hasAlt" true "alt" $alt "decorative" (eq $alt "")
+  ) -}}
+
+  {{- $items = $items | append (dict
+    "line" $lineNo
+    "src" $image.src
+    "markdownSrc" $image.markdownSrc
+    "alt" $image.alt
+    "decorative" (eq $image.alt "")
+    "width" $image.width
+    "height" $image.height
+    "description" $description
+    "href" $href
+    "external" $external
+    "class" $class
+    "zoomable" (and (ne $image.alt "") (eq $href ""))
+  ) -}}
+{{- end -}}
+
+{{- if not $items -}}
+  {{- errorf "gallery: the fence requires at least one image at %s" $position -}}
+{{- end -}}
+
+{{- return (dict "items" $items "hasDescription" $hasDescription) -}}

@@ -175,7 +175,7 @@ def check_outputs(public: Path) -> list[str]:
         '<li><a href="/docs/">Install</a> — Deploy from scratch in five minutes.</li>',
         '<li><a href="/docs/typography/">Reference</a></li>',
         '<li>\n<p><a href="/docs/">Install</a></p>\n<p>Deploy from scratch in five minutes.</p>\n</li>',
-        '<ul class="gallery">',
+        '<ul class="td-gallery td-gallery--described">',
         # 2-space bullets with title, comments, open=false, icon/tone override
         '>Repository layout</p>',
         '<li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><details class="td-filetree__details"><summary class="td-filetree__summary"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true">',
@@ -199,7 +199,7 @@ def check_outputs(public: Path) -> list[str]:
     for block in re.findall(r'<div class="td-filetree[\s\S]*?</ul></div></div>', lists):
         require(block.count("<ul") == block.count("</ul>") and block.count("<li ") == block.count("</li>") and block.count("<details") == block.count("</details>"), "filetree markup is unbalanced", errors)
     require('<span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="build">build</span>' in lists, "type=dir did not override the file kind", errors)
-    for marker in ("- [Install](/docs/) — Deploy from scratch in five minutes.", "{.cards}", "{.gallery}", '```filetree {title="Repository layout"}', "├── bin", "    build {type=dir}"):
+    for marker in ("- [Install](/docs/) — Deploy from scratch in five minutes.", "{.cards}", "```gallery", '```filetree {title="Repository layout"}', "├── bin", "    build {type=dir}"):
         require(marker in lists_markdown, f"lists Markdown missing {marker}", errors)
     require("<ul" not in lists_markdown and "td-" not in lists_markdown and "{.filetree}" not in lists_markdown, "lists Markdown contains HTML or the removed marker", errors)
 
@@ -694,9 +694,16 @@ def check_template_contracts() -> list[str]:
         require(not (ROOT / relative).exists(), f"{relative} must stay deleted", errors)
 
     markers = (ROOT / "assets/scss/td/_markers.scss").read_text()
-    for marker in ("ol.steps", "ul.cards", "ul.gallery", "counter-reset: td-step", "ol.steps[start=", "@media print", "forced-colors", "prefers-reduced-motion"):
+    for marker in ("ol.steps", "ul.cards", "counter-reset: td-step", "ol.steps[start=", "@media print", "forced-colors", "prefers-reduced-motion"):
         require(marker in markers, f"_markers.scss lacks {marker}", errors)
-    require("filetree" not in markers, "_markers.scss keeps the removed {.filetree} list marker", errors)
+    # FileTree and Gallery left the list-marker layer for data fences. Assert the
+    # selectors are gone rather than the words: the file explains the move, and a
+    # bare substring test would forbid documenting it.
+    for selector in ("ul.filetree", "ul.gallery"):
+        require(selector not in markers, f"_markers.scss keeps the removed {selector} list marker", errors)
+    gallery_scss = (ROOT / "assets/scss/td/_gallery.scss").read_text()
+    for marker in (".td-gallery", "&__item", "&__image", "&__description", "forced-colors", "@media print"):
+        require(marker in gallery_scss, f"_gallery.scss lacks {marker}", errors)
     filetree_styles = (ROOT / "assets/scss/td/_filetree.scss").read_text()
     for marker in (".td-filetree", "--td-filetree-name-col", "--td-filetree-indent: 2.5ch", "clamp(50%, var(--td-filetree-name-col), 70%)", ".td-filetree__divider", ".td-filetree__details[open]", ".td-filetree--static", ".td-filetree--plain", "@media print", "@media (forced-colors: active)", "[dir='rtl']", "media-breakpoint-down(sm)"):
         require(marker in filetree_styles, f"_filetree.scss lacks {marker}", errors)

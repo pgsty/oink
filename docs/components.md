@@ -36,7 +36,7 @@ this way:
   HTML on Hugo 0.160–0.164, so `%` collectors cannot exist; a `%` block inside a
   list item truncates the list. Both facts are verified and drive this rule.)
 - Data fences (`mermaid`, `plantuml`, `markmap`, `math`, `chem`, `echarts`,
-  `infographic`, `checksums`, `filetree`) are native because the fenced source
+  `infographic`, `checksums`, `filetree`, `gallery`) are native because the fenced source
   *is* the content.
 - Authors do not control presentation: no `class`, `style`, color, or `cols`
   parameters; icons are exactly one Font Awesome class pair; site CSS may still
@@ -57,14 +57,14 @@ Passthrough math needs the site's `passthrough` extension.
 | Cards | link list + `{.cards}` | `{{< cards >}}` `{{< card title= link= icon= badge= image= image_alt=\|decorative= >}}body{{< /card >}}` `{{< /cards >}}` | |
 | Fields | table + `{.fields [caption=]}` (first column name, last column description, middle columns metadata) | `{{< fields label= >}}` `{{< field name= type= required= default= >}}…{{< /field >}}` `{{< /fields >}}` | typed `required`/`default` only in the shortcode |
 | FileTree | ```` ```filetree {title=} ```` fence: `- name[/]  # comment  {icon= tone= open= type=}` per line; 2/4-space, tab, or `tree` indentation | — | CSS + native `<details>`; comment column aligned at build time, split clamped 50–70% and draggable (`hasFileTree` → `assets/js/filetree.js`) |
-| Gallery | image list + `{.gallery}` | — | alt required; Zoom reuse |
+| Gallery | ```` ```gallery ```` fence, `![alt](src) # description {link= class=}` per line | — | alt required; per-item link; Zoom marked at emit time |
 | Image | `![alt](src "title")` (render hook; block image + `{#id num= caption= width= height=}` → figure) | `{{< image src= command= options= alt=\|decorative= >}}caption{{< /image >}}` | processed images only in the shortcode |
 | Table family | `{.full-width}` `{.fields}` `{.matrix}` `{caption=}` `{#id}` `{#id num= caption=}` `{tab= group= value=}` | — | site classes pass through; exclusivity: fields ⟂ matrix/full-width/num, num ⟂ tab |
 | Fig / Tbl / Eq / Eg | image / table / `$$` block / fence + `{#id num= caption=}` | `{{< fig >}}` `{{< tbl >}}` `{{< eq >}}` `{{< eg >}}` | default IDs `fig- tbl- eq- eg-<num>`; `eg` caption required |
 | Xref | plain Markdown links (kind-less) | `{{< xref fig\|tbl\|eq\|eg="…" [page=] [anchor=] >}}` | |
 | Book indexes | — | `book-toc` `book-figures` `book-tables` `book-equations` `book-examples` | no `kind` parameter |
 | Fences | `{title copy wrap collapse label id tab group value num caption lineNos hl_lines lineNoStart anchorLineNos tabWidth}` | — | Prism mode unchanged |
-| Data fences | `mermaid plantuml markmap math chem echarts infographic checksums filetree` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.tdEchartsFunctions` |
+| Data fences | `mermaid plantuml markmap math chem echarts infographic checksums filetree gallery` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.tdEchartsFunctions` |
 | Leaves | raw `<kbd>` | `kbd` `badge` `param` `include` `comment` `contributors` `asciinema` | `badge` has no `outline`; `param` scalar only |
 | Release / OpenAPI | `checksums` fence | `release-card` `release-assets` `download` / `swaggerui` `redoc` | |
 
@@ -111,16 +111,12 @@ Steps:
 {.steps}
 ```
 
-Cards, Gallery, Fields:
+Cards, Fields:
 
 ```markdown
 - [Install](/docs/install/) — Deploy from scratch.
 - [Configure](/docs/configure/) — Tune the runtime.
 {.cards}
-
-- ![Overview](overview.webp)
-- ![Detail](detail.webp) — Request details
-{.gallery}
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -168,6 +164,11 @@ Data fences and leaves:
 - LICENSE                         # {icon="fa-solid fa-scale-balanced" tone=warning}
 ```
 
+```gallery
+![Overview page](overview.webp) # The landing view
+![Detail page](detail.webp) # Request details {link=/docs/requests/}
+```
+
 ```echarts {height="320px"}
 series: [{type: bar, data: [12, 9, 4]}]
 ```
@@ -193,7 +194,7 @@ Every render hook that reads block attributes goes through
 | `style`, `on*`, unknown | build error | build error | build error (`style`/`on*`/`srcdoc`/reserved `data-td-code*` and any unknown key; enhanced-code-blocks §5.5) | build error | build error |
 
 The theme never accepts author `style` or event handlers anywhere. Markers
-(`steps cards gallery fields matrix full-width`) are fixed vocabulary;
+(`steps cards fields matrix full-width`) are fixed vocabulary;
 any other class on a table, image, blockquote, or figure is site CSS and is
 passed through untouched.
 
@@ -220,7 +221,7 @@ covers what Goldmark cannot report:
 | `{{% alert color=… title=… %}}`, `{{% details %}}`, `{{% pageinfo %}}`, raw `<details><summary>` | `> [!TYPE] title` / `> [!DETAILS]-` | `callout` |
 | `{{< tabpane >}}{{% tab header=… %}}`, `{{< code-group >}}{{< code-tab >}}` | adjacent fences `{tab= group= value=}` (code-only panes) or `{{< tabs >}}{{< tab >}}` | `tabs` |
 | `{{< filetree >}}` `filetree/folder` `filetree/file`, interim `{.filetree}` lists | ```` ```filetree ```` fence (`label`→`title`, `open`/`icon`/`color`/`comment`/`link` kept) | `filetree` |
-| `{{< gallery >}}` `gallery/image` | image list + `{.gallery}` | `gallery` |
+| `{{< gallery >}}` `gallery/image`, image list + `{.gallery}` | ```` ```gallery ```` fence | `gallery` |
 | `{{< echarts >}}` `{{< infographic >}}` | same-named fences (`$fn:` unchanged; `js` sub-fences must move to `window.tdEchartsFunctions`) | `datafence` |
 | `doc-cards`/`doc-card`, `nav-cards`/`nav-card`, `card`/`cardpane`, `doc-carousel` | `{{< cards >}}{{< card >}}` or link list + `{.cards}` | `cards` |
 | `{{< imgproc … >}}` | `{{< image … >}}` (named only) | `image` |

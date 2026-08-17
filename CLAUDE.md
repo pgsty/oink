@@ -26,8 +26,10 @@ released theme tag in its `go.mod`; local cross-repo work goes through an
 ignored `go.work` (`HUGO_MODULE_WORKSPACE=go.work`) that replaces the module
 with `../oink`. Never commit a filesystem `replace` into either module.
 
-Theme branches: `main` = next release, `release` = current stable, `vX.Y.Z` tags
-are immutable. Site repo has only `main`.
+Theme branches: `main` = next release; `release` = current stable, created at
+the first 1.0 tag (there is none before it); `vX.Y.Z` tags are immutable and
+only count as published once pushed (0.4.2 was tagged locally but never
+pushed). Site repo has only `main`.
 
 ## Commands
 
@@ -103,7 +105,9 @@ Interactive preview of the fixture site:
 cd exampleSite && hugo server
 ```
 
-CI additionally verifies the `system` typography preset
+CI additionally builds one small consumer site in Hugo Module mode
+(`HUGO_MODULE_REPLACEMENTS` pointing at the checkout) so module-only path
+resolution is exercised, verifies the `system` typography preset
 (`HUGO_PARAMS_UI_TYPOGRAPHY=system` must emit
 `data-td-typography="system"`), that legacy Sass font overrides in a consumer's
 `_variables_project.scss` still win, and that an invalid preset **fails the

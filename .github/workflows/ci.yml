@@ -116,6 +116,38 @@ jobs:
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning
 
+      # exampleSite mounts the theme through a classic themes/ symlink; the
+      # published form is a Hugo Module. Build one small site that imports the
+      # module (replaced with this checkout) so module-only path resolution —
+      # os.ReadFile in the include shortcode, mounted static assets, print —
+      # is exercised on every run.
+      - name: Build a consumer site in Hugo Module mode
+        run: |
+          site="$RUNNER_TEMP/oink-module-site"
+          mkdir -p "$site/content/docs" "$site/content/snippets"
+          cat > "$site/hugo.yaml" <<'YAML'
+          baseURL: https://example.org/
+          title: Module fixture
+          module:
+            imports:
+              - path: github.com/pgsty/oink
+          outputs:
+            section: [HTML, print]
+          params:
+            offline_search: true
+            ui:
+              image_zoom: true
+          YAML
+          printf -- '---\ntitle: Docs\n---\n\nSection.\n' > "$site/content/docs/_index.md"
+          printf -- 'included text\n' > "$site/content/snippets/part.md"
+          printf -- '---\ntitle: Page\n---\n\n{{< include file="/snippets/part.md" >}}\n\n```filetree\n- a/\n  - b.txt\n```\n' > "$site/content/docs/page.md"
+          HUGO_MODULE_REPLACEMENTS="github.com/pgsty/oink -> $GITHUB_WORKSPACE" \
+            hugo --source "$site" --destination "$RUNNER_TEMP/oink-module-public" \
+              --printPathWarnings --panicOnWarning
+          grep -q 'included text' "$RUNNER_TEMP/oink-module-public/docs/page/index.html"
+          test -f "$RUNNER_TEMP/oink-module-public/_print/docs/index.html"
+          test -f "$RUNNER_TEMP/oink-module-public/webfonts/fa-solid-900.woff2"
+
       - name: Check enhanced code-block contracts
         run: python3 scripts/check-code-blocks.py
 

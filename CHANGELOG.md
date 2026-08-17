@@ -83,6 +83,9 @@ fail the build with the new name rather than being silently ignored.
 - Four-state goldens (HTML, print, Markdown, RSS, `llms.txt`) over 30 surfaces
   of the fixture site, plus output-structure, duplicate-ID, bundle-graph, and
   output-security checks.
+- CI builds a small consumer site in Hugo Module mode (the fixture site
+  mounts the theme through a classic `themes/` symlink), so module-only path
+  resolution such as the `include` shortcode's `os.ReadFile` is covered.
 
 ### Changed
 

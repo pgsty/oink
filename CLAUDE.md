@@ -154,7 +154,7 @@ stylesheet is shipped as a prebuilt artifact rather than running `rtlcss`.
 assemble the shell from small partials in `layouts/_partials/shell/`
 (`sidebar-tree`, `toc-aside`, `subnav`, `search-dialog`, `root-menu`,
 `taxonomy-filter`, …). Shell activation is **type-based, not path-based**:
-`params.ui.shell_types` (default `docs, blog, swagger`) decides, so a site can
+`params.ui.shell_types` (default `docs, book, blog, swagger`) decides, so a site can
 place docs anywhere and assign `type: docs` via a front-matter cascade.
 `params.ui.docs_section` / `blog_section` only name the roots for navigation.
 `_partials/shell/config.html` is the single `return`-style resolver for

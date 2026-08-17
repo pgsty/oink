@@ -8,7 +8,7 @@
   <body class="td-{{ .Kind }} td-print-view{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
     <div class="container-fluid td-print-shell">
-      <main id="td-main-content" class="td-print-document" role="main" tabindex="-1">
+      <main id="td-main-content" class="td-print-document" tabindex="-1">
         {{ block "main" . }}{{ end }}
       </main>
     </div>

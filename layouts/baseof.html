@@ -13,7 +13,7 @@
     {{ partial "skip-link.html" . }}
     {{ if partial "shell/navbar-enabled.html" . }}{{ partial "navbar.html" . }}{{ end }}
     <div class="container-fluid td-default td-outer">
-      <main id="td-main-content" role="main" class="td-main" tabindex="-1">
+      <main id="td-main-content" class="td-main" tabindex="-1">
         {{ block "main" . }}{{ end }}
       </main>
       {{ partial "footer.html" . }}

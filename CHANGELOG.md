@@ -212,6 +212,15 @@ fail the build with the new name rather than being silently ignored.
 
 ### Fixed
 
+- Landmarks: `<main>` no longer carries the redundant `role="main"`, and the
+  sidebar `<aside>` no longer repeats the inner `<nav>`'s "Section navigation"
+  label, so assistive technology lists one navigation landmark instead of two
+  with the same name.
+- `CLAUDE.md` documented `params.ui.shell_types` as `docs, blog, swagger`; the
+  declared default has been `[docs, book, blog, swagger]` since Book shipped.
+  `check-params.py` now asserts that every `params.X (default V)` in
+  `CLAUDE.md` / `README.md` matches `hugo.yaml`.
+
 - The table render hook runs in the print and RSS outputs, so a table keeps its
   caption, number, and scroll container outside interactive HTML.
 - Folded (`[!TYPE]-` / `[!DETAILS]`) callouts get symmetric summary padding:

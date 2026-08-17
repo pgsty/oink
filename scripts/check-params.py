@@ -321,6 +321,53 @@ def legacy_key(fragment: str) -> str:
     return keys[-1]
 
 
+def hugo_yaml_values() -> dict[str, str]:
+    """Dotted key -> scalar/inline-list text of the theme's hugo.yaml (params only).
+
+    The file is flat enough for an indentation walk; block lists and block maps
+    are not needed for the keys the docs quote."""
+    values: dict[str, str] = {}
+    stack: list[tuple[int, str]] = []
+    for raw in (ROOT / "hugo.yaml").read_text(encoding="utf-8").splitlines():
+        line = raw.split(" #", 1)[0].rstrip() if not raw.lstrip().startswith("#") else ""
+        if not line.strip():
+            continue
+        indent = len(line) - len(line.lstrip())
+        key, _, value = line.strip().partition(":")
+        if not _ or not KEY_SHAPE.match(key.replace("-", "_")):
+            continue
+        while stack and stack[-1][0] >= indent:
+            stack.pop()
+        path = ".".join([k for _, k in stack] + [key])
+        if value.strip():
+            values[path] = value.strip()
+        stack.append((indent, key))
+    return values
+
+
+DOCUMENTED_DEFAULT = re.compile(r"`params\.([a-z0-9_.]+)`\s*\(default:?\s*`([^`]+)`\)")
+
+
+def check_documented_defaults() -> list[str]:
+    """`params.X` (default `V`) in CLAUDE.md / README.md must match hugo.yaml."""
+    errors: list[str] = []
+    values = hugo_yaml_values()
+    for name in ("CLAUDE.md", "README.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        for key, documented in DOCUMENTED_DEFAULT.findall(text):
+            declared = values.get(f"params.{key}")
+            require(declared is not None, f"{name} documents a default for params.{key} that hugo.yaml does not declare", errors)
+            if declared is None:
+                continue
+            normalise = lambda v: re.sub(r"[\[\]\s'\"]", "", v)  # noqa: E731
+            require(
+                normalise(declared) == normalise(documented),
+                f"{name}: params.{key} documented default {documented!r} != hugo.yaml {declared!r}",
+                errors,
+            )
+    return errors
+
+
 def check_legacy_registries() -> list[str]:
     errors: list[str] = []
     site_registry = CONFIG_LEGACY.read_text(encoding="utf-8")
@@ -404,7 +451,12 @@ def main() -> int:
     args = parser.parse_args()
 
     site, page, param_reads = scan_read_points()
-    errors = check_shapes(site, page) + check_page_parity(site, page, param_reads) + check_legacy_registries()
+    errors = (
+        check_shapes(site, page)
+        + check_page_parity(site, page, param_reads)
+        + check_legacy_registries()
+        + check_documented_defaults()
+    )
     if not args.source_only:
         errors += check_builds(args.hugo)
 

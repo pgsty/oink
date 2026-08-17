@@ -35,14 +35,13 @@
       <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if not $hasToc }} td-shell-layout--no-toc{{ end }}{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
            style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
         {{ if $hasSidebar -}}
-        <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none"
-               aria-label="{{ T "ui_sidebar_nav" }}">
+        <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none">
           {{ partial "shell/sidebar-panel.html" . }}
         </aside>
         <div class="td-shell-drawer-backdrop d-md-none d-print-none" data-td-shell-drawer-close></div>
         {{ partial "shell/floating-pill.html" . }}
         {{- end }}
-        <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
+        <main id="td-main-content" class="td-shell-main" tabindex="-1">
           <article class="td-shell-article">
             {{ $crumbs := partial "shell/breadcrumb-enabled.html" . -}}
             {{- /* On the blog root and its first-level sections the split

@@ -313,12 +313,15 @@ class Document:
                 if self.lines[index].strip() == first:
                     return index + 1
             return 0
-        if first.startswith("{") and not first.startswith("{{"):
-            depth = 0
-            for index, line in enumerate(self.lines):
-                depth += line.count("{") - line.count("}")
-                if depth <= 0:
-                    return index + 1
+        if first == "{" or re.match(r'^\{\s*"', first):
+            source = "\n".join(self.lines)
+            try:
+                value, end = json.JSONDecoder().raw_decode(source)
+            except json.JSONDecodeError as exc:
+                raise ScanError(f"invalid JSON front matter: {exc}") from exc
+            if not isinstance(value, dict):
+                raise ScanError("JSON front matter must be an object")
+            return source[:end].count("\n") + 1
         return 0
 
     # -- helpers ----------------------------------------------------------

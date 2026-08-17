@@ -788,6 +788,20 @@ class FrontMatterCase(unittest.TestCase):
         )
         self.assertIn("not migrated automatically", found[0].reason)
 
+    def test_json_front_matter_braces_inside_strings_do_not_end_the_object(self):
+        _, found = self.unchanged(
+            """\
+            {
+              "title": "Config } reference",
+              "hide_feedback": true
+            }
+
+            Body.
+            """,
+            findings=1,
+        )
+        self.assertEqual(found[0].reason, "TOML/JSON front matter is not migrated automatically")
+
     # -- safety ---------------------------------------------------------------
     def test_body_and_unrelated_front_matter_are_untouched(self):
         self.unchanged(
@@ -919,6 +933,44 @@ class FrontMatterCase(unittest.TestCase):
 
 
 class FrontMatterCliCase(unittest.TestCase):
+    def test_check_and_report_fail_closed_on_missing_or_empty_sites(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            missing = Path(tmp) / "missing"
+            for command in (
+                ["check", "--site", str(missing)],
+                ["report", "--sites", str(missing)],
+            ):
+                result = subprocess.run(
+                    [sys.executable, str(CLI), *command],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                self.assertIn("site directory not found", result.stderr)
+
+            empty = Path(tmp) / "empty"
+            (empty / "content").mkdir(parents=True)
+            result = subprocess.run(
+                [sys.executable, str(CLI), "check", "--site", str(empty)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+            self.assertIn("no Markdown content files", result.stderr)
+
+    def test_check_fails_on_non_utf8_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            site = Path(tmp) / "site"
+            (site / "content").mkdir(parents=True)
+            (site / "content" / "bad.md").write_bytes(b"\xff\xfe")
+            result = subprocess.run(
+                [sys.executable, str(CLI), "check", "--site", str(site)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+            self.assertIn("not utf-8", result.stderr)
+
     def test_cli_dry_run_then_write(self):
         with tempfile.TemporaryDirectory() as tmp:
             site = Path(tmp) / "site"

@@ -31,7 +31,7 @@ def build_report(sites: list[Path], only: list[str] | None) -> dict:
             if outcome.changed:
                 changed += 1
             text = outcome.final or outcome.original
-            if text:
+            if text and not outcome.error:
                 residual.extend(f.__dict__ for f in residual_findings(outcome.rel, text))
             if outcome.error:
                 findings.append({"path": outcome.rel, "line": 0, "kind": "error", "reason": outcome.error, "source": ""})

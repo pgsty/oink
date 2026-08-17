@@ -62,6 +62,27 @@ def content_files(site: Path, paths: list[str] | None = None) -> list[Path]:
     return sorted(files)
 
 
+def validate_scan_targets(site: Path, paths: list[str] | None = None) -> list[str]:
+    """Return fail-closed target errors before a report/check/migration run."""
+
+    if not site.is_dir():
+        return [f"site directory not found: {site}"]
+    roots = [site / p for p in paths] if paths else [site / content_dir(site)]
+    errors: list[str] = []
+    for root in roots:
+        resolved = root.resolve()
+        try:
+            resolved.relative_to(site)
+        except ValueError:
+            errors.append(f"scan target is outside the site: {root}")
+            continue
+        if not resolved.exists():
+            errors.append(f"scan target not found: {root}")
+    if not errors and not content_files(site, paths):
+        errors.append(f"no Markdown content files found under {', '.join(str(root) for root in roots)}")
+    return errors
+
+
 def read_text(path: Path) -> str | None:
     data = path.read_bytes()
     try:
@@ -116,7 +137,12 @@ def process_site(site: Path, only: list[str] | None, paths: list[str] | None = N
     for path in content_files(site, paths):
         rel = str(path.relative_to(site))
         outcome = FileOutcome(path, rel)
-        text = read_text(path)
+        try:
+            text = read_text(path)
+        except OSError as exc:
+            outcome.error = f"{type(exc).__name__}: {exc}"
+            outcomes.append(outcome)
+            continue
         if text is None:
             outcome.error = "not utf-8"
             outcomes.append(outcome)
@@ -214,8 +240,10 @@ def print_diff(outcome: FileOutcome, limit: int) -> None:
 # ------------------------------------------------------------------- commands
 def cmd_migrate(args: argparse.Namespace) -> int:
     site = args.site.resolve()
-    if not site.is_dir():
-        print(f"site directory not found: {site}", file=sys.stderr)
+    target_errors = validate_scan_targets(site, args.paths)
+    if target_errors:
+        for error in target_errors:
+            print(error, file=sys.stderr)
         return 2
     only = args.only.split(",") if args.only else None
     outcomes = process_site(site, only, args.paths)
@@ -246,7 +274,9 @@ def cmd_migrate(args: argparse.Namespace) -> int:
         print(f"ERROR {rel}: {error}")
     if args.json:
         args.json.write_text(json.dumps(outcome_json(outcomes, include_residual=False), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    if args.write:
+    if args.write and (bad or errors):
+        print("\nwrote 0 file(s): resolve errors and non-idempotent transforms first")
+    elif args.write:
         written = 0
         for outcome in changed:
             if not outcome.idempotent:
@@ -262,22 +292,43 @@ def cmd_migrate(args: argparse.Namespace) -> int:
 
 def cmd_check(args: argparse.Namespace) -> int:
     site = args.site.resolve()
+    target_errors = validate_scan_targets(site, args.paths)
+    if target_errors:
+        for error in target_errors:
+            print(error, file=sys.stderr)
+        return 2
     findings: list[Finding] = []
+    errors: list[str] = []
     for path in content_files(site, args.paths):
-        text = read_text(path)
-        if text is None:
+        try:
+            text = read_text(path)
+        except OSError as exc:
+            errors.append(f"{path.relative_to(site)}: {type(exc).__name__}: {exc}")
             continue
-        findings.extend(residual_findings(str(path.relative_to(site)), text))
+        if text is None:
+            errors.append(f"{path.relative_to(site)}: not utf-8")
+            continue
+        try:
+            findings.extend(residual_findings(str(path.relative_to(site)), text))
+        except Exception as exc:
+            errors.append(f"{path.relative_to(site)}: {type(exc).__name__}: {exc}")
     for finding in findings:
         print(f"{finding.path}:{finding.line}: [{finding.kind}] {finding.reason} — {finding.source}")
+    for error in errors:
+        print(f"ERROR {error}", file=sys.stderr)
     print(f"{len(findings)} residual legacy construct(s) in {site}")
-    return 1 if findings else 0
+    return 2 if errors else (1 if findings else 0)
 
 
 def cmd_report(args: argparse.Namespace) -> int:
     from .report import build_report, render_markdown
 
     sites = [p.resolve() for p in args.sites]
+    target_errors = [error for site in sites for error in validate_scan_targets(site)]
+    if target_errors:
+        for error in target_errors:
+            print(error, file=sys.stderr)
+        return 2
     only = args.only.split(",") if args.only else None
     report = build_report(sites, only)
     if args.json:
@@ -289,7 +340,12 @@ def cmd_report(args: argparse.Namespace) -> int:
         args.md.write_text(markdown, encoding="utf-8")
     else:
         print(markdown)
-    return 0
+    has_errors = any(
+        finding.get("kind") == "error"
+        for site in report["sites"].values()
+        for finding in site["findings"]
+    )
+    return 1 if has_errors else 0
 
 
 def build_parser() -> argparse.ArgumentParser:

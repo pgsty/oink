@@ -26,6 +26,7 @@
   "hasAlt" true "alt" $alt "decorative" (eq $alt "")
 ) -}}
 {{- $src := $image.src -}}
+{{- $fullSrc := $image.fullSrc -}}
 {{- if eq $format "rss" }}{{ $src = absURL $src }}{{ end -}}
 {{- $width := $image.width -}}
 {{- $height := $image.height -}}
@@ -38,10 +39,31 @@
 {{- $classes := slice -}}
 {{- $generic := dict -}}
 {{- if $isBlock -}}
-  {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "num" "caption" "width" "height" "link") "position" .Position "kind" "image") -}}
+  {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "num" "caption" "width" "height" "link" "command" "options") "position" .Position "kind" "image") -}}
   {{- $classes = $policy.classes -}}
   {{- $generic = $policy.generic -}}
   {{- $caption = strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
+  {{- /* Hugo image processing on the native form. The shared operation partial
+         is the same one the `image` shortcode uses, so the accepted commands,
+         the option grammar and the failure messages are identical; a source
+         that cannot be processed (static path, remote URL, SVG) fails here
+         exactly as it does there. */ -}}
+  {{- $hasCommand := isset $policy.consumed "command" -}}
+  {{- $hasOptions := isset $policy.consumed "options" -}}
+  {{- if ne $hasCommand $hasOptions -}}
+    {{- errorf "image: command and options must be given together at %s" .Position -}}
+  {{- end -}}
+  {{- if $hasCommand -}}
+    {{- $processed := partial "content/image-process.html" (dict
+      "name" "image" "position" .Position "image" $image
+      "command" (index $policy.consumed "command") "options" (index $policy.consumed "options")
+    ) -}}
+    {{- $src = $processed.src -}}
+    {{- if eq $format "rss" }}{{ $src = absURL $src }}{{ end -}}
+    {{- $fullSrc = $processed.fullSrc -}}
+    {{- $width = $processed.width -}}
+    {{- $height = $processed.height -}}
+  {{- end -}}
   {{- with index $policy.consumed "width" -}}
     {{- if not (findRE `^[1-9][0-9]*$` .) }}{{ errorf "image: width must be a positive integer; got %q at %s" . $.Position }}{{ end -}}
     {{- $width = int . -}}
@@ -89,14 +111,20 @@
   {{- range $key, $value := $generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $key (htmlEscape $value) }}{{ end -}}
 {{- end -}}
 {{- /* The Zoom marker sits before loading= so the candidate scan's attribute
-       regex (marker followed by whitespace) matches. */ -}}
+       regex (marker followed by whitespace) matches. It carries the full-size
+       URL only when the rendered image is a processed derivative; a bare marker
+       means "use src". */ -}}
+{{- $zoomAttr := "" -}}
+{{- if $zoomable -}}
+  {{- $zoomAttr = cond (ne $fullSrc $src) (printf ` data-td-image-zoom="%s"` ($fullSrc | safeURL)) " data-td-image-zoom" -}}
+{{- end -}}
 {{- $img := printf `<img%s src="%s" alt="%s"%s%s%s%s loading="lazy" decoding="async"%s%s>`
   (cond $plainBlock (printf ` class="td-image%s"` (cond (gt (len $classes) 0) (printf " %s" (delimit $classes " ")) "")) "")
   ($src | safeURL) (htmlEscape $image.alt)
   (cond (ne $title "") (printf ` title="%s"` (htmlEscape $title)) "")
   (cond (gt $width 0) (printf ` width="%d"` $width) "")
   (cond (gt $height 0) (printf ` height="%d"` $height) "")
-  (cond $zoomable " data-td-image-zoom" "")
+  $zoomAttr
   (cond (and $plainBlock (ne $id "")) (printf ` id="%s"` $id) "")
   $genericAttrs
 -}}

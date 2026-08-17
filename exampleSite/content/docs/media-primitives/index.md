@@ -44,3 +44,8 @@ The **caption** is Markdown; alt text and the byline come from the resource meta
 
 ![Blue and gold page-resource test pattern](page.png)
 {caption="A linked figure keeps the anchor inside the figure" link="/docs/"}
+
+## Processed native image {#processed-native}
+
+![Blue and gold page-resource test pattern](page.png)
+{command="Fit" options="32x20" caption="The attribute line can process too"}

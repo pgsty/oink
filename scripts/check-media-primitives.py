@@ -52,10 +52,14 @@ def check_outputs(public: Path) -> list[str]:
         # figure, and a linked image is never marked for Zoom.
         '<a class="td-figure__link" href="/docs/"><img src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="64" height="40" loading="lazy" decoding="async"></a>',
         '<span class="td-fig-caption">A linked figure keeps the anchor inside the figure</span>',
+        # render-image hook: {command=/options=} processes the source, and the
+        # Zoom marker carries the original so the dialog is not the derivative.
+        '<img src="/docs/media-primitives/page_hu_5572166d4bfa1d62.png" alt="Blue and gold page-resource test pattern" width="32" height="20" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async">',
+        '<span class="td-fig-caption">The attribute line can process too</span>',
     ):
         require(marker in page, f"HTML media fixture missing {marker}", errors)
     require(page.count("td-figure--processed") == 4, "image shortcode lost a fixture", errors)
-    require(page.count('loading="lazy" decoding="async"') == 7, "images lack stable loading attributes", errors)
+    require(page.count('loading="lazy" decoding="async"') == 8, "images lack stable loading attributes", errors)
     require("td-imgproc" not in page and "card-img-top" not in page, "legacy imgproc markup survived", errors)
     require("resources.GetRemote" not in page, "rendered media output leaked template code", errors)
 
@@ -74,7 +78,7 @@ def check_outputs(public: Path) -> list[str]:
         require(marker in markdown, f"Markdown media fixture missing {marker}", errors)
     for marker in ("<figure", "<img", "td-figure", "data-td-image-zoom"):
         require(marker not in markdown, f"Markdown media output contains {marker}", errors)
-    require(markdown.count("![") == 7, "Markdown media output lost image order", errors)
+    require(markdown.count("![") == 8, "Markdown media output lost image order", errors)
 
     for marker in (
         "Blue and gold page-resource test pattern",
@@ -363,6 +367,12 @@ HOOK_INVALID_CASES = (
     # `link` needs a figure to live in; the bare case already has native syntax.
     ("hook-link-without-caption", '![x](page.png)\n{link="/docs/"}\n', "link requires caption or num"),
     ("hook-link-unsafe", '![x](page.png)\n{caption="c" link="javascript:alert(1)"}\n', "unsupported link scheme"),
+    # Processing on the attribute line reuses the shortcode's operation partial,
+    # so it fails the same way on the same inputs.
+    ("hook-command-without-options", '![x](page.png)\n{command="Fit"}\n', "command and options must be given together"),
+    ("hook-options-without-command", '![x](page.png)\n{options="10x10"}\n', "command and options must be given together"),
+    ("hook-command-unknown", '![x](page.png)\n{command="Squish" options="10x10"}\n', "command must be one of"),
+    ("hook-command-on-static", '![x](/media/content-primitives-static.svg)\n{command="Fit" options="10x10"}\n', "cannot be processed"),
 )
 
 

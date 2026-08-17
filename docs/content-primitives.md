@@ -587,6 +587,15 @@ image `![alt](src "title")` resolves through the shared resolver:
   (positive integers; they override the resource dimensions and give static
   or remote images their box), `link`, plus `class`, `data-*`, `aria-*`;
   anything else fails the build;
+- `command` and `options` run Hugo image processing on the source, through the
+  same operation partial the `image` shortcode uses, so the accepted commands,
+  the option grammar and the failure messages are identical. They must be given
+  together, and a source that cannot be processed (static path, remote URL,
+  SVG) fails the build. The rendered `src` is the derivative and `width`/
+  `height` are its dimensions unless the attribute line overrides them; the
+  Zoom marker then carries the full-size original, so the dialog never shows
+  the derivative. This closes the gap that made processing and numbering
+  mutually exclusive: a processed image can now also be a numbered Book figure;
 - `link` wraps the image in `<a class="td-figure__link">` *inside* the figure
   and requires `caption` or `num`. A linked image without a caption is written
   `[![alt](src)](href)`, which the hook cannot turn into a figure because

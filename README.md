@@ -91,7 +91,9 @@ Set `params.ui.navbar_autohide: true` to tuck the navbar above the viewport on
 mouse-driven devices at the `md` breakpoint (768px) and above and reveal it
 from the center of the top edge. The two 64px corners stay inactive for
 collapsed-rail controls, while touch pointers and every drawer-width viewport
-keep the sticky navbar visible. A section cascade or page can override that
+keep the sticky navbar visible. The home page is exempt: a landing page shows
+its navbar even when the site-wide setting is on (its own front matter can
+still set `navbar_autohide: true`). A section cascade or page can override the
 policy with the top-level `navbar_autohide` front-matter key. This differs from
 `navbar_enabled: false`, which omits the navbar completely.
 

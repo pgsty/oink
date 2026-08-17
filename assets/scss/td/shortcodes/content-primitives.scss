@@ -101,12 +101,21 @@ a.td-badge {
   margin-block: 1.5rem;
 }
 
-.td-fields__label {
-  margin-block: 0 0.65rem;
-  color: var(--bs-body-color);
+// The group title above the list: a small heading in the heading face with a
+// rule that continues the field separators, so it reads as the title of the
+// block rather than a stray bold paragraph. Scoped under .td-fields so it
+// outranks the `.td-content p` body reset (which is why the old 650 weight
+// never showed).
+.td-fields .td-fields__label {
+  margin-block: 0 0.35rem;
+  padding-block-end: 0.45rem;
+  border-block-end: 2px solid var(--bs-border-color);
+  color: var(--bs-heading-color, var(--bs-body-color));
   font-family: var(--td-heading-font-family);
-  font-size: 1rem;
-  font-weight: 650;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .td-fields__list {

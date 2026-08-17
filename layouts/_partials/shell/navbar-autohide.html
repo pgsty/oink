@@ -1,9 +1,12 @@
 {{- /* Whether this page keeps the rendered navbar tucked above the viewport
        until the top-edge reveal zone or keyboard focus reaches it. Front
        matter — including cascaded front matter — overrides
-       params.ui.navbar_autohide. */ -}}
+       params.ui.navbar_autohide. The home page is exempt from the site-wide
+       setting: a landing page shows its navbar unless the home page's own front
+       matter sets navbar_autohide: true. */ -}}
 {{- $autohide := false -}}
 {{- if isset .Site.Params.ui "navbar_autohide" }}{{ $autohide = .Site.Params.ui.navbar_autohide }}{{ end -}}
+{{- if .IsHome }}{{ $autohide = false }}{{ end -}}
 {{- if isset .Params "navbar_autohide" }}{{ $autohide = .Params.navbar_autohide }}{{ end -}}
 {{- if ne (printf "%T" $autohide) "bool" -}}
   {{- errorf "navbar_autohide must be a boolean in %s" .Path -}}

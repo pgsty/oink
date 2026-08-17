@@ -113,7 +113,13 @@ body.td-book .td-shell-tree__link {
     text-align: center;
   }
 
+  // Numbered table: the caption is a title *above* the table (Chicago /
+  // O'Reilly convention), start-aligned, in the heading face — figures keep
+  // their caption below.
   &--tbl {
+    display: flex;
+    flex-direction: column-reverse;
+
     > .td-book-figure__body > .td-table-scroll,
     > .td-book-figure__body > table {
       margin-inline: auto;
@@ -121,6 +127,24 @@ body.td-book .td-shell-tree__link {
 
     > .td-book-figure__body > .td-table-scroll {
       margin-block-end: 0;
+    }
+
+    > figcaption {
+      margin: 0 0 0.6rem;
+      color: var(--bs-heading-color, var(--bs-body-color));
+      font-family: var(--td-heading-font-family);
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.35;
+      text-align: start;
+
+      .td-tbl-label {
+        font-family: inherit;
+      }
+
+      .td-tbl-caption {
+        font-weight: 600;
+      }
     }
   }
 

@@ -370,12 +370,16 @@ def check_navbar_autohide(hugo: str) -> list[str]:
             f"""baseURL: https://example.org/
 title: Navbar auto-hide fixture
 theme: {ROOT.name}
-disableKinds: [home, RSS, sitemap, taxonomy, term]
+disableKinds: [RSS, sitemap, taxonomy, term]
 params:
   offlineSearch: false
   ui:
     navbar_autohide: true
 """,
+        )
+        write(
+            source / "content/_index.md",
+            "---\ntitle: Home\n---\nThe home page keeps its navbar visible.\n",
         )
         write(
             source / "content/project.md",
@@ -402,6 +406,7 @@ params:
             "global": public / "project/index.html",
             "section": public / "docs/inherit/index.html",
             "page": public / "docs/override/index.html",
+            "home": public / "index.html",
         }
         for name, path in outputs.items():
             require(path.exists(), f"navbar auto-hide {name} fixture is missing", errors)
@@ -415,6 +420,10 @@ params:
         require(marker in global_page, "global navbar auto-hide policy did not apply", errors)
         require(marker not in section_page, "section navbar auto-hide override did not apply", errors)
         require(marker in page_override, "page navbar auto-hide override did not win", errors)
+        # the home page is exempt from the site-wide policy: a landing page shows its navbar
+        home_page = outputs["home"].read_text(encoding="utf-8")
+        require(marker not in home_page, "site-wide navbar auto-hide policy leaked onto the home page", errors)
+        require("landing-header" in home_page, "home page lost its navbar", errors)
     return errors
 
 

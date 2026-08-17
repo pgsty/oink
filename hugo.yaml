@@ -38,6 +38,7 @@ params:
     # auto-hide, and footer style can be overridden per page (or per section,
     # via a front-matter cascade) with the matching top-level keys.
     navbar_enabled: true
+    # Auto-hide never applies to the home page unless its own front matter asks.
     navbar_autohide: false
     footer_style: fat # fat | slim | none
     # Non-home pages with `layout: landing` reuse the search/command palette

@@ -176,12 +176,14 @@ translated_from:
 
 ### 2.5 Pager
 
-每张卡只有两个逻辑行：
+不是卡片，而是文末一行两个安静的文本链接：
 
-1. 标题 + 方向箭头；Previous 左对齐，Next 右对齐；
-2. 页面 description（缺失时使用纯文本 summary），Previous 左对齐，Next 右对齐。
-
-只有一个方向时，该卡横跨整个容器；不能留下空半栏。
+1. Previous 在行首：`←` + 链接标题（`LinkTitle`）；Next 在行尾：链接标题 + `→`；
+2. 只有标题，没有 description / summary；完整标题保留在 `title` 与无障碍名称中；
+3. 每一侧最多占行宽的一半（`max-width: calc(50% - gap/2)`），超出以省略号截断；
+4. 只有一个方向时，Previous 仍贴行首、Next 仍贴行尾，不居中、不占满；
+5. 当 Feedback 与 Annotation 都关闭、pager 成为文末第一个元素时，它自带一条
+   与 Annotation 同款的顶部细线，把文末与正文分开。
 
 ---
 
@@ -244,8 +246,8 @@ Q/E；不在 JavaScript 中注入一个不可见的特殊 root。
    一级 breadcrumb，标题填入原 breadcrumb 空间，但 Action 下拉在根页与子页
    保持完全相同的位置。
 7. 文末源码与渲染顺序均为 Feedback → Annotation → Pager → Comments。
-8. 单方向 pager 占满宽度，卡片收窄为标题/简介两行；简介单行省略，Next 简介
-   右对齐，Pager 与 Comments 之间不叠加大段留白。
+8. pager 是"← 标题 / 标题 →"两个文本链接，各不超过半行、超长省略；单方向时
+   仍贴各自一侧；Pager 与 Comments 之间不叠加大段留白。
 9. Feedback 一次点击即记录；No 可选原因；状态按语言/页面持久化；
    Giscus 启用时可跳到评论区；页面中没有 textarea、Submit 或 endpoint。
 10. Annotation 可通过 consumer layout 覆盖，旧的 lastmod override 继续工作。

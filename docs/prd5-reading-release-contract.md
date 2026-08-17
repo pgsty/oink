@@ -38,8 +38,11 @@ manual pages intentionally live at the content root may set
 tree, while top-level `toc_root: true` overview sections remain excluded. Any
 value other than `home` or `section` is a build error.
 
-Interactive HTML renders only the sides that exist and emits matching
-`<link rel="prev">` / `<link rel="next">` elements in the document head.
+Interactive HTML renders only the sides that exist — as two text links,
+`← LinkTitle` at the inline start and `LinkTitle →` at the inline end, each
+capped at half the row and truncated with an ellipsis (no cards, no
+description) — and emits matching `<link rel="prev">` / `<link rel="next">`
+elements in the document head.
 These relations use `RelPermalink`, keeping client-side paging on the current
 origin even when a development server overrides the configured base URL.
 Print, Markdown, and RSS contain no pager markup or relations.

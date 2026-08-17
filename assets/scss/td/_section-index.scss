@@ -31,12 +31,13 @@
   }
 
   // Card mode reuses the content-card grid: the index becomes a grid of
-  // link cards (icon, title, one-line description), no rule above it.
+  // link cards (icon, title, one-line description). The rule above stays: the
+  // group only renders when it has at least one navigable child, and the line
+  // separates it from the section's own prose.
   &--cards {
     display: grid;
     gap: 1rem;
-    padding-top: 0;
-    border-top: 0;
+    padding-top: 1.5rem;
   }
 
   &__card {

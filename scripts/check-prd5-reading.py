@@ -587,8 +587,11 @@ def check_pager_sources() -> list[str]:
         "page-end order is not feedback, annotation, pager, comments",
         errors,
     )
-    require("&__card:only-child" in styles, "single-direction pager does not span the grid", errors)
-    require("td-pager__summary" in pager, "pager lost the second-row description", errors)
+    require("&__link--prev {\n    margin-inline-end: auto;" in styles
+            and "&__link--next {\n    margin-inline-start: auto;" in styles,
+            "a single-direction pager does not keep its own edge", errors)
+    require("td-pager__summary" not in pager and "td-pager__title" in pager,
+            "pager renders more than the linked title", errors)
     for marker in (
         "[dir='rtl']",
         "@media (prefers-reduced-motion: reduce)",

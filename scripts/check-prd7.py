@@ -101,17 +101,24 @@ def check_sources() -> list[str]:
         require('partial "page-end.html"' in (ROOT / template).read_text(),
                 f"{template} bypasses page-end", errors)
 
-    require("td-pager__summary" in pager and "&__card:only-child" in pager_styles,
-            "pager lost its two-row or full-width boundary behavior", errors)
-    require("with .Description }}{{ $description = . | markdownify" in pager
-            and "$description := .Summary" in pager
-            and 'replaceRE `\\s+` " "' in pager
-            and "truncate 180" in pager,
-            "pager descriptions no longer distinguish rendered summaries from Markdown metadata", errors)
-    require("white-space: nowrap" in pager_styles
-            and "&__card--next &__summary" in pager_styles
+    # Two text links, title only: "← previous" at the start, "next →" at the
+    # end, each capped at half the row and truncated with an ellipsis.
+    require("td-pager__summary" not in pager and "td-pager__card" not in pager,
+            "pager regressed to description cards", errors)
+    require('class="td-pager__link td-pager__link--prev"' in pager
+            and 'class="td-pager__link td-pager__link--next"' in pager
+            and 'title="{{ .LinkTitle }}"' in pager
+            and pager.count("td-pager__arrow") == 2,
+            "pager links lost their arrow/title/full-title structure", errors)
+    require("max-width: calc(50% - 0.5rem)" in pager_styles
+            and "text-overflow: ellipsis" in pager_styles
+            and "white-space: nowrap" in pager_styles
+            and "&__link--prev {\n    margin-inline-end: auto;" in pager_styles
+            and "&__link--next {\n    margin-inline-start: auto;" in pager_styles
             and "font-family: var(--td-body-font-family)" in pager_styles,
-            "pager descriptions no longer stay on one aligned line", errors)
+            "pager links no longer cap at half width, truncate, or keep their own edge", errors)
+    require(".td-page-end > .td-pager:first-child" in pager_styles,
+            "a pager that opens the page end lost its separating rule", errors)
     annotation_styles = content_styles.split(".td-page-annotation", 1)[1].split("}", 1)[0]
     require("font-family: var(--td-body-font-family)" in annotation_styles,
             "page annotation reverted to a code-like font", errors)
@@ -457,7 +464,7 @@ params:
             require(first is not None and first.group(1) == expected,
                     f"{name} self-root first link is not {expected}", errors)
             if name == "manual":
-                prev = re.search(r'<a class="td-pager__card td-pager__card--prev" href="([^"]+)"', html)
+                prev = re.search(r'<a class="td-pager__link td-pager__link--prev" href="([^"]+)"', html)
                 require(prev is not None and prev.group(1) == expected,
                         "default self-root pager does not return to its own landing", errors)
     return errors

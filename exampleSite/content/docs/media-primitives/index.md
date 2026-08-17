@@ -12,25 +12,23 @@ resources:
 
 ## Named page resource
 
-{{< image src="page.png" command="Fit" options="48x32" alt="Blue and gold page-resource test pattern" >}}
-A **page resource** caption with `inline code`.
-{{< /image >}}
+![Blue and gold page-resource test pattern](page.png)
+{command="Fit" options="48x32" caption="A page resource caption with inline code."}
 
 ## Named global resource
 
-{{< image src="media/content-primitives-global.png" command="Resize" options="32x" alt="Green and violet global-resource test pattern" >}}
-A global asset caption.
-{{< /image >}}
+![Green and violet global-resource test pattern](media/content-primitives-global.png)
+{command="Resize" options="32x" caption="A global asset caption."}
 
 ## Explicit decorative image
 
-{{< image src="page.png" command="Crop" options="24x24" decorative=true >}}{{< /image >}}
+![](page.png)
+{command="Crop" options="24x24"}
 
 ## Resource metadata alt and byline
 
-{{< image src="page.png" command="Fill" options="40x24" >}}
-The **caption** is Markdown; alt text and the byline come from the resource metadata.
-{{< /image >}}
+![](page.png)
+{command="Fill" options="40x24" caption="Alt text and the byline come from the resource metadata."}
 
 ## Plain Markdown image (render hook)
 

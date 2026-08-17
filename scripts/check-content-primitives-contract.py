@@ -72,8 +72,10 @@ REQUIRED_LITERALS = (
     "td-tabs:v1:<group>",
     "#<group>-<value>",
     "data-td-tabs-ready",
-    "{{< image src=",
+    # The `image` shortcode is retired; its processing parameters live on the
+    # block-image attribute line, and the contract must still pin their grammar.
     "| `command` | yes | `Fit`, `Resize`, `Fill`, `Crop` | none |",
+    "The `image` shortcode is retired.",
     "A standalone public Icon shortcode is deferred.",
     "`params.ui.image_zoom.enable`",
     "The Markdown output must contain no component classes",

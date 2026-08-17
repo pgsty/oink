@@ -101,12 +101,6 @@ body.td-book .td-shell-tree__link {
     }
   }
 
-  // The processed figure is capped at its rendered width.
-  &--processed {
-    max-width: var(--td-figure-max, 100%);
-    margin-inline: auto;
-  }
-
   &__byline {
     display: block;
     color: var(--bs-tertiary-color);

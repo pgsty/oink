@@ -869,9 +869,9 @@ class TransformationCase(unittest.TestCase):
             {{< badge text="Deprecated" tone="danger" outline=false >}}
             """,
             """\
-            {{< image src="images/x.webp" command="Fit" options="640x320" alt="Preview" >}}
+            {{< imgproc src="images/x.webp" command="Fit" options="640x320" alt="Preview" >}}
             Caption **md**.
-            {{< /image >}}
+            {{< /imgproc >}}
 
             {{% imgproc ddia Fit "768x512" %}}{{% /imgproc %}}
 
@@ -884,13 +884,38 @@ class TransformationCase(unittest.TestCase):
 
             {{< badge text="Deprecated" tone="danger" >}}
             """,
-            findings=1,
+            findings=2,
         )
-        self.assertEqual(counts["imgproc"], 1)
         self.assertEqual(counts["readfile"], 2)
         self.assertEqual(counts["fencetitle"], 1)
         self.assertEqual(counts["badge.outline_dropped"], 1)
-        self.assertIn("positional imgproc", found[0].reason)
+        reasons = " | ".join(f.reason for f in found)
+        # A Markdown caption cannot survive as a plain-text attribute value, so
+        # the block is reported and left for a human instead of being flattened.
+        self.assertIn("caption is Markdown", reasons)
+        self.assertIn("positional imgproc", reasons)
+
+    def test_image_shortcode_to_attribute_line(self):
+        """A plain-text caption converts cleanly to the block-image attribute line."""
+        counts, _ = self.assertMigrates(
+            """\
+            {{< image src="a.png" command="Fit" options="640x320" alt="A" >}}
+            A plain caption.
+            {{< /image >}}
+
+            {{< imgproc src="b.png" command="Crop" options="24x24" decorative=true >}}{{< /imgproc >}}
+            """,
+            """\
+            ![A](a.png)
+            {command="Fit" options="640x320" caption="A plain caption."}
+
+            ![](b.png)
+            {command="Crop" options="24x24"}
+            """,
+            ["image"],
+        )
+        self.assertEqual(counts["image"], 1)
+        self.assertEqual(counts["imgproc"], 1)
 
     # -- book: example -> eg, book-figures kind ------------------------------------
     def test_example_to_eg_and_book_figures(self):

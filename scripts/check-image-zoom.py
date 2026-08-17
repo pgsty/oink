@@ -83,8 +83,9 @@ def check_outputs(public: Path) -> list[str]:
         "Green and violet processed preview",
         # One marker for every path: the value is the full-size original.
         'data-td-image-zoom="/media/content-primitives-global.png"',
-        # A decorative processed image opts out instead of carrying a marker.
-        'data-no-zoom alt="" width="48" height="30"',
+        # A decorative processed image is simply not marked: an empty alt is
+        # already disqualifying, so no explicit opt-out is emitted for it.
+        '<img src="/docs/image-zoom/legacy-empty_hu_',
         "Linked image remains a link",
     ):
         require(marker in zoom, f"enabled Zoom fixture missing {marker}", errors)
@@ -128,8 +129,10 @@ def check_outputs(public: Path) -> list[str]:
         require(marker not in markdown, f"Markdown output contains Zoom marker {marker}", errors)
         require(marker not in print_page, f"print output contains Zoom marker {marker}", errors)
     require("![Blue and gold standalone preview]" in markdown, "Markdown lost the standalone image", errors)
-    require("![](/docs/image-zoom/legacy-empty_" in markdown, "Markdown lost the legacy empty-alt image", errors)
-    require("data-no-zoom" in media, "explicit decorative imgproc is not excluded from Zoom", errors)
+    # Markdown output is the page source now that every image form is a hook.
+    require("![](legacy-empty.png)" in markdown, "Markdown lost the legacy empty-alt image", errors)
+    require('data-td-image-zoom' not in media.split("legacy-empty")[1][:200] if "legacy-empty" in media else True,
+            "a decorative image was marked for Zoom", errors)
     require("data-td-image-zoom-dialog" in blog, "blog content candidate did not request Zoom", errors)
     require("td-blog-posts-list__thumbnail" in blog, "blog scope fixture lacks a featured thumbnail", errors)
     require(blog_path is not None and blog_path.exists(), "blog scope fixture lacks a main bundle", errors)

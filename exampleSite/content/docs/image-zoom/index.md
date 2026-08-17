@@ -11,15 +11,13 @@ weight: 32
 
 ## Processed image with a long caption
 
-{{< image src="media/content-primitives-global.png" command="Resize" options="56x" alt="Green and violet processed preview" >}}
-This intentionally long caption verifies that the shared preview remains readable on narrow screens, preserves its accessible image name, and wraps without introducing page-level horizontal overflow.
-{{< /image >}}
+![Green and violet processed preview](media/content-primitives-global.png)
+{command="Resize" options="56x" caption="This intentionally long caption verifies that the shared preview remains readable on narrow screens, preserves its accessible image name, and wraps without introducing page-level horizontal overflow."}
 
 ## Processed image with a caption but decorative alt
 
-{{< image src="legacy-empty.png" command="Fit" options="48x32" decorative=true >}}
-A decorative processed image is excluded from Zoom while its caption still supplies visible context.
-{{< /image >}}
+![](legacy-empty.png)
+{command="Fit" options="48x32" caption="A decorative processed image is excluded from Zoom while its caption still supplies visible context."}
 
 ## Linked image exclusion
 

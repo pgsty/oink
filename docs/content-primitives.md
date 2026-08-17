@@ -27,7 +27,7 @@ The public interfaces in this document are the version-two contract for:
 - Fields (table form and shortcode form);
 - the `filetree` and `gallery` data fences; Steps and Cards native list forms
   (+ the `cards`/`card` shortcode);
-- the image render hook and the `image` shortcode; Image Zoom;
+- the image render hook (all image forms); Image Zoom;
 - Release Assets and the `checksums` fence;
 - the table family (`full-width`, `fields`, `matrix`, `caption`, numbered,
   tabbed);
@@ -564,8 +564,8 @@ dimensions when the build cannot know them without I/O. An SVG resolves as an
 image resource but reports no intrinsic dimensions.
 
 Every theme path that takes an image source uses this resolver: the image
-render hook, the `image` shortcode, the `card` shortcode's `image`, and the
-Book `fig` shortcode's `src`.
+render hook, the `card` shortcode's `image`, and the Book `fig` shortcode's
+`src`.
 
 Sources that come from site configuration rather than content — landing
 sections, the blog featured image, the footer logo — do not use the resolver,
@@ -595,7 +595,7 @@ image `![alt](src "title")` resolves through the shared resolver:
   or remote images their box), `link`, plus `class`, `data-*`, `aria-*`;
   anything else fails the build;
 - `command` and `options` run Hugo image processing on the source, through the
-  same operation partial the `image` shortcode uses, so the accepted commands,
+  same operation partial Book figures use, so the accepted commands,
   the option grammar and the failure messages are identical. They must be given
   together, and a source that cannot be processed (static path, remote URL,
   SVG) fails the build. The rendered `src` is the derivative and `width`/
@@ -614,36 +614,36 @@ image `![alt](src "title")` resolves through the shared resolver:
   becomes a caption; an empty alt marks the image decorative for Zoom;
 - RSS uses absolute `src`.
 
-**`image` shortcode** (processed images; replaces the removed positional
-`imgproc` form implemented by [pgsty/oink#8](https://github.com/pgsty/oink/issues/8)):
-
-```go-html-template
-{{< image src="image.png" command="Fit" options="1200x800" alt="Architecture overview" >}}
-Caption with Markdown.
-{{< /image >}}
-
-{{< image src="rule.png" command="Resize" options="600x" decorative=true >}}{{< /image >}}
-```
+Image-processing attributes (the parameters the retired `imgproc` and `image`
+shortcodes took, implemented by
+[pgsty/oink#8](https://github.com/pgsty/oink/issues/8)):
 
 | Parameter | Required | Accepted values | Default |
 | --- | --- | --- | --- |
-| `src` | yes | exact page or global resource path | none |
 | `command` | yes | `Fit`, `Resize`, `Fill`, `Crop` | none |
 | `options` | yes | Hugo image-processing option string | none |
-| `alt` | conditional | meaningful plain string; resource `params.alt` is honored | none |
-| `decorative` | conditional | strict boolean; excludes `alt` | `false` |
 
-Named parameters only; the body is the Markdown caption. Either meaningful
-alt text (parameter or resource metadata) or `decorative=true` is required.
-Static paths, SVG, and remote URLs resolve for other renderers but fail here
-because they are not locally processable image resources. HTML renders
-`<figure class="td-figure td-figure--processed">` with
-`data-td-image-zoom="<full-size URL>"`, `data-no-zoom` when decorative
-(a decorative image carries no marker), intrinsic `width`/`height`, and a
-`<figcaption>` holding the rendered caption and the resource `byline`. The
-figure caps itself at the rendered width through the `--td-figure-max` custom
-property rather than an inline `max-width`, so site CSS can override it.
-Markdown emits `![alt](src)`, the caption source, and `_byline_`.
+Both are required together. Static paths, SVG, and remote URLs resolve for
+every other purpose but fail here, because they are not locally processable
+image resources. Alt text comes from the Markdown image itself, and an empty
+alt marks the image decorative, so no `decorative` parameter is needed.
+
+**The `image` shortcode is retired.** Everything it did — Hugo image
+processing, an alt/decorative contract, the resource `byline`, and a Zoom
+marker carrying the full-size original — is now on the attribute line above.
+Its one remaining exclusive capability, a Markdown caption, was dropped so the
+component has a single form: every public string parameter in this contract is
+plain text (section 2.3), and one component keeping a Markdown exception was
+the only thing holding a second form alive.
+
+The resource `byline` renders inside the `figcaption` of a figure. It does not
+promote a plain block image to a figure: that image is a bare `<img>` by
+contract, and resource metadata must not silently change its shape.
+
+`scripts/migrations/oink06.py` rewrites both `imgproc` and `image` to the
+attribute line. A caption carrying inline Markdown or a double quote is
+reported and left untouched rather than flattened, because the conversion
+would be lossy.
 
 ### 3.6 Image Zoom
 
@@ -672,10 +672,9 @@ page `false` wins over a site `true`.
 
 Zoom has one opt-in marker, `data-td-image-zoom`. Everything the theme renders
 declares its own eligibility with it: the image render hook (block images and
-figures), the `image` shortcode, Book `fig`, and the `gallery` fence. The
-marker may carry a value, which is the URL Zoom opens — the `image` shortcode
-puts the full-size original there so the dialog does not show the processed
-derivative. Without a value the rendered image URL is used. `data-no-zoom`
+figures), Book `fig`, and the `gallery` fence. The marker may carry a value,
+which is the URL Zoom opens — a processed image puts the full-size original
+there so the dialog does not show the derivative. Without a value the rendered image URL is used. `data-no-zoom`
 remains the opt-out.
 
 Zoom progressively enhances content images (`.td-content img`, top-level

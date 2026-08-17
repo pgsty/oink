@@ -241,11 +241,12 @@ files (`--sync` does the mechanical part).
 `docs/components.md` is the authoring guide that summarizes the v5 API. The
 first is machine-checked for structure by `check-content-primitives-contract.py`,
 the Book contract by `check-prd5-contract.py`. They define the public component
-APIs — the native forms (`> [!TYPE]` callouts; `{.steps}` `{.cards}`
-`{.filetree}` `{.gallery}` list markers; `{.fields}` `{.matrix}` `{caption=}`
-`{#id num=}` `{tab=}` table attributes; the image render hook; adjacent-fence
-tabs; data fences) and the 30 shortcodes (core 15: `tabs tab steps cards card
-fields field image include kbd badge param comment contributors asciinema`;
+APIs — the native forms (`> [!TYPE]` callouts; `{.steps}` `{.cards}` list
+markers; `{.fields}` `{.matrix}` `{caption=}` `{#id num=}` `{tab=}` table
+attributes; the image render hook, which carries captions, numbering, links and
+Hugo image processing; adjacent-fence tabs; data fences including `filetree`
+and `gallery`) and the 29 shortcodes (core 14: `tabs tab steps cards card
+fields field include kbd badge param comment contributors asciinema`;
 Book 10: `fig tbl eq eg xref book-toc book-figures book-tables book-equations
 book-examples`; Release 3; OpenAPI 2) — plus parameter validation, escaping and
 URL policy, ID generation, and the output matrix. **Read the relevant contract

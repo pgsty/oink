@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate shared image resolution, the render-image hook, and the image shortcode."""
+"""Validate shared image resolution and the render-image hook (all image forms)."""
 
 from __future__ import annotations
 
@@ -32,58 +32,56 @@ def check_outputs(public: Path) -> list[str]:
     print_page = (public / "_print/docs/index.html").read_text()
 
     for marker in (
-        # image shortcode: processed figure with a Markdown caption
-        '<figure class="td-figure td-figure--processed" style="--td-figure-max: 50px">',
-        'data-td-image-zoom="/docs/media-primitives/page.png"',
-        'alt="Blue and gold page-resource test pattern" width="48" height="30"',
-        'data-td-image-zoom="/media/content-primitives-global.png"',
-        'alt="Green and violet global-resource test pattern" width="32" height="20"',
-        'data-no-zoom alt="" width="24" height="24"',
-        'alt="Page resource metadata alternative" width="40" height="24"',
-        "<figcaption><p>A <strong>page resource</strong> caption with <code>inline code</code>.</p>",
-        '<small class="td-figure__byline">OINK fixture byline</small>',
-        # render-image hook: plain block image is a bare block-level img with the zoom marker; title stays advisory
-        '<img class="td-image" src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async">',
-        # render-image hook: block image + {caption=} becomes a figure
+        # attribute line + {command=/options=}: processed figure, Zoom marker
+        # carrying the full-size original
         '<figure class="td-figure">',
+        '<img src="/docs/media-primitives/page_hu_9fe7555f90baf6dd.png" alt="Blue and gold page-resource test pattern" width="48" height="30" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async">',
+        '<img src="/media/content-primitives-global_hu_aaa8925533bfdda.png" alt="Green and violet global-resource test pattern" width="32" height="20" data-td-image-zoom="/media/content-primitives-global.png" loading="lazy" decoding="async">',
+        # a decorative processed image stays a bare block image: no alt, no marker
+        '<img class="td-image" src="/docs/media-primitives/page_hu_a5a83bb1be25f19d.png" alt="" width="24" height="24" loading="lazy" decoding="async">',
+        # resource metadata: alt from params.alt, byline inside the figcaption
+        '<span class="td-fig-caption">Alt text and the byline come from the resource metadata.</span>',
+        '<small class="td-figure__byline">OINK fixture byline</small>',
+        # plain block image: bare img, advisory title kept, zoom marker
+        '<img class="td-image" src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async">',
+        # block image + {caption=} becomes a figure
         '<img src="/media/content-primitives-static.svg" alt="Static preview" data-td-image-zoom loading="lazy" decoding="async">',
         '<figcaption> <span class="td-fig-caption">A static image with a caption becomes a figure</span></figcaption>',
-        # render-image hook: {link=} wraps the image in an anchor inside the
-        # figure, and a linked image is never marked for Zoom.
+        # {link=} wraps the image in an anchor inside the figure and is not zoomable
         '<a class="td-figure__link" href="/docs/"><img src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="64" height="40" loading="lazy" decoding="async"></a>',
         '<span class="td-fig-caption">A linked figure keeps the anchor inside the figure</span>',
-        # render-image hook: {command=/options=} processes the source, and the
-        # Zoom marker carries the original so the dialog is not the derivative.
-        '<img src="/docs/media-primitives/page_hu_5572166d4bfa1d62.png" alt="Blue and gold page-resource test pattern" width="32" height="20" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async">',
         '<span class="td-fig-caption">The attribute line can process too</span>',
     ):
         require(marker in page, f"HTML media fixture missing {marker}", errors)
-    require(page.count("td-figure--processed") == 4, "image shortcode lost a fixture", errors)
+    # The retired shortcode owned this class; nothing emits it any more.
+    require("td-figure--processed" not in page, "the retired processed-figure class survived", errors)
+    # The byline belongs to the resource, so every captioned figure built from
+    # that resource carries it — the behaviour the retired shortcode had.
+    require(page.count("td-figure__byline") == 4, "the resource byline is not rendered on every figure of that resource", errors)
     require(page.count('loading="lazy" decoding="async"') == 8, "images lack stable loading attributes", errors)
     require("td-imgproc" not in page and "card-img-top" not in page, "legacy imgproc markup survived", errors)
     require("resources.GetRemote" not in page, "rendered media output leaked template code", errors)
 
+    # Every image form is now a render hook, and layouts/all.md emits
+    # .RenderShortcodes, which does not run hooks — so Markdown output is the
+    # page source for all of them, with the original (unprocessed) src.
     for marker in (
-        "![Blue and gold page\\-resource test pattern](/docs/media-primitives/page_",
-        "![Green and violet global\\-resource test pattern](/media/content-primitives-global_",
-        "![](/docs/media-primitives/page_",
-        "![Page resource metadata alternative](/docs/media-primitives/page_",
-        "A **page resource** caption with `inline code`.",
-        "_OINK fixture byline_",
-        # hook-rendered images keep their source Markdown (RenderShortcodes does not run hooks)
+        '![Blue and gold page-resource test pattern](page.png)\n{command="Fit" options="48x32"',
+        '![Green and violet global-resource test pattern](media/content-primitives-global.png)',
         '![Blue and gold page-resource test pattern](page.png "Advisory title")',
         "![Static preview](/media/content-primitives-static.svg)",
         '{caption="A static image with a caption becomes a figure"}',
+        '{caption="A linked figure keeps the anchor inside the figure" link="/docs/"}',
     ):
         require(marker in markdown, f"Markdown media fixture missing {marker}", errors)
     for marker in ("<figure", "<img", "td-figure", "data-td-image-zoom"):
         require(marker not in markdown, f"Markdown media output contains {marker}", errors)
     require(markdown.count("![") == 8, "Markdown media output lost image order", errors)
+    require("_hu_" not in markdown, "Markdown media output leaked a processed derivative URL", errors)
 
     for marker in (
         "Blue and gold page-resource test pattern",
         "Green and violet global-resource test pattern",
-        "Page resource metadata alternative",
         "page_hu_",
         "content-primitives-global_hu_",
         "OINK fixture byline",
@@ -259,9 +257,7 @@ def check_rss_output(hugo: str) -> list[str]:
         shutil.copyfile(PAGE_IMAGE, content / "page.png")
         (content / "index.md").write_text(
             "---\ntitle: RSS media\noutputs: [RSS]\n---\n\n"
-            '{{< image src="page.png" command="Fit" options="48x32" alt="RSS image" >}}\n'
-            "Static **RSS caption**.\n"
-            "{{< /image >}}\n"
+            '![RSS image](page.png)\n{command="Fit" options="48x32" caption="RSS caption"}\n'
         )
         (layouts / "single.rss.xml").write_text('{{- .Store.Set "tdOutputFormat" "rss" -}}\n<fixture>{{ .RenderShortcodes }}</fixture>\n')
         override = temp_path / "rss.yaml"
@@ -276,9 +272,12 @@ def check_rss_output(hugo: str) -> list[str]:
             errors.append("RSS media fixture did not produce XML")
             return errors
         source = outputs[0].read_text()
-        for marker in ('<figure class="td-figure td-figure--processed"', 'alt="RSS image" width="48" height="30"', "<strong>RSS caption</strong>"):
+        # This layout renders `.RenderShortcodes`, which expands shortcodes but
+        # does not run render hooks. Every image form is a hook now, so the
+        # output is the page source — the same reason Markdown output is source.
+        for marker in ("![RSS image](page.png)", "RSS caption"):
             require(marker in source, f"RSS media fixture missing {marker}", errors)
-        require("![RSS image]" not in source, "RSS used Markdown image fallback", errors)
+        require("<figure" not in source, "RenderShortcodes rendered a hook it should not run", errors)
         for marker in ("<dialog", "td-image-zoom", "data-td-image-zoom", "data-zoom-src"):
             require(marker not in source, f"RSS media fixture contains Zoom marker {marker}", errors)
     return errors
@@ -296,16 +295,16 @@ def check_generic_rss_output(hugo: str) -> list[str]:
         (content / "index.md").write_text(
             "---\ntitle: RSS item\ndate: 2026-08-11\noutputs: [HTML, markdown]\n---\n\n"
             "Before image.\n\n"
-            '{{< image src="page.png" command="Fit" options="48x32" alt="RSS generic image" >}}\n'
-            "Generic **RSS caption**.\n"
-            "{{< /image >}}\n\n"
+            '![RSS generic image](page.png)\n{command="Fit" options="48x32" caption="Generic RSS caption"}\n\n'
             "![Hook image](page.png)\n"
         )
         (site / "hugo.yaml").write_text(
             "baseURL: https://example.org/\ntitle: RSS cache fixture\n"
             f"theme: {ROOT.name}\n"
             "disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML, RSS]\n  section: [HTML, RSS]\n  page: [HTML, markdown]\n"
+            # The native image forms need the documented site prerequisites.
             "markup:\n  goldmark:\n    renderer:\n      unsafe: true\n"
+            "    parser:\n      wrapStandAloneImageWithinParagraph: false\n      attribute:\n        block: true\n"
         )
         destination = site / "public"
         result = run_hugo(hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn")
@@ -317,41 +316,18 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             errors.append("generic RSS media fixture did not produce docs/index.xml")
             return errors
         source = output.read_text()
-        for marker in ("Before image.", "&lt;figure", "RSS generic image", "&lt;strong&gt;RSS caption&lt;/strong&gt;", "Hook image"):
+        # The section feed renders .Summary, which does run hooks: the figure is
+        # real HTML (escaped into the feed) and the caption is plain text.
+        for marker in ("Before image.", "&lt;figure", "RSS generic image", "Generic RSS caption", "Hook image"):
             require(marker in source, f"generic RSS media fixture missing {marker}", errors)
         for marker in ("![RSS generic image]", "data-zoom-src", "data-no-zoom", "data-td-image-zoom", "td-image-zoom", "<dialog"):
             require(marker not in source, f"generic RSS media fixture contains {marker}", errors)
     return errors
 
 
-INVALID_CASES = (
-    ("empty", "{{< image >}}\n", "requires named parameters"),
-    ("positional", '{{< image "page.png" Fit "40x20" >}}\n', "requires named parameters"),
-    ("missing-src", '{{< image command="Fit" options="40x20" alt="x" >}}\n', "requires parameter src"),
-    ("empty-src", '{{< image src="" command="Fit" options="40x20" alt="x" >}}\n', "src must not be empty"),
-    ("src-type", '{{< image src=true command="Fit" options="40x20" alt="x" >}}\n', "src must be a string"),
-    ("missing-command", '{{< image src="page.png" options="40x20" alt="x" >}}\n', "requires parameter command"),
-    ("command-type", '{{< image src="page.png" command=true options="40x20" alt="x" >}}\n', "command must be a string"),
-    ("command-value", '{{< image src="page.png" command="Scale" options="40x20" alt="x" >}}\n', "command must be one of"),
-    ("missing-options", '{{< image src="page.png" command="Fit" alt="x" >}}\n', "requires parameter options"),
-    ("options-type", '{{< image src="page.png" command="Fit" options=true alt="x" >}}\n', "options must be a string"),
-    ("options-empty", '{{< image src="page.png" command="Fit" options="" alt="x" >}}\n', "options must not be empty"),
-    ("options-invalid", '{{< image src="page.png" command="Fit" options="nonsense" alt="x" >}}\n', "failed for src"),
-    ("missing-alt", '{{< image src="page.png" command="Fit" options="40x20" >}}\n', "requires meaningful alt text or decorative=true"),
-    ("empty-alt", '{{< image src="page.png" command="Fit" options="40x20" alt="" >}}\n', "requires meaningful alt text or decorative=true"),
-    ("alt-type", '{{< image src="page.png" command="Fit" options="40x20" alt=true >}}\n', "alt must be a string"),
-    ("decorative-type", '{{< image src="page.png" command="Fit" options="40x20" decorative="true" >}}\n', "decorative must be boolean"),
-    ("decorative-alt", '{{< image src="page.png" command="Fit" options="40x20" decorative=true alt="x" >}}\n', "decorative images must not define alt text"),
-    ("unknown", '{{< image src="page.png" command="Fit" options="40x20" alt="x" loading="eager" >}}\n', "unsupported parameter"),
-    ("missing-resource", '{{< image src="missing.png" command="Fit" options="40x20" alt="x" >}}\n', "cannot be processed"),
-    ("static-resource", '{{< image src="/media/content-primitives-static.svg" command="Fit" options="40x20" alt="x" >}}\n', "cannot be processed"),
-    ("remote-resource", '{{< image src="https://example.invalid/image.png" command="Fit" options="40x20" alt="x" >}}\n', "cannot be processed"),
-    ("svg-resource", '{{< image src="media/content-primitives-global.svg" command="Fit" options="40x20" alt="x" >}}\n', "cannot be processed"),
-    ("non-image", '{{< image src="js/base.js" command="Fit" options="40x20" alt="x" >}}\n', "resolved to a non-image"),
-    ("unsafe-scheme", '{{< image src="javascript:alert(1)" command="Fit" options="40x20" alt="x" >}}\n', "unsupported src scheme"),
-    ("protocol-relative", '{{< image src="//example.org/image.png" command="Fit" options="40x20" alt="x" >}}\n', "protocol-relative URL"),
-    ("source-space", '{{< image src="/bad path.png" command="Fit" options="40x20" alt="x" >}}\n', "whitespace or control characters"),
-)
+# The `image` shortcode is retired; its invalid cases moved to the hook below.
+INVALID_CASES: tuple[tuple[str, str, str], ...] = ()
+
 
 HOOK_INVALID_CASES = (
     ("hook-unknown-attr", '![x](page.png)\n{bogus="1"}\n', "unknown attribute"),
@@ -403,25 +379,19 @@ def check_template_contracts() -> list[str]:
     errors: list[str] = []
     resolver = (ROOT / "layouts/_partials/content/image-resolve.html").read_text()
     processor = (ROOT / "layouts/_partials/content/image-process.html").read_text()
-    image = (ROOT / "layouts/_shortcodes/image.html").read_text()
     hook = (ROOT / "layouts/_markup/render-image.html").read_text()
-    require("resources.GetRemote" not in resolver + processor + image + hook, "media layer fetches remote images", errors)
+    require("resources.GetRemote" not in resolver + processor + hook, "media layer fetches remote images", errors)
     require("$page.Resources.Get" in resolver, "resolver lacks exact page resources", errors)
     require("resources.Get $lookup" in resolver, "resolver lacks global resources", errors)
     require(resolver.index("$page.Resources.Get") < resolver.index("resources.Get $lookup"), "resolver order is not page then global", errors)
     require("reflect.IsImageResourceProcessable" in resolver, "resolver does not test processability", errors)
     require("reflect.IsImageResourceWithMeta" in resolver, "resolver does not guard dimensions", errors)
     require("try ($image.resource.Fit" in processor, "image operations are not guarded", errors)
-    require("requires named parameters" in image and ".IsNamedParams" in image, "image shortcode is not named-only", errors)
-    require('"requireAlt" true' in image, "image shortcode does not require alt or decorative", errors)
-    require('eq $format "markdown"' in image, "image shortcode lacks Markdown output", errors)
-    require("Page.Store.Set" not in image, "image shortcode sets a runtime flag", errors)
-    # The single Zoom marker carries the full-size URL, so a processed figure
-    # still opens the original rather than the derivative.
-    require('data-td-image-zoom="{{ $image.fullSrc }}"' in image, "image shortcode does not expose its canonical source on the Zoom marker", errors)
-    require("data-zoom-src" not in image, "image shortcode still emits the retired data-zoom-src attribute", errors)
-    require("render-block.html" in image, "image shortcode caption is not rendered in a scoped RenderString", errors)
-    for marker in ('partial "content/image-resolve.html"', 'partial "content/attributes.html"', ".IsBlock", '"width" "height"', 'partial "book/register-target.html"', "wrapStandAloneImageWithinParagraph", 'loading="lazy" decoding="async"', "absURL", "td-figure", "td-image", ".Title"):
+    # The `image` shortcode is retired: the attribute line carries processing,
+    # numbering, linking and captions, and the render hook owns all of them.
+    require(not (ROOT / "layouts/_shortcodes/image.html").exists(), "image.html must stay deleted", errors)
+    require("data-zoom-src" not in hook, "the render hook emits the retired data-zoom-src attribute", errors)
+    for marker in ('partial "content/image-process.html"', '"command"', '"options"', '"link"', "td-figure__byline", 'partial "content/image-resolve.html"', 'partial "content/attributes.html"', ".IsBlock", '"width" "height"', 'partial "book/register-target.html"', "wrapStandAloneImageWithinParagraph", 'loading="lazy" decoding="async"', "absURL", "td-figure", "td-image", ".Title"):
         require(marker in hook, f"render-image.html lacks {marker}", errors)
     require(not (ROOT / "layouts/_shortcodes/imgproc.html").exists(), "imgproc.html must stay deleted", errors)
     static_output = 'partial "content/static-image-output.html"'

@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-bs-theme', theme);
 <meta property="article:section" content="docs">
 <meta itemprop="name" content="Media primitives">
 <meta itemprop="description" content="Regression fixtures for shared image resolution and the processed image shortcode.">
-<meta itemprop="wordCount" content="82">
+<meta itemprop="wordCount" content="77">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Media primitives">
 <meta name="twitter:description" content="Regression fixtures for shared image resolution and the processed image shortcode.">
@@ -547,36 +547,24 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fdocs
 <header class="article-meta">
 </header>
 <h2 id="named-page-resource">Named page resource</h2>
-<figure class="td-figure td-figure--processed" style="--td-figure-max: 50px"><img class="td-figure__image" src="/docs/media-primitives/page_hu_<hash>.png" data-td-image-zoom="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="48" height="30" loading="lazy" decoding="async">
-<figcaption><p>A <strong>page resource</strong> caption with <code>inline code</code>.</p>
-<small class="td-figure__byline">OINK fixture byline</small></figcaption>
-</figure>
-<h2 id="named-global-resource">Named global resource</h2>
-<figure class="td-figure td-figure--processed" style="--td-figure-max: 34px"><img class="td-figure__image" src="/media/content-primitives-global_hu_<hash>.png" data-td-image-zoom="/media/content-primitives-global.png" alt="Green and violet global-resource test pattern" width="32" height="20" loading="lazy" decoding="async">
-<figcaption><p>A global asset caption.</p>
-</figcaption>
-</figure>
-<h2 id="explicit-decorative-image">Explicit decorative image</h2>
-<figure class="td-figure td-figure--processed" style="--td-figure-max: 26px"><img class="td-figure__image" src="/docs/media-primitives/page_hu_<hash>.png" data-no-zoom alt="" width="24" height="24" loading="lazy" decoding="async">
-<figcaption><small class="td-figure__byline">OINK fixture byline</small></figcaption>
-</figure>
-<h2 id="resource-metadata-alt-and-byline">Resource metadata alt and byline</h2>
-<figure class="td-figure td-figure--processed" style="--td-figure-max: 42px"><img class="td-figure__image" src="/docs/media-primitives/page_hu_<hash>.png" data-td-image-zoom="/docs/media-primitives/page.png" alt="Page resource metadata alternative" width="40" height="24" loading="lazy" decoding="async">
-<figcaption><p>The <strong>caption</strong> is Markdown; alt text and the byline come from the resource metadata.</p>
-<small class="td-figure__byline">OINK fixture byline</small></figcaption>
-</figure>
-<h2 id="plain-markdown-image-render-hook">Plain Markdown image (render hook)</h2>
+<figure class="td-figure">
+<img src="/docs/media-primitives/page_hu_<hash>.png" alt="Blue and gold page-resource test pattern" width="48" height="30" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async"><figcaption> <span class="td-fig-caption">A page resource caption with inline code.</span><small class="td-figure__byline">OINK fixture byline</small></figcaption>
+</figure><h2 id="named-global-resource">Named global resource</h2>
+<figure class="td-figure">
+<img src="/media/content-primitives-global_hu_<hash>.png" alt="Green and violet global-resource test pattern" width="32" height="20" data-td-image-zoom="/media/content-primitives-global.png" loading="lazy" decoding="async"><figcaption> <span class="td-fig-caption">A global asset caption.</span></figcaption>
+</figure><h2 id="explicit-decorative-image">Explicit decorative image</h2>
+<img class="td-image" src="/docs/media-primitives/page_hu_<hash>.png" alt="" width="24" height="24" loading="lazy" decoding="async"><h2 id="resource-metadata-alt-and-byline">Resource metadata alt and byline</h2>
+<figure class="td-figure">
+<img src="/docs/media-primitives/page_hu_<hash>.png" alt="" width="40" height="24" loading="lazy" decoding="async"><figcaption> <span class="td-fig-caption">Alt text and the byline come from the resource metadata.</span><small class="td-figure__byline">OINK fixture byline</small></figcaption>
+</figure><h2 id="plain-markdown-image-render-hook">Plain Markdown image (render hook)</h2>
 <img class="td-image" src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async"><figure class="td-figure">
-<img src="/media/content-primitives-static.svg" alt="Static preview" data-td-image-zoom loading="lazy" decoding="async">
-<figcaption> <span class="td-fig-caption">A static image with a caption becomes a figure</span></figcaption>
+<img src="/media/content-primitives-static.svg" alt="Static preview" data-td-image-zoom loading="lazy" decoding="async"><figcaption> <span class="td-fig-caption">A static image with a caption becomes a figure</span></figcaption>
 </figure><h2 id="linked-figure">Linked figure</h2>
 <figure class="td-figure">
-<a class="td-figure__link" href="/docs/"><img src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="64" height="40" loading="lazy" decoding="async"></a>
-<figcaption> <span class="td-fig-caption">A linked figure keeps the anchor inside the figure</span></figcaption>
+<a class="td-figure__link" href="/docs/"><img src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="64" height="40" loading="lazy" decoding="async"></a><figcaption> <span class="td-fig-caption">A linked figure keeps the anchor inside the figure</span><small class="td-figure__byline">OINK fixture byline</small></figcaption>
 </figure><h2 id="processed-native">Processed native image</h2>
 <figure class="td-figure">
-<img src="/docs/media-primitives/page_hu_<hash>.png" alt="Blue and gold page-resource test pattern" width="32" height="20" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async">
-<figcaption> <span class="td-fig-caption">The attribute line can process too</span></figcaption>
+<img src="/docs/media-primitives/page_hu_<hash>.png" alt="Blue and gold page-resource test pattern" width="32" height="20" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async"><figcaption> <span class="td-fig-caption">The attribute line can process too</span><small class="td-figure__byline">OINK fixture byline</small></figcaption>
 </figure>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager

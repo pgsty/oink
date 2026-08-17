@@ -58,7 +58,7 @@ Passthrough math needs the site's `passthrough` extension.
 | Fields | table + `{.fields [caption=]}` (first column name, last column description, middle columns metadata) | `{{< fields label= >}}` `{{< field name= type= required= default= >}}…{{< /field >}}` `{{< /fields >}}` | typed `required`/`default` only in the shortcode |
 | FileTree | ```` ```filetree {title=} ```` fence: `- name[/]  # comment  {icon= tone= open= type=}` per line; 2/4-space, tab, or `tree` indentation | — | CSS + native `<details>`; comment column aligned at build time, split clamped 50–70% and draggable (`hasFileTree` → `assets/js/filetree.js`) |
 | Gallery | ```` ```gallery ```` fence, `![alt](src) # description {link= class=}` per line | — | alt required; per-item link; Zoom marked at emit time |
-| Image | `![alt](src "title")` (render hook; block image + `{#id num= caption= width= height= link= command= options=}` → figure) | `{{< image src= command= options= alt=\|decorative= >}}caption{{< /image >}}` | the shortcode is now only for a Markdown caption; `link` needs a caption or num, a linked image is never zoomable |
+| Image | `![alt](src "title")` (render hook; block image + `{#id num= caption= width= height= link= command= options=}` → figure) | — | the `image` shortcode is retired; `link` needs a caption or num and is never zoomable; the resource `byline` rides in the figcaption |
 | Table family | `{.full-width}` `{.fields}` `{.matrix}` `{caption=}` `{#id}` `{#id num= caption=}` `{tab= group= value=}` | — | site classes pass through; exclusivity: fields ⟂ matrix/full-width/num, num ⟂ tab |
 | Fig / Tbl / Eq / Eg | image / table / `$$` block / fence + `{#id num= caption=}` | `{{< fig >}}` `{{< tbl >}}` `{{< eq >}}` `{{< eg >}}` | default IDs `fig- tbl- eq- eg-<num>`; `eg` caption required |
 | Xref | plain Markdown links (kind-less) | `{{< xref fig\|tbl\|eq\|eg="…" [page=] [anchor=] >}}` | |
@@ -68,8 +68,8 @@ Passthrough math needs the site's `passthrough` extension.
 | Leaves | raw `<kbd>` | `kbd` `badge` `param` `include` `comment` `contributors` `asciinema` | `badge` has no `outline`; `param` scalar only |
 | Release / OpenAPI | `checksums` fence | `release-card` `release-assets` `download` / `swaggerui` `redoc` | |
 
-Shortcode inventory: 30 — core 15 (`tabs tab steps cards card fields field
-image include kbd badge param comment contributors asciinema`), Book 10 (`fig
+Shortcode inventory: 29 — core 14 (`tabs tab steps cards card fields field
+include kbd badge param comment contributors asciinema`), Book 10 (`fig
 tbl eq eg xref book-toc book-figures book-tables book-equations
 book-examples`), Release 3, OpenAPI 2.
 
@@ -224,7 +224,7 @@ covers what Goldmark cannot report:
 | `{{< gallery >}}` `gallery/image`, image list + `{.gallery}` | ```` ```gallery ```` fence | `gallery` |
 | `{{< echarts >}}` `{{< infographic >}}` | same-named fences (`$fn:` unchanged; `js` sub-fences must move to `window.tdEchartsFunctions`) | `datafence` |
 | `doc-cards`/`doc-card`, `nav-cards`/`nav-card`, `card`/`cardpane`, `doc-carousel` | `{{< cards >}}{{< card >}}` or link list + `{.cards}` | `cards` |
-| `{{< imgproc … >}}` | `{{< image … >}}` (named only) | `image` |
+| `{{< imgproc … >}}`, `{{< image … >}}` | `![alt](src)` + `{command= options= caption=}` | `image` |
 | `{{< readfile file=… >}}` | `{{< include file=… >}}` | `include` |
 | fence `{filename="x"}` | `{title="x"}` | `fencetitle` |
 | `{{< badge … outline=… >}}` | drop `outline` | `badge` |

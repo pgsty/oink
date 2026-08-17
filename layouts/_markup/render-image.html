@@ -139,6 +139,10 @@
 <figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ delimit $figureClasses " " }}"{{ if $num }} data-book-kind="fig" data-book-num="{{ $num }}"{{ end }}
   {{- range $key, $value := $generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
   {{ if $href }}<a class="td-figure__link" href="{{ $href }}"{{ if $external }} rel="external"{{ end }}>{{ $img | safeHTML }}</a>{{ else }}{{ $img | safeHTML }}{{ end }}
-  <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}</figcaption>
+  {{- /* The resource byline rides along in the figcaption, which is where the
+         retired `image` shortcode put it. It does not promote a plain block
+         image to a figure: that image is a bare <img> by contract, and resource
+         metadata should not silently change its shape. */ -}}
+  <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}{{ with $image.byline }}<small class="td-figure__byline">{{ . }}</small>{{ end }}</figcaption>
 </figure>
 {{- end -}}

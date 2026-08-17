@@ -4,19 +4,17 @@
 LLMS index: [llms.txt](/llms.txt)
 ---
 ## Named page resource
-![Blue and gold page\-resource test pattern](/docs/media-primitives/page_hu_<hash>.png)
-A **page resource** caption with `inline code`.
-_OINK fixture byline_
+![Blue and gold page-resource test pattern](page.png)
+{command="Fit" options="48x32" caption="A page resource caption with inline code."}
 ## Named global resource
-![Green and violet global\-resource test pattern](/media/content-primitives-global_hu_<hash>.png)
-A global asset caption.
+![Green and violet global-resource test pattern](media/content-primitives-global.png)
+{command="Resize" options="32x" caption="A global asset caption."}
 ## Explicit decorative image
-![](/docs/media-primitives/page_hu_<hash>.png)
-_OINK fixture byline_
+![](page.png)
+{command="Crop" options="24x24"}
 ## Resource metadata alt and byline
-![Page resource metadata alternative](/docs/media-primitives/page_hu_<hash>.png)
-The **caption** is Markdown; alt text and the byline come from the resource metadata.
-_OINK fixture byline_
+![](page.png)
+{command="Fill" options="40x24" caption="Alt text and the byline come from the resource metadata."}
 ## Plain Markdown image (render hook)
 ![Blue and gold page-resource test pattern](page.png "Advisory title")
 ![Static preview](/media/content-primitives-static.svg)

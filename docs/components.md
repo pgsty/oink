@@ -63,7 +63,7 @@ Passthrough math needs the site's `passthrough` extension.
 | Fig / Tbl / Eq / Eg | image / table / `$$` block / fence + `{#id num= caption=}` | `{{< fig >}}` `{{< tbl >}}` `{{< eq >}}` `{{< eg >}}` | default IDs `fig- tbl- eq- eg-<num>`; `eg` caption required |
 | Xref | plain Markdown links (kind-less) | `{{< xref fig\|tbl\|eq\|eg="…" [page=] [anchor=] >}}` | |
 | Book indexes | — | `book-toc` `book-figures` `book-tables` `book-equations` `book-examples` | no `kind` parameter |
-| Fences | `{title copy wrap collapse label id tab group value num caption lineNos hl_lines lineNoStart anchorLineNos tabWidth}` | — | Prism mode unchanged |
+| Fences | `{title copy wrap collapse label id tab group value num caption lineNos hl_lines lineNoStart anchorLineNos tabWidth}` | — | Chroma only (the Prism path is gone) |
 | Data fences | `mermaid plantuml markmap math chem echarts infographic checksums filetree gallery` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.OinkEchartsFunctions` |
 | Leaves | raw `<kbd>` | `kbd` `badge` `param` `include` `comment` `contributors` `asciinema` | `badge` has no `outline`; `param` scalar only |
 | Release / OpenAPI | `checksums` fence | `release-card` `release-assets` `download` / `swagger` `redoc` | |

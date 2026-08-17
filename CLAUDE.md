@@ -27,7 +27,7 @@ ignored `go.work` (`HUGO_MODULE_WORKSPACE=go.work`) that replaces the module
 with `../oink`. Never commit a filesystem `replace` into either module.
 
 Theme branches: `main` = next release; `release` = current stable, created at
-the first 1.0 tag (there is none before it); `vX.Y.Z` tags are immutable and
+the 0.5.0 tag (there is none before it); `vX.Y.Z` tags are immutable and
 only count as published once pushed (0.4.2 was tagged locally but never
 pushed). Site repo has only `main`.
 

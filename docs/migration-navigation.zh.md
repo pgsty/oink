@@ -172,8 +172,8 @@ search_exclude: false
   值会 warning 并使用 `1.0`。
 - `search_exclude` 是规范排除字段。
 
-`exclude_search` 与 `excludeSearch` 是 0.x 的兼容别名（0.4 起对新内容弃用），
-1.0 已删除：页面若仍写任一别名，构建会失败并在错误信息中给出
+`exclude_search` 与 `excludeSearch` 是 0.4 的兼容别名（0.4 起对新内容弃用），
+0.5.0 已删除：页面若仍写任一别名，构建会失败并在错误信息中给出
 `search_exclude`；换键名、值不变即可。
 
 ### Cascade 继承 {#cascade-inheritance}
@@ -397,7 +397,7 @@ request 或助手 URL。消费站显式启用的助手链接、analytics、评�
 - 现有平铺 `menus.main` 无需改配置，HTML 与行为继续受到兼容测试保护。
 - 整个 0.x 期间，未配置 `params.ui.sidebar_icon_policy` 时仍为 `all`；starter
   显式选择 `all`，确保已配置的叶子页图标保持可见。
-- `exclude_search` 与 `excludeSearch` 在整个 0.x 期间保留；1.0 已删除，构建
+- `exclude_search` 与 `excludeSearch` 在 0.4 期间保留；0.5.0 已删除，构建
   失败并提示替代键。
 - Cmd/Ctrl-K 继续作为 Palette 快捷键，普通文本继续搜索页面。
 - `/` 仅在焦点不位于 input、textarea、select 或 contenteditable 区域时打开命令模式。

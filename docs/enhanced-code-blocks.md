@@ -37,7 +37,7 @@ normalized pipeline described here:
 
 1. `render-codeblock.html` only merged Chroma options and called
    `transform.Highlight`; it had no author-facing shell contract.
-2. Docsy's `click-to-copy.js` (removed in 1.0) discovered code after render,
+2. Docsy's `click-to-copy.js` (removed in 0.5.0) discovered code after render,
    injected controls, hard-coded English labels, and did not report clipboard
    failures correctly.
 3. Its `.highlight > pre` selector missed Chroma's table line-number layout.
@@ -798,7 +798,7 @@ lookup and do not receive the code shell or runtime.
   the `hasTabs` flag, `content/render-block.html` ID scoping, and the `num`/
   `caption` Book example fence added; content migrated with
   `scripts/migrations/oink06.py`.
-- OINK 1.0: the Prism path removed. It could not coexist with the attributes
+- OINK 0.5.0: the Prism path removed. It could not coexist with the attributes
   this contract defines — `tab`, `group`, `value`, `num`, and `caption` all
   require Chroma, so any site using tabs or numbered examples failed the build
   as soon as it opted in. `params.prism_syntax_highlighting`,

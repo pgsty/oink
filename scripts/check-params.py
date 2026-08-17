@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Enforce the configuration parameter contract.
 
-Three rules shape every theme parameter (see CHANGELOG, 1.0):
+Three rules shape every theme parameter (see CHANGELOG 0.5.0):
 
 1. A boolean switch is the bare feature name (`ui.annotation: true`), never a
    `*.enable` member or an `*_enabled` suffix. The only `_enabled` keys left

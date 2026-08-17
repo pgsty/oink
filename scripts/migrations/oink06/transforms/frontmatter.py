@@ -1,4 +1,4 @@
-"""frontmatter: the 1.0 front matter key renames (YAML front matter only).
+"""frontmatter: the 0.5.0 front matter key renames (YAML front matter only).
 
 Rewrites, inside the ``---`` delimited block only (the body is never touched):
 
@@ -326,7 +326,7 @@ def parse_level(lines: list[str], abs_offset: int) -> Level:
 # ---------------------------------------------------------------- the transform
 class FrontMatterTransformation(Transformation):
     key = "frontmatter"
-    description = "1.0 front matter keys: manual_link*, page_context_menu, reading_time, feedback, search_exclude, reading_width, ui.* lifted to the top level"
+    description = "0.5.0 front matter keys: manual_link*, page_context_menu, reading_time, feedback, search_exclude, reading_width, ui.* lifted to the top level"
     residual_patterns = (
         r"^[ \t]*[Mm]anual[Ll]ink(?:[Tt]itle|[Tt]arget|[Rr]elref)?[ \t]*:",
         r"^[ \t]*context_menu[ \t]*:",

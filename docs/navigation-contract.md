@@ -88,7 +88,7 @@ Canonical front matter:
 - search_exclude: the canonical exclusion flag.
 
 search_exclude is the only exclusion flag. The 0.x aliases exclude_search and
-excludeSearch were removed in 1.0: a page that still sets either fails the
+excludeSearch were removed in 0.5.0: a page that still sets either fails the
 build and the error names search_exclude.
 
 Every indexed document keeps the existing fields and adds root, section, type,

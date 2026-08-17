@@ -187,7 +187,7 @@ search_exclude: false
 - `search_exclude` is the canonical exclusion flag.
 
 `exclude_search` and `excludeSearch`, the 0.x compatibility aliases
-(deprecated for new content since 0.4), were removed in 1.0. A page that still
+(deprecated for new content since 0.4), were removed in 0.5.0. A page that still
 sets either fails the build with an error naming `search_exclude`; replace the
 key and keep the value.
 
@@ -435,7 +435,7 @@ site.
 - `params.ui.sidebar_icon_policy` remains `all` when absent throughout 0.x;
   starters choose `all` explicitly so authored leaf icons remain visible.
 - `exclude_search` and `excludeSearch` were search-exclusion aliases
-  throughout 0.x; 1.0 removed them and fails the build with the replacement.
+  through 0.4; 0.5.0 removed them and fails the build with the replacement.
 - Cmd/Ctrl-K stays the Palette shortcut and ordinary text remains page search.
 - `/` opens command mode only when focus is outside an input, textarea, select,
   or contenteditable region.

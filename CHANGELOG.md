@@ -3,9 +3,9 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
-## [Unreleased]
+## [0.5.0] - 2026-08-17
 
-The component API v5 release. Content written for 0.4 needs migration:
+Draft: the tag is not created yet. The component API v5 release. Content written for 0.4 needs migration:
 `scripts/migrations/oink06.py report --sites <dir>` inventories a site and
 `… migrate --site <dir> --write` rewrites it. Configuration keys renamed here
 fail the build with the new name rather than being silently ignored.
@@ -95,7 +95,8 @@ fail the build with the new name rather than being silently ignored.
 
 ### Changed
 
-- **Breaking.** Configuration keys converge on three rules for 1.0: a boolean
+- **Breaking.** Configuration keys converge on three rules ahead of the 1.0
+  API freeze: a boolean
   switch is the bare feature name (`ui.annotation: true`, not
   `ui.annotation.enable` or `ui.annotation_enabled` — the only `_enabled`
   suffixes left are `ui.navbar_enabled`, `ui.sidebar_enabled`, and
@@ -236,7 +237,7 @@ fail the build with the new name rather than being silently ignored.
   the tokens instead of maintaining a per-selector opt-out list that drifted
   (12 selectors covered 42 rules; four files had no guard at all).
 - `scripts/migrations/oink06.py` gains a `frontmatter` transform (run first)
-  that rewrites the 1.0 page-key renames in YAML front matter and cascades —
+  that rewrites the 0.5.0 page-key renames in YAML front matter and cascades —
   `manualLink*`, `context_menu`, `hide_readingtime`, `hide_feedback`,
   `exclude_search`/`excludeSearch`, `content_width`, `assistant_links`,
   `annotation: {enable}`, and any `ui:` block (lifted to bare keys) — with
@@ -810,7 +811,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.4.2...HEAD
+[0.5.0]: https://github.com/pgsty/oink/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/pgsty/oink/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/pgsty/oink/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/pgsty/oink/compare/v0.3.0...v0.4.0

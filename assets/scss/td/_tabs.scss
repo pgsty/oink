@@ -9,47 +9,49 @@
 // visible with its own title (also the print / no-JS rendering) and the
 // tablist is hidden.
 
+// The tab set shares the code block's card: same canvas, border, radius, and
+// header surface, so a tabbed code group and a single block read as one family.
 .td-tabs {
   position: relative;
   max-width: 100%;
   margin: 1.5rem 0;
   overflow: hidden;
-  border: 1px solid var(--bs-border-color);
-  border-radius: calc(#{$border-radius} + 0.15rem);
-  background: var(--bs-body-bg);
-  box-shadow: 0 1px 2px rgba($black, 0.06);
+  border: 1px solid var(--td-code-border-color, var(--bs-border-color));
+  border-radius: var(--td-code-radius, 0.75rem);
+  background: var(--td-pre-bg, var(--bs-body-bg));
 
   &__list {
     display: flex;
     min-width: 0;
     flex-wrap: nowrap;
-    gap: 0.15rem;
-    padding: 0.35rem 0.45rem 0;
+    gap: 0.25rem;
+    padding: 0 0.5rem;
     overflow-x: auto;
-    border-bottom: 1px solid var(--bs-border-color);
-    background: color-mix(in srgb, var(--td-pre-bg, var(--bs-tertiary-bg)) 88%, var(--bs-body-bg));
+    border-bottom: 1px solid var(--td-code-border-color, var(--bs-border-color));
+    background: var(--td-code-header-bg, var(--bs-tertiary-bg));
     scrollbar-width: thin;
   }
 
   &__tab {
     flex: 0 0 auto;
     margin: 0;
-    padding: 0.5rem 0.8rem 0.55rem;
+    margin-bottom: -1px;
+    padding: 0.6rem 0.65rem;
     border: 0;
     border-bottom: 2px solid transparent;
-    border-radius: $border-radius-sm $border-radius-sm 0 0;
+    border-radius: 0;
     background: transparent;
     color: var(--bs-secondary-color);
     font-family: var(--td-ui-font-family);
-    font-size: 0.82rem;
-    font-weight: $font-weight-semibold;
-    line-height: 1.2;
+    font-size: 0.8125rem;
+    font-weight: $font-weight-medium;
+    line-height: 1.25;
     white-space: nowrap;
     cursor: pointer;
+    transition: color 120ms ease;
 
     &:hover {
       color: var(--bs-emphasis-color);
-      background: var(--bs-tertiary-bg);
     }
 
     &:focus-visible {
@@ -59,8 +61,7 @@
 
     &[aria-selected='true'] {
       border-bottom-color: var(--bs-link-color);
-      color: var(--bs-emphasis-color);
-      background: var(--bs-body-bg);
+      color: var(--bs-link-color);
     }
   }
 
@@ -74,13 +75,13 @@
   }
 
   &__panel-title {
-    padding: 0.45rem 0.9rem;
-    border-bottom: 1px solid var(--bs-border-color);
-    background: var(--bs-tertiary-bg);
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--td-code-border-color, var(--bs-border-color));
+    background: var(--td-code-header-bg, var(--bs-tertiary-bg));
     color: var(--bs-body-color);
     font-family: var(--td-ui-font-family);
-    font-size: 0.82rem;
-    font-weight: $font-weight-semibold;
+    font-size: 0.8125rem;
+    font-weight: $font-weight-medium;
     line-height: 1.4;
   }
 
@@ -123,7 +124,7 @@
     }
 
     > .td-tabs__panel + .td-tabs__panel {
-      border-block-start: 1px solid var(--bs-border-color);
+      border-block-start: 1px solid var(--td-code-border-color, var(--bs-border-color));
     }
   }
 
@@ -162,7 +163,6 @@
 
 @media print {
   .td-tabs {
-    box-shadow: none;
     break-inside: avoid-page;
 
     > .td-tabs__list {

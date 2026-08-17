@@ -4,7 +4,15 @@
 // Sass, PostCSS, or a Node.js toolchain.
 
 :root {
-  --td-ui-font-family: var(--bs-body-font-family);
+  // The `technical` preset reads UI and prose in the bundled Inter face; the
+  // platform stack behind it still renders CJK, emoji, and anything Inter
+  // lacks. A project that declared its own sans stack keeps exactly that stack:
+  // Inter is only put in front of OINK's stock value.
+  @if $font-family-sans-serif == $_td-fonts-sans-default {
+    --td-ui-font-family: 'Inter', var(--bs-body-font-family);
+  } @else {
+    --td-ui-font-family: var(--bs-body-font-family);
+  }
   --td-body-font-family: var(--td-ui-font-family);
 
   @if $headings-font-family == null {
@@ -32,6 +40,7 @@
     --bs-font-monospace: #{inspect($font-family-monospace)};
   }
 
+  --td-ui-font-family: var(--bs-body-font-family);
   --td-display-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
   --td-print-font-family: var(--bs-body-font-family);

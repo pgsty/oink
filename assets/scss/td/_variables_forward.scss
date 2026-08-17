@@ -6,10 +6,16 @@
 // Note: since these are Oink variables, we don't forward (repeat) the
 // definitions, we've simply added them here.
 
-$td-fonts-serif:
+// The platform sans stack. `_tokens-typography.scss` puts the bundled Inter
+// face in front of it for the `technical` preset only while this default is
+// untouched: a project that assigns `$td-fonts-serif` or
+// `$font-family-sans-serif` keeps exactly the stack it declared.
+$_td-fonts-sans-default:
   -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
   'Microsoft YaHei', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC',
-  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' !default;
+  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+
+$td-fonts-serif: $_td-fonts-sans-default !default;
 
 $_td-font-family-monospace-default:
   'IBM Plex Mono', SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo,

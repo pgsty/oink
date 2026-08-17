@@ -367,57 +367,68 @@ no longer read or written.
 ## 7. Presentation design
 
 OINK has three related surfaces, all using the same canvas, border, radius,
-font, focus, and light/dark tokens.
+font, focus, and light/dark tokens: one card (`--td-pre-bg` canvas,
+`--td-code-border-color` hairline, `--td-code-radius` corners) whose optional
+header row uses `--td-code-header-bg`. A block is one quiet object; nothing
+in the shell competes with the code. There is no visible language label:
+the lexer name stays machine-readable in `data-language`, but it is not
+presented as UI text.
 
 ### 7.1 Titled block
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│ hugo.yml                    YAML        [copy icon]      │
+│ hugo.yml                                    [copy icon]  │
 ├──────────────────────────────────────────────────────────┤
 │ params:                                                  │
 │   offlineSearch: true                                    │
 └──────────────────────────────────────────────────────────┘
 ```
 
-The filename is left-aligned and truncates visually on narrow screens without
-changing its accessible text. Language and actions occupy the inline end. The
-header exists only when `filename` or `title` is present.
+The filename is left-aligned in the UI face and truncates visually on narrow
+screens without changing its accessible text. Copy is a persistent icon
+button at the inline end of the header. The header exists only when
+`filename` or `title` is present.
 
 ### 7.2 Untitled block
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│ params:                              YAML    [copy icon]  │
-│   offlineSearch: true                                    │
+│ params:                                     [copy icon]  │   ← visible while
+│   offlineSearch: true                                    │     hovered/focused
 └──────────────────────────────────────────────────────────┘
 ```
 
-There is no empty full-width title bar. A compact utility cluster sits at the
-upper inline end and the viewport reserves enough top/inline padding to prevent
-overlap with code. On narrow screens the language text may hide, while the
-localized icon button and accessible label remain.
+There is no empty full-width title bar. The Copy control floats at the upper
+inline end of the block on its own small surface and is revealed while the
+pointer is over the block or focus is inside it (`:hover`, `:focus-within`).
+Devices without hover (`@media (hover: none)`) always show it — an affordance
+never lives behind hover alone — and a fresh success/error state stays visible
+after the pointer leaves so the confirmation glyph is seen. The viewport
+reserves inline-end padding so the control never covers the first line.
 
 ### 7.3 Tab set
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│ [ npm ] [ pnpm ] [ yarn ]                                │
+│  npm   pnpm   yarn                                       │
+│ ─────                                                    │
 ├──────────────────────────────────────────────────────────┤
-│ pnpm add @example/client                  BASH [copy]    │
+│ pnpm add @example/client                    [copy icon]  │
 └──────────────────────────────────────────────────────────┘
 ```
 
-The tab row is the set's only header. An embedded code panel keeps its own
-compact utility cluster (language label and Copy) inside the panel and drops
-its frame; prose panels get the standard panel padding. Long tab lists scroll
-horizontally instead of wrapping into multiple ambiguous rows. Before the
-runtime runs, the same set renders as stacked titled blocks with one visible
-title per panel.
+The tab row is the set's only header and shares the code header surface. An
+embedded code panel is an untitled block: it keeps its own floating Copy
+control inside the panel (same reveal rules) and drops its frame; prose panels
+get the standard panel padding. Long tab lists scroll horizontally instead of
+wrapping into multiple ambiguous rows. Before the runtime runs, the same set
+renders as stacked titled blocks with one visible title per panel.
 
-Copy is always an icon-only visual action. Its localized name remains available
-through `aria-label`, `title`, the live status region, and the success/error
-icon state; translated prose does not consume header width.
+Copy is always an icon-only visual action (the outline copy glyph at rest, a
+check on success, a warning triangle on error). Its localized name remains
+available through `aria-label`, `title`, the live status region, and the
+success/error icon state; translated prose does not consume header width.
 
 ### 7.4 Collapse treatment
 
@@ -439,7 +450,7 @@ the fade or controls.
 - Preserve horizontal scrolling in non-wrap mode.
 - Preserve Chroma `.highlight`, `.chroma`, `.lntable`, `.ln`, `.lnt`, `.hl`,
   `.gi`, and `.gd` semantics.
-- Pair the Friendly light palette with GitHub Dark. Because generated palettes
+- Pair the GitHub light palette with GitHub Dark. Because generated palettes
   omit roles that equal their default color, the dark layer explicitly resets
   every token defined only by the light palette. Never carry a light error
   token background into dark mode; `.err` uses text color only.
@@ -480,7 +491,6 @@ The semantic contract is:
   <div class="td-code__header">
     <span class="td-code__filename" id="td-code-...-title">hugo.yml</span>
     <div class="td-code__utilities">
-      <span class="td-code__language">YAML</span>
       <button type="button" hidden data-td-code-copy>...</button>
     </div>
   </div>
@@ -497,9 +507,9 @@ The semantic contract is:
 
 The header is omitted for an untitled block; the same utility partial is then
 placed as an overlay within the root. Elements that do not apply are omitted,
-not emitted empty. In particular, the live status region exists only when Copy
-is enabled; static outputs and `copy=false` blocks do not carry inert
-interactive semantics.
+not emitted empty. In particular, the utility cluster and the live status
+region exist only when Copy is enabled; static outputs and `copy=false` blocks
+do not carry inert interactive semantics.
 
 All interactive controls carry `hidden` in server HTML. `code-block.js` only
 reveals a Copy control after finding a valid source, and only reveals an expand
@@ -677,7 +687,7 @@ Print CSS must additionally:
 - wrap long lines to page width;
 - override `break-inside: avoid-page` for `.td-code`, its `.highlight`, and
   long `pre` elements so long listings can span pages;
-- retain filename and language text when present.
+- retain the filename text when present.
 
 The result is a sequence such as `npm`, its complete code, `pnpm`, its complete
 code, and so on.
@@ -739,11 +749,10 @@ Every other bundled locale receives an explicit English fallback through the
 existing i18n synchronization workflow, and `scripts/check-i18n.py` must report
 exact parity across all 32 files.
 
-Language identifiers such as `YAML`, `BASH`, and `SQL` are technical labels,
-not localized prose. Display the token in upper case, with the common
-`bash`/`sh`/`shell` lexer aliases presented consistently as `BASH`; this changes
-only the UI label, not the language passed to Chroma or stored in
-`data-language`. Omit the visual label when the token is empty.
+Language identifiers such as `yaml`, `bash`, and `sql` are not user-facing
+text: the shell does not display them, so nothing about them is localized. The
+lexer name reaches Chroma unchanged and is stored in `data-language` for
+stylesheets, scripts, and tests.
 
 ## 13. Compatibility decisions
 

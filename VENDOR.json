@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "generated": "2026-08-13",
+  "generated": "2026-08-17",
   "hash": "sha256",
   "trees": [
-    {"path": "assets/third_party", "files": 237, "sha256": "4e1837c6ab0fcd4b3b357a9f505a60cc81a620e9cec8fda4edab49dbcca52639"},
+    {"path": "assets/third_party", "files": 240, "sha256": "2f97030068fce3c60b4f23b9d21aebe12846fb601f1fac736d3b42edbdcbaaf3"},
     {"path": "assets/js/third_party", "files": 1, "sha256": "ac21e64c5c17db79d37d0a3149cdc4489879e730e3cb360180eb8cf7b0041d27"},
-    {"path": "static/webfonts", "files": 27, "sha256": "3074a82e01185685b726fb4d6e9222d179adcaa15772dd6dab93889945faa692"}
+    {"path": "static/webfonts", "files": 41, "sha256": "55f2ebfbef479b898d52e8ec86b21bd661d5c7c8d4014440f300901e489e11cf"}
   ],
   "dependencies": [
     {
@@ -57,6 +57,31 @@
         {"path": "assets/third_party/open-sans/_normal.scss", "sha256": "4c5cb06dcb4ce897bb9af24e41e29a10dab1098652fb94c9a275b19f8ebf3b5b"},
         {"path": "assets/third_party/open-sans/_italic.scss", "sha256": "748d13e2b46f24dbde68abfc4e393458213f7a15bdb799504194babd8c3536d7"},
         {"path": "static/webfonts/open-sans/open-sans-latin-wght-normal.woff2", "sha256": "d8e4fe0452aa2076429a9bb5d8757d00a994dd95986cf950e9a1a371b9a072a0"}
+      ]
+    },
+    {
+      "name": "@fontsource-variable/inter",
+      "version": "5.3.0",
+      "source": "https://registry.npmjs.org/@fontsource-variable/inter/-/inter-5.3.0.tgz",
+      "license": "OFL-1.1",
+      "licenseFiles": ["assets/third_party/inter/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/inter/_normal.scss", "sha256": "1a0f10ce2bb6e3f5bc42ac3a390a983747c0d09a71bfa0e0bb29ebb4ce204387"},
+        {"path": "assets/third_party/inter/_italic.scss", "sha256": "2be8112aeedd22b97a53237ab181317e7580c059c3d25932ce761cdd1186f04b"},
+        {"path": "static/webfonts/inter/inter-cyrillic-ext-wght-italic.woff2", "sha256": "39689184132e9fba8fb1066f429125d14445352a566f47f4edcae7c3c90e486d"},
+        {"path": "static/webfonts/inter/inter-cyrillic-ext-wght-normal.woff2", "sha256": "ca157063339ac4ad418f214f3abfed119b0798ab4d377386ce5c9e5a7a435ebd"},
+        {"path": "static/webfonts/inter/inter-cyrillic-wght-italic.woff2", "sha256": "47d42151dff6d13f1c2b9a1f278290f625593c1f01c89612ee4ae7f063167f7a"},
+        {"path": "static/webfonts/inter/inter-cyrillic-wght-normal.woff2", "sha256": "71d5ee93cc1e9f1d520a3a8b66456de18c7879d8df09d57fcd2eaff75fef0075"},
+        {"path": "static/webfonts/inter/inter-greek-ext-wght-italic.woff2", "sha256": "787fc783f35c913334445a7c4502bb272f94a8328426578776eac5e4ebd03ba1"},
+        {"path": "static/webfonts/inter/inter-greek-ext-wght-normal.woff2", "sha256": "6e9e020a25f9b56d418f2c085b1d3c09725a4da23fe693a5b463064606732190"},
+        {"path": "static/webfonts/inter/inter-greek-wght-italic.woff2", "sha256": "29e273a42cac8240f37fbdd94c684f8a255e61c8076942d9b8f18a0e2c014991"},
+        {"path": "static/webfonts/inter/inter-greek-wght-normal.woff2", "sha256": "1be3448e292fbf05ffe176fe1e43f135013d50b1e7d324ad1a558f623d3bb6f6"},
+        {"path": "static/webfonts/inter/inter-latin-ext-wght-italic.woff2", "sha256": "71254244ccb1ec21e14db3480fef6f6826d1136dc4aca1c7d3ca7ce31294fcce"},
+        {"path": "static/webfonts/inter/inter-latin-ext-wght-normal.woff2", "sha256": "34b9c504cab7a73e37b746343a449132e56cf7b5481af2cb81dc74dcff25c956"},
+        {"path": "static/webfonts/inter/inter-latin-wght-italic.woff2", "sha256": "7291b5970da2237441273c03b424a504b70b18f09791473fab99687dcc314720"},
+        {"path": "static/webfonts/inter/inter-latin-wght-normal.woff2", "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"},
+        {"path": "static/webfonts/inter/inter-vietnamese-wght-italic.woff2", "sha256": "1991ed5832eb07f7523f22a843ca9a8aa83c51c8e87062ce77794855d2f5dee8"},
+        {"path": "static/webfonts/inter/inter-vietnamese-wght-normal.woff2", "sha256": "5c66f9e07e90c6d4ac4922cc68d60de26c17b1858e677fb5e603fce3952b3ff2"}
       ]
     },
     {

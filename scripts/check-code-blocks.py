@@ -107,15 +107,10 @@ def check_outputs(public: Path) -> list[str]:
         require(marker in code_html, f"HTML fixture missing {marker}", errors)
 
     require(re.search(r'<div class="td-tabs__panel"[^>]*\shidden(?:\s|>)', code_html) is None, "a tab panel is hidden before the runtime enhances the DOM", errors)
-    require(
-        re.search(
-            r'data-language="sh"[\s\S]*?class="td-code__language">BASH</span>',
-            code_html,
-        )
-        is not None,
-        "shell lexer alias was not presented as Bash",
-        errors,
-    )
+    # The shell keeps the lexer name on the root; there is no visible language
+    # label (the block is one quiet card, Copy is its only control).
+    require('data-language="sh"' in code_html, "shell lexer alias lost its data-language", errors)
+    require("td-code__language" not in code_html, "a visible language label survived in the code shell", errors)
     require("td-code__copy-label" not in code_html, "Copy control still contains a visible text label", errors)
     require("data-td-tp-persist" not in code_html and "td-code-group" not in code_html and "nav-tabs" not in code_html, "legacy tabpane / code-group markup survived", errors)
     for legacy in ("data-bs-toggle", "tab-pane"):

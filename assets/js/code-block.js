@@ -103,7 +103,7 @@
           ? 'fa-solid fa-check'
           : state === 'error'
             ? 'fa-solid fa-triangle-exclamation'
-            : 'fa-solid fa-copy';
+            : 'fa-regular fa-copy';
     }
   };
 

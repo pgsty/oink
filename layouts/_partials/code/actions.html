@@ -1,19 +1,14 @@
 {{- $config := .config -}}
 {{- $compact := .compact | default false -}}
-{{- if or $config.languageLabel $config.copyEnabled -}}
+{{- if $config.copyEnabled -}}
 <div class="td-code__utilities{{ if $compact }} td-code__utilities--compact{{ end }}"{{ with .slot }} data-td-code-actions="{{ . }}"{{ end }}>
-  {{- with $config.languageLabel }}
-  <span class="td-code__language">{{ . }}</span>
-  {{- end }}
-  {{- if $config.copyEnabled }}
   <button class="td-code__copy" type="button" hidden data-td-code-copy
           data-td-code-target="{{ $config.rootID }}" data-copy-mode="{{ $config.copyMode }}"
           data-label-copy="{{ T "ui_code_copy_label" }}"
           data-label-copied="{{ T "ui_code_copied" }}"
           data-label-error="{{ T "ui_code_copy_error" }}"
           aria-label="{{ T "ui_code_copy_label" }}" title="{{ T "ui_code_copy_label" }}">
-    <i class="fa-solid fa-copy" aria-hidden="true"></i>
+    <i class="fa-regular fa-copy" aria-hidden="true"></i>
   </button>
-  {{- end }}
 </div>
 {{- end -}}

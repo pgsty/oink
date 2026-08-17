@@ -59,6 +59,7 @@
   --bs-link-hover-color: #1d588c;
   --bs-link-hover-color-rgb: 29, 88, 140;
   --bs-code-color: #925b20;
+  --td-pre-bg: #fff;
   --td-brand-elev: #fff;
   --td-brand-silk: #5d7189;
   --td-brand-copper: #b4762e;
@@ -122,30 +123,12 @@ a {
 }
 
 .td-content {
-  overflow-wrap: anywhere;
-
-  h1 {
-    font-weight: 800;
-    letter-spacing: 0.01em;
-  }
-
-  h2 {
-    margin-top: 2.5rem;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--bs-border-color);
-    font-weight: 700;
-  }
-
-  h3,
-  h4 {
-    margin-top: 2rem;
-    font-weight: 700;
-  }
-
+  // Bare highlighted output (no enhanced shell) gets the same card treatment
+  // as `.td-code`; the shell itself owns its border and radius.
   .highlight {
     overflow: hidden;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.6rem;
+    border: 1px solid var(--td-code-border-color);
+    border-radius: var(--td-code-radius);
     background: var(--td-pre-bg);
   }
 
@@ -155,18 +138,9 @@ a {
 
   pre,
   .chroma {
-    border-color: var(--bs-border-color);
-    border-radius: 0.6rem;
+    border-color: var(--td-code-border-color);
+    border-radius: var(--td-code-radius);
     background-color: var(--td-pre-bg);
-  }
-
-  p code,
-  li > code,
-  table code {
-    padding: 0.12em 0.35em;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 5px;
-    background: rgba(var(--bs-link-color-rgb), 0.06);
   }
 
   blockquote {
@@ -191,30 +165,36 @@ a {
   }
 
 
+  // Tables: hairline rows under a quiet header, no zebra fill. On the tinted
+  // canvas Bootstrap's stripe reads as grey bands rather than as guidance.
+  // `_content.scss` extends `.table` onto `table:not(.td-initial)`, so the
+  // overrides repeat that selector to outrank the extended Bootstrap rules.
   table {
     display: block;
     max-width: 100%;
     overflow-x: auto;
     border-color: var(--bs-border-color);
+  }
+
+  table:not(.td-initial) {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: transparent;
+
+    > :not(caption) > * > th,
+    > :not(caption) > * > td {
+      padding: 0.6rem 0.75rem;
+    }
 
     thead th,
     thead td {
       border-bottom: 1px solid var(--td-brand-line-strong);
-      background: var(--bs-tertiary-bg);
+      color: var(--bs-emphasis-color);
+      font-weight: $font-weight-semibold;
     }
-  }
-}
 
-[data-bs-theme='light'] .td-content {
-  .highlight,
-  pre {
-    border: 1px solid var(--bs-border-color);
-    background: #f6f9fc;
-  }
-
-  .highlight pre {
-    border: 0;
-    background: transparent;
+    tbody tr:last-child > * {
+      border-bottom-color: var(--td-brand-line-strong);
+    }
   }
 }
 

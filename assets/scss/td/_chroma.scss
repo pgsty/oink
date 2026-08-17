@@ -97,8 +97,9 @@
   }
 }
 
-// The generated Friendly palette contains several colors below 4.5:1 on
-// OINK's light code canvas. Keep the token roles, but meet WCAG AA.
+// The generated GitHub palette is AA-clean on the white code canvas; this
+// layer only adjusts roles the palette leaves at their defaults or paints as
+// boxes: line numbers, console output/prompt, and the lexer-error token.
 .chroma {
   // Highlight the line as reading context, not as a bordered input. The
   // narrow leading accent stays visible when adjacent lines are selected,
@@ -111,65 +112,25 @@
   .ln,
   .lnt,
   .lnlinks,
-  .go,
   .w {
-    color: #6b6b6b;
+    color: #656d76;
   }
 
-  .nc,
-  .nn {
-    color: #08759f;
+  // Console blocks: output stays secondary; the prompt is distinguishable from
+  // both the command and its output.
+  .go {
+    color: #57606a;
   }
 
-  .no {
-    color: #226b8a;
-  }
-
-  .ni {
-    color: #b23d24;
-  }
-
-  .nv,
-  .vc,
-  .vg,
-  .vi,
-  .vm {
-    color: #8a3ca5;
-  }
-
-  .si {
-    color: #386d9c;
-  }
-
-  .sx,
   .gp {
-    color: #a44a00;
+    color: #116329;
+    font-weight: $font-weight-semibold;
   }
 
-  .m,
-  .mb,
-  .mf,
-  .mh,
-  .mi,
-  .il,
-  .mo {
-    color: #18794e;
-  }
-
-  .c,
-  .ch,
-  .cm,
-  .c1,
-  .cs {
-    color: #326f7d;
-  }
-
-  .gr {
-    color: #c52222;
-  }
-
-  .gi {
-    color: #087a08;
+  // A lexer error is a token, not an alert: text colour only, never a box.
+  .err {
+    color: #cf222e;
+    background-color: transparent;
   }
 }
 

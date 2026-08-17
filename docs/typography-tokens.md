@@ -22,12 +22,15 @@ params:
       preset: technical # technical | system
 ```
 
-- `technical` is the default. It preserves the current Chakra Petch and IBM
-  Plex Mono treatment and uses only locally bundled font files.
-- `system` resets the display, metadata, print, and Bootstrap monospace roles to
-  platform stacks. The stock UI, body, and heading roles are already seeded by
-  a platform sans stack. OINK's brand and Open Sans files remain static theme
-  assets, but the browser does not request them with the stock configuration.
+- `technical` is the default. It sets UI and prose in the bundled Inter face
+  (variable weight, Latin/Latin-ext/Cyrillic/Greek/Vietnamese subsets served
+  by `unicode-range`; CJK and emoji fall through to the platform stack behind
+  it), keeps the Chakra Petch and IBM Plex Mono treatment, and uses only
+  locally bundled font files.
+- `system` resets the UI, display, metadata, print, and Bootstrap monospace
+  roles to platform stacks; body and heading roles follow the UI role. OINK's
+  Inter, brand, and Open Sans files remain static theme assets, but the browser
+  does not request them with the stock configuration.
 
 OINK emits the selected value as `data-td-typography` on `<html>`. Unsupported
 values fail the Hugo build instead of silently changing the site.
@@ -36,7 +39,7 @@ values fail the Hugo build instead of silently changing the site.
 
 | Token | Intended use | Default source |
 | --- | --- | --- |
-| `--td-ui-font-family` | Navigation, controls, and general chrome | `--bs-body-font-family` |
+| `--td-ui-font-family` | Navigation, controls, and general chrome | Inter, then `--bs-body-font-family` (`technical`); `--bs-body-font-family` (`system`) |
 | `--td-body-font-family` | Article and blog prose | UI role |
 | `--td-heading-font-family` | Content headings | `$headings-font-family`, or body role |
 | `--td-code-font-family` | Code and terminal content | `$font-family-code` |
@@ -59,7 +62,7 @@ reuses these established variables instead of introducing parallel Sass knobs:
 
 | Existing variable | OINK interpretation |
 | --- | --- |
-| `$td-fonts-serif` / `$font-family-sans-serif` / `$font-family-base` | Bootstrap body font, then UI and body roles |
+| `$td-fonts-serif` / `$font-family-sans-serif` / `$font-family-base` | Bootstrap body font, then UI and body roles; a project value replaces the stock stack outright, so Inter is not put in front of it |
 | `$headings-font-family` | Heading role when explicitly configured |
 | `$td-font-family-monospace` / `$font-family-monospace` | Bootstrap monospace base; an explicit project value also survives `system` |
 | `$font-family-code` | Code role and ordinary `code`, `pre`, `kbd`, and `samp` |

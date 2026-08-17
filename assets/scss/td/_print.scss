@@ -203,12 +203,10 @@
       background: #edf0f3 !important;
     }
 
-    .td-code__utilities--compact {
-      position: static !important;
-      justify-content: flex-end;
-      padding: 0.35rem 0.5rem !important;
-      background: #edf0f3 !important;
-      backdrop-filter: none !important;
+    // The utility cluster only ever holds interactive controls now; on paper
+    // it would be an empty strip.
+    .td-code__utilities {
+      display: none !important;
     }
 
     .td-code__viewport,

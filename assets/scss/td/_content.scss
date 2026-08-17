@@ -6,14 +6,49 @@
 .td-content {
   order: 1;
   font-family: var(--td-body-font-family);
+  overflow-wrap: anywhere;
 
+  // Prose heading scale. Bootstrap's fluid 2.5rem/2rem/1.75rem headings are
+  // sized for marketing pages; documentation reads better with a tighter,
+  // semibold scale where the size step (not the weight) carries hierarchy.
+  // Negative tracking suits Inter and every platform sans at these sizes.
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
+    color: var(--bs-emphasis-color);
     font-family: var(--td-heading-font-family);
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: $font-weight-bold;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  h4 {
+    font-size: 1.0625rem;
+  }
+
+  h5,
+  h6 {
+    font-size: 1rem;
   }
 
   p,
@@ -23,28 +58,44 @@
   }
 
   > h1 {
-    font-weight: $font-weight-bold;
     margin-bottom: 1rem;
   }
 
   > h2 {
+    margin-top: 3rem;
     margin-bottom: 1rem;
   }
 
-  > h2:not(:first-child) {
-    margin-top: 3rem;
+  > h2:first-child {
+    margin-top: 0;
   }
 
   > h2 + h3 {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
   }
 
-  > h3,
+  > h3 {
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+
   > h4,
   > h5,
   > h6 {
-    margin-bottom: 1rem;
-    margin-top: 2rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  // Markdown links carry no class. Colour alone is thin affordance in running
+  // text, so they underline on hover/focus; component links (cards, pager,
+  // badges, buttons) keep their own treatment.
+  :where(p, li, dd, dt, td, th, blockquote, figcaption, .lead) a:not([class]) {
+    text-underline-offset: 0.16em;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
   }
 
   img {
@@ -103,8 +154,14 @@
     }
   }
 
+  // Page description under the title: quieter and lighter than the h1, but
+  // regular weight (Bootstrap's 300 gets thin and patchy in Inter and CJK).
   .lead {
     margin-bottom: 1.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 1.125rem;
+    font-weight: $font-weight-normal;
+    line-height: 1.6;
   }
 
   // Server-rendered KaTeX can be wider than the document column. Keep long

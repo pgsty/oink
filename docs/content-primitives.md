@@ -466,12 +466,14 @@ Markdown in Markdown output. An explicit empty-string default is displayed as
 HTML is one `<dl>` (`.td-fields > .td-fields__list`) with HTML-valid wrappers
 containing paired `<dt>` and `<dd>` elements. It must not use
 `display: contents`. Each entry stacks two rows: the `<dt>` header row carries
-the field name followed by metadata chips — `type` (`.td-field__type`),
+the field name followed by quiet metadata text — `type` (`.td-field__type`),
 `required` (`.td-field__required`), `default: value` (`.td-field__default`) for
 semantic metadata from either form; `label: value` (`.td-field__meta` with
 `.td-field__meta-label` / `.td-field__meta-value`) for a table's unnamed middle
-columns — and the `<dd>` below it carries the description. Entries are
-separated by hairline dividers, not boxed cells or columns.
+columns — and the `<dd>` below it carries the description. Metadata is set
+small in the metadata face without borders or fills (the name is the one
+element that must be found at a glance; `required` is the only coloured
+token); entries are separated by hairline dividers, not boxed cells or columns.
 
 **Entry anchors.** Every entry of either form gets a generated id,
 `field-<anchorized name>`, plus the heading self-link affordance

@@ -11,7 +11,11 @@ SCSS_ROOT = ROOT / "assets" / "scss"
 TD_ROOT = SCSS_ROOT / "td"
 LAYOUT_ROOT = ROOT / "layouts"
 FAMILIES = ("Chakra Petch", "IBM Plex Mono", "Open Sans")
-FAMILY_PATTERN = re.compile("|".join(map(re.escape, FAMILIES)), re.IGNORECASE)
+# Inter is matched only as a quoted family literal: the bare word is ordinary
+# English ("interactive", "internal") in comments and selectors.
+FAMILY_PATTERN = re.compile(
+    "|".join(map(re.escape, FAMILIES)) + r"""|['"]Inter['"]""", re.IGNORECASE
+)
 REVERSE_PATTERN = re.compile(r"--bs-[\w-]+\s*:\s*var\(--td-")
 FAMILY_NAME_ALLOWLIST = {
     TD_ROOT / "_brand.scss",  # Local @font-face declarations.

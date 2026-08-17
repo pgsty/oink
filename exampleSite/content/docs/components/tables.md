@@ -30,6 +30,14 @@ Two columns (glossary):
 | `random()` | A random number |
 {.fields}
 
+Semantic columns (`meta=`) render the same chips as the shortcode form:
+
+| Parameter | Type | Required | Default | Note | Description |
+| --- | --- | --- | --- | --- | --- |
+| `baseURL` | string | yes | | 部署地址 | Must include the subpath |
+| `offlineSearch` | boolean | | `false` | | Builds the local index |
+{.fields meta="type required default -" caption="Semantic columns"}
+
 ## Matrix `{.matrix}`
 
 | OS / PG | PG18 | PG17 | PG16 | PG15 | PG14 |

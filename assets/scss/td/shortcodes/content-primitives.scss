@@ -125,6 +125,7 @@ a.td-badge {
 .td-field {
   min-width: 0;
   padding-block: 0.95rem;
+  scroll-margin-block-start: var(--td-scroll-padding-top, 0px);
 
   &:first-child {
     padding-block-start: 0.15rem;
@@ -137,6 +138,30 @@ a.td-badge {
   + .td-field {
     border-block-start: 1px solid var(--bs-border-color);
   }
+
+  // Landing on a field link tints the whole entry, name and description
+  // together. The inline margin cancels the padding, so nothing shifts.
+  &:target {
+    margin-inline: -0.6rem;
+    padding-inline: 0.6rem;
+    border-radius: 0.4rem;
+    background: var(--bs-tertiary-bg);
+  }
+}
+
+// Same affordance as a heading self-link: hidden until the entry is hovered or
+// the link takes focus, always visible on touch (see _content.scss).
+.td-field__self-link {
+  padding-left: 0;
+  padding-inline-start: 0.25em;
+
+  &:focus-visible {
+    visibility: visible;
+  }
+}
+
+.td-field__term:hover > .td-field__self-link {
+  visibility: visible;
 }
 
 .td-field__term {
@@ -350,6 +375,12 @@ a.td-badge {
   .td-field__default {
     border-color: currentColor;
     background: Canvas;
+  }
+
+  // A background tint carries nothing here, so the targeted field is outlined.
+  .td-field:target {
+    background: Canvas;
+    outline: 2px solid Highlight;
   }
 
   a.td-badge {

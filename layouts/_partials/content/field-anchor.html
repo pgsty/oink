@@ -1,0 +1,43 @@
+{{- /*
+  Allocate a stable, page-unique anchor id for one Fields entry so both the
+  `{.fields}` table hook and the `fields`/`field` shortcode pair produce
+  linkable definitions (docs/content-primitives.md §3.3).
+
+  Input dict:
+    page      the page the entry belongs to
+    name      the field name (plain text)
+    identity  caller-stable identity of this entry inside the page, e.g.
+              "tb3#2" (table ordinal / row) or "sc1#4" (shortcode ordinal /
+              child). Re-registering the same identity is idempotent, so a
+              second render pass over the same document keeps its ids.
+
+  The registry lives on the page store, keyed by output format, because Hugo
+  renders one page once per format and the store outlives a single pass. A name
+  that collides inside one page takes the next free `-2`, `-3`, … suffix, the
+  way Goldmark disambiguates repeated headings.
+
+  Returns the id (never empty).
+*/ -}}
+{{- $page := .page -}}
+{{- $identity := printf "%v" .identity -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $slug := anchorize (printf "%v" .name) -}}
+{{- if not $slug }}{{ $slug = "entry" }}{{ end -}}
+{{- $base := printf "field-%s" $slug -}}
+{{- $registry := $page.Store.Get "tdFieldAnchors" | default (dict) -}}
+{{- $id := "" -}}
+{{- range $i := seq 1 64 -}}
+  {{- if not $id -}}
+    {{- $candidate := cond (eq $i 1) $base (printf "%s-%d" $base $i) -}}
+    {{- $key := printf "%s|%s" $format $candidate -}}
+    {{- $taken := printf "%v" (index $registry $key | default "") -}}
+    {{- if or (not $taken) (eq $taken $identity) -}}
+      {{- $id = $candidate -}}
+      {{- $page.Store.SetInMap "tdFieldAnchors" $key $identity -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $id -}}
+  {{- errorf "fields: cannot allocate an anchor for field %q on %s (more than 64 entries share one name)" .name $page.Path -}}
+{{- end -}}
+{{- return $id -}}

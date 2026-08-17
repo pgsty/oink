@@ -360,8 +360,13 @@ Ctrl + K
 
 ### 3.3 Fields and Field
 
-Fields has a native table form and a shortcode form; both render through the
-shared `<dl>` partial `layouts/_partials/content/fields-list.html`.
+Fields has a native table form and a shortcode form. The table form is the
+default; the shortcode form exists for the one thing a pipe table cannot hold,
+a **block-level description** (several paragraphs, a list, a fence, a callout).
+Both render through the shared `<dl>` partial
+`layouts/_partials/content/fields-list.html`, and both build their metadata
+chips with `layouts/_partials/content/field-meta.html`, so the same field
+written either way produces the same entry header.
 
 **Table form.** Any pipe table followed by `{.fields}`:
 
@@ -389,6 +394,32 @@ Positional rule, no header vocabulary and no synonym guessing:
   `.matrix`, `.full-width`, or a Book `num`; the table hook attribute policy of
   section 3.9 applies.
 
+**Semantic columns.** `meta` names the role of each middle column so a table
+can emit the shortcode form's chips instead of `header: value` pairs. It is
+explicit rather than inferred, because the positional rule refuses to guess
+header vocabulary in 32 locales:
+
+```markdown
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `offlineSearch` | boolean | 是 | `false` | 开启本地索引 |
+{.fields meta="type required default"}
+```
+
+- the roles are `type`, `required`, `default`, and `-` (keep the header label);
+- the list is positional and must name **every** middle column, so its length
+  equals the column count minus two; a semantic role may not repeat; an unknown
+  role, a length mismatch, or `meta` on a table without `.fields` fails the
+  build;
+- an empty cell omits the chip whatever its role, so `required` is a
+  non-empty-means-true column and the chip itself is the untranslated word
+  `required`, not the cell text;
+- a `type` or `default` cell that carries no inline markup is wrapped in
+  `<code>` so it matches the shortcode form; a cell that is already a code span
+  or a link is left alone;
+- semantic chips render in the canonical `type`, `required`, `default` order
+  regardless of column order; `-` columns follow in column order.
+
 Markdown output keeps the source table (render hooks do not run there).
 
 **Shortcode form** (unchanged notation from version one; strict typed
@@ -411,6 +442,11 @@ metadata and multi-paragraph descriptions):
 | Parameter | Required | Accepted values | Default |
 | --- | --- | --- | --- |
 | `label` | no | non-empty plain string | no visible label |
+| `id` | no | non-empty string without whitespace, quotes, `<`, `>`, `&` | none |
+
+`fields` also accepts `class` (token-validated) and `data-*` / `aria-*`
+parameters, matching the table hook's attribute policy; `style` and `on*` fail
+the build.
 
 `field` parameters:
 
@@ -431,11 +467,22 @@ HTML is one `<dl>` (`.td-fields > .td-fields__list`) with HTML-valid wrappers
 containing paired `<dt>` and `<dd>` elements. It must not use
 `display: contents`. Each entry stacks two rows: the `<dt>` header row carries
 the field name followed by metadata chips — `type` (`.td-field__type`),
-`required` (`.td-field__required`), `default: value` (`.td-field__default`) in
-the shortcode form; `label: value` (`.td-field__meta` with
-`.td-field__meta-label` / `.td-field__meta-value`) in the table form — and the
-`<dd>` below it carries the description. Entries are separated by hairline
-dividers, not boxed cells or columns.
+`required` (`.td-field__required`), `default: value` (`.td-field__default`) for
+semantic metadata from either form; `label: value` (`.td-field__meta` with
+`.td-field__meta-label` / `.td-field__meta-value`) for a table's unnamed middle
+columns — and the `<dd>` below it carries the description. Entries are
+separated by hairline dividers, not boxed cells or columns.
+
+**Entry anchors.** Every entry of either form gets a generated id,
+`field-<anchorized name>`, plus the heading self-link affordance
+(`.td-heading-self-link.td-field__self-link`, revealed on hover or focus) and a
+`:target` tint, so a single parameter is linkable. Ids are allocated by
+`content/field-anchor.html`: page-scoped, allocated in document order, and
+disambiguated with `-2`, `-3`, … when one page repeats a field name, the way
+Goldmark disambiguates repeated headings. They are emitted in interactive HTML
+only — print and RSS concatenate many pages into one document, where a
+page-scoped id would collide. Author-written ids (`{#id}`, `id=`) name the
+wrapper and are never rewritten.
 
 Markdown fallback of the shortcode form is an ordered author-preserving bullet
 list:
@@ -820,6 +867,7 @@ The table family is selected by the attribute line after the table:
 | --- | --- | --- |
 | `{.full-width}` | opt out of the prose measure | wrapper `td-table-scroll--full`; the `full-width` class stays on `<table>` |
 | `{.fields}` | reference table | `<dl>` (section 3.3) |
+| `{.fields meta="…"}` | name the middle columns' semantic roles | `type` / `required` / `default` chips instead of `header: value` (section 3.3) |
 | `{.matrix}` | compatibility/feature matrix | first column `<th scope="row">`, wrapper `td-table-scroll--matrix` with sticky header and first column, other cells centered unless the author aligns them |
 | `{caption="…"}` | table caption | `<caption class="td-table__caption">`; on `.fields` the list label |
 | `{#id}` | stable id | on `<table>` (or on the figure of a numbered table) |
@@ -828,13 +876,24 @@ The table family is selected by the attribute line after the table:
 | any other class | site CSS | passed through on `<table>` |
 
 Exclusivity: `.fields` cannot combine with `.matrix`, `.full-width`, or `num`;
-`num` and `tab` are mutually exclusive; `group`/`value` require `tab`. Allowed
-keys are `id caption num tab group value` plus `class`, `data-*`, `aria-*`;
-`style`, `on*`, and unknown keys fail the build (section 2.2).
+`num` and `tab` are mutually exclusive; `group`/`value` require `tab`; `meta`
+requires `.fields`. Allowed keys are `id caption num tab group value meta` plus
+`class`, `data-*`, `aria-*`; `style`, `on*`, and unknown keys fail the build
+(section 2.2).
 
 Print removes the scroll viewport and renders the complete table at page
 width; Markdown and RSS preserve the table data without interactive
 attributes.
+
+The hook itself lives in `layouts/_partials/content/table-render.html`, and
+`layouts/_markup/render-table.{html,print.html,rss.xml}` are one-line delegates
+to it. Hugo resolves render hooks per output format; unlike the image,
+blockquote, and code block hooks, the **table** hook does not fall back to the
+base template for a custom format, so without a delegate per format Goldmark's
+default table renderer runs instead and the whole family degrades silently — a
+`.fields` table becomes a bare `<table>` and `caption`/`meta`/`num` leak into it
+as HTML attributes. Verified on Hugo 0.160.1 and 0.164.0; a new output format
+that renders content needs its own delegate.
 
 ### 3.10 Numbered Figure, Table, and Equation
 
@@ -1251,7 +1310,8 @@ compatibility guidance in the same review. Additive parameters remain deferred
 until their behavior is specified across the full output matrix.
 
 Version two (OINK 0.5/0.6) changes from version one: Badge lost `outline`;
-Fields gained the `{.fields}` table form;
+Fields gained the `{.fields}` table form, its `meta` semantic columns, entry
+anchors, and container attributes on the shortcode form;
 FileTree and Gallery became the `filetree` and `gallery` data fences (the
 `filetree`, `filetree/folder`, `filetree/file`, `gallery`, `gallery/image`
 shortcodes and the interim `{.filetree}` / `{.gallery}` list markers were

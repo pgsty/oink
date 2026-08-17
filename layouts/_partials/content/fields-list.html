@@ -5,8 +5,12 @@
   Input dict:
     label        optional plain-text label above the list
     labelID      id for the label element (required when label is set)
+    format       output format ("html" | "print" | "rss"). Entry anchors and the
+                 self-link are HTML-only: print and RSS both concatenate many
+                 pages into one document, where page-scoped ids would collide
     entries      slice of dicts:
                    name          field name (already HTML-safe)
+                   anchor        page-unique id for the entry (content/field-anchor.html)
                    meta          slice of {label, value, class}; value/label HTML-safe;
                                  an empty value renders the label alone
                    description   HTML (descriptionMarkdown=false) or raw Markdown
@@ -16,14 +20,16 @@
 */ -}}
 {{- $label := .label | default "" -}}
 {{- $labelID := .labelID | default "" -}}
+{{- $format := lower (.format | default "html") -}}
 <div class="td-fields{{ with .class }} {{ . }}{{ end }}"{{ with .id }} id="{{ . }}"{{ end }}
   {{- range $key, $value := (.generic | default dict) }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
 {{- if $label }}
 <p class="td-fields__label" id="{{ $labelID }}">{{ $label }}</p>
 {{- end }}
 <dl class="td-fields__list"{{ if $label }} aria-labelledby="{{ $labelID }}"{{ end }}>
+{{- $anchored := eq $format "html" -}}
 {{- range .entries }}
-<div class="td-field">
+<div class="td-field"{{ if $anchored }}{{ with .anchor }} id="{{ . }}"{{ end }}{{ end }}>
 <dt class="td-field__term"><code class="td-field__name">{{ .name | safeHTML }}</code>
 {{- range .meta }}
 {{- $class := .class | default "td-field__meta" }}
@@ -35,6 +41,11 @@
     {{ .label | safeHTML }}
   {{- end -}}
 </span>
+{{- end }}
+{{- if and $anchored .anchor }}
+{{- /* Same affordance and class as a heading self-link (td/render-heading.html),
+       so hover behaviour, print suppression, and RTL come for free. */ -}}
+<a class="td-heading-self-link td-field__self-link" href="#{{ .anchor }}" aria-label="Field self-link"></a>
 {{- end }}
 </dt>
 {{- if .descriptionMarkdown }}

@@ -1,0 +1,43 @@
+{{- /*
+  Turn one entry's semantic Fields metadata into the shared chip list, so the
+  `fields`/`field` shortcode and a `{.fields meta="…"}` table render byte-identical
+  headers (docs/content-primitives.md §3.3).
+
+  Input dict:
+    type        type value; empty omits the chip
+    required    truthy emits the untranslated `required` chip
+    hasDefault  whether a default exists (an empty default is still a default)
+    default     default value
+    html        when true, type/default are already-rendered inline HTML (table
+                cells); a value that carries no markup is wrapped in <code> so it
+                matches the shortcode form. When false they are plain text.
+
+  `required` and `default` are untranslated API vocabulary in every locale.
+
+  Returns the meta slice consumed by content/fields-list.html.
+*/ -}}
+{{- $isHTML := .html | default false -}}
+{{- $meta := slice -}}
+{{- $code := "" -}}
+{{- with .type -}}
+  {{- $value := printf "%v" . -}}
+  {{- if $isHTML -}}
+    {{- $code = cond (in $value "<") $value (printf "<code>%s</code>" $value) -}}
+  {{- else -}}
+    {{- $code = printf "<code>%s</code>" (htmlEscape $value) -}}
+  {{- end -}}
+  {{- $meta = $meta | append (dict "label" "" "value" $code "class" "td-field__type") -}}
+{{- end -}}
+{{- if .required -}}
+  {{- $meta = $meta | append (dict "label" "required" "value" "" "class" "td-field__required") -}}
+{{- end -}}
+{{- if .hasDefault -}}
+  {{- $value := printf "%v" (.default | default "") -}}
+  {{- if $isHTML -}}
+    {{- $code = cond (in $value "<") $value (printf "<code>%s</code>" $value) -}}
+  {{- else -}}
+    {{- $code = printf "<code>%s</code>" (htmlEscape $value) -}}
+  {{- end -}}
+  {{- $meta = $meta | append (dict "label" "default" "value" $code "class" "td-field__default") -}}
+{{- end -}}
+{{- return $meta -}}

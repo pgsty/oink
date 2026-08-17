@@ -8,10 +8,45 @@
 {{- if and $hasParams (not .IsNamedParams) -}}
   {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
 {{- end -}}
-{{- $allowed := slice "label" -}}
-{{- range $name, $_ := .Params -}}
-  {{- if not (in $allowed $name) -}}
+{{- /* Container attributes mirror the `{.fields}` table hook (content/attributes.html):
+       named parameters, plus class token validation and data- / aria- passthrough,
+       so the same block can be styled and targeted whichever form wrote it. */ -}}
+{{- $allowed := slice "label" "id" -}}
+{{- $generic := dict -}}
+{{- $classes := slice -}}
+{{- range $name, $value := .Params -}}
+  {{- $lower := lower $name -}}
+  {{- if in $allowed $lower -}}
+  {{- else if eq $lower "class" -}}
+    {{- range $token := split (strings.TrimSpace (printf "%v" $value)) " " -}}
+      {{- $token = strings.TrimSpace $token -}}
+      {{- if $token -}}
+        {{- if not (findRE `^[A-Za-z0-9_-]+$` $token) -}}
+          {{- errorf "shortcode %q: class token %q contains unsupported characters at %s" $.Name $token $.Position -}}
+        {{- end -}}
+        {{- if not (in $classes $token) }}{{ $classes = $classes | append $token }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if or (strings.HasPrefix $lower "on") (eq $lower "style") (eq $lower "srcdoc") -}}
+    {{- errorf "shortcode %q: unsafe attribute %q is not supported at %s" $.Name $name $.Position -}}
+  {{- else if or (strings.HasPrefix $lower "data-") (strings.HasPrefix $lower "aria-") -}}
+    {{- if not (findRE `^[a-z][a-z0-9_:.-]*$` $lower) -}}
+      {{- errorf "shortcode %q: invalid attribute name %q at %s" $.Name $name $.Position -}}
+    {{- end -}}
+    {{- $generic = merge $generic (dict $lower (printf "%v" $value)) -}}
+  {{- else -}}
     {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $id := "" -}}
+{{- if and $hasParams (isset .Params "id") -}}
+  {{- $id = strings.TrimSpace (printf "%v" (.Get "id")) -}}
+  {{- if not $id -}}
+    {{- errorf "shortcode %q: id must not be empty at %s" .Name .Position -}}
+  {{- end -}}
+  {{- if findRE `[\s"'<>&]` $id -}}
+    {{- errorf "shortcode %q: id %q contains unsupported characters at %s" .Name $id .Position -}}
   {{- end -}}
 {{- end -}}
 
@@ -69,19 +104,18 @@
 {{- else -}}
   {{- $labelID := printf "td-fields-%s-%d-label" (md5 .Page.RelPermalink) .Ordinal -}}
   {{- $items := slice -}}
-  {{- range $entries -}}
-    {{- $meta := slice -}}
-    {{- with .type -}}
-      {{- $meta = $meta | append (dict "label" "" "value" (printf "<code>%s</code>" (htmlEscape .)) "class" "td-field__type") -}}
-    {{- end -}}
-    {{- if .required -}}
-      {{- /* required/default are untranslated API vocabulary; see the contract. */ -}}
-      {{- $meta = $meta | append (dict "label" "required" "value" "" "class" "td-field__required") -}}
-    {{- end -}}
-    {{- if .hasDefault -}}
-      {{- $meta = $meta | append (dict "label" "default" "value" (printf "<code>%s</code>" (htmlEscape .default)) "class" "td-field__default") -}}
-    {{- end -}}
-    {{- $items = $items | append (dict "name" (htmlEscape .name) "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" (printf "fields%d-%s" $.Ordinal (anchorize .name)) "content" .description)) "descriptionMarkdown" false) -}}
+  {{- range $key, $entry := $entries -}}
+    {{- $meta := partial "content/field-meta.html" (dict
+      "type" $entry.type
+      "required" $entry.required
+      "hasDefault" $entry.hasDefault
+      "default" $entry.default
+    ) -}}
+    {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%d#%s" $.Ordinal $key)) -}}
+    {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" (printf "fields%d-%s" $.Ordinal (anchorize $entry.name)) "content" $entry.description)) "descriptionMarkdown" false) -}}
   {{- end -}}
-  {{- partial "content/fields-list.html" (dict "label" $label "labelID" $labelID "entries" $items) -}}
+  {{- partial "content/fields-list.html" (dict
+    "label" $label "labelID" $labelID "entries" $items "format" $outputFormat
+    "id" $id "class" (delimit $classes " ") "generic" $generic
+  ) -}}
 {{- end -}}

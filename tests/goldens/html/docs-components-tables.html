@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-bs-theme', theme);
 <meta property="article:section" content="docs">
 <meta itemprop="name" content="Tables">
 <meta itemprop="description" content="Table family — fields, matrix, caption, numbered, tabs, full-width.">
-<meta itemprop="wordCount" content="153">
+<meta itemprop="wordCount" content="186">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Tables">
 <meta name="twitter:description" content="Table family — fields, matrix, caption, numbered, tabs, full-width.">
@@ -574,23 +574,23 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fdocs
 <div class="td-fields">
 <p class="td-fields__label" id="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t1-label">搜索参数</p>
 <dl class="td-fields__list" aria-labelledby="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t1-label">
-<div class="td-field">
+<div class="td-field" id="field-offlinesearch">
 <dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">boolean</span></span>
-<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>false</code></span></span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>false</code></span></span><a class="td-heading-self-link td-field__self-link" href="#field-offlinesearch" aria-label="Field self-link"></a>
 </dt>
 <dd class="td-field__description">开启本地索引与命令面板</dd>
 </div>
-<div class="td-field">
+<div class="td-field" id="field-offlinesearchmaxresults">
 <dt class="td-field__term"><code class="td-field__name">offlineSearchMaxResults</code>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span>
-<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>10</code></span></span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>10</code></span></span><a class="td-heading-self-link td-field__self-link" href="#field-offlinesearchmaxresults" aria-label="Field self-link"></a>
 </dt>
 <dd class="td-field__description">结果上限，<em>支持行内 Markdown</em> 与 <a href="/docs/">链接</a></dd>
 </div>
-<div class="td-field">
+<div class="td-field" id="field-offlinesearchsummarylength">
 <dt class="td-field__term"><code class="td-field__name">offlineSearchSummaryLength</code>
-<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span><a class="td-heading-self-link td-field__self-link" href="#field-offlinesearchsummarylength" aria-label="Field self-link"></a>
 </dt>
 <dd class="td-field__description">摘要长度（空的中间列被省略）</dd>
 </div>
@@ -599,15 +599,36 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fdocs
 <p>Two columns (glossary):</p>
 <div class="td-fields">
 <dl class="td-fields__list">
-<div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">now()</code>
+<div class="td-field" id="field-now">
+<dt class="td-field__term"><code class="td-field__name">now()</code><a class="td-heading-self-link td-field__self-link" href="#field-now" aria-label="Field self-link"></a>
 </dt>
 <dd class="td-field__description">Current timestamp</dd>
 </div>
-<div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">random()</code>
+<div class="td-field" id="field-random">
+<dt class="td-field__term"><code class="td-field__name">random()</code><a class="td-heading-self-link td-field__self-link" href="#field-random" aria-label="Field self-link"></a>
 </dt>
 <dd class="td-field__description">A random number</dd>
+</div>
+</dl>
+</div>
+<p>Semantic columns (<code>meta=</code>) render the same chips as the shortcode form:</p>
+<div class="td-fields">
+<p class="td-fields__label" id="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t3-label">Semantic columns</p>
+<dl class="td-fields__list" aria-labelledby="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t3-label">
+<div class="td-field" id="field-baseurl">
+<dt class="td-field__term"><code class="td-field__name">baseURL</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>string</code></span></span>
+<span class="visually-hidden">, </span><span class="td-field__required">required</span>
+<span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">Note</span><span class="td-field__meta-value">部署地址</span></span><a class="td-heading-self-link td-field__self-link" href="#field-baseurl" aria-label="Field self-link"></a>
+</dt>
+<dd class="td-field__description">Must include the subpath</dd>
+</div>
+<div class="td-field" id="field-offlinesearch-2">
+<dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
+<span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>boolean</code></span></span>
+<span class="visually-hidden">, </span><span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>false</code></span></span><a class="td-heading-self-link td-field__self-link" href="#field-offlinesearch-2" aria-label="Field self-link"></a>
+</dt>
+<dd class="td-field__description">Builds the local index</dd>
 </div>
 </dl>
 </div>

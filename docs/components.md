@@ -55,7 +55,7 @@ Passthrough math needs the site's `passthrough` extension.
 | Tabs | adjacent fences / tables with `{tab= group= value=}` | `{{< tabs group= default= label= >}}` `{{< tab label= value= >}}…{{< /tab >}}` `{{< /tabs >}}` | runtime `assets/js/tabs.js`; hash `#<group>-<value>`, storage `td-tabs:v1:<group>` only with a group |
 | Steps | `1.` list + `{.steps}` | `{{% steps %}}` + headings | list items hold any block except `%` containers |
 | Cards | link list + `{.cards}` | `{{< cards >}}` `{{< card title= link= icon= badge= image= image_alt=\|decorative= >}}body{{< /card >}}` `{{< /cards >}}` | |
-| Fields | table + `{.fields [caption=]}` (first column name, last column description, middle columns metadata) | `{{< fields label= >}}` `{{< field name= type= required= default= >}}…{{< /field >}}` `{{< /fields >}}` | typed `required`/`default` only in the shortcode |
+| Fields | table + `{.fields [caption=] [id=] [meta="type required default -"]}` (first column name, last column description, middle columns metadata) | `{{< fields label= id= class= data-*= >}}` `{{< field name= type= required= default= >}}…{{< /field >}}` `{{< /fields >}}` | same chips from either form; the shortcode is for block-level descriptions; entries get `#field-<name>` anchors |
 | FileTree | ```` ```filetree {title=} ```` fence: `- name[/]  # comment  {icon= tone= open= type=}` per line; 2/4-space, tab, or `tree` indentation | — | CSS + native `<details>`; comment column aligned at build time, split clamped 50–70% and draggable (`hasFileTree` → `assets/js/filetree.js`) |
 | Gallery | ```` ```gallery ```` fence, `![alt](src) # description {link= class=}` per line | — | alt required; per-item link; Zoom marked at emit time |
 | Image | `![alt](src "title")` (render hook; block image + `{#id num= caption= width= height= link= command= options=}` → figure) | — | the `image` shortcode is retired; `link` needs a caption or num and is never zoomable; the resource `byline` rides in the figcaption |
@@ -122,7 +122,17 @@ Cards, Fields:
 | --- | --- | --- | --- |
 | `offlineSearch` | boolean | `false` | Local search index |
 {.fields caption="Search parameters"}
+
+| Field | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `baseURL` | string | yes | | Site address, subpath included |
+{.fields meta="type required default"}
 ```
+
+`meta` names each middle column's role (`type`, `required`, `default`, or `-`
+to keep the header as the chip label), which is what makes a table render the
+same chips as the shortcode form. Reach for the shortcode only when a
+description needs several paragraphs, a list, or a fence.
 
 Tables and Book targets:
 

@@ -464,6 +464,43 @@ def check_rss_summary_contract(hugo: str) -> list[str]:
 TABLE = "| Field | Type | Description |\n| --- | --- | --- |\n| `a` | string | First |\n| `b` | | Second |\n"
 
 
+FIELD_ENTRY = re.compile(r'<div class="td-field"(?P<id>[^>]*)>\s*<dt class="td-field__term">(?P<term>.*?)</dt>', re.S)
+SELF_LINK = re.compile(r'<a class="td-heading-self-link td-field__self-link"[^>]*></a>')
+
+
+def check_field_parity(html: str) -> list[str]:
+    """A `{.fields meta=}` table and the shortcode must emit the same entry header.
+
+    The two forms exist because only the shortcode can carry block-level
+    descriptions; everything above the description is one shared renderer, and
+    that is what this compares (docs/content-primitives.md §3.3).
+    """
+    errors: list[str] = []
+    terms: dict[str, list[str]] = {}
+    for match in FIELD_ENTRY.finditer(html):
+        term = match.group("term")
+        name = re.search(r'class="td-field__name">([^<]*)<', term)
+        if name:
+            terms.setdefault(name.group(1), []).append(SELF_LINK.sub("", term).strip())
+    for name in ("alpha", "beta"):
+        rendered = terms.get(name, [])
+        require(len(rendered) == 2, f"the parity fixture lost one {name} entry", errors)
+        if len(rendered) == 2:
+            require(rendered[0] == rendered[1], f"the table and shortcode forms disagree on {name}:\n  table: {rendered[0]}\n  shortcode: {rendered[1]}", errors)
+    for marker in (
+        '<span class="td-field__type"><span class="td-field__meta-value"><code>string</code></span></span>',
+        '<span class="td-field__required">required</span>',
+        '<span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>x</code></span></span>',
+        '<span class="td-field__meta"><span class="td-field__meta-label">Note</span><span class="td-field__meta-value">备注</span></span>',
+        '<div class="td-fields site-fields" id="sc-fields" data-fixture="shortcode">',
+        '<div class="td-field" id="field-alpha">',
+        '<div class="td-field" id="field-alpha-2">',
+        '<a class="td-heading-self-link td-field__self-link" href="#field-alpha" aria-label="Field self-link"></a>',
+    ):
+        require(marker in html, f"fields parity fixture missing {marker}", errors)
+    return errors
+
+
 def check_table_family(hugo: str) -> list[str]:
     """Attribute policy, orphan attribute lines, class pass-through, include and param."""
     errors: list[str] = []
@@ -487,6 +524,26 @@ def check_table_family(hugo: str) -> list[str]:
             '{{< include file="js/base.js" code=true lang="js" >}}\n\n'
             "## Param\n\n"
             "Value {{< param fixture_scalar >}} inline.\n",
+            encoding="utf-8",
+        )
+        (site / "content/docs/parity.md").write_text(
+            "---\ntitle: Fields parity\n---\n\n"
+            "## Semantic roles render exactly like the shortcode form\n\n"
+            "| Field | Type | Required | Default | Description |\n| --- | --- | --- | --- | --- |\n"
+            "| `alpha` | string | yes | `x` | First |\n| `beta` | | | | Second |\n"
+            '{.fields meta="type required default"}\n\n'
+            "{{< fields >}}\n"
+            '{{< field name="alpha" type="string" required=true default="x" >}}First{{< /field >}}\n'
+            '{{< field name="beta" >}}Second{{< /field >}}\n'
+            "{{< /fields >}}\n\n"
+            "## A `-` role keeps the column header as the chip label\n\n"
+            "| Field | Type | Note | Description |\n| --- | --- | --- | --- |\n"
+            "| `gamma` | string | 备注 | Third |\n"
+            '{.fields meta="type -"}\n\n'
+            "## Shortcode container attributes\n\n"
+            '{{< fields label="Shortcode attributes" id="sc-fields" class="site-fields" data-fixture="shortcode" >}}\n'
+            '{{< field name="delta" >}}Fourth{{< /field >}}\n'
+            "{{< /fields >}}\n",
             encoding="utf-8",
         )
         (family / "snippet.md").write_text("Included **Markdown** snippet.\n", encoding="utf-8")
@@ -521,6 +578,7 @@ def check_table_family(hugo: str) -> list[str]:
         ):
             require(marker in html, f"table family fixture missing {marker}", errors)
         require("onclick" not in html, "an on* attribute reached the rendered table", errors)
+        errors += check_field_parity((destination / "docs/parity/index.html").read_text(encoding="utf-8"))
         require(html.count('data-language="yaml"') == 2 and 'data-language="js"' in html, "include code=true did not highlight the included files", errors)
         require("td-table--matrix" not in html and "<p>{.matrix}</p>" not in html, "an orphan attribute line was applied or printed", errors)
         require(html.count("<table") == 2, "table family fixture rendered a wrong number of tables", errors)
@@ -552,6 +610,10 @@ INVALID_CASES = (
     ("fields-label-type", '{{< fields label=true >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "label must be a string"),
     ("fields-positional", '{{< fields "Label" >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "accepts named parameters only"),
     ("fields-unknown", '{{< fields kind="config" >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "unsupported parameter"),
+    ("fields-id-empty", '{{< fields id="" >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "id must not be empty"),
+    ("fields-id-characters", '{{< fields id="a b" >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "contains unsupported characters"),
+    ("fields-class-token", '{{< fields class="ok bad!" >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "class token"),
+    ("fields-style", '{{< fields style="color:red" >}}{{< field name="x" >}}description{{< /field >}}{{< /fields >}}\n', "unsafe attribute"),
     ("field-outside", '{{< field name="x" >}}description{{< /field >}}\n', "must be enclosed by fields"),
     ("field-missing-name", '{{< fields >}}{{< field >}}description{{< /field >}}{{< /fields >}}\n', "requires parameter name"),
     ("field-empty-name", '{{< fields >}}{{< field name="" >}}description{{< /field >}}{{< /fields >}}\n', "name must not be empty"),
@@ -567,6 +629,10 @@ INVALID_CASES = (
     ("table-fields-full-width", TABLE + "{.fields .full-width}\n", "cannot be combined with .full-width"),
     ("table-fields-one-column", "| Only |\n| --- |\n| x |\n{.fields}\n", "at least two columns"),
     ("table-fields-empty-name", "| Field | Description |\n| --- | --- |\n| | no name |\n{.fields}\n", "must not be empty"),
+    ("table-fields-meta-unknown", TABLE + '{.fields meta="kind"}\n', "not one of type, required, default"),
+    ("table-fields-meta-count", TABLE + '{.fields meta="type default"}\n', "meta lists 2 role(s)"),
+    ("table-fields-meta-duplicate", "| F | T1 | T2 | D |\n| --- | --- | --- | --- |\n| `a` | x | y | z |\n" + '{.fields meta="type type"}\n', "listed twice"),
+    ("table-meta-without-fields", TABLE + '{meta="type"}\n', "meta requires .fields"),
     ("table-fields-duplicate", "| Field | Description |\n| --- | --- |\n| `a` | one |\n| `a` | two |\n{.fields}\n", "duplicate field name"),
     ("table-fields-num", TABLE + '{.fields num="1"}\n', "cannot be a numbered Book table"),
     ("table-num-tab", TABLE + '{num="1" tab="x"}\n', "mutually exclusive"),

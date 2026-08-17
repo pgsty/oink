@@ -4,6 +4,7 @@
     | … |                       default table (scroll wrapper, th scope=col)
     {.full-width}               overflow the prose column
     {.fields}                   reference table -> <dl> (positional rule)
+    {.fields meta="type - default"} name the semantic role of each middle column
     {.matrix}                   row headers + sticky first column / header
     {caption="…"}               <caption> (no number, not a Book target)
     {#id num="9-1" caption="…"} Book numbered table (registers a `tbl` target)
@@ -14,7 +15,7 @@
 */ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "caption" "num" "tab" "group" "value") "position" .Position "kind" "table") -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "caption" "num" "tab" "group" "value" "meta") "position" .Position "kind" "table") -}}
 {{- $classes := $policy.classes -}}
 {{- $isFields := in $classes "fields" -}}
 {{- $isMatrix := in $classes "matrix" -}}
@@ -30,6 +31,7 @@
 {{- if and $numRaw $tab }}{{ errorf "table: num (Book target) and tab (tabs) are mutually exclusive at %s" .Position }}{{ end -}}
 {{- if and $isFields $numRaw }}{{ errorf "table: .fields cannot be a numbered Book table at %s" .Position }}{{ end -}}
 {{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "table: group/value require tab at %s" .Position }}{{ end -}}
+{{- if and (isset $policy.consumed "meta") (not $isFields) }}{{ errorf "table: meta requires .fields at %s" .Position }}{{ end -}}
 {{- $siteClasses := slice -}}
 {{- range $classes }}{{ if not (in (slice "fields" "matrix" "full-width") .) }}{{ $siteClasses = $siteClasses | append . }}{{ end }}{{ end -}}
 {{- $header := index .THead 0 | default (slice) -}}
@@ -38,11 +40,31 @@
 {{- /* ---------------------------------------------------------------- fields */ -}}
 {{- if $isFields -}}
   {{- if lt $columns 2 }}{{ errorf "table .fields: at least two columns are required (name … description) at %s" .Position }}{{ end -}}
+  {{- /* Optional semantic roles for the middle columns. Explicit, because the
+         positional rule deliberately refuses to guess header vocabulary: a
+         column named `type` is metadata like any other unless meta says
+         otherwise. A role makes the chip render exactly like the shortcode's. */ -}}
+  {{- $roles := slice -}}
+  {{- if isset $policy.consumed "meta" -}}
+    {{- $known := slice "type" "required" "default" "-" -}}
+    {{- $usedRoles := dict -}}
+    {{- range $token := split (strings.TrimSpace (index $policy.consumed "meta")) " " -}}
+      {{- $token = strings.TrimSpace $token -}}
+      {{- if $token -}}
+        {{- if not (in $known $token) }}{{ errorf "table .fields: meta role %q is not one of type, required, default, - at %s" $token $.Position }}{{ end -}}
+        {{- if and (ne $token "-") (isset $usedRoles $token) }}{{ errorf "table .fields: meta role %q is listed twice at %s" $token $.Position }}{{ end -}}
+        {{- $usedRoles = merge $usedRoles (dict $token true) -}}
+        {{- $roles = $roles | append $token -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if ne (len $roles) (sub $columns 2) }}{{ errorf "table .fields: meta lists %d role(s) but the table has %d metadata column(s) at %s" (len $roles) (sub $columns 2) $.Position }}{{ end -}}
+  {{- end -}}
   {{- $entries := slice -}}
   {{- $seen := dict -}}
-  {{- range $row := .TBody -}}
+  {{- range $rowIndex, $row := .TBody -}}
     {{- $nameHTML := "" -}}
-    {{- $meta := slice -}}
+    {{- $labelled := slice -}}
+    {{- $semantic := dict "type" "" "required" false "hasDefault" false "default" "" "html" true -}}
     {{- $description := "" -}}
     {{- range $i, $cell := $row -}}
       {{- $text := printf "%s" $cell.Text -}}
@@ -50,22 +72,41 @@
         {{- $nameHTML = strings.TrimSpace $text -}}
       {{- else if eq $i (sub $columns 1) -}}
         {{- $description = $text -}}
-      {{- else if strings.TrimSpace $text -}}
-        {{- $label := printf "%s" (index $header $i).Text -}}
-        {{- $meta = $meta | append (dict "label" (strings.TrimSpace $label) "value" (strings.TrimSpace $text) "class" "td-field__meta") -}}
+      {{- else -}}
+        {{- $value := strings.TrimSpace $text -}}
+        {{- $role := cond (gt (len $roles) 0) (index $roles (sub $i 1)) "-" -}}
+        {{- if not $value -}}
+          {{- /* An empty middle cell is omitted, whatever its role. */ -}}
+        {{- else if eq $role "type" -}}
+          {{- $semantic = merge $semantic (dict "type" $value) -}}
+        {{- else if eq $role "required" -}}
+          {{- /* Any non-empty cell marks the field required; the chip itself is
+                 the untranslated API word, exactly as the shortcode renders it. */ -}}
+          {{- $semantic = merge $semantic (dict "required" true) -}}
+        {{- else if eq $role "default" -}}
+          {{- $semantic = merge $semantic (dict "hasDefault" true "default" $value) -}}
+        {{- else -}}
+          {{- $label := printf "%s" (index $header $i).Text -}}
+          {{- $labelled = $labelled | append (dict "label" (strings.TrimSpace $label) "value" $value "class" "td-field__meta") -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
+    {{- /* Semantic chips keep the canonical type / required / default order so a
+           table and a shortcode read the same; labelled chips follow in column order. */ -}}
+    {{- $meta := partial "content/field-meta.html" $semantic -}}
+    {{- if $labelled }}{{ $meta = $meta | append $labelled }}{{ end -}}
     {{- $key := $nameHTML | plainify | strings.TrimSpace -}}
     {{- if not $key }}{{ errorf "table .fields: the first column (field name) must not be empty at %s" $.Position }}{{ end -}}
     {{- if isset $seen $key }}{{ errorf "table .fields: duplicate field name %q at %s" $key $.Position }}{{ end -}}
     {{- $seen = merge $seen (dict $key true) -}}
     {{- /* A field name written as `code` keeps only its text; the <dt> supplies the code styling. */ -}}
     {{- $nameInner := replaceRE `^<code>(.*)</code>$` "$1" $nameHTML -}}
-    {{- $entries = $entries | append (dict "name" $nameInner "meta" $meta "description" $description "descriptionMarkdown" false) -}}
+    {{- $anchor := partial "content/field-anchor.html" (dict "page" $page "name" $key "identity" (printf "tb%d#%d" $.Ordinal $rowIndex)) -}}
+    {{- $entries = $entries | append (dict "name" $nameInner "anchor" $anchor "meta" $meta "description" $description "descriptionMarkdown" false) -}}
   {{- end -}}
   {{- if not $entries }}{{ errorf "table .fields: at least one row is required at %s" .Position }}{{ end -}}
   {{- $labelID := printf "td-fields-%s-t%d-label" (md5 $page.RelPermalink) .Ordinal -}}
-  {{- $html := partial "content/fields-list.html" (dict "label" $caption "labelID" $labelID "entries" $entries "id" $idRaw "class" (delimit $siteClasses " ") "generic" $policy.generic) -}}
+  {{- $html := partial "content/fields-list.html" (dict "label" $caption "labelID" $labelID "entries" $entries "format" $format "id" $idRaw "class" (delimit $siteClasses " ") "generic" $policy.generic) -}}
   {{- if $tab -}}
     {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" (index $policy.consumed "group") "value" (index $policy.consumed "value") "kind" "table" "content" $html) -}}
   {{- else -}}

@@ -228,6 +228,21 @@ fail the build with the new name rather than being silently ignored.
   role but follows the body role in both presets; `$td-print-font-name` and
   `$td-enable-webfonts` no longer exist. A site that wants a different face
   on paper sets the role in its own stylesheet.
+- Shell motion runs on three duration tokens (`--td-motion-duration-fast`
+  100ms, `--td-motion-duration` 150ms, `--td-motion-duration-slow` 250ms)
+  declared in `shell/_tokens.scss`; every transition and animation of the
+  shell, page actions, language/version selectors, taxonomy, skip link, and
+  footer toggle draws from them, and `prefers-reduced-motion: reduce` zeroes
+  the tokens instead of maintaining a per-selector opt-out list that drifted
+  (12 selectors covered 42 rules; four files had no guard at all).
+- `scripts/migrations/oink06.py` gains a `frontmatter` transform (run first)
+  that rewrites the 1.0 page-key renames in YAML front matter and cascades —
+  `manualLink*`, `context_menu`, `hide_readingtime`, `hide_feedback`,
+  `exclude_search`/`excludeSearch`, `content_width`, `assistant_links`,
+  `annotation: {enable}`, and any `ui:` block (lifted to bare keys) — with
+  findings for anything it will not guess at; TOML/JSON front matter is
+  reported, not rewritten. Dry-run over the eleven in-house sites: 628 files,
+  0 findings, idempotent.
 - The giscus palettes ship as `assets/css/giscus-{light,dark}.css` and are
   published only on pages that render comments; they are also the default
   `comments.giscus.lightTheme` / `darkTheme`, so a site no longer points at

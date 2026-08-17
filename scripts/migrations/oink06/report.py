@@ -66,6 +66,8 @@ def render_markdown(report: dict) -> str:
         ("echarts", "echarts"), ("infographic", "infographic"), ("cards", "cards"), ("imgproc", "imgproc"),
         ("readfile", "readfile"), ("fencetitle", "filename="), ("badge.outline_dropped", "badge outline"),
         ("example", "example"), ("xref.kindless", "xref (no kind)"),
+        ("frontmatter.manual_link", "manualLink"), ("frontmatter.ui_lift", "ui.* lifted"), ("frontmatter.feedback", "hide_feedback"),
+        ("frontmatter.search_exclude", "exclude_search"), ("frontmatter.reading_time", "hide_readingtime"),
     ]
     lines.append("## 1. Conversions per site")
     lines.append("")

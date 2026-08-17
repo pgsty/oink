@@ -6,6 +6,7 @@ import importlib
 
 # module name -> class name, in apply order
 ORDER = [
+    ("frontmatter", "FrontMatterTransformation"),
     ("callout", "CalloutTransformation"),
     ("param_placeholders", "ParamPlaceholdersTransformation"),
     ("tabs", "TabsTransformation"),

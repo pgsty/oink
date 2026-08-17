@@ -574,12 +574,14 @@ image `![alt](src "title")` resolves through the shared resolver:
   decoding="async" [width height]>`; they carry no attributes;
 - a standalone image (its own paragraph; requires the site setting
   `wrapStandAloneImageWithinParagraph: false`, otherwise Goldmark wraps it and
-  the hook sees an inline image) renders `<p class="td-image [classes]"
-  [id]><img …></p>`;
+  the hook sees an inline image) renders a bare block-level
+  `<img class="td-image [classes]" [id] …>` with no wrapper element, because a
+  wrapper around a linked standalone image would be invalid HTML;
 - a standalone image followed by an attribute line with `caption` or `num`
   renders `<figure class="td-figure [td-book-figure td-book-figure--fig]
   [classes]" [id]>` with `<figcaption>`; `num` registers a Book `fig` target
-  (section 3.10);
+  (section 3.10). The `fig` shortcode emits the same class set, so numbered
+  figures are styled identically whichever form produced them;
 - allowed attributes: `id`, `num`, `caption` (plain text), `width`, `height`
   (positive integers; they override the resource dimensions and give static
   or remote images their box), plus `class`, `data-*`, `aria-*`; anything else
@@ -613,8 +615,10 @@ Static paths, SVG, and remote URLs resolve for other renderers but fail here
 because they are not locally processable image resources. HTML renders
 `<figure class="td-figure td-figure--processed">` with `data-zoom-src` (full
 size), `data-no-zoom` when decorative, intrinsic `width`/`height`, and a
-`<figcaption>` holding the rendered caption and the resource `byline`. Markdown
-emits `![alt](src)`, the caption source, and `_byline_`.
+`<figcaption>` holding the rendered caption and the resource `byline`. The
+figure caps itself at the rendered width through the `--td-figure-max` custom
+property rather than an inline `max-width`, so site CSS can override it.
+Markdown emits `![alt](src)`, the caption source, and `_byline_`.
 
 ### 3.6 Image Zoom
 
@@ -1117,7 +1121,7 @@ e3a339fe…47d1  pig-1.7.0-1.aarch64.rpm
 | Kbd | nested `<kbd>` sequence | visible key boundaries | `Ctrl + K` | static inline HTML | identical content | none |
 | Fields | responsive semantic `<dl>` (both forms) | complete definition list | source table / metadata bullet list | complete static `<dl>` | identical content | none |
 | FileTree | monospace panel, aligned `#` comment column, native `<details>` directories, draggable split | same panel, static and fully expanded | the `filetree` fence source | source in `<pre>` | identical content (disclosure is native; split stays at the build-time width) | one local split runtime, only with comments |
-| Shared image | `<img>`, `<p class="td-image">`, or `<figure>` with caption | image/figure and caption | source image (+ attribute line) | absolute-URL image | identical content | none |
+| Shared image | `<img>`, `<img class="td-image">`, or `<figure>` with caption | image/figure and caption | source image (+ attribute line) | absolute-URL image | identical content | none |
 | Image Zoom | shared image plus eligible enhancement | shared image only | shared image only | shared image only | original image remains readable | one opt-in local dialog runtime |
 | Gallery | responsive image-list grid | sequential list | source image list | sequential list | complete static grid | reuses Image Zoom only |
 | Release Assets | linked table with copy controls | linked static table with full hashes | pipe table (shortcode) / source fence (`checksums`) | pipe table with full hashes | complete linked table | one opt-in local copy runtime |

@@ -610,7 +610,9 @@ def check_ddia_compatibility(hugo: str) -> list[str]:
         page = (source / "public/book/page/index.html").read_text(encoding="utf-8")
         for marker in (
             'id="office_2003"',
-            'class="td-book-figure td-book-figure--fig legacy wide"',
+            # `fig` carries the shared image-figure base class as well, so the
+            # shortcode and the native numbered form style identically.
+            'class="td-figure td-book-figure td-book-figure--fig legacy wide"',
             'href="https://example.org/source"',
             'src="/figure.png"',
             'alt="Legacy caption"',

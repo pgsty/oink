@@ -92,6 +92,12 @@ migration and is mutually exclusive with `caption`. `src` and inner content
 are mutually exclusive. Width and height are positive integers; class tokens
 and every URL are validated.
 
+`fig` renders `<figure class="td-figure td-book-figure td-book-figure--fig">`,
+the same class set as the native numbered form. `.td-figure` is the shared
+image-figure base; `.td-book-figure` is the numbered variant and overrides its
+spacing. `tbl`, `eq`, and `eg` carry only `.td-book-figure`, which therefore
+stays self-sufficient rather than becoming a `.td-figure` modifier.
+
 `src` resolves through the shared image resolver (contract
 `content-primitives.md` section 3.5), so a Book figure has the same source
 precedence as `![alt](src)` and the `image` shortcode: page resource, then

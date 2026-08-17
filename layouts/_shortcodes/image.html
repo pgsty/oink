@@ -30,7 +30,7 @@
   {{- with $image.byline }}{{ $markdown = printf "%s\n\n_%s_" $markdown (partial "content/markdown-escape.html" .) }}{{ end -}}
   {{- $markdown | safeHTML -}}
 {{- else -}}
-<figure class="td-figure td-figure--processed" style="max-width: {{ add $image.width 2 }}px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: {{ add $image.width 2 }}px">
 <img class="td-figure__image" src="{{ $image.src }}"{{ if eq $format "html" }} data-zoom-src="{{ $image.fullSrc }}"{{ if $image.decorative }} data-no-zoom{{ end }}{{ end }} alt="{{ $image.alt }}" width="{{ $image.width }}" height="{{ $image.height }}" loading="lazy" decoding="async">
 {{- if or $caption $image.byline }}
 <figcaption>

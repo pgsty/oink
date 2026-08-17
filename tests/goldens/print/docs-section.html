@@ -840,24 +840,24 @@ contained overflow policy.</p>
 <h1 id="pg-552dea60702201dc43257ec8ae421ff4">8 - Media primitives</h1>
 <div class="lead">Regression fixtures for shared image resolution and the processed image shortcode.</div>
 <h2 id="named-page-resource">Named page resource</h2>
-<figure class="td-figure td-figure--processed" style="max-width: 50px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: 50px">
 <img class="td-figure__image" src="/docs/media-primitives/page_hu_<hash>.png" alt="Blue and gold page-resource test pattern" width="48" height="30" loading="lazy" decoding="async">
 <figcaption><p>A <strong>page resource</strong> caption with <code>inline code</code>.</p>
 <small class="td-figure__byline">OINK fixture byline</small></figcaption>
 </figure>
 <h2 id="named-global-resource">Named global resource</h2>
-<figure class="td-figure td-figure--processed" style="max-width: 34px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: 34px">
 <img class="td-figure__image" src="/media/content-primitives-global_hu_<hash>.png" alt="Green and violet global-resource test pattern" width="32" height="20" loading="lazy" decoding="async">
 <figcaption><p>A global asset caption.</p>
 </figcaption>
 </figure>
 <h2 id="explicit-decorative-image">Explicit decorative image</h2>
-<figure class="td-figure td-figure--processed" style="max-width: 26px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: 26px">
 <img class="td-figure__image" src="/docs/media-primitives/page_hu_<hash>.png" alt="" width="24" height="24" loading="lazy" decoding="async">
 <figcaption><small class="td-figure__byline">OINK fixture byline</small></figcaption>
 </figure>
 <h2 id="resource-metadata-alt-and-byline">Resource metadata alt and byline</h2>
-<figure class="td-figure td-figure--processed" style="max-width: 42px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: 42px">
 <img class="td-figure__image" src="/docs/media-primitives/page_hu_<hash>.png" alt="Page resource metadata alternative" width="40" height="24" loading="lazy" decoding="async">
 <figcaption><p>The <strong>caption</strong> is Markdown; alt text and the byline come from the resource metadata.</p>
 <small class="td-figure__byline">OINK fixture byline</small></figcaption>
@@ -873,13 +873,13 @@ contained overflow policy.</p>
 <div class="lead">Regression fixtures for opt-in native image preview.</div>
 <h2 id="standalone-markdown-image">Standalone Markdown image</h2>
 <img class="td-image" src="/media/content-primitives-static.svg" alt="Blue and gold standalone preview" loading="lazy" decoding="async"><h2 id="processed-image-with-a-long-caption">Processed image with a long caption</h2>
-<figure class="td-figure td-figure--processed" style="max-width: 58px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: 58px">
 <img class="td-figure__image" src="/media/content-primitives-global_hu_<hash>.png" alt="Green and violet processed preview" width="56" height="35" loading="lazy" decoding="async">
 <figcaption><p>This intentionally long caption verifies that the shared preview remains readable on narrow screens, preserves its accessible image name, and wraps without introducing page-level horizontal overflow.</p>
 </figcaption>
 </figure>
 <h2 id="processed-image-with-a-caption-but-decorative-alt">Processed image with a caption but decorative alt</h2>
-<figure class="td-figure td-figure--processed" style="max-width: 50px">
+<figure class="td-figure td-figure--processed" style="--td-figure-max: 50px">
 <img class="td-figure__image" src="/docs/image-zoom/legacy-empty_hu_<hash>.png" alt="" width="48" height="30" loading="lazy" decoding="async">
 <figcaption><p>A decorative processed image is excluded from Zoom while its caption still supplies visible context.</p>
 </figcaption>

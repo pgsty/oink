@@ -79,6 +79,57 @@ body.td-book .td-shell-tree__link {
   color: var(--bs-warning-text-emphasis);
 }
 
+// Base figure: one centered block image with a caption underneath. It backs
+// the render hook's `![alt](src)` + {caption=…} form and the `image`
+// shortcode's processed figure. A numbered figure carries this class *and*
+// `.td-book-figure`, so this block must stay first: the Book variant below
+// deliberately overrides the spacing.
+.td-figure {
+  max-width: 100%;
+  margin-block: 1.5rem;
+  text-align: center;
+
+  > figcaption {
+    margin-block-start: 0.6rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    text-align: center;
+
+    > :last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  // The processed figure is capped at its rendered width.
+  &--processed {
+    max-width: var(--td-figure-max, 100%);
+    margin-inline: auto;
+  }
+
+  &__byline {
+    display: block;
+    color: var(--bs-tertiary-color);
+    font-size: 0.85em;
+  }
+}
+
+// Every figure image is the same centered block. Declared once; the
+// `td-figure__image` / `td-book-figure__image` class names stay in the markup
+// for one major version so downstream site CSS keeps matching.
+.td-figure > img,
+.td-figure > .td-figure__image,
+.td-book-figure__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+// Numbered figures (`fig`, `tbl`, `eq`, `eg`). `tbl`/`eq`/`eg` carry only this
+// class, so it stays self-sufficient rather than becoming a `.td-figure`
+// modifier; for `fig` it overrides the base spacing above.
 .td-book-figure {
   max-width: 100%;
   margin-block: 2rem;
@@ -88,14 +139,6 @@ body.td-book .td-shell-tree__link {
   &__body {
     min-width: 0;
     text-align: start;
-  }
-
-  &__image {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    margin-inline: auto;
   }
 
   &__link {
@@ -200,44 +243,6 @@ body.td-book .td-shell-tree__link {
     > .td-book-figure__body > :last-child {
       margin-block-end: 0;
     }
-  }
-}
-
-// Plain figures from the image render hook (`![alt](src)` + {caption=…}) and
-// the `{{% image %}}` shortcode share the Book figure caption look.
-.td-figure {
-  max-width: 100%;
-  margin-block: 1.5rem;
-  text-align: center;
-
-  > img,
-  > .td-figure__image {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin-inline: auto;
-  }
-
-  > figcaption {
-    margin-block-start: 0.6rem;
-    color: var(--bs-secondary-color);
-    font-size: 0.9rem;
-    line-height: 1.55;
-    text-align: center;
-
-    > :last-child {
-      margin-block-end: 0;
-    }
-  }
-
-  &--processed {
-    margin-inline: auto;
-  }
-
-  &__byline {
-    display: block;
-    color: var(--bs-tertiary-color);
-    font-size: 0.85em;
   }
 }
 

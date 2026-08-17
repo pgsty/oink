@@ -1,10 +1,11 @@
 {{/* cSpell:ignore docsearch absurlreplacer */ -}}
-
-{{ .Scratch.Set "td-search-count" 0 -}}
+{{- /* Online search inputs for the sidebar header: Google Programmable Search
+       or Algolia DocSearch. Local (Lunr) search renders the palette button
+       instead (shell/sidebar-panel.html). A site configures one backend. */ -}}
+{{- $backends := slice -}}
 
 {{ if .Site.Params.gcs_engine_id -}}
-{{ .Scratch.Add "td-search-count" 1 -}}
-
+{{- $backends = $backends | append "params.gcs_engine_id" -}}
 <div class="td-search">
   <div class="td-search__icon"></div>
   <input type="search" name="q" {{/**/ -}}
@@ -12,23 +13,18 @@
     placeholder='{{ T "ui_search" }}' {{/**/ -}}
     aria-label='{{ T "ui_search" }}' autocomplete="off">
 </div>
-
 {{- end -}}
-
 
 {{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}
-{{ .Scratch.Add "td-search-count" 1 -}}
-{{ .Scratch.Add "docsearch-id-num" 1 -}}
-
+{{- $backends = $backends | append "params.search.algolia" -}}
+{{- /* One container per page; scripts.html mounts DocSearch on this id. */ -}}
 <div class="td-search">
-  <div class="td-search--algolia" id="docsearch-{{ mod (.Scratch.Get "docsearch-id-num") 2 }}"></div>
+  <div class="td-search--algolia" id="td-docsearch"></div>
 </div>
-
 {{- end -}}
 
-
 {{ if partial "shell/search-enabled.html" . -}}
-{{ .Scratch.Add "td-search-count" 1 -}}
+{{- $backends = $backends | append "params.offline_search" -}}
 <button type="button" class="td-search td-search--offline td-search--palette"
   data-td-shell-search-open aria-controls="td-shell-search" aria-expanded="false">
   <span class="td-search__icon" aria-hidden="true"></span>
@@ -36,7 +32,6 @@
 </button>
 {{- end -}}
 
-{{ if gt (.Scratch.Get "td-search-count") 1 -}}
-{{ warnf `You have more than one site-search option configured: choose only one.
-      For details, see https://oink.pgsty.com/docs/content/search.` -}}
+{{ if gt (len $backends) 1 -}}
+  {{ errorf "params: more than one site-search backend is configured (%s); choose one" (delimit $backends ", ") -}}
 {{ end -}}

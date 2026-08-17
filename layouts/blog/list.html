@@ -4,15 +4,14 @@
 {{ partial "page-title.html" . }}
 {{ with partial "content/render.html" . }}{{ . }}{{ end -}}
 </div>
+{{ $blogPages := .Pages -}}
 {{ if (and .Parent .Parent.IsHome) -}}
-  {{ $.Scratch.Set "blog-pages" (where .Site.RegularPages "Section" .Section) -}}
-{{ else -}}
-  {{$.Scratch.Set "blog-pages" .Pages -}}
+  {{ $blogPages = where .Site.RegularPages "Section" .Section -}}
 {{ end -}}
 
 {{ if .Pages -}}
 <div class="td-blog-posts">
-  {{ $pager := .Paginate (( $.Scratch.Get "blog-pages").GroupByDate "2006" ) -}}
+  {{ $pager := .Paginate ($blogPages.GroupByDate "2006") -}}
   {{ range $pager.PageGroups -}}
   <h2>{{ T "post_posts_in" }} {{ .Key }}</h2>
   <ul class="td-blog-posts-list">

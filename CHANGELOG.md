@@ -194,6 +194,16 @@ fail the build with the new name rather than being silently ignored.
   `docs-shell-contract.zh.md`, and `migration-{navigation,components,docs-shell}.md`.
   The check scripts and JavaScript tests are renamed to match. One-time
   site-specific migration work orders are no longer published with the theme.
+- The giscus palettes ship as `assets/css/giscus-{light,dark}.css` and are
+  published only on pages that render comments; they are also the default
+  `comments.giscus.lightTheme` / `darkTheme`, so a site no longer points at
+  `/css/giscus-oink-*.css` itself (those files are gone). Set a giscus
+  built-in theme name or a stylesheet URL to override.
+- The theme no longer uses `.Scratch`: the blog list and the search input
+  use variables and the page store, and DocSearch mounts on one
+  `#td-docsearch` container instead of two hard-coded ids paired with a
+  `mod 2` counter. Configuring more than one search backend fails the build
+  instead of warning.
 - Unify the shell chrome on Font Awesome. `shell/icon.html` now dispenses one
   FA class pair per semantic name as
   `<i class="td-shell-icon td-shell-icon--<name> fa-solid fa-…">` instead of
@@ -212,6 +222,14 @@ fail the build with the new name rather than being silently ignored.
 
 ### Fixed
 
+- Print aggregates rendered a page's content once per enclosing section — a
+  chapter that is itself a section was rendered by its own print output and
+  by its parent's, concurrently, and the two renders raced on the page store
+  (render scope, code-block id registry), which produced intermittent
+  duplicate `td-code-…` ids in `_print/` output. `print/page-content.html`
+  now renders each page's print content exactly once per build through
+  `partialCached`, and every print template (section, page, Book, single
+  page) reads that.
 - Landmarks: `<main>` no longer carries the redundant `role="main"`, and the
   sidebar `<aside>` no longer repeats the inner `<nav>`'s "Section navigation"
   label, so assistive technology lists one navigation landmark instead of two

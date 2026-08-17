@@ -329,10 +329,9 @@ window.markmap = {
 <script src="{{ $docsearchJS.RelPermalink }}"
   {{- with $docsearchJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 <script type="text/javascript">
-const containers = ['#docsearch-0', '#docsearch-1'];
-for (let c of containers) {
+if (document.getElementById('td-docsearch')) {
   docsearch({
-    container: c,
+    container: '#td-docsearch',
     appId: {{ .appId | jsonify | safeJS }},
     apiKey: {{ .apiKey | jsonify | safeJS }},
     indexName: {{ .indexName | jsonify | safeJS }},

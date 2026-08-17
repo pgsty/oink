@@ -48,8 +48,11 @@
 {{- $ariaLabel := index $giscus "arialabel" | default "Comments" -}}
 {{- $errorMessage := index $giscus "errormessage" | default "Comments could not be loaded." -}}
 {{- $theme := index $giscus "theme" | default "auto" -}}
-{{- $lightTheme := index $giscus "lighttheme" | default "light" -}}
-{{- $darkTheme := index $giscus "darktheme" | default "dark" -}}
+{{- /* OINK's own giscus palettes are published only on pages that render
+       comments; a site may still name a giscus built-in theme or its own
+       stylesheet URL. */ -}}
+{{- $lightTheme := index $giscus "lighttheme" | default (resources.Get "css/giscus-light.css").Permalink -}}
+{{- $darkTheme := index $giscus "darktheme" | default (resources.Get "css/giscus-dark.css").Permalink -}}
 <section id="td-comments" class="td-comments d-print-none"
   data-td-giscus
   data-repo="{{ $repo }}"

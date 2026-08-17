@@ -45,8 +45,9 @@ params:
       emitMetadata: 0
       inputPosition: top
       theme: auto
-      lightTheme: light
-      darkTheme: dark
+      # lightTheme / darkTheme default to the theme's own giscus palettes
+      # (assets/css/giscus-{light,dark}.css, published only where comments
+      # render); set a giscus built-in name or a stylesheet URL to override.
       loading: lazy
   ui:
     # The site navbar and footer render on every layout by default. Rendering,

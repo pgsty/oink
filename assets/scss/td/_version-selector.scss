@@ -27,13 +27,8 @@
       color: var(--bs-body-color);
     }
 
-    > i {
-      color: var(--td-brand-copper);
-    }
-
     > .td-shell-icon--chevron-down {
-      width: 14px;
-      height: 14px;
+      --td-shell-icon-size: 14px;
       margin-inline-start: auto;
       color: var(--bs-tertiary-color);
       transition: transform 120ms ease;
@@ -43,11 +38,8 @@
       transform: rotate(180deg);
     }
 
-    > .td-shell-icon--git-fork {
-      width: 16px;
-      height: 16px;
-      flex: 0 0 auto;
-      color: currentColor;
+    > .td-shell-icon--code-branch {
+      --td-shell-icon-size: 16px;
     }
 
     p {

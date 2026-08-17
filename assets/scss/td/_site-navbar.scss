@@ -348,8 +348,7 @@
     color: var(--bs-tertiary-color);
 
     .td-shell-icon {
-      width: 13px;
-      height: 13px;
+      --td-shell-icon-size: 13px;
     }
   }
 
@@ -387,9 +386,7 @@
 
   .nav-util .td-shell-icon,
   .nav-github .td-shell-icon {
-    display: block;
-    width: 18px;
-    height: 18px;
+    --td-shell-icon-size: 18px;
   }
 
   // Boxed search trigger: reads as a short input advertising the "/" shortcut,
@@ -423,8 +420,7 @@
 
     .td-shell-icon {
       flex: none;
-      width: 14px;
-      height: 14px;
+      --td-shell-icon-size: 14px;
     }
   }
 
@@ -709,8 +705,7 @@
 
 .td-shell-sidebar__footer .nav-hover-menu__option > .td-shell-icon {
   flex: 0 0 auto;
-  width: 15px;
-  height: 15px;
+  --td-shell-icon-size: 15px;
   color: var(--bs-tertiary-color);
 }
 
@@ -753,8 +748,7 @@
       }
 
       .td-shell-icon {
-        width: 18px;
-        height: 18px;
+        --td-shell-icon-size: 18px;
       }
     }
 

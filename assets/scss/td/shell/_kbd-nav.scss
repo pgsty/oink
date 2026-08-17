@@ -71,8 +71,7 @@ html[data-td-kbd-zen] .td-shell-subnav {
   font-size: 0.875rem;
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
     color: var(--bs-link-color);
   }
 }

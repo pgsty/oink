@@ -112,6 +112,31 @@ html:has(body.td-shell-chrome--navbar) {
   }
 }
 
+// Shell chrome icons: Font Awesome glyphs dispensed by shell/icon.html as
+// `<i class="td-shell-icon td-shell-icon--<name> fa-solid fa-…">`. One knob
+// per surface — `--td-shell-icon-size` is the square box the glyph is centred
+// in; the glyph em is derived from it (a filled glyph reads heavier than the
+// 2px outlines the shell was drawn with, so it sits a step below the box).
+// Angle glyphs (chevrons) drop one more step to keep their light, small look.
+// The property may be set on the icon or on any ancestor; 18px is the default.
+.td-shell-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: var(--td-shell-icon-size, 18px);
+  height: var(--td-shell-icon-size, 18px);
+  font-size: calc(var(--td-shell-icon-size, 18px) * 0.875);
+  line-height: var(--td-shell-icon-size, 18px); // centres the glyph even where a consumer forces display: block
+  text-align: center;
+  color: currentColor;
+}
+
+.td-shell-icon--chevron-down,
+.td-shell-icon--chevrons-up-down {
+  font-size: calc(var(--td-shell-icon-size, 18px) * 0.8);
+}
+
 // The prepaint script suppresses first-frame animations; docs-shell.js clears it.
 html[data-td-shell-no-anim] * {
   transition: none !important;

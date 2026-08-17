@@ -141,8 +141,7 @@
 
 // Every footer utility glyph shares one optical size and one quiet foreground.
 .td-shell-sidebar__footer .td-shell-icon {
-  width: 18px;
-  height: 18px;
+  --td-shell-icon-size: 18px;
   color: currentColor;
 }
 
@@ -178,11 +177,10 @@
       white-space: nowrap;
     }
 
-    > .td-shell-icon--git-fork {
-      flex: 0 0 auto;
+    // Same optical size as the neighbouring footer icons.
+    > .td-shell-icon--code-branch {
+      --td-shell-icon-size: 18px;
       margin-inline-start: 0;
-      color: currentColor;
-      transform: none;
     }
   }
 
@@ -215,8 +213,7 @@
     color 150ms ease;
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
     flex-shrink: 0;
   }
 
@@ -466,8 +463,7 @@
   cursor: pointer;
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
     transform: rotate(-90deg);
     transition: transform 150ms ease;
   }
@@ -586,8 +582,7 @@
     color 100ms ease;
 
   .td-shell-icon {
-    width: 18px;
-    height: 18px;
+    --td-shell-icon-size: 18px;
   }
 
   &:hover,
@@ -626,8 +621,7 @@
   }
 
   > .td-shell-icon--chevrons-up-down {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
     flex-shrink: 0;
     margin-inline-start: auto;
     color: var(--td-shell-muted-fg);
@@ -740,8 +734,7 @@
   color: var(--td-shell-primary);
 
   .td-shell-icon {
-    width: 14px;
-    height: 14px;
+    --td-shell-icon-size: 14px;
   }
 
   &.is-hidden {

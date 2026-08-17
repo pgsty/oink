@@ -5,6 +5,23 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- Unify the shell chrome on Font Awesome. `shell/icon.html` now dispenses one
+  FA class pair per semantic name as
+  `<i class="td-shell-icon td-shell-icon--<name> fa-solid fa-…">` instead of
+  inline lucide SVG, so the sidebar, navbar, TOC, page actions and Command
+  Palette share one icon family and one sizing model (`--td-shell-icon-size`
+  sets the box; the glyph em derives from it, chevrons a step smaller). Role
+  classes are unchanged, so CSS hooks and `dark-mode.js` keep working; the
+  page-action menu takes its icons from the action registry, so it and the
+  palette always show the same glyph. The eight never-used dispenser entries
+  (`book-open`, `newspaper`, `panel-right`, `git-fork`, `git-branch`, `text`,
+  `printer`, `text-align-start`) are gone; the version controls use
+  `fa-code-branch` and the shortcut help `fa-circle-question`. Consumer
+  overrides that sized `.td-shell-icon` with `width`/`height` still get a
+  centred glyph; set `--td-shell-icon-size` to resize.
+
 ### Fixed
 
 - Give folded (`[!TYPE]-` / `[!DETAILS]`) callouts symmetric summary padding:

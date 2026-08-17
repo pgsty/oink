@@ -188,8 +188,11 @@ def main() -> int:
                     r'<nav class="td-shell-tree".*?</nav>', html, re.DOTALL
                 )
                 if sidebar:
+                    # Entry icons only: the tree's own chrome (fold chevrons)
+                    # is dispensed by shell/icon.html as td-shell-icon glyphs
+                    # and is not governed by the icon policy.
                     require(
-                        "<i " not in sidebar.group(0),
+                        not re.search(r'<i class="(?!td-shell-icon\b)', sidebar.group(0)),
                         f"none policy emitted icon markup in {html_path}",
                     )
     except (OSError, RuntimeError) as exc:

@@ -55,6 +55,9 @@ def check_sources() -> list[str]:
     navbar = (ROOT / "layouts/_partials/navbar.html").read_text()
     version = (ROOT / "layouts/_partials/navbar-version-selector.html").read_text()
     icons = (ROOT / "layouts/_partials/shell/icon.html").read_text()
+    actions_context = (ROOT / "layouts/_partials/actions/context.html").read_text()
+    shell_tokens = (ROOT / "assets/scss/td/shell/_tokens.scss").read_text()
+    title_menu = (ROOT / "layouts/_partials/actions/title-menu.html").read_text()
     docs_layout = (ROOT / "layouts/docs/baseof.html").read_text()
     blog_layout = (ROOT / "layouts/blog/baseof.html").read_text()
     migration_en = (ROOT / "docs/prd7-migration-guide.md").read_text()
@@ -181,9 +184,21 @@ def check_sources() -> list[str]:
             and "position: static" in keyboard_styles
             and "inset-inline: 8px" in keyboard_styles,
             "sidebar shortcut help lost its hover trigger or KBD cheat sheet", errors)
-    require('"git-fork"' in icons and '"git-fork"' in version
-            and '"git-fork"' in navbar and "fa-code-branch" not in version,
-            "version controls no longer use the shared fork icon", errors)
+    # One icon system in the shell chrome: shell/icon.html dispenses Font Awesome
+    # glyphs under role-named classes, version controls take theirs from it, and
+    # the page action menu takes action icons from the registry rather than a
+    # second hand-written mapping. Glyph choices themselves are not contract.
+    require('<i class="td-shell-icon td-shell-icon--{{ $name }}' in icons and "<svg" not in icons
+            and "--td-shell-icon-size" in shell_tokens,
+            "shell/icon.html no longer dispenses a single Font Awesome icon system", errors)
+    require('shell/icon.html' in version and 'shell/icon.html' in navbar
+            and 'class="fa-' not in version and '<i class="fa-solid fa-code' not in navbar,
+            "version controls no longer take their icon from the shell dispenser", errors)
+    require(all(f"$byID.{action}.icon" in title_menu for action in (
+                "copy_markdown", "view_markdown", "view_history", "edit_page",
+                "create_child_page", "create_issue", "create_project_issue", "print_section"))
+            and 'shell/icon.html" "copy"' not in title_menu,
+            "page action menu no longer takes action icons from the registry", errors)
     require("if not $hasToc" in toc_aside
             and "quickLinks" not in toc_aside
             and "td-shell-quick-theme" not in toc_aside

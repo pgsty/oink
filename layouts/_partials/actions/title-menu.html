@@ -1,7 +1,9 @@
 {{/* cSpell:ignore querify subdir */ -}}
 {{/* Page actions: a split button in the breadcrumb row. This is the only
      surface that renders data-oink-action controls; the Command Palette reads
-     the JSON manifest instead. The left half is an icon-only copy control
+     the JSON manifest instead. Action icons come from the registry
+     (actions/context.html) so this menu and the palette show the same glyph
+     for the same action. The left half is an icon-only copy control
      (clipboard, flipping to a green check on success); the caret disclosure
      lists every page action — reading items above the separator, acting items
      below — so `copy_markdown` renders twice on purpose (primary + first row).
@@ -35,7 +37,7 @@
     {{- else }}{{ with $markdownURL }}
     <button type="button" class="td-page-actions__primary" data-oink-action="copy_markdown" data-url="{{ . }}"
       title="{{ T "ui_copy_markdown" }}" aria-label="{{ T "ui_copy_markdown" }}">
-      <span class="td-page-actions__icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>
+      <span class="td-page-actions__icon"><i class="td-shell-icon td-shell-icon--copy {{ $byID.copy_markdown.icon }}" aria-hidden="true"></i></span>
       <span class="td-page-actions__icon td-page-actions__icon--done">{{ partialCached "shell/icon.html" "check" "check" }}</span>
     </button>
     {{- end }}{{ end }}
@@ -52,7 +54,7 @@
          swaps the primary; the menu keeps the full copy action. */ -}}
     {{- with $markdownURL }}
     <li><button type="button" class="td-page-actions__item" data-oink-action="copy_markdown" data-url="{{ . }}">
-      {{ partialCached "shell/icon.html" "copy" "copy" }}<span>{{ T "ui_copy_markdown" }}</span>
+      <i class="{{ $byID.copy_markdown.icon }}" aria-hidden="true"></i><span>{{ T "ui_copy_markdown" }}</span>
     </button></li>
     {{- end }}
     {{- if $assistantLinks }}
@@ -67,12 +69,12 @@
     {{- end }}
     {{- with $markdownURL }}
     <li><a class="td-page-actions__item" data-oink-action="view_markdown" href="{{ . }}" target="_blank" rel="noopener">
-      {{ partialCached "shell/icon.html" "markdown" "markdown" }}<span>{{ T "post_view_markdown" }}</span>
+      <i class="{{ $byID.view_markdown.icon }}" aria-hidden="true"></i><span>{{ T "post_view_markdown" }}</span>
     </a></li>
     {{- end }}
     {{- with $actionURLs.history }}
     <li><a class="td-page-actions__item" data-oink-action="view_history" href="{{ . }}" target="_blank" rel="noopener">
-      {{ partialCached "shell/icon.html" "history" "history" }}<span>{{ T "ui_view_history" }}</span>
+      <i class="{{ $byID.view_history.icon }}" aria-hidden="true"></i><span>{{ T "ui_view_history" }}</span>
     </a></li>
     {{- end }}
     {{- /* Acting half: change or produce something. */ -}}
@@ -81,27 +83,27 @@
     {{- end }}
     {{- with $actionURLs.edit }}
     <li><a class="td-page-actions__item" data-oink-action="edit_page" href="{{ . }}" target="_blank" rel="noopener">
-      {{ partialCached "shell/icon.html" "pencil" "pencil" }}<span>{{ T "post_edit_this" }}</span>
+      <i class="{{ $byID.edit_page.icon }}" aria-hidden="true"></i><span>{{ T "post_edit_this" }}</span>
     </a></li>
     {{- end }}
     {{- with $actionURLs.createChild }}
     <li><a class="td-page-actions__item" data-oink-action="create_child_page" href="{{ . | safeURL }}" target="_blank" rel="noopener">
-      {{ partialCached "shell/icon.html" "file-plus" "file-plus" }}<span>{{ T "post_create_child_page" }}</span>
+      <i class="{{ $byID.create_child_page.icon }}" aria-hidden="true"></i><span>{{ T "post_create_child_page" }}</span>
     </a></li>
     {{- end }}
     {{- with $actionURLs.createIssue }}
     <li><a class="td-page-actions__item" data-oink-action="create_issue" href="{{ . | safeURL }}" target="_blank" rel="noopener">
-      {{ partialCached "shell/icon.html" "circle-help" "circle-help" }}<span>{{ T "post_create_issue" }}</span>
+      <i class="{{ $byID.create_issue.icon }}" aria-hidden="true"></i><span>{{ T "post_create_issue" }}</span>
     </a></li>
     {{- end }}
     {{- with $actionURLs.createProjectIssue }}
     <li><a class="td-page-actions__item" data-oink-action="create_project_issue" href="{{ . }}" target="_blank" rel="noopener">
-      {{ partialCached "shell/icon.html" "circle-alert" "circle-alert" }}<span>{{ T "post_create_project_issue" }}</span>
+      <i class="{{ $byID.create_project_issue.icon }}" aria-hidden="true"></i><span>{{ T "post_create_project_issue" }}</span>
     </a></li>
     {{- end }}
     {{- with $actionURLs.printSection }}
     <li><a class="td-page-actions__item" data-oink-action="print_section" href="{{ . }}">
-      {{ partialCached "shell/icon.html" "files" "files" }}<span>{{ T "print_entire_section" }}</span>
+      <i class="{{ $byID.print_section.icon }}" aria-hidden="true"></i><span>{{ T "print_entire_section" }}</span>
     </a></li>
     {{- end }}
     {{- with $customLinks }}

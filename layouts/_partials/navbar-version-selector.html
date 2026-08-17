@@ -9,7 +9,7 @@
 <div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}" data-td-version-menu>
   <button class="td-version-menu__title" type="button" data-bs-toggle="dropdown"
     aria-haspopup="true" aria-expanded="false" aria-label="{{ $menuName | plainify }}">
-    {{- partialCached "shell/icon.html" "git-fork" "version-git-fork" -}}
+    {{- partialCached "shell/icon.html" "code-branch" "version-code-branch" -}}
     <span class="td-version-menu__title-text">{{ $menuName | markdownify }}</span>
   </button>
   <ul class="dropdown-menu{{ if $dropup }} dropdown-menu-up{{ end }}">

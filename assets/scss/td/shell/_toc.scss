@@ -105,8 +105,7 @@
     color 100ms ease;
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
   }
 
   &:hover {
@@ -132,8 +131,7 @@
 
   .td-shell-icon {
     flex: 0 0 auto;
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
   }
 }
 
@@ -143,11 +141,10 @@
   border-radius: 6px;
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
   }
 
-  // Size Font Awesome content shortcuts to align with Lucide icons.
+  // Size content shortcut glyphs (plain <i>) to the shell icon box.
   i {
     display: inline-block;
     width: 16px;
@@ -385,8 +382,7 @@
   }
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
   }
 }
 
@@ -402,8 +398,7 @@
   text-align: center;
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
   }
 
   &--toc {

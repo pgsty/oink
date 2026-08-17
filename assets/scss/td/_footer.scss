@@ -238,8 +238,7 @@
   color: var(--td-shell-muted-fg);
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
     transition: transform 150ms ease;
   }
 

@@ -147,7 +147,7 @@
     "kind" "invoke" "available" true "disabledReason" "" "url" ""
     "target" "self" "placements" $noPlacement "options" (slice))
   (dict "id" "switch_version" "title" $versionTitle
-    "description" $versionTitle "icon" "fa-solid fa-code-fork"
+    "description" $versionTitle "icon" "fa-solid fa-code-branch"
     "keywords" (slice $versionTitle "version") "kind" "choice"
     "available" (gt (len $versionOptions) 0) "disabledReason" (cond (gt (len $versionOptions) 0) "" (printf "%s: %s" $versionTitle $unavailable)) "url" ""
     "target" "self" "placements" $paletteOnly "options" $versionOptions)

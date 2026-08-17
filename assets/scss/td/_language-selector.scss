@@ -133,8 +133,7 @@ a.td-language-selector__item:focus-visible {
   }
 
   .td-shell-icon {
-    width: 16px;
-    height: 16px;
+    --td-shell-icon-size: 16px;
   }
 }
 
@@ -160,8 +159,7 @@ a.td-language-selector__item:focus-visible {
     }
 
     .td-shell-icon {
-      width: 18px;
-      height: 18px;
+      --td-shell-icon-size: 18px;
     }
 
     &:hover {

@@ -120,8 +120,7 @@
   border-inline-start: 1px solid var(--bs-border-color);
 
   .td-shell-icon {
-    width: 14px;
-    height: 14px;
+    --td-shell-icon-size: 14px;
     transition: transform 150ms ease;
   }
 
@@ -139,8 +138,7 @@
   display: inline-flex;
 
   .td-shell-icon {
-    width: 15px;
-    height: 15px;
+    --td-shell-icon-size: 15px;
   }
 }
 
@@ -222,11 +220,15 @@
     text-decoration: none;
   }
 
-  // Font Awesome (custom links) and lucide (built-ins) share one column so
-  // every label starts on the same axis.
+  // Registry / custom-link glyphs (plain <i>) and shell icons share one
+  // 15px column so every label starts on the same axis.
   > i,
   .td-shell-icon {
+    --td-shell-icon-size: 15px;
+    display: inline-flex;
     flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
     width: 15px;
     height: 15px;
     font-size: 13px;

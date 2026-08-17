@@ -187,7 +187,7 @@
 
   .td-shell-icon {
     --td-shell-icon-size: 16px;
-    transition: transform 150ms ease;
+    transition: transform var(--td-motion-duration) ease;
   }
 
   &.td-is-collapsed .td-shell-icon {
@@ -198,11 +198,5 @@
   &:focus-visible {
     background: var(--td-shell-accent);
     color: var(--bs-body-color);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .td-shell-footline__toggle .td-shell-icon {
-    transition: none;
   }
 }

@@ -12,8 +12,8 @@
     flex: 0 0 286px;
     width: 286px;
     transition:
-      width 150ms ease,
-      flex-basis 150ms ease;
+      width var(--td-motion-duration) ease,
+      flex-basis var(--td-motion-duration) ease;
   }
 }
 
@@ -34,8 +34,8 @@
     // at an unrelated hard-coded height.
     padding: var(--td-shell-content-top, 2.5rem) 20px 12px 8px;
     transition:
-      transform 200ms ease,
-      opacity 150ms ease;
+      transform var(--td-motion-duration) ease,
+      opacity var(--td-motion-duration) ease;
   }
 }
 
@@ -78,7 +78,7 @@
 @include media-breakpoint-up(xl) {
   [data-td-shell-toc='collapsed'] .td-shell-toc-float {
     display: flex;
-    animation: td-shell-fade 300ms ease both;
+    animation: td-shell-fade var(--td-motion-duration-slow) ease both;
   }
 }
 
@@ -101,8 +101,8 @@
   background: transparent;
   color: var(--td-shell-muted-fg);
   transition:
-    background-color 100ms ease,
-    color 100ms ease;
+    background-color var(--td-motion-duration-fast) ease,
+    color var(--td-motion-duration-fast) ease;
 
   .td-shell-icon {
     --td-shell-icon-size: 16px;
@@ -206,7 +206,7 @@
     line-height: 20px;
     color: var(--td-shell-muted-fg);
     overflow-wrap: anywhere;
-    transition: color 150ms ease;
+    transition: color var(--td-motion-duration) ease;
 
     &:hover {
       color: var(--bs-body-color);
@@ -249,7 +249,7 @@
   }
 }
 
-// Clip the accent path to the active range with a 150ms transition.
+// Clip the accent path to the active range with a base-duration transition.
 .td-shell-toc__active {
   position: absolute;
   top: 0;
@@ -266,7 +266,7 @@
       100% var(--td-shell-track-bottom, 0px),
       0 var(--td-shell-track-bottom, 0px)
     );
-    transition: clip-path 150ms ease;
+    transition: clip-path var(--td-motion-duration) ease;
   }
 
   path {
@@ -288,8 +288,8 @@
   offset-distance: var(--td-shell-dot-d, 0px);
   opacity: var(--td-shell-dot-o, 0);
   transition:
-    offset-distance 150ms ease,
-    opacity 150ms ease;
+    offset-distance var(--td-motion-duration) ease,
+    opacity var(--td-motion-duration) ease;
 }
 
 .td-shell-toc__panel > .td-shell-aside {
@@ -343,7 +343,7 @@
   display: flex;
   align-items: center;
   border-radius: 10px;
-  transition: background-color 150ms ease;
+  transition: background-color var(--td-motion-duration) ease;
 
   &:hover {
     background: var(--td-shell-accent);

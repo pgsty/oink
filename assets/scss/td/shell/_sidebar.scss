@@ -209,8 +209,8 @@
   line-height: 20px;
   text-align: start;
   transition:
-    background-color 150ms ease,
-    color 150ms ease;
+    background-color var(--td-motion-duration) ease,
+    color var(--td-motion-duration) ease;
 
   .td-shell-icon {
     --td-shell-icon-size: 16px;
@@ -361,13 +361,13 @@
   padding-inline-start: var(--td-shell-indent, 8px);
   border-radius: 10px;
   color: var(--td-shell-muted-fg);
-  transition: background-color 150ms ease;
+  transition: background-color var(--td-motion-duration) ease;
 
   @include media-breakpoint-up(md) {
     padding-block: 6px;
   }
 
-  // Hover appears immediately and fades out over 150ms.
+  // Hover appears immediately and fades out over the base duration.
   &:hover {
     background: var(--td-shell-accent);
     transition: none;
@@ -465,7 +465,7 @@
   .td-shell-icon {
     --td-shell-icon-size: 16px;
     transform: rotate(-90deg);
-    transition: transform 150ms ease;
+    transition: transform var(--td-motion-duration) ease;
   }
 
   &:hover {
@@ -487,9 +487,9 @@
   // Delay visibility until collapse completes so hidden content is not focusable.
   visibility: hidden;
   transition:
-    grid-template-rows 150ms var(--td-shell-ease-collapsible),
-    opacity 150ms ease,
-    visibility 0s linear 150ms;
+    grid-template-rows var(--td-motion-duration) var(--td-shell-ease-collapsible),
+    opacity var(--td-motion-duration) ease,
+    visibility 0s linear var(--td-motion-duration);
 
   &--static {
     grid-template-rows: 1fr;
@@ -504,8 +504,8 @@
   opacity: 1;
   visibility: visible;
   transition:
-    grid-template-rows 150ms var(--td-shell-ease-collapsible),
-    opacity 150ms ease,
+    grid-template-rows var(--td-motion-duration) var(--td-shell-ease-collapsible),
+    opacity var(--td-motion-duration) ease,
     visibility 0s;
 }
 
@@ -578,8 +578,8 @@
   background: transparent;
   color: var(--td-shell-muted-fg);
   transition:
-    background-color 100ms ease,
-    color 100ms ease;
+    background-color var(--td-motion-duration-fast) ease,
+    color var(--td-motion-duration-fast) ease;
 
   .td-shell-icon {
     --td-shell-icon-size: 18px;
@@ -612,8 +612,8 @@
   font-size: 14px;
   text-align: start;
   transition:
-    background-color 150ms ease,
-    color 150ms ease;
+    background-color var(--td-motion-duration) ease,
+    color var(--td-motion-duration) ease;
 
   &:hover,
   &[aria-expanded='true'] {
@@ -674,8 +674,8 @@
   opacity: 0;
   transform: scale(0.9);
   transition:
-    opacity 100ms ease,
-    transform 100ms ease;
+    opacity var(--td-motion-duration-fast) ease,
+    transform var(--td-motion-duration-fast) ease;
 
   &.td-is-open {
     opacity: 1;

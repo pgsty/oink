@@ -13,8 +13,8 @@
   pointer-events: none;
   transform: translateY(-150%);
   transition:
-    opacity 120ms ease,
-    transform 120ms ease;
+    opacity var(--td-motion-duration-fast) ease,
+    transform var(--td-motion-duration-fast) ease;
 
   &:focus-visible {
     color: var(--bs-white);

@@ -22,8 +22,18 @@
   --td-shell-sidebar-min: 220px;
   --td-shell-sidebar-max: 480px;
 
-  --td-shell-ease-collapsible: cubic-bezier(0.45, 0, 0.55, 1); // 150ms collapse
-  --td-shell-ease-dialog: cubic-bezier(0.16, 1, 0.3, 1); // 240ms dialog
+  // Every shell transition and animation draws its duration from one of these
+  // three roles, so `prefers-reduced-motion` is honoured by zeroing the tokens
+  // below rather than by maintaining a per-selector opt-out list.
+  //   fast — hover tints, disclosure pops, the skip link
+  //   base — the default: collapses, rail geometry, sidebar width, color shifts
+  //   slow — dialogs, the mobile drawer, floating-control entrances
+  --td-motion-duration-fast: 100ms;
+  --td-motion-duration: 150ms;
+  --td-motion-duration-slow: 250ms;
+
+  --td-shell-ease-collapsible: cubic-bezier(0.45, 0, 0.55, 1); // base collapse
+  --td-shell-ease-dialog: cubic-bezier(0.16, 1, 0.3, 1); // slow dialog
   --td-shell-mark-gradient: var(
     --td-brand-mark-gradient,
     linear-gradient(115deg, var(--bs-link-color), var(--bs-info))
@@ -161,21 +171,15 @@ html[data-td-shell-drawer='open'] {
   }
 }
 
-// Respect reduced-motion preferences across every shell surface.
+// Respect reduced-motion preferences across every shell surface. Zeroing the
+// duration tokens neutralises every transition and animation that draws from
+// them, including ones added later — no selector list to keep in sync. No JS
+// in this theme waits on `transitionend`/`animationend`, so a true 0ms is safe
+// (only vendored Bootstrap listens for those, and it uses its own durations).
 @media (prefers-reduced-motion: reduce) {
-  .td-shell-sidebar,
-  .td-shell-sidebar__panel,
-  .td-shell-tree__children,
-  .td-shell-tree__chevron .td-shell-icon,
-  .td-shell-toc__active svg,
-  .td-shell-toc__dot,
-  .td-shell-search,
-  .td-shell-search__backdrop,
-  .td-shell-search__panel,
-  .td-shell-drawer-backdrop,
-  .td-shell-root__pop,
-  .td-shell-float {
-    transition: none !important;
-    animation: none !important;
+  :root {
+    --td-motion-duration-fast: 0ms;
+    --td-motion-duration: 0ms;
+    --td-motion-duration-slow: 0ms;
   }
 }

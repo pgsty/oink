@@ -61,7 +61,7 @@
 
   &__section-link {
     color: inherit;
-    transition: color 100ms ease;
+    transition: color var(--td-motion-duration-fast) ease;
 
     &:hover,
     &:focus-visible {
@@ -186,8 +186,8 @@ a.td-taxonomy-term {
   color: var(--td-shell-muted-fg);
   text-decoration: none;
   transition:
-    background-color 100ms ease,
-    color 100ms ease;
+    background-color var(--td-motion-duration-fast) ease,
+    color var(--td-motion-duration-fast) ease;
 
   &:hover {
     background: var(--td-shell-accent);
@@ -220,9 +220,9 @@ a.td-taxonomy-term {
   color: var(--td-shell-muted-fg);
   text-decoration: none;
   transition:
-    background-color 100ms ease,
-    color 100ms ease,
-    border-color 100ms ease;
+    background-color var(--td-motion-duration-fast) ease,
+    color var(--td-motion-duration-fast) ease,
+    border-color var(--td-motion-duration-fast) ease;
 
   &:hover {
     background: var(--td-shell-accent);

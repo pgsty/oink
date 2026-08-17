@@ -91,8 +91,8 @@
   font-size: 13px;
   cursor: pointer;
   transition:
-    background-color 100ms ease,
-    color 100ms ease;
+    background-color var(--td-motion-duration-fast) ease,
+    color var(--td-motion-duration-fast) ease;
 
   &:hover,
   &:focus-visible {
@@ -121,7 +121,7 @@
 
   .td-shell-icon {
     --td-shell-icon-size: 14px;
-    transition: transform 150ms ease;
+    transition: transform var(--td-motion-duration) ease;
   }
 
   &--solo {
@@ -181,9 +181,9 @@
   pointer-events: none;
   transform: translateY(-4px);
   transition:
-    opacity 120ms ease,
-    visibility 120ms ease,
-    transform 120ms ease;
+    opacity var(--td-motion-duration-fast) ease,
+    visibility var(--td-motion-duration-fast) ease,
+    transform var(--td-motion-duration-fast) ease;
 }
 
 .td-page-actions.td-is-open .td-page-actions__menu {
@@ -210,8 +210,8 @@
   text-decoration: none;
   cursor: pointer;
   transition:
-    background-color 100ms ease,
-    color 100ms ease;
+    background-color var(--td-motion-duration-fast) ease,
+    color var(--td-motion-duration-fast) ease;
 
   &:hover,
   &:focus-visible {
@@ -254,9 +254,5 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .td-page-actions__menu,
-  .td-page-actions__toggle .td-shell-icon {
-    transition: none;
-  }
-}
+// No local reduced-motion block: both surfaces above draw their durations from
+// the shared motion tokens, which shell/_tokens.scss zeroes under the query.

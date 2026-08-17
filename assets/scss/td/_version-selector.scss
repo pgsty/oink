@@ -15,9 +15,9 @@
     font-weight: 500;
     text-align: start;
     transition:
-      background-color 120ms ease,
-      border-color 120ms ease,
-      color 120ms ease;
+      background-color var(--td-motion-duration-fast) ease,
+      border-color var(--td-motion-duration-fast) ease,
+      color var(--td-motion-duration-fast) ease;
 
     &:hover,
     &:focus-visible,
@@ -31,7 +31,7 @@
       --td-shell-icon-size: 14px;
       margin-inline-start: auto;
       color: var(--bs-tertiary-color);
-      transition: transform 120ms ease;
+      transition: transform var(--td-motion-duration-fast) ease;
     }
 
     &[aria-expanded='true'] > .td-shell-icon--chevron-down {

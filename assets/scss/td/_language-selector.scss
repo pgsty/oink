@@ -48,9 +48,9 @@
     transform: translateY(-4px) scale(0.98);
     transform-origin: top right;
     transition:
-      opacity 120ms ease,
-      transform 120ms ease,
-      visibility 0s linear 120ms;
+      opacity var(--td-motion-duration-fast) ease,
+      transform var(--td-motion-duration-fast) ease,
+      visibility 0s linear var(--td-motion-duration-fast);
 
     // Keep the visual gap inside the hover target so pointer travel is continuous.
     &::before {

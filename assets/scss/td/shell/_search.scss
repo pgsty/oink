@@ -1,5 +1,6 @@
 // ============================================================
-// Command search dialog with a 240ms scale entrance and keyboard navigation.
+// Command search dialog with a slow-token scale entrance and keyboard
+// navigation.
 // ============================================================
 
 .td-shell-search {
@@ -19,7 +20,7 @@
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   opacity: 0;
-  transition: opacity 240ms ease;
+  transition: opacity var(--td-motion-duration-slow) ease;
 }
 
 .td-shell-search__panel {
@@ -37,8 +38,8 @@
   opacity: 0;
   transform: scale(1.06);
   transition:
-    opacity 240ms var(--td-shell-ease-dialog),
-    transform 240ms var(--td-shell-ease-dialog);
+    opacity var(--td-motion-duration-slow) var(--td-shell-ease-dialog),
+    transform var(--td-motion-duration-slow) var(--td-shell-ease-dialog);
 }
 
 .td-shell-search.td-is-open {

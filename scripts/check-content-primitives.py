@@ -210,12 +210,12 @@ def check_outputs(public: Path) -> list[str]:
     for marker in (
         '<ol class="steps">',
         '<ol start="3" class="steps">',
-        '<h3 id="init-workspace">Initialise the workspace</h3>',
+        '<h3 id="init-workspace">Initialise the workspace<a class="td-heading-self-link" href="#init-workspace"',
         'href="#init-workspace"',  # heading inside a step enters the TOC
         'class="td-callout td-callout--tip"',
         'data-td-tab="Homebrew" data-td-tab-group="install" data-td-tab-value="brew"',
         '<div class="td-steps td-max-width-on-larger-screens">',
-        '<h3 id="create-the-content">Create the content</h3>',
+        '<h3 id="create-the-content">Create the content<a class="td-heading-self-link"',
     ):
         require(marker in steps, f"steps fixture missing {marker}", errors)
     for marker in ("1. Install the dependencies", "1. ### Initialise the workspace {#init-workspace}", "{.steps}", "3. third", "### Create the content"):
@@ -576,7 +576,7 @@ def check_table_family(hugo: str) -> list[str]:
             '<table class="ext-table stretch-last" aria-describedby="note" data-fixture="kept">',
             '<div class="td-fields site-fields" data-fixture="fields">',
             "Included <strong>Markdown</strong> snippet.",
-            "included: yes",
+            '<span class="nt">included</span><span class="p">:</span>',  # the yaml include, highlighted
             "Value 42 inline.",
         ):
             require(marker in html, f"table family fixture missing {marker}", errors)

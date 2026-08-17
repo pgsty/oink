@@ -271,7 +271,7 @@ def check_steps_container(hugo: str) -> list[str]:
             return errors
         html = (destination / "docs/steps/index.html").read_text()
         markdown = (destination / "docs/steps/index.md").read_text()
-        for marker in ('<div class="td-steps td-max-width-on-larger-screens">', '<h3 id="first-step">First step</h3>', '<h3 id="second-step">Second step</h3>', "<li>nested</li>", '<ol class="steps">\n<li>native</li>'):
+        for marker in ('<div class="td-steps td-max-width-on-larger-screens">', '<h3 id="first-step">First step<a class="td-heading-self-link"', '<h3 id="second-step">Second step<a class="td-heading-self-link"', "<li>nested</li>", '<ol class="steps">\n<li>native</li>'):
             require(marker in html, f"steps container HTML missing {marker}", errors)
         require("{{%" not in html and "### First step" not in html, "steps container swallowed its Markdown body into the HTML block", errors)
         require(html.count('<ol class="steps">') == 2, "the list inside the steps container was not rendered", errors)

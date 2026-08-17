@@ -225,7 +225,7 @@ def check_config_matrix(hugo: str) -> list[str]:
         ("site-number", "1", None, "params.ui.image_zoom must be a boolean"),
         ("page-string", None, '"false"', "front matter image_zoom must be a boolean"),
         ("site-legacy-map", "\n      enable: true", None, "params.ui.image_zoom.enable was flattened"),
-        ("page-legacy-map", None, "\nparams:\n  ui:\n    image_zoom:\n      enable: false", "front matter ui.image_zoom was renamed"),
+        ("page-legacy-map", None, "\nparams:\n  ui:\n    image_zoom:\n      enable: false", "front matter ui.image_zoom is not a page key: use image_zoom"),
     )
     for name, site_value, page_value, expected in invalid:
         result, _ = build_gate_case(

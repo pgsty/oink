@@ -63,6 +63,7 @@ ui_palette_preferences: Preferences
 ui_palette_page_actions: Page actions
 ui_palette_empty_query: Quick links and actions
 ui_sidebar_nav: Section navigation
+ui_heading_self_link: Link to this heading
 ui_main_nav: Main navigation
 ui_home: Home
 ui_sidebar_expand: Expand sidebar

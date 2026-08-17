@@ -34,6 +34,7 @@ ui_palette_action_failed: Action could not be completed
 ui_palette_pages: Pages
 ui_palette_index_unavailable: Page index unavailable; actions still work
 ui_sidebar_nav: Section navigation
+ui_heading_self_link: Link to this heading
 ui_main_nav: Main navigation
 ui_home: Home
 ui_sidebar_expand: Expand sidebar

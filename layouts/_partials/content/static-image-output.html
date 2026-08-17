@@ -1,5 +1,7 @@
-{{- /* Remove interaction-only image attributes from cached static HTML outputs. */ -}}
+{{- /* Remove interaction-only markup from cached static HTML outputs (print,
+       RSS): image zoom attributes and the hover-revealed heading self-links. */ -}}
 {{- $html := printf "%s" . -}}
 {{- $html = replaceRE `\sdata-td-image-zoom(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?(\s|/?>)` "$1" $html -}}
 {{- $html = replaceRE `\sdata-no-zoom(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?(\s|/?>)` "$1" $html -}}
+{{- $html = replaceRE `<a class="td-heading-self-link" href="#[^"]*" aria-label="[^"]*"></a>` "" $html -}}
 {{- $html | safeHTML -}}

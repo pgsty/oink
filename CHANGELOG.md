@@ -83,6 +83,12 @@ fail the build with the new name rather than being silently ignored.
 - Four-state goldens (HTML, print, Markdown, RSS, `llms.txt`) over 30 surfaces
   of the fixture site, plus output-structure, duplicate-ID, bundle-graph, and
   output-security checks.
+- A heading render hook of the theme's own: every heading carries its id and
+  a hover-revealed self-link (`.td-heading-self-link`, label
+  `ui_heading_self_link`), and heading block attributes follow the shared
+  policy. Sites no longer need a `render-heading.html` that calls
+  `td/render-heading.html` (that partial is gone). Print and RSS output strip
+  the self-link.
 - CI builds a small consumer site in Hugo Module mode (the fixture site
   mounts the theme through a classic `themes/` symlink), so module-only path
   resolution such as the `include` shortcode's `os.ReadFile` is covered.

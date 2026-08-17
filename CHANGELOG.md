@@ -3,7 +3,7 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
-## [0.5.0] - 2026-08-17
+## [0.5.0] - 2026-08-18
 
 Draft: the tag is not created yet. The component API v5 release. Content written for 0.4 needs migration:
 `scripts/migrations/oink06.py report --sites <dir>` inventories a site and
@@ -272,6 +272,23 @@ fail the build with the new name rather than being silently ignored.
 
 ### Fixed
 
+- The action manifest now precedes the synchronous action-registry bundle, and
+  browser runtimes read the `data-td-*` names that templates actually emit.
+  Page actions, Command Palette rows and search, command-only code copying,
+  collapsible code blocks, localized disclosure labels, feedback identity,
+  Giscus palettes, Image Zoom labels, and Asciinema timer labels therefore
+  work in the rendered DOM rather than only in hand-written unit-test mocks.
+- The Quick Start includes the three consuming-site Goldmark prerequisites;
+  `scripts/check-site-markup.py` verifies their resolved Hugo configuration.
+  The content migration checker now fails closed on missing, empty, unreadable,
+  or non-UTF-8 targets, and JSON front matter is parsed rather than brace-counted.
+- Legacy front-matter errors also run for Markdown, RSS, and aggregate print
+  rendering; an empty or scalar `ui` key fails with the bare page-key rule, and
+  the removed sidebar body class names the valid `sidebar_enabled` replacement.
+- Data-fence and unknown-callout hooks retain accepted `data-*` / `aria-*`
+  attributes, chart `full` values are strict booleans, Swagger/ReDoc instances
+  have unique IDs without replacing `window.onload`, and configured shell or
+  featured images pass through the shared URL policy.
 - Print aggregates rendered a page's content once per enclosing section — a
   chapter that is itself a section was rendered by its own print output and
   by its parent's, concurrently, and the two renders raced on the page store

@@ -58,6 +58,17 @@ outputs:
   page: [HTML, markdown]
   section: [HTML, RSS, print, markdown]
 
+# Hugo does not merge a theme module's Goldmark configuration into the site.
+# These three settings are required by OINK's native component forms.
+markup:
+  goldmark:
+    renderer:
+      unsafe: true # `%` container shortcodes emit HTML that Goldmark must keep
+    parser:
+      wrapStandAloneImageWithinParagraph: false # block images carry attributes
+      attribute:
+        block: true # {.steps}, {.fields}, captions, numbered Book targets
+
 params:
   # Book reading measure: slim | normal | wide (default: normal).
   reading_width: normal
@@ -78,6 +89,12 @@ params:
       enable: false
       reasons: true
     image_zoom: true
+```
+
+Before migrating content, verify the consuming site's resolved configuration:
+
+```sh
+python3 path/to/oink/scripts/check-site-markup.py --site .
 ```
 
 `markdown` enables Copy text and View source, `LLMS` emits `llms.txt`, and

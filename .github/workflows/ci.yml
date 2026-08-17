@@ -178,6 +178,9 @@ jobs:
       - name: Check the parameter contract and legacy-key errors
         run: python3 scripts/check-params.py
 
+      - name: Check consuming-site Goldmark prerequisites
+        run: python3 scripts/check-site-markup.py --site exampleSite
+
       - name: Check four-state goldens
         run: python3 scripts/check-goldens.py --public exampleSite/public
 

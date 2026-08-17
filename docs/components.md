@@ -57,7 +57,7 @@ Passthrough math needs the site's `passthrough` extension.
 | Cards | link list + `{.cards}` | `{{< cards >}}` `{{< card title= link= icon= badge= image= image_alt=\|decorative= >}}body{{< /card >}}` `{{< /cards >}}` | |
 | Fields | table + `{.fields [caption=] [id=] [meta="type required default -"]}` (first column name, last column description, middle columns metadata) | `{{< fields label= id= class= data-*= >}}` `{{< field name= type= required= default= >}}…{{< /field >}}` `{{< /fields >}}` | same chips from either form; the shortcode is for block-level descriptions; entries get `#field-<name>` anchors |
 | FileTree | ```` ```filetree {title=} ```` fence: `- name[/]  # comment  {icon= tone= open= type=}` per line; 2/4-space, tab, or `tree` indentation | — | CSS + native `<details>`; comment column aligned at build time, split clamped 50–70% and draggable (`hasFileTree` → `assets/js/filetree.js`) |
-| Gallery | ```` ```gallery ```` fence, `![alt](src) # description {link= class=}` per line | — | alt required; per-item link; Zoom marked at emit time |
+| Gallery | ```` ```gallery ```` fence, `![alt](src) # description {link= class=}` per line | — | non-empty alt is informative; empty alt is explicitly decorative; per-item link; Zoom marked at emit time |
 | Image | `![alt](src "title")` (render hook; block image + `{#id num= caption= width= height= link= command= options=}` → figure) | — | the `image` shortcode is retired; `link` needs a caption or num and is never zoomable; the resource `byline` rides in the figcaption |
 | Table family | `{.full-width}` `{.fields}` `{.matrix}` `{caption=}` `{#id}` `{#id num= caption=}` `{tab= group= value=}` | — | site classes pass through; exclusivity: fields ⟂ matrix/full-width/num, num ⟂ tab |
 | Fig / Tbl / Eq / Eg | image / table / `$$` block / fence + `{#id num= caption=}` | `{{< fig >}}` `{{< tbl >}}` `{{< eq >}}` `{{< eg >}}` | default IDs `fig- tbl- eq- eg-<num>`; `eg` caption required |
@@ -208,11 +208,17 @@ The theme never accepts author `style` or event handlers anywhere. Markers
 any other class on a table, image, blockquote, or figure is site CSS and is
 passed through untouched.
 
-## 5. Source linter rules (preflight)
+## 5. Site preflight and source lint rules
+
+Run the shipped resolved-configuration preflight before migrating content:
+
+```sh
+python3 scripts/check-site-markup.py --site /path/to/site
+```
 
 The theme validates what it can at build time (unknown parameters and
-attributes, exclusivity, IDs, numbers, required alt/caption); a source linter
-covers what Goldmark cannot report:
+attributes, exclusivity, IDs, numbers, required alt/caption). Consumer CI
+should additionally lint what Goldmark cannot report from rendered hooks:
 
 - an attribute line separated from its block by a blank line (it silently
   disappears);
@@ -220,7 +226,8 @@ covers what Goldmark cannot report:
   `ol`, `{.fields}`/`{.matrix}`/`{.full-width}` off a table), and the removed
   `{.filetree}` marker (write a `filetree` fence);
 - `{{% … %}}` shortcodes written inside a list item (the list truncates);
-- Gallery images without alt text;
+- Gallery images whose alt text does not describe an informative image (write
+  `![](...)` only when the image is intentionally decorative);
 - Font Awesome icon values that are not one `fa-<style> fa-<name>` pair;
 - residual removed shortcodes (see section 6): `python3 scripts/migrations/oink06.py check --site <dir>`.
 

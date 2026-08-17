@@ -64,6 +64,7 @@ python3 scripts/check-keyboard.py                    # keyboard navigation contr
 python3 scripts/check-shell.py                       # navigation and page-end composition
 python3 scripts/check-namespace.py                   # td- class / data-td- attribute / --td- property namespaces
 python3 scripts/check-params.py                      # parameter shapes (bare booleans, no single-key maps, FM = site key minus ui.) + legacy-key build matrix
+python3 scripts/check-site-markup.py --site exampleSite # consuming-site Goldmark prerequisites
 python3 scripts/check-output.py                      # HTML structure, duplicate IDs, bundle graph, output security (+ negative fixture)
 python3 scripts/check-goldens.py                     # four-state goldens (html / print / markdown / rss / llms) of exampleSite
 

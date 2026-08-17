@@ -6,7 +6,7 @@ Original design milestone: OINK 0.6.0
 
 Contract version: 2 (OINK 0.5/0.6 component API v5)
 
-Status: frozen for OINK v0.6.0 (version 1 remains the record of OINK v0.4.0)
+Status: frozen for OINK v0.5.0 (version 1 remains the record of OINK v0.4.0)
 
 Compatibility floor: Hugo Extended 0.160.1
 

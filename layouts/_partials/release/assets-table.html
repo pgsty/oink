@@ -6,7 +6,8 @@
 {{- if $grouped -}}
   {{- $groups = slice ".rpm" ".deb" ".apk" ".tar.gz" ".zip" ".exe / .msi" ".dmg / .pkg" "*" -}}
 {{- end -}}
-<div class="td-asset-list{{ if not $interactive }} td-asset-list--static{{ end }}"{{ if $interactive }} data-td-asset-list{{ end }}>
+<div class="td-asset-list{{ if not $interactive }} td-asset-list--static{{ end }}{{ with .class }} {{ . }}{{ end }}"{{ if $interactive }} data-td-asset-list{{ end }}
+  {{- range $name, $value := (.generic | default dict) }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
   {{- if $interactive }}
   <div class="td-asset-list__toolbar">
     <button class="td-asset-list__copy-all" type="button" data-td-asset-copy-all data-td-label-copy="{{ T "ui_assets_copy_all" }}" data-td-label-copied="{{ T "ui_assets_copied" }}" hidden>

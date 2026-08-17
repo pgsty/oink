@@ -102,18 +102,18 @@
     var session = 0;
     var delayedClose = false;
     var logicalOpen = false;
-    var maxResults = parseInt(root.dataset.maxResults, 10);
+    var maxResults = parseInt(root.dataset.tdMaxResults, 10);
     if (!Number.isFinite(maxResults) || maxResults < 1) maxResults = 10;
     var openers = document.querySelectorAll('[data-td-shell-search-open]');
     var lastOpener = null;
     var labels = {
-      actions: root.dataset.tActions || 'Actions',
-      commands: root.dataset.tCommands || 'Commands',
-      pageActions: root.dataset.tPageActions || 'Page actions',
-      preferences: root.dataset.tPreferences || 'Preferences',
-      choose: root.dataset.tChoice || 'Choose an option',
-      pages: root.dataset.tPages || 'Pages',
-      quickLinks: root.dataset.tQuickLinks || 'Quick links',
+      actions: root.dataset.tdTActions || 'Actions',
+      commands: root.dataset.tdTCommands || 'Commands',
+      pageActions: root.dataset.tdTPageActions || 'Page actions',
+      preferences: root.dataset.tdTPreferences || 'Preferences',
+      choose: root.dataset.tdTChoice || 'Choose an option',
+      pages: root.dataset.tdTPages || 'Pages',
+      quickLinks: root.dataset.tdTQuickLinks || 'Quick links',
     };
 
     function isOpen() {
@@ -126,7 +126,7 @@
     }
 
     function resultMessage(count) {
-      return (root.dataset.tResults || '{count} results').replace(
+      return (root.dataset.tdTResults || '{count} results').replace(
         '{count}', String(count),
       );
     }
@@ -165,7 +165,7 @@
       loading = true;
       var request = ++indexRequest;
       syncBusy();
-      fetch(root.dataset.indexSrc)
+      fetch(root.dataset.tdIndexSrc)
         .then(function (response) {
           if (!response.ok) throw new Error('Search index unavailable');
           return response.json();
@@ -455,21 +455,21 @@
       if (!raw || choiceState || commandOnly || engine || (loadFailed && !retryIndex)) {
         if (!actionCount) {
           message(loadFailed && !retryIndex && !commandOnly
-            ? (root.dataset.tIndexUnavailable || root.dataset.tEmpty || 'Page index unavailable')
+            ? (root.dataset.tdTIndexUnavailable || root.dataset.tdTEmpty || 'Page index unavailable')
             : commandOnly
-              ? (root.dataset.tNoCommands || root.dataset.tEmpty || 'No results')
-              : (root.dataset.tEmpty || 'No results'));
+              ? (root.dataset.tdTNoCommands || root.dataset.tdTEmpty || 'No results')
+              : (root.dataset.tdTEmpty || 'No results'));
         } else {
           renderGroups(groups, choiceState ? '' : (commandOnly ? raw.slice(1).trim() : raw));
           if (loadFailed && !retryIndex)
-            announce(root.dataset.tIndexUnavailable || resultMessage(rows.length));
+            announce(root.dataset.tdTIndexUnavailable || resultMessage(rows.length));
         }
         return;
       }
 
       // Normal search can still offer matching actions while the index loads.
       if (actionCount) renderGroups(groups, raw);
-      else message(root.dataset.tLoading || '…');
+      else message(root.dataset.tdTLoading || '…');
       ensureIndex();
     }
 
@@ -478,7 +478,7 @@
         var destination = row.ref || row.url;
         destination = registry.safeUrl ? registry.safeUrl(destination) : null;
         if (!destination)
-          return Promise.reject(new Error(root.dataset.tActionFailed || 'Unsafe link'));
+          return Promise.reject(new Error(root.dataset.tdTActionFailed || 'Unsafe link'));
         if (row.target === 'blank') {
           global.open(destination, '_blank', 'noopener,noreferrer');
           return Promise.resolve();
@@ -500,7 +500,7 @@
       var row = rows[index];
       if (!row) return;
       if (!row.available) {
-        announce(row.disabledReason || root.dataset.tActionFailed || 'Unavailable');
+        announce(row.disabledReason || root.dataset.tdTActionFailed || 'Unavailable');
         return;
       }
       var targetChoice = row.type === 'action' && row.action && row.action.kind === 'choice'
@@ -514,7 +514,7 @@
           command: row.type === 'command' ? row.command : null,
         };
         render(input.value);
-        announce(root.dataset.tChoice || 'Choose an option');
+        announce(root.dataset.tdTChoice || 'Choose an option');
         return;
       }
       if (pendingKey) return;
@@ -533,7 +533,7 @@
         if (result && result.requiresChoice) {
           choiceState = { action: result.action, command: result.command || null };
           render(input.value);
-          announce(root.dataset.tChoice || 'Choose an option');
+          announce(root.dataset.tdTChoice || 'Choose an option');
           return;
         }
         var completedInPlace = result && (
@@ -552,7 +552,7 @@
         if (activationSession !== session) return;
         announce(
           (error && error.message) ||
-          row.disabledReason || root.dataset.tActionFailed || 'Action failed',
+          row.disabledReason || root.dataset.tdTActionFailed || 'Action failed',
         );
       });
     }

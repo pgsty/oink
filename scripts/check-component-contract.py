@@ -157,7 +157,7 @@ def validate_docs(contract: dict[str, object]) -> None:
         "book": (
             "# Book contract",
             "Contract version: 2",
-            "Status: frozen for OINK v0.6.0",
+            "Status: frozen for OINK v0.5.0",
             "`eg`",
             "book-tables",
             "book-equations",

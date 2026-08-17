@@ -55,7 +55,7 @@ function fixture(storage = memoryStorage(), gtag) {
   reasons.hidden = true;
   const change = control();
   const root = control();
-  root.dataset = { pagePath: '/zh/docs/start/', language: 'zh' };
+  root.dataset = { tdPagePath: '/zh/docs/start/', tdLanguage: 'zh' };
   root.querySelector = (selector) => ({
     '[data-td-feedback-result]': result,
     '[data-td-feedback-reasons]': reasons,

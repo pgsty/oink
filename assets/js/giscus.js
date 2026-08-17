@@ -20,8 +20,8 @@
       ? siteTheme
       : colorScheme.matches ? 'dark' : 'light';
     return colorMode === 'dark'
-      ? resolveTheme(section.dataset.themeDark || 'dark')
-      : resolveTheme(section.dataset.themeLight || 'light');
+      ? resolveTheme(section.dataset.tdThemeDark)
+      : resolveTheme(section.dataset.tdThemeLight);
   };
 
   const setTheme = section => {
@@ -44,7 +44,7 @@
     section.setAttribute('aria-busy', 'false');
     const status = section.querySelector('[data-td-giscus-status]');
     if (!status) return;
-    status.textContent = section.dataset.errorMessage || 'Comments could not be loaded.';
+    status.textContent = section.dataset.tdErrorMessage || 'Comments could not be loaded.';
     status.classList.remove('d-none');
   };
 

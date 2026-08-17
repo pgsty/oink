@@ -28,8 +28,8 @@
       toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
       if (toggle.classList) toggle.classList.toggle('td-is-collapsed', collapsed);
       var label = collapsed
-        ? toggle.dataset.labelExpand
-        : toggle.dataset.labelCollapse;
+        ? toggle.dataset.tdLabelExpand
+        : toggle.dataset.tdLabelCollapse;
       if (label) {
         toggle.setAttribute('aria-label', label);
         toggle.setAttribute('title', label);

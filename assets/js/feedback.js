@@ -31,8 +31,8 @@
     var reasonChoices = Array.prototype.slice.call(
       root.querySelectorAll('[data-td-feedback-reason]'),
     );
-    var pagePath = data(root, 'pagePath') || '/';
-    var language = data(root, 'language') || 'en';
+    var pagePath = data(root, 'tdPagePath') || '/';
+    var language = data(root, 'tdLanguage') || 'en';
     var storageKey = 'td-feedback:v2:' + language + ':' + pagePath;
     var response = null;
 

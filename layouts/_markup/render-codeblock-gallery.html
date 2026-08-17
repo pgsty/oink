@@ -47,7 +47,9 @@
   {{- end -}}
   {{- $rows = $rows | append (printf `<li class="%s">%s</li>` (delimit $itemClasses " ") $body) -}}
 {{- end -}}
-{{- $html := printf `<ul class="%s">%s</ul>` (delimit $classes " ") (delimit $rows "") -}}
+{{- $genericAttrs := "" -}}
+{{- range $name, $value := $policy.generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $name (htmlEscape $value) }}{{ end -}}
+{{- $html := printf `<ul class="%s"%s>%s</ul>` (delimit $classes " ") $genericAttrs (delimit $rows "") -}}
 
 {{- if $tab -}}
   {{- partial "content/tab-block.html" (dict

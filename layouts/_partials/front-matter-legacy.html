@@ -26,8 +26,8 @@
   {{- end -}}
 {{- end -}}
 
-{{- if in (printf "%v" ($params.body_class | default "")) "td-no-left-sidebar" -}}
-  {{- errorf "front matter body_class td-no-left-sidebar was removed: use ui.sidebar_enabled: false at %s" $path -}}
+{{- if findRE `(?:^|\s)td-no-left-sidebar(?:\s|$)` (printf "%v" ($params.body_class | default "")) -}}
+  {{- errorf "front matter body_class td-no-left-sidebar was removed: use sidebar_enabled: false at %s" $path -}}
 {{- end -}}
 
 {{- if and (isset $params "annotation") (reflect.IsMap $params.annotation) -}}
@@ -38,11 +38,13 @@
      key without its `ui.` prefix (`section_index: cards`, not
      `params.ui.section_index`), and the switches that changed shape are
      named explicitly so the message says what to write. */ -}}
-{{- with $params.ui -}}
-  {{- $ui := . -}}
+{{- if isset $params "ui" -}}
+  {{- $ui := index $params "ui" -}}
   {{- if not (reflect.IsMap $ui) -}}
     {{- errorf "front matter ui is not a page key: page overrides are the site key without ui. at %s" $path -}}
-  {{- end -}}
+  {{- else if eq (len $ui) 0 -}}
+    {{- errorf "front matter ui is not a page key: remove the empty map at %s" $path -}}
+  {{- else -}}
   {{- $renamed := dict
     "image_zoom"         "image_zoom: true | false"
     "annotation"         "annotation: true | false"
@@ -65,6 +67,7 @@
       {{- if eq (lower $old) $key }}{{ $hint = $new }}{{ end -}}
     {{- end -}}
     {{- errorf "front matter ui.%s is not a page key: use %s at %s" $key $hint $path -}}
+  {{- end -}}
   {{- end -}}
 {{- end -}}
 

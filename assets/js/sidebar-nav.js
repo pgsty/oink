@@ -51,8 +51,8 @@
       );
       if (toggle) {
         toggle.setAttribute('aria-expanded', 'true');
-        if (toggle.dataset.labelCollapse) {
-          toggle.setAttribute('aria-label', toggle.dataset.labelCollapse);
+        if (toggle.dataset.tdLabelCollapse) {
+          toggle.setAttribute('aria-label', toggle.dataset.tdLabelCollapse);
         }
         var target = document.getElementById(
           toggle.getAttribute('aria-controls'),

@@ -14,8 +14,8 @@
     var label = button.querySelector('[data-td-page-copy-label]');
     button.classList.add('td-is-copied');
     if (label && !label.dataset.original) label.dataset.original = label.textContent;
-    if (label) label.textContent = root.dataset.tCopied || label.textContent;
-    announce(root, root.dataset.tCopied || 'Copied');
+    if (label) label.textContent = root.dataset.tdTCopied || label.textContent;
+    announce(root, root.dataset.tdTCopied || 'Copied');
     window.setTimeout(function () {
       button.classList.remove('td-is-copied');
       if (label && label.dataset.original) label.textContent = label.dataset.original;
@@ -28,7 +28,7 @@
   }
 
   document.querySelectorAll('[data-td-action]').forEach(function (control) {
-    var id = control.dataset.oinkAction;
+    var id = control.dataset.tdAction;
     var action = window.OinkActions.get(id);
     if (!action || !action.available) return;
     var root = control.closest('[data-td-page-context]');
@@ -51,7 +51,7 @@
         window.OinkActions.run(id, { source: 'page' })
           .then(function () { showCopied(feedback, root); })
           .catch(function () {
-            announce(root, (root && root.dataset.tCopyError) || 'Copy failed');
+            announce(root, (root && root.dataset.tdTCopyError) || 'Copy failed');
           });
       });
     } else if (id === 'print') {

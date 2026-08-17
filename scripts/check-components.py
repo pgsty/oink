@@ -145,7 +145,9 @@ def check_callout_matrix(hugo: str) -> list[str]:
                 "> [!DETAILS]+ Open details\n> - item\n\n"
                 "> [!WARNING]- Folded warning\n> hidden body\n\n"
                 "> plain quote without a marker\n\n"
-                "> [!tip] lowercase marker\n> still a tip\n"
+                "> [!tip] lowercase marker\n> still a tip\n\n"
+                "> [!MYSTERY] Unknown attributes\n> body\n"
+                '{data-fixture="unknown-callout" aria-label="Unknown callout"}\n'
             ),
         },
         prefix="oink-components-callouts-",
@@ -164,6 +166,7 @@ def check_callout_matrix(hugo: str) -> list[str]:
             '<details class="td-callout td-callout--warning td-callout--collapsible">',
             "<blockquote>\n<p>plain quote without a marker</p>\n</blockquote>",
             '<div class="td-callout td-callout--tip" role="note">',
+            '<blockquote aria-label="Unknown callout" data-fixture="unknown-callout">',
         ):
             require(marker in html, f"callout matrix HTML missing {marker}", errors)
         for marker in (
@@ -185,11 +188,14 @@ def check_data_fences(hugo: str) -> list[str]:
             "docs/_index.md": "---\ntitle: Docs\n---\n",
             "docs/fences.md": (
                 "---\ntitle: Data fences\n---\n\n"
-                "```echarts {height=\"240px\" theme=\"dark\" full=true class=\"site-chart\"}\n"
+                "```echarts {height=\"240px\" theme=\"dark\" full=true class=\"site-chart\" data-fixture=\"chart\" aria-label=\"Chart\"}\n"
                 '{"series": [{"type": "line", "data": [1, 2]}]}\n'
                 "```\n\n"
-                "```infographic {height=\"300px\"}\n"
+                "```infographic {height=\"300px\" data-fixture=\"infographic\" aria-label=\"Infographic\"}\n"
                 "infographic list-row-simple-horizontal-arrow\n"
+                "```\n\n"
+                '```checksums {base="https://example.org/downloads" class="site-assets" data-fixture="assets" aria-label="Checksums"}\n'
+                + "a" * 64 + "  package.rpm\n"
                 "```\n\n"
                 "```mermaid\ngraph TD; A-->B;\n```\n"
             ),
@@ -207,12 +213,13 @@ def check_data_fences(hugo: str) -> list[str]:
         markdown = (destination / "docs/fences/index.md").read_text()
         for marker in (
             'class="td-echarts site-chart"',
-            'data-td-echarts data-theme="dark">',
+            'data-td-echarts data-theme="dark" aria-label="Chart" data-fixture="chart">',
             '<div data-td-echarts-canvas style="height: 240px"></div>',
             '<script type="application/json" data-td-echarts-options>{"series":[{"data":[1,2],"type":"line"}]}</script>',
             'class="td-infographic td-max-width-on-larger-screens"',
-            'data-td-infographic data-height="300px">',
+            'data-td-infographic data-td-height="300px" aria-label="Infographic" data-fixture="infographic">',
             '<script type="application/json" data-td-infographic-syntax>"infographic list-row-simple-horizontal-arrow"</script>',
+            'class="td-asset-list site-assets" data-td-asset-list aria-label="Checksums" data-fixture="assets">',
             '<pre class="mermaid">',
         ):
             require(marker in html, f"data fence HTML missing {marker}", errors)
@@ -220,7 +227,7 @@ def check_data_fences(hugo: str) -> list[str]:
         for marker in ('<pre class="td-echarts-source"><code class="language-echarts">', '<pre class="td-infographic-source"><code class="language-infographic">'):
             require(marker in rss, f"data fence RSS lost {marker}", errors)
         require("data-td-echarts" not in rss and "data-td-infographic" not in rss, "RSS rendered a chart runtime container", errors)
-        require('```echarts {height="240px" theme="dark" full=true class="site-chart"}' in markdown and "```infographic" in markdown, "data fence Markdown lost the source fences", errors)
+        require('```echarts {height="240px" theme="dark" full=true class="site-chart" data-fixture="chart" aria-label="Chart"}' in markdown and "```infographic" in markdown, "data fence Markdown lost the source fences", errors)
 
     invalid = (
         ("echarts-invalid-yaml", '```echarts\n{"series": [\n```\n', "not valid JSON/YAML"),
@@ -228,8 +235,10 @@ def check_data_fences(hugo: str) -> list[str]:
         ("echarts-empty", "```echarts\n\n```\n", "requires JSON or YAML options"),
         ("echarts-unknown-attr", '```echarts {width="10px"}\nseries: []\n```\n', "unknown attribute"),
         ("echarts-height", '```echarts {height="wide"}\nseries: []\n```\n', "not a safe CSS length"),
+        ("echarts-full", '```echarts {full="yes"}\nseries: []\n```\n', "full must be true or false"),
         ("infographic-empty", "```infographic\n\n```\n", "requires DSL content"),
         ("infographic-height", '```infographic {height="tall"}\nx\n```\n', "not auto or a safe CSS length"),
+        ("infographic-full", '```infographic {full="yes"}\nx\n```\n', "full must be true or false"),
         ("checksums-no-base", "```checksums\n" + "a" * 64 + "  file.rpm\n```\n", "base is required unless the page has release front matter"),
         ("checksums-bad-algo", '```checksums {base="https://example.org/dl/" algo="crc"}\n' + "a" * 64 + "  file.rpm\n```\n", "algo must be md5, sha1, sha256, or sha512"),
         ("checksums-bad-group", '```checksums {base="https://example.org/dl/" group="yes"}\n' + "a" * 64 + "  file.rpm\n```\n", "group must be auto"),
@@ -282,6 +291,50 @@ def check_steps_container(hugo: str) -> list[str]:
     return errors
 
 
+def check_openapi(hugo: str) -> list[str]:
+    """Multiple Swagger/ReDoc instances stay isolated and reject old raw options."""
+    errors: list[str] = []
+    result, destination, temp = build_site(
+        hugo,
+        {
+            "docs/_index.md": "---\ntitle: Docs\n---\n",
+            "docs/openapi.md": (
+                "---\ntitle: OpenAPI\n---\n\n"
+                '{{< swagger src="/spec-a.yaml" >}}\n'
+                '{{< swagger src="/spec-b.yaml" >}}\n'
+                '{{< redoc "/spec-a.yaml" >}}\n'
+                '{{< redoc "/spec-b.yaml" >}}\n'
+            ),
+        },
+        prefix="oink-components-openapi-",
+    )
+    with temp:
+        if result.returncode != 0:
+            errors.append(f"OpenAPI fixture failed to build: {result.stdout}{result.stderr}")
+        else:
+            html = (destination / "docs/openapi/index.html").read_text()
+            ids = re.findall(r'id="(td-(?:swagger|redoc)-[^"]+)"', html)
+            require(len(ids) == 4 and len(set(ids)) == 4, f"OpenAPI instance IDs are not unique: {ids}", errors)
+            require("window.onload" not in html and "window.ui" not in html, "Swagger replaces global page state", errors)
+            require(html.count("SwaggerUIBundle({") == 2, "Swagger did not initialize both instances", errors)
+
+    invalid = (
+        ("swagger-missing-src", "{{< swagger >}}", "requires named parameter src"),
+        ("redoc-extra-options", '{{< redoc "/spec.yaml" `theme="dark"` >}}', "requires exactly one positional"),
+    )
+    for name, body, expected in invalid:
+        result, _destination, temp = build_site(
+            hugo,
+            {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}\n"},
+            prefix=f"oink-components-{name}-",
+        )
+        with temp:
+            output = result.stdout + result.stderr
+            require(result.returncode != 0, f"invalid OpenAPI case {name} unexpectedly built", errors)
+            require(expected in output, f"invalid OpenAPI case {name} did not report {expected!r}: {output[-400:]}", errors)
+    return errors
+
+
 def check_removed_shortcodes(hugo: str) -> list[str]:
     errors: list[str] = []
     for name in REMOVED_SHORTCODES:
@@ -300,7 +353,7 @@ def check_i18n() -> list[str]:
     # Callout labels are namespaced (`callout_note`, …): the theme must not
     # claim bare top-level keys such as `note` or `example` that a consuming
     # site is just as likely to want.
-    keys = ["ui_tabs_label", "ui_table_scroll", "book_example", "book_figure", "book_table", "book_equation"]
+    keys = ["ui_tabs_label", "ui_table_scroll", "ui_field_self_link", "book_example", "book_figure", "book_table", "book_equation"]
     keys += [f"callout_{t}" for t in CANONICAL_TYPES]
     keys += ["callout_details"]
     for path in sorted((ROOT / "i18n").glob("*.yaml")):
@@ -321,9 +374,9 @@ def check_template_contracts() -> list[str]:
         require(marker in hook, f"render-blockquote-alert.html lacks {marker}", errors)
     require("nb" not in re.sub(r'\{\{-?\s*/\*.*?\*/\s*-?\}\}', "", hook, flags=re.S), "the nb callout special case survived", errors)
     for name, markers in {
-        "render-codeblock-echarts.html": ('partial "content/attributes.html"', '(slice "height" "theme" "full")', "transform.Unmarshal", "reflect.IsMap", "td-echarts-source", 'Store.Set "hasEcharts" true'),
-        "render-codeblock-infographic.html": ('(slice "height" "full")', "td-infographic-source", 'Store.Set "hasInfographic" true'),
-        "render-codeblock-checksums.html": ('(slice "base" "algo" "group")', 'partial "release/assets-parse.html"', 'partial "release/assets-table.html"', 'partial "release/assets-markdown.html"', "base is required unless the page has release front matter"),
+        "render-codeblock-echarts.html": ('partial "content/attributes.html"', '(slice "height" "theme" "full")', "$policy.generic", "full must be true or false", "transform.Unmarshal", "reflect.IsMap", "td-echarts-source", 'Store.Set "hasEcharts" true'),
+        "render-codeblock-infographic.html": ('(slice "height" "full")', "$policy.generic", "full must be true or false", "td-infographic-source", 'Store.Set "hasInfographic" true'),
+        "render-codeblock-checksums.html": ('(slice "base" "algo" "group")', '"generic" $policy.generic', 'partial "release/assets-parse.html"', 'partial "release/assets-table.html"', 'partial "release/assets-markdown.html"', "base is required unless the page has release front matter"),
     }.items():
         source = (ROOT / "layouts/_markup" / name).read_text()
         for marker in markers:
@@ -355,6 +408,7 @@ def main() -> int:
         + check_callout_matrix(args.hugo)
         + check_data_fences(args.hugo)
         + check_steps_container(args.hugo)
+        + check_openapi(args.hugo)
         + check_removed_shortcodes(args.hugo)
         + check_i18n()
         + check_template_contracts()

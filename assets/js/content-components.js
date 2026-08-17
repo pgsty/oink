@@ -64,7 +64,7 @@
         if (timer && !timer.getAttribute('aria-label')) {
           timer.setAttribute(
             'aria-label',
-            root.dataset.timerLabel || 'Playback time',
+            root.dataset.tdTimerLabel || 'Playback time',
           );
         }
       }
@@ -152,7 +152,7 @@
       var chart = new window.AntVInfographic.Infographic({
         container: '#' + target.id,
         width: target.offsetWidth || '100%',
-        height: root.getAttribute('data-height') || 'auto',
+        height: root.getAttribute('data-td-height') || 'auto',
       });
       chart.render(syntax);
     } catch (error) {

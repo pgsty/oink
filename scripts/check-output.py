@@ -20,9 +20,11 @@ Over the built exampleSite (--public, default exampleSite/public):
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -46,6 +48,8 @@ class Structure(HTMLParser):
         self.bundles: list[str] = []
         self.cores: list[str] = []
         self.actions: list[str] = []
+        self.action_lines: list[int] = []
+        self.manifest_lines: list[int] = []
         self.remote: list[str] = []
         self.in_template = 0
 
@@ -58,11 +62,14 @@ class Structure(HTMLParser):
         ident = attrs.get("id")
         if ident and not self.in_template:
             self.ids[ident] = self.ids.get(ident, 0) + 1
+        if tag == "script" and ident == "td-action-manifest":
+            self.manifest_lines.append(self.getpos()[0])
         if tag == "script" and attrs.get("src"):
             src = attrs["src"]
             clean = src.split("?", 1)[0]
             if re.search(r"/js/actions(?:\.min\.[0-9a-f]{64})?\.js$", clean):
                 self.actions.append(src)
+                self.action_lines.append(self.getpos()[0])
             if re.search(r"/js/core(?:\.min\.[0-9a-f]{64})?\.js$", clean):
                 self.cores.append(src)
             if re.search(r"/js/page-[0-9a-f]{32}(?:\.min\.[0-9a-f]{64})?\.js$", clean):
@@ -120,6 +127,13 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         # one shared core exactly once and at most one feature bundle.
         if len(parser.actions) != 1:
             errors.append(f"{rel}: expected exactly one actions bundle, found {len(parser.actions)}")
+        if len(parser.manifest_lines) != 1:
+            errors.append(f"{rel}: expected exactly one action manifest, found {len(parser.manifest_lines)}")
+        elif parser.action_lines and parser.manifest_lines[0] >= parser.action_lines[0]:
+            errors.append(
+                f"{rel}: action manifest line {parser.manifest_lines[0]} must precede "
+                f"the actions bundle at line {parser.action_lines[0]}"
+            )
         expected_cores = 0 if "/_print/" in f"/{rel}" else 1
         if len(parser.cores) != expected_cores:
             errors.append(f"{rel}: expected {expected_cores} core bundle(s), found {len(parser.cores)}: {parser.cores[:3]}")
@@ -154,6 +168,57 @@ def check_security(public: Path) -> list[str]:
     return errors
 
 
+def check_config_image_policy(hugo: str) -> list[str]:
+    """Configured shell images must reach the same URL policy as content."""
+
+    errors: list[str] = []
+    cases = (
+        (
+            "wordmark",
+            {"HUGOxPARAMSxWORDMARK": "//evil.example/wordmark.svg"},
+            "wordmark must not use a protocol-relative URL",
+        ),
+        (
+            "logo-without-footer",
+            {
+                "HUGOxPARAMSxLOGO": "//evil.example/logo.svg",
+                "HUGOxPARAMSxUIxFOOTER_STYLE": "none",
+            },
+            "logo must not use a protocol-relative URL",
+        ),
+        (
+            "default-featured",
+            {"HUGOxPARAMSxDEFAULT_FEATURED": "//evil.example/featured.svg"},
+            "src must not use a protocol-relative URL",
+        ),
+    )
+    for name, overrides, expected in cases:
+        with tempfile.TemporaryDirectory(prefix=f"oink-output-{name}-") as temp:
+            environment = {**os.environ, **overrides}
+            result = subprocess.run(
+                [
+                    hugo,
+                    "--source",
+                    str(EXAMPLE),
+                    "--destination",
+                    str(Path(temp) / "public"),
+                    "--logLevel",
+                    "warn",
+                ],
+                cwd=ROOT,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            output = result.stdout + result.stderr
+            if result.returncode == 0:
+                errors.append(f"configured image case {name} unexpectedly built")
+            elif expected not in output:
+                errors.append(f"configured image case {name} did not report {expected!r}: {output[-400:]}")
+    return errors
+
+
 def self_test() -> list[str]:
     """The structure parser must catch what it claims to catch."""
     errors: list[str] = []
@@ -173,12 +238,13 @@ def self_test() -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
-    parser.add_argument("--hugo", default="hugo", help="unused; kept for the shared checker CLI shape")
+    parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
     errors = self_test()
     html_errors, bundles = check_html(args.public)
     errors += html_errors
     errors += check_security(args.public)
+    errors += check_config_image_policy(args.hugo)
     if errors:
         print("Output checks failed:")
         for error in errors:

@@ -1,5 +1,6 @@
 {{- /* Render an RSS-safe summary without crossing a manual summary divider. */ -}}
 {{- $page := . -}}
+{{- partial "front-matter-legacy.html" $page -}}
 {{- $markup := $page.Markup "td-rss-summary" -}}
 {{- $render := $markup.Render -}}
 {{- $summary := $render.Summary -}}

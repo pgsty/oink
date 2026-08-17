@@ -498,7 +498,7 @@ def check_field_parity(html: str) -> list[str]:
         '<div class="td-fields site-fields" id="sc-fields" data-fixture="shortcode">',
         '<div class="td-field" id="field-alpha">',
         '<div class="td-field" id="field-alpha-2">',
-        '<a class="td-heading-self-link td-field__self-link" href="#field-alpha" aria-label="Field self-link"></a>',
+        '<a class="td-heading-self-link td-field__self-link" href="#field-alpha" aria-label="Link to this field"></a>',
     ):
         require(marker in html, f"fields parity fixture missing {marker}", errors)
     return errors
@@ -782,7 +782,7 @@ def check_template_contracts() -> list[str]:
     for marker in (".td-filetree", "--td-filetree-name-col", "--td-filetree-indent: 2.5ch", "clamp(50%, var(--td-filetree-name-col), 70%)", ".td-filetree__divider", ".td-filetree__details[open]", ".td-filetree--static", ".td-filetree--plain", "@media print", "@media (forced-colors: active)", "[dir='rtl']", "media-breakpoint-down(sm)"):
         require(marker in filetree_styles, f"_filetree.scss lacks {marker}", errors)
     filetree_hook = (ROOT / "layouts/_markup/render-codeblock-filetree.html").read_text()
-    for marker in ('partial "content/attributes.html"', 'partial "content/filetree-parse.html"', 'partial "content/filetree-icon.html"', 'partial "content/tab-block.html"', "td-filetree--static", "td-filetree-source", "```filetree", '$page.Store.Set "hasFileTree" true', 'role="separator"', 'T "ui_filetree_divider"'):
+    for marker in ('partial "content/attributes.html"', "$policy.generic", 'partial "content/filetree-parse.html"', 'partial "content/filetree-icon.html"', 'partial "content/tab-block.html"', "td-filetree--static", "td-filetree-source", "```filetree", '$page.Store.Set "hasFileTree" true', 'role="separator"', 'T "ui_filetree_divider"'):
         require(marker in filetree_hook, f"render-codeblock-filetree.html lacks {marker}", errors)
     scripts_html = (ROOT / "layouts/_partials/scripts.html").read_text()
     require('.Page.Store.Get "hasFileTree"' in scripts_html and 'resources.Get "js/filetree.js"' in scripts_html and "$hasFileTree -}}" in scripts_html and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts_html, "scripts.html does not load filetree.js on hasFileTree (and key the bundle on it)", errors)

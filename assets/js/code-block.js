@@ -93,7 +93,7 @@
   };
 
   const updateCopyControl = (button, state, label) => {
-    button.dataset.state = state;
+    button.dataset.tdState = state;
     button.setAttribute('aria-label', label);
     button.setAttribute('title', label);
     const icon = button.querySelector('i');
@@ -126,18 +126,18 @@
   const resetCopyControl = (button) => {
     const timer = resetTimers.get(button);
     if (timer) window.clearTimeout(timer);
-    const label = button.dataset.labelCopy || 'Copy code';
+    const label = button.dataset.tdLabelCopy || 'Copy code';
     button.disabled = false;
     if (controlStaysVisible(button)) {
       updateCopyControl(button, 'idle', label);
       return;
     }
-    button.dataset.state = 'idle';
+    button.dataset.tdState = 'idle';
     resetTimers.set(
       button,
       window.setTimeout(() => {
         // A new copy may have started during the fade; leave its state alone.
-        if (button.dataset.state === 'idle') {
+        if (button.dataset.tdState === 'idle') {
           updateCopyControl(button, 'idle', label);
         }
       }, 240),
@@ -154,15 +154,15 @@
     if (status) status.textContent = '';
     try {
       const text =
-        button.dataset.copyMode === 'command'
+        button.dataset.tdCopyMode === 'command'
           ? extractCommands(code)
           : extractAll(code);
       await writeClipboard(text);
-      const label = button.dataset.labelCopied || 'Copied';
+      const label = button.dataset.tdLabelCopied || 'Copied';
       updateCopyControl(button, 'success', label);
       if (status) status.textContent = label;
     } catch (error) {
-      const label = button.dataset.labelError || 'Copy failed';
+      const label = button.dataset.tdLabelError || 'Copy failed';
       updateCopyControl(button, 'error', label);
       if (status) status.textContent = label;
       console.error('OINK code block: unable to copy code:', error);
@@ -180,7 +180,7 @@
   };
 
   const setCollapsedFocus = (root, collapsed) => {
-    const limit = Number.parseInt(root.dataset.collapseLines || '', 10);
+    const limit = Number.parseInt(root.dataset.tdCollapseLines || '', 10);
     if (!limit) return;
     // Keep the complete source in the accessibility tree, but do not leave
     // clipped line anchors in the keyboard tab order.
@@ -211,7 +211,7 @@
   };
 
   function measureCollapse(root) {
-    const limit = Number.parseInt(root.dataset.collapseLines || '', 10);
+    const limit = Number.parseInt(root.dataset.tdCollapseLines || '', 10);
     const viewport = root.querySelector('[data-td-code-viewport]');
     const button = root.querySelector('[data-td-code-expand]');
     if (!limit || !viewport || !button || root.offsetParent === null) return;
@@ -257,8 +257,8 @@
     }
 
     const label = expanded
-      ? button.dataset.labelCollapse
-      : button.dataset.labelExpand;
+      ? button.dataset.tdLabelCollapse
+      : button.dataset.tdLabelExpand;
     const text = button.querySelector('span');
     if (text && label) text.textContent = label;
     button.setAttribute('aria-expanded', String(expanded));

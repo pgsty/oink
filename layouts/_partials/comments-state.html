@@ -5,22 +5,29 @@ of truth for activation and legacy Disqus fallback. */ -}}
        shorthand `comments: true|false`. */ -}}
 {{- $raw := .Site.Params.comments -}}
 {{- $comments := dict -}}
-{{- $enabledValue := false -}}
+{{- $enabledValue := partial "config-enabled.html" (dict "value" $raw "key" "params.comments") -}}
 {{- if reflect.IsMap $raw -}}
   {{- $comments = $raw -}}
-  {{- $enabledValue = index $comments "enable" | default false -}}
-{{- else if ne $raw nil -}}
-  {{- $enabledValue = $raw -}}
 {{- end -}}
 {{- $pageOverride := isset .Params "comments" -}}
 {{- if $pageOverride -}}
   {{- $enabledValue = .Params.comments -}}
+  {{- if ne (printf "%T" $enabledValue) "bool" -}}
+    {{- errorf "front matter comments must be a boolean; got %v at %s" $enabledValue .Path -}}
+  {{- end -}}
 {{- end -}}
 {{- $enabledText := printf "%v" $enabledValue | lower -}}
 {{- $enabled := or (eq $enabledText "true") (eq $enabledText "1") -}}
 
-{{- $commentType := index $comments "type" | default "" | lower -}}
+{{- $commentTypeValue := index $comments "type" | default "" -}}
+{{- if ne (printf "%T" $commentTypeValue) "string" -}}
+  {{- errorf "params.comments.type must be a string; got %v" $commentTypeValue -}}
+{{- end -}}
+{{- $commentType := lower $commentTypeValue -}}
 {{- $giscus := index $comments "giscus" | default dict -}}
+{{- if not (reflect.IsMap $giscus) -}}
+  {{- errorf "params.comments.giscus must be a map; got %v" $giscus -}}
+{{- end -}}
 {{- $missing := slice -}}
 {{- $required := slice
   (dict "key" "repo" "label" "repo")

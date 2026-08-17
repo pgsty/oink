@@ -41,7 +41,8 @@
 {{- if not (in $canonical $type) -}}
   {{- /* Unknown type: plain blockquote, marker kept visible so nothing is lost. */ -}}
   {{- $marker := printf "[!%s]%s" (upper $type) $sign -}}
-<blockquote{{ with $policy.class }} class="{{ . }}"{{ end }}>
+<blockquote{{ with $policy.class }} class="{{ . }}"{{ end }}
+  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
 <p>{{ $marker }}{{ with .AlertTitle }} {{ . }}{{ end }}</p>
 {{ .Text }}
 </blockquote>

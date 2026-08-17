@@ -381,8 +381,8 @@
           button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
           target.classList.toggle('td-is-open', expanded);
           var label = expanded
-            ? button.dataset.labelCollapse
-            : button.dataset.labelExpand;
+            ? button.dataset.tdLabelCollapse
+            : button.dataset.tdLabelExpand;
           if (label) button.setAttribute('aria-label', label);
         }
 
@@ -474,8 +474,8 @@
           );
           target.classList.toggle('td-is-open', shouldExpand);
           var label = shouldExpand
-            ? button.dataset.labelCollapse
-            : button.dataset.labelExpand;
+            ? button.dataset.tdLabelCollapse
+            : button.dataset.tdLabelExpand;
           if (label) button.setAttribute('aria-label', label);
         });
     }

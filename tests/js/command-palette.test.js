@@ -72,7 +72,7 @@ class Element {
     const visit = (node) => {
       if (selector === '[role="option"]' && node.getAttribute && node.getAttribute('role') === 'option')
         found.push(node);
-      if (selector === '[data-td-shell-search-close]' && node.dataset.searchClose)
+      if (selector === '[data-td-shell-search-close]' && node.dataset.tdShellSearchClose)
         found.push(node);
       if (selector === '[tabindex]:not([tabindex="-1"])' && node.getAttribute && node.getAttribute('tabindex') !== '-1')
         found.push(node);
@@ -99,19 +99,19 @@ function setup({ controlledAnimationFrame = false } = {}) {
   const panel = new Element();
   const status = new Element();
   const close = new Element('button');
-  close.dataset.searchClose = 'true';
+  close.dataset.tdShellSearchClose = 'true';
   panel.appendChild(input);
   panel.appendChild(list);
   panel.appendChild(close);
   root.appendChild(panel);
   root.hidden = true;
   root.dataset = {
-    indexSrc: '/index.json', maxResults: '10',
-    tEmpty: 'No results', tLoading: 'Loading', tResults: '{count} results',
-    tActions: 'Actions', tPageActions: 'Page actions',
-    tPreferences: 'Preferences', tCommands: 'Commands',
-    tQuickLinks: 'Quick links', tChoice: 'Choose',
-    tNoCommands: 'No commands', tActionFailed: 'Failed', tPages: 'Pages',
+    tdIndexSrc: '/index.json', tdMaxResults: '10',
+    tdTEmpty: 'No results', tdTLoading: 'Loading', tdTResults: '{count} results',
+    tdTActions: 'Actions', tdTPageActions: 'Page actions',
+    tdTPreferences: 'Preferences', tdTCommands: 'Commands',
+    tdTQuickLinks: 'Quick links', tdTChoice: 'Choose',
+    tdTNoCommands: 'No commands', tdTActionFailed: 'Failed', tdTPages: 'Pages',
   };
   root.querySelector = (selector) => ({
     '.td-shell-search__input': input,

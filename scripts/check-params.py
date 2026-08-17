@@ -165,7 +165,10 @@ LEGACY_PAGE_CASES = [
     ("manualLinkTitle: Example", "manual_link_title"),
     ("manualLinkTarget: _blank", "manual_link_target"),
     ("manualLinkRelref: /docs/", "manual_link_relref"),
-    ("body_class: td-no-left-sidebar", "ui.sidebar_enabled: false"),
+    ("body_class: td-no-left-sidebar", "sidebar_enabled: false"),
+    ("ui: false", "front matter ui is not a page key"),
+    ("ui: {}", "remove the empty map"),
+    ("outputs: [markdown]\nhide_feedback: true", "feedback: false"),
 ]
 
 # The converged shapes must build; the bare-boolean shorthand of every kept
@@ -178,6 +181,16 @@ ACCEPTED_SITE_CASES = [
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide",
     "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
+    "body_class: product-td-no-left-sidebar-preview",
+]
+
+INVALID_SITE_CASES = [
+    ("comments: definitely", "params.comments must be a boolean or a map"),
+    ("comments:\n  enable: definitely", "params.comments.enable must be a boolean"),
+    ("comments:\n  type: true", "params.comments.type must be a string"),
+]
+INVALID_PAGE_CASES = [
+    ("comments: definitely", "front matter comments must be a boolean"),
 ]
 
 
@@ -387,6 +400,18 @@ def check_legacy_registries() -> list[str]:
         require(re.search(rf"\b{key}\b", page_registry) is not None, f"front-matter-legacy.html does not register {key}", errors)
     require('partialCached "config-legacy.html"' in (ROOT / "layouts/_partials/head.html").read_text(), "head.html no longer runs config-legacy.html", errors)
     require('partial "front-matter-legacy.html"' in (ROOT / "layouts/_partials/head.html").read_text(), "head.html no longer runs front-matter-legacy.html", errors)
+    for relative in (
+        "layouts/all.md",
+        "layouts/landing.md",
+        "layouts/landing.rss.xml",
+        "layouts/_partials/content/rss-description.html",
+        "layouts/_partials/print/page-content.html",
+    ):
+        require(
+            'partial "front-matter-legacy.html"' in (ROOT / relative).read_text(),
+            f"{relative} does not validate front matter for its output",
+            errors,
+        )
     require(
         'partialCached "config-legacy.html"' in (ROOT / "layouts/_partials/typography-preset.html").read_text(),
         "typography-preset.html runs before head.html and must trigger config-legacy.html first",
@@ -436,6 +461,10 @@ def check_builds(hugo: str) -> list[str]:
         jobs.append((f"ok-site-{index}", fragment, "", None))
     for index, fragment in enumerate(ACCEPTED_PAGE_CASES):
         jobs.append((f"ok-page-{index}", "", fragment, None))
+    for index, (fragment, expected) in enumerate(INVALID_SITE_CASES):
+        jobs.append((f"invalid-site-{index}", fragment, "", expected))
+    for index, (fragment, expected) in enumerate(INVALID_PAGE_CASES):
+        jobs.append((f"invalid-page-{index}", "", fragment, expected))
 
     def run(job: tuple[str, str, str, str | None]) -> tuple[tuple[str, str, str, str | None], str]:
         return job, build_case(hugo, job[0], job[1], job[2])

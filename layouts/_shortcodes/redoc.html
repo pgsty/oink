@@ -1,8 +1,13 @@
-{{- /* Embed a ReDoc specification. Positional: spec path/URL, extra options. */ -}}
+{{- /* Embed a ReDoc specification. Positional: one spec path/URL. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
+{{- if ne (len .Params) 1 -}}
+  {{- errorf "shortcode %q requires exactly one positional spec path or URL at %s" .Name .Position -}}
+{{- end -}}
 {{- $file := .Get 0 -}}
+{{- if ne (printf "%T" $file) "string" }}{{ errorf "shortcode %q: spec must be a string at %s" .Name .Position }}{{ end -}}
+{{- $file = strings.TrimSpace $file -}}
+{{- if not $file }}{{ errorf "shortcode %q: spec must not be empty at %s" .Name .Position }}{{ end -}}
 {{- $url := "" -}}
-{{- $otheroptions := .Get 1 -}}
 {{- .Page.Store.Set "hasRedoc" true -}}
 
 {{- if hasPrefix $file "http" -}}
@@ -24,7 +29,8 @@
   .td-redoc img[alt="redocly logo"] { display: none; }
   .td-redoc a[href="https://redocly.com/redoc/"] { display: none; }
 </style>
-<div id="redoc-container" class="td-redoc">
+{{- $id := printf "td-redoc-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
+<div id="{{ $id }}" class="td-redoc">
   <redoc spec-url="{{ $url }}" hide-hostname="true" hide-logo="true"
-    suppress-warnings="true" lazy-rendering native-scrollbars {{ $otheroptions }}></redoc>
+    suppress-warnings="true" lazy-rendering native-scrollbars></redoc>
 </div>

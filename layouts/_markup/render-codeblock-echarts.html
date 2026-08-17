@@ -8,7 +8,9 @@
 {{- $height := index $policy.consumed "height" | default "400px" -}}
 {{- if not (findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $height) }}{{ errorf "echarts: height %q is not a safe CSS length at %s" $height .Position }}{{ end -}}
 {{- $theme := index $policy.consumed "theme" | default "" -}}
-{{- $full := eq (lower (index $policy.consumed "full" | default "false")) "true" -}}
+{{- $fullValue := lower (index $policy.consumed "full" | default "false") -}}
+{{- if not (in (slice "true" "false") $fullValue) }}{{ errorf "echarts: full must be true or false; got %q at %s" $fullValue .Position }}{{ end -}}
+{{- $full := eq $fullValue "true" -}}
 {{- $config := strings.TrimSpace .Inner -}}
 {{- if not $config }}{{ errorf "echarts: the fence requires JSON or YAML options at %s" .Position }}{{ end -}}
 {{- $result := try (transform.Unmarshal $config) -}}
@@ -21,7 +23,8 @@
 {{- $id := printf "td-echarts-%s-f%d" (md5 $page.RelPermalink) .Ordinal -}}
 {{- $page.Store.Set "hasEcharts" true -}}
 <div id="{{ $id }}" class="td-echarts{{ if not $full }} td-max-width-on-larger-screens{{ end }}{{ with $policy.class }} {{ . }}{{ end }}"
-  data-td-echarts{{ with $theme }} data-theme="{{ . }}"{{ end }}>
+  data-td-echarts{{ with $theme }} data-theme="{{ . }}"{{ end }}
+  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
   <div data-td-echarts-canvas style="height: {{ $height }}"></div>
   <script type="application/json" data-td-echarts-options>{{ $options | jsonify | safeJS }}</script>
 </div>

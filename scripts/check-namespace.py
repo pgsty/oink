@@ -152,7 +152,7 @@ def check_css(public: Path) -> list[str]:
 
 
 def check_sources() -> list[str]:
-    """Guard the two source-level namespaces the built output cannot show."""
+    """Guard source-level namespaces and the rendered DOM/JS dataset contract."""
     errors: list[str] = []
     js = list((ROOT / "assets/js").glob("*.js"))
     globals_set = set()
@@ -163,6 +163,58 @@ def check_sources() -> list[str]:
     for name in sorted(globals_set):
         if not name.startswith("Oink") and name not in {"HTMLDialogElement"}:
             errors.append(f"window.{name} is outside the Oink* global namespace")
+
+    # `data-td-copy-mode` is exposed as `dataset.tdCopyMode`, not
+    # `dataset.copyMode`. The 0.5 namespace migration updated selectors but a
+    # camelCase dataset accessor contains no `data-` token for grep to find, so
+    # stale readers can otherwise pass every output check while returning
+    # undefined in the browser. Verify every direct accessor against the source
+    # attribute vocabulary and allow only third-party or private bookkeeping
+    # keys that deliberately stay unprefixed.
+    source_files = (
+        list((ROOT / "layouts").rglob("*.html"))
+        + list((ROOT / "layouts").rglob("*.xml"))
+        + list((ROOT / "assets").rglob("*.js"))
+        + list((ROOT / "assets").rglob("*.scss"))
+    )
+    vocabulary = "\n".join(path.read_text(encoding="utf-8", errors="ignore") for path in source_files)
+    allowed_unprefixed = {
+        "command-palette.js": {"paletteRow"},
+        "page-actions.js": {"original"},
+        # These are Giscus' own embed API plus one private idempotency marker.
+        "giscus.js": {
+            "theme", "loaded", "repo", "repoId", "category", "categoryId",
+            "mapping", "strict", "reactionsEnabled", "emitMetadata",
+            "inputPosition", "lang", "loading", "term",
+        },
+    }
+
+    def kebab(value: str) -> str:
+        return re.sub(r"(?<!^)([A-Z])", r"-\1", value).lower()
+
+    for path in js:
+        text = path.read_text(encoding="utf-8")
+        for prop in sorted(set(re.findall(r"\.dataset\.([A-Za-z][A-Za-z0-9_]*)", text))):
+            if prop.startswith("td") and len(prop) > 2 and prop[2].isupper():
+                attribute = "data-td-" + kebab(prop[2:])
+            else:
+                attribute = "data-" + kebab(prop)
+                if prop in allowed_unprefixed.get(path.name, set()):
+                    continue
+                else:
+                    errors.append(
+                        f"{path.name}: dataset.{prop} is outside the td* dataset namespace"
+                    )
+                    continue
+            if attribute not in vocabulary:
+                errors.append(
+                    f"{path.name}: dataset.{prop} has no matching {attribute} source attribute"
+                )
+
+    feedback = (ROOT / "assets/js/feedback.js").read_text(encoding="utf-8")
+    for marker in ("data(root, 'tdPagePath')", "data(root, 'tdLanguage')"):
+        if marker not in feedback:
+            errors.append(f"feedback.js does not read the namespaced identity through {marker}")
     return errors
 
 

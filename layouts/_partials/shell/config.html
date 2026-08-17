@@ -1,13 +1,19 @@
 {{- $name := .Site.Title -}}
 {{- $logoPath := .Site.Params.logo | default "icons/logo.svg" -}}
-{{- $logoURL := $logoPath | relURL -}}
+{{- $logoURL := (partial "content/url.html" (dict
+  "name" "shell" "parameter" "logo" "position" "site configuration"
+  "value" $logoPath "kind" "image"
+)).href -}}
 {{- with resources.Get $logoPath -}}
   {{- $logoURL = .RelPermalink -}}
 {{- end -}}
 {{- $wordmarkPath := .Site.Params.wordmark | default "" -}}
 {{- $wordmarkURL := "" -}}
 {{- if $wordmarkPath -}}
-  {{- $wordmarkURL = $wordmarkPath | relURL -}}
+  {{- $wordmarkURL = (partial "content/url.html" (dict
+    "name" "shell" "parameter" "wordmark" "position" "site configuration"
+    "value" $wordmarkPath "kind" "image"
+  )).href -}}
   {{- with resources.Get $wordmarkPath -}}
     {{- $wordmarkURL = .RelPermalink -}}
   {{- end -}}

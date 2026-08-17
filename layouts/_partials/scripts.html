@@ -120,6 +120,11 @@ window.markmap = {
   {{ errorf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service" -}}
 {{ end -}}
 
+{{/* The registry reads this manifest synchronously while js/actions.js loads,
+     so the data must already exist in the document before that classic script
+     executes. Keep the two halves adjacent and in this order. */ -}}
+<script type="application/json" id="td-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
+
 {{/* Three bundles, not one. Two of them are byte-identical on every page, so a
      reader crossing pages with different feature sets keeps one cached copy of
      Bootstrap and the shell runtime; only the small feature bundle at the end
@@ -259,10 +264,6 @@ window.markmap = {
 {{ end -}}
 
 {{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch }}{{ end -}}
-{{/* The manifest is the data half of js/actions.js and ships wherever it does. */ -}}
-<script type="application/json" id="td-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
-
-
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/dark-mode.js") -}}

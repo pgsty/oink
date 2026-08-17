@@ -34,6 +34,7 @@ ui_palette_pages: 頁面
 ui_palette_index_unavailable: 頁面索引暫時無法使用，操作仍可使用
 ui_sidebar_nav: 章節導覽
 ui_heading_self_link: 標題錨點
+ui_field_self_link: 連結至此欄位
 ui_main_nav: 主導覽
 ui_home: 首頁
 ui_sidebar_expand: 展開側欄

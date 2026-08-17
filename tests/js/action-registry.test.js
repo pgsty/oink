@@ -165,6 +165,25 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     { id: 'unsafe', kind: 'url', url: 'javascript:alert(1)' },
     { id: 'unknown', kind: 'builtin', action: 'not_real' },
   ];
+
+  // Production does not inject the manifest into create(); the registry reads
+  // the inert JSON node that scripts.html emitted before js/actions.js. Keep a
+  // direct test of that path so template/script ordering cannot be masked by
+  // the convenience injection used by the rest of this unit harness.
+  const domManifest = { version: 1, actions, commands, quickLinks: [] };
+  const registryFromDOM = registryModule.create({
+    window: { location: { href: 'https://example.org/docs/' }, navigator: {} },
+    document: {
+      getElementById(id) {
+        return id === 'td-action-manifest'
+          ? { textContent: JSON.stringify(domManifest) }
+          : null;
+      },
+    },
+  });
+  assert.equal(registryFromDOM.get('copy_markdown').id, 'copy_markdown');
+  assert.ok(registryFromDOM.commands().some((command) => command.id === 'status'));
+
   const { registry, events, window: fakeWindow } = harness({ actions, commands });
 
   assert.deepEqual(registry.list().map((action) => action.id), builtinIds);

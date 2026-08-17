@@ -45,5 +45,8 @@
 {{- else -}}
   {{- $interactive := eq $format "html" -}}
   {{- if $interactive }}{{ $page.Store.Set "hasAssetList" true }}{{ end -}}
-  {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" $grouped "interactive" $interactive) -}}
+  {{- partial "release/assets-table.html" (dict
+    "entries" $entries "grouped" $grouped "interactive" $interactive
+    "class" $policy.class "generic" $policy.generic
+  ) -}}
 {{- end -}}

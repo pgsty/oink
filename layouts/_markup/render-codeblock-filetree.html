@@ -88,7 +88,9 @@
   {{- end -}}
   {{- $nameCol := printf "%.1fch" $parsed.nameWidth -}}
   {{- $resizable := and (not $static) $parsed.hasComments -}}
-  {{- $html = printf `<div class="%s" style="--td-filetree-name-col:%s"%s%s>` (delimit $classes " ") $nameCol (cond (ne $title "") (printf ` role="group" aria-labelledby="%s-title"` $id) "") (cond $resizable " data-td-filetree" "") -}}
+  {{- $genericAttrs := "" -}}
+  {{- range $name, $value := $policy.generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $name (htmlEscape $value) }}{{ end -}}
+  {{- $html = printf `<div class="%s" style="--td-filetree-name-col:%s"%s%s%s>` (delimit $classes " ") $nameCol (cond (ne $title "") (printf ` role="group" aria-labelledby="%s-title"` $id) "") (cond $resizable " data-td-filetree" "") $genericAttrs -}}
   {{- with $title -}}
     {{- $html = printf `%s<div class="td-filetree__chrome"><p class="td-filetree__title" id="%s-title" dir="auto">%s</p></div>` $html $id (htmlEscape .) -}}
   {{- end -}}

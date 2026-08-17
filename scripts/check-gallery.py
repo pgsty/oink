@@ -40,13 +40,14 @@ def image_tag(source: str, alt: str) -> str:
 
 
 def gallery_block(source: str) -> str:
-    match = re.search(r'<ul class="td-gallery[^"]*">[\s\S]*?</ul>', source)
+    match = re.search(r'<ul class="td-gallery[^"]*"[^>]*>[\s\S]*?</ul>', source)
     return match.group(0) if match else ""
 
 
-def fence(*lines: str) -> str:
+def fence(*lines: str, attrs: str = "") -> str:
     body = "\n".join(lines)
-    return f"```gallery\n{body}\n```\n"
+    suffix = f" {attrs}" if attrs else ""
+    return f"```gallery{suffix}\n{body}\n```\n"
 
 
 def check_outputs(public: Path) -> list[str]:
@@ -159,12 +160,14 @@ def check_escaping_and_forms(hugo: str) -> list[str]:
         f'![A "quoted" & image]({VALID_IMAGE}) # a & *description* with `backticks`',
         f"![Image only]({TALL_IMAGE})",
         f"![Issue #42 dashboard]({VALID_IMAGE}) # tracked in \\#42",
+        attrs='{class="site-gallery" data-fixture="gallery" aria-label="Gallery"}',
     )
     result, html, markdown = temp_page_build(hugo, body)
     if result.returncode != 0:
         errors.append(f"Gallery escaping fixture failed to build: {result.stdout}{result.stderr}")
         return errors
     gallery = gallery_block(html)
+    require('<ul class="td-gallery td-gallery--described site-gallery" aria-label="Gallery" data-fixture="gallery">' in gallery, "Gallery root attributes did not pass through", errors)
     require('alt="A &#34;quoted&#34; &amp; image"' in gallery, "Gallery alt was not HTML-escaped", errors)
     # The description is plain text, like every other public string parameter:
     # Markdown in it stays literal rather than turning into markup.
@@ -342,6 +345,7 @@ def check_template_contracts() -> list[str]:
     require("ul.gallery" not in runtime, "the Zoom runtime still special-cases gallery lists", errors)
     require("ul.gallery" not in markers, "_markers.scss still styles the removed gallery list", errors)
     require("data-td-image-zoom" in hook, "render-image hook does not mark eligible block images for Zoom", errors)
+    require("$policy.generic" in (ROOT / "layouts/_markup/render-codeblock-gallery.html").read_text(), "Gallery hook drops generic attributes", errors)
     require("js/gallery" not in scripts and not (ROOT / "assets/js/gallery.js").exists(), "Gallery added a second runtime", errors)
     require("data-td-image-zoom" in static_output, "static output filter does not remove Zoom eligibility", errors)
     require("(\\s|/?>)" in static_output and '"$1"' in static_output, "static output filter lacks exact attribute boundaries", errors)

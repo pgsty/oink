@@ -35,6 +35,7 @@ ui_palette_pages: 页面
 ui_palette_index_unavailable: 页面索引暂不可用，操作仍可使用
 ui_sidebar_nav: 章节导航
 ui_heading_self_link: 标题锚点
+ui_field_self_link: 链接到此字段
 ui_main_nav: 主导航
 ui_home: 首页
 ui_sidebar_expand: 展开侧栏

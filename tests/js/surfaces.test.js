@@ -253,10 +253,10 @@ function testPaletteFocusFromDrawer() {
   const status = element();
   const root = element({
     dataset: {
-      indexSrc: '/search.json',
-      maxResults: '10',
-      tLoading: 'Loading',
-      tEmpty: 'Empty',
+      tdIndexSrc: '/search.json',
+      tdMaxResults: '10',
+      tdTLoading: 'Loading',
+      tdTEmpty: 'Empty',
     },
     hidden: true,
     contains(candidate) {

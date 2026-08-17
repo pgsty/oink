@@ -45,7 +45,7 @@
 {{- if and $anchored .anchor }}
 {{- /* Same affordance and class as a heading self-link (td/render-heading.html),
        so hover behaviour, print suppression, and RTL come for free. */ -}}
-<a class="td-heading-self-link td-field__self-link" href="#{{ .anchor }}" aria-label="Field self-link"></a>
+<a class="td-heading-self-link td-field__self-link" href="#{{ .anchor }}" aria-label="{{ T "ui_field_self_link" }}"></a>
 {{- end }}
 </dt>
 {{- if .descriptionMarkdown }}

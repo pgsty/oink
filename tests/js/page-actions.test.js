@@ -16,7 +16,7 @@ function control(id, root, tagName = 'BUTTON') {
   const classes = new Set();
   const attributes = new Map();
   return {
-    dataset: { oinkAction: id },
+    dataset: { tdAction: id },
     tagName,
     listeners,
     label,
@@ -43,7 +43,7 @@ function control(id, root, tagName = 'BUTTON') {
 async function testBindings() {
   const status = { textContent: '' };
   const root = {
-    dataset: { tCopied: 'Markdown copied', tCopyError: 'Copy failed' },
+    dataset: { tdTCopied: 'Markdown copied', tdTCopyError: 'Copy failed' },
     querySelector(selector) {
       return selector === '[data-td-page-context-status]' ? status : null;
     },
@@ -152,7 +152,7 @@ async function testTitleMenu() {
     querySelectorAll() { return []; },
   };
   const root = {
-    dataset: { tCopied: 'Markdown copied', tCopyError: 'Copy failed' },
+    dataset: { tdTCopied: 'Markdown copied', tdTCopyError: 'Copy failed' },
     classList: {
       add(value) { rootClasses.add(value); },
       remove(value) { rootClasses.delete(value); },

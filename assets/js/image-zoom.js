@@ -81,7 +81,7 @@
     closeButton.focus({ preventScroll: true });
   };
 
-  const openLabel = dialog.dataset.openLabel?.trim();
+  const openLabel = dialog.dataset.tdOpenLabel?.trim();
   if (!openLabel) return;
   const contentImages = [
     '#td-main-content .td-content img',

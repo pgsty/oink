@@ -15,8 +15,8 @@
     owner.classList.toggle('td-is-open', open);
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     var label = open
-      ? toggle.dataset.labelCollapse
-      : toggle.dataset.labelExpand;
+      ? toggle.dataset.tdLabelCollapse
+      : toggle.dataset.tdLabelExpand;
     if (label) toggle.setAttribute('aria-label', label);
   }
 

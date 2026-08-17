@@ -170,8 +170,8 @@ def check_enabled(hugo: str, root: Path, plural: str) -> list[str]:
             continue
         html = path.read_text(encoding="utf-8")
         require(
-            "nav-menu__panel--taxonomy" in html
-            and 'data-taxonomy="' + plural + '"' in html,
+            "td-nav-menu__panel--taxonomy" in html
+            and 'data-td-taxonomy="' + plural + '"' in html,
             f"{path} did not promote its URL menu to a taxonomy panel",
             errors,
         )
@@ -186,7 +186,7 @@ def check_enabled(hugo: str, root: Path, plural: str) -> list[str]:
         if path.exists():
             html = path.read_text(encoding="utf-8")
             require(
-                f'<span class="taxonomy-title">{label}</span>' in html,
+                f'<span class="td-taxonomy-title">{label}</span>' in html,
                 f"{path} did not contain localized article taxonomy label {label}",
                 errors,
             )

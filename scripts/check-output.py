@@ -7,9 +7,11 @@ Over the built exampleSite (--public, default exampleSite/public):
      form, svg, dialog, template, headings, pre, code, blockquote) closes in order;
      void elements and elements with optional end tags are ignored.
   2. duplicate IDs — no id value appears twice on one page.
-  3. bundle graph — every HTML page references exactly one local main-*.js bundle,
-     no remote <script src> / stylesheet <link>, and the number of distinct bundles is
-     reported.
+  3. bundle graph — every page references exactly one shared js/actions bundle,
+     every non-print page additionally references the shared js/core shell bundle,
+     any page references at most one per-page js/page-<key> feature bundle, no
+     remote <script src> / stylesheet <link> appears, and the number of distinct
+     feature bundles is reported.
   4. output security — scripts/check-output-security.py over the same build (the
      fixture opts into third-party embeds) plus a synthetic negative fixture that must
      be rejected.
@@ -42,6 +44,8 @@ class Structure(HTMLParser):
         self.ids: dict[str, int] = {}
         self.problems: list[str] = []
         self.bundles: list[str] = []
+        self.cores: list[str] = []
+        self.actions: list[str] = []
         self.remote: list[str] = []
         self.in_template = 0
 
@@ -56,7 +60,12 @@ class Structure(HTMLParser):
             self.ids[ident] = self.ids.get(ident, 0) + 1
         if tag == "script" and attrs.get("src"):
             src = attrs["src"]
-            if re.search(r"/js/main-[0-9a-f]{32}(?:\.min\.[0-9a-f]{64})?\.js$", src.split("?", 1)[0]):
+            clean = src.split("?", 1)[0]
+            if re.search(r"/js/actions(?:\.min\.[0-9a-f]{64})?\.js$", clean):
+                self.actions.append(src)
+            if re.search(r"/js/core(?:\.min\.[0-9a-f]{64})?\.js$", clean):
+                self.cores.append(src)
+            if re.search(r"/js/page-[0-9a-f]{32}(?:\.min\.[0-9a-f]{64})?\.js$", clean):
                 self.bundles.append(src)
             if src.startswith(("http://", "https://", "//")):
                 self.remote.append(f"script {src[:60]}")
@@ -107,8 +116,19 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         for ident, n in parser.ids.items():
             if n > 1:
                 errors.append(f"{rel}: duplicate id {ident!r} ({n}×)")
-        if len(parser.bundles) != 1:
-            errors.append(f"{rel}: expected exactly one main bundle, found {len(parser.bundles)}: {parser.bundles[:3]}")
+        # Print pages carry no shell runtime at all; every other page loads the
+        # one shared core exactly once and at most one feature bundle.
+        if len(parser.actions) != 1:
+            errors.append(f"{rel}: expected exactly one actions bundle, found {len(parser.actions)}")
+        expected_cores = 0 if "/_print/" in f"/{rel}" else 1
+        if len(parser.cores) != expected_cores:
+            errors.append(f"{rel}: expected {expected_cores} core bundle(s), found {len(parser.cores)}: {parser.cores[:3]}")
+        if len(parser.bundles) > 1:
+            errors.append(f"{rel}: expected at most one feature bundle, found {len(parser.bundles)}: {parser.bundles[:3]}")
+        if expected_cores == 0 and parser.bundles:
+            # A print page may still need diagram runtimes, but never the shell ones.
+            for b in parser.bundles:
+                bundle_counts[b] = bundle_counts.get(b, 0) + 1
         for b in parser.bundles:
             bundle_counts[b] = bundle_counts.get(b, 0) + 1
         for r in parser.remote:
@@ -164,7 +184,7 @@ def main() -> int:
         for error in errors:
             print(f"  {error}")
         return 1
-    print(f"Output checks passed ({len(bundles)} distinct main bundles)")
+    print(f"Output checks passed ({len(bundles)} distinct feature bundles)")
     return 0
 
 

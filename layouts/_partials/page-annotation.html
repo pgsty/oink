@@ -1,25 +1,19 @@
 {{- /* Stable consumer override slot for page provenance and revision notes.
      The legacy lastmod partial remains the default implementation so existing
-     site overrides continue to work unchanged. */ -}}
+     site overrides continue to work unchanged.
+     Site: params.ui.annotation (boolean). Page: front matter annotation. */ -}}
 {{- $enabled := true -}}
 {{- if isset .Site.Params.ui "annotation" -}}
-  {{- $annotation := .Site.Params.ui.annotation -}}
-  {{- if reflect.IsMap $annotation -}}
-    {{- if isset $annotation "enable" }}{{ $enabled = index $annotation "enable" }}{{ end -}}
-  {{- else -}}
-    {{- $enabled = $annotation -}}
+  {{- $enabled = index .Site.Params.ui "annotation" -}}
+  {{- if ne (printf "%T" $enabled) "bool" -}}
+    {{- errorf "params.ui.annotation must be a boolean; got %v" $enabled -}}
   {{- end -}}
 {{- end -}}
 {{- if isset .Params "annotation" -}}
-  {{- $annotation := .Params.annotation -}}
-  {{- if reflect.IsMap $annotation -}}
-    {{- if isset $annotation "enable" }}{{ $enabled = index $annotation "enable" }}{{ end -}}
-  {{- else -}}
-    {{- $enabled = $annotation -}}
+  {{- $enabled = .Params.annotation -}}
+  {{- if ne (printf "%T" $enabled) "bool" -}}
+    {{- errorf "front matter annotation must be a boolean; got %v at %s" $enabled .Path -}}
   {{- end -}}
-{{- end -}}
-{{- if ne (printf "%T" $enabled) "bool" -}}
-  {{- errorf "annotation.enable must be a boolean on %s" .RelPermalink -}}
 {{- end -}}
 {{- $hasDefault := or (not .Lastmod.IsZero) .Params.upstream_attribution .Params.downstream_modified -}}
 {{- if and $enabled $hasDefault -}}

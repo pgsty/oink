@@ -1,7 +1,7 @@
 {{ if .Site.Params.archived_version -}}
   {{ $latestVersion := .Site.Params.url_latest_version -}}
   {{ $currentVersion := .Site.Params.version -}}
-  <div class="pageinfo pageinfo-primary">
+  <div class="td-page-notice td-page-notice--primary">
     {{ with $currentVersion -}}
       <p>
         {{ T "version_banner_archived" (dict "Version" (. | markdownify)) | safeHTML }}

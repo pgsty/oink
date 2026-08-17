@@ -3,10 +3,10 @@
 {{- if $config.copyEnabled -}}
 <div class="td-code__utilities{{ if $compact }} td-code__utilities--compact{{ end }}"{{ with .slot }} data-td-code-actions="{{ . }}"{{ end }}>
   <button class="td-code__copy" type="button" hidden data-td-code-copy
-          data-td-code-target="{{ $config.rootID }}" data-copy-mode="{{ $config.copyMode }}"
-          data-label-copy="{{ T "ui_code_copy_label" }}"
-          data-label-copied="{{ T "ui_code_copied" }}"
-          data-label-error="{{ T "ui_code_copy_error" }}"
+          data-td-code-target="{{ $config.rootID }}" data-td-copy-mode="{{ $config.copyMode }}"
+          data-td-label-copy="{{ T "ui_code_copy_label" }}"
+          data-td-label-copied="{{ T "ui_code_copied" }}"
+          data-td-label-error="{{ T "ui_code_copy_error" }}"
           aria-label="{{ T "ui_code_copy_label" }}" title="{{ T "ui_code_copy_label" }}">
     <i class="fa-regular fa-copy" aria-hidden="true"></i>
   </button>

@@ -22,7 +22,7 @@
   {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end -}}
   >
 {{ else -}}
-  {{ errorf "Resource not found or error building CSS: %s" $scssMain -}}
+  {{ errorf "stylesheet: resource not found or CSS build failed: %s" $scssMain -}}
 {{ end -}}
 
 {{/* Bootstrap publishes its RTL transform as a release artifact. Keep that

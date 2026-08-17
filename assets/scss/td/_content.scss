@@ -390,7 +390,7 @@
     color: var(--bs-link-color);
   }
 
-  &.is-submitted &__choice[aria-pressed='true'] {
+  &.td-is-submitted &__choice[aria-pressed='true'] {
     color: var(--bs-primary);
     opacity: 1;
   }

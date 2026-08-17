@@ -1,7 +1,7 @@
 {{ $context := . -}}
-{{ if .Site.Params.Taxonomy -}}
-  {{ if .Site.Params.Taxonomy.taxonomyPageHeader -}}
-    {{ range $index, $taxo := .Site.Params.Taxonomy.taxonomyPageHeader -}}
+{{ if .Site.Params.taxonomy -}}
+  {{ if .Site.Params.taxonomy.page_header -}}
+    {{ range $index, $taxo := .Site.Params.taxonomy.page_header -}}
       {{ partial "taxonomy_terms_article.html" (dict "context" $context "taxo" $taxo) -}}
     {{ end }}
   {{ else -}}

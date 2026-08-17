@@ -3,11 +3,11 @@
 {{- $tiers := $data.tiers | default (slice) -}}{{- $groups := $data.groups | default (slice) -}}
 {{- if or (not (reflect.IsSlice $tiers)) (not $tiers) }}{{ errorf "%s: pricing-compare.tiers must be a non-empty array" $page.Path }}{{ end -}}
 {{- if or (not (reflect.IsSlice $groups)) (not $groups) }}{{ errorf "%s: pricing-compare.groups must be a non-empty array" $page.Path }}{{ end -}}
-<section id="{{ $id }}" class="oink-section oink-pricing-compare{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-pricing-compare{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    <div class="oink-table-scroll"{{ if $interactive }} tabindex="0"{{ end }} role="region" aria-label="{{ $data.title | default "Pricing comparison" | plainify }}"{{ if $interactive }} data-reveal{{ end }}>
-      <table class="oink-pricing-table">
+    <div class="td-landing-table-scroll"{{ if $interactive }} tabindex="0"{{ end }} role="region" aria-label="{{ $data.title | default "Pricing comparison" | plainify }}"{{ if $interactive }} data-td-reveal{{ end }}>
+      <table class="td-landing-pricing-table">
         <thead><tr><th scope="col">{{ $data.feature_label | default "Feature" }}</th>{{ range $tiers }}<th scope="col">{{ . }}</th>{{ end }}</tr></thead>
         <tbody>
         {{- range $groupIndex, $group := $groups }}
@@ -16,7 +16,7 @@
           {{- if eq $groupName false }}{{ $groupName = partial "landing/field.html" (dict "page" $page "record" $group "key" "group") }}{{ end -}}
           {{- if not $groupName }}{{ errorf "%s: pricing-compare group %d requires name" $page.Path (add $groupIndex 1) }}{{ end -}}
           {{- if not (reflect.IsSlice $group.rows) }}{{ errorf "%s: pricing-compare group %d rows must be an array" $page.Path (add $groupIndex 1) }}{{ end -}}
-          <tr class="oink-pricing-table__group"><th scope="rowgroup" colspan="{{ add (len $tiers) 1 }}">{{ $groupName }}</th></tr>
+          <tr class="td-landing-pricing-table__group"><th scope="rowgroup" colspan="{{ add (len $tiers) 1 }}">{{ $groupName }}</th></tr>
           {{- range $rowIndex, $row := $group.rows }}
             {{- if not (reflect.IsMap $row) }}{{ errorf "%s: pricing-compare group %d row %d must be a map" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ end -}}
             {{- $name := partial "landing/field.html" (dict "page" $page "record" $row "key" "name") -}}
@@ -24,8 +24,8 @@
             {{- if not $name }}{{ errorf "%s: pricing-compare group %d row %d requires name" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ end -}}
             {{- if not (reflect.IsSlice $cells) }}{{ errorf "%s: pricing-compare group %d row %d cells must be an array" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ end -}}
             {{- if ne (len $cells) (len $tiers) }}{{ errorf "%s: pricing-compare group %d row %d has %d cells for %d tiers" $page.Path (add $groupIndex 1) (add $rowIndex 1) (len $cells) (len $tiers) }}{{ end -}}
-          <tr{{ if $row.price_row }} class="oink-pricing-table__price"{{ end }}><th scope="row">{{ $name }}</th>
-            {{- range $cells }}<td>{{ if eq (upper (printf "%v" .)) "Y" }}<i class="fa-solid fa-check oink-value-yes" role="img" aria-label="{{ T "ui_pricing_included" }}"></i>{{ else if eq (upper (printf "%v" .)) "N" }}<i class="fa-solid fa-minus oink-value-no" role="img" aria-label="{{ T "ui_pricing_excluded" }}"></i>{{ else }}{{ . }}{{ end }}</td>{{ end -}}
+          <tr{{ if $row.price_row }} class="td-landing-pricing-table__price"{{ end }}><th scope="row">{{ $name }}</th>
+            {{- range $cells }}<td>{{ if eq (upper (printf "%v" .)) "Y" }}<i class="fa-solid fa-check td-landing-value-yes" role="img" aria-label="{{ T "ui_pricing_included" }}"></i>{{ else if eq (upper (printf "%v" .)) "N" }}<i class="fa-solid fa-minus td-landing-value-no" role="img" aria-label="{{ T "ui_pricing_excluded" }}"></i>{{ else }}{{ . }}{{ end }}</td>{{ end -}}
           </tr>
           {{- end }}
         {{- end }}

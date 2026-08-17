@@ -2,13 +2,19 @@
 {{ $shell := partial "shell/chrome-enabled.html" . -}}
 {{ $localSearch := partial "shell/search-enabled.html" . -}}
 {{ $hasGoogleSearch := ne (.Site.Params.gcs_engine_id | default "") "" -}}
-{{ $hasMarkmap := and .Site.Params.markmap.enable (.Page.Store.Get "hasMarkmap") -}}
-{{ $hasPlantuml := and .Site.Params.plantuml.enable (.Page.Store.Get "hasPlantuml") -}}
+{{ $markmapEnabled := .Site.Params.markmap | default false -}}
+{{ if ne (printf "%T" $markmapEnabled) "bool" -}}
+  {{ errorf "params.markmap must be a boolean; got %v" $markmapEnabled -}}
+{{ end -}}
+{{ $plantumlEnabled := partial "config-enabled.html" (dict "value" .Site.Params.plantuml "key" "params.plantuml") -}}
+{{ $drawioEnabled := partial "config-enabled.html" (dict "value" .Site.Params.drawio "key" "params.drawio") -}}
+{{ $hasMarkmap := and $markmapEnabled (.Page.Store.Get "hasMarkmap") -}}
+{{ $hasPlantuml := and $plantumlEnabled (.Page.Store.Get "hasPlantuml") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{ $keyboardNavParam := .Param "ui.keyboard_nav.enable" -}}
+{{ $keyboardNavParam := .Param "ui.keyboard_nav" -}}
 {{ if and (ne $keyboardNavParam nil) (ne (printf "%T" $keyboardNavParam) "bool") -}}
-  {{ errorf "params.ui.keyboard_nav.enable must be a boolean" -}}
+  {{ errorf "params.ui.keyboard_nav must be a boolean; got %v" $keyboardNavParam -}}
 {{ end -}}
 {{/* Global action keys (language/theme/navbar/search) also belong on landing
      and ordinary pages; keyboard-nav.js keeps tree, pager, and zen bindings
@@ -99,38 +105,78 @@ window.markmap = {
   {{- with $markmapAutoloader.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 
-{{ if and .Site.Params.plantuml.enable (not .Site.Params.plantuml.svg_image_url) -}}
+{{ $plantumlSVGURL := "" -}}
+{{ $plantumlSVG := false -}}
+{{ if reflect.IsMap .Site.Params.plantuml -}}
+  {{ $plantumlSVGURL = index .Site.Params.plantuml "svg_image_url" | default "" -}}
+  {{ $plantumlSVG = eq (index .Site.Params.plantuml "svg") true -}}
+{{ end -}}
+{{ if and $plantumlEnabled (not $plantumlSVGURL) -}}
   {{ errorf "params.plantuml.enable requires an explicit params.plantuml.svg_image_url; the theme does not default to a public PlantUML service" -}}
 {{ end -}}
-{{ if and .Site.Params.drawio.enable (not .Site.Params.drawio.drawio_server) -}}
+{{ $drawioServer := "" -}}
+{{ if reflect.IsMap .Site.Params.drawio }}{{ $drawioServer = index .Site.Params.drawio "drawio_server" | default "" }}{{ end -}}
+{{ if and $drawioEnabled (not $drawioServer) -}}
   {{ errorf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service" -}}
 {{ end -}}
 
-{{ $jsBs := resources.Get "third_party/bootstrap/dist/js/bootstrap.bundle.js" -}}
-{{ $jsSurfaces := resources.Get "js/surface-coordinator.js" -}}
-{{ $jsBase := resources.Get "js/base.js" -}}
-{{ $jsNavbar := resources.Get "js/navbar-menu.js" -}}
-{{ $jsSidebarNav := resources.Get "js/sidebar-nav.js" -}}
-{{ $jsActions := resources.Get "js/action-registry.js" -}}
-{{ $jsPageActions := resources.Get "js/page-actions.js" -}}
+{{/* Three bundles, not one. Two of them are byte-identical on every page, so a
+     reader crossing pages with different feature sets keeps one cached copy of
+     Bootstrap and the shell runtime; only the small feature bundle at the end
+     varies with the page's Page Store flags.
+
+     `js/actions.js` is the action registry and its two dependencies. Print
+     output needs exactly this much: its "click to print" control is a
+     data-td-action button, and none of these three touch Bootstrap.
+     `js/core.js` is the interactive shell and is HTML-only — a print view has
+     no navbar, sidebar, palette, or scroll spy to drive. */ -}}
+{{ $actions := slice
+  (resources.Get "js/surface-coordinator.js")
+  (resources.Get "js/action-registry.js")
+  (resources.Get "js/page-actions.js")
+  | resources.Concat "js/actions.js" -}}
+{{ if hugo.IsProduction -}}
+  {{ $actions = $actions | minify | fingerprint -}}
+  <script src="{{ $actions.RelPermalink }}" integrity="{{ $actions.Data.Integrity }}" crossorigin="anonymous"></script>
+{{ else -}}
+  <script src="{{ $actions.RelPermalink }}"></script>
+{{ end -}}
+{{ if $interactiveOutput -}}
+  {{ $core := slice
+    (resources.Get "third_party/bootstrap/dist/js/bootstrap.bundle.js")
+    (resources.Get "js/base.js")
+    (resources.Get "js/navbar-menu.js")
+    (resources.Get "js/sidebar-nav.js")
+    (resources.Get "js/authored-a11y.js")
+    | resources.Concat "js/core.js" -}}
+  {{ if hugo.IsProduction -}}
+    {{ $core = $core | minify | fingerprint -}}
+    <script src="{{ $core.RelPermalink }}" integrity="{{ $core.Data.Integrity }}" crossorigin="anonymous"></script>
+  {{ else -}}
+    <script src="{{ $core.RelPermalink }}"></script>
+  {{ end -}}
+{{ end -}}
+
 {{ $jsPaletteModel := resources.Get "js/palette-model.js" -}}
 {{ $jsPalette := resources.Get "js/command-palette.js" -}}
 {{ $jsSearchEngine := resources.Get "js/search-engine.js" -}}
+{{/* These four interpolate site parameters only, so one execution per language
+     is correct; the language is part of the feature-bundle key below. */ -}}
 {{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate "js/search.js" .Site.Home -}}
-{{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" . -}}
-{{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate "js/plantuml.js" . -}}
-{{ $jsDrawio := resources.Get "js/drawio.js" | resources.ExecuteAsTemplate "js/drawio.js" . -}}
+{{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" .Site.Home -}}
+{{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate "js/plantuml.js" .Site.Home -}}
+{{ $jsDrawio := resources.Get "js/drawio.js" | resources.ExecuteAsTemplate "js/drawio.js" .Site.Home -}}
 {{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
 {{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
 
-{{ $jsArray := slice $jsBs $jsSurfaces $jsBase $jsNavbar $jsSidebarNav $jsActions $jsPageActions (resources.Get "js/authored-a11y.js") -}}
+{{ $jsArray := slice -}}
 {{ if $hasPlantuml -}}
   {{ $jsArray = $jsArray | append $jsPako -}}
-  {{ if .Site.Params.plantuml.svg }}{{ $jsArray = $jsArray | append $jsSvgLoader }}{{ end -}}
+  {{ if $plantumlSVG }}{{ $jsArray = $jsArray | append $jsSvgLoader }}{{ end -}}
   {{ $jsArray = $jsArray | append $jsPlantuml -}}
 {{ end -}}
 {{ if $hasMarkmap }}{{ $jsArray = $jsArray | append $jsMarkmap }}{{ end -}}
-{{ if .Site.Params.drawio.enable }}{{ $jsArray = $jsArray | append $jsDrawio }}{{ end -}}
+{{ if $drawioEnabled }}{{ $jsArray = $jsArray | append $jsDrawio }}{{ end -}}
 {{ $hasAsciinema := .Page.Store.Get "hasAsciinema" -}}
 {{ $hasEcharts := .Page.Store.Get "hasEcharts" -}}
 {{ $hasInfographic := .Page.Store.Get "hasInfographic" -}}
@@ -147,7 +193,13 @@ window.markmap = {
     {{- with $asciinemaJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 {{ if $hasEcharts -}}
-  {{ $jsArray = $jsArray | append (resources.Get "third_party/echarts/echarts.min.js") -}}
+  {{/* Apache ECharts ships a pre-minified 1 MB UMD bundle. Keep it out of the
+       concatenated feature bundle: inside it, every flag combination would
+       carry its own uncacheable megabyte. */ -}}
+  {{ $echartsJS := resources.Get "third_party/echarts/echarts.min.js" -}}
+  {{ if hugo.IsProduction }}{{ $echartsJS = $echartsJS | fingerprint }}{{ end -}}
+  <script src="{{ $echartsJS.RelPermalink }}"
+    {{- with $echartsJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 {{ if $hasInfographic -}}
   {{/* AntV ships a pre-minified UMD bundle. Keep it separate so Hugo's
@@ -162,8 +214,8 @@ window.markmap = {
 {{ end -}}
 {{ if $shell -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/docs-shell.js") -}}
-  {{ if $hasGoogleSearch }}{{ $jsArray = $jsArray | append $jsSearch }}{{ end -}}
-{{ else if $hasGoogleSearch -}}
+{{ end -}}
+{{ if and $interactiveOutput $hasGoogleSearch -}}
   {{ $jsArray = $jsArray | append $jsSearch -}}
 {{ end -}}
 {{ if $hasKeyboardNav -}}
@@ -207,18 +259,18 @@ window.markmap = {
 {{ end -}}
 
 {{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch }}{{ end -}}
-{{- if ne (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "markdown" }}
-<script type="application/json" id="oink-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
-{{- end }}
+{{/* The manifest is the data half of js/actions.js and ships wherever it does. */ -}}
+<script type="application/json" id="td-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
+
 
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-{{ if $darkMode.enable -}}
+{{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/dark-mode.js") -}}
 {{ end -}}
-{{ if $hasGiscus -}}
+{{ if and $interactiveOutput $hasGiscus -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/giscus.js") -}}
 {{ end -}}
-{{ $hasFeedback := .Page.Store.Get "hasFeedback" | default false -}}
+{{ $hasFeedback := and $interactiveOutput (.Page.Store.Get "hasFeedback" | default false) -}}
 {{ if $hasFeedback -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/feedback.js") -}}
 {{ end -}}
@@ -241,31 +293,26 @@ window.markmap = {
   {{ $jsArray = $jsArray | append (resources.Get "js/filetree.js") -}}
 {{ end -}}
 
-{{ if not (.Param "ui.scrollSpy.disable") -}}
+{{ if and $interactiveOutput (eq (.Param "ui.scroll_spy") true) -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
-  $shell $localSearch $hasGoogleSearch .Site.Language.Lang $hasMarkmap
-  $hasPlantuml .Site.Params.drawio.enable
-  $hasAsciinema $hasEcharts $hasInfographic $hasGiscus $hasFeedback
-  $hasCodeRuntime $hasAssetList $hasLanding $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable"))
-  $hasKeyboardNav $hasFooterCollapse $hasFileTree | md5 -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
-{{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
-{{ if hugo.IsProduction -}}
-  {{ $js = $js | minify | fingerprint -}}
-  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
-{{ else -}}
-  <script src="{{ $js.RelPermalink }}"></script>
-{{ end -}}
-
-{{ if .Site.Params.prism_syntax_highlighting -}}
-  {{ $prismJS := resources.FromString "js/prism.js" (os.ReadFile "static/js/prism.js") -}}
-  {{ if hugo.IsProduction }}{{ $prismJS = $prismJS | minify | fingerprint }}{{ end -}}
-  <script src="{{ $prismJS.RelPermalink }}"
-    {{- with $prismJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
+{{/* The bundle name is derived from the members themselves, so adding a
+     runtime cannot silently collide two different feature sets on one file
+     name. The language is part of the key because the templated members
+     (search, markmap, plantuml, drawio) read per-language site parameters. */ -}}
+{{ with $jsArray -}}
+  {{ $bundleKey := $.Site.Language.Lang -}}
+  {{ range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}{{ end -}}
+  {{ $js := . | resources.Concat (printf "js/page-%s.js" (md5 $bundleKey)) -}}
+  {{ if hugo.IsProduction -}}
+    {{ $js = $js | minify | fingerprint -}}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
+  {{ else -}}
+    <script src="{{ $js.RelPermalink }}"></script>
+  {{ end -}}
 {{ end -}}
 
 {{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}

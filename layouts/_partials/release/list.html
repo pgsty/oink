@@ -61,7 +61,7 @@
     {{- if $groupByProduct }}<h2 class="td-release-index__product" dir="auto">{{ $product }}</h2>{{ end -}}
     <ol class="td-release-index__list">
       {{- range $group }}
-      <li class="td-release-index__item" data-release-product="{{ .meta.product }}">
+      <li class="td-release-index__item" data-td-release-product="{{ .meta.product }}">
         <a class="td-release-index__version" href="{{ .page.RelPermalink }}" dir="auto">{{ .meta.version }}</a>
         <time class="td-release-index__date" datetime="{{ .meta.date.Format "2006-01-02" }}">{{ .meta.dateDisplay }}</time>
         {{- with .meta.product }}<span class="td-badge td-badge--neutral td-badge--outline">{{ . }}</span>{{ end -}}

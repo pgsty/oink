@@ -118,6 +118,28 @@ Public parameter names and enum values are case-sensitive.
 - Every author error uses `errorf`, names the shortcode and parameter, and
   includes `.Position`.
 
+Every shortcode delegates the first three rules to one partial,
+`layouts/_partials/content/shortcode-params.html`, so a new shortcode cannot
+quietly skip them; `scripts/check-content-primitives-contract.py` fails when
+one does not call it. Its `form` selects the shape —
+`named` (the default), `none`, `positional`, or `any` for the components that
+accept one positional shorthand — and `attributes: true` additionally permits
+the `class` / `data-*` / `aria-*` passthrough that the hook attribute policy
+below defines, for the shortcodes that mirror it.
+
+**Error message shape.** Build failures are the theme's most-read output, so
+their grammar is part of this contract:
+
+```
+<component>: <subject> <expectation>; got <value> at <position>
+```
+
+lower case throughout (proper nouns excepted), `at %s` as the only preposition
+for a source location, and configuration errors naming the full `params.` path
+(`params.ui.feedback.enable must be a boolean at …`, not
+`feedback.enable must be a boolean on …`). The contract check enforces the
+case and preposition rules.
+
 Shortcodes do not accept `class`, `style`, color, event-handler, or `cols`
 parameters. Icons accept exactly one Font Awesome pair matching
 `fa-(solid|regular|brands) fa-[a-z0-9-]+`. The Book components are the
@@ -325,6 +347,21 @@ modes. The former `outline` parameter was a purely visual switch and is
 removed; there is one badge appearance. The same five-value `tone` vocabulary
 is used by FileTree (section 3.4).
 
+Callouts (section 3.12) name a *kind of statement*, so they carry more types
+than a colour vocabulary needs. The two are related but not interchangeable;
+an author reaching for a badge beside a callout can use this mapping:
+
+| `tone` | callout types that share its colour |
+| --- | --- |
+| `neutral` | `quote`, `details` |
+| `info` | `note`, `important` |
+| `success` | `success`, `tip` |
+| `warning` | `warning`, `caution` |
+| `danger` | `danger` |
+
+`question` and `example` are callout types with their own treatment and no
+badge tone; a badge next to them should state its own meaning in text.
+
 There is no public Badge `icon`, `class`, or color parameter. Markdown
 fallback:
 
@@ -373,8 +410,8 @@ written either way produces the same entry header.
 ```markdown
 | 参数 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `offlineSearch` | boolean | `false` | 开启本地索引与命令面板 |
-| `offlineSearchMaxResults` | integer | `10` | 结果上限，*支持行内 Markdown* |
+| `offline_search` | boolean | `false` | 开启本地索引与命令面板 |
+| `offline_search_max_results` | integer | `10` | 结果上限，*支持行内 Markdown* |
 {.fields caption="搜索参数"}
 ```
 
@@ -402,7 +439,7 @@ header vocabulary in 32 locales:
 ```markdown
 | 参数 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `offlineSearch` | boolean | 是 | `false` | 开启本地索引 |
+| `offline_search` | boolean | 是 | `false` | 开启本地索引 |
 {.fields meta="type required default"}
 ```
 
@@ -427,11 +464,11 @@ metadata and multi-paragraph descriptions):
 
 ```go-html-template
 {{< fields label="Configuration fields" >}}
-  {{< field name="offlineSearch" type="boolean" default=true required=true >}}
+  {{< field name="offline_search" type="boolean" default=true required=true >}}
   Enables the local search index and command palette.
   {{< /field >}}
 
-  {{< field name="offlineSearchMaxResults" type="integer" default=10 >}}
+  {{< field name="offline_search_max_results" type="integer" default=10 >}}
   Maximum number of visible results.
   {{< /field >}}
 {{< /fields >}}
@@ -492,7 +529,7 @@ list:
 ```markdown
 **Configuration fields**
 
-- `offlineSearch` — `boolean`; required; default: `true`
+- `offline_search` — `boolean`; required; default: `true`
 
   Enables the local search index and command palette.
 ```
@@ -701,23 +738,22 @@ Image Zoom is disabled by default. Site configuration:
 ```yaml
 params:
   ui:
-    image_zoom:
-      enable: true
+    image_zoom: true
 ```
 
-Page front matter uses the same nested page parameter and overrides the site:
+Page front matter uses the site key without its `ui.` prefix and overrides
+the site:
 
 ```yaml
 ---
-params:
-  ui:
-    image_zoom:
-      enable: false
+image_zoom: false
 ---
 ```
 
-The selected `params.ui.image_zoom.enable` value must be a boolean. An explicit
-page `false` wins over a site `true`.
+Both `params.ui.image_zoom` and front matter `image_zoom` must be booleans.
+An explicit page `false` wins over a site `true`. The 0.x map form
+(`image_zoom: { enable: … }`, at either level) fails the build and names the
+flat key.
 
 Zoom has one opt-in marker, `data-td-image-zoom`. Everything the theme renders
 declares its own eligibility with it: the image render hook (block images and
@@ -873,7 +909,7 @@ The table family is selected by the attribute line after the table:
 | `{.matrix}` | compatibility/feature matrix | first column `<th scope="row">`, wrapper `td-table-scroll--matrix` with sticky header and first column, other cells centered unless the author aligns them |
 | `{caption="…"}` | table caption | `<caption class="td-table__caption">`; on `.fields` the list label |
 | `{#id}` | stable id | on `<table>` (or on the figure of a numbered table) |
-| `{#id num="9-1" caption="…"}` | numbered Book table | `<figure class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num>` + `<figcaption>`; registers a `tbl` target (section 3.10) |
+| `{#id num="9-1" caption="…"}` | numbered Book table | `<figure class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num>` + `<figcaption>`; registers a `tbl` target (section 3.10) |
 | `{tab="…" group="…" value="…"}` | adjacent tables become tabs | tab-block wrapper (section 3.13) |
 | any other class | site CSS | passed through on `<table>` |
 
@@ -1219,7 +1255,7 @@ e3a339fe…47d1  pig-1.7.0-1.aarch64.rpm
 - `echarts`: declarative YAML/JSON options only (a non-mapping or invalid
   document fails the build); attributes `height` (safe CSS length, default
   `400px`), `theme`, `full=true`; callbacks stay the `"$fn:<name>"` bridge
-  resolved from `window.tdEchartsFunctions` (unregistered names are ignored
+  resolved from `window.OinkEchartsFunctions` (unregistered names are ignored
   with a console warning); the fence cannot carry JavaScript. Sets
   `hasEcharts`.
 - `infographic`: attributes `height` (`auto` or a safe CSS length), `full`;
@@ -1327,6 +1363,6 @@ removed); `imgproc`
 became the named-only `image` shortcode and Markdown images gained a render
 hook; the table family, Callouts, Tabs, Steps, Cards, data fences, `include`, strict `param`, and the
 Book `eg`/native forms/`book-*` indexes were added; `alert`, `details`,
-`pageinfo`, `tabpane`/`tab` (legacy), `code-group`/`code-tab`, the card family,
+`td-page-notice`, `tabpane`/`tab` (legacy), `code-group`/`code-tab`, the card family,
 `doc-carousel`, `echarts`/`infographic` shortcodes, `readfile`, `iframe`,
 `conditional-text`, `_param`, `blocks/*`, and the leaf `example` were removed.

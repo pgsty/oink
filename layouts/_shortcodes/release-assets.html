@@ -1,16 +1,8 @@
 {{- /* Strict sha*sum asset lists with output-aware static fallbacks. */ -}}
-{{- $hasParams := false -}}
-{{- with .Params }}{{ $hasParams = true }}{{ end -}}
-{{- if and $hasParams (not .IsNamedParams) -}}
-  {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
-{{- end -}}
-{{- $allowed := slice "algo" "base" "src" "group" -}}
-{{- range $name, $_ := .Params -}}
-  {{- if not (in $allowed $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
-{{- end -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "algo" "base" "src" "group")) -}}
 
 {{- $algo := "" -}}
-{{- if and $hasParams (isset .Params "algo") -}}
+{{- if and .IsNamedParams (isset .Params "algo") -}}
   {{- if ne (printf "%T" (.Get "algo")) "string" }}{{ errorf "shortcode %q: algo must be a string at %s" .Name .Position }}{{ end -}}
   {{- $algo = strings.TrimSpace (.Get "algo") -}}
   {{- if not (in (slice "md5" "sha1" "sha256" "sha512") $algo) -}}
@@ -18,7 +10,7 @@
   {{- end -}}
 {{- end -}}
 {{- $grouped := false -}}
-{{- if and $hasParams (isset .Params "group") -}}
+{{- if and .IsNamedParams (isset .Params "group") -}}
   {{- if ne (printf "%T" (.Get "group")) "string" }}{{ errorf "shortcode %q: group must be a string at %s" .Name .Position }}{{ end -}}
   {{- if ne (.Get "group") "auto" }}{{ errorf "shortcode %q: group must be auto at %s" .Name .Position }}{{ end -}}
   {{- $grouped = true -}}
@@ -26,7 +18,7 @@
 
 {{- $inner := printf "%s" .InnerDeindent -}}
 {{- $src := "" -}}
-{{- if and $hasParams (isset .Params "src") -}}
+{{- if and .IsNamedParams (isset .Params "src") -}}
   {{- if ne (printf "%T" (.Get "src")) "string" }}{{ errorf "shortcode %q: src must be a string at %s" .Name .Position }}{{ end -}}
   {{- $src = strings.TrimSpace (.Get "src") -}}
   {{- if not $src }}{{ errorf "shortcode %q: src must not be empty at %s" .Name .Position }}{{ end -}}
@@ -39,7 +31,7 @@
 
 {{- $base := "" -}}
 {{- $hasRelease := isset .Page.Params "release" -}}
-{{- if and $hasParams (isset .Params "base") -}}
+{{- if and .IsNamedParams (isset .Params "base") -}}
   {{- if ne (printf "%T" (.Get "base")) "string" }}{{ errorf "shortcode %q: base must be a string at %s" .Name .Position }}{{ end -}}
   {{- if $hasRelease }}{{ errorf "shortcode %q: base is only valid without release front matter at %s" .Name .Position }}{{ end -}}
   {{- $baseInput := strings.TrimSpace (.Get "base") -}}

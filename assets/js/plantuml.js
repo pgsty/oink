@@ -1,5 +1,5 @@
 {{ with .Site.Params.plantuml }}
-{{ if .enable }}
+{{ if and (reflect.IsMap .) (partial "config-enabled.html" (dict "value" . "key" "params.plantuml")) }}
 (function () {
     'use strict';
 

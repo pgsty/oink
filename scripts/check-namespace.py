@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+"""Freeze the theme's public naming surface.
+
+Over the built exampleSite (--public, default exampleSite/public):
+
+  1. every class the theme generates starts with `td-`;
+  2. every data attribute the theme generates starts with `data-td-`;
+  3. every CSS custom property the theme defines starts with `--td-`.
+
+Third-party markup (Bootstrap, Font Awesome, KaTeX, Chroma, Giscus, Swagger
+UI, ReDoc, Mermaid, asciinema) and the documented unprefixed *author* markers
+keep their own names; both are allowlisted below and nothing else is.
+
+The point is not tidiness. `.leaf`, `.is-open`, `data-url`, and `--oink-ink`
+in a theme's global stylesheet collide with whatever the consuming site and
+its authors already use, and a theme cannot take a name back after 1.0.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+# Author-facing markers: an author types these, so they stay unprefixed.
+# docs/content-primitives.md and docs/components.md are the contract.
+AUTHOR_MARKERS = {
+    "steps", "cards", "fields", "matrix", "full-width", "no-step-marker",
+}
+
+# Classes emitted by third-party runtimes or by Hugo/Goldmark itself.
+THIRD_PARTY_CLASS = re.compile(
+    r"^("
+    # Bootstrap layout, components and utilities
+    r"d-|col($|-)|row$|container($|-)|btn($|-)|nav-(link|item|tabs)$|navbar($|-)|form-|input-"
+    r"|text-|bg-|border($|-)|[mp][sebtxy]?-(auto|\d|sm|md|lg|xl|xxl)|g-\d|gap-|align-|justify-|flex-|order-"
+    r"|w-|h-|position-|top-|start-|end-|bottom-|visually-|fs-\d|fw-|lh-|rounded|shadow($|-)"
+    r"|dropdown($|-)|collapse($|-)|collapsing$|show$|active$|disabled$|fade$|offcanvas($|-)"
+    r"|badge$|list-|table($|-)|card($|-)|accordion($|-)|modal($|-)|small$|lead$|float-"
+    r"|overflow-|user-select-|z-\d|opacity-|ratio($|-)|img-|figure($|-)|blockquote($|-)"
+    r"|mark$|sr-only|clearfix$|stretched-link$|vstack$|hstack$|h[1-6]$|display-\d"
+    r"|tab-(pane|content)$|pagination$|page-(item|link)$|offset-|invisible$|visible$"
+    r"|breadcrumb($|-)|alert($|-)|close$|spinner-|progress($|-)|placeholder($|-)"
+    # Swagger UI renders its own .info .title inside .swagger-ui
+    r"|info$|title$|content$|scheme|opblock|model|response|parameter"
+    # Font Awesome
+    r"|fa[brsl]?$|fa-"
+    # KaTeX
+    r"|katex|mord|mtight|mathnormal|pstrut|mspace|vlist|size\d|sizing$|reset-size\d|base$"
+    r"|strut$|m(bin|rel|op|open|close|inner|frac|punct)$|msupsub$|nulldelimiter$|delim"
+    r"|frac-line$|op-|large-op$|sqrt$|svg-align$|hide-tail$|accent|overline$|underline$"
+    r"|mtable$|col-align|arraycolsep$|rlap$|llap$|inner$|fix$|vbox$|thinbox$|eqn-num$|tag$"
+    r"|newline$|boxpad$|angl|cd-|fbox$|fcolorbox$|not$|textbf$|textit$|mspace$|mathdefault$"
+    # Chroma / Hugo highlighting
+    r"|chroma$|highlight$|line$|lnt?$|lntable$|lntd$|lnlinks$|hl$|cl$|language-|[a-z]{1,3}\d?$"
+    # Hugo / Goldmark
+    r"|footnotes$|footnote-|task-list-item$"
+    # Giscus, Swagger UI, ReDoc, Mermaid, asciinema, external SVG loader
+    r"|giscus|swagger|redoc|mermaid|ap-|markmap|drawio|DocSearch|gsc?-|gsc"
+    r")"
+)
+
+# Data attributes required by a third-party runtime's own API.
+THIRD_PARTY_DATA = {
+    # Giscus embed contract
+    "data-repo", "data-repo-id", "data-category", "data-category-id", "data-mapping",
+    "data-strict", "data-reactions-enabled", "data-emit-metadata", "data-input-position",
+    "data-theme", "data-lang", "data-loading",
+    # Bootstrap
+    "data-bs-theme", "data-bs-toggle", "data-bs-target", "data-bs-placement",
+    "data-bs-container", "data-bs-original-title", "data-bs-theme-value", "data-bs-dismiss",
+    "data-bs-parent", "data-bs-slide", "data-bs-slide-to", "data-bs-ride", "data-bs-backdrop",
+    # html-proofer opt-out honoured by consuming sites' CI
+    "data-proofer-ignore",
+    # documented author opt-out, in the same family as the {.cards} markers
+    "data-no-zoom",
+    # Authored data-* attributes pass through by contract
+    # (docs/content-primitives.md, attribute policy); the fixture exercises one.
+    "data-note",
+}
+
+CLASS_RE = re.compile(r'class="([^"]*)"')
+# Only a real attribute assignment counts; prose such as "data-driven
+# sections" in page copy is not markup.
+DATA_RE = re.compile(r"[\s<](data-[a-z0-9-]+)=")
+CUSTOM_PROPERTY_RE = re.compile(r"(?:^|[;{\s])(--[a-z][a-z0-9-]*)\s*:")
+# Font Awesome sets a bare `--fa` plus its `--fa-*` family.
+ALLOWED_PROPERTY_PREFIX = ("--td-", "--bs-", "--fa")
+
+
+def scan_html(public: Path) -> tuple[Counter[str], Counter[str], int]:
+    classes: Counter[str] = Counter()
+    attributes: Counter[str] = Counter()
+    pages = 0
+    for path in sorted(public.rglob("*.html")):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        pages += 1
+        for match in CLASS_RE.finditer(text):
+            for token in match.group(1).split():
+                classes[token] += 1
+        for match in DATA_RE.finditer(text):
+            attributes[match.group(1)] += 1
+    return classes, attributes, pages
+
+
+def check_html(public: Path) -> list[str]:
+    errors: list[str] = []
+    classes, attributes, pages = scan_html(public)
+    if pages == 0:
+        return ["no HTML pages found — build exampleSite first"]
+
+    stray_classes = sorted(
+        name
+        for name in classes
+        if not name.startswith("td-")
+        and name not in AUTHOR_MARKERS
+        and not THIRD_PARTY_CLASS.match(name)
+        # exampleSite fixtures use their own site-local classes on purpose
+        and "fixture" not in name
+    )
+    for name in stray_classes:
+        errors.append(f"class {name!r} is theme-generated but not td- prefixed ({classes[name]}×)")
+
+    stray_attributes = sorted(
+        name
+        for name in attributes
+        if not name.startswith(("data-td-", "data-bs-")) and name not in THIRD_PARTY_DATA
+    )
+    for name in stray_attributes:
+        errors.append(f"attribute {name!r} is theme-generated but not data-td- prefixed ({attributes[name]}×)")
+    return errors
+
+
+def check_css(public: Path) -> list[str]:
+    errors: list[str] = []
+    seen = 0
+    for path in sorted(public.rglob("*.css")):
+        # Vendored stylesheets keep their own custom properties.
+        if "third_party" in path.as_posix() or path.name.startswith(("katex", "swagger", "giscus")):
+            continue
+        seen += 1
+        for name in set(CUSTOM_PROPERTY_RE.findall(path.read_text(encoding="utf-8", errors="ignore"))):
+            if not name.startswith(ALLOWED_PROPERTY_PREFIX):
+                errors.append(f"{path.name}: custom property {name} is outside the --td- namespace")
+    if seen == 0:
+        errors.append("no theme stylesheet found in the build")
+    return errors
+
+
+def check_sources() -> list[str]:
+    """Guard the two source-level namespaces the built output cannot show."""
+    errors: list[str] = []
+    js = list((ROOT / "assets/js").glob("*.js"))
+    globals_set = set()
+    for path in js:
+        text = path.read_text(encoding="utf-8")
+        globals_set |= set(re.findall(r"window\.([A-Z][A-Za-z0-9_]*)\s*=", text))
+        globals_set |= set(re.findall(r"window\.(td[A-Za-z0-9_]*)", text))
+    for name in sorted(globals_set):
+        if not name.startswith("Oink") and name not in {"HTMLDialogElement"}:
+            errors.append(f"window.{name} is outside the Oink* global namespace")
+    return errors
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--public", type=Path, default=ROOT / "exampleSite/public")
+    args = parser.parse_args()
+
+    errors = check_html(args.public) + check_css(args.public) + check_sources()
+    if errors:
+        print("Namespace checks failed:")
+        for error in errors:
+            print(f"  {error}")
+        return 1
+    print("Namespace checks passed (td- classes, data-td- attributes, --td- properties, Oink* globals)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

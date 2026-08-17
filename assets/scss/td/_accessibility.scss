@@ -38,7 +38,7 @@ a:active {
 // Without an underline, inline links need a non-color distinction from the
 // surrounding copy to preserve the WCAG link-in-text contract.
 .td-content,
-.oink-landing {
+.td-landing-landing {
   :where(p, li, dd, figcaption, td, th) a:not(.btn) {
     font-weight: 600;
   }

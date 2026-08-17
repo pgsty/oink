@@ -1,42 +1,22 @@
-{{- /* Resolve and validate the site/page Image Zoom switch without losing explicit false. */ -}}
+{{- /* Resolve and validate the Image Zoom switch without losing explicit false.
+     Site: params.ui.image_zoom (boolean). Page: front matter image_zoom
+     (boolean), the site key with its ui. prefix dropped. */ -}}
 {{- $enabled := false -}}
 
-{{- with .Site.Params.ui -}}
-  {{- if not (reflect.IsMap .) -}}
-    {{- errorf "site parameter params.ui must be a map to configure params.ui.image_zoom.enable" -}}
+{{- if isset .Site.Params.ui "image_zoom" -}}
+  {{- $value := index .Site.Params.ui "image_zoom" -}}
+  {{- if ne (printf "%T" $value) "bool" -}}
+    {{- errorf "params.ui.image_zoom must be a boolean; got %v" $value -}}
   {{- end -}}
-  {{- if isset . "image_zoom" -}}
-    {{- $zoom := index . "image_zoom" -}}
-    {{- if not (reflect.IsMap $zoom) -}}
-      {{- errorf "site parameter params.ui.image_zoom must be a map with boolean enable" -}}
-    {{- end -}}
-    {{- if isset $zoom "enable" -}}
-      {{- $value := index $zoom "enable" -}}
-      {{- if ne (printf "%T" $value) "bool" -}}
-        {{- errorf "site parameter params.ui.image_zoom.enable must be a boolean" -}}
-      {{- end -}}
-      {{- $enabled = $value -}}
-    {{- end -}}
-  {{- end -}}
+  {{- $enabled = $value -}}
 {{- end -}}
 
-{{- with .Params.ui -}}
-  {{- if not (reflect.IsMap .) -}}
-    {{- errorf "page parameter params.ui must be a map to configure params.ui.image_zoom.enable in %s" $.Path -}}
+{{- if isset .Params "image_zoom" -}}
+  {{- $value := index .Params "image_zoom" -}}
+  {{- if ne (printf "%T" $value) "bool" -}}
+    {{- errorf "front matter image_zoom must be a boolean; got %v at %s" $value .Path -}}
   {{- end -}}
-  {{- if isset . "image_zoom" -}}
-    {{- $zoom := index . "image_zoom" -}}
-    {{- if not (reflect.IsMap $zoom) -}}
-      {{- errorf "page parameter params.ui.image_zoom must be a map with boolean enable in %s" $.Path -}}
-    {{- end -}}
-    {{- if isset $zoom "enable" -}}
-      {{- $value := index $zoom "enable" -}}
-      {{- if ne (printf "%T" $value) "bool" -}}
-        {{- errorf "page parameter params.ui.image_zoom.enable must be a boolean in %s" $.Path -}}
-      {{- end -}}
-      {{- $enabled = $value -}}
-    {{- end -}}
-  {{- end -}}
+  {{- $enabled = $value -}}
 {{- end -}}
 
 {{- return (dict "enable" $enabled) -}}

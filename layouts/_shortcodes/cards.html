@@ -1,6 +1,6 @@
 {{- /* `<` container for card children (plan/design/components.md v5 §3.4).
        Native text-only form: a link list with `{.cards}`. */ -}}
-{{- with .Params }}{{ errorf "shortcode %q takes no parameters at %s" $.Name $.Position }}{{ end -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "none") -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if eq $format "markdown" -}}
 {{ .Inner }}

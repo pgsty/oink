@@ -1,9 +1,9 @@
 # Alert labels
-caution: Oprez
-important: Važno
-note: Beleška
-tip: Savet
-warning: Upozorenje
+callout_caution: Oprez
+callout_important: Važno
+callout_note: Beleška
+callout_tip: Savet
+callout_warning: Upozorenje
 
 # UI strings. Buttons and similar.
 ui_pager_prev: Prethodno
@@ -280,12 +280,12 @@ ui_page_annotation: Page information
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
-success: Success
-danger: Danger
-question: Question
-example: Example
-quote: Quote
-details: Details
+callout_success: Success
+callout_danger: Danger
+callout_question: Question
+callout_example: Example
+callout_quote: Quote
+callout_details: Details
 
 # UI strings. Buttons and similar.
 

@@ -71,20 +71,20 @@
     <div class="td-shell-sidebar__footer-end">
       {{ partial "shell/keyboard-help.html" . }}
       {{- if $darkMode.showMenu }}
-      <div class="td-shell-sidebar__theme nav-hover-menu" data-td-nav-hover>
+      <div class="td-shell-sidebar__theme td-nav-hover-menu" data-td-nav-hover>
         <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-nav-hover-trigger data-td-theme-toggle
           title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}" aria-expanded="false">
           {{- partialCached "shell/icon.html" "moon" "sidebar-moon" -}}
           {{- partialCached "shell/icon.html" "sun" "sidebar-sun" -}}
         </button>
-        <div class="nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
-          <button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
+        <div class="td-nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
+          <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
             {{- partialCached "shell/icon.html" "sun" "sidebar-theme-light" -}}<span>{{ T "ui_theme_light" }}</span>
           </button>
-          <button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
+          <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
             {{- partialCached "shell/icon.html" "moon" "sidebar-theme-dark" -}}<span>{{ T "ui_theme_dark" }}</span>
           </button>
-          <button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
+          <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
             {{- partialCached "shell/icon.html" "contrast" "sidebar-theme-auto" -}}<span>{{ T "ui_theme_auto" }}</span>
           </button>
         </div>

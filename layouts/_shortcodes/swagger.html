@@ -1,0 +1,18 @@
+{{- /* Embed Swagger UI. Required named parameter: src. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "src")) -}}
+{{ $original := .Get "src" }}
+{{ .Page.Store.Set "hasSwagger" true }}
+<div id="td-swagger-ui"></div>
+<script>
+  window.onload = function () {
+    const ui = SwaggerUIBundle({
+      url: {{ $original | relURL }},
+      dom_id: '#td-swagger-ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ]
+    });
+    window.ui = ui;
+  };
+</script>

@@ -1,11 +1,11 @@
 {{- $page := .page -}}
 {{- $data := .data -}}
 {{- $id := .id -}}
-<section id="{{ $id }}" class="oink-section oink-markdown-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-markdown-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     {{- with ($data.body | default $data.content) }}
-    <div class="oink-markdown">{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</div>
+    <div class="td-landing-markdown">{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</div>
     {{- end }}
   </div>
 </section>

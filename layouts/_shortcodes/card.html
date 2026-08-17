@@ -1,16 +1,13 @@
 {{- /* One card inside `{{< cards >}}`: title (required), link, icon (one Font
        Awesome class pair), badge, image + image_alt | decorative; the body is
        the Markdown description, rendered here with RenderString (v5 §3.4). */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "title" "link" "icon" "badge" "image" "image_alt" "decorative")) -}}
 {{- with .Parent -}}
   {{- if ne .Name "cards" }}{{ errorf "shortcode %q must be enclosed by cards, not %q, at %s" $.Name .Name $.Position }}{{ end -}}
 {{- else -}}
   {{- errorf "shortcode %q must be enclosed by cards at %s" .Name .Position -}}
 {{- end -}}
 {{- if or (not .Params) (not .IsNamedParams) }}{{ errorf "shortcode %q requires named parameters (title, …) at %s" .Name .Position }}{{ end -}}
-{{- $allowed := slice "title" "link" "icon" "badge" "image" "image_alt" "decorative" -}}
-{{- range $name, $_ := .Params -}}
-  {{- if not (in $allowed $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
-{{- end -}}
 {{- if not (isset .Params "title") }}{{ errorf "shortcode %q requires parameter title at %s" .Name .Position }}{{ end -}}
 {{- $title := .Get "title" -}}
 {{- if ne (printf "%T" $title) "string" }}{{ errorf "shortcode %q: title must be a string at %s" .Name .Position }}{{ end -}}

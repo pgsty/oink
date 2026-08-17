@@ -12,7 +12,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/main-[^"]+\.js)"[^>]*>')
+MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/page-[^"]+\.js)"[^>]*>')
 VALID_IMAGE = "/media/content-primitives-static.svg"
 TALL_IMAGE = "/media/content-primitives-tall.svg"
 
@@ -69,14 +69,14 @@ def check_outputs(public: Path) -> list[str]:
     require(gallery.count("<img") == 4, "Gallery lost an image", errors)
     require(gallery.count('loading="lazy" decoding="async"') == 4, "Gallery loading attributes diverged", errors)
     require(html.count("data-td-image-zoom-dialog") == 1, "Gallery page did not request one Zoom dialog", errors)
-    require(bundle is not None and bundle.exists(), "Gallery has no local main bundle", errors)
+    require(bundle is not None and bundle.exists(), "Gallery has no local feature bundle", errors)
     if bundle and bundle.exists():
         require("data-td-image-zoom-dialog" in bundle.read_text(), "Gallery bundle omits Image Zoom", errors)
     disabled_gallery = gallery_block(disabled)
     require(disabled_gallery.count("<img") == 2, "disabled Gallery lost its images", errors)
     require("Static Gallery overview" in disabled and "Static Gallery detail" in disabled, "disabled Gallery lost content", errors)
     require("data-td-image-zoom-dialog" not in disabled, "disabled Gallery emitted a dialog", errors)
-    require(disabled_bundle is not None and disabled_bundle.exists(), "disabled Gallery has no main bundle", errors)
+    require(disabled_bundle is not None and disabled_bundle.exists(), "disabled Gallery has no feature bundle", errors)
     if disabled_bundle and disabled_bundle.exists():
         require("data-td-image-zoom-dialog" not in disabled_bundle.read_text(), "disabled Gallery loaded Zoom", errors)
     require(bundle != disabled_bundle, "enabled and disabled Gallery reused one bundle target", errors)
@@ -244,7 +244,7 @@ def check_rss_output(hugo: str) -> list[str]:
             f"theme: {ROOT.name}\n"
             "disableKinds: [sitemap, taxonomy, term]\n"
             "outputs:\n  home: [HTML, RSS]\n  section: [HTML, RSS]\n  page: [HTML, markdown]\n"
-            "params:\n  ui:\n    image_zoom:\n      enable: true\n"
+            "params:\n  ui:\n    image_zoom: true\n"
             "markup:\n  goldmark:\n    renderer:\n      unsafe: true\n    parser:\n      wrapStandAloneImageWithinParagraph: false\n      attribute:\n        block: true\n"
         )
         destination = site / "public"
@@ -277,7 +277,7 @@ def zoom_site_config(enabled: bool | None) -> str:
         "markup:\n  goldmark:\n    parser:\n      wrapStandAloneImageWithinParagraph: false\n      attribute:\n        block: true\n"
     )
     if enabled is not None:
-        config += f"params:\n  ui:\n    image_zoom:\n      enable: {str(enabled).lower()}\n"
+        config += f"params:\n  ui:\n    image_zoom: {str(enabled).lower()}\n"
     return config
 
 
@@ -301,7 +301,7 @@ def check_zoom_reuse(hugo: str) -> list[str]:
             (site / "content/docs").mkdir(parents=True)
             front = "---\ntitle: Gallery Zoom\n"
             if page_enabled is not None:
-                front += f"params:\n  ui:\n    image_zoom:\n      enable: {str(page_enabled).lower()}\n"
+                front += f"image_zoom: {str(page_enabled).lower()}\n"
             front += "---\n\n"
             (site / "content/docs/index.md").write_text(front + body)
             (site / "hugo.yaml").write_text(zoom_site_config(site_enabled))

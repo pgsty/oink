@@ -13,7 +13,7 @@
   {{- $children = $children.ByWeight -}}
 {{- end -}}
 {{- $children = where $children ".Params.toc_hide" "!=" true -}}
-{{- $truncate := $section.Site.Params.ui.sidebar_menu_truncate | default 128 -}}
+{{- $truncate := $section.Site.Params.ui.sidebar_menu_truncate | default 2000 -}}
 {{- $children = $children | first $truncate -}}
 {{- range $children -}}
   {{- if and (eq $section $section.Site.Home) (eq .Params.toc_root true) -}}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and verify every PRD 4 sidebar icon density policy."""
+"""Build and verify every sidebar icon density policy."""
 
 from __future__ import annotations
 
@@ -14,13 +14,13 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT_SCRIPT = ROOT / "scripts" / "check-prd4-contract.py"
+CONTRACT_SCRIPT = ROOT / "scripts" / "check-navigation-contract.py"
 
 
 def load_contract_module() -> Any:
-    spec = importlib.util.spec_from_file_location("prd4_contract", CONTRACT_SCRIPT)
+    spec = importlib.util.spec_from_file_location("navigation_contract", CONTRACT_SCRIPT)
     if spec is None or spec.loader is None:
-        raise RuntimeError("cannot load PRD 4 fixture helper")
+        raise RuntimeError("cannot load the navigation fixture helper")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -39,7 +39,7 @@ class SidebarParser(HTMLParser):
         values = {name: value or "" for name, value in attrs}
         classes = set(values.get("class", "").split())
         if tag == "nav" and "td-shell-tree" in classes:
-            self.policy = values.get("data-sidebar-icon-policy", "")
+            self.policy = values.get("data-td-sidebar-icon-policy", "")
         elif tag == "a" and "td-shell-tree__link" in classes:
             self._link = {"text": [], "icon": False, "current": values.get("aria-current")}
         elif tag == "i" and self._link is not None:

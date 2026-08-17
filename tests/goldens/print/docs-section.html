@@ -2,7 +2,7 @@
 <html itemscope itemtype="http://schema.org/WebPage"
 dir="ltr"
 lang="en"
-data-td-typography="technical" data-theme-init>
+data-td-typography="technical" data-td-theme-init>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -14,7 +14,7 @@ html { background: Canvas; color: CanvasText; }
 @media (prefers-color-scheme: dark) {
 html { background: #0b0d12; color: #e6e6e6; }
 }
-html[data-theme-init] * { transition: none !important; }
+html[data-td-theme-init] * { transition: none !important; }
 [data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
 [data-td-theme-toggle] > [hidden] { display: none !important; }
 html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
@@ -59,30 +59,30 @@ document.documentElement.setAttribute('data-bs-theme', theme);
 </head>
 <body class="td-section td-print-view">
 <a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
-<header class="landing-header d-print-none" data-header>
-<div class="landing-container">
-<nav class="landing-nav" aria-label="Main navigation">
-<a href="/" class="nav-brand" data-td-navbar-route
+<header class="td-site-header d-print-none" data-td-header>
+<div class="td-site-container">
+<nav class="td-site-nav" aria-label="Main navigation">
+<a href="/" class="td-nav-brand" data-td-navbar-route
 aria-label="OINK Landing Example — Home">
-<img src="/icons/logo.svg" alt="" class="nav-logo" width="22" height="22">
-<span class="nav-title">OINK Landing Example</span>
-</a><div class="nav-links nav-menu-zone"><div class="nav-menu" data-td-navbar-menu>
-<a class="nav-link nav-menu__parent-link active" href="/docs/"
+<img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
+<span class="td-nav-title">OINK Landing Example</span>
+</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link active" href="/docs/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Documentation"
 data-td-navbar-region="desktop" data-td-navbar-label="Documentation"
 data-td-navbar-external="false" aria-current="page" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
 <i class="fa-solid fa-book" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Documentation</span></a>
-<div class="nav-menu__panel nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
-style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="nav-menu__item-link" href="/docs/content-primitives/"
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/content-primitives/"
 data-td-navbar-level="1" data-td-navbar-kind="link"
 aria-label="Content primitives"
 data-td-navbar-region="desktop" data-td-navbar-label="Content primitives"
 data-td-navbar-external="false">
 <i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Content primitives</span><small class="td-navbar-entry__description">Semantic authoring components</small></a>
-<a class="nav-menu__item-link" href="/docs/typography/"
+<a class="td-nav-menu__item-link" href="/docs/typography/"
 data-td-navbar-level="1" data-td-navbar-kind="link"
 aria-label="Typography"
 data-td-navbar-region="desktop" data-td-navbar-label="Typography"
@@ -104,21 +104,21 @@ data-td-navbar-region="desktop" data-td-navbar-label="Source"
 data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
 <i class="fa-brands fa-github" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Source</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
-</div><div class="nav-links nav-util-zone">
-<a class="nav-util nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
-title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="nav-hover-menu nav-theme-menu" data-td-nav-hover>
-<button type="button" class="nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+</div><div class="td-nav-links td-nav-util-zone">
+<a class="td-nav-util td-nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
+title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
+<button type="button" class="td-nav-util" data-td-nav-hover-trigger data-td-theme-toggle
 title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i></button>
-<div class="nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
 </button>
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
 </button>
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
 </button>
 </div>
 </div>
-<a href="https://github.com/pgsty/oink" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="nav-count" data-td-github-stars>2.2k</span></a>
+<a href="https://github.com/pgsty/oink" class="td-nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="td-nav-count" data-td-github-stars>2.2k</span></a>
 </div>
 </nav>
 </div>
@@ -126,10 +126,10 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <div class="container-fluid td-print-shell">
 <main id="td-main-content" class="td-print-document" role="main" tabindex="-1">
 <div class="td-content">
-<div class="pageinfo pageinfo-primary d-print-none">
+<div class="td-page-notice td-page-notice--primary d-print-none">
 <p>
 This is the multi-page printable view of this section.
-<button type="button" class="btn btn-link p-0 align-baseline" data-oink-action="print">Click here to print</button>.
+<button type="button" class="btn btn-link p-0 align-baseline" data-td-action="print">Click here to print</button>.
 </p><p>
 <a href="/docs/">Return to the regular view of this page</a>.
 </p>
@@ -258,7 +258,7 @@ This is the multi-page printable view of this section.
 <div class="td-callout__body">
 <p>An example callout with a fenced block:</p>
 <div class="td-code td-code--untitled" id="td-code-c599ee0b-fence-0" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-c599ee0b-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;hello&#34;</span></span></span></code></pre></div></div>
 </div>
 </div>
@@ -337,11 +337,10 @@ typography roles. 中文正文用于验证明确的 CJK 回退与换行行为。
 <h2 id="configure-the-theme">Configure the theme</h2>
 <p>Inline <code>code</code> and the following block exercise Bootstrap&rsquo;s monospace bridge:</p>
 <div class="td-code td-code--untitled" id="td-code-8146c568-fence-0" data-td-code data-td-code-auto-id
-data-language="yaml" data-line-count="4">
+data-td-language="yaml" data-td-line-count="3">
 <div class="td-code__viewport" id="td-code-8146c568-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">params</span><span class="p">:</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ui</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">typography</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l">technical</span></span></span></code></pre></div></div>
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">typography</span><span class="p">:</span><span class="w"> </span><span class="l">technical</span></span></span></code></pre></div></div>
 </div>
 <h3 id="build-the-site">Build the site</h3>
 <p>Run Hugo Extended without a frontend package manager.</p>
@@ -380,7 +379,7 @@ data-language="yaml" data-line-count="4">
 <div class="lead">Regression fixtures for the shared Chroma shell and code groups.</div>
 <h2 id="titled-numbered-and-highlighted">Titled, numbered, and highlighted</h2>
 <div class="td-code td-code--titled" id="td-code-a874e6d7-fence-0" data-td-code data-td-code-auto-id
-data-language="yaml" data-line-count="5" role="group" aria-labelledby="td-code-a874e6d7-fence-0-title">
+data-td-language="yaml" data-td-line-count="5" role="group" aria-labelledby="td-code-a874e6d7-fence-0-title">
 <div class="td-code__header">
 <span class="td-code__filename" id="td-code-a874e6d7-fence-0-title" title="config/very-long-example-name-for-responsive-layout.yml">config/very-long-example-name-for-responsive-layout.yml</span>
 </div>
@@ -394,7 +393,7 @@ data-language="yaml" data-line-count="5" role="group" aria-labelledby="td-code-a
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">params</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">offlineSearch</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">offline_search</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ui</span><span class="p">:</span><span class="w">
 </span></span></span><span class="line hl"><span class="cl"><span class="w">    </span><span class="nt">sidebar_menu_foldable</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">sidebar_menu_compact</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span></span></span></code></pre></td></tr></table>
@@ -403,12 +402,12 @@ data-language="yaml" data-line-count="5" role="group" aria-labelledby="td-code-a
 </div>
 <h2 id="escaped-generic-attributes">Escaped generic attributes</h2>
 <div class="td-code td-code--untitled code-fixture" id="generic-code" data-td-code
-data-language="text" data-line-count="1" data-note="a &#34;quoted&#34; &amp; value">
+data-td-language="text" data-td-line-count="1" data-note="a &#34;quoted&#34; &amp; value">
 <div class="td-code__viewport" id="generic-code-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">safe attributes</span></span></code></pre></div></div>
 </div>
 <h2 id="wrapped-and-collapsed">Wrapped and collapsed</h2>
 <div class="td-code td-code--untitled td-code--wrap" id="wrapped-example" data-td-code
-data-language="text" data-line-count="7" role="group" aria-label="Wrapped configuration example">
+data-td-language="text" data-td-line-count="7" role="group" aria-label="Wrapped configuration example">
 <div class="td-code__viewport" id="wrapped-example-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">alpha = one
 </span></span><span class="line"><span class="cl">beta = two
 </span></span><span class="line"><span class="cl">gamma = this-is-a-deliberately-long-unbroken-value-that-tests-responsive-wrapping-without-changing-the-source
@@ -419,7 +418,7 @@ data-language="text" data-line-count="7" role="group" aria-label="Wrapped config
 </div>
 <h2 id="console-commands">Console commands</h2>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-3" data-td-code data-td-code-auto-id
-data-language="console" data-line-count="9">
+data-td-language="console" data-td-line-count="9">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-3-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">printf</span> <span class="s1">&#39;hello\n&#39;</span>
 </span></span><span class="line"><span class="cl"><span class="go">hello
 </span></span></span><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">printf</span> <span class="s1">&#39;world\n&#39;</span>
@@ -433,28 +432,28 @@ data-language="console" data-line-count="9">
 </div>
 <h2 id="shell-language-label">Shell language label</h2>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-4" data-td-code data-td-code-auto-id
-data-language="sh" data-line-count="1">
+data-td-language="sh" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-4-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;displayed as Bash&#34;</span></span></span></code></pre></div></div>
 </div>
 <h2 id="package-managers-adjacent-fences-synchronized-group">Package managers (adjacent fences, synchronized group)</h2>
 <div class="td-tab-block td-tab-block--code" data-td-tab="npm" data-td-tab-group="package-manager" data-td-tab-value="npm" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>npm</div>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-5" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-5-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install @example/client</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="td-tab-block td-tab-block--code" data-td-tab="pnpm" data-td-tab-value="pnpm" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>pnpm</div>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-6" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-6-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm add @example/client</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="td-tab-block td-tab-block--code" data-td-tab="yarn" data-td-tab-value="yarn" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>yarn</div>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-7" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-7-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yarn add @example/client</span></span></code></pre></div></div>
 </div>
 </div>
@@ -462,14 +461,14 @@ data-language="bash" data-line-count="1">
 <div class="td-tab-block td-tab-block--code" data-td-tab="npm" data-td-tab-group="package-manager" data-td-tab-value="npm" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>npm</div>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-8" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-8-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install --global @example/tool</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="td-tab-block td-tab-block--code" data-td-tab="pnpm" data-td-tab-value="pnpm" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>pnpm</div>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-9" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-9-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pnpm add --global @example/tool</span></span></code></pre></div></div>
 </div>
 </div>
@@ -477,14 +476,14 @@ data-language="bash" data-line-count="1">
 <div class="td-tab-block td-tab-block--code" data-td-tab="A **literal** [label]" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>A **literal** [label]</div>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-fence-10" data-td-code data-td-code-auto-id
-data-language="text" data-line-count="1">
+data-td-language="text" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-fence-10-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">punctuation stays literal</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="td-tab-block td-tab-block--code" data-td-tab="YAML" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>YAML</div>
 <div class="td-code td-code--titled" id="td-code-a874e6d7-fence-11" data-td-code data-td-code-auto-id
-data-language="yaml" data-line-count="1" role="group" aria-labelledby="td-code-a874e6d7-fence-11-title">
+data-td-language="yaml" data-td-line-count="1" role="group" aria-labelledby="td-code-a874e6d7-fence-11-title">
 <div class="td-code__header">
 <span class="td-code__filename" id="td-code-a874e6d7-fence-11-title" title="config.yaml">config.yaml</span>
 </div>
@@ -498,7 +497,7 @@ data-language="yaml" data-line-count="1" role="group" aria-labelledby="td-code-a
 <div class="td-tabs__panel-body"><h6 id="envvar-queue-dir"><code>MINIO_LOGGER_WEBHOOK_QUEUE_DIR</code></h6>
 <p>Set the queue directory through the environment.</p>
 <div class="td-code td-code--untitled" id="td-code-a874e6d7-tabs0-env-fence-0" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-a874e6d7-tabs0-env-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">MINIO_LOGGER_WEBHOOK_QUEUE_DIR</span><span class="o">=</span>/var/lib/minio/queue</span></span></code></pre></div></div>
 </div>
 </div>
@@ -556,14 +555,14 @@ data-language="bash" data-line-count="1">
 <div class="td-tab-block td-tab-block--code" data-td-tab="Homebrew" data-td-tab-group="install" data-td-tab-value="brew" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>Homebrew</div>
 <div class="td-code td-code--untitled" id="td-code-eb050d30-fence-0" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-eb050d30-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">brew install pigsty</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="td-tab-block td-tab-block--code" data-td-tab="APT" data-td-tab-value="apt" data-td-tab-kind="code">
 <div class="td-tab-block__title" data-td-tab-title>APT</div>
 <div class="td-code td-code--untitled" id="td-code-eb050d30-fence-1" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-eb050d30-fence-1-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install pigsty</span></span></code></pre></div></div>
 </div>
 </div>
@@ -580,7 +579,7 @@ data-language="bash" data-line-count="1">
 <li>
 <p>Verify the installation</p>
 <div class="td-code td-code--untitled" id="td-code-eb050d30-fence-2" data-td-code data-td-code-auto-id
-data-language="console" data-line-count="2">
+data-td-language="console" data-td-line-count="2">
 <div class="td-code__viewport" id="td-code-eb050d30-fence-2-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> pig --version
 </span></span><span class="line"><span class="cl"><span class="go">pig 1.7.0
 </span></span></span></code></pre></div></div>
@@ -683,7 +682,7 @@ filled state <span class="td-badge td-badge--danger">Deprecated</span>.</p>
 <p class="td-fields__label" id="td-fields-a0c0e0b1b3bfbfd6304c44d62b36df9a-10-label">Configuration fields</p>
 <dl class="td-fields__list" aria-labelledby="td-fields-a0c0e0b1b3bfbfd6304c44d62b36df9a-10-label">
 <div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
+<dt class="td-field__term"><code class="td-field__name">offline_search</code>
 <span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>boolean</code></span></span>
 <span class="visually-hidden">, </span><span class="td-field__required">required</span>
 <span class="visually-hidden">, </span><span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>true</code></span></span>
@@ -692,7 +691,7 @@ filled state <span class="td-badge td-badge--danger">Deprecated</span>.</p>
 </dd>
 </div>
 <div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">offlineSearchMaxResults</code>
+<dt class="td-field__term"><code class="td-field__name">offline_search_max_results</code>
 <span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>integer</code></span></span>
 <span class="visually-hidden">, </span><span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>10</code></span></span>
 </dt>
@@ -942,21 +941,21 @@ contained overflow policy.</p>
 <p class="td-fields__label" id="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t1-label">搜索参数</p>
 <dl class="td-fields__list" aria-labelledby="td-fields-5afc2c2b33f59be3a2408bb247e4c0cc-t1-label">
 <div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
+<dt class="td-field__term"><code class="td-field__name">offline_search</code>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">boolean</span></span>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>false</code></span></span>
 </dt>
 <dd class="td-field__description">开启本地索引与命令面板</dd>
 </div>
 <div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">offlineSearchMaxResults</code>
+<dt class="td-field__term"><code class="td-field__name">offline_search_max_results</code>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>10</code></span></span>
 </dt>
 <dd class="td-field__description">结果上限，<em>支持行内 Markdown</em> 与 <a href="/docs/">链接</a></dd>
 </div>
 <div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">offlineSearchSummaryLength</code>
+<dt class="td-field__term"><code class="td-field__name">offline_search_summary_length</code>
 <span class="visually-hidden">, </span><span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">integer</span></span>
 </dt>
 <dd class="td-field__description">摘要长度（空的中间列被省略）</dd>
@@ -991,7 +990,7 @@ contained overflow policy.</p>
 <dd class="td-field__description">Must include the subpath</dd>
 </div>
 <div class="td-field">
-<dt class="td-field__term"><code class="td-field__name">offlineSearch</code>
+<dt class="td-field__term"><code class="td-field__name">offline_search</code>
 <span class="visually-hidden">, </span><span class="td-field__type"><span class="td-field__meta-value"><code>boolean</code></span></span>
 <span class="visually-hidden">, </span><span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>false</code></span></span>
 </dt>
@@ -1071,7 +1070,7 @@ contained overflow policy.</p>
 </table>
 </div>
 <h2 id="numbered-book-table-id-num-caption">Numbered Book table <code>{#id num= caption=}</code></h2>
-<figure id="tab_iso" class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num="9-1"><div class="td-book-figure__body"><div class="td-table-scroll td-table-scroll--static">
+<figure id="tab_iso" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="9-1"><div class="td-book-figure__body"><div class="td-table-scroll td-table-scroll--static">
 <table>
 <thead>
 <tr>
@@ -1095,7 +1094,7 @@ contained overflow policy.</p>
 </table>
 </div>
 </div><figcaption><span class="td-tbl-label">Table 9-1</span> <span class="td-tbl-caption">Anomalies allowed by isolation level</span></figcaption></figure>
-<p>See <a class="td-book-xref td-book-xref--tbl" href="#tab_iso" data-book-kind="tbl" data-book-num="9-1">Table 9-1</a>.</p>
+<p>See <a class="td-book-xref td-book-xref--tbl" href="#tab_iso" data-td-book-kind="tbl" data-td-book-num="9-1">Table 9-1</a>.</p>
 <h2 id="adjacent-tables-with-tab">Adjacent tables with <code>{tab=}</code></h2>
 <div class="td-tab-block td-tab-block--table" data-td-tab="PG 17" data-td-tab-group="pgver" data-td-tab-value="pg17" data-td-tab-kind="table">
 <div class="td-tab-block__title" data-td-tab-title>PG 17</div>
@@ -1205,31 +1204,31 @@ formatter: &#34;$fn:bytesFormatter&#34;</code></pre><h2 id="checksums-release-pa
 <div class="td-content" style="page-break-before: always">
 <h1 id="pg-3ffbeadcba3f7022aa29809fa27c07c3">16 - Download data demo</h1>
 <div class="lead">Rolling and pinned channels render from one validated data record.</div>
-<div class="td-download td-download--static" data-download-key="demo">
-<section class="td-download__channel" id="download-demo-script" data-download-kind="rolling">
+<div class="td-download td-download--static" data-td-download-key="demo">
+<section class="td-download__channel" id="download-demo-script" data-td-download-kind="rolling">
 <header class="td-download__heading">
 <h2><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>Install script</span></h2>
 </header><div class="td-download__note"><p>Mirrors track the rolling stable channel and may lag the GitHub release.</p>
 </div><div class="td-code td-code--titled" id="td-code-d7b66756-download-0-0-0" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1" role="group" aria-labelledby="td-code-d7b66756-download-0-0-0-title">
+data-td-language="bash" data-td-line-count="1" role="group" aria-labelledby="td-code-d7b66756-download-0-0-0-title">
 <div class="td-code__header">
 <span class="td-code__filename" id="td-code-d7b66756-download-0-0-0-title" title="Install">Install</span>
 </div>
 <div class="td-code__viewport" id="td-code-d7b66756-download-0-0-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://repo.example.org/demo <span class="p">|</span> bash</span></span></code></pre></div></div>
 </div>
 </section>
-<section class="td-download__channel" id="download-demo-source" data-download-kind="pinned">
+<section class="td-download__channel" id="download-demo-source" data-td-download-kind="pinned">
 <header class="td-download__heading">
 <h2><i class="fa-solid fa-code-branch" aria-hidden="true"></i><span>Source archive</span></h2>
 </header><a class="td-download__action" href="https://github.com/pgsty/oink/archive/refs/tags/v2.4.1.tar.gz">Source archive</a><div class="td-code td-code--titled" id="td-code-d7b66756-download-0-1-0" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1" role="group" aria-labelledby="td-code-d7b66756-download-0-1-0-title">
+data-td-language="bash" data-td-line-count="1" role="group" aria-labelledby="td-code-d7b66756-download-0-1-0-title">
 <div class="td-code__header">
 <span class="td-code__filename" id="td-code-d7b66756-download-0-1-0-title" title="Build source">Build source</span>
 </div>
 <div class="td-code__viewport" id="td-code-d7b66756-download-0-1-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone --branch v2.4.1 https://github.com/pgsty/oink.git</span></span></code></pre></div></div>
 </div>
 </section>
-<section class="td-download__channel" id="download-demo-assets" data-download-kind="pinned">
+<section class="td-download__channel" id="download-demo-assets" data-td-download-kind="pinned">
 <header class="td-download__heading">
 <h2><i class="fa-solid fa-box-open" aria-hidden="true"></i><span>Release assets</span></h2>
 </header><div class="td-asset-list td-asset-list--static">
@@ -1304,20 +1303,20 @@ data-language="bash" data-line-count="1" role="group" aria-labelledby="td-code-d
 <div class="td-content" style="page-break-before: always">
 <h1 id="pg-5c668cf19f9b781edeff7c1a1c346ea7">20 - Unpublished download demo</h1>
 <div class="lead">Pinned release facts remain visible without exposing download actions.</div>
-<div class="td-download td-download--static" data-download-key="pending">
-<section class="td-download__channel" id="download-pending-repository" data-download-kind="rolling">
+<div class="td-download td-download--static" data-td-download-key="pending">
+<section class="td-download__channel" id="download-pending-repository" data-td-download-kind="rolling">
 <header class="td-download__heading">
 <h2><span>Package repository</span></h2>
 </header><div class="td-download__note"><p>The rolling repository remains available while the pinned candidate is unpublished.</p>
 </div><a class="td-download__action" href="https://repo.example.org/oink/">Package repository</a><div class="td-code td-code--untitled" id="td-code-20d7b3a3-download-0-0-0" data-td-code data-td-code-auto-id
-data-language="bash" data-line-count="1">
+data-td-language="bash" data-td-line-count="1">
 <div class="td-code__viewport" id="td-code-20d7b3a3-download-0-0-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://repo.example.org/oink/install <span class="p">|</span> bash</span></span></code></pre></div></div>
 </div>
 </section>
-<section class="td-download__channel" id="download-pending-candidate" data-download-kind="pinned">
+<section class="td-download__channel" id="download-pending-candidate" data-td-download-kind="pinned">
 <header class="td-download__heading">
 <h2><span>Release candidate</span></h2><span class="td-download__state" aria-disabled="true">Pending release</span>
-</header><span class="td-download__action is-disabled" aria-disabled="true">Release candidate</span><div class="td-asset-list td-asset-list--static">
+</header><span class="td-download__action td-is-disabled" aria-disabled="true">Release candidate</span><div class="td-asset-list td-asset-list--static">
 <div class="td-asset-list__table-wrap" tabindex="0" role="region" aria-label="Download asset">
 <table class="td-asset-list__table">
 <caption class="visually-hidden">Download asset</caption>
@@ -1340,6 +1339,7 @@ data-language="bash" data-line-count="1">
 </div>
 </main>
 </div>
-<script type="application/json" id="oink-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/docs/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script><script src="/js/main-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/docs/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 {{- /* Dense, local-data-driven GitHub avatar wall for content pages. */ -}}
-{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "data" "class")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "data" "class")) -}}
 {{- $key := "contributors" -}}
 {{- if and .IsNamedParams (isset .Params "data") -}}
   {{- $key = .Get "data" -}}

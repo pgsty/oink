@@ -3,7 +3,7 @@
   "generated": "2026-08-17",
   "hash": "sha256",
   "trees": [
-    {"path": "assets/third_party", "files": 240, "sha256": "2f97030068fce3c60b4f23b9d21aebe12846fb601f1fac736d3b42edbdcbaaf3"},
+    {"path": "assets/third_party", "files": 239, "sha256": "98870691b5b9dafd622511db081162864515898abdfbd6699e00551f29aeed49"},
     {"path": "assets/js/third_party", "files": 1, "sha256": "ac21e64c5c17db79d37d0a3149cdc4489879e730e3cb360180eb8cf7b0041d27"},
     {"path": "static/webfonts", "files": 41, "sha256": "55f2ebfbef479b898d52e8ec86b21bd661d5c7c8d4014440f300901e489e11cf"}
   ],
@@ -54,8 +54,8 @@
       "license": "OFL-1.1",
       "licenseFiles": ["assets/third_party/open-sans/LICENSE"],
       "artifacts": [
-        {"path": "assets/third_party/open-sans/_normal.scss", "sha256": "4c5cb06dcb4ce897bb9af24e41e29a10dab1098652fb94c9a275b19f8ebf3b5b"},
-        {"path": "assets/third_party/open-sans/_italic.scss", "sha256": "748d13e2b46f24dbde68abfc4e393458213f7a15bdb799504194babd8c3536d7"},
+        {"path": "assets/third_party/open-sans/_normal.scss", "sha256": "a5ae3f39ed0ff844a8cc9b2f141944dbc862bafd0f9411b34b6b6478832f4ba9"},
+        {"path": "assets/third_party/open-sans/_italic.scss", "sha256": "645b92829f5e6c805adc9fb2a529dcd6dd39afdc56f75aaeb74d1b2c0bd90160"},
         {"path": "static/webfonts/open-sans/open-sans-latin-wght-normal.woff2", "sha256": "d8e4fe0452aa2076429a9bb5d8757d00a994dd95986cf950e9a1a371b9a072a0"}
       ]
     },
@@ -310,17 +310,6 @@
       "licenseFiles": ["assets/third_party/external-svg-loader/LICENSE.idb-keyval"],
       "artifacts": [
         {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a3301df36135fff595018610d75e8c54cf024d90a7f0bd39bc0ae5211ea8440d"}
-      ]
-    },
-    {
-      "name": "prismjs",
-      "version": "1.30.0",
-      "source": "https://registry.npmjs.org/prismjs/-/prismjs-1.30.0.tgz",
-      "license": "MIT",
-      "licenseFiles": ["assets/third_party/prism/LICENSE"],
-      "artifacts": [
-        {"path": "static/js/prism.js", "sha256": "fb3fd240cc40a7514b9e4f74f29763680d2f44b84eb5231a20d06ed9a8d0e6ce"},
-        {"path": "static/css/prism.css", "sha256": "469b0da1607c631886c006196d73145880e62a2abdedd787b913e7c2ef3bb793"}
       ]
     }
   ]

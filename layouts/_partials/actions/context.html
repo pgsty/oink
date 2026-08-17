@@ -5,18 +5,30 @@
 {{- $assistantLinks := false -}}
 {{- with $p.Site.Params.ui.page_context_menu -}}
   {{- if reflect.IsMap . -}}
-    {{- if isset . "enable" }}{{ $pagePlacement = .enable }}{{ end -}}
+    {{- if isset . "enable" -}}
+      {{- if ne (printf "%T" .enable) "bool" -}}
+        {{- errorf "params.ui.page_context_menu.enable must be a boolean; got %v" .enable -}}
+      {{- end -}}
+      {{- $pagePlacement = .enable -}}
+    {{- end -}}
     {{- if isset . "assistant_links" -}}
       {{- if ne (printf "%T" .assistant_links) "bool" -}}
         {{- errorf "params.ui.page_context_menu.assistant_links must be a boolean" -}}
       {{- end -}}
       {{- $assistantLinks = .assistant_links -}}
     {{- end -}}
-  {{- else -}}
+  {{- else if eq (printf "%T" .) "bool" -}}
     {{- $pagePlacement = . -}}
+  {{- else -}}
+    {{- errorf "params.ui.page_context_menu must be a boolean or a map with enable, assistant_links, and links; got %v" . -}}
   {{- end -}}
 {{- end -}}
-{{- if isset $p.Params "context_menu" }}{{ $pagePlacement = $p.Params.context_menu }}{{ end -}}
+{{- if isset $p.Params "page_context_menu" -}}
+  {{- if ne (printf "%T" $p.Params.page_context_menu) "bool" -}}
+    {{- errorf "front matter page_context_menu must be a boolean; got %v at %s" $p.Params.page_context_menu $p.Path -}}
+  {{- end -}}
+  {{- $pagePlacement = $p.Params.page_context_menu -}}
+{{- end -}}
 {{- if isset $p.Params "assistant_links" -}}
   {{- if ne (printf "%T" $p.Params.assistant_links) "bool" -}}
     {{- errorf "front matter assistant_links must be a boolean at %s" $p.Path -}}

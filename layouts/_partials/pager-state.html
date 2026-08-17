@@ -1,19 +1,15 @@
 {{- $page := . -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $types := slice "docs" "book" "blog" -}}
-{{- with $page.Site.Params.ui.pager -}}
-  {{- if not (reflect.IsMap .) -}}
-    {{- errorf "params.ui.pager must be a map" -}}
-  {{- else if isset . "types" -}}
-    {{- $types = .types -}}
-  {{- end -}}
+{{- if isset $page.Site.Params.ui "pager_types" -}}
+  {{- $types = index $page.Site.Params.ui "pager_types" -}}
 {{- end -}}
 {{- if not (reflect.IsSlice $types) -}}
-  {{- errorf "params.ui.pager.types must be an array of docs, book, and/or blog" -}}
+  {{- errorf "params.ui.pager_types must be an array of docs, book, and/or blog" -}}
 {{- end -}}
 {{- range $types -}}
   {{- if or (ne (printf "%T" .) "string") (not (in (slice "docs" "book" "blog") .)) -}}
-    {{- errorf "invalid params.ui.pager.types value %q (allowed: docs | book | blog)" . -}}
+    {{- errorf "invalid params.ui.pager_types value %q (allowed: docs | book | blog)" . -}}
   {{- end -}}
 {{- end -}}
 

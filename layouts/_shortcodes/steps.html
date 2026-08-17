@@ -10,6 +10,7 @@ block (plan/design/components.md v5 §2). Markdown output passes the body
 through unchanged (headings + content are already semantic Markdown).
 
 */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "none") -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if eq $format "markdown" -}}
 {{ .Inner }}

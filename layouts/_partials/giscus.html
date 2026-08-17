@@ -62,12 +62,12 @@
   data-emit-metadata="{{ $emitMetadata }}"
   data-input-position="{{ index $giscus "inputposition" | default "top" }}"
   data-theme="{{ $theme }}"
-  data-theme-light="{{ $lightTheme }}"
-  data-theme-dark="{{ $darkTheme }}"
+  data-td-theme-light="{{ $lightTheme }}"
+  data-td-theme-dark="{{ $darkTheme }}"
   data-lang="{{ $lang }}"
   data-loading="{{ index $giscus "loading" | default "lazy" }}"
   {{- with index $giscus "term" }} data-term="{{ . }}"{{ end }}
-  data-error-message="{{ $errorMessage }}"
+  data-td-error-message="{{ $errorMessage }}"
   aria-label="{{ $ariaLabel }}"
   aria-busy="true">
   <div data-td-giscus-container></div>

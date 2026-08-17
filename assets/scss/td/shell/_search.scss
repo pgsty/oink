@@ -41,7 +41,7 @@
     transform 240ms var(--td-shell-ease-dialog);
 }
 
-.td-shell-search.is-open {
+.td-shell-search.td-is-open {
   .td-shell-search__backdrop {
     opacity: 1;
   }
@@ -152,7 +152,7 @@
     background: var(--td-shell-primary-dim);
   }
 
-  &.is-disabled {
+  &.td-is-disabled {
     color: var(--td-shell-muted-fg);
     cursor: not-allowed;
 

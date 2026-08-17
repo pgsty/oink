@@ -2,7 +2,7 @@
 <html itemscope itemtype="http://schema.org/WebPage"
 dir="ltr"
 lang="en"
-data-td-typography="technical" data-theme-init>
+data-td-typography="technical" data-td-theme-init>
 <head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="color-scheme" content="light dark">
@@ -13,7 +13,7 @@ html { background: Canvas; color: CanvasText; }
 @media (prefers-color-scheme: dark) {
 html { background: #0b0d12; color: #e6e6e6; }
 }
-html[data-theme-init] * { transition: none !important; }
+html[data-td-theme-init] * { transition: none !important; }
 [data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
 [data-td-theme-toggle] > [hidden] { display: none !important; }
 html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
@@ -78,32 +78,32 @@ html.setAttribute('data-td-kbd-zen', '');
 })();
 </script><script defer src="/js/third_party/lunr.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 </head>
-<body class="td-page td-book td-book-content--norm td-shell-chrome td-shell-chrome--navbar">
+<body class="td-page td-book td-book-content--normal td-shell-chrome td-shell-chrome--navbar">
 <a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
-<header class="landing-header d-print-none" data-header>
-<div class="landing-container">
-<nav class="landing-nav" aria-label="Main navigation">
-<a href="/" class="nav-brand" data-td-navbar-route
+<header class="td-site-header d-print-none" data-td-header>
+<div class="td-site-container">
+<nav class="td-site-nav" aria-label="Main navigation">
+<a href="/" class="td-nav-brand" data-td-navbar-route
 aria-label="OINK Landing Example — Home">
-<img src="/icons/logo.svg" alt="" class="nav-logo" width="22" height="22">
-<span class="nav-title">OINK Landing Example</span>
-</a><div class="nav-links nav-menu-zone"><div class="nav-menu" data-td-navbar-menu>
-<a class="nav-link nav-menu__parent-link" href="/docs/"
+<img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
+<span class="td-nav-title">OINK Landing Example</span>
+</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link" href="/docs/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Documentation"
 data-td-navbar-region="desktop" data-td-navbar-label="Documentation"
 data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
 <i class="fa-solid fa-book" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Documentation</span></a>
-<div class="nav-menu__panel nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
-style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="nav-menu__item-link" href="/docs/content-primitives/"
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/content-primitives/"
 data-td-navbar-level="1" data-td-navbar-kind="link"
 aria-label="Content primitives"
 data-td-navbar-region="desktop" data-td-navbar-label="Content primitives"
 data-td-navbar-external="false">
 <i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Content primitives</span><small class="td-navbar-entry__description">Semantic authoring components</small></a>
-<a class="nav-menu__item-link" href="/docs/typography/"
+<a class="td-nav-menu__item-link" href="/docs/typography/"
 data-td-navbar-level="1" data-td-navbar-kind="link"
 aria-label="Typography"
 data-td-navbar-region="desktop" data-td-navbar-label="Typography"
@@ -125,26 +125,26 @@ data-td-navbar-region="desktop" data-td-navbar-label="Source"
 data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
 <i class="fa-brands fa-github" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Source</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
-</div><div class="nav-links nav-util-zone">
-<button type="button" class="nav-search-box" data-td-shell-search-open
+</div><div class="td-nav-links td-nav-util-zone">
+<button type="button" class="td-nav-search-box" data-td-shell-search-open
 title="Search…" aria-label="Search…"
-aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i><span class="nav-search-box__hint">Search…</span>
-<kbd class="nav-search-box__kbd" aria-hidden="true">/</kbd>
+aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i><span class="td-nav-search-box__hint">Search…</span>
+<kbd class="td-nav-search-box__kbd" aria-hidden="true">/</kbd>
 </button>
-<a class="nav-util nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
-title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="nav-hover-menu nav-theme-menu" data-td-nav-hover>
-<button type="button" class="nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+<a class="td-nav-util td-nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
+title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
+<button type="button" class="td-nav-util" data-td-nav-hover-trigger data-td-theme-toggle
 title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i></button>
-<div class="nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
 </button>
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
 </button>
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
 </button>
 </div>
 </div>
-<a href="https://github.com/pgsty/oink" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="nav-count" data-td-github-stars>2.2k</span></a><button class="nav-util mobile-menu-toggle" type="button" data-td-shell-drawer-open
+<a href="https://github.com/pgsty/oink" class="td-nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="td-nav-count" data-td-github-stars>2.2k</span></a><button class="td-nav-util td-site-nav__menu-toggle" type="button" data-td-shell-drawer-open
 title="Open navigation" aria-label="Open navigation"
 aria-controls="td-shell-sidebar" aria-expanded="false"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></button>
 </div>
@@ -189,14 +189,14 @@ aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
 <span class="td-shell-root__meta">
 <span class="td-shell-root__item-title">Blog</span>
 </span>
-<span class="td-shell-root__check is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </a><a class="td-shell-root__item" href="/docs/">
 <span class="td-shell-root__icon"></span>
 <span class="td-shell-root__meta">
 <span class="td-shell-root__item-title">Documentation</span>
 </span>
-<span class="td-shell-root__check is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
-</a><a class="td-shell-root__item is-active" href="/book/" aria-current="page">
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item td-is-active" href="/book/" aria-current="page">
 <span class="td-shell-root__icon"></span>
 <span class="td-shell-root__meta">
 <span class="td-shell-root__item-title">Scenario Components Handbook</span>
@@ -210,9 +210,9 @@ aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
 <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
 <div id="td-sidebar-menu" class="td-shell-tree-wrap">
 <nav class="td-shell-tree" id="td-section-nav" aria-label="Section navigation"
-data-sidebar-icon-policy="all" data-sidebar-root-id="/book/">
-<ul class="td-shell-tree__list ul-0">
-<li class="td-shell-tree__item has-child active-path td-shell-tree__item--root"
+data-td-sidebar-icon-policy="all" data-td-sidebar-root-id="/book/">
+<ul class="td-shell-tree__list td-shell-tree__list--0">
+<li class="td-shell-tree__item td-has-child td-active-path td-shell-tree__item--root"
 id="m-book-li">
 <div class="td-shell-tree__row td-shell-tree__row--root">
 <a href="/book/" title="Scenario Components Handbook"
@@ -220,15 +220,14 @@ class="td-shell-tree__link"
 id="m-book"><span class="td-book-number">B</span><span>Scenario Components Handbook</span></a>
 </div><div id="m-book-children" class="td-shell-tree__children td-shell-tree__children--static">
 <div class="td-shell-tree__children-inner">
-<ul class="td-shell-tree__list ul-1">
-<li class="td-shell-tree__item leaf"
+<ul class="td-shell-tree__list td-shell-tree__list--1"><li class="td-shell-tree__item td-leaf"
 id="m-bookchapter-one-li">
 <div class="td-shell-tree__row">
 <a href="/book/chapter-one/" title="Numbered evidence"
 class="td-shell-tree__link"
 id="m-bookchapter-one"><span class="td-book-number">1</span><span>Numbered evidence</span></a>
 </div>
-</li><li class="td-shell-tree__item leaf active-path"
+</li><li class="td-shell-tree__item td-leaf td-active-path"
 id="m-bookchapter-two-li">
 <div class="td-shell-tree__row td-shell-active">
 <a href="/book/chapter-two/" aria-current="page" title="Draft chapter"
@@ -241,8 +240,7 @@ id="m-bookchapter-two"><span class="td-book-number">2</span><span>Draft chapter<
 <li><a href="#shared-heading">Shared heading</a></li>
 </ul>
 </div>
-</li>
-</ul>
+</li></ul>
 </div>
 </div>
 </li>
@@ -254,12 +252,12 @@ id="m-bookchapter-two"><span class="td-book-number">2</span><span>Draft chapter<
 <div class="td-shell-sidebar__footer-start">
 </div>
 <div class="td-shell-sidebar__footer-end">
-<div class="td-shell-keyboard nav-hover-menu" data-td-nav-hover>
+<div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
 <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
 data-td-nav-hover-trigger data-td-nav-hover-open
 title="Keyboard shortcuts" aria-label="Keyboard shortcuts"
 aria-expanded="false"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i></button>
-<div class="nav-hover-menu__pop td-shell-keyboard-help" role="group"
+<div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
 aria-label="Keyboard shortcuts">
 <div class="td-shell-keyboard-help__header"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i><strong>Keyboard shortcuts</strong>
 </div>
@@ -315,15 +313,15 @@ aria-label="Keyboard shortcuts">
 </section>
 </div>
 </div>
-<div class="td-shell-sidebar__theme nav-hover-menu" data-td-nav-hover>
+<div class="td-shell-sidebar__theme td-nav-hover-menu" data-td-nav-hover>
 <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-nav-hover-trigger data-td-theme-toggle
 title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i></button>
-<div class="nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
 </button>
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
 </button>
-<button type="button" class="nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
 </button>
 </div>
 </div>
@@ -351,9 +349,9 @@ Draft chapter</li>
 </ol>
 </nav>
 <span class="td-shell-topline__spacer"></span><div class="td-page-actions d-print-none" data-td-page-actions data-td-page-context
-data-t-copied="Markdown copied" data-t-copy-error="Could not copy Markdown">
+data-td-t-copied="Markdown copied" data-td-t-copy-error="Could not copy Markdown">
 <div class="td-page-actions__group">
-<button type="button" class="td-page-actions__primary" data-oink-action="copy_markdown" data-url="/book/chapter-two/index.md"
+<button type="button" class="td-page-actions__primary" data-td-action="copy_markdown" data-td-url="/book/chapter-two/index.md"
 title="Copy Markdown" aria-label="Copy Markdown">
 <span class="td-page-actions__icon"><i class="td-shell-icon td-shell-icon--copy fa-regular fa-copy" aria-hidden="true"></i></span>
 <span class="td-page-actions__icon td-page-actions__icon--done"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
@@ -365,22 +363,22 @@ title="Actions" aria-label="Actions"><i class="td-shell-icon td-shell-icon--chev
 </div>
 <ul class="td-page-actions__menu" id="td-page-actions-menu" data-td-page-actions-menu
 aria-label="Actions">
-<li><button type="button" class="td-page-actions__item" data-oink-action="copy_markdown" data-url="/book/chapter-two/index.md">
+<li><button type="button" class="td-page-actions__item" data-td-action="copy_markdown" data-td-url="/book/chapter-two/index.md">
 <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy Markdown</span>
 </button></li>
-<li><a class="td-page-actions__item" data-oink-action="open_chatgpt" data-td-page-open-in="chatgpt"
+<li><a class="td-page-actions__item" data-td-action="open_chatgpt" data-td-page-open-in="chatgpt"
 href="https://chatgpt.com/?hints=search&amp;prompt=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook%2Fchapter-two%2F&#43;so&#43;I&#43;can&#43;ask&#43;questions&#43;about&#43;it." target="_blank" rel="noopener noreferrer">
 <i class="fa-brands fa-openai" aria-hidden="true"></i><span>Open in ChatGPT</span>
 </a></li>
-<li><a class="td-page-actions__item" data-oink-action="open_claude" data-td-page-open-in="claude"
+<li><a class="td-page-actions__item" data-td-action="open_claude" data-td-page-open-in="claude"
 href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook%2Fchapter-two%2F&#43;so&#43;I&#43;can&#43;ask&#43;questions&#43;about&#43;it." target="_blank" rel="noopener noreferrer">
 <i class="fa-brands fa-claude" aria-hidden="true"></i><span>Open in Claude</span>
 </a></li>
-<li><a class="td-page-actions__item" data-oink-action="view_markdown" href="/book/chapter-two/index.md" target="_blank" rel="noopener">
+<li><a class="td-page-actions__item" data-td-action="view_markdown" href="/book/chapter-two/index.md" target="_blank" rel="noopener">
 <i class="fa-brands fa-markdown" aria-hidden="true"></i><span>View markdown</span>
 </a></li>
 <li class="td-page-actions__separator" role="separator"></li>
-<li><a class="td-page-actions__item" data-oink-action="print_section" href="/_print/book/">
+<li><a class="td-page-actions__item" data-td-action="print_section" href="/_print/book/">
 <i class="fa-solid fa-print" aria-hidden="true"></i><span>Print entire section</span>
 </a></li>
 </ul>
@@ -392,13 +390,13 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook
 <h1><span class="td-book-number">2</span> Draft chapter</h1>
 </div>
 <div class="lead">Draft status is visible without suppressing the page.</div>
-<header class="article-meta">
+<header class="td-article-meta">
 </header>
 <aside class="td-book-draft" role="status">
 <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i>
 <strong>Draft</strong>
 <span>This chapter is still being revised.</span>
-</aside><p>Back reference: <a class="td-book-xref td-book-xref--fig" href="/book/chapter-one/#office_2003" data-book-kind="fig" data-book-num="1-1">Figure 1-1</a>.</p>
+</aside><p>Back reference: <a class="td-book-xref td-book-xref--fig" href="/book/chapter-one/#office_2003" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>.</p>
 <h2 id="stable-heading">Stable heading</h2>
 <p>The explicit anchor is safe for heading xrefs and sidebar heading navigation.</p>
 <h2 id="shared-heading">Shared heading</h2>
@@ -426,13 +424,13 @@ title="Hide table of contents" aria-label="Hide table of contents"><i class="td-
 data-td-shell-tree-toggle data-td-shell-aside-keep-open
 aria-expanded="true" aria-controls="td-shell-aside-toc"
 aria-label="Collapse section: Content"
-data-label-expand="Expand section: Content"
-data-label-collapse="Collapse section: Content"><span class="td-shell-aside-group__icon td-shell-aside-group__icon--toc" aria-hidden="true"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></span>
+data-td-label-expand="Expand section: Content"
+data-td-label-collapse="Collapse section: Content"><span class="td-shell-aside-group__icon td-shell-aside-group__icon--toc" aria-hidden="true"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></span>
 <span class="td-shell-aside-group__title">Content</span>
 <span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
 </button>
 </div>
-<div id="td-shell-aside-toc" class="td-shell-tree__children is-open">
+<div id="td-shell-aside-toc" class="td-shell-tree__children td-is-open">
 <div class="td-shell-tree__children-inner">
 <div class="td-shell-toc__inner" data-proofer-ignore>
 <div class="td-shell-toc__body" id="td-shell-toc-body">
@@ -494,28 +492,30 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
 aria-expanded="true" aria-controls="td-site-footer"
 title="Hide footer links" aria-label="Hide footer links"
-data-label-collapse="Hide footer links"
-data-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
+data-td-label-collapse="Hide footer links"
+data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
 </div>
 </div>
 </footer>
 </div>
+<script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden
-data-index-src="/offline-search-index.en.<hash>.json"
-data-max-results="10"
-data-t-empty="No results found"
-data-t-loading="Loading search index…"
-data-t-results="{count} results found"
-data-t-actions="Actions"
-data-t-page-actions="Page actions"
-data-t-preferences="Preferences"
-data-t-commands="Commands"
-data-t-quick-links="Quick links"
-data-t-no-commands="No matching commands"
-data-t-choice="Choose an option"
-data-t-action-failed="Action could not be completed"
-data-t-index-unavailable="Page index unavailable; actions still work"
-data-t-pages="Pages">
+data-td-index-src="/offline-search-index.en.<hash>.json"
+data-td-max-results="10"
+data-td-t-empty="No results found"
+data-td-t-loading="Loading search index…"
+data-td-t-results="{count} results found"
+data-td-t-actions="Actions"
+data-td-t-page-actions="Page actions"
+data-td-t-preferences="Preferences"
+data-td-t-commands="Commands"
+data-td-t-quick-links="Quick links"
+data-td-t-no-commands="No matching commands"
+data-td-t-choice="Choose an option"
+data-td-t-action-failed="Action could not be completed"
+data-td-t-index-unavailable="Page index unavailable; actions still work"
+data-td-t-pages="Pages">
 <div class="td-shell-search__backdrop" data-td-shell-search-close></div>
 <div class="td-shell-search__panel" role="dialog" aria-modal="true" aria-label="Search…">
 <div class="td-shell-search__head">
@@ -540,7 +540,6 @@ data-td-shell-search-status></div>
 <span><kbd>esc</kbd> Close</span>
 </div>
 </div>
-</div>
-<script type="application/json" id="oink-action-manifest">{"actions":[{"available":true,"description":"Copy Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":"/book/chapter-two/index.md"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-two%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-two%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"View markdown","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":"/book/chapter-two/index.md"},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/book/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/book/chapter-two/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script><script src="/js/main-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</div><script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"Copy Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":"/book/chapter-two/index.md"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-two%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-two%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"View markdown","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":"/book/chapter-two/index.md"},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/book/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/book/chapter-two/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script><script src="/js/page-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 </body>
 </html>

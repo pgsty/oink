@@ -1,16 +1,6 @@
 {{- /* Semantic inline status label with static fallbacks for every output. */ -}}
-{{- $hasParams := false -}}
-{{- with .Params }}{{ $hasParams = true }}{{ end -}}
-{{- if and $hasParams (not .IsNamedParams) -}}
-  {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
-{{- end -}}
-{{- $allowed := slice "text" "tone" "link" -}}
-{{- range $name, $_ := .Params -}}
-  {{- if not (in $allowed $name) -}}
-    {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
-  {{- end -}}
-{{- end -}}
-{{- if or (not $hasParams) (not (isset .Params "text")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "text" "tone" "link")) -}}
+{{- if not (and .IsNamedParams (isset .Params "text")) -}}
   {{- errorf "shortcode %q requires parameter text at %s" .Name .Position -}}
 {{- end -}}
 {{- $textParam := .Get "text" -}}
@@ -23,7 +13,7 @@
 {{- end -}}
 
 {{- $tone := "neutral" -}}
-{{- if isset .Params "tone" -}}
+{{- if and .IsNamedParams (isset .Params "tone") -}}
   {{- $toneParam := .Get "tone" -}}
   {{- if ne (printf "%T" $toneParam) "string" -}}
     {{- errorf "shortcode %q: tone must be a string at %s" .Name .Position -}}
@@ -36,7 +26,7 @@
 {{- end -}}
 
 {{- $link := false -}}
-{{- if isset .Params "link" -}}
+{{- if and .IsNamedParams (isset .Params "link") -}}
   {{- $link = partial "content/url.html" (dict
     "name" .Name "parameter" "link" "position" .Position "value" (.Get "link")
   ) -}}

@@ -16,7 +16,7 @@
     {{- $href := .RelPermalink -}}
     {{- if $aggregate }}{{ $href = printf "#pg-%s" .File.UniqueID }}{{ end -}}
   <li class="td-book-toc__item{{ if eq .Params.book_status "draft" }} td-book-toc__item--draft{{ end }}">
-    <a href="{{ $href }}"{{ if eq .Params.book_status "draft" }} data-draft-label="{{ T "book_draft" }}"{{ end }}>{{ with $number }}<span class="td-book-number">{{ . }}</span> {{ end }}<span>{{ .LinkTitle }}</span></a>
+    <a href="{{ $href }}"{{ if eq .Params.book_status "draft" }} data-td-draft-label="{{ T "book_draft" }}"{{ end }}>{{ with $number }}<span class="td-book-number">{{ . }}</span> {{ end }}<span>{{ .LinkTitle }}</span></a>
     {{- if eq $depth 3 }}{{ partial "book/toc-headings.html" (dict "page" . "headings" .Fragments.Headings "depth" 1 "level" 1 "aggregate" $aggregate) }}{{ end -}}
     {{- if and .IsSection (lt $level 2) }}{{ partial "book/toc-tree.html" (dict "page" . "depth" $depth "includeDraft" $includeDraft "format" $format "level" (add $level 1) "aggregate" $aggregate) }}{{ end -}}
   </li>

@@ -10,11 +10,11 @@
 // Consumer sites can override these tokens without replacing the layout API.
 .td-book {
   --td-book-content-slim: 48rem;
-  --td-book-content-norm: 70rem;
+  --td-book-content-normal: 70rem;
 }
 
 .td-book-content--slim .td-shell-article > .td-content,
-.td-book-content--norm .td-shell-article > .td-content,
+.td-book-content--normal .td-shell-article > .td-content,
 .td-book-content--wide .td-shell-article > .td-content {
   width: 100%;
   margin-inline: auto;
@@ -24,8 +24,8 @@
   max-width: var(--td-book-content-slim);
 }
 
-.td-book-content--norm .td-shell-article > .td-content {
-  max-width: var(--td-book-content-norm);
+.td-book-content--normal .td-shell-article > .td-content {
+  max-width: var(--td-book-content-normal);
 }
 
 .td-book-content--wide .td-shell-article > .td-content {
@@ -323,7 +323,7 @@ a > img.td-image {
 .td-book-toc__item--draft > a::after {
   margin-inline-start: 0.35rem;
   color: var(--bs-warning-text-emphasis);
-  content: '(' attr(data-draft-label) ')';
+  content: '(' attr(data-td-draft-label) ')';
 }
 
 .td-book-toc__headings {
@@ -388,7 +388,7 @@ a > img.td-image {
 
 @media print {
   .td-book-content--slim .td-shell-article > .td-content,
-  .td-book-content--norm .td-shell-article > .td-content,
+  .td-book-content--normal .td-shell-article > .td-content,
   .td-book-content--wide .td-shell-article > .td-content {
     max-width: none;
   }

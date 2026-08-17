@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the PRD 5 Book component contract and output matrix."""
+"""Validate the Book component contract and output matrix."""
 
 from __future__ import annotations
 
@@ -99,17 +99,17 @@ class BookHTML(HTMLParser):
             if "td-book-xref" in classes:
                 self._xref = {
                     "href": values.get("href") or "",
-                    "kind": values.get("data-book-kind") or "",
-                    "num": values.get("data-book-num") or "",
+                    "kind": values.get("data-td-book-kind") or "",
+                    "num": values.get("data-td-book-num") or "",
                     "text": "",
                 }
-        if tag == "section" and values.get("data-book-page"):
-            self.book_pages.append(values["data-book-page"] or "")
-        if tag == "figure" and values.get("data-book-kind"):
+        if tag == "section" and values.get("data-td-book-page"):
+            self.book_pages.append(values["data-td-book-page"] or "")
+        if tag == "figure" and values.get("data-td-book-kind"):
             target = {
                 "id": values.get("id") or "",
-                "kind": values.get("data-book-kind") or "",
-                "num": values.get("data-book-num") or "",
+                "kind": values.get("data-td-book-kind") or "",
+                "num": values.get("data-td-book-num") or "",
                 "caption": "",
                 "images": [],
             }
@@ -301,7 +301,7 @@ def check_example(public: Path) -> list[str]:
     two = documents.get("/book/chapter-two/")
     root = documents.get("/book/")
     if one and two and root:
-        require("td-book-content--norm" in one.body_classes, "Book default content width is not norm", errors)
+        require("td-book-content--normal" in one.body_classes, "Book default reading width is not normal", errors)
         require(one.sidebar_links[:3] == ["/book/", "/book/chapter-one/", "/book/chapter-two/"], "Book sidebar order changed", errors)
         require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
         require(two.pager == {"prev": "/book/chapter-one/"}, "last Book page pager is wrong", errors)
@@ -406,11 +406,11 @@ def check_example(public: Path) -> list[str]:
         'id="example-query"',
         'class="td-book-figure td-book-figure--eg"',
         'id="example-native"',
-        'data-book-num="1-2"',
+        'data-td-book-num="1-2"',
         "Example 1-1",
         "Example 1-2",
         'class="td-contributor-wall"',
-        'data-contributor-count="3"',
+        'data-td-contributor-count="3"',
         'class="td-contributor-wall__avatar td-contributor-wall__avatar--placeholder"',
         ">P</span>",
     ):
@@ -491,8 +491,7 @@ params:
     shell_types: [book]
     sidebar_root_enabled: true
     sidebar_root_menu: false
-    pager:
-      types: [book]
+    pager_types: [book]
 {extra_ui}"""
 
 
@@ -508,9 +507,9 @@ def create_site(root: Path, body: str, *, extra_ui: str = "", draft: bool = Fals
 
 def check_reading_time(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-book-reading-time-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-reading-time-") as temp:
         source = Path(temp)
-        create_site(source, "Book chapter words.\n", extra_ui="    readingtime:\n      enable: true\n")
+        create_site(source, "Book chapter words.\n", extra_ui="    reading_time: true\n")
         write(source / "content/docs/_index.md", "---\ntitle: Docs\ntype: docs\n---\n")
         write(source / "content/docs/page.md", "---\ntitle: Docs page\ntype: docs\n---\n\nDocs page words.\n")
         result = build(hugo, source, source / "public")
@@ -540,7 +539,7 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("xref-empty", '{{< xref />}}', "requires fig, tbl, eq, eg, or anchor"),
         ("xref-anchor-text", '{{< xref anchor="heading" />}}', "requires inner link text"),
         ("xref-page", '{{< xref page="missing" anchor="heading" >}}text{{< /xref >}}', "was not found"),
-        ("toc-depth", '{{< book-toc depth=4 >}}', "depth must be from 1 through 3"),
+        ("toc-depth", '{{< book-toc depth=4 >}}', "depth must be an integer from 1 through 3"),
         ("toc-drafts", '{{< book-toc drafts="false" >}}', "drafts must be boolean"),
         ("eg-caption", '{{< eg num="1" >}}```sql\nSELECT 1;\n```{{< /eg >}}', "requires parameter caption"),
         ("eg-num", '{{< eg num="1/2" caption="Bad" >}}x{{< /eg >}}', "num must match"),
@@ -553,7 +552,7 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("book-figures-kind", '{{< book-figures kind="tbl" >}}', "unsupported parameter"),
     )
     for name, body, expected in cases:
-        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-book-invalid-{name}-") as temp:
+        with tempfile.TemporaryDirectory(prefix=f"oink-components-book-invalid-{name}-") as temp:
             source = Path(temp)
             create_site(source, body)
             result = build(hugo, source, source / "public")
@@ -564,10 +563,11 @@ def check_invalid_components(hugo: str) -> list[str]:
     config_cases = (
         ("headings", "    sidebar_headings: 1\n", "", False, "params.ui.sidebar_headings"),
         ("banner", '    book_draft_banner: "yes"\n', "", True, "params.ui.book_draft_banner"),
-        ("content-width", "", "  content_width: broad\n", False, "invalid content_width"),
+        ("reading-width", "", "  reading_width: broad\n", False, "invalid params.reading_width"),
+        ("legacy-content-width", "", "  content_width: normal\n", False, "params.content_width was renamed: use params.reading_width"),
     )
     for name, extra_ui, extra_params, draft, expected in config_cases:
-        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-book-config-{name}-") as temp:
+        with tempfile.TemporaryDirectory(prefix=f"oink-components-book-config-{name}-") as temp:
             source = Path(temp)
             create_site(source, "## Heading\n", extra_ui=extra_ui, draft=draft)
             if extra_params:
@@ -589,7 +589,7 @@ def check_invalid_contributors(hugo: str) -> list[str]:
         ("duplicate", "items:\n  - github: pgsty\n  - github: PGSTY\n", "duplicate GitHub handle"),
     )
     for name, data, expected in cases:
-        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-contributors-invalid-{name}-") as temp:
+        with tempfile.TemporaryDirectory(prefix=f"oink-components-contributors-invalid-{name}-") as temp:
             source = Path(temp)
             create_site(source, "{{< contributors >}}")
             write(source / "data/contributors.yaml", data)
@@ -602,7 +602,7 @@ def check_invalid_contributors(hugo: str) -> list[str]:
 
 def check_ddia_compatibility(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-book-ddia-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-ddia-") as temp:
         source = Path(temp)
         create_site(
             source,
@@ -632,7 +632,7 @@ def check_ddia_compatibility(hugo: str) -> list[str]:
 
 def check_rss_output(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-book-rss-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-rss-") as temp:
         source = Path(temp)
         write(
             source / "hugo.yaml",
@@ -692,12 +692,12 @@ def check_validator_regressions() -> list[str]:
     errors: list[str] = []
     documents = {
         "/book/one/": parse_html(
-            '<figure id="shared" data-book-kind="fig" data-book-num="1"><img src="x" alt=""><figcaption>Figure 1</figcaption></figure>'
-            '<a class="td-book-xref td-book-xref--fig" data-book-kind="fig" data-book-num="2" href="#shared">Figure 2</a>'
+            '<figure id="shared" data-td-book-kind="fig" data-td-book-num="1"><img src="x" alt=""><figcaption>Figure 1</figcaption></figure>'
+            '<a class="td-book-xref td-book-xref--fig" data-td-book-kind="fig" data-td-book-num="2" href="#shared">Figure 2</a>'
             '<a class="td-book-xref" href="#missing">missing</a>'
         ),
         "/book/two/": parse_html(
-            '<figure id="shared" data-book-kind="fig" data-book-num="1"><figcaption>Figure 1</figcaption></figure>'
+            '<figure id="shared" data-td-book-kind="fig" data-td-book-num="1"><figcaption>Figure 1</figcaption></figure>'
         ),
     }
     found = "\n".join(validate_documents(documents))
@@ -709,28 +709,28 @@ def check_validator_regressions() -> list[str]:
 def check_sources() -> list[str]:
     errors: list[str] = []
     source_markers = {
-        "layouts/_shortcodes/fig.html": ("register-target.html", "data-book-kind", "src", "title", "width", "height"),
-        "layouts/_shortcodes/tbl.html": ("register-target.html", "render-block.html", "data-book-kind"),
-        "layouts/_shortcodes/eq.html": ("scripts/math.html", "data-book-kind"),
-        "layouts/_shortcodes/xref.html": ("targetPage.RelPermalink", "tdBookAggregate", "data-book-num"),
+        "layouts/_shortcodes/fig.html": ("register-target.html", "data-td-book-kind", "src", "title", "width", "height"),
+        "layouts/_shortcodes/tbl.html": ("register-target.html", "render-block.html", "data-td-book-kind"),
+        "layouts/_shortcodes/eq.html": ("scripts/math.html", "data-td-book-kind"),
+        "layouts/_shortcodes/xref.html": ("targetPage.RelPermalink", "tdBookAggregate", "data-td-book-num"),
         "layouts/_shortcodes/book-toc.html": ("depth", "drafts", "toc-tree.html", "toc-markdown.html"),
-        "layouts/_shortcodes/eg.html": ("register-target.html", "render-block.html", "data-book-kind", "markdown"),
+        "layouts/_shortcodes/eg.html": ("register-target.html", "render-block.html", "data-td-book-kind", "markdown"),
         "layouts/_shortcodes/book-tables.html": ('"kind" "tbl"',),
         "layouts/_shortcodes/book-equations.html": ('"kind" "eq"',),
         "layouts/_shortcodes/book-examples.html": ('"kind" "eg"',),
-        "layouts/_partials/content/table-render.html": ("register-target.html", '"kind" "tbl"', "data-book-kind"),
-        "layouts/_markup/render-image.html": ("register-target.html", '"kind" "fig"', "data-book-kind", "wrapStandAloneImageWithinParagraph"),
-        "layouts/_markup/render-passthrough.html": ("register-target.html", '"kind" "eq"', "data-book-kind"),
-        "layouts/_markup/render-codeblock.html": ("register-target.html", '"kind" "eg"', "data-book-kind"),
+        "layouts/_partials/content/table-render.html": ("register-target.html", '"kind" "tbl"', "data-td-book-kind"),
+        "layouts/_markup/render-image.html": ("register-target.html", '"kind" "fig"', "data-td-book-kind", "wrapStandAloneImageWithinParagraph"),
+        "layouts/_markup/render-passthrough.html": ("register-target.html", '"kind" "eq"', "data-td-book-kind"),
+        "layouts/_markup/render-codeblock.html": ("register-target.html", '"kind" "eg"', "data-td-book-kind"),
         "layouts/_shortcodes/contributors.html": ("contributors/items.html", "contributors/wall.html", "markdown"),
         "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
-        "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
-        "layouts/_partials/book/print.html": ("nav-flatten.html", "tdBookAggregate", "namespace-print-headings.html", "data-book-page"),
+        "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-td-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
+        "layouts/_partials/book/print.html": ("nav-flatten.html", "tdBookAggregate", "namespace-print-headings.html", "data-td-book-page"),
         "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink"),
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
         "layouts/_td-content.html": ('ne .Type "book"', "reading-time.html"),
-        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--norm", "&--eg"),
+        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--normal", "&--eg"),
         "assets/scss/td/_contributors.scss": ("auto-fill", "forced-colors", "@media print"),
     }
     for relative, markers in source_markers.items():
@@ -760,19 +760,19 @@ def main() -> int:
     if args.site_public is not None:
         errors = check_consumer_public(args.site_public)
         if errors:
-            print("PRD 5 consumer Book checks failed:")
+            print("consumer Book checks failed:")
             for error in errors:
                 print(f"  {error}")
             return 1
-        print("PRD 5 consumer Book checks passed")
+        print("consumer Book checks passed")
         return 0
 
     if args.public is None:
-        with tempfile.TemporaryDirectory(prefix="oink-prd5-book-") as temp:
+        with tempfile.TemporaryDirectory(prefix="oink-components-book-") as temp:
             public = Path(temp) / "public"
             result = build(args.hugo, EXAMPLE, public)
             if result.returncode != 0:
-                print("PRD 5 Book fixture failed to build:")
+                print("Book fixture failed to build:")
                 print(result.stdout + result.stderr)
                 return 1
             errors = check_example(public)
@@ -789,11 +789,11 @@ def main() -> int:
         + check_sources()
     )
     if errors:
-        print("PRD 5 Book checks failed:")
+        print("Book checks failed:")
         for error in errors:
             print(f"  {error}")
         return 1
-    print("PRD 5 Book checks passed")
+    print("Book checks passed")
     return 0
 
 

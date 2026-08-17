@@ -101,9 +101,9 @@ class TransformationCase(unittest.TestCase):
 
             {{% /details %}}
 
-            {{% pageinfo %}}
+            {{% td-page-notice %}}
             info
-            {{% /pageinfo %}}
+            {{% /td-page-notice %}}
             """,
             """\
             > [!WARNING]
@@ -717,13 +717,13 @@ class TransformationCase(unittest.TestCase):
             """,
             """\
             <script>
-            window.tdEchartsFunctions = window.tdEchartsFunctions || {};
+            window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
             (function (registry) {
             var fnum = function(n) { return n; };
             function tip(p) { return p; }
             registry["fnum"] = fnum;
             registry["tip"] = tip;
-            })(window.tdEchartsFunctions);
+            })(window.OinkEchartsFunctions);
             </script>
 
             ```echarts {height="820px"}
@@ -1016,14 +1016,14 @@ class TransformationCase(unittest.TestCase):
         counts, _ = self.assertMigrates(
             """\
             {{% fields label="Config" %}}
-              {{% field name="offlineSearch" type="boolean" required=true %}}
+              {{% field name="offline_search" type="boolean" required=true %}}
               Enables search.
               {{% /field %}}
             {{% /fields %}}
             """,
             """\
             {{< fields label="Config" >}}
-              {{< field name="offlineSearch" type="boolean" required=true >}}
+              {{< field name="offline_search" type="boolean" required=true >}}
               Enables search.
               {{< /field >}}
             {{< /fields >}}

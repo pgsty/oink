@@ -1,4 +1,5 @@
 {{- /* Register one validated field with the enclosing fields collector. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "name" "type" "required" "default")) -}}
 {{- with .Parent -}}
   {{- if ne $.Parent.Name "fields" -}}
     {{- errorf "shortcode %q must be enclosed by fields, not %q, at %s" $.Name $.Parent.Name $.Position -}}
@@ -6,19 +7,8 @@
 {{- else -}}
   {{- errorf "shortcode %q must be enclosed by fields at %s" $.Name $.Position -}}
 {{- end -}}
-{{- $hasParams := false -}}
-{{- with .Params }}{{ $hasParams = true }}{{ end -}}
-{{- if and $hasParams (not .IsNamedParams) -}}
-  {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
-{{- end -}}
-{{- $allowed := slice "name" "type" "required" "default" -}}
-{{- range $name, $_ := .Params -}}
-  {{- if not (in $allowed $name) -}}
-    {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
-  {{- end -}}
-{{- end -}}
 
-{{- if or (not $hasParams) (not (isset .Params "name")) -}}
+{{- if not (and .IsNamedParams (isset .Params "name")) -}}
   {{- errorf "shortcode %q requires parameter name at %s" .Name .Position -}}
 {{- end -}}
 {{- $nameParam := .Get "name" -}}
@@ -31,7 +21,7 @@
 {{- end -}}
 
 {{- $fieldType := "" -}}
-{{- if isset .Params "type" -}}
+{{- if and .IsNamedParams (isset .Params "type") -}}
   {{- $typeParam := .Get "type" -}}
   {{- if ne (printf "%T" $typeParam) "string" -}}
     {{- errorf "shortcode %q: type must be a string at %s" .Name .Position -}}
@@ -43,7 +33,7 @@
 {{- end -}}
 
 {{- $required := false -}}
-{{- if isset .Params "required" -}}
+{{- if and .IsNamedParams (isset .Params "required") -}}
   {{- $requiredParam := .Get "required" -}}
   {{- if ne (printf "%T" $requiredParam) "bool" -}}
     {{- errorf "shortcode %q: required must be boolean at %s" .Name .Position -}}

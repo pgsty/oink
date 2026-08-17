@@ -55,7 +55,7 @@
   }
 
   function setControl(button, state, label) {
-    button.setAttribute('data-state', state);
+    button.setAttribute('data-td-state', state);
     button.setAttribute('aria-label', label);
     button.setAttribute('title', label);
     var labelNode = button.querySelector('span');
@@ -71,7 +71,7 @@
   }
 
   function resetControl(button) {
-    var label = button.getAttribute('data-label-copy') || 'Copy';
+    var label = button.getAttribute('data-td-label-copy') || 'Copy';
     setControl(button, 'idle', label);
     button.disabled = false;
   }
@@ -100,13 +100,13 @@
     button.disabled = true;
     if (status) status.textContent = '';
     return writeClipboard(text, doc).then(function () {
-      var label = button.getAttribute('data-label-copied') || 'Copied';
+      var label = button.getAttribute('data-td-label-copied') || 'Copied';
       setControl(button, 'success', label);
       if (status) status.textContent = label;
       scheduleReset(button);
       return true;
     }).catch(function (error) {
-      var label = button.getAttribute('data-label-copy') || 'Copy';
+      var label = button.getAttribute('data-td-label-copy') || 'Copy';
       setControl(button, 'error', label);
       if (status) status.textContent = label;
       button.disabled = false;

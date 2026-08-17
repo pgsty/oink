@@ -5,7 +5,7 @@
     lang="{{ partial "language-tag.html" . }}"
     data-td-typography="{{ partial "typography-preset.html" .Site }}"
     {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
   <head>
     {{ partial "head.html" . }}
   </head>
@@ -26,7 +26,7 @@
   {{ end -}}
   {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ if not (in (slice "normal" "wide" "full") $pageWidth) -}}
-    {{ errorf "invalid page_width %q in %s (allowed: normal | wide | full)" $pageWidth .Path -}}
+    {{ errorf "invalid params.page_width %q at %s (allowed: normal | wide | full)" $pageWidth .Path -}}
   {{ end -}}
   <body class="td-{{ .Kind }} td-blog td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}

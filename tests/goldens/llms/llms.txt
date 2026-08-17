@@ -5,6 +5,27 @@
 - [Documentation](https://example.org/docs/)
 - [Blog](https://example.org/blog/)
 ## Documentation index
-- [Nested guides](https://example.org/docs/guides/)
+- [Nested guides](https://example.org/docs/guides/): A section fixture that proves tree-order navigation across levels.
+- [First nested guide](https://example.org/docs/guides/first/index.md): The first leaf below a section index.
+- [Pager opt-out](https://example.org/docs/guides/opt-out/index.md): A page-level fixture for disabling sequential navigation.
+- [Callouts](https://example.org/docs/components/callouts/index.md): GitHub / Obsidian style callouts rendered by the blockquote render hook.
+- [Typography fixture](https://example.org/docs/typography/): Representative prose, labels, and code for theme regression checks.
+- [Enhanced code blocks](https://example.org/docs/code-blocks/index.md): Regression fixtures for the shared Chroma shell and code groups.
+- [Steps](https://example.org/docs/components/steps/index.md): Ordered-list steps (native form) and heading steps (full form).
+- [Math passthrough](https://example.org/docs/math-passthrough/index.md): Regression fixtures for delimiter-style server-rendered mathematics.
+- [Cards / FileTree / Gallery](https://example.org/docs/components/lists/index.md): List-based native forms selected by a trailing marker.
+- [Content primitives](https://example.org/docs/content-primitives/index.md): Regression fixtures for inline everyday content primitives.
+- [Media primitives](https://example.org/docs/media-primitives/index.md): Regression fixtures for shared image resolution and the processed image shortcode.
+- [Image Zoom](https://example.org/docs/image-zoom/index.md): Regression fixtures for opt-in native image preview.
+- [Image Zoom disabled](https://example.org/docs/image-zoom-disabled/): A page-level false value wins over the enabled example site.
+- [Image Zoom exclusions](https://example.org/docs/image-zoom-exclusions/): A page with only ineligible images must not load the runtime.
+- [Cards (rich)](https://example.org/docs/components/cards/index.md): The `{{</* cards */>}}` / `{{</* card */>}}` full form with icons, badges, images and Markdown bodies.
+- [Tables](https://example.org/docs/components/tables/index.md): Table family — fields, matrix, caption, numbered, tabs, full-width.
+- [Data fences](https://example.org/docs/components/data-fences/index.md): Declarative charts, infographics and checksum lists as fenced code blocks.
+- [Download data demo](https://example.org/docs/download-demo/index.md): Rolling and pinned channels render from one validated data record.
+- [Gallery](https://example.org/docs/gallery/index.md): Regression fixtures for a static-first responsive image Gallery.
+- [Gallery with Zoom disabled](https://example.org/docs/gallery-disabled/): Gallery remains complete when page-level Image Zoom is disabled.
+- [Release assets with an explicit base](https://example.org/docs/release-assets-base/index.md): Asset tables can remain useful outside release pages without inventing version facts.
+- [Unpublished download demo](https://example.org/docs/download-pending/index.md): Pinned release facts remain visible without exposing download actions.
 ## Site locales
 - [English](https://example.org/)

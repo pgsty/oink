@@ -28,7 +28,7 @@
   var SAFE_SCHEMES = new Set(['http:', 'https:']);
 
   function readManifest(documentObject) {
-    var node = documentObject.getElementById('oink-action-manifest');
+    var node = documentObject.getElementById('td-action-manifest');
     if (!node) return { version: 1, actions: [], commands: [] };
     try {
       var parsed = JSON.parse(node.textContent || '{}');

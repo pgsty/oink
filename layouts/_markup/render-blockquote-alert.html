@@ -47,7 +47,7 @@
 </blockquote>
 {{- else -}}
   {{- $title := .AlertTitle -}}
-  {{- if not $title }}{{ $title = i18n $type | default (title $type) }}{{ end -}}
+  {{- if not $title }}{{ $title = i18n (printf "callout_%s" $type) | default (title $type) }}{{ end -}}
   {{- $collapsible := or (eq $sign "-") (eq $sign "+") (eq $type "details") -}}
   {{- $open := eq $sign "+" -}}
   {{- $static := or (ne $format "html") (not $collapsible) -}}

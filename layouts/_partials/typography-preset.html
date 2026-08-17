@@ -1,6 +1,10 @@
-{{- $preset := .Params.ui.typography.preset | default "technical" -}}
+{{- /* The root element's data-td-typography attribute reads this before
+     head.html runs, so make sure renamed configuration keys fail with their
+     replacement first. */ -}}
+{{- partialCached "config-legacy.html" . "config-legacy" -}}
+{{- $preset := site.Params.ui.typography | default "technical" -}}
 {{- $allowed := slice "technical" "system" -}}
-{{- if not (in $allowed $preset) -}}
-  {{- errorf "invalid params.ui.typography.preset %q (allowed: %s)" $preset (delimit $allowed " | ") -}}
+{{- if or (ne (printf "%T" $preset) "string") (not (in $allowed $preset)) -}}
+  {{- errorf "invalid params.ui.typography %q (allowed: %s)" (printf "%v" $preset) (delimit $allowed " | ") -}}
 {{- end -}}
 {{- return $preset -}}

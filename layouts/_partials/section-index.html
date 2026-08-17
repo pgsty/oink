@@ -10,8 +10,8 @@
 {{ end -}}
 {{ if not (or $page.Params.no_list (eq (len $pages) 0)) -}}
 {{ $mode := $page.Param "ui.section_index" | default "list" -}}
-{{ if not (in (slice "list" "cards") $mode) }}{{ errorf "invalid params.ui.section_index %q in %s (allowed: list | cards)" $mode $page.Path }}{{ end -}}
-<div class="section-index section-index--{{ $mode }}{{ if eq $mode "cards" }} td-content-cards{{ end }}"{{ if eq $mode "cards" }} style="--td-card-columns: {{ $page.Param "ui.section_index_columns" | default 2 }}"{{ end }}>
+{{ if not (in (slice "list" "cards") $mode) }}{{ errorf "invalid params.ui.section_index %q at %s (allowed: list | cards)" $mode $page.Path }}{{ end -}}
+<div class="td-section-index td-section-index--{{ $mode }}{{ if eq $mode "cards" }} td-content-cards{{ end }}"{{ if eq $mode "cards" }} style="--td-card-columns: {{ $page.Param "ui.section_index_columns" | default 2 }}"{{ end }}>
     {{ if $page.Params.simple_list -}}
         {{/* If simple_list is true we show a bulleted list of subpages */}}
         <ul>
@@ -23,7 +23,7 @@
     {{ else if eq $mode "cards" -}}
         {{ range $pages -}}
             {{ $manualLink := cond (isset .Params "manuallink") .Params.manualLink ( cond (isset .Params "manuallinkrelref") (relref . .Params.manualLinkRelref) .RelPermalink) -}}
-            <article class="td-content-card section-index__card">
+            <article class="td-content-card td-section-index__card">
                 <div class="td-content-card__body">
                     <div class="td-content-card__head">
                         {{- with .Params.icon }}<i class="{{ . }} td-content-card__icon" aria-hidden="true"></i>{{ end -}}
@@ -37,7 +37,7 @@
         {{/* Otherwise we show a formatted list of subpages with page descriptions */}}
         {{ range $pages -}}
             {{ $manualLink := cond (isset .Params "manuallink") .Params.manualLink ( cond (isset .Params "manuallinkrelref") (relref . .Params.manualLinkRelref) .RelPermalink) -}}
-            <div class="entry">
+            <div class="td-section-index__entry">
                 <h2 class="h5">
                     <a href="{{ $manualLink }}"{{ with .Params.manualLinkTitle }} title="{{ . }}"{{ end }}{{ with .Params.manualLinkTarget }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}>{{- .Title -}}</a>
                 </h2>

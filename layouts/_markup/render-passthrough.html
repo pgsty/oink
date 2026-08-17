@@ -28,7 +28,7 @@
     {{- printf "<p><strong>%s.</strong>%s</p>" $label (cond (ne $caption "") (printf " %s" (htmlEscape $caption)) "") | safeHTML -}}
     {{- partial "scripts/math.html" . -}}
   {{- else -}}
-<figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $policy.class }} {{ . }}{{ end }}" data-book-kind="eq" data-book-num="{{ $num }}"
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $policy.class }} {{ . }}{{ end }}" data-td-book-kind="eq" data-td-book-num="{{ $num }}"
   {{- range $key, $value := $policy.generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
   <div class="td-book-equation__body">{{ partial "scripts/math.html" . }}</div>
   <figcaption><span class="td-eq-label">{{ $label }}</span>{{ with $caption }} <span class="td-eq-caption">{{ . }}</span>{{ end }}</figcaption>

@@ -42,41 +42,43 @@ python3 scripts/check-i18n.py --sync                 # append missing keys as En
 python3 scripts/check-taxonomy.py                    # opt-in taxonomy labels and bilingual output
 python3 scripts/check-font-tokens.py                 # no raw font families outside the token layer
 python3 scripts/check-content-primitives-contract.py # docs/content-primitives.md still has required sections
-python3 scripts/check-prd4-contract.py               # navigation/palette/action contracts
-python3 scripts/check-prd4-runtime.py                # runtime isolation and capability predicates
+python3 scripts/check-navigation-contract.py         # navigation/palette/action contracts
+python3 scripts/check-runtime-isolation.py           # runtime isolation and capability predicates
 python3 scripts/check-sidebar-icons.py               # sidebar icon density policy
-python3 scripts/check-prd4-search.py                 # search metadata and ranking
-python3 scripts/check-prd4-actions.py                # action registry and command manifest
-python3 scripts/check-prd4-palette.py                # Command Palette modes and behavior
-python3 scripts/check-prd4-docs.py                   # bilingual migration and starter guidance
-python3 scripts/check-prd5-contract.py               # PRD 5 human/machine contract alignment
-python3 scripts/check-prd5-docs.py                   # PRD 5 bilingual migration + root/subpath starter
-python3 scripts/check-prd5-reading.py                # math passthrough + tree-order pager
+python3 scripts/check-search.py                      # search metadata and ranking
+python3 scripts/check-actions.py                     # action registry and command manifest
+python3 scripts/check-palette.py                     # Command Palette modes and behavior
+python3 scripts/check-navigation-docs.py             # bilingual migration and starter guidance
+python3 scripts/check-component-contract.py          # component human/machine contract alignment
+python3 scripts/check-component-docs.py              # bilingual migration + root/subpath starter
+python3 scripts/check-reading.py                     # math passthrough + tree-order pager
 python3 scripts/check-release-assets.py              # release facts/cards/checksum output matrix
 python3 scripts/check-download.py                    # download schema and publication states
 python3 scripts/check-landing.py                     # landing registry/runtime/output matrix
 python3 scripts/check-book.py                        # numbered targets/xrefs/Book assembly
-python3 scripts/check-prd5-migrations.py             # dry-run/idempotency Book migration profiles
-python3 scripts/check-prd5-misc.py                   # shared scenario fixes and compatibility
-python3 scripts/check-prd6-keyboard.py               # keyboard navigation contract
-python3 scripts/check-prd7.py                        # navigation and page-end composition
+python3 scripts/check-book-migrations.py             # dry-run/idempotency Book migration profiles
+python3 scripts/check-shared-scenarios.py            # shared scenario fixes and compatibility
+python3 scripts/check-keyboard.py                    # keyboard navigation contract
+python3 scripts/check-shell.py                       # navigation and page-end composition
+python3 scripts/check-namespace.py                   # td- class / data-td- attribute / --td- property namespaces
+python3 scripts/check-params.py                      # parameter shapes (bare booleans, no single-key maps, FM = site key minus ui.) + legacy-key build matrix
 python3 scripts/check-output.py                      # HTML structure, duplicate IDs, bundle graph, output security (+ negative fixture)
 python3 scripts/check-goldens.py                     # four-state goldens (html / print / markdown / rss / llms) of exampleSite
 
 cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warning-free
 
 # Output checks (each builds exampleSite into a temp dir itself)
-python3 scripts/check-code-blocks.py        # enhanced fences / adjacent-fence tabs / tabs shortcode
+python3 scripts/check-code-blocks.py                 # enhanced fences / adjacent-fence tabs / tabs shortcode
 python3 scripts/check-content-primitives.py # badge, kbd, fields (table + shortcode), filetree/steps/cards lists, table family
-python3 scripts/check-media-primitives.py   # image render hook + image shortcode
-python3 scripts/check-image-zoom.py         # zoom gating and output isolation
-python3 scripts/check-gallery.py            # native gallery list + zoom runtime reuse
-python3 scripts/check-components.py         # callouts, tabs, data fences, removed shortcodes, hook attribute policy
+python3 scripts/check-media-primitives.py            # image render hook + image shortcode
+python3 scripts/check-image-zoom.py                  # zoom gating and output isolation
+python3 scripts/check-gallery.py                     # native gallery list + zoom runtime reuse
+python3 scripts/check-components.py                  # callouts, tabs, data fences, removed shortcodes, hook attribute policy
 
 # Content migration toolkit for the 0.4 -> v5 syntax (dry-run by default; tests in tests/migrations/)
-python3 scripts/migrations/oink06.py report --sites <dir>...   # read-only inventory
+python3 scripts/migrations/oink06.py report --sites <dir>... # read-only inventory
 python3 scripts/migrations/oink06.py migrate --site <dir> [--write]
-python3 scripts/migrations/oink06.py check --site <dir>        # residual legacy syntax
+python3 scripts/migrations/oink06.py check --site <dir> # residual legacy syntax
 python3 -m unittest discover -s tests/migrations -t .
 
 # Browser runtimes (plain assets, no install step)
@@ -102,10 +104,10 @@ cd exampleSite && hugo server
 ```
 
 CI additionally verifies the `system` typography preset
-(`HUGO_PARAMS_UI_TYPOGRAPHY_PRESET=system` must emit
+(`HUGO_PARAMS_UI_TYPOGRAPHY=system` must emit
 `data-td-typography="system"`), that legacy Sass font overrides in a consumer's
 `_variables_project.scss` still win, and that an invalid preset **fails the
-build** with `invalid params.ui.typography.preset`.
+build** with `invalid params.ui.typography`.
 
 CI matrix: Hugo Extended `0.160.1` (the floor, declared in `hugo.yaml` and
 `theme.toml`) and `0.164.0`. Anything requiring a newer Hugo feature is out of
@@ -200,7 +202,7 @@ them carefully.
 
 Fonts live behind `--td-*-font-family` custom properties
 (`ui`, `body`, `heading`, `code`, `display`, `metadata`, `print`) defined in
-`assets/scss/td/_tokens-typography.scss`. `params.ui.typography.preset` selects
+`assets/scss/td/_tokens-typography.scss`. `params.ui.typography` selects
 `technical` (default, OINK brand faces) or `system` (platform stack, no brand
 font requests); both compile into the same stylesheet, no JS. Existing Docsy /
 Bootstrap Sass font variables seed the roles, so legacy consumer overrides keep
@@ -236,11 +238,13 @@ files (`--sync` does the mechanical part).
 ## Frozen contracts
 
 `docs/content-primitives.md` (contract v2), `docs/enhanced-code-blocks.md`,
-`docs/typography-tokens.md`, and the three `docs/prd5-*-contract.md` files
-(Book contract v2) are implementation contracts, not tutorials;
+`docs/typography-tokens.md`, and the `docs/*-contract.md` files
+(`navigation`, `reading-release`, `landing`, `book` — Book contract v2 — plus
+the Chinese `docs-shell` and `keyboard-nav` contracts) are implementation
+contracts, not tutorials;
 `docs/components.md` is the authoring guide that summarizes the v5 API. The
 first is machine-checked for structure by `check-content-primitives-contract.py`,
-the Book contract by `check-prd5-contract.py`. They define the public component
+the Book contract by `check-component-contract.py`. They define the public component
 APIs — the native forms (`> [!TYPE]` callouts; `{.steps}` `{.cards}` list
 markers; `{.fields}` `{.matrix}` `{caption=}` `{#id num=}` `{tab=}` table
 attributes; the image render hook, which carries captions, numbering, links and
@@ -281,9 +285,20 @@ Recurring rules from those contracts:
   ported into the single canonical implementation rather than gated behind a
   brand switch.
 - Theme parameters live under `params.ui.*` in `hugo.yaml`; theme defaults there
-  are intentionally conservative — interactive features (`offlineSearch`,
-  `ui.image_zoom.enable`, `comments.enable`, `ui.feedback.enable`) are opt-in so
-  the theme never sets site policy.
+  are intentionally conservative — interactive features (`offline_search`,
+  `ui.image_zoom`, `comments`, `ui.feedback`) are opt-in so
+  the theme never sets site policy. Every default is declared there with its
+  value range in a comment (only `ui.quick_links` and `ui.taxonomy_icons` are
+  derived), and the template `| default` fallbacks match the declared values.
+- Parameter shapes (`check-params.py`): a boolean switch is the bare feature
+  name (`ui.annotation: true`, no `.enable`, no `_enabled` unless a sibling
+  family forces it); single-key maps are flattened; a map survives only for a
+  feature with several settings and also accepts a bare boolean; a front
+  matter override is the site key without `ui.`; keys are snake_case except
+  values passed straight to an external runtime (`comments.giscus.*`,
+  `mermaid.*`). Renaming a key means adding it to `config-legacy.html` /
+  `front-matter-legacy.html` (build fails, error names the new key) and to the
+  matrix in `check-params.py`, in the same commit.
 - Code highlighting goes through `layouts/_markup/render-codeblock.html`, not
   `markup:` config (Hugo ignores `markup` set by a theme).
 - Docsy heritage: keep `td-` prefixes, existing Sass variables, documented

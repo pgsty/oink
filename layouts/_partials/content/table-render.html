@@ -161,7 +161,7 @@
   {{- else -}}
     {{- /* Same wrapper element as the `tbl` shortcode (td-book-figure__body), so a
            numbered table is styled identically whichever form produced it. */ -}}
-    {{- $html = printf `<figure id="%s" class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num="%s"><div class="td-book-figure__body">%s</div><figcaption><span class="td-tbl-label">%s</span>%s</figcaption></figure>` $id $num $table $label (cond (ne $caption "") (printf ` <span class="td-tbl-caption">%s</span>` (htmlEscape $caption)) "") -}}
+    {{- $html = printf `<figure id="%s" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="%s"><div class="td-book-figure__body">%s</div><figcaption><span class="td-tbl-label">%s</span>%s</figcaption></figure>` $id $num $table $label (cond (ne $caption "") (printf ` <span class="td-tbl-caption">%s</span>` (htmlEscape $caption)) "") -}}
   {{- end -}}
 {{- end -}}
 {{- if $tab -}}

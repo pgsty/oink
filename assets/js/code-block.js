@@ -242,7 +242,7 @@
       );
       setCollapsedFocus(root, false);
     } else {
-      root.classList.add('is-collapsible', 'is-collapsed');
+      root.classList.add('is-collapsible', 'td-is-collapsed');
       setCollapsedFocus(root, true);
     }
     button.hidden = false;
@@ -269,7 +269,7 @@
         '--td-code-expanded-height',
         `${viewport.scrollHeight}px`,
       );
-      root.classList.remove('is-collapsed');
+      root.classList.remove('td-is-collapsed');
       root.classList.add('is-expanded');
     } else {
       setCollapsedFocus(root, true);
@@ -280,7 +280,7 @@
       // Force the current pixel height before transitioning to the line limit.
       void viewport.offsetHeight;
       root.classList.remove('is-expanded');
-      root.classList.add('is-collapsed');
+      root.classList.add('td-is-collapsed');
       const rect = root.getBoundingClientRect();
       if (rect.top < 0) {
         root.scrollIntoView({ block: 'start', behavior: 'auto' });
@@ -298,7 +298,7 @@
     }
     const target = document.getElementById(id);
     const root = target?.closest('[data-td-code]');
-    if (root?.classList.contains('is-collapsed')) {
+    if (root?.classList.contains('td-is-collapsed')) {
       setExpanded(root, true);
       window.requestAnimationFrame(() =>
         target.scrollIntoView({ block: 'nearest', behavior: 'auto' }),

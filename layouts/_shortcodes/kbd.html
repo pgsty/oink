@@ -1,7 +1,5 @@
 {{- /* Positional-only keyboard sequence with a pure Markdown fallback. */ -}}
-{{- if .IsNamedParams -}}
-  {{- errorf "shortcode %q accepts positional parameters only at %s" .Name .Position -}}
-{{- end -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- if eq (len .Params) 0 -}}
   {{- errorf "shortcode %q requires at least one key at %s" .Name .Position -}}
 {{- end -}}

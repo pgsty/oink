@@ -1,9 +1,9 @@
 {{/* cSpell:ignore docsearch absurlreplacer */ -}}
 
-{{ .Scratch.Set "oink-search" 0 -}}
+{{ .Scratch.Set "td-search-count" 0 -}}
 
 {{ if .Site.Params.gcs_engine_id -}}
-{{ .Scratch.Add "oink-search" 1 -}}
+{{ .Scratch.Add "td-search-count" 1 -}}
 
 <div class="td-search">
   <div class="td-search__icon"></div>
@@ -17,7 +17,7 @@
 
 
 {{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}
-{{ .Scratch.Add "oink-search" 1 -}}
+{{ .Scratch.Add "td-search-count" 1 -}}
 {{ .Scratch.Add "docsearch-id-num" 1 -}}
 
 <div class="td-search">
@@ -28,7 +28,7 @@
 
 
 {{ if partial "shell/search-enabled.html" . -}}
-{{ .Scratch.Add "oink-search" 1 -}}
+{{ .Scratch.Add "td-search-count" 1 -}}
 <button type="button" class="td-search td-search--offline td-search--palette"
   data-td-shell-search-open aria-controls="td-shell-search" aria-expanded="false">
   <span class="td-search__icon" aria-hidden="true"></span>
@@ -36,7 +36,7 @@
 </button>
 {{- end -}}
 
-{{ if gt (.Scratch.Get "oink-search") 1 -}}
+{{ if gt (.Scratch.Get "td-search-count") 1 -}}
 {{ warnf `You have more than one site-search option configured: choose only one.
       For details, see https://oink.pgsty.com/docs/content/search.` -}}
 {{ end -}}

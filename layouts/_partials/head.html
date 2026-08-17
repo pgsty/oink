@@ -2,6 +2,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+{{ partialCached "config-legacy.html" . "config-legacy" -}}
+{{ partial "front-matter-legacy.html" . -}}
 {{ $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{ if $darkMode.enable -}}
 {{/* Browser hints before CSS loads */ -}}
@@ -18,7 +20,7 @@
     html { background: #0b0d12; color: #e6e6e6; }
   }
   {{/* Avoid transitions until theme CSS is loaded */ -}}
-  html[data-theme-init] * { transition: none !important; }
+  html[data-td-theme-init] * { transition: none !important; }
   [data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
   [data-td-theme-toggle] > [hidden] { display: none !important; }
   html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
@@ -88,10 +90,6 @@ rendered, so read that instead of re-deriving it from the output-format lists. *
 {{ if hugo.IsProduction }}{{ $lunr = $lunr | fingerprint }}{{ end -}}
 <script defer src="{{ $lunr.RelPermalink }}"
   {{- with $lunr.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
-{{ end -}}
-
-{{ if .Site.Params.prism_syntax_highlighting -}}
-<link rel="stylesheet" href="{{ "css/prism.css" | relURL }}"/>
 {{ end -}}
 
 {{ template "algolia/head" . -}}

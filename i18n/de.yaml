@@ -1,9 +1,9 @@
 # Alert labels
-caution: Achtung
-important: Wichtig
-note: Hinweis
-tip: Tipp
-warning: Warnung
+callout_caution: Achtung
+callout_important: Wichtig
+callout_note: Hinweis
+callout_tip: Tipp
+callout_warning: Warnung
 
 # UI strings. Buttons and similar.
 ui_pager_prev: Zurück
@@ -286,12 +286,12 @@ ui_page_annotation: Page information
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
-success: Success
-danger: Danger
-question: Question
-example: Example
-quote: Quote
-details: Details
+callout_success: Success
+callout_danger: Danger
+callout_question: Question
+callout_example: Example
+callout_quote: Quote
+callout_details: Details
 
 # UI strings. Buttons and similar.
 

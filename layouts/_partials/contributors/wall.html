@@ -1,6 +1,6 @@
 {{- $items := .items -}}
 {{- $id := .id -}}
-<section class="td-contributor-wall{{ with .class }} {{ . }}{{ end }}" aria-labelledby="{{ $id }}" data-contributor-count="{{ len $items }}">
+<section class="td-contributor-wall{{ with .class }} {{ . }}{{ end }}" aria-labelledby="{{ $id }}" data-td-contributor-count="{{ len $items }}">
   <div class="td-contributor-wall__summary" id="{{ $id }}">
     <span class="td-contributor-wall__count">{{ len $items }}</span>
     <span>{{ T "contributors_count" }}</span>

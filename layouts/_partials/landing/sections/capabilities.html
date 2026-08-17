@@ -2,24 +2,24 @@
 {{- $data := .data -}}
 {{- $id := .id -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-<section id="{{ $id }}" class="oink-section oink-capabilities{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-capabilities{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     {{- range $index, $module := $data.items }}
     {{- $url := $module.url | default $module.href }}
-    <article class="oink-module{{ if eq (mod $index 2) 1 }} oink-module--reverse{{ end }}">
-      <div class="oink-module__copy">
-        {{- with $module.ref }}<p class="oink-module__ref">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+    <article class="td-landing-module{{ if eq (mod $index 2) 1 }} td-landing-module--reverse{{ end }}">
+      <div class="td-landing-module__copy">
+        {{- with $module.ref }}<p class="td-landing-module__ref">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
         <h3>
           {{- if $url }}<a href="{{ $url | relLangURL }}"{{ if $module.external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ end -}}
           {{- partial "landing/markdown.html" (dict "page" $page "value" ($module.title | default $module.name)) -}}
           {{- if $url }}</a>{{ end -}}
         </h3>
-        {{- with $module.motto }}<p class="oink-module__motto">◇ {{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+        {{- with $module.motto }}<p class="td-landing-module__motto">◇ {{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
         {{- with $module.bullets }}
         <ul>{{ range . }}<li>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</li>{{ end }}</ul>
         {{- end }}
-        {{- with $module.value }}<p class="oink-module__value">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+        {{- with $module.value }}<p class="td-landing-module__value">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
       </div>
 
       {{- with $module.visual }}
@@ -28,19 +28,19 @@
           {{- errorf "%s: capabilities item %d has unsupported visual.type %q" $page.Path (add $index 1) $visualType -}}
         {{- end -}}
         {{- if eq $visualType "code" }}
-      <div class="oink-codeplate" aria-label="{{ .aria_label | default .title }}">
-        <div class="oink-codeplate__head"><span><i></i><i></i><i></i></span><b>{{ .title }}</b></div>
+      <div class="td-landing-codeplate" aria-label="{{ .aria_label | default .title }}">
+        <div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>{{ .title }}</b></div>
         <pre><code>{{ partial "landing/code-lines.html" (dict "lines" .lines "position" (printf "%s: capabilities item %d visual" $page.Path (add $index 1))) }}</code></pre>
       </div>
         {{- else if eq $visualType "shell" }}
-      <div class="oink-shell-demo" aria-hidden="true">
-        <div class="oink-shell-demo__sidebar">
-          <span class="oink-shell-demo__brand"><i></i> {{ .brand }}</span>
-          <span class="oink-shell-demo__search">{{ .search }} <kbd>{{ .shortcut }}</kbd></span>
+      <div class="td-landing-shell-demo" aria-hidden="true">
+        <div class="td-landing-shell-demo__sidebar">
+          <span class="td-landing-shell-demo__brand"><i></i> {{ .brand }}</span>
+          <span class="td-landing-shell-demo__search">{{ .search }} <kbd>{{ .shortcut }}</kbd></span>
           <b><i class="{{ .section_icon }}"></i> {{ .section }} <em>⌃</em></b>
           <ul>{{ range .items }}<li{{ if .active }} class="active"{{ end }}>{{ .label }}</li>{{ end }}</ul>
         </div>
-        <div class="oink-shell-demo__main">
+        <div class="td-landing-shell-demo__main">
           <small>{{ .eyebrow }}</small>
           <strong>{{ range .title_lines }}{{ . }}<br>{{ end }}</strong>
           {{- range .rules }}<span style="--w: {{ . }}"></span>{{ end }}
@@ -53,8 +53,8 @@
         {{- end }}
         {{- $columns := int (.columns | default 2) }}
         {{- if lt $columns 1 }}{{ $columns = 1 }}{{ else if gt $columns 4 }}{{ $columns = 4 }}{{ end }}
-      <div class="oink-component-board{{ if $interactive }} oink-component-board--nav{{ end }}{{ if .compact }} oink-component-board--compact{{ end }}"
-           style="--oink-component-columns: {{ $columns }}"
+      <div class="td-landing-component-board{{ if $interactive }} td-landing-component-board--nav{{ end }}{{ if .compact }} td-landing-component-board--compact{{ end }}"
+           style="--td-component-columns: {{ $columns }}"
            {{- if $interactive }} role="navigation" aria-label="{{ .aria_label | default $module.title }}"{{ else }} aria-hidden="true"{{ end }}>
         {{- range .items }}
           {{- $itemURL := .url | default .href }}
@@ -77,16 +77,16 @@
           {{- $srcURL := (partial "content/url.html" (dict "name" "landing" "parameter" "src" "position" $where "value" $src "kind" "image")).href -}}
           {{- $darkURL := $srcURL -}}
           {{- if ne $dark $src }}{{ $darkURL = (partial "content/url.html" (dict "name" "landing" "parameter" "src_dark" "position" $where "value" $dark "kind" "image")).href }}{{ end -}}
-      <figure class="oink-module-image">
+      <figure class="td-landing-module-image">
         <img src="{{ $srcURL }}" alt="{{ $alt }}" loading="lazy"
-             {{- if and $interactive (ne $dark $src) }} data-theme-src-light="{{ $srcURL }}" data-theme-src-dark="{{ $darkURL }}"{{ end }}
+             {{- if and $interactive (ne $dark $src) }} data-td-theme-src-light="{{ $srcURL }}" data-td-theme-src-dark="{{ $darkURL }}"{{ end }}
              {{- with .width }} width="{{ . }}"{{ end }}{{ with .height }} height="{{ . }}"{{ end }}>
       </figure>
         {{- else if eq $visualType "card" }}
           {{- $title := strings.TrimSpace (printf "%v" (.title | default "")) -}}
           {{- if not $title }}{{ errorf "%s: capabilities item %d card visual requires title" $page.Path (add $index 1) }}{{ end -}}
           {{- if and (isset . "lines") (not (reflect.IsSlice .lines)) }}{{ errorf "%s: capabilities item %d card visual lines must be an array" $page.Path (add $index 1) }}{{ end -}}
-      <aside class="oink-visual-card" aria-label="{{ $title | plainify }}">
+      <aside class="td-landing-visual-card" aria-label="{{ $title | plainify }}">
         {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
         <h4>{{ partial "landing/markdown.html" (dict "page" $page "value" $title) }}</h4>
         {{- with .lines }}<ul>{{ range . }}<li>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</li>{{ end }}</ul>{{ end }}

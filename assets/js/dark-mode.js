@@ -43,7 +43,7 @@
       document.documentElement.setAttribute('data-bs-theme', theme)
     }
     try {
-      window.dispatchEvent(new CustomEvent('oink-theme-change', {
+      window.dispatchEvent(new CustomEvent('td-theme-change', {
         detail: { theme: document.documentElement.getAttribute('data-bs-theme') },
       }))
     } catch (_) {
@@ -73,7 +73,7 @@
     document.querySelectorAll('[data-bs-theme-value]').forEach(button => {
       const selected = button.getAttribute('data-bs-theme-value') === preference
       button.setAttribute('aria-pressed', selected ? 'true' : 'false')
-      button.classList.toggle('is-active', selected)
+      button.classList.toggle('td-is-active', selected)
     })
   }
 
@@ -82,7 +82,7 @@
   } finally {
     // Never leave the transition-suppression attribute behind, even when a
     // browser API or consumer override throws during initialisation.
-    document.documentElement.removeAttribute('data-theme-init')
+    document.documentElement.removeAttribute('data-td-theme-init')
   }
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

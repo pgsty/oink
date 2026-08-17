@@ -57,8 +57,8 @@ assert.equal(
   };
   const button = element({
     'data-td-asset-copy': '',
-    'data-label-copy': 'Copy checksum',
-    'data-label-copied': 'Copied',
+    'data-td-label-copy': 'Copy checksum',
+    'data-td-label-copied': 'Copied',
   });
   button.closest = (selector) => {
     if (selector === '[data-td-asset-list]') return root;
@@ -73,7 +73,7 @@ assert.equal(
 
   assert.equal(await assets.copyFromControl(button, {}), true);
   assert.deepEqual(writes, [`${'a'.repeat(64)}  pig arm64.rpm\n`]);
-  assert.equal(button.getAttribute('data-state'), 'success');
+  assert.equal(button.getAttribute('data-td-state'), 'success');
   assert.equal(button.getAttribute('aria-label'), 'Copied');
   assert.equal(label.textContent, 'Copied');
   assert.equal(status.textContent, 'Copied');
@@ -128,7 +128,7 @@ assert.equal(
   globalThis.setTimeout = originalSetTimeout;
   if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator);
   else delete globalThis.navigator;
-  console.log('PRD 5 asset-list runtime checks passed');
+  console.log('asset-list runtime checks passed');
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;

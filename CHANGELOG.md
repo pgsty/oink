@@ -5,8 +5,175 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+The component API v5 release. Content written for 0.4 needs migration:
+`scripts/migrations/oink06.py report --sites <dir>` inventories a site and
+`… migrate --site <dir> --write` rewrites it. Configuration keys renamed here
+fail the build with the new name rather than being silently ignored.
+
+### Removed
+
+- **Breaking.** The `image` shortcode. Every image is now the Markdown image
+  `![alt](src)`, optionally followed by an attribute line carrying `#id`,
+  `num`, `caption`, `width`, `height`, `link`, `command`, and `options`. One
+  render hook resolves page resources, section resources, global assets, and
+  static or remote paths for markdown images, `fig`, and configuration image
+  sources alike. `scripts/migrations/oink06.py migrate --only image` rewrites
+  existing calls.
+- **Breaking.** The Prism highlighting path, `params.prism_syntax_highlighting`,
+  `static/js/prism.js`, and `static/css/prism.css`. Prism could not coexist
+  with the attributes this theme's code blocks are built on — `tab`, `group`,
+  `value`, `num`, and `caption` all require Chroma — so any site using tabs or
+  numbered examples failed the build the moment it opted in, while every site
+  paid 55 KB of published assets whether it enabled Prism or not. Chroma with
+  `params.highlight_classes` is the only highlighter.
+- **Breaking.** The `{.filetree}` and `{.gallery}` list markers, the
+  `filetree`/`filetree-file`/`filetree-folder` and `gallery`/`gallery-image`
+  shortcodes, `code-group`/`code-tab`, Docsy's `tabpane`/`tab`, `doc-cards`,
+  `nav-cards`, Docsy's `card`/`cardpane`, `doc-carousel`, `imgproc`,
+  `readfile`, `example`, `alert`, `pageinfo`, and `details`. (`card` survives
+  as the child of `cards`, with a different contract.) Every replacement is
+  listed in the migration table in `docs/components.md`.
+- **Breaking.** `{{< badge outline= >}}`. There is one badge appearance.
+- **Breaking.** `{{< book-figures kind= >}}` in favour of `book-tables`,
+  `book-equations`, and `book-examples`.
+
+### Added
+
+- Native Markdown forms for every content primitive, so most components no
+  longer need a shortcode: `> [!TYPE]` callouts with optional folding and an
+  `{icon=}` attribute; `{.steps}` and `{.cards}` list markers; the
+  `{.fields}`, `{.matrix}`, `{.full-width}`, `{caption=}`, `{#id num=}`, and
+  `{tab=}` table attributes; ```` ```filetree ````, ```` ```gallery ````,
+  ```` ```echarts ````, ```` ```infographic ````, and ```` ```checksums ````
+  data fences; adjacent fences with `{tab= group= value=}` for code tabs; and
+  the numbered Book forms for figures, tables, equations, and examples. The
+  29 remaining shortcodes are the full forms for the cases a Markdown block
+  cannot express. `docs/components.md` is the authoring guide.
+- One block-attribute policy shared by every render hook
+  (`content/attributes.html`): allowlisted keys are consumed, `class` is token
+  validated, `data-*` and `aria-*` pass through, and `style`, `on*`, and
+  unknown keys fail the build.
+- A content migration toolkit, `scripts/migrations/oink06.py`, with
+  `report` / `migrate` / `check` modes. It is dry-run by default and
+  idempotent; `tests/migrations/` covers it.
+- `scripts/check-namespace.py`: every class the theme generates starts with
+  `td-`, every data attribute with `data-td-`, every CSS custom property with
+  `--td-`, and every JavaScript global with `Oink`. Third-party markup and the
+  documented unprefixed author markers are allowlisted; nothing else is.
+- Four-state goldens (HTML, print, Markdown, RSS, `llms.txt`) over 30 surfaces
+  of the fixture site, plus output-structure, duplicate-ID, bundle-graph, and
+  output-security checks.
+
 ### Changed
 
+- **Breaking.** Configuration keys converge on three rules for 1.0: a boolean
+  switch is the bare feature name (`ui.annotation: true`, not
+  `ui.annotation.enable` or `ui.annotation_enabled` — the only `_enabled`
+  suffixes left are `ui.navbar_enabled`, `ui.sidebar_enabled`, and
+  `ui.sidebar_root_enabled`, whose bare names would collide with sibling
+  keys); a single-key map is flattened to a scalar, and the maps that stay
+  (`comments`, `ui.feedback`, `ui.page_context_menu`, `ui.dark_mode`,
+  `plantuml`, `drawio`, …) also accept a bare boolean; and a front matter key
+  is the site key with its `ui.` prefix dropped, without exception. Keys are
+  snake_case, positive, and named for what they do; camelCase survives only
+  where a value is passed straight to an external runtime
+  (`comments.giscus.*`, `mermaid.*`). Every old key or shape fails the build
+  with its replacement rather than being silently ignored
+  (`_partials/config-legacy.html` for site configuration,
+  `_partials/front-matter-legacy.html` for pages), so upgrading is a matter
+  of following the build errors one by one:
+
+  | Old | New |
+  | --- | --- |
+  | `offlineSearch`, `offlineSearchIndex`, `offlineSearchMaxResults`, `offlineSearchOnServe`, `offlineSearchSummaryLength` | `offline_search`, `offline_search_index`, `offline_search_max_results`, `offline_search_on_serve`, `offline_search_summary_length` |
+  | `ui.showLightDarkModeMenu: "enable-only (experimental)"` | `ui.dark_mode` (`true`, or `{ enable, show_menu }`) |
+  | `ui.scrollSpy.disable` | `ui.scroll_spy` (inverted) |
+  | `ui.no_left_sidebar` | `ui.sidebar_enabled` (inverted) |
+  | `ui.breadcrumb_disable` | `ui.breadcrumb` (inverted) |
+  | `print.disable_toc` | `print.toc` (inverted) |
+  | `disable_click2copy_chroma` | `ui.code_copy` (inverted) |
+  | `ui.readingtime.enable` | `ui.reading_time` |
+  | `ui.ul_show` | `ui.sidebar_expand_levels` |
+  | `Taxonomy.taxonomyCloud`, `.taxonomyCloudTitle`, `.taxonomyPageHeader` | `taxonomy.cloud`, `.cloud_title`, `.page_header` |
+  | `ui.annotation.enable`, `ui.image_zoom.enable`, `ui.keyboard_nav.enable` | `ui.annotation`, `ui.image_zoom`, `ui.keyboard_nav` (bare booleans) |
+  | `ui.typography.preset` | `ui.typography` (`technical` \| `system`) |
+  | `ui.pager.types` | `ui.pager_types` |
+  | `markmap.enable` | `markmap` |
+  | `content_width` (`slim` \| `norm` \| `wide`) | `reading_width` (`slim` \| `normal` \| `wide`) |
+  | `ui.docs_root` | `ui.docs_sidebar_root` |
+  | front matter `context_menu` | `page_context_menu` |
+  | front matter `params.ui.image_zoom.enable` | `image_zoom` |
+  | front matter `hide_readingtime: true` | `reading_time: false` |
+  | front matter `hide_feedback: true` | `feedback: false` |
+  | front matter `exclude_search`, `excludeSearch` | `search_exclude` |
+  | `github_url` | `github_repo` (the edit, history, and issue links are derived from it) |
+  | `rss_sections` | removed; it was never read |
+
+  `ui.code_copy: false` sets the site-wide *default* only: a fence that names
+  `copy` explicitly still gets what it asks for (the old key silently overrode
+  an explicit author value). Every theme default is now declared in the
+  theme's `hugo.yaml` with its value range in a comment (`offline_search`,
+  `offline_search_summary_length`, `ui.breadcrumb`, `ui.reading_time`,
+  `ui.dark_mode`, `ui.docs_sidebar_root`, `ui.sidebar_icon_policy`,
+  `ui.section_index_columns`, `print.toc`, `print.section_break_wordcount`,
+  `markmap`, `plantuml.enable`, `drawio.enable`, `github_branch` were
+  previously template-only fallbacks), except `ui.quick_links` and
+  `ui.taxonomy_icons`, whose defaults are derived and documented as such;
+  the template fallbacks for `ui.sidebar_expand_levels` (2) and
+  `ui.sidebar_menu_truncate` (2000) now match the declared values. The
+  unloaded Docsy `click-to-copy.js` runtime and its styles are gone.
+  `scripts/check-params.py` enforces the key rules and the legacy-key errors.
+- **Breaking.** One naming namespace. Classes the theme generates are `td-`
+  prefixed (`leaf`, `has-child`, `active-path`, `is-open`, `is-active`,
+  `is-hidden`, `is-disabled`, `landing-header`, `landing-nav`,
+  `landing-container`, `article-meta`, `pageinfo`, `nav-*`, `taxonomy-*`,
+  `ul-N`, and the landing subsystem's `oink-*` set are gone); data attributes
+  are `data-td-*`; CSS custom properties are `--td-*` (`--oink-*` and
+  `--term-*` are gone); the ECharts extension point is
+  `window.OinkEchartsFunctions`. The site header and nav are now
+  `td-site-header` / `td-site-nav` / `td-site-container` — they style every
+  page, not only a landing page, and the old names said otherwise.
+  `check-namespace.py` keeps it that way.
+- **Breaking.** Callout labels are namespaced i18n keys (`callout_note`,
+  `callout_tip`, …). The theme no longer claims bare top-level keys such as
+  `note`, `example`, or `quote` that a consuming site is just as likely to
+  want. All 32 locales are updated.
+- **Breaking.** The `swaggerui` shortcode is `swagger`, matching every other
+  multi-word shortcode name.
+- Three JavaScript bundles instead of one per flag combination. `js/actions.js`
+  (the action registry and its two dependencies) and `js/core.js` (Bootstrap
+  and the interactive shell) are byte-identical on every page, so a reader
+  crossing pages with different feature sets keeps one cached copy; only a
+  small `js/page-<key>.js` varies. ECharts is its own `<script>` rather than a
+  megabyte inside an uncacheable bundle, matching how every other large vendor
+  runtime already shipped. The per-page bundle name is derived from its members
+  instead of a hand-maintained 21-argument `printf`, so adding a runtime can no
+  longer collide two different feature sets on one file name. Over the fixture
+  site this is 3.2 MB of JavaScript down to 1.8 MB.
+- Print output loads 7.9 KB instead of 100 KB: it keeps the action runtime its
+  "click to print" control needs and drops Bootstrap, the navbar, the sidebar,
+  the palette, and the scroll spy, none of which a print view can use.
+- Both sidebar sources — the content tree and an explicit `data/docs_nav.json`
+  tree — render through one row partial, `shell/sidebar-node.html`. The two
+  walkers keep their own tree traversal; everything a reader can see is now
+  written once instead of being kept in sync by a check script.
+- Every shortcode validates its parameters through
+  `content/shortcode-params.html`, and the contract check fails if a new one
+  does not. `asciinema`, `redoc`, `swagger`, `param`, `comment`, and `steps`
+  previously accepted any parameter silently.
+- Build failures follow one shape: `<component>: <subject> <expectation>;
+  got <value> at <position>`, lower case throughout, one preposition for the
+  location, and configuration errors naming the full `params.` path. The
+  contract check enforces it.
+- `llms.txt` reads the configured `params.ui.docs_section` instead of a
+  hard-coded `docs`, and lists documentation pages with their descriptions
+  rather than only top-level sections.
+- Documentation is named for its subject rather than the internal planning
+  document it came from: `navigation-contract.md`, `reading-release-contract.md`,
+  `landing-contract.md`, `book-contract.md`, `keyboard-nav-contract.zh.md`,
+  `docs-shell-contract.zh.md`, and `migration-{navigation,components,docs-shell}.md`.
+  The check scripts and JavaScript tests are renamed to match. One-time
+  site-specific migration work orders are no longer published with the theme.
 - Unify the shell chrome on Font Awesome. `shell/icon.html` now dispenses one
   FA class pair per semantic name as
   `<i class="td-shell-icon td-shell-icon--<name> fa-solid fa-…">` instead of
@@ -15,18 +182,30 @@ All notable changes to OINK are documented here. The project follows
   sets the box; the glyph em derives from it, chevrons a step smaller). Role
   classes are unchanged, so CSS hooks and `dark-mode.js` keep working; the
   page-action menu takes its icons from the action registry, so it and the
-  palette always show the same glyph. The eight never-used dispenser entries
-  (`book-open`, `newspaper`, `panel-right`, `git-fork`, `git-branch`, `text`,
-  `printer`, `text-align-start`) are gone; the version controls use
-  `fa-code-branch` and the shortcut help `fa-circle-question`. Consumer
-  overrides that sized `.td-shell-icon` with `width`/`height` still get a
-  centred glyph; set `--td-shell-icon-size` to resize.
+  palette always show the same glyph.
+- Refresh docs and blog typography: Inter for UI and prose, borderless inline
+  code, quiet code cards with a hover-revealed Copy control, Mintlify-style
+  field rows, a page-end pager of two text links, and a rule above card
+  section indexes.
+- `{{< fields >}}` and the `{.fields}` table produce one rendering, and every
+  entry gets a `#field-<name>` anchor.
 
 ### Fixed
 
-- Give folded (`[!TYPE]-` / `[!DETAILS]`) callouts symmetric summary padding:
+- The table render hook runs in the print and RSS outputs, so a table keeps its
+  caption, number, and scroll container outside interactive HTML.
+- Folded (`[!TYPE]-` / `[!DETAILS]`) callouts get symmetric summary padding:
   the print-only static title rule no longer zeroes the `<summary>` bottom
   padding, and the open state keeps the static callout's title-to-body rhythm.
+- The image resolver labels its errors by the caller — a Markdown image says
+  `image`, not `shortcode` — so a failure names something the author can find.
+- Book `fig` sources resolve through the shared image resolver, and
+  configuration image sources are held to the same URL policy as content.
+- The navbar renders on the home page; callout titles meet contrast; Gallery
+  items are Zoom-eligible on the same terms as other images; the tabs runtime
+  keeps its run boundaries, unique peer IDs, and print titles; FileTree honours
+  `prefers-reduced-motion`.
+- README no longer advertises carousels, which the theme does not have.
 
 ## [0.4.2] - 2026-08-16
 
@@ -502,7 +681,7 @@ All notable changes to OINK are documented here. The project follows
   shortcode templates include concise purpose and parameter headers.
 - README quick-start configuration now distinguishes theme-provided features
   from site-enabled output formats and search/theme policy.
-- The remaining landing-header, mobile-menu, and language-menu behavior in
+- The remaining td-site-header, mobile-menu, and language-menu behavior in
   `base.js` now uses the native DOM directly.
 - Document the Google search dark-mode stylesheet as an explicit consumer
   opt-in.
@@ -524,7 +703,7 @@ All notable changes to OINK are documented here. The project follows
   with neutral containers.
 - Replaced the print view's inline `onclick` handler with the shared,
   CSP-compatible print action.
-- Guard sidebar active-path lookup for consumer sites that do not provide the
+- Guard sidebar td-active-path lookup for consumer sites that do not provide the
   optional navigation data map.
 
 ## [0.1.0] - 2026-08-10

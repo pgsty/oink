@@ -1,0 +1,60 @@
+{{/* data/docs_nav.json walker: one node, plus its declared children.
+
+     This partial owns only what is specific to the explicit tree — resolving
+     a node's `page` reference, and reading active state from the precomputed
+     `active_path_by_url` map instead of Hugo's page relationships. The row
+     itself is emitted by shell/sidebar-node.html, shared with the content-tree
+     walker.
+
+     cSpell:ignore manuallink manuallinkrelref manuallinktitle */ -}}
+{{- $p := .page -}}
+{{- $node := .node -}}
+{{- $currentURL := .currentURL -}}
+{{- $activeURLs := .activeURLs -}}
+{{- $shouldDelayActive := .shouldDelayActive -}}
+{{- $ulNr := .ulNr -}}
+{{- $iconPolicy := .iconPolicy -}}
+{{- $s := $p.Site.GetPage $node.page -}}
+{{- if not $s -}}
+  {{- errorf "docs navigation: page %s was not found" $node.page -}}
+{{- else -}}
+  {{- $active := and (not $shouldDelayActive) (eq $node.url $currentURL) -}}
+  {{- $activePath := and (not $shouldDelayActive) (in $activeURLs $node.url) -}}
+  {{- $forceExpanded := $s.Params.sidebar_expanded | default false -}}
+  {{- $shouldExpand := or $activePath $forceExpanded -}}
+  {{- $withChild := gt (len $node.children) 0 -}}
+  {{- $foldable := and ($p.Param "ui.sidebar_menu_foldable") $withChild -}}
+
+  {{- $childMarkup := "" -}}
+  {{- if $withChild -}}
+    {{- $childUlNr := add $ulNr 1 -}}
+    {{- $rows := "" -}}
+    {{- range $node.children -}}
+      {{- $rows = printf "%s%s" $rows (partial "shell/docs-sidebar-node.html" (dict
+          "page" $p
+          "node" .
+          "currentURL" $currentURL
+          "activeURLs" $activeURLs
+          "shouldDelayActive" $shouldDelayActive
+          "ulNr" $childUlNr
+          "iconPolicy" $iconPolicy
+      )) -}}
+    {{- end -}}
+    {{- $childMarkup = printf "<ul class=\"td-shell-tree__list td-shell-tree__list--%d\">%s</ul>" $childUlNr $rows | safeHTML -}}
+  {{- end -}}
+
+  {{- partial "shell/sidebar-node.html" (dict
+    "page" $p
+    "section" $s
+    "active" $active
+    "activePath" $activePath
+    "treeRoot" false
+    "iconRoot" (eq $ulNr 1)
+    "withChild" $withChild
+    "foldable" $foldable
+    "shouldExpand" $shouldExpand
+    "hidden" false
+    "iconPolicy" $iconPolicy
+    "children" $childMarkup
+  ) -}}
+{{- end -}}

@@ -24,11 +24,11 @@ Escaped keys remain readable: {{< kbd "[" "A+B" ">" >}}.
 ## Fields
 
 {{< fields label="Configuration fields" >}}
-  {{< field name="offlineSearch" type="boolean" default=true required=true >}}
+  {{< field name="offline_search" type="boolean" default=true required=true >}}
   Enables the local search index and links to the [documentation](/docs/).
   {{< /field >}}
 
-  {{< field name="offlineSearchMaxResults" type="integer" default=10 >}}
+  {{< field name="offline_search_max_results" type="integer" default=10 >}}
   Maximum number of visible results.
 
   A second paragraph preserves multiline description Markdown and `inline code`.

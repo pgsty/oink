@@ -10,12 +10,9 @@
   before the runtime enhances the DOM; print / RSS render titled sections;
   Markdown output renders "**Label**" sections.
 */ -}}
-{{- if and .Params (not .IsNamedParams) }}{{ errorf "shortcode %q accepts named parameters only at %s" .Name .Position }}{{ end -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "group" "default" "label")) -}}
 {{- $params := dict -}}
 {{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
-{{- range $name, $_ := $params -}}
-  {{- if not (in (slice "group" "default" "label") $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
-{{- end -}}
 {{- $group := "" -}}
 {{- if isset $params "group" -}}
   {{- $group = strings.TrimSpace (printf "%v" (.Get "group")) -}}

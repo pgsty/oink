@@ -1,15 +1,15 @@
 # Alert labels
-caution: Caution
-important: Important
-note: Note
-tip: Tip
-warning: Warning
-success: Success
-danger: Danger
-question: Question
-example: Example
-quote: Quote
-details: Details
+callout_caution: Caution
+callout_important: Important
+callout_note: Note
+callout_tip: Tip
+callout_warning: Warning
+callout_success: Success
+callout_danger: Danger
+callout_question: Question
+callout_example: Example
+callout_quote: Quote
+callout_details: Details
 
 # UI strings. Buttons and similar.
 ui_pager_prev: Previous

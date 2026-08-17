@@ -3,23 +3,23 @@
 {{- if or (not (reflect.IsSlice $keys)) (not $keys) }}{{ errorf "%s: landing download requires key or keys" $page.Path }}{{ end -}}
 {{- $seen := slice -}}{{- range $keys }}{{ $key := strings.TrimSpace (printf "%v" .) }}{{ if not $key }}{{ errorf "%s: landing download keys must not be empty" $page.Path }}{{ end }}{{ if in $seen $key }}{{ errorf "%s: landing download has duplicate key %q" $page.Path $key }}{{ end }}{{ $seen = $seen | append $key }}{{ end -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
-<section id="{{ $id }}" class="oink-section oink-download-section{{ with $section.class }} {{ . }}{{ end }}"{{ with $section.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-download-section{{ with $section.class }} {{ . }}{{ end }}"{{ with $section.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $section "id" $id) }}
     {{- range $productIndex, $key := $seen }}
       {{- $position := printf "%s: landing download %s" $page.Path $key -}}
       {{- $data := partial "download/resolve.html" (dict "page" $page "key" $key "position" $position) -}}
-    <article class="oink-download-product" data-download-key="{{ $key }}">
+    <article class="td-landing-download-product" data-td-download-key="{{ $key }}">
       {{- if gt (len $seen) 1 }}<h3>{{ $key }}</h3>{{ end }}
       {{- if eq $format "html" }}
         {{- $page.Store.Set "hasTabpane" true -}}
         {{- $enabledSet := false -}}
-      <div class="oink-download-tabs">
+      <div class="td-landing-download-tabs">
         <div class="nav nav-tabs" role="tablist">{{ range $index, $channel := $data.channels }}{{ $enabled := or $data.published (eq $channel.kind "rolling") }}{{ $active := and $enabled (not $enabledSet) }}{{ if $active }}{{ $enabledSet = true }}{{ end }}<button class="nav-link{{ if $active }} active{{ end }}{{ if not $enabled }} disabled{{ end }}" id="download-{{ $productIndex }}-{{ $channel.id }}-tab" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#download-{{ $productIndex }}-{{ $channel.id }}" aria-controls="download-{{ $productIndex }}-{{ $channel.id }}" aria-selected="{{ $active }}"{{ if not $enabled }} disabled aria-disabled="true"{{ end }}>{{ with $channel.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ $channel.title }}</button>{{ end }}</div>
         {{- $activeSet := false }}<div class="tab-content">{{ range $index, $channel := $data.channels }}{{ $enabled := or $data.published (eq $channel.kind "rolling") }}{{ $active := and $enabled (not $activeSet) }}{{ if $active }}{{ $activeSet = true }}{{ end }}<div class="tab-pane fade{{ if $active }} show active{{ end }}" id="download-{{ $productIndex }}-{{ $channel.id }}" role="tabpanel" aria-labelledby="download-{{ $productIndex }}-{{ $channel.id }}-tab" tabindex="0">{{ partial "download/channel.html" (dict "page" $page "data" $data "channel" $channel "format" $format) }}</div>{{ end }}</div>
       </div>
       {{- else if eq $format "print" }}
-        {{- range $data.channels }}<section class="oink-download-print"><h4>{{ .title }}</h4>{{ partial "download/channel.html" (dict "page" $page "data" $data "channel" . "format" $format) }}</section>{{ end -}}
+        {{- range $data.channels }}<section class="td-landing-download-print"><h4>{{ .title }}</h4>{{ partial "download/channel.html" (dict "page" $page "data" $data "channel" . "format" $format) }}</section>{{ end -}}
       {{- end }}
     </article>
     {{- end }}

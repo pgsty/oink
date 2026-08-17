@@ -5,4 +5,5 @@ briefly an internal Hugo template, but it is no more. For details, see:
 - https://github.com/gohugoio/hugo/pull/13294
 
 */}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "none") -}}
 {{- $noop := .Inner -}}

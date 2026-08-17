@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -21,7 +20,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 
 
 def bundle_source(page: str, public: Path) -> str:
-    match = re.search(r'<script src="(?P<src>/js/main-[^"]+\.js)"', page)
+    match = re.search(r'<script src="(?P<src>/js/page-[^"]+\.js)"', page)
     if not match:
         return ""
     return (public / match.group("src").lstrip("/")).read_text()
@@ -70,8 +69,8 @@ def check_outputs(public: Path) -> list[str]:
 
     for marker in (
         'class="td-code td-code--titled"',
-        'data-collapse-lines="4"',
-        'data-copy-mode="command"',
+        'data-td-collapse-lines="4"',
+        'data-td-copy-mode="command"',
         'class="td-code td-code--untitled code-fixture"',
         'data-note="a &#34;quoted&#34; &amp; value"',
         # Adjacent fences: one wrapper per fence, group only on the first block.
@@ -109,7 +108,7 @@ def check_outputs(public: Path) -> list[str]:
     require(re.search(r'<div class="td-tabs__panel"[^>]*\shidden(?:\s|>)', code_html) is None, "a tab panel is hidden before the runtime enhances the DOM", errors)
     # The shell keeps the lexer name on the root; there is no visible language
     # label (the block is one quiet card, Copy is its only control).
-    require('data-language="sh"' in code_html, "shell lexer alias lost its data-language", errors)
+    require('data-td-language="sh"' in code_html, "shell lexer alias lost its data-td-language", errors)
     require("td-code__language" not in code_html, "a visible language label survived in the code shell", errors)
     require("td-code__copy-label" not in code_html, "Copy control still contains a visible text label", errors)
     require("data-td-tp-persist" not in code_html and "td-code-group" not in code_html and "nav-tabs" not in code_html, "legacy tabpane / code-group markup survived", errors)
@@ -400,49 +399,48 @@ def check_tabs_behaviour(hugo: str) -> list[str]:
 
 
 INVALID_CASES = (
-    ("filename-title", '```yaml {filename="a.yml" title="A"}\na: 1\n```\n', "filename and title are mutually exclusive", {}),
-    ("command-language", '```bash {copy="command"}\necho no\n```\n', "copy=command requires language console or shell-session", {}),
-    ("wrap-table", '```text {wrap=true lineNos="table"}\none\ntwo\n```\n', "wrap=true is incompatible", {}),
-    ("collapse-zero", '```text {collapse=0}\none\n```\n', "collapse must be a positive integer", {}),
-    ("duplicate-code-ids", '```text {id="same-code"}\none\n```\n\n```text {id="same-code"}\ntwo\n```\n', "duplicate id", {}),
-    ("invalid-code-id", '```text {id="bad id"}\none\n```\n', "id must not contain ASCII whitespace or control characters", {}),
-    ("generated-line-anchor-collision", '```text {id="anchored" lineNos="inline" anchorLineNos=true}\none\n```\n\n```text {id="anchored-1"}\ntwo\n```\n', "duplicate id", {}),
-    ("filename-aria-label", '```text {filename="a.txt" aria-label="conflict"}\none\n```\n', "label/filename and aria-label are mutually exclusive", {}),
-    ("reserved-data", '```text {data-line-count="999"}\none\n```\n', 'attribute "data-line-count" is reserved', {}),
+    ("filename-title", '```yaml {filename="a.yml" title="A"}\na: 1\n```\n', "filename and title are mutually exclusive"),
+    ("command-language", '```bash {copy="command"}\necho no\n```\n', "copy=command requires language console or shell-session"),
+    ("wrap-table", '```text {wrap=true lineNos="table"}\none\ntwo\n```\n', "wrap=true is incompatible"),
+    ("collapse-zero", '```text {collapse=0}\none\n```\n', "collapse must be a positive integer"),
+    ("duplicate-code-ids", '```text {id="same-code"}\none\n```\n\n```text {id="same-code"}\ntwo\n```\n', "duplicate id"),
+    ("invalid-code-id", '```text {id="bad id"}\none\n```\n', "id must not contain ASCII whitespace or control characters"),
+    ("generated-line-anchor-collision", '```text {id="anchored" lineNos="inline" anchorLineNos=true}\none\n```\n\n```text {id="anchored-1"}\ntwo\n```\n', "duplicate id"),
+    ("filename-aria-label", '```text {filename="a.txt" aria-label="conflict"}\none\n```\n', "label/filename and aria-label are mutually exclusive"),
+    ("reserved-data", '```text {data-td-line-count="999"}\none\n```\n', 'attribute "data-td-line-count" is reserved'),
     # Adjacent-fence tabs
-    ("tab-group-without-value", '```bash {tab="A" group="g"}\none\n```\n', "value is required when group is declared", {}),
-    ("tab-value-without-tab", '```bash {value="a"}\none\n```\n', "group/value require tab", {}),
-    ("tab-group-without-tab", '```bash {group="g"}\none\n```\n', "group/value require tab", {}),
-    ("tab-bad-group", '```bash {tab="A" group="Bad Group" value="a"}\none\n```\n', "group must match", {}),
-    ("tab-bad-value", '```bash {tab="A" group="g" value="Bad Value"}\none\n```\n', "value must match", {}),
-    ("tab-empty", '```bash {tab=""}\none\n```\n', "tab label must not be empty", {}),
-    ("tab-and-num", '```bash {tab="A" num="1" caption="x"}\none\n```\n', "mutually exclusive", {}),
+    ("tab-group-without-value", '```bash {tab="A" group="g"}\none\n```\n', "value is required when group is declared"),
+    ("tab-value-without-tab", '```bash {value="a"}\none\n```\n', "group/value require tab"),
+    ("tab-group-without-tab", '```bash {group="g"}\none\n```\n', "group/value require tab"),
+    ("tab-bad-group", '```bash {tab="A" group="Bad Group" value="a"}\none\n```\n', "group must match"),
+    ("tab-bad-value", '```bash {tab="A" group="g" value="Bad Value"}\none\n```\n', "value must match"),
+    ("tab-empty", '```bash {tab=""}\none\n```\n', "tab label must not be empty"),
+    ("tab-and-num", '```bash {tab="A" num="1" caption="x"}\none\n```\n', "mutually exclusive"),
     # Native Book example fence
-    ("eg-caption-without-num", '```sql {caption="orphan"}\nSELECT 1;\n```\n', "caption requires num", {}),
-    ("eg-num-without-caption", '```sql {num="1"}\nSELECT 1;\n```\n', "requires caption", {}),
-    ("eg-bad-num", '```sql {num="1/2" caption="x"}\nSELECT 1;\n```\n', "num must match", {}),
-    ("eg-duplicate-num", '```sql {num="1" caption="x"}\nSELECT 1;\n```\n\n```sql {num="1" caption="y" #other}\nSELECT 2;\n```\n', "duplicate eg number", {}),
+    ("eg-caption-without-num", '```sql {caption="orphan"}\nSELECT 1;\n```\n', "caption requires num"),
+    ("eg-num-without-caption", '```sql {num="1"}\nSELECT 1;\n```\n', "requires caption"),
+    ("eg-bad-num", '```sql {num="1/2" caption="x"}\nSELECT 1;\n```\n', "num must match"),
+    ("eg-duplicate-num", '```sql {num="1" caption="x"}\nSELECT 1;\n```\n\n```sql {num="1" caption="y" #other}\nSELECT 2;\n```\n', "duplicate eg number"),
     # Tabs shortcode
-    ("tabs-positional", '{{< tabs "x" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "accepts named parameters only", {}),
-    ("tabs-unknown", '{{< tabs cols=2 >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "unsupported parameter", {}),
-    ("tabs-empty", '{{< tabs >}}{{< /tabs >}}\n', "requires at least one tab child", {}),
-    ("tabs-text", '{{< tabs >}}not a tab{{< /tabs >}}\n', "accepts tab children only", {}),
-    ("tabs-bad-group", '{{< tabs group="Bad" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "group must match", {}),
-    ("tabs-default-without-group", '{{< tabs default="a" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "default requires group", {}),
-    ("tabs-default-unknown", '{{< tabs group="g" default="zzz" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "does not match a tab value", {}),
-    ("tab-outside", '{{< tab label="A" >}}a{{< /tab >}}\n', "must be enclosed by tabs", {}),
-    ("tab-missing-label", '{{< tabs >}}{{< tab >}}a{{< /tab >}}{{< /tabs >}}\n', "requires named parameter label", {}),
-    ("tab-value-required", '{{< tabs group="g" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "value is required because tabs declares group", {}),
-    ("tab-value-forbidden", '{{< tabs >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "value is only allowed when tabs declares a group", {}),
-    ("tab-duplicate-value", '{{< tabs group="g" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< tab label="B" value="a" >}}b{{< /tab >}}{{< /tabs >}}\n', "duplicate value", {}),
-    ("tab-unknown", '{{< tabs >}}{{< tab label="A" lang="sh" >}}a{{< /tab >}}{{< /tabs >}}\n', "unsupported parameter", {}),
-    ("prism-tabs", '```bash {tab="A"}\none\n```\n', "requires Hugo/Chroma", {"HUGO_PARAMS_PRISM_SYNTAX_HIGHLIGHTING": "true"}),
+    ("tabs-positional", '{{< tabs "x" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "accepts named parameters only"),
+    ("tabs-unknown", '{{< tabs cols=2 >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "unsupported parameter"),
+    ("tabs-empty", '{{< tabs >}}{{< /tabs >}}\n', "requires at least one tab child"),
+    ("tabs-text", '{{< tabs >}}not a tab{{< /tabs >}}\n', "accepts tab children only"),
+    ("tabs-bad-group", '{{< tabs group="Bad" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "group must match"),
+    ("tabs-default-without-group", '{{< tabs default="a" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "default requires group"),
+    ("tabs-default-unknown", '{{< tabs group="g" default="zzz" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "does not match a tab value"),
+    ("tab-outside", '{{< tab label="A" >}}a{{< /tab >}}\n', "must be enclosed by tabs"),
+    ("tab-missing-label", '{{< tabs >}}{{< tab >}}a{{< /tab >}}{{< /tabs >}}\n', "requires named parameter label"),
+    ("tab-value-required", '{{< tabs group="g" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "value is required because tabs declares group"),
+    ("tab-value-forbidden", '{{< tabs >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "value is only allowed when tabs declares a group"),
+    ("tab-duplicate-value", '{{< tabs group="g" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< tab label="B" value="a" >}}b{{< /tab >}}{{< /tabs >}}\n', "duplicate value"),
+    ("tab-unknown", '{{< tabs >}}{{< tab label="A" lang="sh" >}}a{{< /tab >}}{{< /tabs >}}\n', "unsupported parameter"),
 )
 
 
 def check_invalid_cases(hugo: str) -> list[str]:
     errors: list[str] = []
-    for name, body, expected, extra_env in INVALID_CASES:
+    for name, body, expected in INVALID_CASES:
         with tempfile.TemporaryDirectory(prefix=f"oink-code-{name}-") as temp:
             temp_path = Path(temp)
             content = temp_path / "content/docs"
@@ -450,11 +448,7 @@ def check_invalid_cases(hugo: str) -> list[str]:
             (content / "invalid.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
             destination = temp_path / "public"
             command = [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn"]
-            if extra_env:
-                override = temp_path / "override.yaml"
-                override.write_text("params:\n  prism_syntax_highlighting: true\n")
-                command.extend(["--config", f"{EXAMPLE / 'hugo.yaml'},{override}"])
-            result = subprocess.run(command, cwd=ROOT, env={**os.environ, **extra_env}, capture_output=True, text=True, check=False)
+            result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
             output = result.stdout + result.stderr
             if result.returncode == 0:
                 errors.append(f"invalid case {name} unexpectedly built")

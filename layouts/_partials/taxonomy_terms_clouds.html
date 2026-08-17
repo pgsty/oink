@@ -1,9 +1,9 @@
 {{ $context := . -}}
 {{ if .Site.Params.taxonomy -}}
-	{{ if .Site.Params.Taxonomy.taxonomyCloud -}}
-		{{ range $index, $taxo := .Site.Params.Taxonomy.taxonomyCloud -}}
-				{{ if $.Site.Params.Taxonomy.taxonomyCloudTitle -}}
-					{{ $.Scratch.Set "title" (index $.Site.Params.Taxonomy.taxonomyCloudTitle $index) -}}
+	{{ if .Site.Params.taxonomy.cloud -}}
+		{{ range $index, $taxo := .Site.Params.taxonomy.cloud -}}
+				{{ if $.Site.Params.taxonomy.cloud_title -}}
+					{{ $.Scratch.Set "title" (index $.Site.Params.taxonomy.cloud_title $index) -}}
 				{{ else -}}
 					{{ $.Scratch.Set "title" (partial "taxonomy-label.html" (dict "page" $context "key" $taxo)) -}}
 				{{ end -}}

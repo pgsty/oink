@@ -1,8 +1,8 @@
 {{- $page := .page -}}{{- $data := .data -}}{{- $item := .item -}}
-<figure class="oink-testimonial{{ with $item.class }} {{ . }}{{ end }}">
+<figure class="td-landing-testimonial{{ with $item.class }} {{ . }}{{ end }}">
   {{- with ($item.comment | default $item.quote) }}<blockquote>{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</blockquote>{{ end }}
   <figcaption>
-    {{- if or $item.image $item.logo $item.icon }}<div class="oink-testimonial__avatar">{{ partial "landing/media.html" (dict "item" $item) }}</div>{{ end }}
+    {{- if or $item.image $item.logo $item.icon }}<div class="td-landing-testimonial__avatar">{{ partial "landing/media.html" (dict "item" $item) }}</div>{{ end }}
     <div>{{ with ($item.name | default $item.title) }}<strong>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</strong>{{ end }}{{ with ($item.desc | default $item.role) }}<span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span>{{ end }}</div>
     {{- partial "landing/action.html" (dict "page" $page "item" $item "label" ($item.source | default $data.link_label)) }}
   </figcaption>

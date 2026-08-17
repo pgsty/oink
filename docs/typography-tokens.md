@@ -18,8 +18,7 @@ Set one of the two built-in values in `hugo.yaml`:
 ```yaml
 params:
   ui:
-    typography:
-      preset: technical # technical | system
+    typography: technical # technical | system
 ```
 
 - `technical` is the default. It sets UI and prose in the bundled Inter face
@@ -45,7 +44,7 @@ values fail the Hugo build instead of silently changing the site.
 | `--td-code-font-family` | Code and terminal content | `$font-family-code` |
 | `--td-display-font-family` | Wordmarks and display titles | Chakra Petch, then UI role |
 | `--td-meta-font-family` | Technical labels and metadata | IBM Plex Mono, then code role |
-| `--td-print-font-family` | Print-only body copy | `$td-google-font-name`, then Bootstrap body |
+| `--td-print-font-family` | Print-only body copy | `$td-print-font-name`, then Bootstrap body |
 
 Components consume these roles or a component alias such as
 `--td-asciinema-font-family`; they must not name OINK's bundled text faces
@@ -66,7 +65,7 @@ reuses these established variables instead of introducing parallel Sass knobs:
 | `$headings-font-family` | Heading role when explicitly configured |
 | `$td-font-family-monospace` / `$font-family-monospace` | Bootstrap monospace base; an explicit project value also survives `system` |
 | `$font-family-code` | Code role and ordinary `code`, `pre`, `kbd`, and `samp` |
-| `$td-google-font-name` | Default print face |
+| `$td-print-font-name` | Default print face |
 
 Declare legacy Sass overrides in `assets/scss/_variables_project.scss`, as in
 Docsy. They are compiled into the role defaults. CSS custom-property overrides

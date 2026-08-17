@@ -9,7 +9,7 @@
  * l/y/t/r/f/c work on every interactive page.
  * Every binding is a bare single-character shortcut, so all of them yield to
  * anything the reader could be typing into and to open overlays. Bundled only
- * when params.ui.keyboard_nav.enable is not false.
+ * when params.ui.keyboard_nav is not false.
  */
 (function (global) {
   'use strict';
@@ -50,7 +50,7 @@
         if (list.contains('td-shell-tree__item--hidden')) return false;
         if (
           list.contains('td-shell-tree__children') &&
-          !list.contains('is-open') &&
+          !list.contains('td-is-open') &&
           !list.contains('td-shell-tree__children--static')
         ) return false;
       }
@@ -583,7 +583,7 @@
         }
       }
       var fallback = doc.querySelector('[data-td-theme-toggle]') ||
-        doc.querySelector('[data-theme-toggle]');
+        doc.querySelector('[data-td-theme-toggle]');
       if (!fallback || typeof fallback.click !== 'function') return false;
       fallback.click();
       return true;

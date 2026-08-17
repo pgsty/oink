@@ -133,7 +133,7 @@
     function close(restoreFocus) {
       if (pop.hidden) return;
       window.clearTimeout(closeTimer);
-      pop.classList.remove('is-open');
+      pop.classList.remove('td-is-open');
       btn.setAttribute('aria-expanded', 'false');
       closeTimer = window.setTimeout(function () {
         pop.hidden = true;
@@ -148,7 +148,7 @@
       pop.hidden = false;
       btn.setAttribute('aria-expanded', 'true');
       window.requestAnimationFrame(function () {
-        pop.classList.add('is-open');
+        pop.classList.add('td-is-open');
       });
       document.addEventListener('pointerdown', onOutside, true);
     }
@@ -379,7 +379,7 @@
 
         function setExpanded(expanded) {
           button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-          target.classList.toggle('is-open', expanded);
+          target.classList.toggle('td-is-open', expanded);
           var label = expanded
             ? button.dataset.labelCollapse
             : button.dataset.labelExpand;
@@ -472,7 +472,7 @@
             'aria-expanded',
             shouldExpand ? 'true' : 'false',
           );
-          target.classList.toggle('is-open', shouldExpand);
+          target.classList.toggle('td-is-open', shouldExpand);
           var label = shouldExpand
             ? button.dataset.labelCollapse
             : button.dataset.labelExpand;

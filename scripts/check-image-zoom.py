@@ -13,7 +13,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/main-[^"]+\.js)"[^>]*>')
+MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/page-[^"]+\.js)"[^>]*>')
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -75,7 +75,7 @@ def check_outputs(public: Path) -> list[str]:
         'class="td-image-zoom d-print-none"',
         "data-td-image-zoom-dialog",
         'aria-label="Image preview"',
-        'data-open-label="Open image preview"',
+        'data-td-open-label="Open image preview"',
         "data-td-image-zoom-close",
         "data-td-image-zoom-image",
         "data-td-image-zoom-caption",
@@ -90,7 +90,7 @@ def check_outputs(public: Path) -> list[str]:
     ):
         require(marker in zoom, f"enabled Zoom fixture missing {marker}", errors)
     require(zoom.count("data-td-image-zoom-dialog") == 1, "enabled page emitted more than one dialog", errors)
-    require(zoom_path is not None and zoom_path.exists(), "enabled page has no local main bundle", errors)
+    require(zoom_path is not None and zoom_path.exists(), "enabled page has no local feature bundle", errors)
     if zoom_path and zoom_path.exists():
         zoom_bundle = zoom_path.read_text()
         require("data-td-image-zoom-dialog" in zoom_bundle, "enabled bundle omits Image Zoom", errors)
@@ -102,7 +102,7 @@ def check_outputs(public: Path) -> list[str]:
         ("candidate-free", plain, plain_path),
     ):
         require("data-td-image-zoom-dialog" not in page, f"{label} page emitted a dialog", errors)
-        require(path is not None and path.exists(), f"{label} page has no main bundle", errors)
+        require(path is not None and path.exists(), f"{label} page has no feature bundle", errors)
         if path and path.exists():
             require(
                 "data-td-image-zoom-dialog" not in path.read_text(),
@@ -112,7 +112,7 @@ def check_outputs(public: Path) -> list[str]:
 
     require(zoom_path != disabled_path, "Zoom and non-Zoom pages reused one bundle target", errors)
     zoom_tag = MAIN_SCRIPT.search(zoom)
-    require(zoom_tag is not None, "enabled page lacks its main script tag", errors)
+    require(zoom_tag is not None, "enabled page lacks its feature script tag", errors)
     if zoom_tag:
         tag_end = zoom.find(">", zoom_tag.start())
         tag = zoom[zoom_tag.start() : tag_end + 1]
@@ -135,7 +135,7 @@ def check_outputs(public: Path) -> list[str]:
             "a decorative image was marked for Zoom", errors)
     require("data-td-image-zoom-dialog" in blog, "blog content candidate did not request Zoom", errors)
     require("td-blog-posts-list__thumbnail" in blog, "blog scope fixture lacks a featured thumbnail", errors)
-    require(blog_path is not None and blog_path.exists(), "blog scope fixture lacks a main bundle", errors)
+    require(blog_path is not None and blog_path.exists(), "blog scope fixture lacks a feature bundle", errors)
     return errors
 
 
@@ -148,14 +148,16 @@ def site_config(value: str | None) -> str:
         "markup:\n  goldmark:\n    renderer:\n      unsafe: true\n"
     )
     if value is not None:
-        config += "params:\n  ui:\n    image_zoom:\n      enable: " + value + "\n"
+        config += "params:\n  ui:\n    image_zoom: " + value + "\n"
     return config
 
 
 def page_front_matter(value: str | None) -> str:
     front = "---\ntitle: Zoom gate\n"
     if value is not None:
-        front += "params:\n  ui:\n    image_zoom:\n      enable: " + value + "\n"
+        # A value that starts with a newline is a raw front matter fragment
+        # (used to exercise the legacy-shape detection).
+        front += value.lstrip("\n") + "\n" if value.startswith("\n") else "image_zoom: " + value + "\n"
     return front + "---\n\n"
 
 
@@ -219,9 +221,11 @@ def check_config_matrix(hugo: str) -> list[str]:
         require(actual == expected_zoom, f"Zoom config case {name} resolved to {actual}", errors)
 
     invalid = (
-        ("site-string", '"true"', None, "site parameter params.ui.image_zoom.enable must be a boolean"),
-        ("site-number", "1", None, "site parameter params.ui.image_zoom.enable must be a boolean"),
-        ("page-string", None, '"false"', "page parameter params.ui.image_zoom.enable must be a boolean"),
+        ("site-string", '"true"', None, "params.ui.image_zoom must be a boolean"),
+        ("site-number", "1", None, "params.ui.image_zoom must be a boolean"),
+        ("page-string", None, '"false"', "front matter image_zoom must be a boolean"),
+        ("site-legacy-map", "\n      enable: true", None, "params.ui.image_zoom.enable was flattened"),
+        ("page-legacy-map", None, "\nparams:\n  ui:\n    image_zoom:\n      enable: false", "front matter ui.image_zoom was renamed"),
     )
     for name, site_value, page_value, expected in invalid:
         result, _ = build_gate_case(
@@ -307,22 +311,23 @@ def check_template_contracts() -> list[str]:
             errors,
         )
 
-    bundle = re.search(r'\$bundleKey := printf "([^"]+)"(.*?)\| md5', scripts, re.S)
-    require(bundle is not None, "scripts.html bundle key is not inspectable", errors)
-    if bundle:
-        expression = re.sub(
-            r'\(not\s+\(\.Param\s+"[^"]+"\)\)',
-            " ARG ",
-            bundle.group(2),
-        )
-        placeholders = len(re.findall(r"%(?:v|s)", bundle.group(1)))
-        arguments = re.findall(r"\$[A-Za-z][A-Za-z0-9]*|\.[A-Za-z][A-Za-z0-9_.]*|\bARG\b", expression)
-        require(placeholders == len(arguments), "bundle key format/argument count diverged", errors)
-        require("$hasImageZoom" in bundle.group(2), "bundle key omits the Zoom variant", errors)
+    # The feature bundle name is derived from the members themselves, so a
+    # runtime that is appended under a flag is keyed by construction; there is
+    # no hand-maintained argument list that can drift out of sync.
+    require(
+        'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts,
+        "scripts.html no longer derives the bundle key from its members",
+        errors,
+    )
+    require(
+        "$hasImageZoom -}}" in scripts and 'js/image-zoom.js' in scripts,
+        "Zoom runtime is not appended under its flag",
+        errors,
+    )
 
     require('resources.Get "js/image-zoom.js"' in scripts, "scripts.html does not append Zoom", errors)
     require('partial "content/image-zoom-dialog.html"' in scripts, "scripts.html does not emit the dialog", errors)
-    require(scripts.index('partial "content/image-zoom-dialog.html"') < scripts.index("$js :="), "dialog renders after the bundle", errors)
+    require(scripts.index('partial "content/image-zoom-dialog.html"') < scripts.index("$js := . | resources.Concat"), "dialog renders after the bundle", errors)
     require('partial "content/image-zoom-candidate.html"' in render, "content renderer does not scan candidates", errors)
     require('.Store.Set "hasImageZoom" true' in render, "content renderer does not set the Page Store flag", errors)
     require(".Content" not in scripts, "scripts.html forces page content rendering", errors)

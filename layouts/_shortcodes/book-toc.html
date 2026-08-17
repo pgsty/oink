@@ -1,13 +1,13 @@
-{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "depth" "drafts")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "depth" "drafts")) -}}
 {{- $params := dict -}}
 {{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- $depth := 2 -}}
 {{- if isset $params "depth" -}}
   {{- $value := .Get "depth" -}}
-  {{- if not (in (slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64") (printf "%T" $value)) }}{{ errorf "shortcode %q: depth must be an integer from 1 through 3 at %s" .Name .Position }}{{ end -}}
+  {{- if not (in (slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64") (printf "%T" $value)) }}{{ errorf "shortcode %q: depth must be an integer from 1 through 3; got %v at %s" .Name $value .Position }}{{ end -}}
   {{- $depth = int $value -}}
 {{- end -}}
-{{- if or (lt $depth 1) (gt $depth 3) }}{{ errorf "shortcode %q: depth must be from 1 through 3 at %s" .Name .Position }}{{ end -}}
+{{- if or (lt $depth 1) (gt $depth 3) }}{{ errorf "shortcode %q: depth must be an integer from 1 through 3; got %v at %s" .Name $depth .Position }}{{ end -}}
 {{- $includeDraft := true -}}
 {{- if isset $params "drafts" -}}
   {{- $value := .Get "drafts" -}}

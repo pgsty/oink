@@ -1,6 +1,6 @@
 {{- /* ```echarts {height="360px" theme="…" full=true} — declarative ECharts
        options (YAML or JSON) as a data fence (v5 §3.10). Callbacks stay the
-       `"$fn:<name>"` bridge resolved from `window.tdEchartsFunctions`; a fence
+       `"$fn:<name>"` bridge resolved from `window.OinkEchartsFunctions`; a fence
        cannot carry JavaScript. Replaces the echarts shortcode. */ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}

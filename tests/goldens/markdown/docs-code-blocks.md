@@ -6,7 +6,7 @@ LLMS index: [llms.txt](/llms.txt)
 ## Titled, numbered, and highlighted
 ```yaml {filename="config/very-long-example-name-for-responsive-layout.yml" copy="all" lineNos="table" lineNoStart=3 hl_lines="4 6"}
 params:
-offlineSearch: true
+offline_search: true
 ui:
 sidebar_menu_foldable: true
 sidebar_menu_compact: true

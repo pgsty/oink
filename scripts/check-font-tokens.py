@@ -45,7 +45,7 @@ LITERAL_DECLARATION_ALLOWLIST = {
 SPECIAL_DECLARATION_VALUES = {
     "inherit",
     "$td-font-awesome-font-name",
-    "var(--term-font-family)",  # Asciinema player component alias.
+    "var(--td-term-font-family)",  # Asciinema player component alias.
 }
 
 
@@ -120,7 +120,7 @@ def main() -> int:
     legacy_seeds = (
         ("--td-heading-font-family", "$headings-font-family"),
         ("--td-code-font-family", "$font-family-code"),
-        ("--td-print-font-family", "$td-google-font-name"),
+        ("--td-print-font-family", "$td-print-font-name"),
     )
     for token, variable in legacy_seeds:
         if token not in token_source or variable not in token_source:

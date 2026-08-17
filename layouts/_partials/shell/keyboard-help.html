@@ -1,19 +1,19 @@
 {{- /* Context-aware shortcut cheat sheet shared by the desktop sidebar and
        its mobile drawer. The keycaps deliberately reuse the KBD component's
        .td-kbd-sequence markup and presentation. */ -}}
-{{- $keyboardNav := ne (.Param "ui.keyboard_nav.enable") false -}}
+{{- $keyboardNav := ne (.Param "ui.keyboard_nav") false -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- if or $keyboardNav $localSearch -}}
 {{- $targets := partial "language-targets.html" . -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-<div class="td-shell-keyboard nav-hover-menu" data-td-nav-hover>
+<div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
     data-td-nav-hover-trigger data-td-nav-hover-open
     title="{{ T "ui_keyboard_shortcuts" }}" aria-label="{{ T "ui_keyboard_shortcuts" }}"
     aria-expanded="false">
     {{- partialCached "shell/icon.html" "circle-question" "sidebar-keyboard-help" -}}
   </button>
-  <div class="nav-hover-menu__pop td-shell-keyboard-help" role="group"
+  <div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
     aria-label="{{ T "ui_keyboard_shortcuts" }}">
     <div class="td-shell-keyboard-help__header">
       {{- partialCached "shell/icon.html" "circle-question" "keyboard-help-title" -}}

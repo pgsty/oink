@@ -1,4 +1,4 @@
-.landing-container {
+.td-site-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 28px;
@@ -8,7 +8,7 @@
 // brand drift with the viewport. Pin the navbar to the viewport edges instead:
 // the logo anchors the top-left corner above the sidebar (matching its 16px
 // content inset) and the controls anchor the top-right above the TOC rail.
-.td-shell-chrome .landing-header .landing-container {
+.td-shell-chrome .td-site-header .td-site-container {
   max-width: none;
   padding-inline: 16px;
 }
@@ -47,7 +47,7 @@
     pointer-events: auto;
   }
 
-  .td-navbar-autohide > .landing-header {
+  .td-navbar-autohide > .td-site-header {
     position: absolute;
     inset-block-start: 0;
     inset-inline: 0;
@@ -62,7 +62,7 @@
 
   .td-navbar-autohide:hover,
   .td-navbar-autohide:focus-within {
-    > .landing-header {
+    > .td-site-header {
       transform: translateY(0);
       pointer-events: auto;
     }
@@ -80,7 +80,7 @@
   }
 }
 
-.landing-header {
+.td-site-header {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -90,14 +90,14 @@
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 
-  &.scrolled {
+  &.td-scrolled {
     box-shadow: var(--td-brand-shadow-sm);
   }
 
   // Three zones on one grid row: brand at the start, the site's own menu
   // entries true-centered, and the utility cluster at the end with the
   // search box as its elastic leading edge.
-  .landing-nav {
+  .td-site-nav {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
@@ -105,20 +105,20 @@
     height: $td-navbar-min-height;
   }
 
-  .nav-brand {
+  .td-nav-brand {
     justify-self: start;
   }
 
-  .nav-menu-zone {
+  .td-nav-menu-zone {
     justify-self: center;
     min-width: 0;
   }
 
-  .nav-util-zone {
+  .td-nav-util-zone {
     justify-self: end;
   }
 
-  .nav-brand {
+  .td-nav-brand {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -130,19 +130,19 @@
     }
   }
 
-  .nav-logo {
+  .td-nav-logo {
     display: block;
     width: 22px;
     height: 22px;
   }
 
-  .nav-wordmark {
+  .td-nav-wordmark {
     display: block;
     width: auto;
     height: 30px;
   }
 
-  .nav-title {
+  .td-nav-title {
     margin-inline-end: -0.14em;
     background: var(--td-brand-mark-gradient);
     background-clip: text;
@@ -156,7 +156,7 @@
     -webkit-text-fill-color: transparent;
   }
 
-  .nav-links {
+  .td-nav-links {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -188,17 +188,17 @@
     }
   }
 
-  .nav-menu {
+  .td-nav-menu {
     position: relative;
     display: inline-flex;
   }
 
-  .nav-menu.is-open .nav-menu__parent-link {
+  .td-nav-menu.td-is-open .td-nav-menu__parent-link {
     background: var(--td-brand-elev);
     color: var(--bs-body-color);
   }
 
-  .nav-menu__panel {
+  .td-nav-menu__panel {
     position: absolute;
     top: calc(100% + 8px);
     inset-inline-start: 0;
@@ -226,7 +226,7 @@
     }
   }
 
-  .nav-menu__panel--mega {
+  .td-nav-menu__panel--mega {
     width: unquote('min(760px, calc(100vw - 32px))');
     max-width: none;
     grid-template-columns: repeat(var(--td-navbar-columns, 2), minmax(0, 1fr));
@@ -237,7 +237,7 @@
     }
   }
 
-  .nav-menu__panel--taxonomy {
+  .td-nav-menu__panel--taxonomy {
     width: unquote('min(520px, calc(100vw - 32px))');
     max-width: none;
     padding: 10px;
@@ -299,8 +299,8 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .nav-menu__item-link,
-  .nav-menu__group-title {
+  .td-nav-menu__item-link,
+  .td-nav-menu__group-title {
     display: grid;
     grid-template-columns: 20px minmax(0, 1fr) auto;
     gap: 1px 9px;
@@ -330,7 +330,7 @@
     }
   }
 
-  .nav-menu__group-title {
+  .td-nav-menu__group-title {
     margin-block-start: 3px;
     font-weight: 650;
   }
@@ -358,7 +358,7 @@
     border-inline-start: 1px solid var(--bs-border-color);
   }
 
-  .nav-util {
+  .td-nav-util {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -384,15 +384,15 @@
     }
   }
 
-  .nav-util .td-shell-icon,
-  .nav-github .td-shell-icon {
+  .td-nav-util .td-shell-icon,
+  .td-nav-github .td-shell-icon {
     --td-shell-icon-size: 18px;
   }
 
   // Boxed search trigger: reads as a short input advertising the "/" shortcut,
   // opens the Command Palette like the icon it replaces. Collapses back to an
   // icon in the compact state.
-  .nav-search-box {
+  .td-nav-search-box {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -424,7 +424,7 @@
     }
   }
 
-  .nav-search-box__hint {
+  .td-nav-search-box__hint {
     flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
@@ -433,7 +433,7 @@
     white-space: nowrap;
   }
 
-  .nav-search-box__kbd {
+  .td-nav-search-box__kbd {
     flex: none;
     min-width: 18px;
     padding: 0 5px;
@@ -448,7 +448,7 @@
     text-align: center;
   }
 
-  .nav-github {
+  .td-nav-github {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -469,7 +469,7 @@
     }
   }
 
-  .landing-language-selector.td-language-selector--menu {
+  .td-site-nav__language.td-language-selector--menu {
     padding: 0;
 
     > .td-language-selector__trigger {
@@ -487,11 +487,11 @@
 
 }
 
-.landing-mobile-menu-toggle {
+.td-site-drawer-toggle {
   display: none;
 }
 
-.landing-header .nav-alt-site {
+.td-site-header .td-nav-alt-site {
   white-space: nowrap;
 }
 
@@ -502,13 +502,13 @@
 @media (min-width: 768px) {
   html:not([data-td-shell-sidebar='collapsed'])
     body.td-shell-chrome--navbar:has(#td-shell-sidebar)
-    .landing-header
-    .nav-brand {
+    .td-site-header
+    .td-nav-brand {
     visibility: hidden;
   }
 }
 
-.landing-mobile-menu {
+.td-site-drawer {
   position: fixed;
   inset: $td-navbar-min-height 0 auto;
   z-index: 99;
@@ -529,7 +529,7 @@
     margin: 0 auto;
   }
 
-  .mobile-menu-link {
+  .td-site-nav__menu-link {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -548,7 +548,7 @@
     }
   }
 
-  .mobile-menu-link--button {
+  .td-site-nav__menu-link--button {
     width: 100%;
   }
 
@@ -563,27 +563,27 @@
   // Landing renderer too, but its PRD 4 compact navbar must keep the single
   // visible link tree and utility controls.
   body:has([data-td-landing-menu-toggle]) {
-    .landing-header .nav-menu-zone,
-    .landing-header
-      .nav-util-zone
-      > :not(.nav-search-box):not(.landing-mobile-menu-toggle) {
+    .td-site-header .td-nav-menu-zone,
+    .td-site-header
+      .td-nav-util-zone
+      > :not(.td-nav-search-box):not(.td-site-drawer-toggle) {
       display: none;
     }
 
-    .landing-header .landing-mobile-menu-toggle {
+    .td-site-header .td-site-drawer-toggle {
       display: inline-flex;
     }
   }
 }
 
 // Wordmark sites keep a plain logo in reserve for the compact state.
-.landing-header .nav-logo--fallback {
+.td-site-header .td-nav-logo--fallback {
   display: none;
 }
 
 // One popover look everywhere: the language selector ships its own pop
-// styles for the sidebar, so realign the navbar copy with .nav-hover-menu.
-.landing-header .landing-language-selector {
+// styles for the sidebar, so realign the navbar copy with .td-nav-hover-menu.
+.td-site-header .td-site-nav__language {
   .td-language-selector__trigger {
     color: var(--bs-tertiary-color);
 
@@ -607,8 +607,8 @@
 // Shared hover popover for the utility controls (theme, version): the trigger
 // keeps its own click action, hovering or focusing reveals the options. One
 // look for every navbar popover — same border, radius, shadow, and padding as
-// .nav-menu__panel.
-.nav-hover-menu {
+// .td-nav-menu__panel.
+.td-nav-hover-menu {
   position: relative;
   display: inline-flex;
 
@@ -637,7 +637,7 @@
     }
   }
 
-  &.is-open &__pop {
+  &.td-is-open &__pop {
     display: flex;
   }
 
@@ -664,11 +664,11 @@
     }
 
     &[aria-pressed='true'],
-    &.is-active {
+    &.td-is-active {
       color: var(--bs-link-color);
     }
 
-    &.is-disabled {
+    &.td-is-disabled {
       color: var(--bs-tertiary-color);
       cursor: default;
     }
@@ -692,7 +692,7 @@
 // Footer popovers rise into the sidebar instead of dropping below the
 // viewport. Start-side and end-side ownership keep both surfaces inside the
 // rail at its minimum width.
-.td-shell-sidebar__footer .nav-hover-menu__pop {
+.td-shell-sidebar__footer .td-nav-hover-menu__pop {
   top: auto;
   bottom: calc(100% + 8px);
   inset-inline-start: auto;
@@ -703,7 +703,7 @@
   }
 }
 
-.td-shell-sidebar__footer .nav-hover-menu__option > .td-shell-icon {
+.td-shell-sidebar__footer .td-nav-hover-menu__option > .td-shell-icon {
   flex: 0 0 auto;
   --td-shell-icon-size: 15px;
   color: var(--bs-tertiary-color);
@@ -712,7 +712,7 @@
 // Between lg and the widest layouts the centered menu leaves less room for
 // the side zones; the search box gives up some of its width first.
 @media (max-width: 1199.98px) {
-  .landing-header .nav-search-box {
+  .td-site-header .td-nav-search-box {
     width: 150px;
   }
 }
@@ -722,19 +722,19 @@
 // triggers for search, language, theme, version, and GitHub. This is the only
 // other navbar state; phones use it too.
 @media (max-width: 991.98px) {
-  .landing-header {
+  .td-site-header {
     // The grid's centered zone folds back into one right-aligned icon row.
-    .landing-nav {
+    .td-site-nav {
       display: flex;
       justify-content: space-between;
     }
 
-    .nav-menu-zone {
+    .td-nav-menu-zone {
       margin-inline-start: auto;
     }
 
     // The search box collapses to the plain icon trigger it replaced.
-    .nav-search-box {
+    .td-nav-search-box {
       width: auto;
       min-width: 34px;
       justify-content: center;
@@ -752,29 +752,29 @@
       }
     }
 
-    .nav-search-box__hint,
-    .nav-search-box__kbd {
+    .td-nav-search-box__hint,
+    .td-nav-search-box__kbd {
       display: none;
     }
 
-    .nav-title,
-    .nav-wordmark {
+    .td-nav-title,
+    .td-nav-wordmark {
       display: none;
     }
 
-    .nav-alt-site > span,
-    .nav-github .nav-count {
+    .td-nav-alt-site > span,
+    .td-nav-github .td-nav-count {
       display: none;
     }
 
-    .nav-logo--fallback {
+    .td-nav-logo--fallback {
       display: block;
     }
 
-    .nav-links > .nav-link .td-navbar-entry__label,
-    .nav-links > .nav-link .td-navbar-entry__external,
-    .nav-menu > .nav-menu__parent-link .td-navbar-entry__label,
-    .nav-menu > .nav-menu__parent-link .td-navbar-entry__external {
+    .td-nav-links > .nav-link .td-navbar-entry__label,
+    .td-nav-links > .nav-link .td-navbar-entry__external,
+    .td-nav-menu > .td-nav-menu__parent-link .td-navbar-entry__label,
+    .td-nav-menu > .td-nav-menu__parent-link .td-navbar-entry__external {
       display: none;
     }
 
@@ -789,7 +789,7 @@
     // Taxonomy clouds can be much wider than their icon trigger. Anchor the
     // compact panel to the viewport instead of letting it overflow from the
     // rightmost menu item.
-    .nav-menu__panel--taxonomy {
+    .td-nav-menu__panel--taxonomy {
       position: fixed;
       inset-block-start: $td-navbar-min-height;
       inset-inline: 16px;
@@ -801,20 +801,20 @@
 // Give the remaining phone controls a little more horizontal breathing room
 // on truly narrow screens without shrinking their hit area.
 @media (max-width: 479.98px) {
-  .td-shell-chrome .landing-header .landing-container {
+  .td-shell-chrome .td-site-header .td-site-container {
     padding-inline: 10px;
   }
 
-  .landing-header {
-    .nav-links {
+  .td-site-header {
+    .td-nav-links {
       gap: 2px;
     }
 
     .nav-link,
-    .nav-util,
-    .nav-github,
-    .nav-search-box,
-    .landing-language-selector.td-language-selector--menu
+    .td-nav-util,
+    .td-nav-github,
+    .td-nav-search-box,
+    .td-site-nav__language.td-language-selector--menu
       > .td-language-selector__trigger {
       flex: 0 0 28px;
       width: 28px;
@@ -828,7 +828,7 @@
 }
 
 // Shell drawer opener; shown below md only (the drawer only exists there).
-.landing-header .mobile-menu-toggle.nav-util {
+.td-site-header .td-site-nav__menu-toggle.td-nav-util {
   display: none;
 }
 
@@ -849,50 +849,50 @@
   // Keep the content-generated menu on the physical center line. Equal outer
   // tracks mean the larger search/menu cluster on the end edge cannot push
   // these links to the right.
-  .landing-header .landing-nav {
+  .td-site-header .td-site-nav {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     column-gap: 4px;
   }
 
-  .landing-header .nav-brand {
+  .td-site-header .td-nav-brand {
     justify-self: start;
   }
 
-  .landing-header .nav-menu-zone {
+  .td-site-header .td-nav-menu-zone {
     justify-self: center;
     margin-inline-start: 0;
   }
 
-  .landing-header .nav-util-zone {
+  .td-site-header .td-nav-util-zone {
     justify-self: end;
   }
 
   // Phone chrome has one deliberately small right-hand contract: search and
   // the relevant drawer/menu opener. Version, language, theme, and GitHub
   // remain available in the drawer footer instead of competing for this row.
-  .landing-header .nav-util-zone {
-    > .nav-version-menu,
-    > .landing-language-selector,
-    > .nav-alt-site,
-    > .nav-theme-menu,
-    > .nav-github {
+  .td-site-header .td-nav-util-zone {
+    > .td-nav-version-menu,
+    > .td-site-nav__language,
+    > .td-nav-alt-site,
+    > .td-nav-theme-menu,
+    > .td-nav-github {
       display: none;
     }
   }
 
-  .landing-header .mobile-menu-toggle.nav-util {
+  .td-site-header .td-site-nav__menu-toggle.td-nav-util {
     display: inline-flex;
   }
 
-  .landing-container {
+  .td-site-container {
     padding: 0 14px;
   }
 }
 
 // The PRD 6 chrome-free reading mode (H key) hides the navbar with the rest
 // of the chrome; fixed elements and anchor jumps stop reserving its height.
-html[data-td-kbd-zen] .landing-header {
+html[data-td-kbd-zen] .td-site-header {
   display: none;
 }
 
@@ -912,7 +912,7 @@ html[data-td-kbd-zen]:has(body.td-shell-chrome--navbar) {
     display: contents;
   }
 
-  html[data-td-kbd-zen] .landing-header {
+  html[data-td-kbd-zen] .td-site-header {
     display: block;
   }
 
@@ -923,20 +923,20 @@ html[data-td-kbd-zen]:has(body.td-shell-chrome--navbar) {
 }
 
 @media (forced-colors: active) {
-  .landing-header .nav-title {
+  .td-site-header .td-nav-title {
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .td-navbar-autohide > .landing-header {
+  .td-navbar-autohide > .td-site-header {
     transition: none;
   }
 }
 
 @media print {
-  .landing-header .nav-title {
+  .td-site-header .td-nav-title {
     color: #1d588c;
     -webkit-text-fill-color: #1d588c;
   }

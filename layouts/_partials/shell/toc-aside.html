@@ -39,8 +39,8 @@
             data-td-shell-tree-toggle data-td-shell-aside-keep-open
             aria-expanded="true" aria-controls="td-shell-aside-toc"
             aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}"
-            data-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ T "toc_on_this_page" }}"
-            data-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}">
+            data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ T "toc_on_this_page" }}"
+            data-td-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}">
             {{- /* Static stand-in for the rail toggle once the block moves
                  into the drawer, so the group reads like the taxonomy heads:
                  icon, then title. Hidden in the rail. */ -}}
@@ -53,7 +53,7 @@
             </span>
           </button>
         </div>
-        <div id="td-shell-aside-toc" class="td-shell-tree__children is-open">
+        <div id="td-shell-aside-toc" class="td-shell-tree__children td-is-open">
           <div class="td-shell-tree__children-inner">
             {{ partial "shell/toc.html" $p }}
           </div>

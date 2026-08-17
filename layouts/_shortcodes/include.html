@@ -4,11 +4,9 @@
        content root, else relative to the page directory); a missing file fails
        the build; no draft placeholder output. Without code=true the file is Markdown
        rendered in the page context. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "file" "code" "lang")) -}}
 {{- if or (not .IsNamedParams) (not (isset .Params "file")) -}}
   {{- errorf "shortcode %q requires named parameter file at %s" .Name .Position -}}
-{{- end -}}
-{{- range $name, $_ := .Params -}}
-  {{- if not (in (slice "file" "code" "lang") $name) }}{{ errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position }}{{ end -}}
 {{- end -}}
 {{- $file := strings.TrimSpace (printf "%v" (.Get "file")) -}}
 {{- if not $file }}{{ errorf "shortcode %q: file must not be empty at %s" .Name .Position }}{{ end -}}

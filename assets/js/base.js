@@ -19,11 +19,11 @@ limitations under the License.
     'use strict';
 
     function initHeaderScroll() {
-        const header = document.querySelector('.landing-header');
+        const header = document.querySelector('.td-site-header');
         if (!header) return;
 
         const update = function() {
-            header.classList.toggle('scrolled', window.pageYOffset > 60);
+            header.classList.toggle('td-scrolled', window.pageYOffset > 60);
         };
 
         window.addEventListener('scroll', update, {passive: true});
@@ -42,7 +42,7 @@ limitations under the License.
                     window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
                 }
                 window.clearTimeout(closeTimer);
-                menu.classList.add('is-open');
+                menu.classList.add('td-is-open');
                 if (trigger) trigger.setAttribute('aria-expanded', 'true');
             }
             if (window.OinkSurfaceCoordinator) {
@@ -50,7 +50,7 @@ limitations under the License.
             }
 
             function close() {
-                menu.classList.remove('is-open');
+                menu.classList.remove('td-is-open');
                 if (trigger) trigger.setAttribute('aria-expanded', 'false');
             }
 
@@ -150,7 +150,7 @@ limitations under the License.
     // theme toggle; the version trigger toggles the popover for touch).
     function initThemeMenus() {
         document.querySelectorAll('[data-td-nav-hover]').forEach(function(menu, index) {
-            const trigger = menu.querySelector('[data-td-nav-hover-trigger], .nav-util');
+            const trigger = menu.querySelector('[data-td-nav-hover-trigger], .td-nav-util');
             const surfaceName = 'theme-menu-' + index;
             let closeTimer = 0;
             let activatedOpen = false;
@@ -161,12 +161,12 @@ limitations under the License.
                     window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
                 }
                 window.clearTimeout(closeTimer);
-                menu.classList.add('is-open');
+                menu.classList.add('td-is-open');
                 if (trigger) trigger.setAttribute('aria-expanded', 'true');
             }
 
             function close() {
-                menu.classList.remove('is-open');
+                menu.classList.remove('td-is-open');
                 if (trigger) trigger.setAttribute('aria-expanded', 'false');
                 activatedOpen = false;
             }
@@ -197,7 +197,7 @@ limitations under the License.
                     // focus or hover may already have opened the menu before
                     // this activation. Keep the first explicit activation
                     // open; a second one behaves like a disclosure toggle.
-                    if (activatedOpen && menu.classList.contains('is-open')) {
+                    if (activatedOpen && menu.classList.contains('td-is-open')) {
                         close();
                     } else {
                         open();

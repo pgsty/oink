@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "authorities": {
+    "global_navigation": "hugo_menu",
+    "sidebar": "hugo_content_tree",
+    "root_switcher": "existing_root_switcher",
+    "discovery_and_commands": "local_search_index"
+  },
+  "navigation": {
+    "interactive_child_levels": 1,
+    "desktop_control": "link_with_hover_panel",
+    "hover_required": false,
+    "deep_menu": {
+      "warning": true,
+      "rendering": "flatten_under_group_heading",
+      "third_level_flyout": false
+    },
+    "external_rel": [
+      "noopener",
+      "noreferrer"
+    ]
+  },
+  "sidebar_icons": {
+    "parameter": "params.ui.sidebar_icon_policy",
+    "values": [
+      "all",
+      "groups",
+      "none"
+    ],
+    "compatibility_default": "all",
+    "compatibility_default_change_earliest": "1.0",
+    "starter_default": "all"
+  },
+  "search": {
+    "canonical_front_matter": [
+      "search_keywords",
+      "search_boost",
+      "search_exclude"
+    ],
+    "exclude_aliases": [],
+    "removed_exclude_aliases": [
+      "exclude_search",
+      "excludeSearch"
+    ],
+    "exclude_alias_status": "removed_in_1.0_build_fails_with_replacement",
+    "exclude_resolution": "search_exclude_only",
+    "default_boost": 1.0,
+    "invalid_boost": "warn_and_use_default",
+    "score_formula": "text_score_times_search_boost",
+    "keywords_in_latin": true,
+    "keywords_in_cjk": true,
+    "language_separated_indexes": true,
+    "size_budget": {
+      "uncompressed_bytes": 2097152,
+      "gzip_bytes": 524288
+    },
+    "index_fields": [
+      "ref",
+      "title",
+      "categories",
+      "tags",
+      "excerpt",
+      "headings",
+      "description",
+      "body",
+      "root",
+      "section",
+      "type",
+      "keywords",
+      "boost",
+      "breadcrumb",
+      "icon"
+    ]
+  },
+  "commands": {
+    "builtin_action_ids": [
+      "copy_markdown",
+      "open_chatgpt",
+      "open_claude",
+      "view_markdown",
+      "view_history",
+      "edit_page",
+      "create_child_page",
+      "create_issue",
+      "create_project_issue",
+      "print_section",
+      "print",
+      "switch_theme",
+      "switch_language",
+      "switch_version",
+      "open_github"
+    ],
+    "site_command_kinds": [
+      "url",
+      "builtin_action_id"
+    ],
+    "javascript_callbacks_allowed": false,
+    "localized_parameter": "languages.<lang>.params.ui.command_palette.commands"
+  },
+  "palette": {
+    "dialog_owner": "existing_local_search_dialog",
+    "modes": [
+      "empty",
+      "text",
+      "commands"
+    ],
+    "command_prefix": ">",
+    "first_version_scopes": [],
+    "default_telemetry": false
+  },
+  "runtime": {
+    "enabled_when": [
+      "params.offline_search",
+      "home_or_shell_surface",
+      "not_print"
+    ],
+    "disabled_must_omit": [
+      "dialog",
+      "local_index",
+      "lunr",
+      "palette_controller"
+    ],
+    "print_must_omit": [
+      "dialog",
+      "local_index",
+      "lunr",
+      "palette_controller"
+    ]
+  },
+  "characterization_matrix": {
+    "menu_variants": [
+      "flat",
+      "nested",
+      "deep"
+    ],
+    "search_states": [
+      "disabled",
+      "enabled"
+    ],
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "deployments": [
+      "root",
+      "subpath"
+    ],
+    "surfaces": [
+      "home",
+      "docs",
+      "blog",
+      "plain",
+      "print"
+    ]
+  },
+  "non_goals": [
+    "ai_or_semantic_search",
+    "remote_search_replacement",
+    "recent_history",
+    "personalized_recommendations",
+    "arbitrary_depth_flyouts",
+    "second_navigation_authority",
+    "default_query_upload"
+  ]
+}

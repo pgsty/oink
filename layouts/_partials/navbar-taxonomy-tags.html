@@ -4,7 +4,7 @@
 {{- $taxonomyPage := .taxonomyPage -}}
 {{- $plural := $taxonomyPage.Data.Plural | default ($taxonomyPage.Title | urlize) -}}
 {{- $taxonomy := index $page.Site.Taxonomies $plural -}}
-<div class="td-navbar-taxonomy-tags" data-taxonomy="{{ $plural }}">
+<div class="td-navbar-taxonomy-tags" data-td-taxonomy="{{ $plural }}">
   {{- range $taxonomy.ByCount }}
   <a class="td-navbar-taxonomy-tag" href="{{ .Page.RelPermalink }}">
     <span class="td-navbar-taxonomy-tag__name">{{ .Page.LinkTitle }}</span>

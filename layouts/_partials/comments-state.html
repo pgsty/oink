@@ -1,8 +1,17 @@
 {{/* Hugo normalizes keys under Params to lowercase. Keep all map lookups in
 this helper lowercase so comments.html and the page layouts share one source
 of truth for activation and legacy Disqus fallback. */ -}}
-{{- $comments := .Site.Params.comments | default dict -}}
-{{- $enabledValue := index $comments "enable" | default false -}}
+{{- /* params.comments is a map (enable, type, giscus) or the bare boolean
+       shorthand `comments: true|false`. */ -}}
+{{- $raw := .Site.Params.comments -}}
+{{- $comments := dict -}}
+{{- $enabledValue := false -}}
+{{- if reflect.IsMap $raw -}}
+  {{- $comments = $raw -}}
+  {{- $enabledValue = index $comments "enable" | default false -}}
+{{- else if ne $raw nil -}}
+  {{- $enabledValue = $raw -}}
+{{- end -}}
 {{- $pageOverride := isset .Params "comments" -}}
 {{- if $pageOverride -}}
   {{- $enabledValue = .Params.comments -}}

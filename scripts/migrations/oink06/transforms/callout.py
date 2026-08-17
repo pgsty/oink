@@ -1,4 +1,4 @@
-"""alert / details / pageinfo shortcodes and raw <details> -> GFM/Obsidian callouts.
+"""alert / details / td-page-notice shortcodes and raw <details> -> GFM/Obsidian callouts.
 
     {{% alert title="Note" color="info" %}}      >  [!NOTE] Note
     body                                        >  body
@@ -27,7 +27,7 @@ COLOR_TO_TYPE = {
     "primary": "IMPORTANT",
     "secondary": "NOTE",
 }
-NAMES = {"alert", "details", "pageinfo"}
+NAMES = {"alert", "details", "td-page-notice"}
 DETAILS_OPEN_RE = re.compile(r"^(?P<indent>[ \t]*)<details(?P<attrs>[^>]*)>(?P<rest>.*)$")
 DETAILS_CLOSE_RE = re.compile(r"^[ \t]*</details>(?:\s*<br\s*/?>)*\s*$")
 SUMMARY_RE = re.compile(r"^[ \t]*<summary>(?P<title>.*)</summary>\s*$")
@@ -56,9 +56,9 @@ def _quote(lines: list[str]) -> list[str]:
 
 class CalloutTransformation(Transformation):
     key = "callout"
-    description = "alert/details/pageinfo shortcodes and raw <details> -> > [!TYPE] callouts"
+    description = "alert/details/td-page-notice shortcodes and raw <details> -> > [!TYPE] callouts"
     residual_patterns = (
-        r"\{\{[<%]\s*/?(?:alert|details|pageinfo)\b",
+        r"\{\{[<%]\s*/?(?:alert|details|td-page-notice)\b",
         r"^[ \t]*<details\b",
     )
 
@@ -126,7 +126,7 @@ class CalloutTransformation(Transformation):
             if closed_param is not None:
                 closed = closed_param.strip().lower() != "false"
             marker = "[!DETAILS]" + ("-" if closed else "+")
-        else:  # pageinfo
+        else:  # td-page-notice
             marker = "[!NOTE]"
         if title and ("\n" in title):
             self.note(result, path, open_tag.line, self.key, "multi-line title", open_tag.raw)

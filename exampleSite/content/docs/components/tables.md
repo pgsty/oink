@@ -17,9 +17,9 @@ weight: 40
 
 | 参数 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `offlineSearch` | boolean | `false` | 开启本地索引与命令面板 |
-| `offlineSearchMaxResults` | integer | `10` | 结果上限，*支持行内 Markdown* 与 [链接](/docs/) |
-| `offlineSearchSummaryLength` | integer | | 摘要长度（空的中间列被省略） |
+| `offline_search` | boolean | `false` | 开启本地索引与命令面板 |
+| `offline_search_max_results` | integer | `10` | 结果上限，*支持行内 Markdown* 与 [链接](/docs/) |
+| `offline_search_summary_length` | integer | | 摘要长度（空的中间列被省略） |
 {.fields caption="搜索参数"}
 
 Two columns (glossary):
@@ -35,7 +35,7 @@ Semantic columns (`meta=`) render the same chips as the shortcode form:
 | Parameter | Type | Required | Default | Note | Description |
 | --- | --- | --- | --- | --- | --- |
 | `baseURL` | string | yes | | 部署地址 | Must include the subpath |
-| `offlineSearch` | boolean | | `false` | | Builds the local index |
+| `offline_search` | boolean | | `false` | | Builds the local index |
 {.fields meta="type required default -" caption="Semantic columns"}
 
 ## Matrix `{.matrix}`

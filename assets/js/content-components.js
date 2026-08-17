@@ -88,7 +88,7 @@
 
   function replaceFunctions(value) {
     if (typeof value === 'string' && value.indexOf('$fn:') === 0) {
-      return (window.tdEchartsFunctions || {})[value.slice(4)];
+      return (window.OinkEchartsFunctions || {})[value.slice(4)];
     }
     if (Array.isArray(value)) return value.map(replaceFunctions);
     if (value && typeof value === 'object') {

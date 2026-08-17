@@ -38,14 +38,14 @@
   {{- delimit $chunks "\n\n" | safeHTML -}}
 {{- else -}}
   {{- $interactive := eq $format "html" -}}
-<div class="td-download{{ if not $interactive }} td-download--static{{ end }}" data-download-key="{{ $data.key }}">
+<div class="td-download{{ if not $interactive }} td-download--static{{ end }}" data-td-download-key="{{ $data.key }}">
   {{- if $interactive }}
   <nav class="td-download__channels" aria-label="{{ T "ui_download_channels" }}">
     {{- range $data.channels }}<a class="td-download__chip" href="#download-{{ $data.key }}-{{ .id }}">{{ .title }}</a>{{ end -}}
   </nav>
   {{- end }}
   {{- range $channelIndex, $channel := $data.channels }}
-  <section class="td-download__channel" id="download-{{ $data.key }}-{{ $channel.id }}" data-download-kind="{{ $channel.kind }}">
+  <section class="td-download__channel" id="download-{{ $data.key }}-{{ $channel.id }}" data-td-download-kind="{{ $channel.kind }}">
     <header class="td-download__heading">
       <h2>{{ with $channel.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<span>{{ $channel.title }}</span></h2>
       {{- if and (eq $channel.kind "pinned") (not $data.published) }}<span class="td-download__state" aria-disabled="true">{{ T "ui_download_unpublished" }}</span>{{ end }}
@@ -53,7 +53,7 @@
     {{- with $channel.note }}<div class="td-download__note">{{ $page.RenderString (dict "display" "block") . }}</div>{{ end -}}
     {{- with $channel.url -}}
       {{- if and (eq $channel.kind "pinned") (not $data.published) -}}
-      <span class="td-download__action is-disabled" aria-disabled="true">{{ $channel.title }}</span>
+      <span class="td-download__action td-is-disabled" aria-disabled="true">{{ $channel.title }}</span>
       {{- else -}}
       <a class="td-download__action" href="{{ . }}">{{ $channel.title }}</a>
       {{- end -}}

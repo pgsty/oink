@@ -1,0 +1,116 @@
+{{/* One sidebar row, shared by both tree sources.
+
+     The content tree (shell/sidebar-tree.html) and an explicit
+     data/docs_nav.json tree (shell/docs-sidebar-tree.html) walk different
+     structures and compute visibility differently, but a reader must not be
+     able to tell which one produced the sidebar. This partial owns everything
+     the two have to agree on: item classes, the link and its accessible name,
+     the icon policy, the fold control and its localized labels, Book heading
+     projection, and the children container.
+
+     The caller renders its own children (recursion differs per source) and
+     passes the finished <ul> markup as `children`.
+
+     Parameters:
+       page          current page, for .Param lookups
+       section       the Page this row links to
+       active        this row is the current page
+       activePath    the current page is at or below this row
+       treeRoot      this row is the single visible root of the tree
+       iconRoot      this row counts as top level for the icon policy
+       withChild     the row has children
+       foldable      the row gets a fold control
+       shouldExpand  the fold control starts open
+       hidden        the row is collapsed away by the compact-menu rules
+       iconPolicy    resolved shell/sidebar-icon-policy value
+       children      pre-rendered children markup (may be empty)
+*/ -}}
+{{- $p := .page -}}
+{{- $s := .section -}}
+{{- $active := .active -}}
+{{- $activePath := .activePath -}}
+{{- $treeRoot := .treeRoot | default false -}}
+{{- $iconRoot := .iconRoot | default false -}}
+{{- $withChild := .withChild -}}
+{{- $foldable := .foldable -}}
+{{- $shouldExpand := .shouldExpand -}}
+{{- $hidden := .hidden | default false -}}
+{{- $iconPolicy := .iconPolicy -}}
+{{- $children := .children | default "" -}}
+
+{{- $showIcon := partial "shell/sidebar-icon-enabled.html" (dict "policy" $iconPolicy "root" $iconRoot "hasChildren" $withChild) -}}
+{{- $ellipsis := ne ($p.Param "ui.sidebar_item_overflow") "wrap" -}}
+{{- $nodeID := $s.RelPermalink | default $s.Path | default $s.Title -}}
+{{- $mid := printf "m-%s" ($nodeID | anchorize) -}}
+{{- $manualLink :=
+    cond
+      (isset $s.Params "manuallink")
+      $s.Params.manualLink
+      (cond
+        (isset $s.Params "manuallinkrelref")
+        (relref $s $s.Params.manualLinkRelref)
+        $s.RelPermalink
+      )
+-}}
+{{- $manualLinkTitle :=
+    cond
+      (isset $s.Params "manuallinktitle")
+      $s.Params.manualLinkTitle
+      $s.Title
+-}}
+{{- $rootLinkSelf := true -}}
+{{- if isset $s.Params "sidebar_root_link_self" -}}
+  {{- if ne (printf "%T" $s.Params.sidebar_root_link_self) "bool" -}}
+    {{- errorf "front matter sidebar_root_link_self must be a boolean at %s" $s.Path -}}
+  {{- end -}}
+  {{- $rootLinkSelf = $s.Params.sidebar_root_link_self -}}
+{{- end -}}
+{{- if and $treeRoot (eq $s.Params.sidebar_root_for "self") (not $rootLinkSelf) -}}
+  {{- with $s.Parent -}}
+    {{- $manualLink = .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- $isDivider := $s.Params.sidebar_divider | default false -}}
+{{- if $isDivider -}}
+  <li class="td-shell-tree__item td-shell-tree__heading" id="{{ $mid }}-li">
+    <span class="td-shell-tree__heading-label" id="{{ $mid }}"><span>{{ $s.LinkTitle }}</span></span>
+  </li>
+  {{- else -}}
+  <li class="td-shell-tree__item
+        {{- if $withChild }} td-has-child{{ else }} td-leaf{{ end -}}
+        {{- if $activePath }} td-active-path{{ end -}}
+        {{- if $treeRoot }} td-shell-tree__item--root{{ end -}}
+        {{- if $hidden }} td-shell-tree__item--hidden{{ end }}"
+      id="{{ $mid }}-li">
+    <div class="td-shell-tree__row{{ if $active }} td-shell-active{{ end }}{{ if $treeRoot }} td-shell-tree__row--root{{ end }}">
+      <a href="{{ $manualLink }}"
+        {{- if $active }} aria-current="page"{{ end -}}
+        {{- if ne $s.LinkTitle $manualLinkTitle }} title="{{ $manualLinkTitle }}"
+        {{- else if $ellipsis }} title="{{ $s.LinkTitle }}"{{ end -}}
+        {{- with $s.Params.manualLinkTarget }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}
+        class="td-shell-tree__link{{ if $active }} active{{ end }}"
+        id="{{ $mid }}">
+        {{- if $showIcon }}{{ with $s.Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ end -}}
+          {{- if eq $s.Type "book" }}{{ partial "book/sidebar-label.html" $s }}{{ else }}<span>{{ $s.LinkTitle }}</span>{{ end -}}
+        </a>
+      {{ if $foldable -}}
+      <button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
+        aria-expanded="{{ $shouldExpand }}" aria-controls="{{ $mid }}-children"
+        aria-label="{{ if $shouldExpand }}{{ T "ui_sidebar_collapse_section" }}{{ else }}{{ T "ui_sidebar_expand_section" }}{{ end }}: {{ $s.LinkTitle }}"
+        data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $s.LinkTitle }}"
+        data-td-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $s.LinkTitle }}">
+        {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+      </button>
+      {{- end }}
+    </div>
+    {{- if eq $s.Type "book" }}{{ partial "book/sidebar-headings.html" (dict "page" $s "current" $p) }}{{ end -}}
+
+    {{ if $withChild -}}
+      <div id="{{ $mid }}-children" class="td-shell-tree__children{{ if not $foldable }} td-shell-tree__children--static{{ else if $shouldExpand }} td-is-open{{ end }}">
+        <div class="td-shell-tree__children-inner">
+          {{ $children }}
+        </div>
+      </div>
+    {{- end }}
+  </li>
+  {{- end -}}

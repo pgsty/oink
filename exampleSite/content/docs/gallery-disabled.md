@@ -1,10 +1,7 @@
 ---
 title: Gallery with Zoom disabled
 description: Gallery remains complete when page-level Image Zoom is disabled.
-params:
-  ui:
-    image_zoom:
-      enable: false
+image_zoom: false
 ---
 
 ```gallery

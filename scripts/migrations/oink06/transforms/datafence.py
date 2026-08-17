@@ -75,10 +75,10 @@ class DataFenceTransformation(Transformation):
                 for match in re.finditer(r"function\s+([A-Za-z_$][\w$]*)\s*\(", line):
                     if match.group(1) not in names:
                         names.append(match.group(1))
-            script_lines = ["<script>", "window.tdEchartsFunctions = window.tdEchartsFunctions || {};", "(function (registry) {"]
+            script_lines = ["<script>", "window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};", "(function (registry) {"]
             script_lines.extend(js_code)
             script_lines.extend(f'registry["{name}"] = {name};' for name in names)
-            script_lines.extend(["})(window.tdEchartsFunctions);", "</script>"])
+            script_lines.extend(["})(window.OinkEchartsFunctions);", "</script>"])
             body = strip_blank_edges(body[:start] + body[end + 1 :])
             if not body:
                 self.note(result, path, open_tag.line, self.key, "echarts body has a JavaScript sub-fence but no options body", open_tag.raw)

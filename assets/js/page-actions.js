@@ -12,12 +12,12 @@
 
   function showCopied(button, root) {
     var label = button.querySelector('[data-td-page-copy-label]');
-    button.classList.add('is-copied');
+    button.classList.add('td-is-copied');
     if (label && !label.dataset.original) label.dataset.original = label.textContent;
     if (label) label.textContent = root.dataset.tCopied || label.textContent;
     announce(root, root.dataset.tCopied || 'Copied');
     window.setTimeout(function () {
-      button.classList.remove('is-copied');
+      button.classList.remove('td-is-copied');
       if (label && label.dataset.original) label.textContent = label.dataset.original;
     }, 1400);
   }
@@ -27,7 +27,7 @@
     if (url) control.setAttribute('href', url);
   }
 
-  document.querySelectorAll('[data-oink-action]').forEach(function (control) {
+  document.querySelectorAll('[data-td-action]').forEach(function (control) {
     var id = control.dataset.oinkAction;
     var action = window.OinkActions.get(id);
     if (!action || !action.available) return;
@@ -40,7 +40,7 @@
       // is the RSS link and must keep its icon.
       var feedback =
         (root &&
-          root.querySelector('.td-page-actions__primary[data-oink-action="copy_markdown"]')) ||
+          root.querySelector('.td-page-actions__primary[data-td-action="copy_markdown"]')) ||
         control;
       ['pointerenter', 'focus'].forEach(function (eventName) {
         control.addEventListener(eventName, function () {
@@ -77,19 +77,19 @@
     if (!toggle || !menu) return;
 
     function isOpen() {
-      return root.classList.contains('is-open');
+      return root.classList.contains('td-is-open');
     }
 
     function open() {
       if (window.OinkSurfaceCoordinator) {
         window.OinkSurfaceCoordinator.closeOthers('page-actions');
       }
-      root.classList.add('is-open');
+      root.classList.add('td-is-open');
       toggle.setAttribute('aria-expanded', 'true');
     }
 
     function close(restoreFocus) {
-      root.classList.remove('is-open');
+      root.classList.remove('td-is-open');
       toggle.setAttribute('aria-expanded', 'false');
       if (restoreFocus) toggle.focus();
     }

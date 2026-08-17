@@ -1,0 +1,69 @@
+{{- /* Fail loudly on front matter keys OINK has renamed or removed — the page
+     counterpart of config-legacy.html. A stale page key would otherwise be
+     ignored and the page would silently change behaviour.
+
+     Front matter keys are the site key with its `ui.` prefix dropped
+     (`params.ui.reading_time` ↔ `reading_time`); the entries below name that
+     replacement. Called once per page from head.html. */ -}}
+{{- $params := .Params -}}
+{{- $path := .Path -}}
+
+{{- range slice
+  (slice "context_menu"    "page_context_menu")
+  (slice "hide_readingtime" "reading_time: false")
+  (slice "hide_feedback"   "feedback: false")
+  (slice "exclude_search"  "search_exclude")
+  (slice "excludeSearch"   "search_exclude")
+  (slice "content_width"   "reading_width (slim | normal | wide)")
+-}}
+  {{- if isset $params (lower (index . 0)) -}}
+    {{- errorf "front matter %s was renamed: use %s at %s" (index . 0) (index . 1) $path -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (isset $params "annotation") (reflect.IsMap $params.annotation) -}}
+  {{- errorf "front matter annotation.enable was flattened: use annotation: true | false at %s" $path -}}
+{{- end -}}
+
+{{/* A `ui:` block in front matter (or a section cascade) may still carry the
+     old site-level shapes. */ -}}
+{{- with $params.ui -}}
+  {{- if reflect.IsMap . -}}
+    {{- $ui := . -}}
+    {{- if isset $ui "image_zoom" -}}
+      {{- errorf "front matter ui.image_zoom was renamed: use image_zoom: true | false at %s" $path -}}
+    {{- end -}}
+    {{- range slice
+      (slice "breadcrumb_disable" "ui.breadcrumb (inverted)")
+      (slice "breadcrumb_enabled" "ui.breadcrumb")
+      (slice "scrollSpy"          "ui.scroll_spy (inverted)")
+      (slice "scroll_spy_enabled" "ui.scroll_spy")
+      (slice "code_copy_enabled"  "ui.code_copy")
+      (slice "no_left_sidebar"    "ui.sidebar_enabled (inverted)")
+      (slice "readingtime"        "reading_time: true | false")
+      (slice "reading_time"       "reading_time: true | false (a top-level front matter key)")
+      (slice "ul_show"            "ui.sidebar_expand_levels")
+      (slice "pager"              "pager: false (a top-level front matter key)")
+    -}}
+      {{- if isset $ui (lower (index . 0)) -}}
+        {{- errorf "front matter ui.%s was renamed: use %s at %s" (index . 0) (index . 1) $path -}}
+      {{- end -}}
+    {{- end -}}
+    {{- range slice "annotation" "keyboard_nav" "typography" -}}
+      {{- if and (isset $ui .) (reflect.IsMap (index $ui .)) -}}
+        {{- errorf "front matter ui.%s was flattened: use a bare value at %s" . $path -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $params.print -}}
+  {{- if reflect.IsMap . -}}
+    {{- if isset . "disable_toc" -}}
+      {{- errorf "front matter print.disable_toc was renamed: use print.toc (inverted) at %s" $path -}}
+    {{- end -}}
+    {{- if isset . "toc_enabled" -}}
+      {{- errorf "front matter print.toc_enabled was renamed: use print.toc at %s" $path -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

@@ -1,5 +1,9 @@
 {{- /* Embed an asciinema cast. Required: file (named or positional). Optional:
        title, theme, fit, autoplay, loop, preload, speed, timing, and size. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "any" "allowed" (slice
+  "file" "title" "theme" "fit" "autoplay" "loop" "preload" "speed" "startAt"
+  "idleTimeLimit" "poster" "markers" "pauseOnMarkers" "cols" "rows"
+)) -}}
 {{- $file := .Get "file" | default (.Get 0) -}}
 {{- if not $file }}{{ errorf "%s: asciinema requires a file parameter" .Position }}{{ end -}}
 {{- $title := .Get "title" | default $file -}}
@@ -46,7 +50,7 @@
 {{- $id := printf "td-asciinema-%s-%d" (md5 .Page.RelPermalink) .Ordinal -}}
 {{- .Page.Store.Set "hasAsciinema" true -}}
 <div id="{{ $id }}" class="td-asciinema td-max-width-on-larger-screens" data-td-asciinema
-  data-timer-label="{{ T "ui_asciinema_timer" }}">
+  data-td-timer-label="{{ T "ui_asciinema_timer" }}">
   <div class="td-asciinema__chrome">
     <span class="td-asciinema__lights" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="td-asciinema__title" dir="auto">{{ $title }}</span>

@@ -63,7 +63,7 @@
   }
 
   &:hover > ul,
-  &.is-open > ul {
+  &.td-is-open > ul {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;

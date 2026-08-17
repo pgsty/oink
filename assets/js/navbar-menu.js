@@ -12,7 +12,7 @@
 
   function setDisclosure(toggle, panel, owner, open) {
     panel.hidden = !open;
-    owner.classList.toggle('is-open', open);
+    owner.classList.toggle('td-is-open', open);
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     var label = open
       ? toggle.dataset.labelCollapse
@@ -31,7 +31,7 @@
 
   function initDesktopMenus() {
     document.querySelectorAll('[data-td-navbar-menu]').forEach(function (menu, index) {
-      var parent = menu.querySelector('.nav-menu__parent-link');
+      var parent = menu.querySelector('.td-nav-menu__parent-link');
       var panel = menu.querySelector('[data-td-navbar-panel]');
       var surfaceName = 'navbar-menu-' + index;
       if (!parent || !panel) return;

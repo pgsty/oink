@@ -136,7 +136,7 @@
   {{- $figureClasses = $figureClasses | append $classes -}}
   {{- $label := "" -}}
   {{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "fig" "num" $num) }}{{ end -}}
-<figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ delimit $figureClasses " " }}"{{ if $num }} data-book-kind="fig" data-book-num="{{ $num }}"{{ end }}
+<figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ delimit $figureClasses " " }}"{{ if $num }} data-td-book-kind="fig" data-td-book-num="{{ $num }}"{{ end }}
   {{- range $key, $value := $generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
   {{ if $href }}<a class="td-figure__link" href="{{ $href }}"{{ if $external }} rel="external"{{ end }}>{{ $img | safeHTML }}</a>{{ else }}{{ $img | safeHTML }}{{ end }}
   {{- /* The resource byline rides along in the figcaption, which is where the

@@ -2,10 +2,7 @@
 title: Gallery
 description: Regression fixtures for a static-first responsive image Gallery.
 outputs: [HTML, markdown]
-params:
-  ui:
-    image_zoom:
-      enable: true
+image_zoom: true
 ---
 
 ```gallery

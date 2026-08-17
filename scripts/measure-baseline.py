@@ -26,7 +26,7 @@ Only *theme-owned* shortcode names (``layouts/_shortcodes/**`` of the theme,
 including site overrides of those names) feed the four metrics. Site-local
 shortcodes (names that exist only under the site's own ``layouts``) and Hugo
 built-ins (``ref`` ``relref`` ``figure`` ``highlight`` ``youtube`` …) are reported
-in separate buckets and excluded, as PRD 9 §4.3 requires. Generated corpus is
+in separate buckets and excluded, as the corpus-measurement rule requires. Generated corpus is
 excluded through ``--exclude`` globs (defaults below) and reported.
 
 1. ``parsed_tokens``   — number of theme shortcode tags (open + close + inline).
@@ -108,7 +108,7 @@ NATIVE_FENCE_LANGS = {
     "echarts", "infographic", "checksums",
 }
 
-# Generated corpus that must not count against the theme (PRD 9 §4.3). Keyed by
+# Generated corpus that must not count against the theme. Keyed by
 # site directory name; globs are relative to the site root.
 DEFAULT_EXCLUDES: dict[str, list[str]] = {
     "pigsty.io": ["content/ext/**"],
@@ -528,7 +528,7 @@ def measure_page(public: Path, page: Path, cache: AssetCache) -> dict:
     js = [j for j in js if j]
     fonts = sorted({f for c in css for f in c["fonts"]})
     third = sorted({t for a in css + js for t in a["third_party"]})
-    bundle = next((j["path"] for j in js if "/main-" in "/" + j["path"] and j["path"].endswith(".js")), None)
+    bundle = next((j["path"] for j in js if "/page-" in "/" + j["path"] and j["path"].endswith(".js")), None)
     fa_usage = len(re.findall(r'class=["\']?[^"\'>]*\bfa-(?:solid|regular|brands)\b', html))
     return {
         "type": classify_page(html, rel),
@@ -579,7 +579,7 @@ def bundle_table(public: Path, pages: dict[str, dict], cache: AssetCache) -> lis
         if info["bundle"]:
             usage[info["bundle"]] = usage.get(info["bundle"], 0) + 1
     table = []
-    for rel in sorted((public / "js").glob("main-*.js")) if (public / "js").is_dir() else []:
+    for rel in sorted((public / "js").glob("page-*.js")) if (public / "js").is_dir() else []:
         entry = cache.info("/" + rel.relative_to(public).as_posix())
         if entry:
             table.append({
@@ -755,7 +755,7 @@ def render_markdown(report: dict) -> str:
                            f"{kb(s['js_bytes']['median'])} / {kb(s['js_gzip']['median'])} | {kb(s['html_bytes']['median'])} | "
                            f"{s['pages_with_third_party']} | {s['pages_with_remote_requests']} | {s['pages_with_fa_icon_uses']} |")
         out.append("")
-        out.append("### JS bundles (main-*.js; combinations of runtime flags)")
+        out.append("### JS bundles (page-*.js; combinations of runtime flags)")
         out.append("")
         out.append("| site | bundle | KB (gz) | pages | third-party |")
         out.append("| --- | --- | ---: | ---: | --- |")

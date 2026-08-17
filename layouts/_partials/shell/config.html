@@ -16,16 +16,16 @@
 {{- $docsSection := strings.Trim (.Site.Params.ui.docs_section | default "docs") "/" -}}
 {{- $blogSection := strings.Trim (.Site.Params.ui.blog_section | default "blog") "/" -}}
 {{- $docsRoot := "section" -}}
-{{- if isset .Site.Params.ui "docs_root" -}}
-  {{- $rawDocsRoot := index .Site.Params.ui "docs_root" -}}
+{{- if isset .Site.Params.ui "docs_sidebar_root" -}}
+  {{- $rawDocsRoot := index .Site.Params.ui "docs_sidebar_root" -}}
   {{- if ne (printf "%T" $rawDocsRoot) "string" -}}
-    {{- errorf "params.ui.docs_root must be a string: home or section" -}}
+    {{- errorf "params.ui.docs_sidebar_root must be a string: home or section; got %v" $rawDocsRoot -}}
   {{- else -}}
     {{- $docsRoot = lower $rawDocsRoot -}}
   {{- end -}}
 {{- end -}}
 {{- if not (in (slice "home" "section") $docsRoot) -}}
-  {{- errorf "params.ui.docs_root must be home or section, got %q" $docsRoot -}}
+  {{- errorf "params.ui.docs_sidebar_root must be home or section; got %q" $docsRoot -}}
 {{- end -}}
 {{- $shellTypes := .Site.Params.ui.shell_types | default (slice "docs" "book" "blog" "swagger") -}}
 {{- $quickLinks := .Site.Params.ui.quick_links | default (slice $docsSection $blogSection) -}}

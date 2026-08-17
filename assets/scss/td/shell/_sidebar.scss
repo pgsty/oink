@@ -343,7 +343,7 @@
   }
 
   // Add slight separation between top-level groups.
-  .ul-1 > li + li {
+  .td-shell-tree__list--1 > li + li {
     margin-top: 2px;
   }
 }
@@ -430,12 +430,12 @@
 }
 
 // Top-level group rows use stronger weight and color.
-.td-shell-tree .ul-1 > li > .td-shell-tree__row > .td-shell-tree__link {
+.td-shell-tree .td-shell-tree__list--1 > li > .td-shell-tree__row > .td-shell-tree__link {
   font-weight: 500;
   color: var(--bs-body-color);
 }
 
-.td-shell-tree .ul-1 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--1 > li > .td-shell-tree__row {
   color: var(--bs-body-color);
 }
 
@@ -499,7 +499,7 @@
   }
 }
 
-.td-shell-tree__children.is-open {
+.td-shell-tree__children.td-is-open {
   grid-template-rows: 1fr;
   opacity: 1;
   visibility: visible;
@@ -516,20 +516,20 @@
 
 /* Row indentation and nested vertical rails. */
 
-.td-shell-tree .ul-2 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--2 > li > .td-shell-tree__row {
   --td-shell-indent: 24px;
 }
-.td-shell-tree .ul-3 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--3 > li > .td-shell-tree__row {
   --td-shell-indent: 36px;
 }
-.td-shell-tree .ul-4 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--4 > li > .td-shell-tree__row {
   --td-shell-indent: 48px;
 }
-.td-shell-tree .ul-5 > li > .td-shell-tree__row {
+.td-shell-tree .td-shell-tree__list--5 > li > .td-shell-tree__row {
   --td-shell-indent: 60px;
 }
 
-.td-shell-tree .ul-2 {
+.td-shell-tree .td-shell-tree__list--2 {
   position: relative;
 
   &::before {
@@ -543,7 +543,7 @@
 }
 
 // Paint an accent segment over the rail beside the active row.
-.td-shell-tree .ul-2 .td-shell-tree__row.td-shell-active::before {
+.td-shell-tree .td-shell-tree__list--2 .td-shell-tree__row.td-shell-active::before {
   content: '';
   position: absolute;
   inset-block: 6px;
@@ -677,7 +677,7 @@
     opacity 100ms ease,
     transform 100ms ease;
 
-  &.is-open {
+  &.td-is-open {
     opacity: 1;
     transform: none;
   }
@@ -737,7 +737,7 @@
     --td-shell-icon-size: 14px;
   }
 
-  &.is-hidden {
+  &.td-is-hidden {
     visibility: hidden;
   }
 }

@@ -4,13 +4,13 @@
 {{ if isset $context.Site.Taxonomies (lower $taxo) -}}
   {{ $taxonomy := index $context.Site.Taxonomies (lower $taxo) -}}
   {{ if (gt (len $taxonomy) 0) -}}
-    <div class="taxonomy taxonomy-terms-cloud taxo-{{ urlize $taxo }}">
+    <div class="taxonomy td-taxonomy-terms-cloud taxo-{{ urlize $taxo }}">
       {{ with $title -}}
-        <h5 class="taxonomy-title">{{ . }}</h5>
+        <h5 class="td-taxonomy-title">{{ . }}</h5>
       {{ end -}}
-      <ul class="taxonomy-terms">
+      <ul class="td-taxonomy-terms">
         {{ range $taxonomy -}}
-          <li><a class="taxonomy-term" href="{{ .Page.Permalink }}" data-taxonomy-term="{{ urlize .Page.Title }}"><span class="taxonomy-label">{{ .Page.Title }}</span><span class="taxonomy-count">{{ .Count }}</span></a></li>
+          <li><a class="td-taxonomy-term" href="{{ .Page.Permalink }}" data-td-taxonomy-term="{{ urlize .Page.Title }}"><span class="td-taxonomy-label">{{ .Page.Title }}</span><span class="td-taxonomy-count">{{ .Count }}</span></a></li>
         {{ end -}}
       </ul>
     </div>

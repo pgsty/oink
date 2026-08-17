@@ -19,20 +19,20 @@
 <div class="td-shell-root">
   <button type="button" class="td-shell-root__trigger" data-td-shell-root-toggle
     aria-haspopup="true" aria-expanded="false" aria-label="{{ T "ui_root_menu_label" }}">
-    <span class="td-shell-root__icon">{{ with $current.Params.Icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
+    <span class="td-shell-root__icon">{{ with $current.Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
     <span class="td-shell-root__title">{{ $current.LinkTitle }}</span>
     {{ partialCached "shell/icon.html" "chevrons-up-down" "chevrons-up-down" }}
   </button>
   <div class="td-shell-root__pop" hidden>
     {{- range $entries }}
     {{- $active := eq . $current -}}
-    <a class="td-shell-root__item{{ if $active }} is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>
-      <span class="td-shell-root__icon">{{ with .Params.Icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
+    <a class="td-shell-root__item{{ if $active }} td-is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>
+      <span class="td-shell-root__icon">{{ with .Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
       <span class="td-shell-root__meta">
         <span class="td-shell-root__item-title">{{ .LinkTitle }}</span>
         {{ with .Description }}<span class="td-shell-root__item-desc">{{ . }}</span>{{ end }}
       </span>
-      <span class="td-shell-root__check{{ if not $active }} is-hidden{{ end }}">
+      <span class="td-shell-root__check{{ if not $active }} td-is-hidden{{ end }}">
         {{- partialCached "shell/icon.html" "check" "check" -}}
       </span>
     </a>

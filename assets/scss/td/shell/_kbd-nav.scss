@@ -29,7 +29,7 @@ html[data-td-kbd-zen] {
   }
 }
 
-// The navbar-off shell uses the compact subnav instead of .landing-header.
+// The navbar-off shell uses the compact subnav instead of .td-site-header.
 // Hide that surface too so H always means the same chrome-free mode.
 html[data-td-kbd-zen] .td-shell-subnav {
   display: none;

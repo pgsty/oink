@@ -1,0 +1,24 @@
+{{- /* Resolve an on/off feature that keeps a map because it carries further
+     settings (params.comments, params.plantuml, params.drawio, ...). Both
+     forms are accepted:
+
+       plantuml: false            bare boolean
+       plantuml: { enable: true } map with an `enable` member
+
+     Input: dict "value" <raw parameter> "key" "params.<name>".
+     Returns a boolean; anything else fails the build. */ -}}
+{{- $value := .value -}}
+{{- $enabled := false -}}
+{{- if eq (printf "%T" $value) "bool" -}}
+  {{- $enabled = $value -}}
+{{- else if reflect.IsMap $value -}}
+  {{- if isset $value "enable" -}}
+    {{- $enabled = index $value "enable" -}}
+    {{- if ne (printf "%T" $enabled) "bool" -}}
+      {{- errorf "%s.enable must be a boolean; got %v" .key $enabled -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if ne $value nil -}}
+  {{- errorf "%s must be a boolean or a map with enable; got %v" .key $value -}}
+{{- end -}}
+{{- return $enabled -}}

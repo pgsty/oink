@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the PRD 5 landing shell, sections, output matrix, and failures."""
+"""Validate the landing shell, sections, output matrix, and failures."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/main-[^"]+\.js)"')
+MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -60,12 +60,12 @@ def check_example(public: Path) -> list[str]:
     docs = paths["docs"].read_text(encoding="utf-8")
 
     for marker in (
-        'class="landing-header',
+        'class="td-site-header',
         'data-td-landing',
         'class="td-site-footer',
         'data-td-navbar-columns="2"',
         'data-td-github-stars>2.2k',
-        'class="nav-util nav-alt-site"',
+        'class="td-nav-util td-nav-alt-site"',
         'class="td-footer__copyright"',
         'class="td-shell-footline__center">Powered by <a href="https://oink.pgsty.com">Oink</a>',
         'data-td-shell-search-open',
@@ -77,45 +77,45 @@ def check_example(public: Path) -> list[str]:
         require(marker not in html, f"landing shell unexpectedly contains {marker}", errors)
 
     section_markers = (
-        'class="oink-hero',
-        '--oink-hero-title-size: 4.25rem',
-        'data-count="2189"',
+        'class="td-landing-hero',
+        '--td-hero-title-size: 4.25rem',
+        'data-td-count="2189"',
         '>2.2k</strong>',
-        'class="oink-metric__source"',
-        'data-theme-src-light="/icons/logo.svg"',
-        'data-theme-src-dark="/icons/logo.svg#dark"',
-        'oink-faq-list--flat',
-        'class="oink-pricing-tier oink-pricing-tier--featured"',
+        'class="td-landing-metric__source"',
+        'data-td-theme-src-light="/icons/logo.svg"',
+        'data-td-theme-src-dark="/icons/logo.svg#dark"',
+        'td-landing-faq-list--flat',
+        'class="td-landing-pricing-tier td-landing-pricing-tier--featured"',
         'aria-label="Included"',
         'aria-label="Not included"',
-        'class="oink-command-box"',
+        'class="td-landing-command-box"',
         '<pre tabindex="0"><code class="language-bash">',
-        'class="oink-landing-steps"',
-        'class="oink-timeline"',
+        'class="td-landing-landing-steps"',
+        'class="td-landing-timeline"',
         'class="highlight"><pre tabindex="0" class="chroma"',
-        'class="oink-case-study"',
-        'class="oink-download-tabs"',
-        'class="oink-marquee__pause"',
+        'class="td-landing-case-study"',
+        'class="td-landing-download-tabs"',
+        'class="td-landing-marquee__pause"',
         'data-td-marquee-pause',
         'class="nav nav-tabs" role="tablist"',
-        '--oink-bar-width: 100.0000%',
-        '--oink-bar-width: 3.8839%',
+        '--td-bar-width: 100.0000%',
+        '--td-bar-width: 3.8839%',
     )
     for marker in section_markers:
         require(marker in html, f"landing section fixture lost {marker}", errors)
 
     require(
-        html.count('class="oink-marquee__group"') == 4,
+        html.count('class="td-landing-marquee__group"') == 4,
         "two-row marquee did not render one original and one duplicate per row",
         errors,
     )
     require(
-        html.count('class="oink-marquee__group" aria-hidden="true"') == 2,
+        html.count('class="td-landing-marquee__group" aria-hidden="true"') == 2,
         "marquee duplicates are not consistently hidden from accessibility APIs",
         errors,
     )
     require(
-        html.count('class="oink-marquee__group" aria-hidden="true" inert') == 2,
+        html.count('class="td-landing-marquee__group" aria-hidden="true" inert') == 2,
         "marquee duplicates are not removed from sequential focus",
         errors,
     )
@@ -132,19 +132,19 @@ def check_example(public: Path) -> list[str]:
         require("OinkLanding" not in source, "docs page bundled the landing runtime", errors)
 
     for marker in (
-        "oink-marquee--static",
+        "td-landing-marquee--static",
         "Static pricing cards",
         "curl -fsSL https://example.org/install | bash",
-        "--oink-bar-width: 3.8839%",
+        "--td-bar-width: 3.8839%",
     ):
         require(marker in print_html, f"landing print output lost {marker}", errors)
     for marker in (
         "data-td-landing",
         "data-td-marquee",
-        'aria-hidden="true"><article class="oink-logo-card"',
-        "data-reveal",
-        "data-count=",
-        "data-copy-text",
+        'aria-hidden="true"><article class="td-landing-logo-card"',
+        "data-td-reveal",
+        "data-td-count=",
+        "data-td-copy-text",
         "data-theme-src",
         "OinkLanding",
     ):
@@ -163,7 +163,7 @@ def check_example(public: Path) -> list[str]:
         "- Decimal value: 43.5 units",
     ):
         require(marker in markdown, f"landing Markdown lost {marker}", errors)
-    for marker in ("%!s(<nil>)", "data-td-", "data-reveal", "oink-", "<section", "<button"):
+    for marker in ("%!s(<nil>)", "data-td-", "td-landing-", "<section", "<button"):
         require(marker not in markdown, f"landing Markdown leaked {marker}", errors)
     return errors
 
@@ -221,12 +221,12 @@ def check_sources() -> list[str]:
         "@media (prefers-reduced-motion: reduce)",
         "@media (forced-colors: active)",
         "@media print",
-        "[dir='rtl'] .oink-marquee",
+        "[dir='rtl'] .td-landing-marquee",
         "&:has(&__pause input:checked) &__track",
     ):
         require(marker in styles, f"landing styles lack {marker}", errors)
     for marker in (
-        "IntersectionObserver", "data-copy-text", "data-theme-src-light",
+        "IntersectionObserver", "data-td-copy-text", "data-td-theme-src-light",
         "OinkSurfaceCoordinator", "register('mobile-menu'",
     ):
         require(marker in runtime, f"landing runtime lacks {marker}", errors)
@@ -295,10 +295,9 @@ disableKinds: [home, RSS, sitemap, taxonomy, term]
 outputs:
   page: [HTML]
 params:
-  offlineSearch: false
+  offline_search: false
   ui:
-    pager:
-      types: []
+    pager_types: []
 """,
     )
     write(
@@ -324,7 +323,7 @@ INVALID_CASES = (
 def check_invalid(hugo: str) -> list[str]:
     errors: list[str] = []
     for name, data, expected in INVALID_CASES:
-        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-landing-{name}-") as temp:
+        with tempfile.TemporaryDirectory(prefix=f"td-landing-components-landing-{name}-") as temp:
             site = Path(temp)
             create_site(site, data)
             result = run(hugo, site)
@@ -347,7 +346,7 @@ def check_localized_fields(hugo: str) -> list[str]:
         - name: Base fallback
           price: Free
 """
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-landing-fields-") as temp:
+    with tempfile.TemporaryDirectory(prefix="td-landing-components-landing-fields-") as temp:
         site = Path(temp)
         create_site(site, data, language="zh-cn")
         result = run(hugo, site)
@@ -365,7 +364,7 @@ def check_localized_fields(hugo: str) -> list[str]:
 
 def check_rss(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-landing-rss-") as temp:
+    with tempfile.TemporaryDirectory(prefix="td-landing-components-landing-rss-") as temp:
         site = Path(temp)
         create_site(site, "sections:\n  - type: command-box\n    data: {title: Install, code: echo secret}\n")
         config = (site / "hugo.yaml").read_text(encoding="utf-8")
@@ -383,7 +382,7 @@ def check_rss(hugo: str) -> list[str]:
             require(len(outputs) == 1, "landing RSS fixture did not emit exactly one feed output", errors)
             if outputs:
                 source = outputs[0].read_text(encoding="utf-8")
-                for marker in ("echo secret", "oink-", "data-td-landing"):
+                for marker in ("echo secret", "td-landing-", "data-td-landing"):
                     require(marker not in source, f"landing RSS leaked {marker}", errors)
     return errors
 
@@ -395,11 +394,11 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.public is None:
-        with tempfile.TemporaryDirectory(prefix="oink-prd5-landing-example-") as temp:
+        with tempfile.TemporaryDirectory(prefix="td-landing-components-landing-example-") as temp:
             public = Path(temp) / "public"
             result = run(args.hugo, EXAMPLE, public)
             if result.returncode != 0:
-                print("PRD 5 landing fixture failed to build:")
+                print("landing fixture failed to build:")
                 print(result.stdout + result.stderr)
                 return 1
             errors = check_example(public)
@@ -407,11 +406,11 @@ def main() -> int:
         errors = check_example(args.public)
     errors += check_sources() + check_invalid(args.hugo) + check_localized_fields(args.hugo) + check_rss(args.hugo)
     if errors:
-        print("PRD 5 landing checks failed:")
+        print("landing checks failed:")
         for error in errors:
             print(f"  {error}")
         return 1
-    print("PRD 5 landing checks passed")
+    print("landing checks passed")
     return 0
 
 

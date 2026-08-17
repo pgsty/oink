@@ -1,5 +1,5 @@
 {{- $shell := partial "shell/chrome-enabled.html" . -}}
-{{- $keyboardNav := ne (.Param "ui.keyboard_nav.enable") false -}}
+{{- $keyboardNav := ne (.Param "ui.keyboard_nav") false -}}
 {{- $readingSurface := or $shell (and .IsHome $keyboardNav) -}}
 {{- if $readingSurface -}}
 <script>

@@ -45,7 +45,7 @@
       item;
       item = item.parentElement && item.parentElement.closest('li')
     ) {
-      item.classList.add('active-path');
+      item.classList.add('td-active-path');
       var toggle = item.querySelector(
         ':scope > .td-shell-tree__row [data-td-shell-tree-toggle]',
       );
@@ -57,7 +57,7 @@
         var target = document.getElementById(
           toggle.getAttribute('aria-controls'),
         );
-        if (target) target.classList.add('is-open');
+        if (target) target.classList.add('td-is-open');
       }
     }
 

@@ -26,7 +26,7 @@
     function apply(collapsed, persist) {
       target.hidden = collapsed;
       toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-      if (toggle.classList) toggle.classList.toggle('is-collapsed', collapsed);
+      if (toggle.classList) toggle.classList.toggle('td-is-collapsed', collapsed);
       var label = collapsed
         ? toggle.dataset.labelExpand
         : toggle.dataset.labelCollapse;

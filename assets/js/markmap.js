@@ -1,5 +1,4 @@
-{{ with .Site.Params.markmap }}
-{{ if .enable }}
+{{ if eq .Site.Params.markmap true }}
 (function () {
   'use strict';
 
@@ -23,5 +22,4 @@
     window.markmap.autoLoader.renderAll();
   }
 })();
-{{ end }}
 {{ end }}

@@ -14,8 +14,7 @@ Inline `code` and the following block exercise Bootstrap's monospace bridge:
 ```yaml
 params:
   ui:
-    typography:
-      preset: technical
+    typography: technical
 ```
 
 ### Build the site

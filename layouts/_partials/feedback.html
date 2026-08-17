@@ -19,21 +19,19 @@
   {{- else -}}
     {{- $enabled = .Params.feedback -}}
   {{- end -}}
-{{- else if .Params.hide_feedback -}}
-  {{- $enabled = false -}}
 {{- end -}}
 {{- if ne (printf "%T" $enabled) "bool" -}}
-  {{- errorf "feedback.enable must be a boolean on %s" .RelPermalink -}}
+  {{- errorf "params.ui.feedback.enable must be a boolean at %s" .RelPermalink -}}
 {{- end -}}
 {{- if ne (printf "%T" $showReasons) "bool" -}}
-  {{- errorf "feedback.reasons must be a boolean on %s" .RelPermalink -}}
+  {{- errorf "params.ui.feedback.reasons must be a boolean at %s" .RelPermalink -}}
 {{- end -}}
 {{- if $enabled -}}
   {{- .Page.Store.Set "hasFeedback" true -}}
   {{- $commentsState := partial "comments-state.html" . -}}
 <section class="td-feedback d-print-none" data-td-feedback
-  data-page-path="{{ .RelPermalink }}"
-  data-language="{{ .Site.Language.Lang }}">
+  data-td-page-path="{{ .RelPermalink }}"
+  data-td-language="{{ .Site.Language.Lang }}">
   <div class="td-feedback__prompt">
     <h2 class="td-feedback__question">{{ i18n "feedback_question" }}</h2>
     <div class="td-feedback__choices" role="group" aria-label="{{ i18n "feedback_question" }}">

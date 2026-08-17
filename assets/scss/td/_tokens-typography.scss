@@ -25,7 +25,7 @@
   --td-display-font-family: 'Chakra Petch', var(--td-ui-font-family);
   --td-meta-font-family: 'IBM Plex Mono', var(--td-code-font-family);
   --td-print-font-family:
-    #{inspect($td-google-font-name)}, var(--bs-body-font-family);
+    #{inspect($td-print-font-name)}, var(--bs-body-font-family);
 }
 
 [data-td-typography='system'] {

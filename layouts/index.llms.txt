@@ -1,4 +1,5 @@
-{{ $homeMarkdownURL := .Site.Home.Permalink -}}
+{{- $config := partial "shell/config.html" . -}}
+{{- $homeMarkdownURL := .Site.Home.Permalink -}}
 {{ with .Site.Home.OutputFormats.Get "markdown" -}}
   {{ $homeMarkdownURL = .Permalink -}}
 {{ end -}}
@@ -16,11 +17,11 @@
 ## Site index
 
 - [Home page]( {{- $homeMarkdownURL -}} )
-{{ with .Site.GetPage "AGENTS.md" -}}
+{{ with .Site.GetPage "/AGENTS.md" -}}
   {{ with .Permalink -}}
     {{ $url := . -}}
     {{ if hasSuffix $url "/" -}}
-      {{ $url = add $url "index.md" -}}
+      {{ $url = printf "%sindex.md" $url -}}
     {{ end -}}
     - [AGENTS.md]( {{- $url -}} ) {{- "\n" -}}
   {{- end -}}
@@ -54,22 +55,28 @@ that agent-docs tooling applies to llms.txt entries. */ -}}
   {{ end -}}
 {{ end -}}
 
-{{/* Doc Sections ------------------------------------------------------ */ -}}
+{{/* Documentation ----------------------------------------------------- */ -}}
 
-{{ with .Site.GetPage "docs" -}}
-  {{- if .Sections -}}
+{{/* The docs root is whatever params.ui.docs_section names, not a literal
+"docs": shell/config.html is the single resolver for it. Every documentation
+page is listed, not only the sections, because an index that stops at the
+section level tells an agent nothing about what the site actually documents. */ -}}
+{{ with .Site.GetPage (printf "/%s" $config.docsSection) -}}
+  {{ $pages := .RegularPagesRecursive -}}
+  {{ if or $pages .Sections -}}
     {{ "\n" -}}
 
     ## Documentation index
 
     {{- "\n\n" -}}
     {{ range .Sections -}}
-      {{ $url := .Permalink -}}
-      {{ with .OutputFormats.Get "markdown" -}}
-        {{ $url = .Permalink -}}
+      {{ template "llms-entry" (dict "page" . "depth" 0) -}}
+      {{ range .RegularPagesRecursive -}}
+        {{ template "llms-entry" (dict "page" . "depth" 1) -}}
       {{ end -}}
-      - [ {{- .Title | strings.TrimSpace -}} ]( {{- $url -}} )
-        {{- "\n" -}}
+    {{ end -}}
+    {{ range .RegularPages -}}
+      {{ template "llms-entry" (dict "page" . "depth" 0) -}}
     {{ end -}}
   {{ end -}}
 {{ end -}}
@@ -91,3 +98,21 @@ that agent-docs tooling applies to llms.txt entries. */ -}}
     - [{{ $home.Language.Label }}]({{ $url }}) {{- "\n" -}}
   {{ end -}}
 {{ end -}}
+
+{{/* A page that Hugo never renders (`build.render: never`, sidebar dividers)
+     has no permalink and must not become a dead link in the index. */ -}}
+{{- define "llms-entry" -}}
+  {{- $page := .page -}}
+  {{- with $page.Permalink -}}
+    {{- $url := . -}}
+    {{- with $page.OutputFormats.Get "markdown" -}}
+      {{- $url = .Permalink -}}
+    {{- end -}}
+    {{- $title := $page.LinkTitle | default $page.Title | strings.TrimSpace -}}
+    {{- $description := $page.Description | strings.TrimSpace | replaceRE `\s+` " " -}}
+    {{- $indent := strings.Repeat $.depth "  " -}}
+    {{- printf "%s- [%s](%s)" $indent $title $url -}}
+    {{- with $description }}: {{ . }}{{ end -}}
+    {{- "\n" -}}
+  {{- end -}}
+{{- end -}}

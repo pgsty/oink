@@ -3,11 +3,7 @@
        them with RenderString for HTML / print / RSS and emits the source
        Markdown for the Markdown output). Shared <dl> renderer:
        content/fields-list.html (also used by the `{.fields}` table hook). */ -}}
-{{- $hasParams := false -}}
-{{- with .Params }}{{ $hasParams = true }}{{ end -}}
-{{- if and $hasParams (not .IsNamedParams) -}}
-  {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
-{{- end -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "attributes" true "allowed" (slice "label" "id")) -}}
 {{- /* Container attributes mirror the `{.fields}` table hook (content/attributes.html):
        named parameters, plus class token validation and data- / aria- passthrough,
        so the same block can be styled and targeted whichever form wrote it. */ -}}
@@ -40,7 +36,7 @@
 {{- end -}}
 
 {{- $id := "" -}}
-{{- if and $hasParams (isset .Params "id") -}}
+{{- if and .IsNamedParams (isset .Params "id") -}}
   {{- $id = strings.TrimSpace (printf "%v" (.Get "id")) -}}
   {{- if not $id -}}
     {{- errorf "shortcode %q: id must not be empty at %s" .Name .Position -}}
@@ -51,7 +47,7 @@
 {{- end -}}
 
 {{- $label := "" -}}
-{{- if and $hasParams (isset .Params "label") -}}
+{{- if and .IsNamedParams (isset .Params "label") -}}
   {{- $labelParam := .Get "label" -}}
   {{- if ne (printf "%T" $labelParam) "string" -}}
     {{- errorf "shortcode %q: label must be a string at %s" .Name .Position -}}

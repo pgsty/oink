@@ -2,11 +2,11 @@
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{- if or (not (reflect.IsSlice $stats)) (not $stats) }}{{ errorf "%s: case-study.stats must be a non-empty array" $page.Path }}{{ end -}}
 {{- if or (not ($data.quote | default "")) (not ($data.source | default "")) }}{{ errorf "%s: case-study requires quote and source" $page.Path }}{{ end -}}
-<section id="{{ $id }}" class="oink-section oink-case-study-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-case-study-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
-    <figure class="oink-case-study"{{ if $interactive }} data-reveal{{ end }}>
-      <div class="oink-case-study__stats">{{ range $index, $stat := $stats }}{{ if or (not (isset $stat "value")) (not ($stat.label | default "")) }}{{ errorf "%s: case-study stat %d requires value and label" $page.Path (add $index 1) }}{{ end }}<div><strong>{{ $stat.value }}</strong><span>{{ $stat.label }}</span></div>{{ end }}</div>
+    <figure class="td-landing-case-study"{{ if $interactive }} data-td-reveal{{ end }}>
+      <div class="td-landing-case-study__stats">{{ range $index, $stat := $stats }}{{ if or (not (isset $stat "value")) (not ($stat.label | default "")) }}{{ errorf "%s: case-study stat %d requires value and label" $page.Path (add $index 1) }}{{ end }}<div><strong>{{ $stat.value }}</strong><span>{{ $stat.label }}</span></div>{{ end }}</div>
       <blockquote>{{ partial "landing/markdown-block.html" (dict "page" $page "value" $data.quote) }}</blockquote>
       <figcaption>{{ if $data.url }}<a href="{{ $data.url }}">{{ end }}{{ $data.source }}{{ if $data.url }}</a>{{ end }}</figcaption>
     </figure>

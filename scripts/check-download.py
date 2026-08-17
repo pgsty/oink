@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate PRD 5 download data normalization and output isolation."""
+"""Validate download data normalization and output isolation."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/main-[^"]+\.js)"')
+MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -52,10 +52,9 @@ outputs:
   page: [HTML]
   section: [HTML]
 params:
-  offlineSearch: false
+  offline_search: false
   ui:
-    pager:
-      types: []
+    pager_types: []
 """,
     )
     write(
@@ -108,8 +107,8 @@ def check_example(public: Path) -> list[str]:
         'href="#download-demo-script"',
         'href="#download-demo-source"',
         'href="#download-demo-assets"',
-        'data-download-kind="rolling"',
-        'data-download-kind="pinned"',
+        'data-td-download-kind="rolling"',
+        'data-td-download-kind="pinned"',
         'class="chroma"',
         "data-td-code-copy",
         "data-td-asset-copy-all",
@@ -202,7 +201,7 @@ def check_example(public: Path) -> list[str]:
 
 def check_site_version_fallback(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-download-version-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-download-version-") as temp:
         site = Path(temp)
         create_site(
             site,
@@ -215,7 +214,7 @@ channels:
 """,
         )
         config = (site / "hugo.yaml").read_text(encoding="utf-8")
-        write(site / "hugo.yaml", config.replace("  offlineSearch", "  version: 4.2.0\n  offlineSearch"))
+        write(site / "hugo.yaml", config.replace("  offline_search", "  version: 4.2.0\n  offline_search"))
         result = run(hugo, site)
         if result.returncode != 0:
             errors.append(f"site version fallback fixture failed: {result.stdout}{result.stderr}")
@@ -227,7 +226,7 @@ channels:
 
 def check_rss(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-download-rss-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-download-rss-") as temp:
         site = Path(temp)
         create_site(
             site,
@@ -308,7 +307,7 @@ INVALID_CASES = (
 def check_invalid(hugo: str) -> list[str]:
     errors: list[str] = []
     for name, data, body, expected in INVALID_CASES:
-        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-download-{name}-") as temp:
+        with tempfile.TemporaryDirectory(prefix=f"oink-components-download-{name}-") as temp:
             site = Path(temp)
             create_site(site, data, body)
             result = run(hugo, site)
@@ -341,11 +340,11 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.public is None:
-        with tempfile.TemporaryDirectory(prefix="oink-prd5-download-example-") as temp:
+        with tempfile.TemporaryDirectory(prefix="oink-components-download-example-") as temp:
             public = Path(temp) / "public"
             result = run(args.hugo, EXAMPLE, public)
             if result.returncode != 0:
-                print("PRD 5 download fixture failed to build:")
+                print("download fixture failed to build:")
                 print(result.stdout + result.stderr)
                 return 1
             errors = check_example(public)
@@ -353,11 +352,11 @@ def main() -> int:
         errors = check_example(args.public)
     errors += check_site_version_fallback(args.hugo) + check_rss(args.hugo) + check_invalid(args.hugo) + check_sources()
     if errors:
-        print("PRD 5 download checks failed:")
+        print("download checks failed:")
         for error in errors:
             print(f"  {error}")
         return 1
-    print("PRD 5 download checks passed")
+    print("download checks passed")
     return 0
 
 

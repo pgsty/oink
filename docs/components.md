@@ -3,7 +3,7 @@
 Status: normative summary of the OINK 0.5/0.6 component API; the frozen
 contracts are `docs/content-primitives.md` (everyday components, contract v2),
 `docs/enhanced-code-blocks.md` (fences and tabs), and
-`docs/prd5-book-contract.md` (Book pack, contract v2). Design record:
+`docs/book-contract.md` (Book pack, contract v2). Design record:
 `plan/design/components.md` v5.
 
 Compatibility floor: Hugo Extended 0.160.1
@@ -64,9 +64,9 @@ Passthrough math needs the site's `passthrough` extension.
 | Xref | plain Markdown links (kind-less) | `{{< xref fig\|tbl\|eq\|eg="…" [page=] [anchor=] >}}` | |
 | Book indexes | — | `book-toc` `book-figures` `book-tables` `book-equations` `book-examples` | no `kind` parameter |
 | Fences | `{title copy wrap collapse label id tab group value num caption lineNos hl_lines lineNoStart anchorLineNos tabWidth}` | — | Prism mode unchanged |
-| Data fences | `mermaid plantuml markmap math chem echarts infographic checksums filetree gallery` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.tdEchartsFunctions` |
+| Data fences | `mermaid plantuml markmap math chem echarts infographic checksums filetree gallery` | — | `echarts` declarative only, `$fn:<name>` callbacks via `window.OinkEchartsFunctions` |
 | Leaves | raw `<kbd>` | `kbd` `badge` `param` `include` `comment` `contributors` `asciinema` | `badge` has no `outline`; `param` scalar only |
-| Release / OpenAPI | `checksums` fence | `release-card` `release-assets` `download` / `swaggerui` `redoc` | |
+| Release / OpenAPI | `checksums` fence | `release-card` `release-assets` `download` / `swagger` `redoc` | |
 
 Shortcode inventory: 29 — core 14 (`tabs tab steps cards card fields field
 include kbd badge param comment contributors asciinema`), Book 10 (`fig
@@ -120,7 +120,7 @@ Cards, Fields:
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `offlineSearch` | boolean | `false` | Local search index |
+| `offline_search` | boolean | `false` | Local search index |
 {.fields caption="Search parameters"}
 
 | Field | Type | Required | Default | Description |
@@ -228,11 +228,11 @@ covers what Goldmark cannot report:
 
 | Old | New | Toolkit key |
 | --- | --- | --- |
-| `{{% alert color=… title=… %}}`, `{{% details %}}`, `{{% pageinfo %}}`, raw `<details><summary>` | `> [!TYPE] title` / `> [!DETAILS]-` | `callout` |
+| `{{% alert color=… title=… %}}`, `{{% details %}}`, `{{% td-page-notice %}}`, raw `<details><summary>` | `> [!TYPE] title` / `> [!DETAILS]-` | `callout` |
 | `{{< tabpane >}}{{% tab header=… %}}`, `{{< code-group >}}{{< code-tab >}}` | adjacent fences `{tab= group= value=}` (code-only panes) or `{{< tabs >}}{{< tab >}}` | `tabs` |
 | `{{< filetree >}}` `filetree/folder` `filetree/file`, interim `{.filetree}` lists | ```` ```filetree ```` fence (`label`→`title`, `open`/`icon`/`color`/`comment`/`link` kept) | `filetree` |
 | `{{< gallery >}}` `gallery/image`, image list + `{.gallery}` | ```` ```gallery ```` fence | `gallery` |
-| `{{< echarts >}}` `{{< infographic >}}` | same-named fences (`$fn:` unchanged; `js` sub-fences must move to `window.tdEchartsFunctions`) | `datafence` |
+| `{{< echarts >}}` `{{< infographic >}}` | same-named fences (`$fn:` unchanged; `js` sub-fences must move to `window.OinkEchartsFunctions`) | `datafence` |
 | `doc-cards`/`doc-card`, `nav-cards`/`nav-card`, `card`/`cardpane`, `doc-carousel` | `{{< cards >}}{{< card >}}` or link list + `{.cards}` | `cards` |
 | `{{< imgproc … >}}`, `{{< image … >}}` | `![alt](src)` + `{command= options= caption=}` | `image` |
 | `{{< readfile file=… >}}` | `{{< include file=… >}}` | `include` |

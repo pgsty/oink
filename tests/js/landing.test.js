@@ -40,41 +40,41 @@ assert.equal(landing.initReveal(
   { querySelectorAll() { return [reveal]; } },
   { matchMedia() { return { matches: true }; } },
 ), 1);
-assert.equal(reveal.classList.contains('is-revealed'), true);
-assert.equal(reveal.hasAttribute('data-revealed'), true);
+assert.equal(reveal.classList.contains('td-is-revealed'), true);
+assert.equal(reveal.hasAttribute('data-td-revealed'), true);
 
-const count = element({ 'data-count': '2189', 'data-count-suffix': '+' });
+const count = element({ 'data-td-count': '2189', 'data-td-count-suffix': '+' });
 assert.equal(landing.initCounts(
   { querySelectorAll() { return [count]; } },
   { matchMedia() { return { matches: true }; } },
 ), 1);
 assert.match(count.textContent, /^2[,\s.]?189\+$/);
-assert.equal(count.hasAttribute('data-count-complete'), true);
+assert.equal(count.hasAttribute('data-td-count-complete'), true);
 
 (async () => {
   const writes = [];
   const timers = [];
   const button = element({
-    'data-copy-text': 'curl https://example.test/install | bash',
-    'data-label-copied': 'Copied!',
+    'data-td-copy-text': 'curl https://example.test/install | bash',
+    'data-td-label-copied': 'Copied!',
     'aria-label': 'Copy',
   });
-  const root = { querySelectorAll(selector) { return selector === '[data-copy-text]' ? [button] : []; } };
+  const root = { querySelectorAll(selector) { return selector === '[data-td-copy-text]' ? [button] : []; } };
   assert.equal(landing.initCopy(root, { setTimeout(callback) { timers.push(callback); } }, {}, {
     clipboard: { writeText(text) { writes.push(text); return Promise.resolve(); } },
   }), 1);
   button.dispatch('click');
   await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual(writes, ['curl https://example.test/install | bash']);
-  assert.equal(button.getAttribute('data-copy-state'), 'success');
+  assert.equal(button.getAttribute('data-td-copy-state'), 'success');
   assert.equal(button.getAttribute('aria-label'), 'Copied!');
   timers[0]();
   assert.equal(button.getAttribute('aria-label'), 'Copy');
 
   const lightDark = element({
     src: '/light.png',
-    'data-theme-src-light': '/light.png',
-    'data-theme-src-dark': '/dark.png',
+    'data-td-theme-src-light': '/light.png',
+    'data-td-theme-src-dark': '/dark.png',
   });
   const doc = { documentElement: element({ 'data-bs-theme': 'dark' }) };
   assert.equal(landing.syncThemeImages({ querySelectorAll() { return [lightDark]; } }, doc), 1);
@@ -111,7 +111,7 @@ assert.equal(count.hasAttribute('data-count-complete'), true);
   docListeners.get('keydown')({ key: 'Escape' });
   assert.equal(toggle.focused, true);
 
-  console.log('PRD 5 landing runtime checks passed');
+  console.log('landing runtime checks passed');
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;

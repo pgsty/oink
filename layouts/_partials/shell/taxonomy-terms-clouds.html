@@ -39,19 +39,19 @@
     {{- if not $icon -}}
       {{- $icon = index (dict "categories" "fa-solid fa-folder" "tags" "fa-solid fa-tags") $plural | default "fa-solid fa-shapes" -}}
     {{- end -}}
-<div class="td-shell-aside-group td-shell-tags-cloud" data-taxonomy="{{ $plural }}" data-taxonomy-root="{{ $root.RelPermalink | default "/" }}">
+<div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="{{ $plural }}" data-td-taxonomy-root="{{ $root.RelPermalink | default "/" }}">
   <button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
     aria-expanded="true" aria-controls="{{ $id }}-children"
     aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}"
-    data-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $title }}"
-    data-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}">
+    data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $title }}"
+    data-td-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}">
     <span class="td-shell-aside-group__icon"><i class="{{ $icon }}" aria-hidden="true"></i></span>
     <span class="td-shell-aside-group__title td-shell-tags-cloud__title">{{ $title }}</span>
     <span class="td-shell-tree__chevron" aria-hidden="true">
       {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
     </span>
   </button>
-  <div id="{{ $id }}-children" class="td-shell-tree__children is-open">
+  <div id="{{ $id }}-children" class="td-shell-tree__children td-is-open">
     <div class="td-shell-tree__children-inner">
       <div class="td-shell-tags-cloud__chips">
         {{- range sort $items "count" "desc" }}

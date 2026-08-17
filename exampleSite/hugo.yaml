@@ -33,13 +33,14 @@ params:
   copyright:
     authors: '[OINK](https://oink.pgsty.com)'
     from_year: 2026
-  offlineSearch: true
-  offlineSearchIndex: summary
-  offlineSearchSummaryLength: 80
-  offlineSearchMaxResults: 10
+  offline_search: true
+  offline_search_index: summary
+  offline_search_summary_length: 80
+  offline_search_max_results: 10
   ui:
     github_stars: 2189
-    showLightDarkModeMenu: true
+    dark_mode:
+      show_menu: true
     alt_site:
       label: Example 中文站
       url: https://example.cn/
@@ -50,10 +51,8 @@ params:
     sidebar_icon_policy: all
     page_context_menu:
       assistant_links: true
-    image_zoom:
-      enable: true
-    feedback:
-      enable: false
+    image_zoom: true
+    feedback: false
 
 languages:
   en:

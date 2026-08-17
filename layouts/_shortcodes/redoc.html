@@ -1,4 +1,5 @@
 {{- /* Embed a ReDoc specification. Positional: spec path/URL, extra options. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- $file := .Get 0 -}}
 {{- $url := "" -}}
 {{- $otheroptions := .Get 1 -}}

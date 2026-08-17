@@ -8,7 +8,7 @@
     lang="{{ partial "language-tag.html" . }}"
     data-td-typography="{{ partial "typography-preset.html" .Site }}"
     {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
   <head>{{ partial "head.html" . }}</head>
   <body class="td-404">
     {{ partial "skip-link.html" . }}

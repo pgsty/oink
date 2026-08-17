@@ -242,7 +242,7 @@
     transition: transform 150ms ease;
   }
 
-  &.is-collapsed .td-shell-icon {
+  &.td-is-collapsed .td-shell-icon {
     transform: rotate(180deg);
   }
 

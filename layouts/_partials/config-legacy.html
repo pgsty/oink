@@ -1,0 +1,109 @@
+{{/* Fail loudly on configuration keys OINK has renamed or removed.
+
+     A renamed key that is merely ignored is the worst outcome: the site keeps
+     building and the feature is silently off. Every entry below names its
+     replacement, so an upgrade is a mechanical edit rather than a hunt.
+
+     Three shapes are checked: a top-level key, a key under params.ui, and a
+     map where a bare value now lives (`ui.annotation: { enable: true }` was
+     flattened to `ui.annotation: true`).
+
+     Add a key here in the same change that renames it, and drop entries only
+     on a major version. The partial reads the global `site` so it can run
+     from any context; head.html and typography-preset.html both call it
+     through partialCached, so it executes once per build.
+     Front matter counterparts live in front-matter-legacy.html. */ -}}
+
+{{- $params := site.Params -}}
+{{- $ui := $params.ui | default dict -}}
+
+{{- $flat := slice
+  (slice "offlineSearch"              "params.offline_search")
+  (slice "offlineSearchIndex"         "params.offline_search_index")
+  (slice "offlineSearchMaxResults"    "params.offline_search_max_results")
+  (slice "offlineSearchOnServe"       "params.offline_search_on_serve")
+  (slice "offlineSearchSummaryLength" "params.offline_search_summary_length")
+  (slice "disable_click2copy_chroma"  "params.ui.code_copy (inverted; a fence that sets copy= still wins)")
+  (slice "content_width"              "params.reading_width (slim | normal | wide; norm is now normal)")
+  (slice "github_url"                 "params.github_repo (the edit, history, and issue links are derived from it)")
+-}}
+{{- range $flat -}}
+  {{- $old := index . 0 -}}
+  {{- if isset $params (lower $old) -}}
+    {{- errorf "params.%s was renamed: use %s" $old (index . 1) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $removed := slice
+  (slice "prism_syntax_highlighting"  "the Prism path is gone; Chroma with params.highlight_classes is the only highlighter")
+  (slice "rss_sections"               "the key was never read; delete it")
+-}}
+{{- range $removed -}}
+  {{- $old := index . 0 -}}
+  {{- if isset $params (lower $old) -}}
+    {{- errorf "params.%s was removed: %s" $old (index . 1) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $nested := slice
+  (slice "no_left_sidebar"        "params.ui.sidebar_enabled (inverted)")
+  (slice "breadcrumb_disable"     "params.ui.breadcrumb (inverted)")
+  (slice "breadcrumb_enabled"     "params.ui.breadcrumb")
+  (slice "scrollSpy"              "params.ui.scroll_spy (inverted)")
+  (slice "scroll_spy_enabled"     "params.ui.scroll_spy")
+  (slice "code_copy_enabled"      "params.ui.code_copy")
+  (slice "showLightDarkModeMenu"  "params.ui.dark_mode.show_menu")
+  (slice "readingtime"            "params.ui.reading_time")
+  (slice "ul_show"                "params.ui.sidebar_expand_levels")
+  (slice "docs_root"              "params.ui.docs_sidebar_root")
+  (slice "pager"                  "params.ui.pager_types")
+-}}
+{{- range $nested -}}
+  {{- $old := index . 0 -}}
+  {{- if isset $ui (lower $old) -}}
+    {{- errorf "params.ui.%s was renamed: use %s" $old (index . 1) -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Single-key maps that were flattened to a bare value. The key name is
+     unchanged, so the check is on the shape. */ -}}
+{{- $flattened := slice
+  (slice "annotation"   "enable" "params.ui.annotation: true | false")
+  (slice "image_zoom"   "enable" "params.ui.image_zoom: true | false")
+  (slice "keyboard_nav" "enable" "params.ui.keyboard_nav: true | false")
+  (slice "reading_time" "enable" "params.ui.reading_time: true | false")
+  (slice "typography"   "preset" "params.ui.typography: technical | system")
+-}}
+{{- range $flattened -}}
+  {{- $key := index . 0 -}}
+  {{- if and (isset $ui $key) (reflect.IsMap (index $ui $key)) -}}
+    {{- errorf "params.ui.%s.%s was flattened: use %s" $key (index . 1) (index . 2) -}}
+  {{- end -}}
+{{- end -}}
+{{- with $params.markmap -}}
+  {{- if reflect.IsMap . -}}
+    {{- errorf "params.markmap.enable was flattened: use params.markmap: true | false" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $params.taxonomy -}}
+  {{- if reflect.IsMap . -}}
+    {{- $taxonomy := . -}}
+    {{- range slice (slice "taxonomyCloud" "cloud") (slice "taxonomyCloudTitle" "cloud_title") (slice "taxonomyPageHeader" "page_header") -}}
+      {{- if isset $taxonomy (lower (index . 0)) -}}
+        {{- errorf "params.Taxonomy.%s was renamed: use params.taxonomy.%s" (index . 0) (index . 1) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $params.print -}}
+  {{- if reflect.IsMap . -}}
+    {{- if isset . "disable_toc" -}}
+      {{- errorf "params.print.disable_toc was renamed: use params.print.toc (inverted)" -}}
+    {{- end -}}
+    {{- if isset . "toc_enabled" -}}
+      {{- errorf "params.print.toc_enabled was renamed: use params.print.toc" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

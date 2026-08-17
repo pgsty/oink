@@ -59,34 +59,34 @@ jobs:
         run: python3 scripts/check-content-primitives-contract.py
 
       - name: Check PRD 4 contracts and characterization
-        run: python3 scripts/check-prd4-contract.py
+        run: python3 scripts/check-navigation-contract.py
 
       - name: Check PRD 4 runtime isolation
-        run: python3 scripts/check-prd4-runtime.py
+        run: python3 scripts/check-runtime-isolation.py
 
       - name: Check sidebar icon density policies
         run: python3 scripts/check-sidebar-icons.py
 
       - name: Check search metadata and ranking
-        run: python3 scripts/check-prd4-search.py
+        run: python3 scripts/check-search.py
 
       - name: Check action registry and command manifest
-        run: python3 scripts/check-prd4-actions.py
+        run: python3 scripts/check-actions.py
 
       - name: Check Command Palette modes and behavior
-        run: python3 scripts/check-prd4-palette.py
+        run: python3 scripts/check-palette.py
 
       - name: Check PRD 4 bilingual migration and starter guidance
-        run: python3 scripts/check-prd4-docs.py
+        run: python3 scripts/check-navigation-docs.py
 
       - name: Check PRD 5 frozen contracts
-        run: python3 scripts/check-prd5-contract.py
+        run: python3 scripts/check-component-contract.py
 
       - name: Check PRD 5 bilingual migration and starter guidance
-        run: python3 scripts/check-prd5-docs.py
+        run: python3 scripts/check-component-docs.py
 
       - name: Check PRD 5 reading and mathematics
-        run: python3 scripts/check-prd5-reading.py
+        run: python3 scripts/check-reading.py
 
       - name: Check PRD 5 releases and assets
         run: python3 scripts/check-release-assets.py
@@ -101,16 +101,16 @@ jobs:
         run: python3 scripts/check-book.py
 
       - name: Check PRD 5 Book migrations
-        run: python3 scripts/check-prd5-migrations.py
+        run: python3 scripts/check-book-migrations.py
 
       - name: Check PRD 5 shared scenario fixes
-        run: python3 scripts/check-prd5-misc.py
+        run: python3 scripts/check-shared-scenarios.py
 
       - name: Check PRD 6 keyboard navigation
-        run: python3 scripts/check-prd6-keyboard.py
+        run: python3 scripts/check-keyboard.py
 
       - name: Check PRD 7 navigation and page-end composition
-        run: python3 scripts/check-prd7.py
+        run: python3 scripts/check-shell.py
 
       - name: Build the example site without warnings
         working-directory: exampleSite
@@ -140,13 +140,19 @@ jobs:
       - name: Check output structure and security
         run: python3 scripts/check-output.py
 
+      - name: Check the naming namespace
+        run: python3 scripts/check-namespace.py
+
+      - name: Check the parameter contract and legacy-key errors
+        run: python3 scripts/check-params.py
+
       - name: Check four-state goldens
         run: python3 scripts/check-goldens.py --public exampleSite/public
 
       - name: Build the system typography preset
         working-directory: exampleSite
         env:
-          HUGO_PARAMS_UI_TYPOGRAPHY_PRESET: system
+          HUGO_PARAMS_UI_TYPOGRAPHY: system
         run: |
           hugo --destination "$RUNNER_TEMP/oink-system" --printPathWarnings --panicOnWarning
           grep -R -q 'data-td-typography="system"' "$RUNNER_TEMP/oink-system"
@@ -177,10 +183,10 @@ jobs:
       - name: Reject an invalid typography preset
         working-directory: exampleSite
         run: |
-          if HUGO_PARAMS_UI_TYPOGRAPHY_PRESET=invalid \
+          if HUGO_PARAMS_UI_TYPOGRAPHY=invalid \
             hugo --destination "$RUNNER_TEMP/oink-invalid" \
               >"$RUNNER_TEMP/oink-invalid.log" 2>&1; then
             echo "invalid typography preset unexpectedly built" >&2
             exit 1
           fi
-          grep -q 'invalid params.ui.typography.preset' "$RUNNER_TEMP/oink-invalid.log"
+          grep -q 'invalid params.ui.typography' "$RUNNER_TEMP/oink-invalid.log"

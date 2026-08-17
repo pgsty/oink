@@ -37,8 +37,9 @@ normalized pipeline described here:
 
 1. `render-codeblock.html` only merged Chroma options and called
    `transform.Highlight`; it had no author-facing shell contract.
-2. `click-to-copy.js` discovered code after render, injected controls,
-   hard-coded English labels, and did not report clipboard failures correctly.
+2. Docsy's `click-to-copy.js` (removed in 1.0) discovered code after render,
+   injected controls, hard-coded English labels, and did not report clipboard
+   failures correctly.
 3. Its `.highlight > pre` selector missed Chroma's table line-number layout.
 4. Two tab systems (`tabpane` with lenient parameters, `code-group` with a
    strict schema) coexisted with mixed delimiters and Bootstrap Tab.
@@ -51,8 +52,6 @@ The implementation preserves these established contracts:
 
 - class-based Chroma light and dark palettes;
 - `params.highlight_classes`;
-- `params.disable_click2copy_chroma`;
-- the legacy Prism compatibility path;
 - specialized render hooks for Mermaid, math, chemistry, Markmap, PlantUML,
   and the data fences (`echarts`, `infographic`, `checksums`);
 - Hugo Extended 0.160.1 and 0.164.0 CI coverage;
@@ -93,7 +92,7 @@ The contract includes:
 - hash activation, in-page synchronization, and cross-page persistence for
   grouped tab sets;
 - the numbered Book example fence (`num` + `caption`, see
-  `docs/prd5-book-contract.md`);
+  `docs/book-contract.md`);
 - complete print and Markdown representations.
 
 It does not include:
@@ -118,7 +117,7 @@ the supported inserted/deleted treatment.
 ````markdown
 ```yaml {title="hugo.yml" copy="all" lineNos="table" hl_lines="4 7-9" wrap=false collapse=18 label="Hugo configuration"}
 params:
-  offlineSearch: true
+  offline_search: true
 ```
 
 ```bash {tab="Homebrew" group="install" value="brew"}
@@ -156,8 +155,10 @@ coercion is limited to quoted boolean values and `copy=true`.
 
 The default is deterministic:
 
-1. If `params.disable_click2copy_chroma=true`, Copy is globally disabled,
-   including explicit per-block values.
+1. `params.ui.code_copy: false` turns Copy off site-wide. It sets the
+   default only: a fence that names `copy` explicitly still gets what it asks
+   for, because a silent override of an explicit author value is exactly the
+   silent degradation this contract rules out.
 2. For the tested Chroma session lexers `console` and `shell-session`, omitted
    `copy` means `command`.
 3. For every other language, omitted `copy` means `all`.
@@ -221,8 +222,8 @@ collision is a build error because Copy targets, ARIA relationships, and line
 anchors depend on a valid page-wide component namespace. Explicit IDs must not
 contain ASCII whitespace or control characters because ARIA ID references are
 space-separated tokens.
-Names beginning with `data-td-code`, plus `data-language`, `data-line-count`,
-and `data-collapse-lines`, are reserved and cause a build error. `label` or a
+Names beginning with `data-td-code`, plus `data-td-language`, `data-td-line-count`,
+and `data-td-collapse-lines`, are reserved and cause a build error. `label` or a
 visible filename and a generic `aria-label` are mutually exclusive; use
 `label` to override the filename-derived accessible name. Generated accessible
 names also reject a conflicting generic `aria-labelledby`.
@@ -345,7 +346,7 @@ Initial activation priority for a grouped set is:
 A hash-selected tab is applied to same-group peers on the current page but is
 not written to localStorage. Visiting a shared link must not overwrite the
 reader's durable preference. After a hash-driven activation the set is
-scrolled into view with `block: 'nearest'`, smoothly unless
+td-scrolled into view with `block: 'nearest'`, smoothly unless
 `prefers-reduced-motion` is set.
 
 User activation (click, Left/Right, Home/End) updates the URL with
@@ -371,7 +372,7 @@ font, focus, and light/dark tokens: one card (`--td-pre-bg` canvas,
 `--td-code-border-color` hairline, `--td-code-radius` corners) whose optional
 header row uses `--td-code-header-bg`. A block is one quiet object; nothing
 in the shell competes with the code. There is no visible language label:
-the lexer name stays machine-readable in `data-language`, but it is not
+the lexer name stays machine-readable in `data-td-language`, but it is not
 presented as UI text.
 
 ### 7.1 Titled block
@@ -381,7 +382,7 @@ presented as UI text.
 │ hugo.yml                                    [copy icon]  │
 ├──────────────────────────────────────────────────────────┤
 │ params:                                                  │
-│   offlineSearch: true                                    │
+│   offline_search: true                                    │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -395,7 +396,7 @@ button at the inline end of the header. The header exists only when
 ```text
 ┌──────────────────────────────────────────────────────────┐
 │ params:                                     [copy icon]  │   ← visible while
-│   offlineSearch: true                                    │     hovered/focused
+│   offline_search: true                                    │     hovered/focused
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -486,8 +487,8 @@ highlighter API and the UI contract in one step would unnecessarily widen the
 The semantic contract is:
 
 ```html
-<div class="td-code" id="td-code-..." data-td-code data-language="yaml"
-     data-line-count="42">
+<div class="td-code" id="td-code-..." data-td-code data-td-language="yaml"
+     data-td-line-count="42">
   <div class="td-code__header">
     <span class="td-code__filename" id="td-code-...-title">hugo.yml</span>
     <div class="td-code__utilities">
@@ -611,7 +612,7 @@ preserving source and copy text. Non-wrap mode keeps horizontal scrolling.
 
 ### 9.3 Collapse state machine
 
-The server provides `data-line-count` and `data-collapse-lines`; it does not
+The server provides `data-td-line-count` and `data-td-collapse-lines`; it does not
 set a clipping height.
 
 On initialization or when a hidden tab panel becomes visible:
@@ -623,7 +624,7 @@ On initialization or when a hidden tab panel becomes visible:
 3. If no reliable line node or non-zero measurement exists, leave the full
    block and keep the control hidden.
 4. Store the measured pixel height in `--td-code-collapsed-height`, add
-   `is-collapsed`, set `aria-expanded=false`, and reveal the control.
+   `td-is-collapsed`, set `aria-expanded=false`, and reveal the control.
 5. Recalculate when the visible viewport width changes and after document
    fonts are ready. A `ResizeObserver` tracks width only to avoid feedback
    loops from the height transition.
@@ -751,7 +752,7 @@ exact parity across all 32 files.
 
 Language identifiers such as `yaml`, `bash`, and `sql` are not user-facing
 text: the shell does not display them, so nothing about them is localized. The
-lexer name reaches Chroma unchanged and is stored in `data-language` for
+lexer name reaches Chroma unchanged and is stored in `data-td-language` for
 stylesheets, scripts, and tests.
 
 ## 13. Compatibility decisions
@@ -779,10 +780,7 @@ header set unless `persist=disabled`), every other pane becomes
 `{{< tabs >}}`/`{{< tab >}}`, and code groups keep their `sync` key as the
 group and their child values.
 
-### 13.3 Prism and specialized blocks
-
-`params.prism_syntax_highlighting=true` remains an unchanged legacy mode and is
-not enhanced; tab attributes are Chroma-only.
+### 13.3 Specialized blocks
 
 Language-specific hooks for `mermaid`, `math`, `chem`, `markmap`, `plantuml`,
 `echarts`, `infographic`, and `checksums` continue to win Hugo's template
@@ -800,6 +798,12 @@ lookup and do not receive the code shell or runtime.
   the `hasTabs` flag, `content/render-block.html` ID scoping, and the `num`/
   `caption` Book example fence added; content migrated with
   `scripts/migrations/oink06.py`.
+- OINK 1.0: the Prism path removed. It could not coexist with the attributes
+  this contract defines — `tab`, `group`, `value`, `num`, and `caption` all
+  require Chroma, so any site using tabs or numbered examples failed the build
+  as soon as it opted in. `params.prism_syntax_highlighting`,
+  `static/js/prism.js`, and `static/css/prism.css` are gone; Chroma with
+  `params.highlight_classes` is the only highlighter.
 
 ## 15. Verification matrix
 
@@ -819,7 +823,6 @@ Run under Hugo Extended 0.160.1 and 0.164.0:
   wrap plus table line-number failure;
 - the same wrap failure when table line numbers come only from site Highlight
   configuration and the fence omits `lineNos`;
-- legacy Prism build;
 - adjacent-fence tabs (grouped and local), `tab` + `title`, tab attributes on
   tables, invalid `group`/`value`/`num` combinations;
 - `tabs`/`tab` shortcode HTML, print, Markdown, and RSS forms;

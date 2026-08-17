@@ -24,34 +24,34 @@
   {{- if ne (printf "%T" $hero.title_size) "string" }}{{ errorf "%s: hero.title_size must be a CSS length string" $page.Path }}{{ end -}}
   {{- $titleSize := strings.TrimSpace $hero.title_size -}}
   {{- if not (findRE `^[0-9]+(?:[.][0-9]+)?(?:rem|em|px)$` $titleSize) }}{{ errorf "%s: hero.title_size must be a CSS length in rem, em, or px" $page.Path }}{{ end -}}
-  {{- $heroStyle = printf "%s --oink-hero-title-size: %s;" $heroStyle $titleSize -}}
+  {{- $heroStyle = printf "%s --td-hero-title-size: %s;" $heroStyle $titleSize -}}
 {{- end -}}
 {{- $media := $hero.media | default dict -}}
 {{- if and $media (not (reflect.IsMap $media)) }}{{ errorf "%s: hero.media must be a map" $page.Path }}{{ end -}}
 {{- $breakpoint := strings.TrimSpace (printf "%v" ($media.hide_below | default "")) -}}
 {{- if and $breakpoint (not (in (slice "sm" "md" "lg" "xl") $breakpoint)) }}{{ errorf "%s: hero.media.hide_below must be sm, md, lg, or xl" $page.Path }}{{ end -}}
-{{- with $media.ratio }}{{ $heroStyle = printf "%s --oink-hero-columns: %s;" $heroStyle . }}{{ end -}}
-{{- with $media.max_width }}{{ $heroStyle = printf "%s --oink-hero-media-max: %s;" $heroStyle . }}{{ end -}}
+{{- with $media.ratio }}{{ $heroStyle = printf "%s --td-hero-columns: %s;" $heroStyle . }}{{ end -}}
+{{- with $media.max_width }}{{ $heroStyle = printf "%s --td-hero-media-max: %s;" $heroStyle . }}{{ end -}}
 {{- if $hasImage -}}
-  {{- $imageStyle = printf "--oink-hero-image-light: url(%q); --oink-hero-image-dark: url(%q);" ($imageLight | relURL) ($imageDark | relURL) -}}
+  {{- $imageStyle = printf "--td-hero-image-light: url(%q); --td-hero-image-dark: url(%q);" ($imageLight | relURL) ($imageDark | relURL) -}}
 {{- end -}}
-<section id="{{ $id }}" class="oink-hero{{ if $hasImage }} oink-hero--with-media{{ end }}{{ with $breakpoint }} oink-hero--hide-media-below-{{ . }}{{ end }}{{ with $hero.class }} {{ . }}{{ end }}"{{ with $heroStyle }} style="{{ . | safeCSS }}"{{ end }} aria-labelledby="{{ $id }}-title">
-  <div class="oink-hero__glow" aria-hidden="true"></div>
-  <div class="landing-container">
-    <div class="oink-hero__copy">
+<section id="{{ $id }}" class="td-landing-hero{{ if $hasImage }} td-landing-hero--with-media{{ end }}{{ with $breakpoint }} td-landing-hero--hide-media-below-{{ . }}{{ end }}{{ with $hero.class }} {{ . }}{{ end }}"{{ with $heroStyle }} style="{{ . | safeCSS }}"{{ end }} aria-labelledby="{{ $id }}-title">
+  <div class="td-landing-hero__glow" aria-hidden="true"></div>
+  <div class="td-site-container">
+    <div class="td-landing-hero__copy">
       {{- with $hero.eyebrow }}
-      <p class="oink-hero__eyebrow">
-        <span class="oink-status-dot" aria-hidden="true"></span>
+      <p class="td-landing-hero__eyebrow">
+        <span class="td-landing-status-dot" aria-hidden="true"></span>
         <span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span>
       </p>
       {{- end }}
-      <h1 class="oink-hero__title" id="{{ $id }}-title">
+      <h1 class="td-landing-hero__title" id="{{ $id }}-title">
         {{- with $titleLines -}}
           {{- range . }}
         <span>
             {{- if reflect.IsMap . -}}
               {{- range $word := .words -}}
-                {{- with $word.mark }}<b class="oink-initial{{ with $word.color }} oink-initial--{{ . }}{{ end }}">{{ . }}</b>{{ end -}}
+                {{- with $word.mark }}<b class="td-landing-initial{{ with $word.color }} td-landing-initial--{{ . }}{{ end }}">{{ . }}</b>{{ end -}}
                 {{- partial "landing/markdown.html" (dict "page" $page "value" $word.text) -}}{{ " " -}}
               {{- end -}}
             {{- else -}}
@@ -63,21 +63,21 @@
           {{- partial "landing/markdown.html" (dict "page" $page "value" ($hero.title | default $page.Site.Title)) -}}
         {{- end -}}
       </h1>
-      {{- with $lead }}<p class="oink-hero__lead">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+      {{- with $lead }}<p class="td-landing-hero__lead">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
       {{- with $hero.note }}
-      <p class="oink-hero__note"><i class="{{ $hero.note_icon | default "fa-solid fa-circle-check" }}" aria-hidden="true"></i><span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span></p>
+      <p class="td-landing-hero__note"><i class="{{ $hero.note_icon | default "fa-solid fa-circle-check" }}" aria-hidden="true"></i><span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span></p>
       {{- end }}
       {{- with $hero.actions }}
-      <div class="oink-hero__actions">
+      <div class="td-landing-hero__actions">
         {{- range . }}
           {{- $url := .url | default .href -}}
           {{- if $url }}
-        <a class="oink-button oink-button--{{ .style | default "ghost" }}" href="{{ $url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+        <a class="td-landing-button td-landing-button--{{ .style | default "ghost" }}" href="{{ $url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>
           {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
           <span>{{ partial "landing/markdown.html" (dict "page" $page "value" .label) }}</span>
         </a>
           {{- else }}
-        <span class="oink-button oink-button--{{ .style | default "ghost" }}">
+        <span class="td-landing-button td-landing-button--{{ .style | default "ghost" }}">
           {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
           <span>{{ partial "landing/markdown.html" (dict "page" $page "value" .label) }}</span>
         </span>
@@ -87,7 +87,7 @@
       {{- end }}
       {{- with $hero.detail }}
       {{- $url := .url | default .href -}}
-      <p class="oink-hero__detail">
+      <p class="td-landing-hero__detail">
         {{- if $url }}<a href="{{ $url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span>{{ end -}}
         {{ with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ partial "landing/markdown.html" (dict "page" $page "value" .label) }} <span aria-hidden="true">→</span>
         {{- if $url }}</a>{{ else }}</span>{{ end -}}
@@ -95,7 +95,7 @@
       {{- end }}
     </div>
     {{- if $hasImage }}
-    <div class="oink-hero__media" style="{{ $imageStyle | safeCSS }}"{{ with $imageAlt }} role="img" aria-label="{{ . | markdownify | plainify }}"{{ else }} aria-hidden="true"{{ end }}></div>
+    <div class="td-landing-hero__media" style="{{ $imageStyle | safeCSS }}"{{ with $imageAlt }} role="img" aria-label="{{ . | markdownify | plainify }}"{{ else }} aria-hidden="true"{{ end }}></div>
     {{- end }}
   </div>
 </section>

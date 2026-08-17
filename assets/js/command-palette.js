@@ -213,9 +213,9 @@
         }) || drawerOpeners[0] || opener;
       }
       if (
-        opener && opener.closest && opener.closest('[data-mobile-menu]')
+        opener && opener.closest && opener.closest('[data-td-mobile-menu]')
       ) {
-        opener = document.querySelector('[data-menu-toggle]') || opener;
+        opener = document.querySelector('[data-td-menu-toggle]') || opener;
       }
       lastOpener = opener;
       if (global.OinkSurfaceCoordinator)
@@ -227,7 +227,7 @@
       openers.forEach(function (el) { el.setAttribute('aria-expanded', 'true'); });
       input.setAttribute('aria-expanded', 'true');
       global.requestAnimationFrame(function () {
-        if (logicalOpen && openSession === session) root.classList.add('is-open');
+        if (logicalOpen && openSession === session) root.classList.add('td-is-open');
       });
       choiceState = null;
       clearPending();
@@ -255,7 +255,7 @@
       delayedClose = true;
       session += 1;
       logicalOpen = false;
-      root.classList.remove('is-open');
+      root.classList.remove('td-is-open');
       html.removeAttribute('data-td-shell-lock');
       openers.forEach(function (el) { el.setAttribute('aria-expanded', 'false'); });
       input.setAttribute('aria-expanded', 'false');
@@ -402,7 +402,7 @@
           row.setAttribute('tabindex', '-1');
           row.dataset.paletteRow = String(index);
           if (!rowData.available) {
-            row.classList.add('is-disabled');
+            row.classList.add('td-is-disabled');
             row.setAttribute('aria-disabled', 'true');
           }
           if (rowData.option && rowData.option.active)

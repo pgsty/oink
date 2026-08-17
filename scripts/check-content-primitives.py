@@ -74,7 +74,7 @@ def check_outputs(public: Path) -> list[str]:
         'class="td-fields__label"',
         'class="td-fields__list" aria-labelledby=',
         '<dt class="td-field__term">',
-        '<code class="td-field__name">offlineSearch</code>',
+        '<code class="td-field__name">offline_search</code>',
         '<span class="td-field__type"><span class="td-field__meta-value"><code>Array&lt;string&gt; | map[string]any</code></span></span>',
         '<span class="td-field__required">required</span>',
         '<span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>false</code></span></span>',
@@ -122,7 +122,7 @@ def check_outputs(public: Path) -> list[str]:
         "[**v0\\.3**](/release/)",
         "Ctrl + K",
         r"\[ + A\+B + \>",
-        "- `offlineSearch` — `boolean`; required; default: `true`",
+        "- `offline_search` — `boolean`; required; default: `true`",
         "**Configuration fields**",
         "- `explicitFalse` — `boolean`; default: `false`",
         "- `zeroLimit` — `integer`; default: `0`",
@@ -151,7 +151,7 @@ def check_outputs(public: Path) -> list[str]:
         "<kbd>Ctrl</kbd>",
         "实验功能",
         "Configuration fields",
-        "offlineSearch",
+        "offline_search",
         "Array&lt;string&gt; | map[string]any",
         "<code>false</code>",
         "<code>0</code>",
@@ -227,7 +227,7 @@ def check_outputs(public: Path) -> list[str]:
         # {.fields}: positional rule, header labels become metadata labels, caption = label
         '<p class="td-fields__label" id="td-fields-',
         '搜索参数</p>',
-        '<code class="td-field__name">offlineSearch</code>',
+        '<code class="td-field__name">offline_search</code>',
         '<span class="td-field__meta"><span class="td-field__meta-label">类型</span><span class="td-field__meta-value">boolean</span></span>',
         '<span class="td-field__meta"><span class="td-field__meta-label">默认值</span><span class="td-field__meta-value"><code>false</code></span></span>',
         '<dd class="td-field__description">结果上限，<em>支持行内 Markdown</em> 与 <a href="/docs/">链接</a></dd>',
@@ -241,7 +241,7 @@ def check_outputs(public: Path) -> list[str]:
         # {caption=}
         '<caption class="td-table__caption">Release facts</caption>',
         # numbered Book table
-        '<figure id="tab_iso" class="td-book-figure td-book-figure--tbl" data-book-kind="tbl" data-book-num="9-1">',
+        '<figure id="tab_iso" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="9-1">',
         '<span class="td-tbl-label">Table 9-1</span> <span class="td-tbl-caption">Anomalies allowed by isolation level</span>',
         'href="#tab_iso"',
         # adjacent tables with tab
@@ -252,7 +252,7 @@ def check_outputs(public: Path) -> list[str]:
         '<table class="full-width">',
     ):
         require(marker in tables, f"tables fixture missing {marker}", errors)
-    require("offlineSearchSummaryLength" in tables and tables.count('<span class="td-field__meta-label">默认值</span>') == 2, "empty middle cells were not omitted from the fields metadata", errors)
+    require("offline_search_summary_length" in tables and tables.count('<span class="td-field__meta-label">默认值</span>') == 2, "empty middle cells were not omitted from the fields metadata", errors)
     for marker in ("| 参数 | 类型 | 默认值 | 说明 |", '{.fields caption="搜索参数"}', "{.matrix}", '{caption="Release facts"}', '{#tab_iso num="9-1" caption="Anomalies allowed by isolation level"}', '{tab="PG 17" group="pgver" value="pg17"}', "{.full-width}"):
         require(marker in tables_markdown, f"tables Markdown missing {marker}", errors)
     require("<table" not in tables_markdown and "td-" not in tables_markdown, "tables Markdown contains HTML", errors)
@@ -582,7 +582,7 @@ def check_table_family(hugo: str) -> list[str]:
             require(marker in html, f"table family fixture missing {marker}", errors)
         require("onclick" not in html, "an on* attribute reached the rendered table", errors)
         errors += check_field_parity((destination / "docs/parity/index.html").read_text(encoding="utf-8"))
-        require(html.count('data-language="yaml"') == 2 and 'data-language="js"' in html, "include code=true did not highlight the included files", errors)
+        require(html.count('data-td-language="yaml"') == 2 and 'data-td-language="js"' in html, "include code=true did not highlight the included files", errors)
         require("td-table--matrix" not in html and "<p>{.matrix}</p>" not in html, "an orphan attribute line was applied or printed", errors)
         require(html.count("<table") == 2, "table family fixture rendered a wrong number of tables", errors)
     return errors
@@ -785,7 +785,7 @@ def check_template_contracts() -> list[str]:
     for marker in ('partial "content/attributes.html"', 'partial "content/filetree-parse.html"', 'partial "content/filetree-icon.html"', 'partial "content/tab-block.html"', "td-filetree--static", "td-filetree-source", "```filetree", '$page.Store.Set "hasFileTree" true', 'role="separator"', 'T "ui_filetree_divider"'):
         require(marker in filetree_hook, f"render-codeblock-filetree.html lacks {marker}", errors)
     scripts_html = (ROOT / "layouts/_partials/scripts.html").read_text()
-    require('.Page.Store.Get "hasFileTree"' in scripts_html and 'resources.Get "js/filetree.js"' in scripts_html and "$hasFileTree | md5" in scripts_html, "scripts.html does not load filetree.js on hasFileTree (and key the bundle on it)", errors)
+    require('.Page.Store.Get "hasFileTree"' in scripts_html and 'resources.Get "js/filetree.js"' in scripts_html and "$hasFileTree -}}" in scripts_html and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts_html, "scripts.html does not load filetree.js on hasFileTree (and key the bundle on it)", errors)
     filetree_runtime = (ROOT / "assets/js/filetree.js").read_text()
     for marker in ("OinkFileTree", "module.exports", "data-td-filetree-divider", "pointerdown", "'ArrowRight'", "'Home'", "'End'", "--td-filetree-name-col"):
         require(marker in filetree_runtime, f"filetree.js lacks {marker}", errors)

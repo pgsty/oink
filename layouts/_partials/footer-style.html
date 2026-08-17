@@ -5,6 +5,6 @@
 {{- with .Site.Params.ui.footer_style }}{{ $style = . }}{{ end -}}
 {{- with .Params.footer_style }}{{ $style = . }}{{ end -}}
 {{- if not (in (slice "fat" "slim" "none") $style) -}}
-  {{- errorf "invalid footer_style %q in %s (allowed: fat | slim | none)" $style .Path -}}
+  {{- errorf "invalid params.ui.footer_style %q at %s (allowed: fat | slim | none)" $style .Path -}}
 {{- end -}}
 {{- return $style -}}

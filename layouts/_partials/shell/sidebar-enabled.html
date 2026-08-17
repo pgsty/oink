@@ -1,2 +1,9 @@
+{{- /* `ui.sidebar_enabled` is the site/section/page switch; the legacy
+     `td-no-left-sidebar` body class still suppresses one page. */ -}}
 {{- $bodyClass := .Params.body_class | default "" -}}
-{{- return not (or (.Param "ui.no_left_sidebar") (in $bodyClass "td-no-left-sidebar")) -}}
+{{- $enabled := .Param "ui.sidebar_enabled" -}}
+{{- if eq $enabled nil }}{{ $enabled = true }}{{ end -}}
+{{- if ne (printf "%T" $enabled) "bool" -}}
+  {{- errorf "params.ui.sidebar_enabled must be a boolean at %s" .Path -}}
+{{- end -}}
+{{- return and $enabled (not (in $bodyClass "td-no-left-sidebar")) -}}

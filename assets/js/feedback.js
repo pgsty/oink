@@ -33,7 +33,7 @@
     );
     var pagePath = data(root, 'pagePath') || '/';
     var language = data(root, 'language') || 'en';
-    var storageKey = 'oink-feedback-v2:' + language + ':' + pagePath;
+    var storageKey = 'td-feedback:v2:' + language + ':' + pagePath;
     var response = null;
 
     if (!result || !change || choices.length !== 2) return null;
@@ -87,7 +87,7 @@
       });
       result.hidden = !response;
       if (reasons) reasons.hidden = !response || response.result !== 'not_solved';
-      root.classList.toggle('is-submitted', Boolean(response));
+      root.classList.toggle('td-is-submitted', Boolean(response));
     }
 
     function choose(value) {

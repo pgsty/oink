@@ -20,7 +20,7 @@ EXAMPLE = ROOT / "exampleSite"
 CANONICAL_TYPES = ("note", "tip", "important", "warning", "caution", "success", "danger", "question", "example", "quote")
 REMOVED_SHORTCODES = (
     "blocks/cover", "blocks/feature", "blocks/lead", "blocks/link-down", "blocks/section",
-    "pageinfo", "conditional-text", "_param", "alert", "details", "iframe",
+    "td-page-notice", "conditional-text", "_param", "alert", "details", "iframe",
     "tabpane", "code-group", "code-tab", "filetree", "filetree/folder", "filetree/file",
     "gallery", "gallery/image", "echarts", "infographic", "example", "imgproc", "readfile",
     "cardpane", "nav-card", "nav-cards", "doc-card", "doc-cards", "doc-carousel",
@@ -118,11 +118,11 @@ def check_outputs(public: Path) -> list[str]:
         "SHA-256",
     ):
         require(marker in fences, f"data-fence fixture missing {marker}", errors)
-    require(re.search(r'<script src="[^"]*js/main-[^"]+"', fences) is not None, "data-fence page lacks its bundle", errors)
-    bundle = re.search(r'<script src="(/js/main-[^"]+)"', fences)
+    require(re.search(r'<script src="[^"]*js/page-[^"]+"', fences) is not None, "data-fence page lacks its bundle", errors)
+    bundle = re.search(r'<script src="(/js/page-[^"]+)"', fences)
     if bundle:
         source = (public / bundle.group(1).lstrip("/")).read_text()
-        require("tdEchartsFunctions" in source and "data-td-echarts" in source, "data-fence bundle lacks the ECharts runtime", errors)
+        require("OinkEchartsFunctions" in source and "data-td-echarts" in source, "data-fence bundle lacks the ECharts runtime", errors)
     for marker in ('```echarts {height="320px"}', 'formatter: "$fn:bytesFormatter"', '```checksums {base="https://downloads.example.org/releases/stable" algo="sha256"}'):
         require(marker in fences_md, f"data-fence Markdown output lost {marker}", errors)
     require("data-td-echarts" not in fences_md and "td-asset-list" not in fences_md, "data-fence Markdown output contains HTML", errors)
@@ -297,12 +297,19 @@ def check_removed_shortcodes(hugo: str) -> list[str]:
 
 def check_i18n() -> list[str]:
     errors: list[str] = []
-    keys = ["ui_tabs_label", "ui_table_scroll", "book_example", "book_figure", "book_table", "book_equation", "details"] + list(CANONICAL_TYPES)
+    # Callout labels are namespaced (`callout_note`, …): the theme must not
+    # claim bare top-level keys such as `note` or `example` that a consuming
+    # site is just as likely to want.
+    keys = ["ui_tabs_label", "ui_table_scroll", "book_example", "book_figure", "book_table", "book_equation"]
+    keys += [f"callout_{t}" for t in CANONICAL_TYPES]
+    keys += ["callout_details"]
     for path in sorted((ROOT / "i18n").glob("*.yaml")):
         source = path.read_text(encoding="utf-8")
         for key in keys:
             require(re.search(rf"^{re.escape(key)}:", source, re.M) is not None, f"{path.name} lacks i18n key {key}", errors)
-        for removed in ("ui_code_group_label", "ui_doc_carousel", "ui_carousel_previous", "ui_carousel_next"):
+        for removed in ("ui_code_group_label", "ui_doc_carousel", "ui_carousel_previous", "ui_carousel_next",
+                        "note", "tip", "important", "warning", "caution", "success", "danger",
+                        "question", "example", "quote", "details"):
             require(re.search(rf"^{re.escape(removed)}:", source, re.M) is None, f"{path.name} keeps removed i18n key {removed}", errors)
     return errors
 
@@ -310,7 +317,7 @@ def check_i18n() -> list[str]:
 def check_template_contracts() -> list[str]:
     errors: list[str] = []
     hook = (ROOT / "layouts/_markup/render-blockquote-alert.html").read_text()
-    for marker in ('"note" "tip" "important" "warning" "caution" "success" "danger" "question" "example" "quote" "details"', 'partial "content/attributes.html"', '(slice "icon")', "fa-(solid|regular|brands) fa-[a-z0-9-]+", 'eq $sign "-"', 'eq $sign "+"', 'eq $type "details"', "td-callout--collapsible", "<details", "<summary", 'role="note"', "data-td-callout-collapsible", 'i18n $type'):
+    for marker in ('"note" "tip" "important" "warning" "caution" "success" "danger" "question" "example" "quote" "details"', 'partial "content/attributes.html"', '(slice "icon")', "fa-(solid|regular|brands) fa-[a-z0-9-]+", 'eq $sign "-"', 'eq $sign "+"', 'eq $type "details"', "td-callout--collapsible", "<details", "<summary", 'role="note"', "data-td-callout-collapsible", 'i18n (printf "callout_%s" $type)'):
         require(marker in hook, f"render-blockquote-alert.html lacks {marker}", errors)
     require("nb" not in re.sub(r'\{\{-?\s*/\*.*?\*/\s*-?\}\}', "", hook, flags=re.S), "the nb callout special case survived", errors)
     for name, markers in {
@@ -322,7 +329,7 @@ def check_template_contracts() -> list[str]:
         for marker in markers:
             require(marker in source, f"{name} lacks {marker}", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()
-    require("$fn:" in runtime and "tdEchartsFunctions" in runtime, "ECharts callback bridge ($fn: / tdEchartsFunctions) changed", errors)
+    require("$fn:" in runtime and "OinkEchartsFunctions" in runtime, "ECharts callback bridge ($fn: / OinkEchartsFunctions) changed", errors)
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("or $hasAsciinema $hasEcharts $hasInfographic" in scripts, "scripts.html no longer loads content-components.js for data fences", errors)
     styles = (ROOT / "assets/scss/td/_alerts.scss").read_text()

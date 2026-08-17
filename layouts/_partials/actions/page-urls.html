@@ -13,12 +13,8 @@
 {{- $projectIssueURL := "" -}}
 {{- $repoPath := "" -}}
 {{- $repo := $p.Param "github_repo" -}}
-{{- $legacyURL := $p.Param "github_url" -}}
 {{- $projectRepo := $p.Param "github_project_repo" | default $repo | default "" -}}
-{{- if and $p.File $legacyURL -}}
-  {{- warnf "Warning: use of `github_url` is deprecated. For details, see https://oink.pgsty.com/docs/content/repository-links/#github_url-optional" -}}
-  {{- $editURL = $legacyURL -}}
-{{- else if and $p.File $repo -}}
+{{- if and $p.File $repo -}}
   {{- $sourcePath := strings.TrimPrefix (add hugo.WorkingDir "/") $p.File.Filename -}}
   {{- $subdir := $p.Param "github_subdir" | default "" -}}
   {{- $branch := $p.Param "github_branch" | default "main" -}}
@@ -32,9 +28,7 @@
   {{- $repoPath = printf "%s/%s/%s" $branch $subdir $sourcePath | replaceRE "//+" "/" -}}
   {{- $editURL = printf "%s/edit/%s" $repo $repoPath -}}
   {{- /* Same derivation as the edit link, so a repository that supports one
-         supports the other. A site using the legacy `github_url` escape hatch
-         supplies an opaque URL we cannot turn into a history view, and the
-         action reports itself unavailable rather than guessing. */ -}}
+         supports the other. */ -}}
   {{- $historyURL = printf "%s/commits/%s" $repo $repoPath -}}
   {{- $issueURL = printf "%s/issues/new?%s" $repo (querify "title" $p.Title) -}}
   {{- $stub := resources.Get "stubs/new-page-template.md" -}}

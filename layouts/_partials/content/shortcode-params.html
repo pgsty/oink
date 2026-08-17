@@ -1,0 +1,53 @@
+{{/* Reject unknown and mis-shaped shortcode parameters.
+
+     The contract's rule is strict failure over silent degradation
+     (docs/content-primitives.md section 2). Without this, a typo like
+     `{{< fig num="1-1" captoin="…" >}}` builds cleanly and silently drops the
+     caption — exactly the failure the rule exists to prevent. Every shortcode
+     calls this, so the rule cannot be forgotten for a new one;
+     check-content-primitives-contract.py asserts that.
+
+     Parameters:
+       shortcode  the calling shortcode's context (`.`)
+       allowed    slice of accepted named parameters (default: none)
+       attributes true when the shortcode also mirrors the block-attribute
+                  policy (class plus data-* / aria-* passthrough) and validates
+                  those values itself — see content/attributes.html
+       form       "named"      named parameters only (default)
+                  "none"       the shortcode takes no parameters
+                  "positional" positional parameters only
+                  "any"        a positional shorthand is allowed; named
+                               parameters are still checked against `allowed`
+
+     Returns "" so it composes as {{ partial … }} at the top of a shortcode. */ -}}
+{{- $sc := .shortcode -}}
+{{- $allowed := .allowed | default (slice) -}}
+{{- $form := .form | default "named" -}}
+{{- $attributes := .attributes | default false -}}
+{{- $count := 0 -}}
+{{- with $sc.Params }}{{ $count = len . }}{{ end -}}
+
+{{- if eq $form "none" -}}
+  {{- if gt $count 0 -}}
+    {{- errorf "shortcode %q accepts no parameters at %s" $sc.Name $sc.Position -}}
+  {{- end -}}
+{{- else if eq $form "positional" -}}
+  {{- if $sc.IsNamedParams -}}
+    {{- errorf "shortcode %q accepts positional parameters only at %s" $sc.Name $sc.Position -}}
+  {{- end -}}
+{{- else -}}
+  {{- if and (gt $count 0) (not $sc.IsNamedParams) (ne $form "any") -}}
+    {{- errorf "shortcode %q accepts named parameters only at %s" $sc.Name $sc.Position -}}
+  {{- end -}}
+  {{/* A positional shorthand under "any" has integer keys, not names. */ -}}
+  {{- if $sc.IsNamedParams -}}
+    {{- range $name, $_ := $sc.Params -}}
+      {{- $lower := lower $name -}}
+      {{- $passthrough := and $attributes (or (eq $lower "class") (hasPrefix $lower "data-") (hasPrefix $lower "aria-")) -}}
+      {{- if not (or (in $allowed $name) $passthrough) -}}
+        {{- errorf "shortcode %q: unsupported parameter %q at %s (allowed: %s)" $sc.Name $name $sc.Position (delimit $allowed ", ") -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return "" -}}

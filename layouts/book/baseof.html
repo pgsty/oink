@@ -5,7 +5,7 @@
     lang="{{ partial "language-tag.html" . }}"
     data-td-typography="{{ partial "typography-preset.html" .Site }}"
     {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
   <head>{{ partial "head.html" . }}</head>
   {{ $toc := .TableOfContents -}}
   {{ $hasToc := and (not .Params.notoc) $toc (ne $toc `<nav id="TableOfContents"></nav>`) -}}
@@ -15,10 +15,10 @@
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
   {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ $pageWidth := .Param "page_width" | default "normal" -}}
-  {{ if not (in (slice "normal" "wide" "full") $pageWidth) }}{{ errorf "invalid page_width %q in %s (allowed: normal | wide | full)" $pageWidth .Path }}{{ end -}}
-  {{ $contentWidth := .Param "content_width" | default "norm" -}}
-  {{ if not (in (slice "slim" "norm" "wide") $contentWidth) }}{{ errorf "invalid content_width %q in %s (allowed: slim | norm | wide)" $contentWidth .Path }}{{ end -}}
-  <body class="td-{{ .Kind }} td-book td-book-content--{{ $contentWidth }} td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+  {{ if not (in (slice "normal" "wide" "full") $pageWidth) }}{{ errorf "invalid params.page_width %q at %s (allowed: normal | wide | full)" $pageWidth .Path }}{{ end -}}
+  {{ $readingWidth := .Param "reading_width" | default "normal" -}}
+  {{ if not (in (slice "slim" "normal" "wide") $readingWidth) }}{{ errorf "invalid params.reading_width %q at %s (allowed: slim | normal | wide)" $readingWidth .Path }}{{ end -}}
+  <body class="td-{{ .Kind }} td-book td-book-content--{{ $readingWidth }} td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
     {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
     <div class="container-fluid td-outer">

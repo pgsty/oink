@@ -10,16 +10,31 @@ params:
   highlight_classes: true
   # `hugo server` skips the local index and search runtime by default. Set this
   # true when a preview specifically needs to exercise local search.
-  offlineSearchOnServe: false
-  offlineSearchIndex: content
-  offlineSearchMaxResults: 10
+  offline_search_on_serve: false
+  # Local Lunr search. Off by default; a site opts in.
+  offline_search: false
+  offline_search_index: content # content | summary
+  offline_search_summary_length: 70
+  offline_search_max_results: 10
   time_format_blog: Monday, January 02, 2006
   time_format_default: January 2, 2006
-  rss_sections: [blog]
-  page_width: normal
-  # Inner reading measure for Book pages: slim | norm | wide. Unlike
+  # Branch used by the edit / history / new-page links derived from github_repo.
+  github_branch: main
+  page_width: normal # normal | wide | full
+  # Inner reading measure for Book pages: slim | normal | wide. Unlike
   # page_width, this changes content rather than the surrounding shell.
-  content_width: norm
+  reading_width: normal
+  # Diagram runtimes are off until a site opts in. `markmap: true` renders
+  # ```markmap fences; plantuml and drawio also require their server URLs.
+  markmap: false
+  plantuml:
+    enable: false
+  drawio:
+    enable: false
+  print:
+    toc: true # section print views start with a table of contents
+    section_break_wordcount: 50 # pages longer than this start a new print page
+  # `comments: false` is the boolean shorthand for this map.
   comments:
     enable: false
     type: giscus
@@ -42,26 +57,44 @@ params:
     navbar_autohide: false
     footer_style: fat # fat | slim | none
     # Non-home pages with `layout: landing` reuse the search/command palette
-    # when offlineSearch is enabled. Set false to omit it from that shell.
+    # when offline_search is enabled. Set false to omit it from that shell.
     landing_search: true
+    breadcrumb: true
     section_index: list # list | cards
+    section_index_columns: 2 # card columns when section_index is cards
     lastmod_commit: subject # subject | hash | none
-    annotation:
-      enable: true
+    # Page provenance / revision block at the end of a page. Front matter
+    # `annotation: false` turns it off for one page.
+    annotation: true
+    # Reading time in the article header. Front matter `reading_time: false`
+    # hides it for one page.
+    reading_time: false
     # Optional local chrome data (never fetched by the browser):
     # github_stars: 5500
     # alt_site: { label: 中文站, url: https://example.cn/ }
-    image_zoom:
-      enable: false
-    typography:
-      preset: technical
+    # Native image preview. Front matter `image_zoom: true|false` overrides.
+    image_zoom: false
+    # Dark palette and theme menu: `dark_mode: true` is the shorthand for
+    # `dark_mode: { enable: true, show_menu: true }`.
+    dark_mode: false
+    typography: technical # technical | system
     shell_types: [docs, book, blog, swagger]
     docs_section: docs
     blog_section: blog
+    # Root of the docs sidebar tree: section (the docs section itself) or
+    # home (the whole site).
+    docs_sidebar_root: section
+    # Shell quick links default to [docs_section, blog_section]; declaring a
+    # value here would break that derivation, so a site sets it explicitly.
+    # quick_links: [docs, blog]
+    # Sidebar icon density: all | groups | none.
+    sidebar_icon_policy: all
+    # Taxonomy sidebar icons default to built-in categories/tags glyphs; a
+    # site adds or overrides one entry per taxonomy plural name.
+    # taxonomy_icons: { categories: fa-solid fa-folder, tags: fa-solid fa-tag }
     # Sequential navigation is on by default for reading-oriented content.
     # Override this list site-wide, or set `pager: false` in front matter.
-    pager:
-      types: [docs, book, blog]
+    pager_types: [docs, book, blog]
     # Book pages may opt into an h2-h4 branch beneath the active sidebar row.
     sidebar_headings: false
     # Cache section trees once a site reaches this many pages. Active state is
@@ -92,15 +125,18 @@ params:
       # Optional external actions may use the placeholders {url}, {title}, and
       # {markdown_url}. No custom links are enabled by default.
       links: []
-    ul_show: 2
-    scrollSpy:
-      disable: true
+    sidebar_expand_levels: 2
+    # Bootstrap's scroll spy for the in-page outline. Off by default: the
+    # theme's own outline runtime already tracks the active heading.
+    scroll_spy: false
+    # Copy control on code blocks. `false` sets the site-wide default only; a
+    # fence that names `copy` explicitly still wins.
+    code_copy: true
     # Single-key keyboard navigation (WASD/arrow tree focus, j/k outline
     # jumps, q/e paging, and shell/palette toggles). Set false to drop the
     # runtime from the bundle; pages can also opt out via front matter or a
     # section cascade.
-    keyboard_nav:
-      enable: true
+    keyboard_nav: true
 
 outputFormats:
   LLMS:

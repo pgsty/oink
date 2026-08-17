@@ -45,17 +45,17 @@
 {{ end }}
 
 <div class="td-content">
-<div class="pageinfo pageinfo-primary d-print-none">
+<div class="td-page-notice td-page-notice--primary d-print-none">
 <p>
 {{ T "print_printable_section" }}
-<button type="button" class="btn btn-link p-0 align-baseline" data-oink-action="print">{{ T "print_click_to_print" }}</button>.
+<button type="button" class="btn btn-link p-0 align-baseline" data-td-action="print">{{ T "print_click_to_print" }}</button>.
 </p><p>
 <a href="{{ .RelPermalink }}">{{ T "print_show_regular" }}</a>.
 </p>
 </div>
 {{ partial "print/page-heading.html" . }}
 
-{{ if not (.Param "print.disable_toc") }}
+{{ if ne (.Param "print.toc") false }}
     <ul>
     {{ template "recurse-toc" (dict "section" .CurrentSection "psid" "") }}
     </ul>

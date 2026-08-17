@@ -1,5 +1,5 @@
 {{- /* Language-correct figure/table/equation or arbitrary fragment link. */ -}}
-{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "fig" "tbl" "eq" "eg" "page" "anchor")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "fig" "tbl" "eq" "eg" "page" "anchor")) -}}
 {{- $params := dict -}}
 {{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- $kinds := slice -}}
@@ -49,5 +49,5 @@
   {{- if not $markdownText }}{{ $markdownText = partial "book/label.html" (dict "kind" $kind "num" $num) }}{{ end -}}
   {{- printf "[%s](%s)" $markdownText (partial "content/markdown-url.html" $href) | safeHTML -}}
 {{- else -}}
-<a class="td-book-xref{{ with $kind }} td-book-xref--{{ . }}{{ end }}" href="{{ $href }}"{{ with $kind }} data-book-kind="{{ . }}" data-book-num="{{ $num }}"{{ end }}>{{ $label }}</a>
+<a class="td-book-xref{{ with $kind }} td-book-xref--{{ . }}{{ end }}" href="{{ $href }}"{{ with $kind }} data-td-book-kind="{{ . }}" data-td-book-num="{{ $num }}"{{ end }}>{{ $label }}</a>
 {{- end -}}

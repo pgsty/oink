@@ -1,9 +1,9 @@
 # Alert labels
-caution: সাবধানতা
-important: গুরুত্বপূর্ণ
-note: নোট
-tip: টিপ
-warning: সতর্কতা
+callout_caution: সাবধানতা
+callout_important: গুরুত্বপূর্ণ
+callout_note: নোট
+callout_tip: টিপ
+callout_warning: সতর্কতা
 
 # ইউআই স্ট্রিং বাটন এবং অনুরূপ।
 ui_pager_prev: পূর্ববর্তী
@@ -282,12 +282,12 @@ ui_page_annotation: Page information
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
-success: Success
-danger: Danger
-question: Question
-example: Example
-quote: Quote
-details: Details
+callout_success: Success
+callout_danger: Danger
+callout_question: Question
+callout_example: Example
+callout_quote: Quote
+callout_details: Details
 
 # UI strings. Buttons and similar.
 

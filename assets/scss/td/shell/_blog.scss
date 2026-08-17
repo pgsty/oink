@@ -129,7 +129,7 @@
     }
   }
 
-  .article-meta {
+  .td-article-meta {
     margin-bottom: 2px;
   }
 }
@@ -145,20 +145,20 @@
 /* -------------------------------------------- inline taxonomy terms */
 
 // The article/list "Tags:" row rendered by taxonomy_terms_article.
-.taxonomy.taxonomy-terms-article {
+.taxonomy.td-taxonomy-terms-article {
   display: flex;
   align-items: baseline;
   gap: 4px;
   margin: 0.25rem 0;
 
-  .taxonomy-title {
+  .td-taxonomy-title {
     margin: 0;
     font-size: 13px;
     font-weight: 500;
     color: var(--td-shell-muted-fg);
   }
 
-  .taxonomy-terms {
+  .td-taxonomy-terms {
     display: flex;
     flex-wrap: wrap;
     gap: 2px;
@@ -173,7 +173,7 @@
 }
 
 // Plain-text terms gain a subtle background on hover.
-a.taxonomy-term {
+a.td-taxonomy-term {
   display: inline-flex;
   align-items: baseline;
   gap: 4px;
@@ -195,11 +195,11 @@ a.taxonomy-term {
     text-decoration: none;
   }
 
-  .taxonomy-label {
+  .td-taxonomy-label {
     font-weight: 400;
   }
 
-  .taxonomy-count {
+  .td-taxonomy-count {
     font-size: 11px;
     color: var(--bs-tertiary-color);
   }
@@ -230,7 +230,7 @@ a.taxonomy-term {
     text-decoration: none;
   }
 
-  &.is-active {
+  &.td-is-active {
     background: var(--td-shell-primary-dim);
     border-color: color-mix(in srgb, var(--td-shell-primary) 35%, transparent);
     color: var(--td-shell-primary);
@@ -242,7 +242,7 @@ a.taxonomy-term {
     color: var(--bs-tertiary-color);
   }
 
-  &.is-active &__count {
+  &.td-is-active &__count {
     color: inherit;
     opacity: 0.75;
   }
@@ -274,7 +274,7 @@ a.taxonomy-term {
       background: var(--td-shell-accent);
     }
 
-    &.is-active {
+    &.td-is-active {
       background: var(--td-shell-primary-dim);
     }
   }

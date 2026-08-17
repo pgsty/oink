@@ -77,7 +77,7 @@ REQUIRED_LITERALS = (
     "| `command` | yes | `Fit`, `Resize`, `Fill`, `Crop` | none |",
     "The `image` shortcode is retired.",
     "A standalone public Icon shortcode is deferred.",
-    "`params.ui.image_zoom.enable`",
+    "`params.ui.image_zoom`",
     "The Markdown output must contain no component classes",
     "Their Markdown fallback retains source",
     "remains for at least one complete minor release",
@@ -96,7 +96,7 @@ REQUIRED_LITERALS = (
     "`scripts/check-book.py` rejects empty alternatives",
     "`style`, any `on*` handler, `srcdoc`, and every other unknown key fail the",
     "$fn:<name>",
-    "window.tdEchartsFunctions",
+    "window.OinkEchartsFunctions",
     "{{< include file=",
 )
 
@@ -137,6 +137,40 @@ def table_rows(source: str, heading: str) -> dict[str, list[str]]:
             continue
         rows[cells[0]] = cells
     return rows
+
+
+# Build failures are the theme's most-read output, so their shape is part of
+# the contract: `<component>: <subject> <expectation>; got <value> at <position>`,
+# all lower case, one preposition for the location, and configuration errors
+# naming the full `params.` path.
+PROPER_NOUNS = (
+    "OINK", "KaTeX", "Markmap", "PlantUML", "Hugo", "Chroma", "Draw.io",
+    "Algolia", "GitHub", "Book", "FileTree", "Gallery", "Copy", "Zoom",
+    "Markdown", "Font", "Unable", "Prism", "TeX",
+)
+
+
+def check_message_style() -> list[str]:
+    errors: list[str] = []
+    call = re.compile(r'\b(?:errorf|warnf|warnidf)\s+(?:"[^"]*"\s+)?\(?\s*"((?:[^"\\]|\\.)*)"')
+    shortcodes = sorted((ROOT / "layouts/_shortcodes").glob("*.html"))
+    for path in sorted(ROOT.glob("layouts/**/*.html")):
+        text = path.read_text(encoding="utf-8")
+        rel = path.relative_to(ROOT)
+        for message in call.findall(text):
+            head = message.lstrip()
+            if not head:
+                continue
+            first = head.split()[0].strip("%q\":")
+            if head[0].isupper() and not head.startswith(PROPER_NOUNS):
+                errors.append(f"{rel}: message should start lower case: {head[:60]!r}")
+            if re.search(r"\b(?:in|on) %s\"?$", message):
+                errors.append(f"{rel}: use 'at %s' for a location: {head[:60]!r}")
+    # Every shortcode delegates parameter validation, so a new one cannot skip it.
+    for path in shortcodes:
+        if 'partial "content/shortcode-params.html"' not in path.read_text(encoding="utf-8"):
+            errors.append(f"{path.name} does not validate its parameters through content/shortcode-params.html")
+    return errors
 
 
 def main() -> int:
@@ -181,6 +215,8 @@ def main() -> int:
     for number in ("3", "4", "8"):
         if number not in issue_links:
             errors.append(f"contract is missing issue link #{number}")
+
+    errors += check_message_style()
 
     if errors:
         print("Content primitive contract check failed:", file=sys.stderr)

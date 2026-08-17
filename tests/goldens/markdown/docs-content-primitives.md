@@ -15,9 +15,9 @@ Open search with Ctrl + K or the command palette with
 Escaped keys remain readable: \[ + A\+B + \>.
 ## Fields
 **Configuration fields**
-- `offlineSearch` — `boolean`; required; default: `true`
+- `offline_search` — `boolean`; required; default: `true`
 Enables the local search index and links to the [documentation](/docs/).
-- `offlineSearchMaxResults` — `integer`; default: `10`
+- `offline_search_max_results` — `integer`; default: `10`
 Maximum number of visible results.
 A second paragraph preserves multiline description Markdown and `inline code`.
 - `explicitFalse` — `boolean`; default: `false`

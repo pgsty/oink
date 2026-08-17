@@ -34,25 +34,25 @@
   {{- if eq $mode "desktop" -}}
     {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link") }}
   {{- else -}}
-    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link") }}
+    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link") }}
   {{- end -}}
 {{- else if eq $mode "desktop" -}}
 {{- $columns := 1 -}}
 {{- with $entry.Params.columns -}}
   {{- if not (findRE `^[1-4]$` (printf "%v" .)) -}}
-    {{- errorf "Navbar menu %q columns must be an integer from 1 to 4" $entry.Name -}}
+    {{- errorf "navbar menu %q: columns must be an integer from 1 to 4" $entry.Name -}}
   {{- end -}}
   {{- $columns = int . -}}
   {{- if or (lt $columns 1) (gt $columns 4) -}}
-    {{- errorf "Navbar menu %q columns must be from 1 to 4; got %d" $entry.Name $columns -}}
+    {{- errorf "navbar menu %q: columns must be from 1 to 4; got %d" $entry.Name $columns -}}
   {{- end -}}
 {{- end -}}
 {{- /* No disclosure caret on desktop: the parent label navigates on click and
      the panel opens on hover or keyboard focus (see navbar-menu.js). Touch
      users navigate directly; the target page carries its own navigation. */ -}}
-<div class="nav-menu" data-td-navbar-menu>
-  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link" "controls" $panelID) }}
-  <div class="nav-menu__panel{{ if $taxonomyPage }} nav-menu__panel--taxonomy{{ else if gt $columns 1 }} nav-menu__panel--mega{{ end }}" id="{{ $panelID }}" data-td-navbar-panel
+<div class="td-nav-menu" data-td-navbar-menu>
+  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link td-nav-menu__parent-link" "controls" $panelID) }}
+  <div class="td-nav-menu__panel{{ if $taxonomyPage }} td-nav-menu__panel--taxonomy{{ else if gt $columns 1 }} td-nav-menu__panel--mega{{ end }}" id="{{ $panelID }}" data-td-navbar-panel
        style="--td-navbar-columns: {{ $columns }}" data-td-navbar-columns="{{ $columns }}" hidden>
     {{- if $taxonomyPage -}}
       {{ partialCached "navbar-taxonomy-tags.html"
@@ -67,5 +67,5 @@
   {{- /* Compact menus navigate to the parent landing; that page exposes the
        hierarchy in its own shell. Without this branch taxonomy parents would
        disappear whenever this partial is reused in mobile mode. */ -}}
-  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link") }}
+  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link") }}
 {{- end -}}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate PRD 5 GitHub release metadata, lists, and release assets."""
+"""Validate GitHub release metadata, lists, and release assets."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/main-[^"]+\.js)"')
+MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -49,7 +49,7 @@ def create_site(root: Path, config_extra: str = "") -> None:
     write(
         root / "hugo.yaml",
         """baseURL: https://example.org/
-title: PRD 5 release fixture
+title: release fixture
 theme: oink
 defaultContentLanguage: en
 buildFuture: true
@@ -58,10 +58,9 @@ outputs:
   page: [HTML]
   section: [HTML]
 params:
-  offlineSearch: false
+  offline_search: false
   ui:
-    pager:
-      types: []
+    pager_types: []
 """
         + config_extra,
     )
@@ -93,7 +92,7 @@ class ReleaseIndexParser(HTMLParser):
         if tag == "li" and "td-release-index__item" in classes:
             self.rows.append(
                 {
-                    "product": values.get("data-release-product") or "",
+                    "product": values.get("data-td-release-product") or "",
                     "href": "",
                     "version": "",
                 }
@@ -211,7 +210,7 @@ def check_example(public: Path) -> list[str]:
     asset_bundle = bundle_path(pig)
     plain = paths["pig-1.9.0"].read_text(encoding="utf-8")
     plain_bundle = bundle_path(plain)
-    require(asset_bundle and plain_bundle, "fixture pages lost their main bundle", errors)
+    require(asset_bundle and plain_bundle, "fixture pages lost their feature bundle", errors)
     require(asset_bundle != plain_bundle, "hasAssetList did not change the bundle key", errors)
     if asset_bundle:
         script = public / asset_bundle.lstrip("/")
@@ -255,7 +254,7 @@ def check_example(public: Path) -> list[str]:
 
 def check_algorithms_and_rss(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-release-formats-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-release-formats-") as temp:
         site = Path(temp)
         create_site(site)
         blocks = (
@@ -283,7 +282,7 @@ def check_algorithms_and_rss(hugo: str) -> list[str]:
             for _, _, label in blocks:
                 require(label in source, f"asset table did not recognize {label}", errors)
 
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-release-rss-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-release-rss-") as temp:
         site = Path(temp)
         create_site(site)
         config = (site / "hugo.yaml").read_text(encoding="utf-8")
@@ -336,7 +335,7 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  oink.zip
 
 def check_grouping(hugo: str) -> list[str]:
     errors: list[str] = []
-    with tempfile.TemporaryDirectory(prefix="oink-prd5-release-groups-") as temp:
+    with tempfile.TemporaryDirectory(prefix="oink-components-release-groups-") as temp:
         site = Path(temp)
         create_site(site)
         write(
@@ -431,7 +430,7 @@ INVALID_CASES = (
 def check_invalid(hugo: str) -> list[str]:
     errors: list[str] = []
     for name, front_matter, body, expected in INVALID_CASES:
-        with tempfile.TemporaryDirectory(prefix=f"oink-prd5-{name}-") as temp:
+        with tempfile.TemporaryDirectory(prefix=f"oink-components-{name}-") as temp:
             site = Path(temp)
             create_site(site)
             write(
@@ -454,8 +453,12 @@ def check_sources() -> list[str]:
     styles = (ROOT / "assets/scss/td/_release.scss").read_text(encoding="utf-8")
     require('Page.Store.Set "hasAssetList" true' in shortcode, "release-assets never sets its runtime flag", errors)
     require('$hasAssetList' in scripts and 'resources.Get "js/asset-list.js"' in scripts, "asset-list runtime is not conditionally wired", errors)
-    key = re.search(r'\$bundleKey := printf "([^"]+)"(.*?)\| md5', scripts, re.S)
-    require(bool(key and "$hasAssetList" in key.group(2)), "hasAssetList is absent from bundleKey", errors)
+    require(
+        "$hasAssetList -}}" in scripts
+        and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts,
+        "asset-list is not appended under its flag into the derived bundle key",
+        errors,
+    )
     require("line %d" in parser, "asset parser errors do not retain line numbers", errors)
     for marker in ("@media print", "@media (forced-colors: active)"):
         require(marker in styles, f"release/asset styles lack {marker}", errors)
@@ -469,11 +472,11 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.public is None:
-        with tempfile.TemporaryDirectory(prefix="oink-prd5-release-example-") as temp:
+        with tempfile.TemporaryDirectory(prefix="oink-components-release-example-") as temp:
             public = Path(temp) / "public"
             result = run(args.hugo, EXAMPLE, public)
             if result.returncode != 0:
-                print("PRD 5 release fixture failed to build:")
+                print("release fixture failed to build:")
                 print(result.stdout + result.stderr)
                 return 1
             errors = check_example(public)
@@ -487,11 +490,11 @@ def main() -> int:
         + check_sources()
     )
     if errors:
-        print("PRD 5 release/asset checks failed:")
+        print("release/asset checks failed:")
         for error in errors:
             print(f"  {error}")
         return 1
-    print("PRD 5 release/asset checks passed")
+    print("release/asset checks passed")
     return 0
 
 

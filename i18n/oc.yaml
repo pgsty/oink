@@ -61,11 +61,11 @@ feedback_negative: Non
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
-caution: Caution
-important: Important
-note: Note
-tip: Tip
-warning: Warning
+callout_caution: Caution
+callout_important: Important
+callout_note: Note
+callout_tip: Tip
+callout_warning: Warning
 
 # UI strings. Buttons and similar.
 ui_search_empty: No results found
@@ -281,12 +281,12 @@ ui_page_annotation: Page information
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
-success: Success
-danger: Danger
-question: Question
-example: Example
-quote: Quote
-details: Details
+callout_success: Success
+callout_danger: Danger
+callout_question: Question
+callout_example: Example
+callout_quote: Quote
+callout_details: Details
 
 # UI strings. Buttons and similar.
 

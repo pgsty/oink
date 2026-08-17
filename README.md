@@ -31,8 +31,8 @@ site with no Node.js, npm, PostCSS, or CDN dependency.
   RTL support, and alternate-language metadata support serious international
   documentation.
 - **Engineering-native content.** Diagrams, formulae, API references, terminal
-  recordings, charts, cards, tabs, and carousels load only when a page needs
-  them.
+  recordings, charts, file trees, galleries, cards, and tabs load only when a
+  page needs them.
 - **Proven foundation.** OINK evolves Docsy's mature content model with a
   focused interface and site-owned extension points.
 
@@ -59,34 +59,35 @@ outputs:
   section: [HTML, RSS, print, markdown]
 
 params:
-  # Book content measure: slim | norm | wide (default: norm).
-  content_width: norm
+  # Book reading measure: slim | normal | wide (default: normal).
+  reading_width: normal
   copyright:
     authors: '[Example Documentation](https://example.org/)'
     from_year: 2026
   # footer_center_info defaults to Powered by Oink and accepts inline Markdown.
-  offlineSearch: true
+  offline_search: true
   # `hugo server` skips the index by default; opt in only when testing search.
-  offlineSearchOnServe: false
+  offline_search_on_serve: false
   ui:
-    showLightDarkModeMenu: true
+    dark_mode:
+      show_menu: true
     # Hide the 50px navbar until a mouse reaches the top edge; touch stays visible.
     navbar_autohide: false
     # Optional one-click docs feedback; records structured gtag events only.
     feedback:
       enable: false
       reasons: true
-    image_zoom:
-      enable: true
+    image_zoom: true
 ```
 
 `markdown` enables Copy text and View source, `LLMS` emits `llms.txt`, and
 `print` enables section print views. Offline search, assistant handoff links,
 the theme menu, and native image previews are opt-in; the theme supplies their
 implementation but does not silently enable site policy. A page can override
-Image Zoom with the same nested `params.ui.image_zoom.enable` front matter key.
-Book pages can likewise override `content_width`; this controls the inner
-reading measure while `page_width` continues to control the surrounding shell.
+Image Zoom with the front matter key `image_zoom` — every `params.ui.*` switch
+that a page may override uses the site key without its `ui.` prefix. Book pages
+can likewise override `reading_width`; this controls the inner reading measure
+while `page_width` continues to control the surrounding shell.
 Set `params.ui.navbar_autohide: true` to tuck the navbar above the viewport on
 mouse-driven devices at the `md` breakpoint (768px) and above and reveal it
 from the center of the top edge. The two 64px corners stay inactive for
@@ -108,12 +109,13 @@ When upgrading an older feedback configuration, remove `yes`, `no`,
 Worker or a submission endpoint.
 
 Then preview the site. Local search is omitted from `hugo server` so large-site
-content edits stay fast; set the standard Hugo parameter environment override
-when the preview specifically needs to exercise search:
+content edits stay fast; set the Hugo parameter environment override when the
+preview specifically needs to exercise search (the `x` is Hugo's alternate
+key delimiter, needed because the key itself contains underscores):
 
 ```sh
 hugo server
-HUGO_PARAMS_OFFLINESEARCHONSERVE=true hugo server
+HUGOxPARAMSxOFFLINE_SEARCH_ON_SERVE=true hugo server
 ```
 
 ### Delimiter-style mathematics
@@ -162,8 +164,7 @@ wants the platform font stack, with no OINK brand-font requests, can select:
 ```yaml
 params:
   ui:
-    typography:
-      preset: system
+    typography: system
 ```
 
 Both presets are compiled by Hugo into the same static stylesheet. They add no
@@ -193,27 +194,21 @@ Theme implementation contracts:
 [Content primitives](docs/content-primitives.md) ·
 [Enhanced code blocks](docs/enhanced-code-blocks.md) ·
 [Typography tokens](docs/typography-tokens.md) ·
-[PRD 4 contract](docs/prd4-navigation-command-palette-contract.md) ·
-[PRD 5 reading/release](docs/prd5-reading-release-contract.md) ·
-[PRD 5 landing](docs/prd5-landing-contract.md) ·
-[PRD 5 Book](docs/prd5-book-contract.md) ·
-[PRD 7 design](docs/prd7-docs-shell-page-end.md) ·
-[PRD 7 migration: English](docs/prd7-migration-guide.md) /
-[简体中文](docs/prd7-migration-guide.zh.md)
+[Navigation & Command Palette](docs/navigation-contract.md) ·
+[Reading & release](docs/reading-release-contract.md) ·
+[Landing](docs/landing-contract.md) ·
+[Book](docs/book-contract.md) ·
+[Docs shell & page end (中文)](docs/docs-shell-contract.zh.md) ·
+[Docs shell migration: English](docs/migration-docs-shell.md) /
+[简体中文](docs/migration-docs-shell.zh.md)
 
 Navigation and Command Palette migration reference, included in 0.3.0:
-[English](docs/prd4-migration-guide.md) ·
-[简体中文](docs/prd4-migration-guide.zh.md).
+[English](docs/migration-navigation.md) ·
+[简体中文](docs/migration-navigation.zh.md).
 
-Scenario Components migration reference (all tracks included in 0.4.0; the
-original 0.4.0–0.6.0 design milestones remain documented as history):
-[English](docs/prd5-migration-guide.md) ·
-[简体中文](docs/prd5-migration-guide.zh.md).
-
-Book content rewrite recipes:
-[TPME](docs/prd5-migrate-tpme.md) ·
-[DDIA](docs/prd5-migrate-ddia.md) ·
-[pg-internal](docs/prd5-migrate-pg-internal.md).
+Scenario Components migration reference (all tracks included in 0.4.0):
+[English](docs/migration-components.md) ·
+[简体中文](docs/migration-components.zh.md).
 
 ## Localization status
 

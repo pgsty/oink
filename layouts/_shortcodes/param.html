@@ -1,6 +1,7 @@
 {{- /* Print a page parameter, falling back to site configuration. Positional: name.
        Strict: a missing value fails the build; only scalars (string / number /
        bool) are allowed; output is HTML-escaped plain text (v5 §1.2). */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- $name := .Get 0 -}}
 {{- if not $name -}}
   {{- errorf "%s: param requires a page or site parameter name" .Position -}}

@@ -1,7 +1,7 @@
 {{- /* Numbered Book example (`eg`): caption above, body = Markdown (usually one
        or more fenced code blocks). Native single-fence form: a fence with
        {num="4-1" caption="…" #id}. Replaces the leaf `example` shortcode. */ -}}
-{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
 {{- if not (isset .Params "num") }}{{ errorf "shortcode %q requires parameter num at %s" .Name .Position }}{{ end -}}
 {{- if not (isset .Params "caption") }}{{ errorf "shortcode %q requires parameter caption at %s" .Name .Position }}{{ end -}}
 {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
@@ -22,7 +22,7 @@
 {{- if in (slice "markdown" "rss") $format -}}
   {{- printf "**%s.** %s\n\n%s" $label (partial "content/markdown-escape.html" $caption) $inner | safeHTML -}}
 {{- else -}}
-<figure id="{{ $id }}" class="td-book-figure td-book-figure--eg{{ with $class }} {{ . }}{{ end }}" data-book-kind="eg" data-book-num="{{ $num }}">
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--eg{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="eg" data-td-book-num="{{ $num }}">
   <figcaption><span class="td-eg-label">{{ $label }}</span> <span class="td-eg-caption">{{ $caption }}</span></figcaption>
   <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "eg%d" .Ordinal) "content" $inner) }}</div>
 </figure>

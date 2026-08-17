@@ -98,7 +98,7 @@
     {{- end -}}
 {{- else if or
       (strings.HasPrefix $lowerName "data-td-code")
-      (in (slice "data-language" "data-line-count" "data-collapse-lines") $lowerName)
+      (in (slice "data-td-language" "data-td-line-count" "data-td-collapse-lines") $lowerName)
   -}}
     {{- errorf "code block: attribute %q is reserved by OINK at %s" $name $position -}}
   {{- else if or (strings.HasPrefix $lowerName "on") (in (slice "style" "srcdoc") $lowerName) -}}
@@ -140,7 +140,8 @@
 {{- if and (eq $copyMode "command") (not (in $sessionLanguages $languageKey)) -}}
   {{- errorf "code block: copy=command requires language console or shell-session; got %q at %s" $language $position -}}
 {{- end -}}
-{{- if $page.Site.Params.disable_click2copy_chroma -}}
+{{- /* Site-wide default only: a fence that names `copy` explicitly wins. */ -}}
+{{- if and (eq ($page.Param "ui.code_copy") false) (not (isset $attrs "copy")) -}}
   {{- $copyMode = "false" -}}
 {{- end -}}
 

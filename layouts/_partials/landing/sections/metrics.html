@@ -5,20 +5,20 @@
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{- if and (isset $data "animate") (ne (printf "%T" $data.animate) "bool") }}{{ errorf "%s: metrics.animate must be a boolean" $page.Path }}{{ end -}}
 {{- if and $animate $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
-<section id="{{ $id }}" class="oink-section oink-metrics{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-metrics{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id "compact" true) }}
     {{- with $data.items }}
-    <div class="oink-metric-grid" style="--oink-columns: {{ $data.columns | default 4 }}">
+    <div class="td-landing-metric-grid" style="--td-columns: {{ $data.columns | default 4 }}">
       {{- range $index, $item := . }}
-      <div class="oink-metric">
+      <div class="td-landing-metric">
         {{- with $item.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
         {{- if isset $item "value" }}
           {{- $display := printf "%v" $item.value -}}
           {{- if $item.compact }}{{ $display = partial "landing/compact-number.html" $item.value }}{{ end -}}
           {{- if and $animate $interactive }}
             {{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` (printf "%v" $item.value)) }}{{ errorf "%s: metrics item %d animate requires a numeric value" $page.Path (add $index 1) }}{{ end -}}
-        <strong data-count="{{ $item.value }}"{{ with $item.prefix }} data-count-prefix="{{ . }}"{{ end }}{{ with $item.suffix }} data-count-suffix="{{ . }}"{{ end }}>{{ $display }}</strong>
+        <strong data-td-count="{{ $item.value }}"{{ with $item.prefix }} data-td-count-prefix="{{ . }}"{{ end }}{{ with $item.suffix }} data-td-count-suffix="{{ . }}"{{ end }}>{{ $display }}</strong>
           {{- else }}<strong>{{ $display }}</strong>{{ end -}}
         {{- end }}
         {{- with $item.label }}<span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span>{{ end }}
@@ -27,7 +27,7 @@
           {{- if not (reflect.IsMap .) }}{{ errorf "%s: metrics item %d source must be a map" $page.Path (add $index 1) }}{{ end -}}
           {{- $sourceLabel := strings.TrimSpace (printf "%v" (.label | default "")) -}}
           {{- if not $sourceLabel }}{{ errorf "%s: metrics item %d source requires label" $page.Path (add $index 1) }}{{ end -}}
-          {{- with .url }}<a class="oink-metric__source" href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $sourceLabel }}">{{ $sourceLabel }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>{{ else }}<span class="oink-metric__source">{{ $sourceLabel }}</span>{{ end -}}
+          {{- with .url }}<a class="td-landing-metric__source" href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $sourceLabel }}">{{ $sourceLabel }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>{{ else }}<span class="td-landing-metric__source">{{ $sourceLabel }}</span>{{ end -}}
         {{- end }}
         {{- partial "landing/action.html" (dict "page" $page "item" $item "label" $data.link_label) }}
       </div>

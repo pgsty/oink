@@ -3,14 +3,14 @@
 {{- $id := .id -}}
 {{- $layout := lower (strings.TrimSpace (printf "%v" ($data.layout | default "grid"))) -}}
 {{- if not (in (slice "grid" "marquee") $layout) }}{{ errorf "%s: testimonials.layout must be grid or marquee" $page.Path }}{{ end -}}
-<section id="{{ $id }}" class="oink-section oink-testimonials-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
-  <div class="landing-container">
+<section id="{{ $id }}" class="td-landing-section td-landing-testimonials-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     {{- with $data.items }}
     {{- if eq $layout "marquee" }}
       {{- partial "landing/marquee.html" (dict "page" $page "data" $data "items" . "template" "landing/items/testimonial.html" "direction" $data.direction "speed" $data.speed "rows" $data.rows) }}
     {{- else }}
-    <div class="oink-testimonial-grid" style="--oink-columns: {{ $data.columns | default 3 }}">
+    <div class="td-landing-testimonial-grid" style="--td-columns: {{ $data.columns | default 3 }}">
       {{- range . }}{{ partial "landing/items/testimonial.html" (dict "page" $page "data" $data "item" .) }}{{ end }}
     </div>
     {{- end }}

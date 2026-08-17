@@ -129,7 +129,7 @@
   }
 }
 
-.td-page-actions.is-open .td-page-actions__toggle .td-shell-icon {
+.td-page-actions.td-is-open .td-page-actions__toggle .td-shell-icon {
   transform: rotate(180deg);
 }
 
@@ -147,7 +147,7 @@
   color: var(--bs-success);
 }
 
-.td-page-actions__primary.is-copied {
+.td-page-actions__primary.td-is-copied {
   color: var(--bs-success);
 
   .td-page-actions__icon {
@@ -186,7 +186,7 @@
     transform 120ms ease;
 }
 
-.td-page-actions.is-open .td-page-actions__menu {
+.td-page-actions.td-is-open .td-page-actions__menu {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;

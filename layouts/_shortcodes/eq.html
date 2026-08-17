@@ -1,4 +1,4 @@
-{{- partial "book/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- if not $inner }}{{ errorf "shortcode %q requires TeX content at %s" .Name .Position }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
@@ -31,7 +31,7 @@
   {{- if in (slice "markdown" "rss") $format -}}
     {{- printf "**%s.**%s\n\n$$\n%s\n$$" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
   {{- else -}}
-<figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $class }} {{ . }}{{ end }}" data-book-kind="eq" data-book-num="{{ $num }}">
+<figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="eq" data-td-book-num="{{ $num }}">
   <div class="td-book-equation__body">{{ partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) }}</div>
   <figcaption><span class="td-eq-label">{{ $label }}</span>{{ with $caption }} <span class="td-eq-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>

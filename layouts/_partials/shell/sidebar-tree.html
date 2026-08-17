@@ -1,6 +1,8 @@
-{{/* Generic sidebar tree for blog and other non-docs sections. Page-level
-     .Param lookups let section cascades control foldable, compact, and ul_show.
-     The root row renders as a section-heading link. */ -}}
+{{/* Sidebar tree walked from Hugo's content tree — the default source for
+     docs, book, blog, and any other shell type. Page-level .Param lookups let
+     section cascades control foldable, compact, and expand levels. The row markup
+     itself lives in shell/sidebar-node.html, shared with the explicit
+     data/docs_nav.json walker. */ -}}
 {{ $context := .context -}}
 {{ $sidebarRoot := .sidebarRoot -}}
 {{ $sidebarRootID := .sidebarRootID -}}
@@ -14,149 +16,19 @@
 
 <div id="td-sidebar-menu" class="td-shell-tree-wrap{{ if $shouldDelayActive }} d-none{{ end }}">
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
-      data-sidebar-icon-policy="{{ $iconPolicy }}"
-      {{- if .Site.Params.ui.sidebar_root_enabled }} data-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
+      data-td-sidebar-icon-policy="{{ $iconPolicy }}"
+      {{- if .Site.Params.ui.sidebar_root_enabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
     {{ $navRoot := cond .Site.Params.ui.sidebar_root_enabled .Site.Home .FirstSection -}}
     {{ if $sidebarRoot -}}
       {{ $navRoot = $sidebarRoot -}}
     {{ end -}}
     {{ $ulNr := 0 -}}
-    {{ $ulShow := .Param "ui.ul_show" | default 1 -}}
-    {{ $sidebarMenuTruncate := .Site.Params.ui.sidebar_menu_truncate | default 128 -}}
-    <ul class="td-shell-tree__list ul-{{ $ulNr }}">
-      {{ template "shell-section-tree-nav-section" (dict "page" . "section" $navRoot "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $ulNr "ulShow" (add $ulShow 1) "iconPolicy" $iconPolicy) }}
+    {{ $ulShow := .Param "ui.sidebar_expand_levels" | default 2 -}}
+    {{ $sidebarMenuTruncate := .Site.Params.ui.sidebar_menu_truncate | default 2000 -}}
+    <ul class="td-shell-tree__list td-shell-tree__list--{{ $ulNr }}">
+      {{ partial "shell/sidebar-tree-node.html" (dict "page" . "section" $navRoot "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $ulNr "ulShow" (add $ulShow 1) "iconPolicy" $iconPolicy) }}
     </ul>
   </nav>
 </div>
 
 {{- end }}{{/* with $context */ -}}
-
-{{ define "shell-section-tree-nav-section" -}}
-  {{/* cSpell:ignore manuallink manuallinkrelref manuallinktitle */ -}}
-  {{ $s := .section -}}
-  {{ $p := .page -}}
-  {{ $shouldDelayActive := .shouldDelayActive -}}
-  {{ $sidebarMenuTruncate := .sidebarMenuTruncate -}}
-  {{ $treeRoot := cond (eq .ulNr 0) true false -}}
-  {{ $ulNr := .ulNr -}}
-  {{ $ulShow := .ulShow -}}
-  {{ $iconPolicy := .iconPolicy -}}
-  {{ $active := and (not $shouldDelayActive) (eq $s $p) -}}
-  {{ $activePath := and (not $shouldDelayActive) (or (eq $p $s) ($p.IsDescendant $s)) -}}
-  {{/* Blog sections start expanded; sidebar_expanded: false collapses one.
-       isset keeps an explicit false distinct from the type default. */ -}}
-  {{ $forceExpanded := eq $s.Type "blog" -}}
-  {{ if isset $s.Params "sidebar_expanded" -}}
-    {{ $forceExpanded = $s.Params.sidebar_expanded -}}
-  {{ end -}}
-  {{ $shouldExpand := or $activePath $forceExpanded -}}
-  {{ $show := cond
-        (or
-          (lt $ulNr $ulShow)
-          $activePath
-          (and (not $shouldDelayActive) (eq $s.Parent $p.Parent))
-          (and (not $shouldDelayActive) (eq $s.Parent $p))
-          (not ($p.Param "ui.sidebar_menu_compact"))
-          (and (not $shouldDelayActive) ($p.IsDescendant $s.Parent))
-        )
-        true false
-  -}}
-  {{ $nodeID := $s.RelPermalink | default $s.Path | default $s.Title -}}
-  {{ $mid := printf "m-%s" ($nodeID | anchorize) -}}
-  {{ $children := union $s.Pages $s.Sections -}}
-  {{ $orderedChildren := $children.ByWeight -}}
-  {{ if eq $s.Type "blog" -}}
-    {{ $orderedChildren = partial "shell/blog-pages.html" $children -}}
-  {{ end -}}
-  {{ $pages_tmp := where $orderedChildren ".Params.toc_hide" "!=" true -}}
-  {{ $pages := $pages_tmp | first $sidebarMenuTruncate -}}
-  {{ if gt (len $pages_tmp) $sidebarMenuTruncate -}}
-    {{ $truncatedEntryCount := sub (len $pages_tmp) $sidebarMenuTruncate -}}
-    {{ warnf "WARNING: %d sidebar entries have been truncated. To avoid this, increase `params.ui.sidebar_menu_truncate` to at least %d (from %d) in your config file. Section: %s"
-        $truncatedEntryCount (len $pages_tmp) $sidebarMenuTruncate  $s.Path -}}
-  {{ end -}}
-
-  {{ $withChild := gt (len $pages) 0 -}}
-  {{ $showIcon := partial "shell/sidebar-icon-enabled.html" (dict "policy" $iconPolicy "root" $treeRoot "hasChildren" $withChild) -}}
-  {{ $foldable := and ($p.Param "ui.sidebar_menu_foldable") (ge $ulNr 1) $withChild -}}
-  {{ $ellipsis := ne ($p.Param "ui.sidebar_item_overflow") "wrap" -}}
-  {{ $manualLink :=
-      cond
-        (isset $s.Params "manuallink")
-        $s.Params.manualLink
-        (cond
-          (isset $s.Params "manuallinkrelref")
-          (relref $s $s.Params.manualLinkRelref)
-          $s.RelPermalink
-        )
-  -}}
-  {{ $manualLinkTitle :=
-      cond
-        (isset $s.Params "manuallinktitle")
-        $s.Params.manualLinkTitle
-        $s.Title
-  -}}
-  {{ $rootLinkSelf := true -}}
-  {{ if isset $s.Params "sidebar_root_link_self" -}}
-    {{ if ne (printf "%T" $s.Params.sidebar_root_link_self) "bool" -}}
-      {{ errorf "sidebar_root_link_self must be a boolean in %s" $s.Path -}}
-    {{ end -}}
-    {{ $rootLinkSelf = $s.Params.sidebar_root_link_self -}}
-  {{ end -}}
-  {{ if and $treeRoot (eq $s.Params.sidebar_root_for "self") (not $rootLinkSelf) -}}
-    {{ with $s.Parent -}}
-      {{ $manualLink = .RelPermalink -}}
-    {{ end -}}
-  {{ end -}}
-  {{ $isDivider := $s.Params.sidebar_divider | default false -}}
-  {{ if $isDivider -}}
-  <li class="td-shell-tree__item td-shell-tree__heading" id="{{ $mid }}-li">
-    <span class="td-shell-tree__heading-label" id="{{ $mid }}"><span>{{ $s.LinkTitle }}</span></span>
-  </li>
-  {{ else -}}
-  <li class="td-shell-tree__item
-        {{- if $withChild }} has-child{{ else }} leaf{{ end -}}
-        {{- if $activePath }} active-path{{ end -}}
-        {{- if $treeRoot }} td-shell-tree__item--root{{ end -}}
-        {{- if not (or $show $foldable) }} td-shell-tree__item--hidden{{ end }}"
-      id="{{ $mid }}-li">
-    <div class="td-shell-tree__row{{ if $active }} td-shell-active{{ end }}{{ if $treeRoot }} td-shell-tree__row--root{{ end }}">
-      <a href="{{ $manualLink }}"
-        {{- if $active }} aria-current="page"{{ end -}}
-        {{- if ne $s.LinkTitle $manualLinkTitle }} title="{{ $manualLinkTitle }}"
-        {{- else if $ellipsis }} title="{{ $s.LinkTitle }}"{{ end -}}
-        {{- with $s.Params.manualLinkTarget }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}
-        class="td-shell-tree__link{{ if $active }} active{{ end }}"
-        id="{{ $mid }}">
-        {{- if $showIcon }}{{ with $s.Params.Icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ end -}}
-          {{- if eq $s.Type "book" }}{{ partial "book/sidebar-label.html" $s }}{{ else }}<span>{{ $s.LinkTitle }}</span>{{ end -}}
-        </a>
-      {{ if $foldable -}}
-      <button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
-        aria-expanded="{{ $shouldExpand }}" aria-controls="{{ $mid }}-children"
-        aria-label="{{ if $shouldExpand }}{{ T "ui_sidebar_collapse_section" }}{{ else }}{{ T "ui_sidebar_expand_section" }}{{ end }}: {{ $s.LinkTitle }}"
-        data-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $s.LinkTitle }}"
-        data-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $s.LinkTitle }}">
-        {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
-      </button>
-      {{- end }}
-    </div>
-    {{- if eq $s.Type "book" }}{{ partial "book/sidebar-headings.html" (dict "page" $s "current" $p) }}{{ end -}}
-
-    {{ if $withChild -}}
-      {{ $childUlNr := add $ulNr 1 -}}
-      <div id="{{ $mid }}-children" class="td-shell-tree__children{{ if not $foldable }} td-shell-tree__children--static{{ else if $shouldExpand }} is-open{{ end }}">
-        <div class="td-shell-tree__children-inner">
-          <ul class="td-shell-tree__list ul-{{ $childUlNr }}">
-            {{ range $pages -}}
-              {{ if (not (and (eq $s $p.Site.Home) (eq .Params.toc_root true))) -}}
-                {{ template "shell-section-tree-nav-section" (dict "page" $p "section" . "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $childUlNr "ulShow" $ulShow "iconPolicy" $iconPolicy) }}
-              {{- end }}
-            {{- end }}
-          </ul>
-        </div>
-      </div>
-    {{- end }}
-  </li>
-  {{- end }}{{/* if $hideRoot else */}}
-{{- end }}

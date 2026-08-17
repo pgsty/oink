@@ -1,4 +1,5 @@
 {{- /* Render a validated data/download/<key> record; facts are not params. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- if or .IsNamedParams (ne (len .Params) 1) -}}
   {{- errorf "shortcode %q requires exactly one positional data key at %s" .Name .Position -}}
 {{- end -}}

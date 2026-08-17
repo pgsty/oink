@@ -1,7 +1,5 @@
 {{- /* Render release facts from front matter; version facts are never params. */ -}}
-{{- with .Params -}}
-  {{- errorf "shortcode %q accepts no parameters at %s" $.Name $.Position -}}
-{{- end -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "none") -}}
 {{- partial "release/card.html" (dict
   "page" .Page
   "meta" (partial "release/meta.html" (dict "page" .Page "position" .Position))

@@ -9,6 +9,6 @@
 {{- if .IsHome }}{{ $autohide = false }}{{ end -}}
 {{- if isset .Params "navbar_autohide" }}{{ $autohide = .Params.navbar_autohide }}{{ end -}}
 {{- if ne (printf "%T" $autohide) "bool" -}}
-  {{- errorf "navbar_autohide must be a boolean in %s" .Path -}}
+  {{- errorf "params.ui.navbar_autohide must be a boolean at %s" .Path -}}
 {{- end -}}
 {{- return $autohide -}}

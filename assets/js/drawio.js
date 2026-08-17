@@ -1,5 +1,5 @@
-{{with .Site.Params.drawio}}
-{{if .enable }}
+{{ with .Site.Params.drawio }}
+{{ if and (reflect.IsMap .) (partial "config-enabled.html" (dict "value" . "key" "params.drawio")) }}
 (function () {
   var shade;
   var iframe;

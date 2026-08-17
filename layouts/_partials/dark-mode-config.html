@@ -1,51 +1,41 @@
-{{/* Helper partial to get dark mode configuration with backward compatibility */ -}}
+{{/* Resolve the site's dark-mode policy.
 
-{{/* Initialize to config defaults */}}
-{{ $darkModeConfig := dict "enable" false "showMenu" false -}}
-{{ $ui := site.Params.ui -}}
-{{ $menuConfig := $ui.showLightDarkModeMenu -}}
+     `params.ui.dark_mode` is a map with two booleans:
 
-{{ if eq $menuConfig "enable-only (experimental)" -}}
-  {{ warnidf "experimental-dark-mode-config" (printf "%s %s %s"
-    "Site config 'params.ui.showLightDarkModeMenu' is using 'enable-only (experimental)' mode."
-    "For details, see "
-    "https://oink.pgsty.com/docs/content/lookandfeel/#lightdark-mode-menu"
-  ) -}}
-  {{ $darkModeConfig = dict "enable" true "showMenu" false -}}
-{{ else if $menuConfig -}}
-  {{ $darkModeConfig = dict "enable" true "showMenu" true -}}
-{{/* else not $menuConfig,
-  fallthrough and use defaults */ -}}
-{{ end -}}
+       enable     the theme emits the dark palette and honours a stored choice
+       show_menu  the navbar and sidebar expose a System / Light / Dark control
 
+     `show_menu` implies `enable` unless `enable` is explicitly false, so the
+     common case is one line:
 
-{{/* The code below is unreachable atm. Keep it here for future reference. */}}
-{{/* Skip-start ================================================================= */}}
-{{ if false -}}
-{{ $paramUiDarkMode := $ui.darkMode -}}
+       ui:
+         dark_mode:
+           show_menu: true
 
-{{/* Check for deprecated showLightDarkModeMenu */ -}}
-{{ if ne $menuConfig nil -}}
-  {{ warnidf "deprecated-showLightDarkModeMenu" (printf
-    "%s %s %s"
-    "Site config 'params.ui.showLightDarkModeMenu' is deprecated:"
-    "use 'params.ui.darkMode.showMenu' or 'params.ui.darkMode.enable'. For details, see"
-    "https://oink.pgsty.com/docs/content/lookandfeel/#lightdark-mode-menu"
-  ) -}}
-{{ else if eq $paramUiDarkMode true -}}
-  {{/* Shorthand */ -}}
-  {{ $darkModeConfig = dict "enable" true "showMenu" true -}}
-{{ else if $paramUiDarkMode -}}
-  {{/* Use new configuration structure */ -}}
-  {{ $showMenu := $paramUiDarkMode.showMenu -}}
-  {{ $enable := $paramUiDarkMode.enable -}}
-  {{/* showMenu implies enable when not explicitly disabled */ -}}
-  {{ if and $showMenu (ne $enable false) -}}
-    {{ $enable = true -}}
-  {{ end -}}
-  {{ $darkModeConfig = dict "enable" $enable "showMenu" $showMenu -}}
-{{ end -}}
-{{ end -}}
-{{/* Skip-end ================================================================= */}}
+     Returns a dict with both booleans resolved. */ -}}
 
-{{ return $darkModeConfig -}}
+{{- $config := dict "enable" false "showMenu" false -}}
+{{- $raw := site.Params.ui.dark_mode -}}
+
+{{- if ne $raw nil -}}
+  {{- if eq (printf "%T" $raw) "bool" -}}
+    {{/* Shorthand: `dark_mode: true` turns on the palette and the menu. */ -}}
+    {{- $config = dict "enable" $raw "showMenu" $raw -}}
+  {{- else if reflect.IsMap $raw -}}
+    {{- $enable := index $raw "enable" -}}
+    {{- $showMenu := index $raw "show_menu" -}}
+    {{- if and (ne $enable nil) (ne (printf "%T" $enable) "bool") -}}
+      {{- errorf "params.ui.dark_mode.enable must be a boolean" -}}
+    {{- end -}}
+    {{- if and (ne $showMenu nil) (ne (printf "%T" $showMenu) "bool") -}}
+      {{- errorf "params.ui.dark_mode.show_menu must be a boolean" -}}
+    {{- end -}}
+    {{- $showMenu = eq $showMenu true -}}
+    {{- if eq $enable nil }}{{ $enable = $showMenu }}{{ end -}}
+    {{- $config = dict "enable" $enable "showMenu" (and $showMenu $enable) -}}
+  {{- else -}}
+    {{- errorf "params.ui.dark_mode must be a boolean or a map with enable and show_menu" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $config -}}

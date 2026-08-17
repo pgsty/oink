@@ -17,7 +17,7 @@
       {{- $isSeparator := eq .name "---" -}}
       <li>
         {{- if $isSeparator -}}
-          {{- if .url }}{{ warnf "Version menu '%s': separator with URL is not allowed" $menuName }}{{ end -}}
+          {{- if .url }}{{ warnf "version menu %q: a separator must not carry a URL" $menuName }}{{ end -}}
           <hr class="dropdown-divider">
         {{- else -}}
           {{- $url := strings.TrimSuffix "/" (.url | default "") -}}

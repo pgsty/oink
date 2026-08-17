@@ -9,20 +9,20 @@
 {{- if not (in (slice "left" "right") $direction) }}{{ errorf "%s: marquee direction must be left or right" $page.Path }}{{ end -}}
 {{- if not (in (slice "slow" "normal" "fast") $speed) }}{{ errorf "%s: marquee speed must be slow, normal, or fast" $page.Path }}{{ end -}}
 {{- if or (lt $rows 1) (gt $rows 8) }}{{ errorf "%s: marquee rows must be from 1 to 8" $page.Path }}{{ end -}}
-<div class="oink-marquee oink-marquee--{{ $direction }} oink-marquee--{{ $speed }}{{ if not $interactive }} oink-marquee--static{{ end }}"{{ if $interactive }} data-td-marquee data-td-marquee-rows="{{ $rows }}"{{ end }}>
+<div class="td-landing-marquee td-landing-marquee--{{ $direction }} td-landing-marquee--{{ $speed }}{{ if not $interactive }} td-landing-marquee--static{{ end }}"{{ if $interactive }} data-td-marquee data-td-marquee-rows="{{ $rows }}"{{ end }}>
   {{- if $interactive }}
-  <label class="oink-marquee__pause">
+  <label class="td-landing-marquee__pause">
     <input type="checkbox" data-td-marquee-pause>
     <span><i class="fa-solid fa-pause" aria-hidden="true"></i>{{ T "ui_marquee_pause" }}</span>
   </label>
   {{- end }}
   {{- range $row := seq (cond $interactive $rows 1) }}
-  <div class="oink-marquee__row{{ if eq (mod $row 2) 0 }} oink-marquee__row--alternate{{ end }}"{{ if $interactive }} data-td-marquee-row{{ end }}>
-    <div class="oink-marquee__track">
-      <div class="oink-marquee__group">
+  <div class="td-landing-marquee__row{{ if eq (mod $row 2) 0 }} td-landing-marquee__row--alternate{{ end }}"{{ if $interactive }} data-td-marquee-row{{ end }}>
+    <div class="td-landing-marquee__track">
+      <div class="td-landing-marquee__group">
         {{- range $item := $items }}{{ partial $template (dict "page" $page "data" $data "item" $item "marquee" true) }}{{ end -}}
       </div>
-      {{- if $interactive }}<div class="oink-marquee__group" aria-hidden="true" inert>
+      {{- if $interactive }}<div class="td-landing-marquee__group" aria-hidden="true" inert>
         {{- range $item := $items }}{{ partial $template (dict "page" $page "data" $data "item" $item "marquee" true "duplicate" true) }}{{ end -}}
       </div>{{ end }}
     </div>

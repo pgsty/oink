@@ -34,9 +34,9 @@ def check_outputs(public: Path) -> list[str]:
     for marker in (
         # image shortcode: processed figure with a Markdown caption
         '<figure class="td-figure td-figure--processed" style="--td-figure-max: 50px">',
-        'data-zoom-src="/docs/media-primitives/page.png"',
+        'data-td-image-zoom="/docs/media-primitives/page.png"',
         'alt="Blue and gold page-resource test pattern" width="48" height="30"',
-        'data-zoom-src="/media/content-primitives-global.png"',
+        'data-td-image-zoom="/media/content-primitives-global.png"',
         'alt="Green and violet global-resource test pattern" width="32" height="20"',
         'data-no-zoom alt="" width="24" height="24"',
         'alt="Page resource metadata alternative" width="40" height="24"',
@@ -46,7 +46,7 @@ def check_outputs(public: Path) -> list[str]:
         '<img class="td-image" src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async">',
         # render-image hook: block image + {caption=} becomes a figure
         '<figure class="td-figure">',
-        '<img src="/media/content-primitives-static.svg" alt="Static preview" loading="lazy" decoding="async">',
+        '<img src="/media/content-primitives-static.svg" alt="Static preview" data-td-image-zoom loading="lazy" decoding="async">',
         '<figcaption> <span class="td-fig-caption">A static image with a caption becomes a figure</span></figcaption>',
     ):
         require(marker in page, f"HTML media fixture missing {marker}", errors)
@@ -68,7 +68,7 @@ def check_outputs(public: Path) -> list[str]:
         '{caption="A static image with a caption becomes a figure"}',
     ):
         require(marker in markdown, f"Markdown media fixture missing {marker}", errors)
-    for marker in ("<figure", "<img", "td-figure", "data-zoom-src"):
+    for marker in ("<figure", "<img", "td-figure", "data-td-image-zoom"):
         require(marker not in markdown, f"Markdown media output contains {marker}", errors)
     require(markdown.count("![") == 6, "Markdown media output lost image order", errors)
 
@@ -83,7 +83,7 @@ def check_outputs(public: Path) -> list[str]:
         "A static image with a caption becomes a figure",
     ):
         require(marker in print_page, f"print media fixture missing {marker}", errors)
-    require("data-zoom-src" not in print_page and "data-td-image-zoom" not in print_page, "print media output kept interactive zoom attributes", errors)
+    require("data-td-image-zoom" not in print_page, "print media output kept interactive zoom attributes", errors)
     return errors
 
 
@@ -196,7 +196,7 @@ def check_image_hook_matrix(hugo: str) -> list[str]:
             '<figure class="td-figure wide" data-fixture="figure">',
             '<figcaption> <span class="td-fig-caption">A plain caption</span></figcaption>',
             '<figure id="fig_static" class="td-figure td-book-figure td-book-figure--fig" data-book-kind="fig" data-book-num="2-1">',
-            '<img src="/media/content-primitives-static.svg" alt="Numbered" width="640" height="480" loading="lazy" decoding="async">',
+            '<img src="/media/content-primitives-static.svg" alt="Numbered" width="640" height="480" data-td-image-zoom loading="lazy" decoding="async">',
             '<figcaption><span class="td-fig-label">Figure 2-1</span> <span class="td-fig-caption">Static with dimensions</span></figcaption>',
             '<figure id="fig-2-2" class="td-figure td-book-figure td-book-figure--fig" data-book-kind="fig" data-book-num="2-2">',
             '<figcaption><span class="td-fig-label">Figure 2-2</span></figcaption>',
@@ -230,9 +230,9 @@ def check_subpath(hugo: str) -> list[str]:
         page = (destination / "docs/media-primitives/index.html").read_text()
         for marker in (
             'src="/manual/docs/media-primitives/page_',
-            'data-zoom-src="/manual/docs/media-primitives/page.png"',
+            'data-td-image-zoom="/manual/docs/media-primitives/page.png"',
             'src="/manual/media/content-primitives-global_',
-            'data-zoom-src="/manual/media/content-primitives-global.png"',
+            'data-td-image-zoom="/manual/media/content-primitives-global.png"',
             '<img class="td-image" src="/manual/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title"',
             '<img src="/manual/media/content-primitives-static.svg" alt="Static preview"',
         ):
@@ -399,7 +399,10 @@ def check_template_contracts() -> list[str]:
     require('"requireAlt" true' in image, "image shortcode does not require alt or decorative", errors)
     require('eq $format "markdown"' in image, "image shortcode lacks Markdown output", errors)
     require("Page.Store.Set" not in image, "image shortcode sets a runtime flag", errors)
-    require("data-zoom-src" in image, "image shortcode does not expose its canonical source", errors)
+    # The single Zoom marker carries the full-size URL, so a processed figure
+    # still opens the original rather than the derivative.
+    require('data-td-image-zoom="{{ $image.fullSrc }}"' in image, "image shortcode does not expose its canonical source on the Zoom marker", errors)
+    require("data-zoom-src" not in image, "image shortcode still emits the retired data-zoom-src attribute", errors)
     require("render-block.html" in image, "image shortcode caption is not rendered in a scoped RenderString", errors)
     for marker in ('partial "content/image-resolve.html"', 'partial "content/attributes.html"', ".IsBlock", '"width" "height"', 'partial "book/register-target.html"', "wrapStandAloneImageWithinParagraph", 'loading="lazy" decoding="async"', "absURL", "td-figure", "td-image", ".Title"):
         require(marker in hook, f"render-image.html lacks {marker}", errors)

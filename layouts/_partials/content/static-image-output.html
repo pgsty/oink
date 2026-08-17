@@ -1,6 +1,5 @@
 {{- /* Remove interaction-only image attributes from cached static HTML outputs. */ -}}
 {{- $html := printf "%s" . -}}
-{{- $html = replaceRE `\sdata-zoom-src(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?(\s|/?>)` "$1" $html -}}
 {{- $html = replaceRE `\sdata-td-image-zoom(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?(\s|/?>)` "$1" $html -}}
 {{- $html = replaceRE `\sdata-no-zoom(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?(\s|/?>)` "$1" $html -}}
 {{- $html | safeHTML -}}

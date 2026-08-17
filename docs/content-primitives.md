@@ -614,8 +614,9 @@ Named parameters only; the body is the Markdown caption. Either meaningful
 alt text (parameter or resource metadata) or `decorative=true` is required.
 Static paths, SVG, and remote URLs resolve for other renderers but fail here
 because they are not locally processable image resources. HTML renders
-`<figure class="td-figure td-figure--processed">` with `data-zoom-src` (full
-size), `data-no-zoom` when decorative, intrinsic `width`/`height`, and a
+`<figure class="td-figure td-figure--processed">` with
+`data-td-image-zoom="<full-size URL>"`, `data-no-zoom` when decorative
+(a decorative image carries no marker), intrinsic `width`/`height`, and a
 `<figcaption>` holding the rendered caption and the resource `byline`. The
 figure caps itself at the rendered width through the `--td-figure-max` custom
 property rather than an inline `max-width`, so site CSS can override it.
@@ -646,16 +647,28 @@ params:
 The selected `params.ui.image_zoom.enable` value must be a boolean. An explicit
 page `false` wins over a site `true`.
 
-Zoom progressively enhances content images (`.td-content img`, top-level
-`figure > img` and `p > img`). It skips images inside links or buttons, images
-marked `data-no-zoom`, images without alt text, and images already enhanced.
-`data-zoom-src` from the `image` shortcode wins; otherwise the rendered image
-URL is used.
+Zoom has one opt-in marker, `data-td-image-zoom`. Everything the theme renders
+declares its own eligibility with it: the image render hook (block images and
+figures), the `image` shortcode, Book `fig`, and the `gallery` fence. The
+marker may carry a value, which is the URL Zoom opens — the `image` shortcode
+puts the full-size original there so the dialog does not show the processed
+derivative. Without a value the rendered image URL is used. `data-no-zoom`
+remains the opt-out.
 
-The build-time candidate scan recognizes standalone paragraph/figure images and
-explicit `data-td-image-zoom` markers; the browser repeats the same structural
-checks before mutation. Eligible images become real focusable controls after
-enhancement. Enter, Space, pointer activation, Escape, the visible close
+Zoom progressively enhances content images (`.td-content img`, top-level
+`img`, `figure > img` and `p > img`). It skips images inside links or buttons,
+images marked `data-no-zoom`, images without alt text, and images already
+enhanced.
+
+The build-time candidate scan tests for the marker first, which answers the
+question for all theme-rendered content without restating the runtime's rules.
+Only an image a site wrote as raw HTML falls back to a structural test, and
+that fallback keeps the exclusions so a page of decorative images loads no
+runtime. One over-approximation is accepted: a linked standalone image carries
+the marker, because the render hook cannot see the wrapping anchor, and the
+browser then skips it — such a page loads a runtime it never uses. The runtime
+is the only authority on eligibility. Eligible images become real focusable
+controls after enhancement. Enter, Space, pointer activation, Escape, the visible close
 button, and backdrop activation follow the native dialog model. One dialog is
 shared by the page; focus moves into it and returns to the originating control.
 

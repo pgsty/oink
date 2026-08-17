@@ -61,7 +61,10 @@
   {{- $figure = or $num $caption -}}
 {{- end -}}
 {{- $plainBlock := and $isBlock (not $figure) -}}
-{{- $zoomable := and $plainBlock (eq $format "html") (ne $image.alt "") -}}
+{{- /* Every block image the hook renders — bare or wrapped in a <figure> —
+       declares its own Zoom eligibility, so neither the build-time scan nor the
+       runtime has to infer it from the surrounding markup. */ -}}
+{{- $zoomable := and $isBlock (eq $format "html") (ne $image.alt "") -}}
 {{- $genericAttrs := "" -}}
 {{- if $plainBlock -}}
   {{- range $key, $value := $generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $key (htmlEscape $value) }}{{ end -}}

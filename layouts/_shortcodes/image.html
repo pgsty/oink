@@ -31,7 +31,10 @@
   {{- $markdown | safeHTML -}}
 {{- else -}}
 <figure class="td-figure td-figure--processed" style="--td-figure-max: {{ add $image.width 2 }}px">
-<img class="td-figure__image" src="{{ $image.src }}"{{ if eq $format "html" }} data-zoom-src="{{ $image.fullSrc }}"{{ if $image.decorative }} data-no-zoom{{ end }}{{ end }} alt="{{ $image.alt }}" width="{{ $image.width }}" height="{{ $image.height }}" loading="lazy" decoding="async">
+{{- /* The marker carries the full-size URL, so Zoom opens the original rather
+       than the processed derivative. A decorative image keeps the explicit
+       opt-out instead. */ -}}
+<img class="td-figure__image" src="{{ $image.src }}"{{ if eq $format "html" }}{{ if $image.decorative }} data-no-zoom{{ else }} data-td-image-zoom="{{ $image.fullSrc }}"{{ end }}{{ end }} alt="{{ $image.alt }}" width="{{ $image.width }}" height="{{ $image.height }}" loading="lazy" decoding="async">
 {{- if or $caption $image.byline }}
 <figcaption>
 {{- with $caption }}{{ partial "content/render-block.html" (dict "page" $.Page "scope" (printf "image%d" $.Ordinal) "content" .) }}{{ end -}}

@@ -81,8 +81,10 @@ def check_outputs(public: Path) -> list[str]:
         "data-td-image-zoom-caption",
         "Blue and gold standalone preview",
         "Green and violet processed preview",
-        'data-zoom-src="/media/content-primitives-global.png"',
-        'data-zoom-src="/docs/image-zoom/legacy-empty.png" data-no-zoom alt=""',
+        # One marker for every path: the value is the full-size original.
+        'data-td-image-zoom="/media/content-primitives-global.png"',
+        # A decorative processed image opts out instead of carrying a marker.
+        'data-no-zoom alt="" width="48" height="30"',
         "Linked image remains a link",
     ):
         require(marker in zoom, f"enabled Zoom fixture missing {marker}", errors)
@@ -122,7 +124,7 @@ def check_outputs(public: Path) -> list[str]:
     )
     require(not re.search(r"\son[a-z]+\s*=", zoom, re.I), "Zoom markup contains an inline event handler", errors)
 
-    for marker in ("<dialog", "td-image-zoom", "data-td-image-zoom", "data-zoom-src"):
+    for marker in ("<dialog", "td-image-zoom", "data-td-image-zoom"):
         require(marker not in markdown, f"Markdown output contains Zoom marker {marker}", errors)
         require(marker not in print_page, f"print output contains Zoom marker {marker}", errors)
     require("![Blue and gold standalone preview]" in markdown, "Markdown lost the standalone image", errors)
@@ -322,7 +324,12 @@ def check_template_contracts() -> list[str]:
     require('.Store.Set "hasImageZoom" true' in render, "content renderer does not set the Page Store flag", errors)
     require(".Content" not in scripts, "scripts.html forces page content rendering", errors)
     require('printf "%T" $value' in config and '"bool"' in config, "Zoom config is not strict boolean", errors)
-    require("data-no-zoom" in candidate and "standaloneParagraph" in candidate, "candidate scan lacks exclusions or structure", errors)
+    # The scan answers "did the theme mark anything?" first and only falls back
+    # to structure for images a site wrote as raw HTML; that fallback keeps the
+    # exclusions so a page of decorative images pulls in no runtime.
+    require('strings.Contains $html "data-td-image-zoom"' in candidate, "candidate scan does not test the marker first", errors)
+    require("data-no-zoom" in candidate and "aria-hidden" in candidate and "role" in candidate, "candidate scan lost its raw-HTML exclusions", errors)
+    require("standaloneParagraph" not in candidate, "candidate scan still re-derives the runtime eligibility rules", errors)
     require("<dialog" in dialog and "data-td-image-zoom-close" in dialog, "Zoom dialog lacks native markup", errors)
     require(not re.search(r"\son[a-z]+\s*=", dialog, re.I), "dialog partial contains inline handlers", errors)
 
@@ -330,7 +337,7 @@ def check_template_contracts() -> list[str]:
         "HTMLDialogElement",
         "showModal",
         "data-no-zoom",
-        "dataset.zoomSrc",
+        "dataset.tdImageZoom",
         "currentSrc",
         "event.target === dialog",
         "backdropPressed",

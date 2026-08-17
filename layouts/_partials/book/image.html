@@ -19,9 +19,12 @@
   {{- if $href }}{{ $markdown = printf "[%s](%s)" $markdown (partial "content/markdown-url.html" $href) }}{{ end -}}
   {{- $markdown | safeHTML -}}
 {{- else -}}
+{{- /* A linked figure image is not zoomable (the runtime skips images inside
+       anchors), so it declares no marker. */ -}}
+{{- $zoomable := and (eq $format "html") (not $href) (ne (strings.TrimSpace $alt) "") -}}
 {{- if $href }}<a class="td-book-figure__link" href="{{ $href }}">{{ end -}}
 <img class="td-book-figure__image" src="{{ $image.src }}" alt="{{ $alt }}"
   {{- with .width }} width="{{ . }}"{{ end -}}
-  {{- with .height }} height="{{ . }}"{{ end }} loading="lazy" decoding="async">
+  {{- with .height }} height="{{ . }}"{{ end }}{{ if $zoomable }} data-td-image-zoom{{ end }} loading="lazy" decoding="async">
 {{- if $href }}</a>{{ end -}}
 {{- end -}}

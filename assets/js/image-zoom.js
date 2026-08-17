@@ -28,6 +28,11 @@
     return caption?.textContent?.trim() || '';
   };
 
+  // `data-td-image-zoom` may carry the URL to open — the full-size original for
+  // a processed figure. Without a value the rendered image is used.
+  const zoomSource = (image) =>
+    image.dataset.tdImageZoom?.trim() || image.currentSrc || image.src;
+
   const isEligible = (image) => {
     if (!(image instanceof HTMLImageElement)) return false;
     const ariaHidden = image.getAttribute('aria-hidden')?.trim().toLowerCase();
@@ -46,8 +51,7 @@
     }
 
     const alt = image.getAttribute('alt');
-    const source = image.dataset.zoomSrc?.trim() || image.currentSrc || image.src;
-    if (!alt?.trim() || !source) return false;
+    if (!alt?.trim() || !zoomSource(image)) return false;
 
     // The theme marks everything it renders itself, Gallery fence items
     // included; the structural checks below only cover images a site wrote as
@@ -65,7 +69,7 @@
 
   const open = (button, image) => {
     const alt = image.getAttribute('alt') || '';
-    const source = image.dataset.zoomSrc?.trim() || image.currentSrc || image.src;
+    const source = zoomSource(image);
     const caption = directCaption(image);
 
     origin = button;

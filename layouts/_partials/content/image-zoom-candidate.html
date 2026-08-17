@@ -1,42 +1,40 @@
-{{- /* Mirror the runtime's conservative standalone-image eligibility test. */ -}}
-{{- $html := printf "%s" (.html | default "") -}}
-{{- $candidate := false -}}
-{{- if strings.Contains $html "<img" -}}
-  {{- $blocks := findRE `(?is)<p(?:\s[^>]*)?>.*?</p>` $html -}}
-  {{- $blocks = $blocks | append (findRE `(?is)<figure(?:\s[^>]*)?>.*?</figure>` $html) -}}
-  {{- $blocks = $blocks | append (findRE `(?is)<img\b[^>]*\sdata-td-image-zoom(?:\s|=|/?>)[^>]*>` $html) -}}
-  {{- /* Gallery needs no case of its own: the ```gallery fence is rendered by
-         the theme, so its eligible images already carry the explicit marker
-         picked up by the `$explicit` branch below. */ -}}
+{{- /* Decide whether a page needs the Image Zoom runtime.
 
-  {{- range $block := $blocks -}}
+       Everything the theme renders declares its own eligibility with
+       `data-td-image-zoom` (the image render hook for block images and
+       figures, the `image` shortcode, Book `fig`, the `gallery` fence), so a
+       containment test answers the question for theme-authored content without
+       re-deriving the runtime's rules — the drift that made this partial a
+       second implementation of `isEligible()` is gone.
+
+       The one structural case left is an image a site wrote as raw HTML in its
+       content. That branch keeps the exclusions, because the conditional
+       runtime loading is only worth having if a page of decorative images does
+       not pull the runtime in.
+
+       One over-approximation is accepted and pre-existing: a linked standalone
+       image carries the marker (the hook cannot see the wrapping anchor) but is
+       skipped in the browser, so its page loads a runtime it never uses. The
+       runtime remains the only authority on eligibility. */ -}}
+{{- $html := printf "%s" (.html | default "") -}}
+{{- $candidate := strings.Contains $html "data-td-image-zoom" -}}
+{{- if and (not $candidate) (strings.Contains $html "<img") -}}
+  {{- range $block := findRE `(?is)<(?:p|figure)(?:\s[^>]*)?>\s*<img\b[^>]*?/?>` $html -}}
     {{- if not $candidate -}}
-      {{- $standaloneParagraph := gt (len (findRE `(?is)^<p(?:\s[^>]*)?>\s*<img\b[^>]*?/?>\s*</p>$` $block 1)) 0 -}}
-      {{- $standaloneFigure := gt (len (findRE `(?is)^<figure(?:\s[^>]*)?>\s*<img\b[^>]*?/?>` $block 1)) 0 -}}
-      {{- $explicit := gt (len (findRE `(?is)^<img\b[^>]*\sdata-td-image-zoom(?:\s|=|/?>)[^>]*>$` $block 1)) 0 -}}
-      {{- if or $standaloneParagraph $standaloneFigure $explicit -}}
-        {{- $images := findRE `(?is)<img\b[^>]*>` $block 1 -}}
-        {{- with index $images 0 -}}
-          {{- $containers := findRE `(?is)^<(?:p|figure)(?:\s[^>]*)?>` $block 1 -}}
-          {{- $container := "" -}}
-          {{- if gt (len $containers) 0 }}{{ $container = index $containers 0 }}{{ end -}}
-          {{- $hasNoZoom := or
-            (gt (len (findRE `(?is)\sdata-no-zoom(?:\s|=|/?>)` . 1)) 0)
-            (gt (len (findRE `(?is)\sdata-no-zoom(?:\s|=|>)` $container 1)) 0)
-          -}}
-          {{- $hidden := or
-            (gt (len (findRE `(?is)\saria-hidden\s*=\s*(?:"true"|'true'|true)(?:\s|/?>)` . 1)) 0)
-            (gt (len (findRE `(?is)\srole\s*=\s*(?:"(?:presentation|none)"|'(?:presentation|none)'|(?:presentation|none))(?:\s|/?>)` . 1)) 0)
-          -}}
-          {{- $hasSource := gt (len (findRE `(?is)\ssrc\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>]+)` . 1)) 0 -}}
-          {{- $hasMeaningfulAlt := gt (len (findRE `(?is)\salt\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>"']+)` . 1)) 0 -}}
-          {{- if and (not $hasNoZoom) (not $hidden) $hasSource $hasMeaningfulAlt -}}
-            {{- $candidate = true -}}
-          {{- end -}}
-        {{- end -}}
+      {{- $images := findRE `(?is)<img\b[^>]*>` $block 1 -}}
+      {{- with index $images 0 -}}
+        {{- $excluded := or
+          (gt (len (findRE `(?is)\sdata-no-zoom(?:\s|=|/?>)` . 1)) 0)
+          (gt (len (findRE `(?is)\saria-hidden\s*=\s*(?:"true"|'true'|true)(?:\s|/?>)` . 1)) 0)
+          (gt (len (findRE `(?is)\srole\s*=\s*(?:"(?:presentation|none)"|'(?:presentation|none)'|(?:presentation|none))(?:\s|/?>)` . 1)) 0)
+        -}}
+        {{- $usable := and
+          (gt (len (findRE `(?is)\ssrc\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>]+)` . 1)) 0)
+          (gt (len (findRE `(?is)\salt\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>"']+)` . 1)) 0)
+        -}}
+        {{- if and (not $excluded) $usable }}{{ $candidate = true }}{{ end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-
 {{- return $candidate -}}

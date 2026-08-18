@@ -33,7 +33,21 @@ The canonical registry keeps the existing `hero`, `metrics`, `capabilities`,
 `principles`, `cards`, `logo-wall`, `gallery`, `testimonials`, `contributors`,
 `faq`, `markdown`, and `cta` sections. OINK 0.5 adds `pricing`,
 `pricing-compare`, `command-box`, `steps`, `timeline`, `code-plate`,
-`case-study`, `download`, and `bar-chart`.
+`preview`, `case-study`, `download`, and `bar-chart`.
+
+`preview` places a Markdown `source` beside what the theme renders from it.
+The rendered pane is `RenderString` through the site's own hooks, so callouts,
+step lists, adjacent-fence tabs, and fences appear as they do on a docs page
+and register their runtimes on the page store; the source pane is
+Chroma-highlighted Markdown on the terminal surface (`data-bs-theme="dark"`)
+under a `file` name (default `page.md`). `source` must be a non-empty string.
+Markdown output emits the source as a four-backtick `markdown` fence. RSS
+follows the Landing-wide contract and omits all sections. The pane labels are
+theme i18n (`ui_preview_source`, `ui_preview_rendered`).
+
+`hero.align` is `start` (default) or `center`. `center` is a text-only layout
+— the copy block widens and centres, the title balances across lines — and
+combining it with `hero.image` fails the build.
 
 Each section entry may be a type string or a map with `type`, `key`, `id`,
 `enabled`, inline `data`, or a deliberate local `partial` escape hatch. IDs are

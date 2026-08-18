@@ -125,6 +125,52 @@
     background-size: contain;
   }
 
+  // Text-only hero centred on the page: the copy block widens, the title
+  // balances across lines, and every row centres itself.
+  &--center {
+    align-items: center;
+    text-align: center;
+
+    > .td-site-container {
+      display: flex;
+      justify-content: center;
+    }
+
+    // A flex column so the quiet note can sit under the buttons (the shared
+    // markup keeps note before actions for the start-aligned hero).
+    .td-landing-hero__copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 880px;
+      text-align: center;
+
+      > * { order: 0; }
+      > .td-landing-hero__actions { order: 1; margin-top: 30px; }
+      > .td-landing-hero__note { order: 2; margin-top: 18px; }
+      > .td-landing-hero__detail { order: 3; }
+    }
+
+    .td-landing-hero__eyebrow,
+    .td-landing-hero__actions,
+    .td-landing-hero__note {
+      justify-content: center;
+    }
+
+    .td-landing-hero__title {
+      text-wrap: balance;
+
+      > span {
+        white-space: normal;
+      }
+    }
+
+    .td-landing-hero__lead {
+      margin-inline: auto;
+      max-width: 640px;
+    }
+  }
+
   &__eyebrow {
     display: flex;
     align-items: center;
@@ -2055,6 +2101,155 @@
 
   .highlight,
   .chroma { margin: 0; border: 0; background: transparent; }
+}
+
+// `preview`: the Markdown an author writes beside what the theme renders
+// from it. One frame, two panes; the source pane keeps the terminal surface
+// in both themes (it carries data-bs-theme="dark" so Chroma paints its dark
+// palette there), the rendered pane is a slice of an ordinary docs page.
+.td-landing-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--td-terminal-line);
+  border-radius: var(--td-radius-md);
+  box-shadow: var(--td-shadow);
+
+  &__pane {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__pane--source {
+    background: var(--td-terminal);
+    border-inline-end: 1px solid var(--td-terminal-line);
+  }
+
+  &__pane--rendered {
+    background: var(--bs-body-bg);
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--td-line);
+    font-family: var(--td-meta-font-family);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    > span {
+      display: inline-flex;
+      gap: 6px;
+
+      i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+
+        &:nth-child(1) { background: #dd5f56; }
+        &:nth-child(2) { background: #e2a53e; }
+        &:nth-child(3) { background: #58b368; }
+      }
+    }
+
+    b {
+      font-weight: 400;
+      color: var(--td-soft);
+    }
+
+    em {
+      margin-inline-start: auto;
+      font-style: normal;
+      color: var(--td-muted);
+    }
+  }
+
+  &__pane--source &__label {
+    border-bottom-color: rgba(148, 176, 210, 0.14);
+    background: rgba(148, 176, 210, 0.05);
+
+    b { color: rgba(200, 215, 235, 0.72); }
+    em { color: rgba(200, 215, 235, 0.42); }
+  }
+
+  &__pane--rendered &__label {
+    background: color-mix(in srgb, var(--td-line) 35%, transparent);
+
+    b { color: var(--td-muted); }
+  }
+
+  &__source {
+    flex: 1;
+    padding: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 30px);
+    overflow: auto;
+
+    .highlight,
+    .chroma {
+      margin: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      color: #dbe4f0;
+      font-family: var(--td-code-font-family);
+      font-size: clamp(0.76rem, 1.1vw, 0.88rem);
+      line-height: 1.85;
+      white-space: pre;
+    }
+
+  }
+
+  // This pane is a display surface, like the code plate: it owns the few
+  // token colours Chroma's markdown lexer emits, so the syntax reads quiet
+  // and the prose bright on the terminal ground in either theme. The
+  // selector repeats the pane's own data-bs-theme so it outranks the
+  // theme-scoped Chroma palette without !important.
+  &__pane--source[data-bs-theme='dark'] .chroma {
+    color: #dbe4f0;
+
+    .k { color: #7fa3d1; font-weight: 400; }
+    .ge { color: #dbe4f0; font-style: normal; }
+    .gs { color: #f0f4fa; font-weight: 600; }
+    .sb, .s { color: #8fd7a8; }
+    .gu, .gh { color: #f0f4fa; font-weight: 600; }
+  }
+
+  &__rendered {
+    flex: 1;
+    padding: clamp(18px, 3vw, 28px) clamp(18px, 3vw, 30px);
+    overflow: auto;
+    font-size: 0.94rem;
+
+    > :first-child { margin-top: 0; }
+    > :last-child { margin-bottom: 0; }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .td-landing-preview {
+    grid-template-columns: minmax(0, 1fr);
+
+    &__pane--source {
+      border-inline-end: 0;
+      border-bottom: 1px solid var(--td-terminal-line);
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  .td-landing-preview,
+  .td-landing-preview__pane--source,
+  .td-landing-preview__label {
+    border-color: CanvasText;
+  }
 }
 
 .td-landing-case-study {

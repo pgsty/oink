@@ -1,0 +1,17 @@
+{{- $page := .page -}}
+{{- if eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+  {{- $html := printf "%s" .html -}}
+  {{- $raw := printf "%s" (.raw | default "") -}}
+  {{- if or
+    (strings.Contains $html `type="checkbox"`)
+    (findRE `<(?:i|span)\b[^>]*class=["'][^"']*\bfa-` $raw 1)
+  -}}
+    {{- $page.Store.Set "hasAuthoredA11y" true -}}
+  {{- end -}}
+  {{- $zoom := partial "content/image-zoom-config.html" $page -}}
+  {{- if and $zoom.enable (not ($page.Store.Get "hasImageZoom" | default false)) -}}
+    {{- if partial "content/image-zoom-candidate.html" (dict "html" $html) -}}
+      {{- $page.Store.Set "hasImageZoom" true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

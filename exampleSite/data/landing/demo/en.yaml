@@ -117,6 +117,26 @@ sections:
       code: |
         layout: landing
         landing: demo
+  - type: preview
+    key: landing-preview
+    data:
+      title: What you write, what you get
+      file: guide.md
+      source: |
+        > [!TIP] Only Markdown
+        > A blockquote with a type marker is a callout.
+
+        1. Write Markdown
+        2. Run `hugo`
+        {.steps}
+
+        ```bash {tab="macOS"}
+        brew install hugo
+        ```
+
+        ```bash {tab="Linux"}
+        apt install hugo
+        ```
   - type: case-study
     data:
       title: Migration result

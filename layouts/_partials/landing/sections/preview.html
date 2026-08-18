@@ -1,0 +1,37 @@
+{{- /* Markdown source beside its scoped rendered output. */ -}}
+{{- $page := .page -}}
+{{- $data := .data -}}
+{{- $id := .id -}}
+{{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{- $source := "" -}}
+{{- with index $data "source" -}}
+  {{- if ne (printf "%T" .) "string" }}{{ errorf "%s: preview.source must be a string" $page.Path }}{{ end -}}
+  {{- $source = strings.TrimRight "\r\n" . -}}
+{{- end -}}
+{{- if not (strings.TrimSpace $source) }}{{ errorf "%s: preview.source must not be empty" $page.Path }}{{ end -}}
+{{- $file := strings.TrimSpace (printf "%v" ($data.file | default "page.md")) -}}
+{{- $sourceLabel := T "ui_preview_source" | default "Markdown" -}}
+{{- $renderedLabel := T "ui_preview_rendered" | default "Rendered" -}}
+{{- $rendered := partial "content/render-block.html" (dict
+  "page" $page "scope" (printf "landing-preview-%s" $id) "content" $source
+) -}}
+{{- partial "content/register-derived.html" (dict "page" $page "html" $rendered "raw" $source) -}}
+<section id="{{ $id }}" class="td-landing-section td-landing-preview-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="td-site-container">
+    {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
+    <div class="td-landing-preview"{{ if $interactive }} data-td-reveal{{ end }}>
+      <div class="td-landing-preview__pane td-landing-preview__pane--source" data-bs-theme="dark">
+        <div class="td-landing-preview__label" aria-hidden="true"><span><i></i><i></i><i></i></span><b>{{ $file }}</b><em>{{ $sourceLabel }}</em></div>
+        <div class="td-landing-preview__source" aria-label="{{ $sourceLabel }}: {{ $file }}">
+          {{- transform.Highlight $source "markdown" (dict "noClasses" false) -}}
+        </div>
+      </div>
+      <div class="td-landing-preview__pane td-landing-preview__pane--rendered">
+        <div class="td-landing-preview__label" aria-hidden="true"><b>{{ $renderedLabel }}</b></div>
+        <div class="td-landing-preview__rendered td-content" aria-label="{{ $renderedLabel }}">
+          {{- $rendered -}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

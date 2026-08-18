@@ -1,20 +1,4 @@
 {{- /* Render once, then register content-derived runtimes. */ -}}
 {{- $content := .Content -}}
-{{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if eq $outputFormat "html" -}}
-  {{- $html := printf "%s" $content -}}
-  {{- $raw := printf "%s" .RawContent -}}
-  {{- if or
-    (strings.Contains $html `type="checkbox"`)
-    (findRE `<(?:i|span)\b[^>]*class=["'][^"']*\bfa-` $raw 1)
-  -}}
-    {{- .Store.Set "hasAuthoredA11y" true -}}
-  {{- end -}}
-  {{- $config := partial "content/image-zoom-config.html" . -}}
-  {{- if and $config.enable (not (.Store.Get "hasImageZoom" | default false)) -}}
-    {{- if partial "content/image-zoom-candidate.html" (dict "html" $content) -}}
-      {{- .Store.Set "hasImageZoom" true -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- partial "content/register-derived.html" (dict "page" . "html" $content "raw" .RawContent) -}}
 {{- return $content -}}

@@ -27,6 +27,7 @@ def main() -> int:
         head = read("layouts/_partials/head.html")
         scripts = read("layouts/_partials/scripts.html")
         content = read("layouts/_partials/content/render.html")
+        derived = read("layouts/_partials/content/register-derived.html")
         search_input = read("layouts/_partials/search-input.html")
         docs_shell = read("assets/js/docs-shell.js")
         palette = read("assets/js/command-palette.js")
@@ -64,9 +65,10 @@ def main() -> int:
             "legacy offline-search runtime remains in the shared bundle",
         )
         require(
-            '.Store.Set "hasAuthoredA11y" true' in content
-            and 'type="checkbox"' in content
-            and "\\bfa-" in content
+            'partial "content/register-derived.html"' in content
+            and '.Store.Set "hasAuthoredA11y" true' in derived
+            and 'type="checkbox"' in derived
+            and "\\bfa-" in derived
             and '.Page.Store.Get "hasAuthoredA11y"' in scripts
             and 'resources.Get "js/authored-a11y.js"' in scripts,
             "authored accessibility repair is not isolated to pages that need it",

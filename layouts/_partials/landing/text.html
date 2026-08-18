@@ -20,6 +20,8 @@
       {{- range $data.items }}{{ $lines = $lines | append (printf "- **%s · %s** — %s" .date .title (.desc | default .text | default "")) }}{{ end -}}
     {{- else if eq $type "code-plate" }}
       {{- if isset $data "code" }}{{ $lines = $lines | append (printf "```%s\n%s\n```" ($data.lang | default "text") (strings.TrimRight "\r\n" $data.code)) }}{{ else }}{{ $raw := slice }}{{ range $data.lines }}{{ $raw = $raw | append (printf "%s%s" (.prefix | default "") .text) }}{{ end }}{{ $lines = $lines | append (printf "```text\n%s\n```" (delimit $raw "\n")) }}{{ end -}}
+    {{- else if eq $type "preview" }}
+      {{- with $data.source }}{{ $lines = $lines | append (printf "````markdown\n%s\n````" (strings.TrimRight "\r\n" .)) }}{{ end -}}
     {{- else if eq $type "case-study" }}
       {{- range $data.stats }}{{ $lines = $lines | append (printf "- **%v** %s" .value .label) }}{{ end }}{{ $lines = $lines | append (printf "> %s\n>\n> — %s" $data.quote $data.source) -}}
     {{- else if eq $type "download" }}

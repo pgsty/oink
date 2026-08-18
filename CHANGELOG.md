@@ -80,6 +80,16 @@ fail the build with the new name rather than being silently ignored.
 
 ### Added
 
+- Landing section `preview`: a Markdown `source` beside what the theme
+  renders from it. The rendered pane is the real renderer (`RenderString`
+  through the site's hooks — callouts, `{.steps}`, adjacent-fence tabs, and
+  fences all appear as on a docs page and register their runtimes); the
+  source pane is Chroma-highlighted Markdown on the terminal surface. Markdown
+  output emits the source as a fence; RSS omits Landing sections. Pane labels
+  are theme i18n
+  (`ui_preview_source`, `ui_preview_rendered`). `hero.align: center` is a
+  text-only centred hero (the copy widens, the title balances; combining it
+  with `hero.image` fails the build).
 - Native Markdown forms for every content primitive, so most components no
   longer need a shortcode: `> [!TYPE]` callouts with optional folding and an
   `{icon=}` attribute; `{.steps}` and `{.cards}` list markers; the

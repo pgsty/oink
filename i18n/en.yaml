@@ -36,6 +36,8 @@ ui_palette_index_unavailable: Page index unavailable; actions still work
 ui_sidebar_nav: Section navigation
 ui_heading_self_link: Link to this heading
 ui_field_self_link: Link to this field
+ui_preview_source: Markdown
+ui_preview_rendered: Rendered
 ui_main_nav: Main navigation
 ui_home: Home
 ui_sidebar_expand: Expand sidebar

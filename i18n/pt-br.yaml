@@ -285,3 +285,8 @@ ui_filetree_divider: "Resize the file tree comment column"
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_field_self_link: Link to this field
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_preview_source: Markdown
+ui_preview_rendered: Rendered

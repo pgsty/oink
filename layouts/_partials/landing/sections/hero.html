@@ -26,6 +26,9 @@
   {{- if not (findRE `^[0-9]+(?:[.][0-9]+)?(?:rem|em|px)$` $titleSize) }}{{ errorf "%s: hero.title_size must be a CSS length in rem, em, or px" $page.Path }}{{ end -}}
   {{- $heroStyle = printf "%s --td-hero-title-size: %s;" $heroStyle $titleSize -}}
 {{- end -}}
+{{- $align := lower (strings.TrimSpace (printf "%v" ($hero.align | default "start"))) -}}
+{{- if not (in (slice "start" "center") $align) }}{{ errorf "%s: hero.align must be start or center" $page.Path }}{{ end -}}
+{{- if and (eq $align "center") $hero.image }}{{ errorf "%s: hero.align center is a text-only layout; drop hero.image or use align start" $page.Path }}{{ end -}}
 {{- $media := $hero.media | default dict -}}
 {{- if and $media (not (reflect.IsMap $media)) }}{{ errorf "%s: hero.media must be a map" $page.Path }}{{ end -}}
 {{- $breakpoint := strings.TrimSpace (printf "%v" ($media.hide_below | default "")) -}}
@@ -35,7 +38,7 @@
 {{- if $hasImage -}}
   {{- $imageStyle = printf "--td-hero-image-light: url(%q); --td-hero-image-dark: url(%q);" ($imageLight | relURL) ($imageDark | relURL) -}}
 {{- end -}}
-<section id="{{ $id }}" class="td-landing-hero{{ if $hasImage }} td-landing-hero--with-media{{ end }}{{ with $breakpoint }} td-landing-hero--hide-media-below-{{ . }}{{ end }}{{ with $hero.class }} {{ . }}{{ end }}"{{ with $heroStyle }} style="{{ . | safeCSS }}"{{ end }} aria-labelledby="{{ $id }}-title">
+<section id="{{ $id }}" class="td-landing-hero{{ if $hasImage }} td-landing-hero--with-media{{ end }}{{ if eq $align "center" }} td-landing-hero--center{{ end }}{{ with $breakpoint }} td-landing-hero--hide-media-below-{{ . }}{{ end }}{{ with $hero.class }} {{ . }}{{ end }}"{{ with $heroStyle }} style="{{ . | safeCSS }}"{{ end }} aria-labelledby="{{ $id }}-title">
   <div class="td-landing-hero__glow" aria-hidden="true"></div>
   <div class="td-site-container">
     <div class="td-landing-hero__copy">

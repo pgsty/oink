@@ -14,6 +14,8 @@ import re
 import subprocess
 import tempfile
 
+from test_site import build_fixture_public
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -399,12 +401,19 @@ def check_template_contracts() -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
+    parser.add_argument("--public", type=Path)
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
 
+    public = args.public
+    if public is None:
+        public, result = build_fixture_public(args.hugo)
+        if result.returncode != 0:
+            print(f"private fixture build failed: {result.stdout}{result.stderr}")
+            return 1
+
     errors = (
-        check_outputs(args.public)
+        check_outputs(public)
         + check_callout_matrix(args.hugo)
         + check_data_fences(args.hugo)
         + check_steps_container(args.hugo)

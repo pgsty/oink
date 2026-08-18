@@ -44,64 +44,64 @@ jobs:
           extended: true
 
       - name: Check translation key parity
-        run: python3 scripts/check-i18n.py
+        run: python3 bin/check-i18n.py
 
       - name: Check opt-in taxonomy localization
-        run: python3 scripts/check-taxonomy.py
+        run: python3 bin/check-taxonomy.py
 
       - name: Verify vendored dependency inventory
-        run: python3 scripts/check-vendor.py
+        run: python3 bin/check-vendor.py
 
       - name: Check typography token boundaries
-        run: python3 scripts/check-font-tokens.py
+        run: python3 bin/check-font-tokens.py
 
       - name: Check navigation contracts and characterization
-        run: python3 scripts/check-navigation-contract.py
+        run: python3 bin/check-navigation-contract.py
 
       - name: Check runtime isolation
-        run: python3 scripts/check-runtime-isolation.py
+        run: python3 bin/check-runtime-isolation.py
 
       - name: Check sidebar icon density policies
-        run: python3 scripts/check-sidebar-icons.py
+        run: python3 bin/check-sidebar-icons.py
 
       - name: Check search metadata and ranking
-        run: python3 scripts/check-search.py
+        run: python3 bin/check-search.py
 
       - name: Check action registry and command manifest
-        run: python3 scripts/check-actions.py
+        run: python3 bin/check-actions.py
 
       - name: Check Command Palette modes and behavior
-        run: python3 scripts/check-palette.py
+        run: python3 bin/check-palette.py
 
       - name: Check starter root and subpath output
-        run: python3 scripts/check-starter.py
+        run: python3 bin/check-starter.py
 
       - name: Check reading and mathematics
-        run: python3 scripts/check-reading.py
+        run: python3 bin/check-reading.py
 
       - name: Check releases and assets
-        run: python3 scripts/check-release-assets.py
+        run: python3 bin/check-release-assets.py
 
       - name: Check download data
-        run: python3 scripts/check-download.py
+        run: python3 bin/check-download.py
 
       - name: Check Landing surfaces
-        run: python3 scripts/check-landing.py
+        run: python3 bin/check-landing.py
 
       - name: Check Book surfaces
-        run: python3 scripts/check-book.py
+        run: python3 bin/check-book.py
 
       - name: Check Book migrations
-        run: python3 scripts/check-book-migrations.py
+        run: python3 bin/check-book-migrations.py
 
       - name: Check shared scenarios
-        run: python3 scripts/check-shared-scenarios.py
+        run: python3 bin/check-shared-scenarios.py
 
       - name: Check keyboard navigation
-        run: python3 scripts/check-keyboard.py
+        run: python3 bin/check-keyboard.py
 
       - name: Check navigation and page-end composition
-        run: python3 scripts/check-shell.py
+        run: python3 bin/check-shell.py
 
       - name: Build the example site without warnings
         working-directory: exampleSite
@@ -140,40 +140,40 @@ jobs:
           test -f "$RUNNER_TEMP/oink-module-public/webfonts/fa-solid-900.woff2"
 
       - name: Check enhanced code-block contracts
-        run: python3 scripts/check-code-blocks.py
+        run: python3 bin/check-code-blocks.py
 
       - name: Check everyday content primitives
-        run: python3 scripts/check-content-primitives.py
+        run: python3 bin/check-content-primitives.py
 
       - name: Check shared media primitives
-        run: python3 scripts/check-media-primitives.py
+        run: python3 bin/check-media-primitives.py
 
       - name: Check opt-in Image Zoom
-        run: python3 scripts/check-image-zoom.py
+        run: python3 bin/check-image-zoom.py
 
       - name: Check Gallery output and Zoom reuse
-        run: python3 scripts/check-gallery.py
+        run: python3 bin/check-gallery.py
 
       - name: Check v5 components (callouts, tabs, data fences, removed shortcodes)
-        run: python3 scripts/check-components.py
+        run: python3 bin/check-components.py
 
       - name: Check migration toolkit
         run: python3 -m unittest discover -s tests/migrations -t .
 
       - name: Check output structure and security
-        run: python3 scripts/check-output.py
+        run: python3 bin/check-output.py
 
       - name: Check the naming namespace
-        run: python3 scripts/check-namespace.py
+        run: python3 bin/check-namespace.py
 
       - name: Check the parameter contract and legacy-key errors
-        run: python3 scripts/check-params.py
+        run: python3 bin/check-params.py
 
       - name: Check consuming-site Goldmark prerequisites
-        run: python3 scripts/check-site-markup.py --site exampleSite
+        run: python3 bin/check-site-markup.py --site exampleSite
 
       - name: Check four-state goldens
-        run: python3 scripts/check-goldens.py --public exampleSite/public
+        run: python3 bin/check-goldens.py --public exampleSite/public
 
       - name: Build the system typography preset
         working-directory: exampleSite

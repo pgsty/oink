@@ -14,7 +14,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ACTIONS_SCRIPT = ROOT / "scripts" / "check-actions.py"
+ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
 
 # Every key binds must appear in the runtime, and the runtime must not
 # grow keys the contract table does not document. ArrowLeft/ArrowRight bind through

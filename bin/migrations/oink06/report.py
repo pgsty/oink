@@ -56,7 +56,7 @@ def render_markdown(report: dict) -> str:
     lines: list[str] = []
     lines.append(f"# OINK 0.5 migration inventory — {report['generated_at']}")
     lines.append("")
-    lines.append("Read-only dry-run of `scripts/migrations/oink06.py` over the listed sites. Counts are conversions the")
+    lines.append("Read-only dry-run of `bin/migrations/oink06.py` over the listed sites. Counts are conversions the")
     lines.append("scripts would perform; findings are constructs left untouched (with the reason).")
     lines.append("")
     # summary ------------------------------------------------------------------

@@ -6,10 +6,10 @@ The pages listed in tests/goldens/manifest.json are built with Hugo, normalised
 compared line-for-line (indentation-insensitive, blank lines dropped) against tests/goldens/<name>. One golden per output state
 per surface: html, print, markdown, rss, llms.
 
-  scripts/check-goldens.py                # compare (default)
-  scripts/check-goldens.py --update       # rewrite the goldens from the current build
-  scripts/check-goldens.py --hugo PATH    # build with another Hugo binary
-  scripts/check-goldens.py --public DIR   # reuse an existing exampleSite build
+  bin/check-goldens.py                # compare (default)
+  bin/check-goldens.py --update       # rewrite the goldens from the current build
+  bin/check-goldens.py --hugo PATH    # build with another Hugo binary
+  bin/check-goldens.py --public DIR   # reuse an existing exampleSite build
 
 Goldens are shared between the CI Hugo versions; a version-specific difference
 must be normalised here (never by keeping two copies silently). Update goldens

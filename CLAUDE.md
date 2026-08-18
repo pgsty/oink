@@ -39,53 +39,53 @@ Everything CI runs, in order — see `.github/workflows/ci.yml`:
 
 ```sh
 # Source-level contract checks (no build needed)
-python3 scripts/check-i18n.py                        # translation key parity across 32 locales
-python3 scripts/check-i18n.py --sync                 # append missing keys as English fallbacks
-python3 scripts/check-taxonomy.py                    # opt-in taxonomy labels and bilingual output
-python3 scripts/check-font-tokens.py                 # no raw font families outside the token layer
-python3 scripts/check-navigation-contract.py         # navigation/palette/action contracts
-python3 scripts/check-runtime-isolation.py           # runtime isolation and capability predicates
-python3 scripts/check-sidebar-icons.py               # sidebar icon density policy
-python3 scripts/check-search.py                      # search metadata and ranking
-python3 scripts/check-actions.py                     # action registry and command manifest
-python3 scripts/check-palette.py                     # Command Palette modes and behavior
-python3 scripts/check-starter.py                      # root/subpath starter and component wiring
-python3 scripts/check-reading.py                     # math passthrough + tree-order pager
-python3 scripts/check-release-assets.py              # release facts/cards/checksum output matrix
-python3 scripts/check-download.py                    # download schema and publication states
-python3 scripts/check-landing.py                     # landing registry/runtime/output matrix
-python3 scripts/check-book.py                        # numbered targets/xrefs/Book assembly
-python3 scripts/check-book-migrations.py             # dry-run/idempotency Book migration profiles
-python3 scripts/check-shared-scenarios.py            # shared scenario fixes and compatibility
-python3 scripts/check-keyboard.py                    # keyboard navigation contract
-python3 scripts/check-shell.py                       # navigation and page-end composition
-python3 scripts/check-namespace.py                   # td- class / data-td- attribute / --td- property namespaces
-python3 scripts/check-params.py                      # parameter shapes (bare booleans, no single-key maps, FM = site key minus ui.) + legacy-key build matrix
-python3 scripts/check-site-markup.py --site exampleSite # consuming-site Goldmark prerequisites
-python3 scripts/check-output.py                      # HTML structure, duplicate IDs, bundle graph, output security (+ negative fixture)
-python3 scripts/check-goldens.py                     # four-state goldens (html / print / markdown / rss / llms) of exampleSite
+python3 bin/check-i18n.py                        # translation key parity across 32 locales
+python3 bin/check-i18n.py --sync                 # append missing keys as English fallbacks
+python3 bin/check-taxonomy.py                    # opt-in taxonomy labels and bilingual output
+python3 bin/check-font-tokens.py                 # no raw font families outside the token layer
+python3 bin/check-navigation-contract.py         # navigation/palette/action contracts
+python3 bin/check-runtime-isolation.py           # runtime isolation and capability predicates
+python3 bin/check-sidebar-icons.py               # sidebar icon density policy
+python3 bin/check-search.py                      # search metadata and ranking
+python3 bin/check-actions.py                     # action registry and command manifest
+python3 bin/check-palette.py                     # Command Palette modes and behavior
+python3 bin/check-starter.py                      # root/subpath starter and component wiring
+python3 bin/check-reading.py                     # math passthrough + tree-order pager
+python3 bin/check-release-assets.py              # release facts/cards/checksum output matrix
+python3 bin/check-download.py                    # download schema and publication states
+python3 bin/check-landing.py                     # landing registry/runtime/output matrix
+python3 bin/check-book.py                        # numbered targets/xrefs/Book assembly
+python3 bin/check-book-migrations.py             # dry-run/idempotency Book migration profiles
+python3 bin/check-shared-scenarios.py            # shared scenario fixes and compatibility
+python3 bin/check-keyboard.py                    # keyboard navigation contract
+python3 bin/check-shell.py                       # navigation and page-end composition
+python3 bin/check-namespace.py                   # td- class / data-td- attribute / --td- property namespaces
+python3 bin/check-params.py                      # parameter shapes (bare booleans, no single-key maps, FM = site key minus ui.) + legacy-key build matrix
+python3 bin/check-site-markup.py --site exampleSite # consuming-site Goldmark prerequisites
+python3 bin/check-output.py                      # HTML structure, duplicate IDs, bundle graph, output security (+ negative fixture)
+python3 bin/check-goldens.py                     # four-state goldens (html / print / markdown / rss / llms) of exampleSite
 
 cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warning-free
 
 # Output checks (each builds exampleSite into a temp dir itself)
-python3 scripts/check-code-blocks.py                 # enhanced fences / adjacent-fence tabs / tabs shortcode
-python3 scripts/check-content-primitives.py # badge, kbd, fields (table + shortcode), filetree/steps/cards lists, table family
-python3 scripts/check-media-primitives.py            # image render hook and shared resolver
-python3 scripts/check-image-zoom.py                  # zoom gating and output isolation
-python3 scripts/check-gallery.py                     # native gallery list + zoom runtime reuse
-python3 scripts/check-components.py                  # callouts, tabs, data fences, removed shortcodes, hook attribute policy
+python3 bin/check-code-blocks.py                 # enhanced fences / adjacent-fence tabs / tabs shortcode
+python3 bin/check-content-primitives.py # badge, kbd, fields (table + shortcode), filetree/steps/cards lists, table family
+python3 bin/check-media-primitives.py            # image render hook and shared resolver
+python3 bin/check-image-zoom.py                  # zoom gating and output isolation
+python3 bin/check-gallery.py                     # native gallery list + zoom runtime reuse
+python3 bin/check-components.py                  # callouts, tabs, data fences, removed shortcodes, hook attribute policy
 
 # Content migration toolkit for the 0.4 -> v5 syntax (dry-run by default; tests in tests/migrations/)
-python3 scripts/migrations/oink06.py report --sites <dir>... # read-only inventory
-python3 scripts/migrations/oink06.py migrate --site <dir> [--write]
-python3 scripts/migrations/oink06.py check --site <dir> # residual legacy syntax
+python3 bin/migrations/oink06.py report --sites <dir>... # read-only inventory
+python3 bin/migrations/oink06.py migrate --site <dir> [--write]
+python3 bin/migrations/oink06.py check --site <dir> # residual legacy syntax
 python3 -m unittest discover -s tests/migrations -t .
 
 # Browser runtimes (plain assets, no install step)
 node --test 'tests/js/**/*.test.js'
 ```
 
-`check-output.py` and `check-goldens.py` also read `exampleSite/public` (or `--public`); `check-goldens.py --update` rewrites `tests/goldens/` — do it in the same commit as the behaviour change and say why. `scripts/check-output-security.py --public DIR --base-url URL [--third-party]` is the product-level trust check any site can run; `scripts/sites/build-all.py` builds the eleven sites strictly in isolation (`--ref <branch>`, `--keep`, `--baseline` for surface diffs).
+`check-output.py` and `check-goldens.py` also read `exampleSite/public` (or `--public`); `check-goldens.py --update` rewrites `tests/goldens/` — do it in the same commit as the behaviour change and say why. `bin/check-output-security.py --public DIR --base-url URL [--third-party]` is the product-level trust check any site can run; `bin/sites/build-all.py` builds the eleven sites strictly in isolation (`--ref <branch>`, `--keep`, `--baseline` for surface diffs).
 
 The output-checking scripts accept `--hugo /path/to/hugo` (to test the 0.160.1
 floor) and `--public DIR` (to reuse an existing build). Run a single one

@@ -3,7 +3,7 @@
 
        Every image source goes through the shared URL policy, so a landing
        image is held to the same trust boundary as an image in content —
-       scripts/check-output-security.py treats <img> as a remote element, and
+       bin/check-output-security.py treats <img> as a remote element, and
        this partial used to bypass the policy entirely with a bare relURL.
        The full resolver (intrinsic dimensions) is deliberately not used here:
        it fails the build when a source resolves to a non-image resource, and

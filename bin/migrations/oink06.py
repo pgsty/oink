@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """OINK 0.5 component API migration toolkit.
 
-    scripts/migrations/oink06.py report  --sites ~/pgsty/site-a ~/www/ddia [--json r.json] [--md r.md]
-    scripts/migrations/oink06.py migrate --site ~/pgsty/site-a [--only callout,tabs] [--write] [--json out.json]
-    scripts/migrations/oink06.py check   --site ~/pgsty/site-a
+    bin/migrations/oink06.py report  --sites ~/pgsty/site-a ~/www/ddia [--json r.json] [--md r.md]
+    bin/migrations/oink06.py migrate --site ~/pgsty/site-a [--only callout,tabs] [--write] [--json out.json]
+    bin/migrations/oink06.py check   --site ~/pgsty/site-a
 
 Dry-run is the default; ``--write`` rewrites files atomically. A second run
 must report zero changes. Constructs the scripts cannot express are left

@@ -24,10 +24,10 @@ and production parity must be recorded separately.
 The standard toolkit is dry-run first and idempotent:
 
 ```sh
-python3 scripts/migrations/oink06.py report --sites <dir>... --md report.md --json report.json
-python3 scripts/migrations/oink06.py migrate --site <dir>
-python3 scripts/migrations/oink06.py migrate --site <dir> --write
-python3 scripts/migrations/oink06.py check --site <dir>
+python3 bin/migrations/oink06.py report --sites <dir>... --md report.md --json report.json
+python3 bin/migrations/oink06.py migrate --site <dir>
+python3 bin/migrations/oink06.py migrate --site <dir> --write
+python3 bin/migrations/oink06.py check --site <dir>
 ```
 
 Ambiguous content is reported with its position and left unchanged. Text in

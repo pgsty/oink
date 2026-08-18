@@ -12,7 +12,7 @@ Over the built exampleSite (--public, default exampleSite/public):
      any page references at most one per-page js/page-<key> feature bundle, no
      remote <script src> / stylesheet <link> appears, and the number of distinct
      feature bundles is reported.
-  4. output security — scripts/check-output-security.py over the same build (the
+  4. output security — bin/check-output-security.py over the same build (the
      fixture opts into third-party embeds) plus a synthetic negative fixture that must
      be rejected.
 """
@@ -154,11 +154,11 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
 
 def check_security(public: Path) -> list[str]:
     errors: list[str] = []
-    result = subprocess.run([sys.executable, str(ROOT / "scripts/check-output-security.py"), "--public", str(public), "--base-url", "https://example.org/", "--third-party"], capture_output=True, text=True)
+    result = subprocess.run([sys.executable, str(ROOT / "bin/check-output-security.py"), "--public", str(public), "--base-url", "https://example.org/", "--third-party"], capture_output=True, text=True)
     if result.returncode != 0:
         errors.append("check-output-security.py failed on exampleSite:\n" + result.stdout.strip())
     bad = ROOT / "tests/fixtures/output-security/bad"
-    result = subprocess.run([sys.executable, str(ROOT / "scripts/check-output-security.py"), "--public", str(bad), "--base-url", "https://example.org/"], capture_output=True, text=True)
+    result = subprocess.run([sys.executable, str(ROOT / "bin/check-output-security.py"), "--public", str(bad), "--base-url", "https://example.org/"], capture_output=True, text=True)
     if result.returncode == 0:
         errors.append("check-output-security.py accepted the negative fixture tests/fixtures/output-security/bad")
     else:

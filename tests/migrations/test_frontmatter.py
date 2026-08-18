@@ -14,12 +14,12 @@ import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts" / "migrations"))
+sys.path.insert(0, str(ROOT / "bin" / "migrations"))
 
 from oink06.cli import migrate_text, residual_findings  # noqa: E402
 from oink06.transforms import load  # noqa: E402
 
-CLI = ROOT / "scripts" / "migrations" / "oink06.py"
+CLI = ROOT / "bin" / "migrations" / "oink06.py"
 ONLY = ["frontmatter"]
 
 

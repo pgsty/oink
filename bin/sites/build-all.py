@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SITES_FILE = Path(__file__).resolve().parent / "sites.txt"
 
-_spec = importlib.util.spec_from_file_location("measure_baseline", ROOT / "scripts/measure-baseline.py")
+_spec = importlib.util.spec_from_file_location("measure_baseline", ROOT / "bin/measure-baseline.py")
 _mb = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mb)  # type: ignore[union-attr]
 snapshot_site = _mb.snapshot_site

@@ -5,7 +5,7 @@ Hugo does not merge a theme module's ``markup`` configuration into a consuming
 site. This command asks Hugo for the site's fully merged configuration instead
 of guessing across YAML/TOML files and environment overlays.
 
-    python3 scripts/check-site-markup.py --site /path/to/site
+    python3 bin/check-site-markup.py --site /path/to/site
 """
 
 from __future__ import annotations

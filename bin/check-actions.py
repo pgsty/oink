@@ -18,7 +18,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT_SCRIPT = ROOT / "scripts" / "check-navigation-contract.py"
+CONTRACT_SCRIPT = ROOT / "bin" / "check-navigation-contract.py"
 # Order is part of the contract: the title menu renders these in sequence, so
 # this list is also the reading order a visitor sees. The choice trio mirrors
 # the navbar control order — version, language, theme (keyboard-nav contract).

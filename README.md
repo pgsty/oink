@@ -94,7 +94,7 @@ params:
 Before migrating content, verify the consuming site's resolved configuration:
 
 ```sh
-python3 path/to/oink/scripts/check-site-markup.py --site .
+python3 path/to/oink/bin/check-site-markup.py --site .
 ```
 
 `markdown` enables Copy text and View source, `LLMS` emits `llms.txt`, and

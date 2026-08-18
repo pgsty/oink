@@ -351,7 +351,7 @@ def check_template_contracts() -> list[str]:
     require("(\\s|/?>)" in static_output and '"$1"' in static_output, "static output filter lacks exact attribute boundaries", errors)
     for marker in (".td-gallery", "grid-template-columns: repeat(auto-fit", "forced-colors", "@media print", "break-inside"):
         require(marker in styles, f"Gallery styles lack {marker}", errors)
-    require("python3 scripts/check-gallery.py" in ci, "CI does not run Gallery checks", errors)
+    require("python3 bin/check-gallery.py" in ci, "CI does not run Gallery checks", errors)
     return errors
 
 

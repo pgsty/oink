@@ -14,7 +14,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT_SCRIPT = ROOT / "scripts" / "check-navigation-contract.py"
+CONTRACT_SCRIPT = ROOT / "bin" / "check-navigation-contract.py"
 
 
 def load_contract_module() -> Any:

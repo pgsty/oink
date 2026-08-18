@@ -11,7 +11,7 @@ import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MIGRATOR = ROOT / "scripts/migrations/book_figures.py"
+MIGRATOR = ROOT / "bin/migrations/book_figures.py"
 
 
 class MigrationError(RuntimeError):

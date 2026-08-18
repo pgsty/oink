@@ -14,7 +14,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ACTIONS_SCRIPT = ROOT / "scripts" / "check-actions.py"
+ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
 
 
 def require(condition: bool, message: str) -> None:

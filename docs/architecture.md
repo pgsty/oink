@@ -14,7 +14,7 @@ browser suite live in the sibling `oink.pgsty.com` repository.
 Generated `public/` and `resources/` trees are never source. Vendored files in
 `assets/third_party/`, Font Awesome glyph definitions, and font families are
 distributions rather than dead-code candidates; their integrity is checked by
-`scripts/check-vendor.py`.
+`bin/check-vendor.py`.
 
 ## Template assembly
 
@@ -91,8 +91,8 @@ Performance rules:
 - measure large aggregate outputs explicitly rather than enabling them by
   default.
 
-`scripts/measure-baseline.py` measures build time, output weight, bundle count,
-and shortcode density. `scripts/sites/build-all.py` builds the maintained site
+`bin/measure-baseline.py` measures build time, output weight, bundle count,
+and shortcode density. `bin/sites/build-all.py` builds the maintained site
 corpus in isolated snapshots.
 
 ## Content trust boundary

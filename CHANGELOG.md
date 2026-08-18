@@ -7,6 +7,9 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Move repository checks, migration utilities, and measurement tools from
+  `scripts/` to `bin/`; this is a tooling-path change and does not alter the
+  Hugo Module surface.
 - Consolidate the theme's local implementation notes into six current
   contracts and remove prose-only contract checks that duplicated behavioral
   tests and rendered goldens.

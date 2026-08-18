@@ -1,5 +1,5 @@
 {
-  "description": "Four-state output goldens of the theme fixture (scripts/check-goldens.py). Keys are golden files under tests/goldens/, values are exampleSite output paths.",
+  "description": "Four-state output goldens of the theme fixture (bin/check-goldens.py). Keys are golden files under tests/goldens/, values are exampleSite output paths.",
   "pages": {
     "html/docs-code-blocks.html": "docs/code-blocks/index.html",
     "html/docs-content-primitives.html": "docs/content-primitives/index.html",

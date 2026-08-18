@@ -122,9 +122,9 @@ default query upload, or browser-side compatibility shim for removed config.
 
 ## Characterization matrix
 
-`scripts/check-navigation-contract.py` builds flat, nested, and deep menus with
+`bin/check-navigation-contract.py` builds flat, nested, and deep menus with
 search on/off, English/Chinese, root/subpath deployment, and home/docs/blog/
 plain/print surfaces. `tests/fixtures/navigation/current.json` is the normalized
-output snapshot. `scripts/check-shell.py`, JS tests, and the consumer browser
+output snapshot. `bin/check-shell.py`, JS tests, and the consumer browser
 suite cover page-end order, keyboard behavior, accessibility, and responsive
 layout.

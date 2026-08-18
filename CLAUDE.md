@@ -270,6 +270,9 @@ Recurring rules from those contracts:
   through, `style`/`on*`/unknown keys fail the build.
 - Public string parameters (captions, labels, titles) are plain text; only
   Markdown *bodies* (tab, card, field, image caption, Book bodies) are Markdown.
+  Those bodies render as their own Goldmark document, so a footnote reference
+  in one fails the build: footnotes are page-level, and a numbered table or
+  fence that needs them uses the native `{num=… caption=…}` form.
 - Icons are one Font Awesome class pair (`fa-solid fa-rocket`); no icon
   registry, no `oink-` prefixes — theme-generated classes stay `td-`, author
   markers are unprefixed.

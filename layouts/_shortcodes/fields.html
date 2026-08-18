@@ -108,7 +108,7 @@
       "default" $entry.default
     ) -}}
     {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%d#%s" $.Ordinal $key)) -}}
-    {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" (printf "fields%d-%s" $.Ordinal (anchorize $entry.name)) "content" $entry.description)) "descriptionMarkdown" false) -}}
+    {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" (printf "fields%d-%s" $.Ordinal (anchorize $entry.name)) "content" $entry.description "origin" (printf "shortcode %q at %s" $.Name $.Position))) "descriptionMarkdown" false) -}}
   {{- end -}}
   {{- partial "content/fields-list.html" (dict
     "label" $label "labelID" $labelID "entries" $items "format" $outputFormat

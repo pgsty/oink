@@ -63,6 +63,6 @@
   {{- if eq $format "markdown" -}}
     {{- $content | safeHTML -}}
   {{- else -}}
-    {{- partial "content/render-block.html" (dict "page" .Page "scope" (printf "include%d" .Ordinal) "content" $content) -}}
+    {{- partial "content/render-block.html" (dict "page" .Page "scope" (printf "include%d" .Ordinal) "content" $content "origin" (printf "shortcode %q at %s" .Name .Position)) -}}
   {{- end -}}
 {{- end -}}

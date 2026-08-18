@@ -157,7 +157,18 @@ publication state.
 Numbered kinds are `fig`, `tbl`, `eq`, and `eg`. Their default IDs are
 `<kind>-<num>`. `eg` requires a caption. `eq` without `num` is an unnumbered
 display-math escape hatch and registers no target. `xref` accepts exactly one
-kind plus optional `page`/`anchor`, or an anchor with explicit body text.
+kind plus optional `page`/`anchor`, or an anchor with explicit body text. A
+numbered example renders as one framed block: the caption is its header and the
+body sits inside the frame.
+
+Footnotes belong to the page document. A table or fence carrying `{num=…}`
+keeps its cells in that document, so `[^label]` resolves there with the page's
+own numbering and backlinks. A shortcode body is rendered as a separate
+document and cannot: a reference to a page definition would print literally and
+a body-level definition would build a second, colliding footnote list, so a
+footnote reference in any Markdown body a shortcode renders (`tbl`, `eg`,
+`fig`, `card`, `tab`, `field`, `include`) fails the build. Footnote-shaped text
+in code -- `[^0-9]` in a listing or a code span -- is left alone.
 
 `book-toc` follows navigation order at depth 1 to 3. `book-figures`,
 `book-tables`, `book-equations`, and `book-examples` aggregate one registered

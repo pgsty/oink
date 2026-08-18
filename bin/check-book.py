@@ -527,6 +527,19 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("table-unknown-attr", '| A |\n| --- |\n| 1 |\n{bogus="1"}', "unknown attribute"),
         ("table-style-attr", '| A |\n| --- |\n| 1 |\n{style="color:red"}', "unsafe attribute"),
         ("book-figures-kind", '{{< book-figures kind="tbl" >}}', "unsupported parameter"),
+        # A shortcode body is its own Goldmark document: a page-level footnote
+        # definition is unreachable from it, and a body-level one builds a
+        # second footnote list whose ids collide with the page's own.
+        (
+            "footnote-page-definition",
+            '{{< tbl num="1" caption="Notes" >}}\n| a |\n| --- |\n| x [^n1] |\n{{< /tbl >}}\n\n[^n1]: Page note.',
+            "footnote reference [^n1] cannot be used inside a shortcode body",
+        ),
+        (
+            "footnote-body-definition",
+            '{{< eg num="1" caption="Notes" >}}\nBody [^n2]\n\n[^n2]: Body note.\n{{< /eg >}}',
+            "footnote reference [^n2] cannot be used inside a shortcode body",
+        ),
     )
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-book-invalid-{name}-") as temp:
@@ -554,6 +567,40 @@ def check_invalid_components(hugo: str) -> list[str]:
             output = result.stdout + result.stderr
             require(result.returncode != 0, f"invalid Book config {name} unexpectedly built", errors)
             require(expected in output, f"invalid Book config {name} did not report {expected!r}", errors)
+    return errors
+
+
+def check_footnotes(hugo: str) -> list[str]:
+    """Footnotes belong to the page document: native forms carry them, scoped
+    shortcode bodies refuse them, and footnote-shaped code is left alone."""
+
+    errors: list[str] = []
+    body = (
+        "Prose [^n1] and [^n2].\n\n"
+        "| a | b |\n| --- | --- |\n| x [^n1] | y [^n2] |\n"
+        '{#tab_notes num="1-1" caption="Numbered table with footnotes"}\n\n'
+        '{{< eg num="1-1" caption="Character class, not a footnote" >}}\n'
+        "```sh\ngrep '[^n1]' file\n```\n"
+        "{{< /eg >}}\n\n"
+        '{{< tbl num="1-2" caption="Inline code is not a footnote" >}}\n'
+        "| a |\n| --- |\n| `[^n2]` and [^undefined] |\n"
+        "{{< /tbl >}}\n\n"
+        "[^n1]: First note.\n[^n2]: Second note.\n"
+    )
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-footnote-") as temp:
+        source = Path(temp)
+        create_site(source, body)
+        result = build(hugo, source, source / "public")
+        if result.returncode != 0:
+            return [f"Book footnote fixture failed: {result.stdout}{result.stderr}"]
+        page = (source / "public/book/page/index.html").read_text(encoding="utf-8")
+        start = page.index('id="tab_notes"')
+        figure = page[start : page.index("</figure>", start)]
+        for marker in ('href="#fn:1"', 'href="#fn:2"', 'class="footnote-ref"'):
+            require(marker in figure, f"native numbered table lost {marker}", errors)
+        require("[^n1]" not in figure, "native numbered table printed a literal footnote reference", errors)
+        require("[^undefined]" in page, "an undefined footnote reference stopped rendering as text", errors)
+        require(page.count('class="footnotes"') == 1, "the page rendered more than one footnote list", errors)
     return errors
 
 
@@ -760,6 +807,7 @@ def main() -> int:
     errors += (
         check_reading_time(args.hugo)
         + check_invalid_components(args.hugo)
+        + check_footnotes(args.hugo)
         + check_invalid_contributors(args.hugo)
         + check_ddia_compatibility(args.hugo)
         + check_rss_output(args.hugo)

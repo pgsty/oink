@@ -24,6 +24,6 @@
 {{- else -}}
 <figure id="{{ $id }}" class="td-book-figure td-book-figure--eg{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="eg" data-td-book-num="{{ $num }}">
   <figcaption><span class="td-eg-label">{{ $label }}</span> <span class="td-eg-caption">{{ $caption }}</span></figcaption>
-  <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "eg%d" .Ordinal) "content" $inner) }}</div>
+  <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "eg%d" .Ordinal) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
 </figure>
 {{- end -}}

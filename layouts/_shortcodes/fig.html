@@ -67,7 +67,7 @@
   {{- printf "**%s.**%s%s" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") (cond $body (printf "\n\n%s" $body) "") | safeHTML -}}
 {{- else -}}
 <figure id="{{ $id }}" class="td-figure td-book-figure td-book-figure--fig{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="fig" data-td-book-num="{{ $num }}">
-  {{- if $src }}{{ partial "book/image.html" (dict "shortcode" . "image" $image "alt" $alt "link" $link "width" $width "height" $height "format" $format) }}{{ else }}<div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "fig%d" .Ordinal) "content" $inner) }}</div>{{ end }}
+  {{- if $src }}{{ partial "book/image.html" (dict "shortcode" . "image" $image "alt" $alt "link" $link "width" $width "height" $height "format" $format) }}{{ else }}<div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "fig%d" .Ordinal) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>{{ end }}
   <figcaption><span class="td-fig-label">{{ $label }}</span>{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
 {{- end -}}

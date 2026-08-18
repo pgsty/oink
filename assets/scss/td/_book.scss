@@ -213,19 +213,23 @@ body.td-book .td-shell-tree__link {
     }
   }
 
-  // Numbered example (`eg`): caption bar above the body, O'Reilly style.
+  // Numbered example (`eg`): one framed block, O'Reilly style — the caption is
+  // the header bar of the frame and the example body sits *inside* it, so the
+  // number, the caption, and the listing read as a single unit.
   &--eg {
+    overflow: hidden; // the body corners follow the frame radius
+    border: 1px solid var(--bs-border-color);
+    border-inline-start: 4px solid var(--bs-primary);
+    border-radius: var(--bs-border-radius);
     text-align: start;
 
     > figcaption {
       display: flex;
       gap: 0.35em;
       align-items: baseline;
-      margin: 0 0 0.75rem;
+      margin: 0;
       padding: 0.7rem 0.9rem;
-      border: 1px solid var(--bs-border-color);
-      border-inline-start: 4px solid var(--bs-primary);
-      border-radius: var(--bs-border-radius);
+      border-block-end: 1px solid var(--bs-border-color);
       background: var(--bs-tertiary-bg);
       color: var(--bs-body-color);
       font-family: var(--td-ui-font-family);
@@ -234,13 +238,33 @@ body.td-book .td-shell-tree__link {
       text-align: start;
     }
 
-    > .td-code,
-    > .td-book-figure__body > :first-child {
-      margin-block-start: 0;
+    > .td-book-figure__body {
+      padding: 0.9rem;
+
+      > :first-child {
+        margin-block-start: 0;
+      }
+
+      > :last-child {
+        margin-block-end: 0;
+      }
     }
 
-    > .td-book-figure__body > :last-child {
-      margin-block-end: 0;
+    // A body that is exactly one code block (the common case) sits flush in
+    // the frame, which already draws the border and the radius: the block must
+    // not draw a second one. The native fence form puts that block straight
+    // into the figure, the shortcode wraps it in the body element. Browsers
+    // without `:has()` keep the padded form above for the wrapped case, which
+    // is correct, only quieter.
+    > .td-code,
+    > .td-book-figure__body:has(> .td-code:only-child) > .td-code {
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
+    > .td-book-figure__body:has(> .td-code:only-child) {
+      padding: 0;
     }
   }
 }

@@ -14,6 +14,7 @@
 {{- $renderedLabel := T "ui_preview_rendered" | default "Rendered" -}}
 {{- $rendered := partial "content/render-block.html" (dict
   "page" $page "scope" (printf "landing-preview-%s" $id) "content" $source
+  "origin" (printf "%s: landing preview %s" $page.Path $id)
 ) -}}
 {{- partial "content/register-derived.html" (dict "page" $page "html" $rendered "raw" $source) -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-preview-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>

@@ -2,12 +2,32 @@
        scope so that generated IDs (e.g. code block td-code-…-fence-N) of
        hooks that run during this nested render cannot collide with the
        page's own blocks or with sibling shortcodes. Scopes nest.
-       Input: page, scope (short token), content (Markdown). Returns HTML. */ -}}
+       Input: page, scope (short token), content (Markdown), origin (optional
+       "shortcode … at file:line" for diagnostics). Returns HTML. */ -}}
 {{- $page := .page -}}
 {{- $scope := .scope | default "" -}}
+{{- $content := .content -}}
+{{- $origin := .origin | default (printf "page %s" $page.Path) -}}
+{{- /* Hugo renders a shortcode body in its own Goldmark document, so footnotes
+       cannot work here: a definition on the page around the body is out of
+       reach (Goldmark emits the literal `[^label]`), and a definition inside
+       the body produces a second footnote list whose `fn:N` ids collide with
+       the page's own. Fail instead of publishing either. A reference the page
+       never defines is literal text at page level too, so it passes; code is
+       stripped first, because `[^0-9]` in a listing is a character class. */ -}}
+{{- $probe := replaceRE "(?s)```.*?```" " " $content -}}
+{{- $probe = replaceRE "(?s)~~~.*?~~~" " " $probe -}}
+{{- $probe = replaceRE "`[^`\n]*`" " " $probe -}}
+{{- range $reference := findRESubmatch `\[\^([^\]\s]+)\]` $probe -}}
+  {{- $label := index $reference 1 -}}
+  {{- $definition := printf "[^%s]:" $label -}}
+  {{- if or (strings.Contains $page.RawContent $definition) (strings.Contains $content $definition) -}}
+    {{- errorf "%s: footnote reference [^%s] cannot be used inside a shortcode body — Hugo renders the body as its own document, so the reference prints literally when the definition sits on the page, and builds a second, colliding footnote list when it sits in the body. Author the block in its native form (a Markdown table, image, or fence followed by {num=\"…\" caption=\"…\"}) and keep footnotes in page Markdown." $origin $label -}}
+  {{- end -}}
+{{- end -}}
 {{- $previous := $page.Store.Get "tdRenderScope" | default "" -}}
 {{- $next := cond (ne $previous "") (printf "%s-%s" $previous $scope) $scope -}}
 {{- $page.Store.Set "tdRenderScope" $next -}}
-{{- $html := $page.RenderString (dict "display" "block") .content -}}
+{{- $html := $page.RenderString (dict "display" "block") $content -}}
 {{- $page.Store.Set "tdRenderScope" $previous -}}
 {{- return $html -}}

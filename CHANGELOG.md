@@ -5,6 +5,22 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Fixed
+
+- Numbered examples frame their body. `eg` drew a caption bar and then left the
+  listing outside it, so an example read as two unrelated blocks; the figure is
+  now one framed unit whose caption is the header and whose body sits inside,
+  with a single code block flush against the frame instead of drawing a second
+  border.
+- Refuse footnotes that cannot resolve. Hugo renders a shortcode body as its own
+  Goldmark document, so `[^25]` in a `tbl`, `eg`, `card`, `tab`, `field`, or
+  `include` body printed literally when the definition sat on the page, and
+  built a second footnote list with colliding `fn:N` ids when it sat in the
+  body. Both now fail the build and name the native form -- a table, image, or
+  fence carrying `{num=… caption=…}` keeps its content in the page document,
+  where footnotes number and link like any other page footnote. Footnote-shaped
+  text inside code is untouched.
+
 ## [0.5.0] - 2026-08-18
 
 The component API v5 release. Content written for 0.4 needs migration:

@@ -81,7 +81,7 @@
   {{- $panelID := printf "%s-%s" $idPrefix .value }}
   <div class="td-tabs__panel" id="{{ $panelID }}"{{ if $interactive }} role="tabpanel" aria-labelledby="{{ $panelID }}-tab" tabindex="0"{{ end }} data-td-tabs-value="{{ .value }}"{{ if eq .value $default }} data-td-tabs-active{{ end }}>
     <div class="td-tabs__panel-title" aria-hidden="true">{{ .label }}</div>
-    <div class="td-tabs__panel-body">{{ partial "content/render-block.html" (dict "page" $.Page "scope" (printf "tabs%d-%s" $.Ordinal .value) "content" .body) }}</div>
+    <div class="td-tabs__panel-body">{{ partial "content/render-block.html" (dict "page" $.Page "scope" (printf "tabs%d-%s" $.Ordinal .value) "content" .body "origin" (printf "shortcode %q at %s" $.Name $.Position)) }}</div>
   </div>
   {{- end }}
 </div>

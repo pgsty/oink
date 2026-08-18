@@ -19,7 +19,7 @@
   {{- printf "**%s.**%s\n\n%s" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
 {{- else -}}
 <figure id="{{ $id }}" class="td-book-figure td-book-figure--tbl{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="tbl" data-td-book-num="{{ $num }}">
-  <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "tbl%d" .Ordinal) "content" $inner) }}</div>
+  <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "tbl%d" .Ordinal) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
   <figcaption><span class="td-tbl-label">{{ $label }}</span>{{ with $caption }} <span class="td-tbl-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
 {{- end -}}

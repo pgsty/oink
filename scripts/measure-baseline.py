@@ -1,72 +1,16 @@
 #!/usr/bin/env python3
-"""Measure the OINK 0.5 T00 baseline: corpus noise, asset weight, bundles, build time.
+"""Measure shortcode density, isolated build time, asset weight, and bundles.
 
-This is a *measurement* tool, not a gate: it never fails on numbers. It exists so
-that the 0.5 / 0.6 gates (`check-asset-budget.py`, the 0.6 noise re-measurement)
-have a reproducible T00 reference. Re-run it any time; commit the JSON snapshot it
-produces next to the milestone progress record.
+``noise`` scans Markdown after front matter and reports theme shortcode tokens,
+wrapper lines, closing tags, native component instances, and semantic fallback.
+Site-local and Hugo built-in shortcodes are reported separately. ``assets``
+strict-builds revision-locked snapshots, then reports cold/warm time, CSS/JS,
+fonts, third-party presence, and distinct page bundles. ``all`` runs both.
 
-Sub-commands
-------------
-  noise   Corpus noise (four metrics) over one or more site checkouts.
-  assets  Isolated build of one or more sites: build time (cold/warm), CSS/JS
-          weight per page type (raw + gzip), font-face and third-party presence,
-          distinct JS bundle count, optional RTL variant (theme fixture only).
-  all     Both, sharing the same snapshots.
-
-Corpus noise — the four metrics (0.5 definition; 0.6 task 00 finalises the method)
-----------------------------------------------------------------------------------
-Everything is counted over Markdown files under ``content/`` after stripping front
-matter. Shortcode *tags* are ``{{< name … >}}``, ``{{% name … %}}``, ``{{< /name >}}``,
-``{{% /name %}}``; escaped forms (``{{</* … */>}}``) never count. Hugo expands
-shortcodes inside code fences too, so tags inside fences are counted as parsed
-tokens (reported separately as ``in_fence`` for the 0.6 method review).
-
-Only *theme-owned* shortcode names (``layouts/_shortcodes/**`` of the theme,
-including site overrides of those names) feed the four metrics. Site-local
-shortcodes (names that exist only under the site's own ``layouts``) and Hugo
-built-ins (``ref`` ``relref`` ``figure`` ``highlight`` ``youtube`` …) are reported
-in separate buckets and excluded, as the corpus-measurement rule requires. Generated corpus is
-excluded through ``--exclude`` globs (defaults below) and reported.
-
-1. ``parsed_tokens``   — number of theme shortcode tags (open + close + inline).
-                         Normalised as ``parsed_tokens_per_kloc`` = tokens per
-                         1,000 body lines.
-2. ``wrapper_lines``   — lines whose non-blank content is nothing but *container*
-                         tags (an opening tag that is closed later in the file, or a
-                         closing tag): pure wrapper markup an author had to write.
-                         All-tag lines made of leaf tags (``{{< filetree/file … >}}``)
-                         are reported separately as ``leaf_lines``.
-3. ``closing_tokens``  — closing tags ``{{< /x >}}`` / ``{{% /x %}}``.
-4. ``semantic_fallback`` — component instances (open + inline tags) that render as
-                         literal ``{{…}}`` text on GitHub / in plain Markdown, i.e.
-                         everything that needs OINK to mean anything. Reported next
-                         to ``native_instances`` (GFM callout heads, diagram / data
-                         fences, theme block-attribute markers ``{.full-width}`` /
-                         ``{.oink-*}``; site-local attribute lines are counted apart
-                         as ``attr_lines_other``) and the ratio
-                         ``semantic_fallback_ratio`` = fallback / (fallback + native).
-
-Snapshots
----------
-Sites are measured from detached ``git clone --shared`` snapshots of HEAD
-(revision-locked; a dirty working tree never leaks into the baseline; history is
-kept so ``enableGitInfo`` sites build). A directory that is not a git
-repository is copied from the working tree and flagged ``snapshot: worktree``.
-
-Builds
-------
-Each site is built in its snapshot with a scratch ``go.work`` that replaces
-``github.com/pgsty/oink`` with the local theme checkout (``--theme``), using
-``--minify --printPathWarnings --panicOnWarning`` (the strict build). No network
-is needed. The theme fixture (``exampleSite``) is built with ``--themesDir``.
-
-Examples
---------
-  python3 scripts/measure-baseline.py all --sites ~/pgsty/pigsty.io ~/pgsty/oink.pgsty.com \
-      --json plan/progress/0.5/00-baseline.json --md plan/progress/0.5/00-baseline-tables.md
-  python3 scripts/measure-baseline.py noise --sites ~/pgsty/*/ --exclude 'content/ext/**'
-  python3 scripts/measure-baseline.py assets --example-site --rtl
+Git sites default to HEAD snapshots; ``--worktree`` is explicit. Builds use a
+scratch ``go.work`` replacement and ignore only a vendored OINK copy, ensuring
+the measured theme is the requested checkout while other vendored dependencies
+remain available. The command records numbers but does not impose budgets.
 """
 
 from __future__ import annotations
@@ -105,7 +49,7 @@ HUGO_BUILTIN_SHORTCODES = {
 # Fence languages whose *content is the component* (diagram / data): native.
 NATIVE_FENCE_LANGS = {
     "mermaid", "plantuml", "markmap", "math", "chem", "katex", "tex", "latex",
-    "echarts", "infographic", "checksums",
+    "echarts", "infographic", "checksums", "filetree", "gallery",
 }
 
 # Generated corpus that must not count against the theme. Keyed by
@@ -115,8 +59,7 @@ DEFAULT_EXCLUDES: dict[str, list[str]] = {
     "pigsty.cc": ["content/ext/**"],
 }
 
-# Theme-owned block-attribute markers (`{.full-width}` today; `{.oink-*}` from 0.6).
-THEME_MARKER_RE = re.compile(r"\.(?:full-width|oink-[a-z0-9-]+)\b")
+THEME_MARKER_RE = re.compile(r"\.(?:steps|cards|fields|matrix|full-width)\b")
 
 FRONT_MATTER_RE = re.compile(r"\A(---|\+\+\+)\s*\n.*?\n\1\s*\n", re.S)
 # One shortcode tag. Group 1: notation, 2: closing slash, 3: name, 4: rest.
@@ -401,8 +344,10 @@ def snapshot_site(site: Path, dest: Path, *, worktree: bool = False) -> dict:
         subprocess.run(["git", "-C", str(dest), "checkout", "--quiet", "--detach", head],
                        check=True, capture_output=True)
         return {"snapshot": "head", "revision": head, "branch": branch, "dirty_worktree": dirty}
-    ignore = shutil.ignore_patterns("public", "resources", "node_modules", "tmp", ".idea", ".hugo_build.lock",
-                                    ".hugo_cache", ".cache")
+    ignore = shutil.ignore_patterns(
+        "public", "resources", "node_modules", "tmp", ".idea",
+        ".hugo_build.lock", ".hugo_cache", ".cache", "fsmonitor--daemon.ipc",
+    )
     shutil.copytree(site, dest, dirs_exist_ok=True, ignore=ignore, symlinks=True)
     if is_git_repo(site):
         # Keep .git so enableGitInfo works; record the revision the tree is based on.
@@ -627,6 +572,7 @@ def measure_build(name: str, snapshot: Path, hugo: str, theme: Path, *, example:
     else:
         prepare_workspace(snapshot, theme)
         env["HUGO_MODULE_WORKSPACE"] = str(snapshot / "go.work")
+        extra += ["--ignoreVendorPaths", "github.com/pgsty/oink"]
     if config_extra:
         extra += ["--config", f"{snapshot / 'hugo.yaml' if (snapshot / 'hugo.yaml').exists() else snapshot / 'hugo.yml'},{config_extra}"]
     dest = snapshot / "public"

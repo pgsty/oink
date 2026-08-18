@@ -15,6 +15,9 @@ Deploy from scratch in five minutes.
 - [Configure](/docs/content-primitives/)
 Tune the runtime parameters, *with Markdown*.
 {.cards}
+## Task lists
+- [x] Render the static status
+- [ ] Label the disabled checkbox at runtime
 ## FileTree — `filetree` fence
 ```filetree {title="Repository layout"}
 - content/                                # site content

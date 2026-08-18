@@ -27,7 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 # Author-facing markers: an author types these, so they stay unprefixed.
-# docs/content-primitives.md and docs/components.md are the contract.
+# docs/components.md owns the public marker namespace.
 AUTHOR_MARKERS = {
     "steps", "cards", "fields", "matrix", "full-width", "no-step-marker",
 }
@@ -79,7 +79,7 @@ THIRD_PARTY_DATA = {
     # documented author opt-out, in the same family as the {.cards} markers
     "data-no-zoom",
     # Authored data-* attributes pass through by contract
-    # (docs/content-primitives.md, attribute policy); the fixture exercises one.
+    # The shared attribute policy permits site-owned classes.
     "data-note",
 }
 

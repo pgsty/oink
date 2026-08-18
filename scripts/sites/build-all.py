@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
-"""Strict, isolated builds of the eleven in-house sites against this theme checkout.
+"""Strict-build the maintained sites in isolated snapshots against this theme.
 
-For every site in scripts/sites/sites.txt (or --sites): snapshot the requested
-revision (HEAD by default, `--ref <branch>` for a migration branch, `--worktree`
-for the working tree) into a scratch directory as a detached shared clone, point
-its module import at this theme through a scratch go.work, and run
-
-    hugo --minify --printPathWarnings --panicOnWarning
-
-Nothing in the site checkouts is modified. The report lists status, timing,
-page count and the first error lines per site; with `--baseline DIR` (a
-previous --keep directory) it also summarises which output files changed per
-site, grouped by surface (html / print / md / xml / other) — the "产物 diff 只含
-预期 surface" evidence for the DoD.
-
-  scripts/sites/build-all.py                       # HEAD of every site
-  scripts/sites/build-all.py --ref <branch>        # the migration branch where it exists
-  scripts/sites/build-all.py --keep /tmp/run1      # keep snapshots + public/ for diffing
-  scripts/sites/build-all.py --keep /tmp/run2 --baseline /tmp/run1
-  scripts/sites/build-all.py --json report.json --md report.md
+HEAD is the default; ``--ref`` selects another revision and ``--worktree``
+copies the current tree. A scratch ``go.work`` replaces OINK without modifying
+the source checkout. ``--keep`` retains builds and ``--baseline`` compares two
+retained public trees by output surface.
 """
 
 from __future__ import annotations
@@ -74,7 +60,11 @@ def build(snapshot: Path, hugo: str) -> dict:
         env["HUGO_MODULE_WORKSPACE"] = str(snapshot / "go.work")
     dest = snapshot / "public"
     shutil.rmtree(dest, ignore_errors=True)
-    cmd = [hugo, "--source", str(snapshot), "--destination", str(dest), "--minify", "--printPathWarnings", "--panicOnWarning"]
+    cmd = [
+        hugo, "--source", str(snapshot), "--destination", str(dest), "--minify",
+        "--printPathWarnings", "--panicOnWarning",
+        "--ignoreVendorPaths", "github.com/pgsty/oink",
+    ]
     start = time.perf_counter()
     result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     wall = time.perf_counter() - start

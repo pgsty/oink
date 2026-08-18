@@ -189,7 +189,6 @@ def check_sources() -> list[str]:
         "variables": (ROOT / "assets/scss/td/_variables.scss").read_text(
             encoding="utf-8"
         ),
-        "contract": (ROOT / "docs/reading-release-contract.md").read_text(encoding="utf-8"),
     }
     require("hugo.IsProduction" in sources["robots"], "robots policy is not environment-aware", errors)
     for marker in (".Attributes", "td-table-scroll--full", 'T "ui_table_scroll"'):
@@ -273,8 +272,6 @@ def check_sources() -> list[str]:
             f"navbar auto-hide styles lack {marker}",
             errors,
         )
-    for marker in ("data/docs_nav.json", "manual_link", "build.render: link", "sidebar_divider"):
-        require(marker in sources["contract"], f"reading contract lacks {marker}", errors)
     hook = ROOT / "layouts/_partials/hooks/search-keywords-extra.html"
     require(hook.exists() and "return (slice)" in hook.read_text(), "empty search hook default is missing", errors)
     return errors

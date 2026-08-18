@@ -59,6 +59,14 @@ def check_outputs(public: Path) -> list[str]:
     steps_markdown = (public / "docs/components/steps/index.md").read_text()
     tables = (public / "docs/components/tables/index.html").read_text()
     tables_markdown = (public / "docs/components/tables/index.md").read_text()
+    bundle_match = re.search(r'<script src="([^"]*/page-[^"]+\.js)"', lists)
+    require(bundle_match is not None, "lists fixture has no feature bundle", errors)
+    lists_bundle = ""
+    if bundle_match:
+        bundle = public / bundle_match.group(1).lstrip("/")
+        require(bundle.is_file(), "lists feature bundle is missing", errors)
+        if bundle.is_file():
+            lists_bundle = bundle.read_text(encoding="utf-8")
 
     # --- Badge / Kbd / Fields shortcode / full-width table -------------------
     for marker in (
@@ -179,6 +187,8 @@ def check_outputs(public: Path) -> list[str]:
         '<li><a href="/docs/typography/">Reference</a></li>',
         '<li>\n<p><a href="/docs/">Install</a></p>\n<p>Deploy from scratch in five minutes.</p>\n</li>',
         '<ul class="td-gallery td-gallery--described">',
+        '<input checked="" disabled="" type="checkbox"> Render the static status',
+        '<input disabled="" type="checkbox"> Label the disabled checkbox at runtime',
         # 2-space bullets with title, comments, open=false, icon/tone override
         '>Repository layout</p>',
         '<li class="td-filetree__item td-filetree__item--dir td-filetree__item--parent"><details class="td-filetree__details"><summary class="td-filetree__summary"><span class="td-filetree__row" style="--td-filetree-depth:1"><span class="td-filetree__name-cell"><span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true">',
@@ -194,6 +204,8 @@ def check_outputs(public: Path) -> list[str]:
     ):
         require(marker in lists, f"lists fixture missing {marker}", errors)
     require(lists.count('<ul class="cards">') == 2, "cards fixture lost a list", errors)
+    require('input[type="checkbox"]' in lists_bundle and 'i[class*="fa-"]' in lists_bundle,
+            "lists task fixture did not load the authored accessibility runtime", errors)
     require(lists.count("--td-filetree-name-col:") == 3, "lists fixture lost a filetree fence", errors)
     require(lists.count("data-td-filetree-divider") == 1 and lists.count("data-td-filetree>") == 1, "only the commented filetree fence should carry the split divider", errors)
     require("data-td-filetree-divider" not in print_page, "print FileTree must not render the split divider", errors)
@@ -202,7 +214,7 @@ def check_outputs(public: Path) -> list[str]:
     for block in re.findall(r'<div class="td-filetree[\s\S]*?</ul></div></div>', lists):
         require(block.count("<ul") == block.count("</ul>") and block.count("<li ") == block.count("</li>") and block.count("<details") == block.count("</details>"), "filetree markup is unbalanced", errors)
     require('<span class="td-filetree__icon td-filetree__icon--dir" aria-hidden="true"><i class="fa-regular fa-folder td-filetree__glyph td-filetree__glyph--closed"></i><i class="fa-regular fa-folder-open td-filetree__glyph td-filetree__glyph--open"></i></span><span class="td-filetree__name" title="build">build</span>' in lists, "type=dir did not override the file kind", errors)
-    for marker in ("- [Install](/docs/) — Deploy from scratch in five minutes.", "{.cards}", "```gallery", '```filetree {title="Repository layout"}', "├── bin", "    build {type=dir}"):
+    for marker in ("- [Install](/docs/) — Deploy from scratch in five minutes.", "{.cards}", "- [x] Render the static status", "- [ ] Label the disabled checkbox at runtime", "```gallery", '```filetree {title="Repository layout"}', "├── bin", "    build {type=dir}"):
         require(marker in lists_markdown, f"lists Markdown missing {marker}", errors)
     require("<ul" not in lists_markdown and "td-" not in lists_markdown and "{.filetree}" not in lists_markdown, "lists Markdown contains HTML or the removed marker", errors)
 
@@ -476,7 +488,7 @@ def check_field_parity(html: str) -> list[str]:
 
     The two forms exist because only the shortcode can carry block-level
     descriptions; everything above the description is one shared renderer, and
-    that is what this compares (docs/content-primitives.md §3.3).
+    that is what this compares (docs/components.md).
     """
     errors: list[str] = []
     terms: dict[str, list[str]] = {}

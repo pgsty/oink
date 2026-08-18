@@ -61,8 +61,6 @@ def check_sources() -> list[str]:
     title_menu = (ROOT / "layouts/_partials/actions/title-menu.html").read_text()
     docs_layout = (ROOT / "layouts/docs/baseof.html").read_text()
     blog_layout = (ROOT / "layouts/blog/baseof.html").read_text()
-    migration_en = (ROOT / "docs/migration-docs-shell.md").read_text()
-    migration_zh = (ROOT / "docs/migration-docs-shell.zh.md").read_text()
 
     for marker in ("Home.Sections.ByWeight", 'Params.sidebar_root_for', "sidebar_root_menu"):
         require(marker in root_roots, f"root set lost {marker}", errors)
@@ -278,16 +276,6 @@ def check_sources() -> list[str]:
             "detailed feedback no longer has a stable Giscus target", errors)
     require("key === 'l' || key === 'y'" in keyboard,
             "y is no longer the l language alias", errors)
-    for marker in (
-        "offline_search_on_serve",
-        "navbar_autohide",
-        "docs_feedback",
-        "page-annotation.html",
-        "endpoint",
-        "Giscus",
-    ):
-        require(marker in migration_en and marker in migration_zh,
-                f"bilingual shell migration guidance lacks {marker}", errors)
     return errors
 
 

@@ -1,4 +1,4 @@
-{{- /* Build page-local descriptors for the stable PRD 4 action IDs. Keep URL
+{{- /* Build page-local descriptors for stable action IDs. Keep URL
      construction in Hugo so the page rail and Command Palette share it. */ -}}
 {{- $p := . -}}
 {{- $pagePlacement := true -}}
@@ -109,8 +109,7 @@
 {{- $languageTitle := T "ui_language_switch" -}}
 {{- $versionTitle := $p.Site.Params.version_menu | default "Version" -}}
 {{- $githubTitle := "GitHub" -}}
-{{- /* The choice trio mirrors the navbar control order: version, language,
-     theme. Palette listings keep this order (PRD 6). */ -}}
+{{- /* Keep choice actions in navbar order: version, language, theme. */ -}}
 {{- $actions := slice
   (dict "id" "copy_markdown" "title" $copyTitle "description" $copyTitle
     "icon" "fa-regular fa-copy" "keywords" (slice $copyTitle "markdown" "copy")

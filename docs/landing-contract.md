@@ -1,20 +1,13 @@
 # Landing contract
 
-Release assignment: OINK 0.4.0 (consolidated component release)
-
-Original design milestone: OINK 0.5.0
-
-Contract version: 1
-
-Status: frozen for OINK v0.4.0
+Status: current for OINK 0.5.0
 
 Compatibility floor: Hugo Extended 0.160.1
 
-This document freezes the Landing track. Its machine-readable
-companion is `tests/fixtures/components/contract.json`; `scripts/check-component-contract.py`
-keeps the two aligned. Configuration and migration guidance are available in
-[English](migration-components.md) and
-[Simplified Chinese](migration-components.zh.md).
+This document owns the Landing-specific contract. Shared build and component
+rules live in [architecture.md](architecture.md) and
+[components.md](components.md); upgrade guidance lives in
+[migration.md](migration.md).
 
 ## 1. Landing shell and data authority
 
@@ -45,8 +38,8 @@ The canonical registry keeps the existing `hero`, `metrics`, `capabilities`,
 Each section entry may be a type string or a map with `type`, `key`, `id`,
 `enabled`, inline `data`, or a deliberate local `partial` escape hatch. IDs are
 anchor-safe and unique. Unknown types warn rather than silently disappearing.
-The legacy `home/` partial names remain thin compatibility adapters; the
-`landing/` family owns the implementation.
+The `landing/` partial family owns the implementation; removed `home/` partial
+names are not a compatibility API.
 
 The `download` section consumes the same validated
 `data/download/<key>.yaml` record as the 0.4 shortcode. It does not introduce a
@@ -93,8 +86,8 @@ normal build downloads a remote image.
 
 ## 6. Compatibility and non-goals
 
-The inherited Docsy block shortcodes remain render-compatible but are
-deprecated for new Landing work. OINK does not add a pricing-period toggle,
-remote facts, browser API fetches, image hotspots, a visual page builder, or a
-second component registry. Existing homepage data and compatible custom
-partials remain valid while sites migrate incrementally.
+The 0.4 component forms removed in 0.5 are handled by the migration toolkit,
+not retained as parallel Landing implementations. OINK does not add a
+pricing-period toggle, remote facts, browser API fetches, image hotspots, a
+visual page builder, or a second component registry. Existing homepage data
+and explicit custom section partials remain valid.

@@ -655,10 +655,8 @@ def main() -> int:
             )
 
         docs_shell = (ROOT / "assets" / "js" / "docs-shell.js").read_text(encoding="utf-8")
-        authored = (ROOT / "assets" / "js" / "authored-a11y.js").read_text(encoding="utf-8")
         dark_mode = (ROOT / "assets" / "js" / "dark-mode.js").read_text(encoding="utf-8")
         require("fetchMarkdown" not in docs_shell, "Markdown executor remains duplicated in docs-shell")
-        require("window.print()" not in authored, "print executor remains duplicated")
         require(
             "registerExecutor('switch_theme'" in dark_mode
             and "apply(button.getAttribute('data-bs-theme-value'))" in dark_mode,

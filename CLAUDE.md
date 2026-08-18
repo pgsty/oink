@@ -43,16 +43,13 @@ python3 scripts/check-i18n.py                        # translation key parity ac
 python3 scripts/check-i18n.py --sync                 # append missing keys as English fallbacks
 python3 scripts/check-taxonomy.py                    # opt-in taxonomy labels and bilingual output
 python3 scripts/check-font-tokens.py                 # no raw font families outside the token layer
-python3 scripts/check-content-primitives-contract.py # docs/content-primitives.md still has required sections
 python3 scripts/check-navigation-contract.py         # navigation/palette/action contracts
 python3 scripts/check-runtime-isolation.py           # runtime isolation and capability predicates
 python3 scripts/check-sidebar-icons.py               # sidebar icon density policy
 python3 scripts/check-search.py                      # search metadata and ranking
 python3 scripts/check-actions.py                     # action registry and command manifest
 python3 scripts/check-palette.py                     # Command Palette modes and behavior
-python3 scripts/check-navigation-docs.py             # bilingual migration and starter guidance
-python3 scripts/check-component-contract.py          # component human/machine contract alignment
-python3 scripts/check-component-docs.py              # bilingual migration + root/subpath starter
+python3 scripts/check-starter.py                      # root/subpath starter and component wiring
 python3 scripts/check-reading.py                     # math passthrough + tree-order pager
 python3 scripts/check-release-assets.py              # release facts/cards/checksum output matrix
 python3 scripts/check-download.py                    # download schema and publication states
@@ -73,7 +70,7 @@ cd exampleSite && hugo --printPathWarnings --panicOnWarning   # must build warni
 # Output checks (each builds exampleSite into a temp dir itself)
 python3 scripts/check-code-blocks.py                 # enhanced fences / adjacent-fence tabs / tabs shortcode
 python3 scripts/check-content-primitives.py # badge, kbd, fields (table + shortcode), filetree/steps/cards lists, table family
-python3 scripts/check-media-primitives.py            # image render hook + image shortcode
+python3 scripts/check-media-primitives.py            # image render hook and shared resolver
 python3 scripts/check-image-zoom.py                  # zoom gating and output isolation
 python3 scripts/check-gallery.py                     # native gallery list + zoom runtime reuse
 python3 scripts/check-components.py                  # callouts, tabs, data fences, removed shortcodes, hook attribute policy
@@ -174,14 +171,14 @@ Shortcodes and render hooks set flags on the Hugo **Page Store**
 `hasImageZoom`, `hasGiscus`, `hasFeedback`, …). `_partials/scripts.html` reads
 those flags afterwards and concatenates exactly the runtimes the page used —
 once per page, regardless of instance count — into a bundle whose name is an
-md5 of the flag combination. A page that uses nothing gets Bootstrap + base +
-sidebar-nav + a11y only.
+md5 of the member list. A page that uses nothing gets Bootstrap, base,
+navbar-menu, and sidebar-nav only.
 
 Consequences that constrain every new feature:
 
 - Content must render **before** `scripts.html` runs. `_partials/content/render.html`
   is the single wrapper that renders `.Content` and registers derived flags
-  (currently the Image Zoom candidate scan); page layouts call it instead of
+  (currently Image Zoom and authored-content accessibility); page layouts call it instead of
   `.Content` directly.
 - Flags are set by shortcodes/partials, read by asset assembly. Shortcodes must
   never read a flag another shortcode might set later.
@@ -213,7 +210,7 @@ font requests); both compile into the same stylesheet, no JS. Existing Docsy /
 Bootstrap Sass font variables seed the roles, so legacy consumer overrides keep
 working — `check-font-tokens.py` enforces that raw family names appear only in
 the allowlisted files (`_brand.scss`, `_tokens-typography.scss`,
-`_variables_forward.scss`, `_variables.scss`). See `docs/typography-tokens.md`.
+`_variables_forward.scss`, `_variables.scss`). See `docs/architecture.md`.
 
 ### Local-first constraints (non-negotiable)
 
@@ -240,27 +237,20 @@ locales carry inherited Docsy translations plus explicit English fallbacks for
 OINK-only keys. Adding a user-visible string means adding the key to **all 32**
 files (`--sync` does the mechanical part).
 
-## Frozen contracts
+## Implementation contracts
 
-`docs/content-primitives.md` (contract v2), `docs/enhanced-code-blocks.md`,
-`docs/typography-tokens.md`, and the `docs/*-contract.md` files
-(`navigation`, `reading-release`, `landing`, `book` — Book contract v2 — plus
-the Chinese `docs-shell` and `keyboard-nav` contracts) are implementation
-contracts, not tutorials;
-`docs/components.md` is the authoring guide that summarizes the v5 API. The
-first is machine-checked for structure by `check-content-primitives-contract.py`,
-the Book contract by `check-component-contract.py`. They define the public component
-APIs — the native forms (`> [!TYPE]` callouts; `{.steps}` `{.cards}` list
-markers; `{.fields}` `{.matrix}` `{caption=}` `{#id num=}` `{tab=}` table
-attributes; the image render hook, which carries captions, numbering, links and
-Hugo image processing; adjacent-fence tabs; data fences including `filetree`
-and `gallery`) and the 29 shortcodes (core 14: `tabs tab steps cards card
-fields field include kbd badge param comment contributors asciinema`;
-Book 10: `fig tbl eq eg xref book-toc book-figures book-tables book-equations
-book-examples`; Release 3; OpenAPI 2) — plus parameter validation, escaping and
-URL policy, ID generation, and the output matrix. **Read the relevant contract
-before changing a primitive**, and change the contract in the same commit as
-the behavior.
+`docs/README.md` indexes the current maintainer notes. `architecture.md`,
+`components.md`, `shell.md`, `landing-contract.md`, and `migration.md` describe
+the active 0.5 behavior; history belongs in Git and `CHANGELOG.md`. Behavioral
+checks and rendered goldens are executable authority, so do not add tests that
+only pin prose. Read and update the relevant note when changing a public
+contract.
+
+The component surface has native forms (`> [!TYPE]` callouts; `{.steps}` and
+`{.cards}` lists; table/image attributes; adjacent-fence tabs; data fences such
+as `filetree` and `gallery`) and 29 shortcodes (core 14, Book 10, Release 3,
+OpenAPI 2). The complete inventory and output matrix are in
+`docs/components.md`.
 
 Recurring rules from those contracts:
 

@@ -189,7 +189,6 @@ def check_template_contracts() -> list[str]:
         scripts = source.find('partial "scripts.html"')
         require(main >= 0 and scripts > main, f"{relative} loads scripts before content sets Page Store flags", errors)
 
-    namespace = (ROOT / "layouts/_partials/code/namespace-html.html").read_text()
     render = (ROOT / "layouts/_partials/code/render.html").read_text()
     normalize = (ROOT / "layouts/_partials/code/normalize.html").read_text()
     codeblock = (ROOT / "layouts/_markup/render-codeblock.html").read_text()
@@ -200,7 +199,7 @@ def check_template_contracts() -> list[str]:
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     runtime = (ROOT / "assets/js/tabs.js").read_text()
 
-    require("data-td-code-auto-id" in namespace and "data-td-code-auto-id" in render, "automatic code-ID namespace marker is missing", errors)
+    require("data-td-code-auto-id" in render, "automatic code-ID marker is missing", errors)
     require("tdRenderScope" in normalize and "tdRenderScope" in render_block, "nested-render code ID scoping is missing", errors)
     for marker in ('"tab" "group" "value" "num" "caption"',):
         require(marker in normalize, f"normalize.html does not reserve {marker}", errors)

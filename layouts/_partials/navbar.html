@@ -6,9 +6,8 @@
        icon below md that opens the shell drawer (docs tree + relocated
        aside). */ -}}
 {{- $drawerMode := and (partial "shell/chrome-enabled.html" .) (partial "shell/sidebar-enabled.html" .) -}}
-{{- /* The homepage already follows the PRD 4 compact-navbar contract: one
-       semantic link tree, visually condensed below lg. Only an explicit
-       non-home Landing layout needs this separate full-menu surface. */ -}}
+{{- /* The homepage already uses one compact semantic link tree below lg.
+       Only an explicit non-home Landing layout needs a separate full menu. */ -}}
 {{- $landingSurface := eq .Layout "landing" -}}
 {{- $githubStars := partial "landing/github-stars.html" . -}}
 {{- $altSite := false -}}

@@ -55,13 +55,10 @@ jobs:
       - name: Check typography token boundaries
         run: python3 scripts/check-font-tokens.py
 
-      - name: Check content primitive contract
-        run: python3 scripts/check-content-primitives-contract.py
-
-      - name: Check PRD 4 contracts and characterization
+      - name: Check navigation contracts and characterization
         run: python3 scripts/check-navigation-contract.py
 
-      - name: Check PRD 4 runtime isolation
+      - name: Check runtime isolation
         run: python3 scripts/check-runtime-isolation.py
 
       - name: Check sidebar icon density policies
@@ -76,40 +73,34 @@ jobs:
       - name: Check Command Palette modes and behavior
         run: python3 scripts/check-palette.py
 
-      - name: Check PRD 4 bilingual migration and starter guidance
-        run: python3 scripts/check-navigation-docs.py
+      - name: Check starter root and subpath output
+        run: python3 scripts/check-starter.py
 
-      - name: Check PRD 5 frozen contracts
-        run: python3 scripts/check-component-contract.py
-
-      - name: Check PRD 5 bilingual migration and starter guidance
-        run: python3 scripts/check-component-docs.py
-
-      - name: Check PRD 5 reading and mathematics
+      - name: Check reading and mathematics
         run: python3 scripts/check-reading.py
 
-      - name: Check PRD 5 releases and assets
+      - name: Check releases and assets
         run: python3 scripts/check-release-assets.py
 
-      - name: Check PRD 5 download data
+      - name: Check download data
         run: python3 scripts/check-download.py
 
-      - name: Check PRD 5 landing surfaces
+      - name: Check Landing surfaces
         run: python3 scripts/check-landing.py
 
-      - name: Check PRD 5 Book surfaces
+      - name: Check Book surfaces
         run: python3 scripts/check-book.py
 
-      - name: Check PRD 5 Book migrations
+      - name: Check Book migrations
         run: python3 scripts/check-book-migrations.py
 
-      - name: Check PRD 5 shared scenario fixes
+      - name: Check shared scenarios
         run: python3 scripts/check-shared-scenarios.py
 
-      - name: Check PRD 6 keyboard navigation
+      - name: Check keyboard navigation
         run: python3 scripts/check-keyboard.py
 
-      - name: Check PRD 7 navigation and page-end composition
+      - name: Check navigation and page-end composition
         run: python3 scripts/check-shell.py
 
       - name: Build the example site without warnings

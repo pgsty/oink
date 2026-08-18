@@ -3,6 +3,27 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## Unreleased
+
+### Changed
+
+- Consolidate the theme's local implementation notes into six current
+  contracts and remove prose-only contract checks that duplicated behavioral
+  tests and rendered goldens.
+- Load authored task-list and raw-icon accessibility repair only on pages whose
+  rendered content needs it; theme-generated icons carry their own semantics.
+- Keep Draw.io configuration in `#td-drawio-config`, scan content images only,
+  and fetch each distinct PNG/SVG source once per page.
+- Make corpus/site build tools ignore only a vendored OINK copy while retaining
+  other vendored dependencies, and tolerate Git fsmonitor sockets in worktree
+  snapshots.
+
+### Removed
+
+- Drop the unused `code/namespace-html.html` partial and unemitted styles for
+  retired Docsy taxonomy demos/pages and article teasers, the old `.td-sidebar`
+  Algolia result layout, and the superseded `.td-main` flex shell.
+
 ## [0.5.0] - 2026-08-18
 
 The component API v5 release. Content written for 0.4 needs migration:

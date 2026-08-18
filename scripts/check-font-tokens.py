@@ -110,13 +110,6 @@ def main() -> int:
     for token in sorted(references - definitions):
         errors.append(f"undefined typography token --{token}")
 
-    docs_path = ROOT / "docs" / "typography-tokens.md"
-    docs_source = docs_path.read_text()
-    for role in PUBLIC_ROLES:
-        token = f"--td-{role}"
-        if token not in docs_source:
-            errors.append(f"{docs_path.relative_to(ROOT)}: missing {token}")
-
     legacy_seeds = (
         ("--td-heading-font-family", "$headings-font-family"),
         ("--td-code-font-family", "$font-family-code"),

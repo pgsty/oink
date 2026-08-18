@@ -1,5 +1,5 @@
 {{- /*
-  Image render hook (plan/design/components.md v5 §3.7, §3.12).
+  Image render hook (docs/components.md).
 
     ![alt](src "title")                 shared resolver (page resource → global
                                         resource → static → remote), lazy loading,
@@ -43,11 +43,7 @@
   {{- $classes = $policy.classes -}}
   {{- $generic = $policy.generic -}}
   {{- $caption = strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
-  {{- /* Hugo image processing on the native form. The shared operation partial
-         is the same one the `image` shortcode uses, so the accepted commands,
-         the option grammar and the failure messages are identical; a source
-         that cannot be processed (static path, remote URL, SVG) fails here
-         exactly as it does there. */ -}}
+  {{- /* Hugo processing requires a processable local resource. */ -}}
   {{- $hasCommand := isset $policy.consumed "command" -}}
   {{- $hasOptions := isset $policy.consumed "options" -}}
   {{- if ne $hasCommand $hasOptions -}}
@@ -83,11 +79,7 @@
     {{- partial "book/register-target.html" (dict "page" $page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
   {{- end -}}
   {{- $figure = or $num $caption -}}
-  {{- /* A caption and a link together need the anchor *inside* the figure;
-         Goldmark hands the hook only the image, so `[![alt](src)](href)` can
-         never produce one. That is why `link` exists here — and why it is
-         refused on a bare block image, where the native linked form already
-         works and a second spelling would just be a duplicate path. */ -}}
+  {{- /* Bare linked images already have native Markdown syntax. */ -}}
   {{- with index $policy.consumed "link" -}}
     {{- if not $figure -}}
       {{- errorf "image: link requires caption or num; a linked image without a caption is written [![alt](src)](%s) at %s" . $.Position -}}
@@ -100,20 +92,13 @@
   {{- end -}}
 {{- end -}}
 {{- $plainBlock := and $isBlock (not $figure) -}}
-{{- /* Every block image the hook renders — bare or wrapped in a <figure> —
-       declares its own Zoom eligibility, so neither the build-time scan nor the
-       runtime has to infer it from the surrounding markup. */ -}}
-{{- /* A linked figure image is not zoomable: the runtime skips images inside
-       anchors, so declaring a marker would only load the runtime for nothing. */ -}}
+{{- /* Linked images are not Zoom candidates. */ -}}
 {{- $zoomable := and $isBlock (eq $format "html") (ne $image.alt "") (eq $href "") -}}
 {{- $genericAttrs := "" -}}
 {{- if $plainBlock -}}
   {{- range $key, $value := $generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $key (htmlEscape $value) }}{{ end -}}
 {{- end -}}
-{{- /* The Zoom marker sits before loading= so the candidate scan's attribute
-       regex (marker followed by whitespace) matches. It carries the full-size
-       URL only when the rendered image is a processed derivative; a bare marker
-       means "use src". */ -}}
+{{- /* A processed derivative points Zoom at the full-size source. */ -}}
 {{- $zoomAttr := "" -}}
 {{- if $zoomable -}}
   {{- $zoomAttr = cond (ne $fullSrc $src) (printf ` data-td-image-zoom="%s"` ($fullSrc | safeURL)) " data-td-image-zoom" -}}
@@ -139,10 +124,7 @@
 <figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ delimit $figureClasses " " }}"{{ if $num }} data-td-book-kind="fig" data-td-book-num="{{ $num }}"{{ end }}
   {{- range $key, $value := $generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
   {{ if $href }}<a class="td-figure__link" href="{{ $href }}"{{ if $external }} rel="external"{{ end }}>{{ $img | safeHTML }}</a>{{ else }}{{ $img | safeHTML }}{{ end }}
-  {{- /* The resource byline rides along in the figcaption, which is where the
-         retired `image` shortcode put it. It does not promote a plain block
-         image to a figure: that image is a bare <img> by contract, and resource
-         metadata should not silently change its shape. */ -}}
+  {{- /* Metadata never promotes a plain image to a figure. */ -}}
   <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}{{ with $image.byline }}<small class="td-figure__byline">{{ . }}</small>{{ end }}</figcaption>
 </figure>
 {{- end -}}

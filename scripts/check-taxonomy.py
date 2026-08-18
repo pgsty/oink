@@ -67,6 +67,14 @@ params:
     )
 
     field = plural or "module"
+    hook = source / "layouts/_partials/hooks/body-end.html"
+    hook.parent.mkdir(parents=True)
+    hook.write_text(
+        '{{ partial "taxonomy-terms-cloud.html" (dict "context" . "taxo" "'
+        + field
+        + '" "title" "Cloud") }}\n',
+        encoding="utf-8",
+    )
     for language, title in (("en", "English guide"), ("zh-cn", "中文指南")):
         content = source / "content" / language
         docs = content / "docs"
@@ -176,6 +184,12 @@ def check_enabled(hugo: str, root: Path, plural: str) -> list[str]:
             errors,
         )
         require(term_link in html, f"{path} taxonomy panel lost its localized term URL", errors)
+        require(
+            'class="taxonomy td-taxonomy-terms-cloud' in html
+            and 'class="td-taxonomy-count">1</span>' in html,
+            f"{path} consumer taxonomy cloud partial is unavailable",
+            errors,
+        )
 
     article_pages = {
         public / "docs/guide/index.html": f"{english_plural}:",

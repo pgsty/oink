@@ -560,7 +560,7 @@
 @media (max-width: 767.98px) {
   // The rendered menu toggle is the authority for the alternate Landing
   // navbar. Do not key this off [data-td-landing]: the homepage uses the
-  // Landing renderer too, but its PRD 4 compact navbar must keep the single
+  // Landing renderer too, but its compact navbar must keep the single
   // visible link tree and utility controls.
   body:has([data-td-landing-menu-toggle]) {
     .td-site-header .td-nav-menu-zone,
@@ -890,7 +890,7 @@
   }
 }
 
-// The PRD 6 chrome-free reading mode (H key) hides the navbar with the rest
+// The H-key reading mode hides the navbar with the rest
 // of the chrome; fixed elements and anchor jumps stop reserving its height.
 html[data-td-kbd-zen] .td-site-header {
   display: none;

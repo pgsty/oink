@@ -1,4 +1,4 @@
-"""OINK 0.6 content migration toolkit (v5 component API).
+"""OINK 0.5 component migration toolkit.
 
 Dry-run first, fence-safe, idempotent rewrites of the legacy shortcode forms
 into the Markdown-native forms and the surviving shortcodes described in
@@ -7,4 +7,4 @@ into the Markdown-native forms and the surviving shortcodes described in
 
 __all__ = ["__version__"]
 
-__version__ = "0.6.0"
+__version__ = "0.5.0"

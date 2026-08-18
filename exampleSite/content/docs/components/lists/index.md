@@ -25,6 +25,11 @@ Loose form (description as its own paragraph):
   Tune the runtime parameters, *with Markdown*.
 {.cards}
 
+## Task lists
+
+- [x] Render the static status
+- [ ] Label the disabled checkbox at runtime
+
 ## FileTree — `filetree` fence
 
 ```filetree {title="Repository layout"}

@@ -66,7 +66,7 @@
   function actionRows(registry, query) {
     // Built-in actions lead in manifest order, which mirrors the navbar
     // (version, language, theme, GitHub); configured site commands trail in
-    // their configured order (PRD 6).
+    // their configured order.
     var rows = [];
     registry.list({ placement: 'palette' }).forEach(function (action) {
       rows.push({

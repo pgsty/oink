@@ -42,10 +42,7 @@
 {{- partial "book/register-target.html" (dict "page" .Page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $label := partial "book/label.html" (dict "kind" "fig" "num" $num) -}}
-{{- /* Resolve `src` through the shared image resolver so a Book figure gets the
-       same page/global/static/remote precedence, intrinsic dimensions, and
-       resource metadata as `![alt](src)` and `{{< image >}}`. Resolution runs
-       after target registration so numbering errors still report first. */ -}}
+{{- /* Resolve `src` through the same image path as Markdown images. */ -}}
 {{- $image := false -}}
 {{- $alt := $caption -}}
 {{- if $src -}}
@@ -53,13 +50,12 @@
     "name" .Name "position" .Position "page" .Page "src" $src
     "hasAlt" $hasAlt "alt" $altParam
   ) -}}
-  {{- /* explicit alt (even empty) wins; then resource `alt` metadata; then the caption. */ -}}
+  {{- /* Explicit alt wins, including an empty decorative value. */ -}}
   {{- if $hasAlt -}}
     {{- $alt = $image.alt -}}
   {{- else if $image.alt -}}
     {{- $alt = $image.alt -}}
   {{- end -}}
-  {{- /* Explicit width/height still win; intrinsic values fill the gaps. */ -}}
   {{- if and (not $width) (gt $image.width 0) }}{{ $width = printf "%d" $image.width }}{{ end -}}
   {{- if and (not $height) (gt $image.height 0) }}{{ $height = printf "%d" $image.height }}{{ end -}}
 {{- else if $hasAlt -}}

@@ -1,5 +1,5 @@
 /**
- * PRD 6 keyboard navigation. WASD and arrow keys drive the sidebar tree,
+ * Keyboard navigation. WASD and arrow keys drive the sidebar tree,
  * q/e page through the visible sidebar order, j/k jump between the page
  * outline's sections, h toggles a chrome-free reading mode, l/y cycle
  * languages, t flips light/dark, r cycles the internal top-level navbar

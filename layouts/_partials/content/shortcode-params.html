@@ -1,11 +1,10 @@
 {{/* Reject unknown and mis-shaped shortcode parameters.
 
      The contract's rule is strict failure over silent degradation
-     (docs/content-primitives.md section 2). Without this, a typo like
+     (docs/components.md). Without this, a typo like
      `{{< fig num="1-1" captoin="…" >}}` builds cleanly and silently drops the
      caption — exactly the failure the rule exists to prevent. Every shortcode
-     calls this, so the rule cannot be forgotten for a new one;
-     check-content-primitives-contract.py asserts that.
+     calls this, so the rule cannot be forgotten for a new one.
 
      Parameters:
        shortcode  the calling shortcode's context (`.`)

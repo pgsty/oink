@@ -26,6 +26,7 @@ def main() -> int:
         search_enabled = read("layouts/_partials/shell/search-enabled.html")
         head = read("layouts/_partials/head.html")
         scripts = read("layouts/_partials/scripts.html")
+        content = read("layouts/_partials/content/render.html")
         search_input = read("layouts/_partials/search-input.html")
         docs_shell = read("assets/js/docs-shell.js")
         palette = read("assets/js/command-palette.js")
@@ -51,13 +52,24 @@ def main() -> int:
             "Lunr is not gated by the canonical capability",
         )
         require(
-            '{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPaletteModel $jsPalette }}'
-            in scripts,
+            '{{ if $localSearch -}}' in scripts
+            and all(
+                f'resources.Get "js/{name}.js"' in scripts
+                for name in ("search-engine", "palette-model", "command-palette")
+            ),
             "Palette controller is not gated by the canonical capability",
         )
         require(
             'resources.Get "js/offline-search.js"' not in scripts,
             "legacy offline-search runtime remains in the shared bundle",
+        )
+        require(
+            '.Store.Set "hasAuthoredA11y" true' in content
+            and 'type="checkbox"' in content
+            and "\\bfa-" in content
+            and '.Page.Store.Get "hasAuthoredA11y"' in scripts
+            and 'resources.Get "js/authored-a11y.js"' in scripts,
+            "authored accessibility repair is not isolated to pages that need it",
         )
         require(
             'partial "shell/search-enabled.html"' in search_input

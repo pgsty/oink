@@ -32,6 +32,7 @@
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
 {{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
 {{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
+{{ $hasAuthoredA11y := and $interactiveOutput (.Page.Store.Get "hasAuthoredA11y" | default false) -}}
 
 {{ if $hasMarkmap -}}
 {{ range resources.Match "third_party/katex/fonts/*" -}}
@@ -119,6 +120,9 @@ window.markmap = {
 {{ if and $drawioEnabled (not $drawioServer) -}}
   {{ errorf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service" -}}
 {{ end -}}
+{{ if $drawioEnabled -}}
+<script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer | jsonify | safeJS }}</script>
+{{ end -}}
 
 {{/* The registry reads this manifest synchronously while js/actions.js loads,
      so the data must already exist in the document before that classic script
@@ -152,7 +156,6 @@ window.markmap = {
     (resources.Get "js/base.js")
     (resources.Get "js/navbar-menu.js")
     (resources.Get "js/sidebar-nav.js")
-    (resources.Get "js/authored-a11y.js")
     | resources.Concat "js/core.js" -}}
   {{ if hugo.IsProduction -}}
     {{ $core = $core | minify | fingerprint -}}
@@ -162,26 +165,22 @@ window.markmap = {
   {{ end -}}
 {{ end -}}
 
-{{ $jsPaletteModel := resources.Get "js/palette-model.js" -}}
-{{ $jsPalette := resources.Get "js/command-palette.js" -}}
-{{ $jsSearchEngine := resources.Get "js/search-engine.js" -}}
-{{/* These four interpolate site parameters only, so one execution per language
-     is correct; the language is part of the feature-bundle key below. */ -}}
-{{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate "js/search.js" .Site.Home -}}
-{{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" .Site.Home -}}
-{{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate "js/plantuml.js" .Site.Home -}}
-{{ $jsDrawio := resources.Get "js/drawio.js" | resources.ExecuteAsTemplate "js/drawio.js" .Site.Home -}}
-{{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
-{{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
-
 {{ $jsArray := slice -}}
 {{ if $hasPlantuml -}}
+  {{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
+  {{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
+  {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate "js/plantuml.js" .Site.Home -}}
   {{ $jsArray = $jsArray | append $jsPako -}}
   {{ if $plantumlSVG }}{{ $jsArray = $jsArray | append $jsSvgLoader }}{{ end -}}
   {{ $jsArray = $jsArray | append $jsPlantuml -}}
 {{ end -}}
-{{ if $hasMarkmap }}{{ $jsArray = $jsArray | append $jsMarkmap }}{{ end -}}
-{{ if $drawioEnabled }}{{ $jsArray = $jsArray | append $jsDrawio }}{{ end -}}
+{{ if $hasMarkmap -}}
+  {{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" .Site.Home -}}
+  {{ $jsArray = $jsArray | append $jsMarkmap -}}
+{{ end -}}
+{{ if $drawioEnabled -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/drawio.js") -}}
+{{ end -}}
 {{ $hasAsciinema := .Page.Store.Get "hasAsciinema" -}}
 {{ $hasEcharts := .Page.Store.Get "hasEcharts" -}}
 {{ $hasInfographic := .Page.Store.Get "hasInfographic" -}}
@@ -221,6 +220,7 @@ window.markmap = {
   {{ $jsArray = $jsArray | append (resources.Get "js/docs-shell.js") -}}
 {{ end -}}
 {{ if and $interactiveOutput $hasGoogleSearch -}}
+  {{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate "js/search.js" .Site.Home -}}
   {{ $jsArray = $jsArray | append $jsSearch -}}
 {{ end -}}
 {{ if $hasKeyboardNav -}}
@@ -229,7 +229,13 @@ window.markmap = {
 {{ if $hasFooterCollapse -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/footer-collapse.js") -}}
 {{ end -}}
-{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPaletteModel $jsPalette }}{{ end -}}
+{{ if $localSearch -}}
+  {{ $jsArray = $jsArray | append
+    (resources.Get "js/search-engine.js")
+    (resources.Get "js/palette-model.js")
+    (resources.Get "js/command-palette.js")
+  -}}
+{{ end -}}
 
 {{ if .Page.Store.Get "hasmermaid" -}}
   {{ partial "scripts/mermaid.html" . -}}
@@ -293,6 +299,9 @@ window.markmap = {
 {{ if $hasFileTree -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/filetree.js") -}}
 {{ end -}}
+{{ if $hasAuthoredA11y -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/authored-a11y.js") -}}
+{{ end -}}
 
 {{ if and $interactiveOutput (eq (partial "ui-param.html" (dict "page" . "key" "scroll_spy")) true) -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
@@ -303,7 +312,7 @@ window.markmap = {
 {{/* The bundle name is derived from the members themselves, so adding a
      runtime cannot silently collide two different feature sets on one file
      name. The language is part of the key because the templated members
-     (search, markmap, plantuml, drawio) read per-language site parameters. */ -}}
+     (search, markmap, plantuml) read per-language site parameters. */ -}}
 {{ with $jsArray -}}
   {{ $bundleKey := $.Site.Language.Lang -}}
   {{ range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}{{ end -}}

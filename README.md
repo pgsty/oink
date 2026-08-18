@@ -188,7 +188,7 @@ Both presets are compiled by Hugo into the same static stylesheet. They add no
 JavaScript, package-manager step, remote font service, or runtime stylesheet.
 Sites can locally host their own faces and override the documented
 `--td-*-font-family` roles in `assets/scss/_styles_project.scss`; see the
-[typography token reference](docs/typography-tokens.md).
+[architecture contract](docs/architecture.md#css-accessibility-and-typography).
 
 ## Example sites
 
@@ -206,26 +206,13 @@ Sites can locally host their own faces and override the documented
 [Deployment](https://oink.pgsty.com/docs/deploy/) ·
 [Contributing](https://oink.pgsty.com/docs/about/contributing/)
 
-Theme implementation contracts:
-[Components (API v5 guide)](docs/components.md) ·
-[Content primitives](docs/content-primitives.md) ·
-[Enhanced code blocks](docs/enhanced-code-blocks.md) ·
-[Typography tokens](docs/typography-tokens.md) ·
-[Navigation & Command Palette](docs/navigation-contract.md) ·
-[Reading & release](docs/reading-release-contract.md) ·
+Theme maintainer notes:
+[index](docs/README.md) ·
+[architecture](docs/architecture.md) ·
+[components](docs/components.md) ·
+[shell, navigation, and actions](docs/shell.md) ·
 [Landing](docs/landing-contract.md) ·
-[Book](docs/book-contract.md) ·
-[Docs shell & page end (中文)](docs/docs-shell-contract.zh.md) ·
-[Docs shell migration: English](docs/migration-docs-shell.md) /
-[简体中文](docs/migration-docs-shell.zh.md)
-
-Navigation and Command Palette migration reference, included in 0.3.0:
-[English](docs/migration-navigation.md) ·
-[简体中文](docs/migration-navigation.zh.md).
-
-Scenario Components migration reference (all tracks included in 0.4.0):
-[English](docs/migration-components.md) ·
-[简体中文](docs/migration-components.zh.md).
+[0.4 to 0.5 migration](docs/migration.md).
 
 ## Localization status
 

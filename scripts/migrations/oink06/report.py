@@ -54,7 +54,7 @@ def _fmt(value: int) -> str:
 def render_markdown(report: dict) -> str:
     sites = report["sites"]
     lines: list[str] = []
-    lines.append(f"# OINK 0.6 migration inventory — {report['generated_at']}")
+    lines.append(f"# OINK 0.5 migration inventory — {report['generated_at']}")
     lines.append("")
     lines.append("Read-only dry-run of `scripts/migrations/oink06.py` over the listed sites. Counts are conversions the")
     lines.append("scripts would perform; findings are constructs left untouched (with the reason).")

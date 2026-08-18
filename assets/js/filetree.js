@@ -1,4 +1,4 @@
-// OINK FileTree runtime (docs/content-primitives.md §3.4).
+// FileTree divider runtime; disclosure itself is native HTML.
 //
 // The ```filetree fence renders without JavaScript: folding is native
 // <details> and the comment column is aligned at build time. This runtime only

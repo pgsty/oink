@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate navigation contracts and characterize the pre-implementation theme.
+"""Validate navigation contracts and characterize the current theme.
 
 The script builds an isolated bilingual fixture with local search disabled and
 enabled. It compares normalized navigation and runtime observations with a
@@ -27,7 +27,6 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_ROOT = ROOT / "tests" / "fixtures" / "navigation"
 CONTRACT_PATH = FIXTURE_ROOT / "contract.json"
 CURRENT_PATH = FIXTURE_ROOT / "current.json"
-CONTRACT_DOC_PATH = ROOT / "docs" / "navigation-contract.md"
 SITE_FIXTURE_PATH = FIXTURE_ROOT / "site"
 
 LANGUAGES = ("en", "zh")
@@ -39,19 +38,6 @@ SURFACES = {
     "plain": "{lang}/project/index.html",
     "print": "{lang}/_print/docs/index.html",
 }
-
-REQUIRED_DOC_HEADINGS = (
-    "## Authority boundaries",
-    "## Navigation contract",
-    "## Sidebar icon contract",
-    "## Search schema and ranking contract",
-    "## Command registry contract",
-    "## Palette modes",
-    "## Runtime contract",
-    "## Compatibility and non-goals",
-    "## Characterization matrix",
-)
-
 
 class ContractError(RuntimeError):
     """A deterministic contract or characterization failure."""
@@ -300,55 +286,6 @@ def validate_contract(contract: dict[str, Any]) -> None:
             "default_query_upload",
         ],
         "navigation non-goals changed",
-    )
-
-
-def validate_contract_doc(contract: dict[str, Any]) -> None:
-    try:
-        doc = CONTRACT_DOC_PATH.read_text(encoding="utf-8")
-    except FileNotFoundError as exc:
-        raise ContractError(
-            f"missing contract documentation: {CONTRACT_DOC_PATH.relative_to(ROOT)}"
-        ) from exc
-    for heading in REQUIRED_DOC_HEADINGS:
-        require(heading in doc, f"contract document is missing heading: {heading}")
-
-    required_literals = (
-        "params.ui.sidebar_icon_policy",
-        "search_keywords",
-        "search_boost",
-        "search_exclude",
-        "copy_markdown",
-        "open_chatgpt",
-        "open_claude",
-        "view_history",
-        "view_markdown",
-        "noopener noreferrer",
-        "No default telemetry request",
-    )
-    lower_doc = doc.lower()
-    for literal in required_literals:
-        require(
-            literal.lower() in lower_doc,
-            f"contract document is missing required term: {literal}",
-        )
-
-    require(
-        contract["search"]["exclude_resolution"] == "search_exclude_only"
-        and re.search(r"exclude_search[\s\S]*?fails\s+the\s+build", lower_doc) is not None,
-        "removal of the exclusion aliases is not documented",
-    )
-    require(
-        re.search(
-            r"historical rail-only\s+compatibility actions",
-            lower_doc,
-        )
-        is not None,
-        "action registry scope is overstated in the normative contract",
-    )
-    require(
-        "the theme declares all as the default" in lower_doc,
-        "sidebar icon default is not documented",
     )
 
 
@@ -1188,7 +1125,6 @@ def main() -> int:
     try:
         contract = load_json(CONTRACT_PATH)
         validate_contract(contract)
-        validate_contract_doc(contract)
         validate_runtime_source_contract()
         observation = build_observation()
         validate_observation(observation, contract)

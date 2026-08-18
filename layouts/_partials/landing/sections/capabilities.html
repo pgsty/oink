@@ -37,7 +37,7 @@
         <div class="td-landing-shell-demo__sidebar">
           <span class="td-landing-shell-demo__brand"><i></i> {{ .brand }}</span>
           <span class="td-landing-shell-demo__search">{{ .search }} <kbd>{{ .shortcut }}</kbd></span>
-          <b><i class="{{ .section_icon }}"></i> {{ .section }} <em>⌃</em></b>
+          <b><i class="{{ .section_icon }}" aria-hidden="true"></i> {{ .section }} <em>⌃</em></b>
           <ul>{{ range .items }}<li{{ if .active }} class="active"{{ end }}>{{ .label }}</li>{{ end }}</ul>
         </div>
         <div class="td-landing-shell-demo__main">
@@ -61,7 +61,7 @@
           {{- if $itemURL }}
         <a href="{{ $itemURL | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</a>
           {{- else }}
-        <span><i class="{{ .icon }}"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</span>
+        <span><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</span>
           {{- end }}
         {{- end }}
       </div>

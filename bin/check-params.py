@@ -102,6 +102,7 @@ LEGACY_PAGE_KEYS = {
     "manuallinktitle",
     "manuallinktarget",
     "manuallinkrelref",
+    "default_featured",
 }
 
 # Legacy site configuration: (YAML fragment under `params:`, expected message
@@ -118,6 +119,7 @@ LEGACY_SITE_CASES = [
     ("rss_sections: [blog]", "params.rss_sections was removed"),
     ("algolia_docsearch: true", "params.search.algolia"),
     ("github_url: https://example.org/edit", "params.github_repo"),
+    ("default_featured: /img/card.png", "params.images for the site-wide social card"),
     ("Taxonomy:\n  taxonomyCloud: [tags]", "params.taxonomy.cloud"),
     ("Taxonomy:\n  taxonomyCloudTitle: [Tags]", "params.taxonomy.cloud_title"),
     ("Taxonomy:\n  taxonomyPageHeader: [tags]", "params.taxonomy.page_header"),
@@ -165,6 +167,7 @@ LEGACY_PAGE_CASES = [
     ("manualLinkTitle: Example", "manual_link_title"),
     ("manualLinkTarget: _blank", "manual_link_target"),
     ("manualLinkRelref: /docs/", "manual_link_relref"),
+    ("default_featured: /img/card.png", "images: [<path>] on the page"),
     ("body_class: td-no-left-sidebar", "sidebar_enabled: false"),
     ("ui: false", "front matter ui is not a page key"),
     ("ui: {}", "remove the empty map"),

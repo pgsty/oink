@@ -1,68 +1,12 @@
 {{- /* Resolve a page's featured image, returning a URL or "".
 
-Order:
-  1. `images` in front matter — the first entry.
-  2. A page resource matching `**featured*`.
-  3. `default_featured`, taken from the page (so a section `cascade`
-     works), then from each ancestor, nearest first, and finally from site
-     params.
-
-If no explicit default is configured, return an empty string.
-
-Set `default_featured: false` on a section, or in site params, to stop at
-step 2 and render nothing.
+`featured-image-resolve.html` owns the decision and the URL policy; this partial
+only picks the relative form of what it selected.
 
 Input: a page. Returns: a string. */ -}}
-{{- $src := "" -}}
-
-{{- with .Params.images -}}
-  {{- $src = index . 0 -}}
-{{- else -}}
-  {{- with (.Resources.ByType "image").GetMatch "**featured*" -}}
-    {{- $src = .RelPermalink -}}
-  {{- end -}}
-{{- end -}}
-
-{{- if not $src -}}
-  {{- $default := "" -}}
-  {{- $disabled := false -}}
-  {{- $sources := slice . -}}
-  {{- range .Ancestors }}{{ $sources = $sources | append . }}{{ end -}}
-  {{- /* isset, not `with`: an explicit `false` is exactly the value that opts
-         out, and `with` would skip it as empty. */ -}}
-  {{- range $sources -}}
-    {{- if and (not $default) (not $disabled) (isset .Params "default_featured") -}}
-      {{- $value := printf "%v" (index .Params "default_featured") -}}
-      {{- if or (eq $value "false") (eq $value "") -}}
-        {{- $disabled = true -}}
-      {{- else -}}
-        {{- $default = $value -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
-  {{- if and (not $default) (not $disabled) (isset .Site.Params "default_featured") -}}
-    {{- $value := printf "%v" (index .Site.Params "default_featured") -}}
-    {{- if or (eq $value "false") (eq $value "") }}{{ $disabled = true }}{{ else }}{{ $default = $value }}{{ end -}}
-  {{- end -}}
-  {{- $src = $default -}}
-{{- end -}}
-
-{{- /* A project-supplied path may be site-relative; a resolved resource or an
-       absolute URL must be left alone. */ -}}
-{{- if $src -}}
-  {{- /* Validation is intentionally separate from resolution: a resource
-         permalink may already contain the deployment subpath, so feeding the
-         returned href back through relURL would prefix it twice. */ -}}
-  {{- $validated := partial "content/url.html" (dict
-    "name" "featured-image" "parameter" "src" "position" .Path
-    "value" (printf "%v" $src) "kind" "image"
-  ) -}}
-{{- end -}}
-{{- if and $src (not (hasPrefix $src "http")) (not (hasPrefix $src "/")) -}}
-  {{- with resources.Get $src -}}
-    {{- $src = .RelPermalink -}}
-  {{- else -}}
-    {{- $src = $src | relURL -}}
-  {{- end -}}
+{{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}
+{{- $src := $found.href -}}
+{{- with $found.resource -}}
+  {{- $src = .RelPermalink -}}
 {{- end -}}
 {{- return $src -}}

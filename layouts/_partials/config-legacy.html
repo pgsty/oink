@@ -26,6 +26,7 @@
   (slice "disable_click2copy_chroma"  "params.ui.code_copy (inverted; a fence that sets copy= still wins)")
   (slice "content_width"              "params.reading_width (slim | normal | wide; norm is now normal)")
   (slice "github_url"                 "params.github_repo (the edit, history, and issue links are derived from it)")
+  (slice "default_featured"           "params.images for the site-wide social card, or cascade: { images: [<path>] } on a section _index.md for a directory default")
 -}}
 {{- range $flat -}}
   {{- $old := index . 0 -}}

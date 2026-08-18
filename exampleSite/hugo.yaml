@@ -30,6 +30,10 @@ outputs:
 params:
   description: A complete example of OINK's composable landing page.
   github_project_repo: https://github.com/pgsty/oink
+  # The site-wide social card. A page that names no image of its own shares
+  # this one; it is never rendered as a per-page thumbnail. A section that wants
+  # its own default cascades `images` instead (see content/blog/_index.md).
+  images: [/media/content-primitives-tall.svg]
   copyright:
     authors: '[OINK](https://oink.pgsty.com)'
     from_year: 2026

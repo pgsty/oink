@@ -15,6 +15,9 @@ Over the built exampleSite (--public, default exampleSite/public):
   4. output security — bin/check-output-security.py over the same build (the
      fixture opts into third-party embeds) plus a synthetic negative fixture that must
      be rejected.
+  5. social cards — a page's featured image reaches og:image and twitter:image,
+     the two agree, twitter:card follows, and a local card URL names a file the
+     build actually shipped.
 """
 
 from __future__ import annotations
@@ -168,6 +171,56 @@ def check_security(public: Path) -> list[str]:
     return errors
 
 
+OG_IMAGE = re.compile(r'<meta property="og:image" content="([^"]+)"')
+TWITTER_CARD = re.compile(r'<meta name="twitter:card" content="([^"]+)"')
+TWITTER_IMAGE = re.compile(r'<meta name="twitter:image" content="([^"]+)"')
+BASE_URL = "https://example.org/"
+
+
+def check_social_cards(public: Path) -> list[str]:
+    """The image a page shows is the image it shares.
+
+    Hugo's opengraph, twitter_cards, and schema templates take their images from
+    `_partials/_funcs/get-page-images.html`, which the theme overrides so the
+    featured-image resolver decides for all three. Without that override a page
+    renders a featured image and shares nothing, so the wiring is pinned here:
+    the card URL has to name a file the build shipped, which also catches a URL
+    that lost or repeated a deployment subpath.
+    """
+
+    errors: list[str] = []
+    carried = 0
+    for page in sorted(public.rglob("*.html")):
+        name = page.relative_to(public).as_posix()
+        text = page.read_text(encoding="utf-8", errors="replace")
+        images = OG_IMAGE.findall(text)
+        card = TWITTER_CARD.search(text)
+        twitter = TWITTER_IMAGE.findall(text)
+        if not images:
+            if twitter:
+                errors.append(f"{name}: twitter:image {twitter[0]} without og:image")
+            if card and card.group(1) != "summary":
+                errors.append(f"{name}: no image but twitter:card is {card.group(1)!r}")
+            continue
+        carried += 1
+        if not twitter:
+            errors.append(f"{name}: og:image {images[0]} never reached twitter:image")
+        elif twitter[0] != images[0]:
+            errors.append(f"{name}: twitter:image {twitter[0]} disagrees with og:image {images[0]}")
+        if not card:
+            errors.append(f"{name}: og:image {images[0]} without a twitter:card")
+        elif card.group(1) != "summary_large_image":
+            errors.append(f"{name}: og:image present but twitter:card is {card.group(1)!r}")
+        for image in images:
+            if not image.startswith(BASE_URL):
+                errors.append(f"{name}: og:image {image} is not an absolute URL on the fixture host")
+            elif not (public / image[len(BASE_URL):]).is_file():
+                errors.append(f"{name}: og:image {image} names a file the build did not ship")
+    if not carried:
+        errors.append("no page carried og:image — the featured image never reached the social card")
+    return errors
+
+
 def check_config_image_policy(hugo: str) -> list[str]:
     """Configured shell images must reach the same URL policy as content."""
 
@@ -187,9 +240,9 @@ def check_config_image_policy(hugo: str) -> list[str]:
             "logo must not use a protocol-relative URL",
         ),
         (
-            "default-featured",
-            {"HUGOxPARAMSxDEFAULT_FEATURED": "//evil.example/featured.svg"},
-            "src must not use a protocol-relative URL",
+            "site-social-card",
+            {"HUGOxPARAMSxIMAGES": "//evil.example/featured.svg"},
+            "images must not use a protocol-relative URL",
         ),
     )
     for name, overrides, expected in cases:
@@ -244,6 +297,7 @@ def main() -> int:
     html_errors, bundles = check_html(args.public)
     errors += html_errors
     errors += check_security(args.public)
+    errors += check_social_cards(args.public)
     errors += check_config_image_policy(args.hugo)
     if errors:
         print("Output checks failed:")

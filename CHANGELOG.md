@@ -7,6 +7,21 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Share the featured image a page actually shows. Hugo's `opengraph.html`,
+  `twitter_cards.html`, and `schema.html` resolve their images through the
+  embedded `_partials/_funcs/get-page-images.html`, which the theme never
+  reached -- so a post whose image came from the theme's own resolver rendered
+  a thumbnail, emitted no `og:image`, and degraded to `twitter:card: summary`,
+  the small text-only card on X and no preview on LinkedIn. The theme now
+  overrides that one helper, so all three metadata templates stay Hugo's while
+  `featured-image-resolve.html` decides for them: one precedence, one URL
+  policy, one resource lookup, consumed by the blog list, the blog row, and the
+  card metadata alike. A site deployed under a subpath is fixed with it -- Hugo
+  reads a leading slash as the host root and the theme reads it as the site
+  root, so the rendered image and the card used to disagree, and
+  `featured-image.html` re-resolved an already-resolved href into a doubled
+  prefix. `bin/check-output.py` now requires a card URL to name a file the build
+  shipped and `og:image`, `twitter:image`, and `twitter:card` to agree.
 - Reach the dark palettes the vendored runtimes already ship. Swagger UI keys
   its own 256-rule dark theme on `html.dark-mode`, and Algolia DocSearch
   redefines its whole `--docsearch-*` token set under `html[data-theme='dark']`;
@@ -55,6 +70,18 @@ All notable changes to OINK are documented here. The project follows
 
 ### Removed
 
+- **Breaking.** `default_featured`, in every position it was accepted: site
+  params, a section `_index.md`, and a page's own front matter. Hugo's `images`
+  already spans all three levels -- on the page, through a section `cascade`,
+  and site-wide as `params.images` -- so the theme kept a second vocabulary for
+  a question Hugo answers. Two of the old entry points also collided with each
+  other: `params.default_featured` and `params.images` were both site-wide
+  defaults, but only the first quietly gave every blog row a thumbnail. Replace
+  a section default with `cascade: { images: [<path>] }` on its `_index.md`, a
+  page default with `images: [<path>]`, and a site default with
+  `params.images`; `default_featured: false` becomes `images: []`, which opts a
+  page or a whole section out while still sharing the site card. Both legacy
+  registries fail the build and name the replacement.
 - Drop the unused `code/namespace-html.html` partial and unemitted styles for
   retired Docsy taxonomy demos/pages and article teasers, the old `.td-sidebar`
   Algolia result layout, and the superseded `.td-main` flex shell.

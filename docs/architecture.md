@@ -51,6 +51,39 @@ When Draw.io is enabled, `scripts.html` emits `#td-drawio-config` before the
 feature bundle. The runtime reads the configured server from that JSON element
 at DOM ready and remains inactive if a consumer override omits the element.
 
+## Featured images
+
+The theme invents no key here. Hugo's `images` carries a featured image at
+every level, and `params.images` is the site-wide social card.
+
+| Level | Written as | Renders as a thumbnail | Shared as a card |
+| --- | --- | --- | --- |
+| Page | `images: [<path>]`, or a bundled `**featured*` / `*feature*` / `{*cover*,*thumbnail*}` resource | yes | yes |
+| Directory | `cascade: { images: [<path>] }` on the section `_index.md` | yes | yes |
+| Site | `params.images` | no | yes |
+
+`images: []` opts a page out; the same on a `cascade` opts a whole section out.
+Either way the site card still applies, because declining a thumbnail is not
+declining a card.
+
+`featured-image-resolve.html` is the only place that decides, and it ranks a
+bundled resource above `images` inherited from a cascade: Hugo merges a cascade
+into `.Params`, so the two are told apart by comparing with the nearest ancestor
+carrying the key. Without that, a directory default would outrank a post's own
+bundled image.
+
+Three consumers share the decision, so what a reader sees and what a social card
+carries cannot drift apart: `featured-image.html` and `shell/blog-row.html`
+render it, and `_funcs/get-page-images.html` -- the theme's override of the
+helper behind Hugo's `opengraph.html`, `twitter_cards.html`, and `schema.html`
+-- hands it to the metadata templates. Those templates themselves stay Hugo's.
+
+The resolver also owns the URL work, because Hugo and the theme disagree about a
+leading slash: Hugo resolves it against the host, the theme against the site. A
+configured value reaches the shared image URL policy, resolves against page and
+global resources, and comes back in both relative and absolute form.
+`images-param.html` reads the parameter as a list whether a site wrote one.
+
 ## Output formats
 
 Every base template sets `Page.Store.tdOutputFormat` to `html`, `print`,

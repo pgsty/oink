@@ -1,0 +1,18 @@
+{{- /* Read an `images` parameter as a slice of strings.
+
+Hugo's own templates assume a list. A single image is the common case, and a
+site that writes `images: /img/card.png` -- or sets it through an environment
+override, which can only produce a string -- would otherwise fail the build
+inside a metadata template. One entry is a list of one.
+
+Input: the raw parameter value, or nothing. Returns: a slice of strings, empty
+when the parameter is unset. */ -}}
+{{- $out := slice -}}
+{{- with . -}}
+  {{- if reflect.IsSlice . -}}
+    {{- range . }}{{ with printf "%v" . }}{{ $out = $out | append . }}{{ end }}{{ end -}}
+  {{- else -}}
+    {{- $out = slice (printf "%v" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

@@ -2,16 +2,11 @@
 {{ $h := .h | default 180 }}
 {{ $p := .p }}
 {{ $class := .class | default "ms-3" }}
-{{/* The shared resolver owns precedence. A selected page resource can be
-     cropped; a front-matter or default URL is used as-is. */ -}}
-{{ $src := partial "featured-image-src.html" $p }}
-{{ $image := ($p.Resources.ByType "image").GetMatch "**featured*" }}
-{{ $usePageResource := false }}
-{{ with $image }}
-  {{ if eq $src .RelPermalink }}{{ $usePageResource = true }}{{ end }}
-{{ end }}
-{{ if $usePageResource }}
-{{ with $image }}
+{{/* The shared resolver owns precedence and the URL policy. A selected page or
+     global resource can be cropped to the requested box; a remote URL cannot,
+     so it is used as-is and framed by CSS. */ -}}
+{{ $found := partialCached "featured-image-resolve.html" $p $p.RelPermalink }}
+{{ with $found.resource }}
 {{ $image := .Fill (printf "%dx%d" $w $h ) }}
 <figure class="{{ $class }}" style="width: {{ $image.Width }}px">
 <img src="{{ $image.RelPermalink }}" alt="Featured Image for {{ $p.Title }}" width="{{ $image.Width }}" height="{{ $image.Height }}" loading="lazy">
@@ -19,14 +14,10 @@
  <figcaption class="mt-2 mt-md-0"><small class="text-body-secondary">{{ . | html }}</small></figcaption>
 {{ end }}
 </figure>
-{{ end }}
 {{ else }}
-{{ with $src }}
-{{/* A front-matter or default URL is used as-is, but still held to the shared
-     image URL policy rather than trusted straight from configuration. */}}
-{{ $url := partial "content/url.html" (dict "name" "featured-image" "parameter" "src" "position" $p.Path "value" . "kind" "image") }}
+{{ with $found.href }}
 <figure class="{{ $class }}" style="width: {{ $w }}px">
-<img src="{{ $url.href }}" alt="Featured Image for {{ $p.Title }}" width="{{ $w }}" height="{{ $h }}" style="object-fit: cover;" loading="lazy">
+<img src="{{ . }}" alt="Featured Image for {{ $p.Title }}" width="{{ $w }}" height="{{ $h }}" style="object-fit: cover;" loading="lazy">
 </figure>
 {{ end }}
 {{ end }}

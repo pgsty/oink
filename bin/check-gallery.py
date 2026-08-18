@@ -9,6 +9,8 @@ import re
 import subprocess
 import tempfile
 
+from test_site import build_fixture_public, fixture_config
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -207,7 +209,7 @@ def check_subpath(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-gallery-subpath-") as temp:
         destination = Path(temp) / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"Gallery subpath fixture failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -357,12 +359,19 @@ def check_template_contracts() -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
+    parser.add_argument("--public", type=Path)
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
 
+    public = args.public
+    if public is None:
+        public, result = build_fixture_public(args.hugo)
+        if result.returncode != 0:
+            print(f"private fixture build failed: {result.stdout}{result.stderr}")
+            return 1
+
     errors = (
-        check_outputs(args.public)
+        check_outputs(public)
         + check_escaping_and_forms(args.hugo)
         + check_invalid_cases(args.hugo)
         + check_subpath(args.hugo)

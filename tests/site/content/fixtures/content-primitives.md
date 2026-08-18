@@ -3,6 +3,7 @@ title: Content primitives
 description: Regression fixtures for inline everyday content primitives.
 outputs: [HTML, markdown]
 weight: 30
+lastmod: 2026-08-18
 ---
 
 Status {{< badge text="Beta" tone="warning" >}} remains inline with prose.

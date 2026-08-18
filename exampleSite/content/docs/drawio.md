@@ -11,7 +11,8 @@ Markdown images. Tick "Include a copy of my diagram" when exporting from
 Draw.io and the SVG or PNG carries an `mxfile` copy inside it; the theme's
 runtime spots that copy and adds an edit button to the image. It suits diagrams
 readers are meant to take away and change. A diagram that is only there to be
-looked at is an ordinary [image](/docs/image/).
+looked at is an ordinary [image](/docs/image/). The examples below are source
+only: this page carries no diagram files of its own.
 
 ## Shortest form {#minimal}
 
@@ -23,26 +24,21 @@ The syntax is the plain image syntax. The filename does not matter;
 {width="620" height="140"}
 ```
 
-![The Hugo build pipeline: content goes through Hugo and out as public](pipeline.drawio.svg)
-{width="620" height="140"}
-
-This image embeds an `mxfile` copy, so it is wrapped in a `.drawio` container.
+An export that carries an `mxfile` copy is wrapped in a `.drawio` container.
 Hover it and a pencil button appears at the bottom right; clicking lays a
 full-screen iframe over the page and loads the editor the site configured.
 
 ## How the copy is detected {#detection}
 
 The runtime looks at one thing: whether the file's contents contain `mxfile`.
-The filename is irrelevant. The image below is also an SVG, also a block image,
-but it was drawn by hand — no copy, so no button.
+The filename is irrelevant. A hand-drawn SVG written exactly the same way — a
+block image with the same attribute line — carries no copy, so it gets no
+button.
 
 ```markdown {title="Source"}
 ![The three columns of the documentation shell: sidebar, article, table of contents](plain-shell.svg)
 {width="620" height="140"}
 ```
-
-![The three columns of the documentation shell: sidebar, article, table of contents](plain-shell.svg)
-{width="620" height="140"}
 
 ## With a caption {#caption}
 
@@ -55,9 +51,6 @@ captioned figure; the edit button still appears on the image.
 {caption="Content, configuration and theme templates flow into Hugo and out as public/" width="620" height="140"}
 ```
 
-![The Hugo build pipeline](pipeline.drawio.svg)
-{caption="Content, configuration and theme templates flow into Hugo and out as public/" width="620" height="140"}
-
 ## As a numbered figure {#numbered}
 
 Add `{#id num=…}` for a cross-referenceable numbered figure, which `xref` can
@@ -67,9 +60,6 @@ reach and which appears in the list of figures like any other.
 ![The Hugo build pipeline](pipeline.drawio.svg)
 {#fig_pipeline num="1-1" caption="From content to a static site" width="620" height="140"}
 ```
-
-![The Hugo build pipeline](pipeline.drawio.svg)
-{#fig_pipeline num="1-1" caption="From content to a static site" width="620" height="140"}
 
 The complete numbering and cross-reference rules are in
 [publishing books](https://oink.pgsty.com/docs/write/book/).
@@ -83,9 +73,6 @@ chunk, and the runtime's test is identical.
 ![The Hugo build pipeline (PNG export)](pipeline.drawio.png)
 {width="620" height="140"}
 ```
-
-![The Hugo build pipeline (PNG export)](pipeline.drawio.png)
-{width="620" height="140"}
 
 Prefer SVG in documentation: it scales without loss, its text is real text
 (searchable, readable by screen readers) and its diffs are legible. Use PNG when
@@ -185,7 +172,7 @@ Site parameters (`hugo.yaml`):
   not find it. Do not present editability as a headline feature.
 - Colours do not follow the colour scheme: an exported SVG has fixed colours.
   Set fills to `none` and use neutral greys for lines and text and it reads in
-  both modes — which is what the two diagrams on this page do.
+  both modes.
 
 ## Related {#related}
 

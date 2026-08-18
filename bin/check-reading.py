@@ -11,6 +11,8 @@ import subprocess
 import tempfile
 from urllib.parse import urlsplit
 
+from test_site import fixture_config_args
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -87,6 +89,7 @@ def build_example(hugo: str, destination: Path) -> subprocess.CompletedProcess[s
             str(EXAMPLE),
             "--destination",
             str(destination),
+            *fixture_config_args(),
             "--logLevel",
             "warn",
         ],

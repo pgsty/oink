@@ -15,6 +15,8 @@ import re
 import subprocess
 import tempfile
 
+from test_site import build_fixture_public, fixture_config
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -276,7 +278,7 @@ def check_subpath(hugo: str) -> list[str]:
     with tempfile.TemporaryDirectory(prefix="oink-primitives-subpath-") as temp:
         destination = Path(temp) / "public"
         result = subprocess.run(
-            [hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--logLevel", "warn"],
+            [hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -820,12 +822,19 @@ def check_template_contracts() -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
+    parser.add_argument("--public", type=Path)
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
 
+    public = args.public
+    if public is None:
+        public, result = build_fixture_public(args.hugo)
+        if result.returncode != 0:
+            print(f"private fixture build failed: {result.stdout}{result.stderr}")
+            return 1
+
     errors = (
-        check_outputs(args.public)
+        check_outputs(public)
         + check_subpath(args.hugo)
         + check_rss_output(args.hugo)
         + check_generic_rss_output(args.hugo)

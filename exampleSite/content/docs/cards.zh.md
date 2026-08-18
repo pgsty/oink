@@ -140,7 +140,7 @@ Fork 文档站本身，十分钟内完成本地预览。
 
 ```markdown {title="源码"}
 {{</* cards */>}}
-{{</* card title="OINK 文档外壳" link="https://oink.pgsty.com/zh/docs/about/features/" image="images/content-primitives/oink.webp" image_alt="OINK 文档页面：侧栏、正文与目录三栏" */>}}
+{{</* card title="OINK 文档外壳" link="https://oink.pgsty.com/zh/docs/about/features/" image="/images/oink.webp" image_alt="OINK 文档页面：侧栏、正文与目录三栏" */>}}
 侧栏、正文、目录，三栏可以单独关闭。
 {{</* /card */>}}
 {{</* card title="发布说明" link="https://oink.pgsty.com/zh/docs/write/releases/" image="/images/releasenote.webp" decorative=true */>}}
@@ -150,7 +150,7 @@ Fork 文档站本身，十分钟内完成本地预览。
 ```
 
 {{< cards >}}
-{{< card title="OINK 文档外壳" link="https://oink.pgsty.com/zh/docs/about/features/" image="images/content-primitives/oink.webp" image_alt="OINK 文档页面：侧栏、正文与目录三栏" >}}
+{{< card title="OINK 文档外壳" link="https://oink.pgsty.com/zh/docs/about/features/" image="/images/oink.webp" image_alt="OINK 文档页面：侧栏、正文与目录三栏" >}}
 侧栏、正文、目录，三栏可以单独关闭。
 {{< /card >}}
 {{< card title="发布说明" link="https://oink.pgsty.com/zh/docs/write/releases/" image="/images/releasenote.webp" decorative=true >}}

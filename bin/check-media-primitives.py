@@ -10,10 +10,12 @@ import shutil
 import subprocess
 import tempfile
 
+from test_site import build_fixture_public, fixture_config, fixture_media_config
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-PAGE_IMAGE = EXAMPLE / "content/fixtures/media-primitives/page.png"
+PAGE_IMAGE = ROOT / "tests/site/content/fixtures/media-primitives/page.png"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -136,7 +138,7 @@ def check_resolver_matrix(hugo: str) -> list[str]:
             '{{< media-resolve-test src="https://example.invalid/remote.png?fixture=1" alt="Remote raster" >}}\n'
         )
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_media_config(), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"resolver matrix failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -195,7 +197,7 @@ def check_image_hook_matrix(hugo: str) -> list[str]:
         override = temp_path / "rss.yaml"
         override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [HTML, markdown, RSS]\n")
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", f"{EXAMPLE / 'hugo.yaml'},{override}", "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", fixture_media_config(override), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"image hook matrix failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -239,7 +241,7 @@ def check_subpath(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-media-subpath-") as temp:
         destination = Path(temp) / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"media subpath fixture failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -420,12 +422,19 @@ def check_template_contracts() -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
+    parser.add_argument("--public", type=Path)
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
 
+    public = args.public
+    if public is None:
+        public, result = build_fixture_public(args.hugo)
+        if result.returncode != 0:
+            print(f"private fixture build failed: {result.stdout}{result.stderr}")
+            return 1
+
     errors = (
-        check_outputs(args.public)
+        check_outputs(public)
         + check_resolver_matrix(args.hugo)
         + check_image_hook_matrix(args.hugo)
         + check_subpath(args.hugo)

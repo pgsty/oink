@@ -10,8 +10,9 @@ page, a `**featured*` / `*feature*` / `{*cover*,*thumbnail*}` resource, then
 `images` inherited from a section cascade. Site-wide `params.images` is the last
 resort, and only here: it is a social card, never a rendered thumbnail.
 
-When the resolver selects `images`, the full list is emitted, so Hugo's
-multi-image behaviour survives. Everything else is a single image.
+OINK carries one representative image. When `images` contains several entries,
+only the first selected entry reaches Open Graph, Twitter, and schema metadata,
+regardless of whether it resolves as a Resource, static path, or remote URL.
 
 Every path reaches the shared image URL policy, so a card cannot carry a URL the
 theme would refuse to render, and cannot drop a deployment subpath the rendered
@@ -28,8 +29,8 @@ Input: a page. Returns: a slice of dicts carrying `Image`, `RelPermalink`, and
 {{- $imgs = $imgs | append (dict "Image" . "RelPermalink" .RelPermalink "Permalink" .Permalink) }}
 {{- else }}
 {{- if $found.href }}
-{{/* The resolver selected `images`; keep every entry Hugo would have kept. */}}
-{{- $imgParams = partial "images-param.html" .Params.images }}
+{{/* The resolver selected `images`; OINK's card contract is one image. */}}
+{{- $imgParams = first 1 (partial "images-param.html" .Params.images) }}
 {{- else }}
 {{- $imgParams = first 1 (partial "images-param.html" site.Params.images) }}
 {{- end }}

@@ -5,6 +5,13 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+## [0.5.0] - 2026-08-18
+
+The component API v5 release. Content written for 0.4 needs migration:
+`bin/migrations/oink06.py report --sites <dir>` inventories a site and
+`… migrate --site <dir> --write` rewrites it. Configuration keys renamed here
+fail the build with the new name rather than being silently ignored.
+
 ### Fixed
 
 - Keep a landing FAQ question on one line of its own. The `<summary>` is a flex
@@ -30,7 +37,10 @@ All notable changes to OINK are documented here. The project follows
   root, so the rendered image and the card used to disagree, and
   `featured-image.html` re-resolved an already-resolved href into a doubled
   prefix. `bin/check-output.py` now requires a card URL to name a file the build
-  shipped and `og:image`, `twitter:image`, and `twitter:card` to agree.
+  shipped and `og:image`, `twitter:image`, and `twitter:card` to agree. The card
+  contract is one representative image, so every source kind consistently uses
+  the first `images` entry. SVG and other non-processable Resources are framed
+  without calling Hugo's raster-only `Fill` operation.
 - Reach the dark palettes the vendored runtimes already ship. Swagger UI keys
   its own 256-rule dark theme on `html.dark-mode`, and Algolia DocSearch
   redefines its whole `--docsearch-*` token set under `html[data-theme='dark']`;
@@ -85,6 +95,11 @@ All notable changes to OINK are documented here. The project follows
 - Make corpus/site build tools ignore only a vendored OINK copy while retaining
   other vendored dependencies, and tolerate Git fsmonitor sockets in worktree
   snapshots.
+- Keep the published `exampleSite` focused on Docs, Blog, and a three-chapter
+  bilingual Book example. Regression-only pages, media, and layout overrides
+  now live under `tests/site/` and are mounted only by the check suite; shared
+  public demonstrations use `static/images/oink.webp` and
+  `static/images/releasenote.webp`.
 
 ### Removed
 
@@ -97,28 +112,20 @@ All notable changes to OINK are documented here. The project follows
   defaults, but only the first quietly gave every blog row a thumbnail. Replace
   a section default with `cascade: { images: [<path>] }` on its `_index.md`, a
   page default with `images: [<path>]`, and a site default with
-  `params.images`; `default_featured: false` becomes `images: []`, which opts a
-  page or a whole section out while still sharing the site card. Both legacy
-  registries fail the build and name the replacement.
+  `params.images`; `default_featured: false` becomes `images: []`, which drops
+  the inherited default for a page or a whole section. A bundled featured
+  resource still applies, and without one the site card remains the metadata
+  fallback. Both legacy registries fail the build and name the replacement.
 - Drop the unused `code/namespace-html.html` partial and unemitted styles for
   retired Docsy taxonomy demos/pages and article teasers, the old `.td-sidebar`
   Algolia result layout, and the superseded `.td-main` flex shell.
-
-## [0.5.0] - 2026-08-18
-
-The component API v5 release. Content written for 0.4 needs migration:
-`scripts/migrations/oink06.py report --sites <dir>` inventories a site and
-`… migrate --site <dir> --write` rewrites it. Configuration keys renamed here
-fail the build with the new name rather than being silently ignored.
-
-### Removed
 
 - **Breaking.** The `image` shortcode. Every image is now the Markdown image
   `![alt](src)`, optionally followed by an attribute line carrying `#id`,
   `num`, `caption`, `width`, `height`, `link`, `command`, and `options`. One
   render hook resolves page resources, section resources, global assets, and
   static or remote paths for markdown images, `fig`, and configuration image
-  sources alike. `scripts/migrations/oink06.py migrate --only image` rewrites
+  sources alike. `bin/migrations/oink06.py migrate --only image` rewrites
   existing calls.
 - **Breaking.** The Prism highlighting path, `params.prism_syntax_highlighting`,
   `static/js/prism.js`, and `static/css/prism.css`. Prism could not coexist
@@ -184,10 +191,10 @@ fail the build with the new name rather than being silently ignored.
   (`content/attributes.html`): allowlisted keys are consumed, `class` is token
   validated, `data-*` and `aria-*` pass through, and `style`, `on*`, and
   unknown keys fail the build.
-- A content migration toolkit, `scripts/migrations/oink06.py`, with
+- A content migration toolkit, `bin/migrations/oink06.py`, with
   `report` / `migrate` / `check` modes. It is dry-run by default and
   idempotent; `tests/migrations/` covers it.
-- `scripts/check-namespace.py`: every class the theme generates starts with
+- `bin/check-namespace.py`: every class the theme generates starts with
   `td-`, every data attribute with `data-td-`, every CSS custom property with
   `--td-`, and every JavaScript global with `Oink`. Third-party markup and the
   documented unprefixed author markers are allowlisted; nothing else is.
@@ -266,7 +273,7 @@ fail the build with the new name rather than being silently ignored.
   the template fallbacks for `ui.sidebar_expand_levels` (2) and
   `ui.sidebar_menu_truncate` (2000) now match the declared values. The
   unloaded Docsy `click-to-copy.js` runtime and its styles are gone.
-  `scripts/check-params.py` enforces the key rules and the legacy-key errors.
+  `bin/check-params.py` enforces the key rules and the legacy-key errors.
 
   Rule 3 has no exceptions any more. Every `params.ui.*` setting that a page
   may override — the Docsy sidebar family (`sidebar_menu_compact`,
@@ -282,7 +289,7 @@ fail the build with the new name rather than being silently ignored.
   `assistant_links` page key. The last camelCase front matter keys,
   `manualLink`, `manualLinkTitle`, `manualLinkTarget`, and `manualLinkRelref`,
   are `manual_link`, `manual_link_title`, `manual_link_target`, and
-  `manual_link_relref`; `scripts/migrations/oink06.py migrate --only
+  `manual_link_relref`; `bin/migrations/oink06.py migrate --only
   frontmatter` rewrites all of these page keys.
 - **Breaking.** One naming namespace. Classes the theme generates are `td-`
   prefixed (`leaf`, `has-child`, `active-path`, `is-open`, `is-active`,
@@ -347,7 +354,7 @@ fail the build with the new name rather than being silently ignored.
   footer toggle draws from them, and `prefers-reduced-motion: reduce` zeroes
   the tokens instead of maintaining a per-selector opt-out list that drifted
   (12 selectors covered 42 rules; four files had no guard at all).
-- `scripts/migrations/oink06.py` gains a `frontmatter` transform (run first)
+- `bin/migrations/oink06.py` gains a `frontmatter` transform (run first)
   that rewrites the 0.5.0 page-key renames in YAML front matter and cascades —
   `manualLink*`, `context_menu`, `hide_readingtime`, `hide_feedback`,
   `exclude_search`/`excludeSearch`, `content_width`, `assistant_links`,
@@ -390,7 +397,7 @@ fail the build with the new name rather than being silently ignored.
   Giscus palettes, Image Zoom labels, and Asciinema timer labels therefore
   work in the rendered DOM rather than only in hand-written unit-test mocks.
 - The Quick Start includes the three consuming-site Goldmark prerequisites;
-  `scripts/check-site-markup.py` verifies their resolved Hugo configuration.
+  `bin/check-site-markup.py` verifies their resolved Hugo configuration.
   The content migration checker now fails closed on missing, empty, unreadable,
   or non-UTF-8 targets, and JSON front matter is parsed rather than brace-counted.
 - Legacy front-matter errors also run for Markdown, RSS, and aggregate print

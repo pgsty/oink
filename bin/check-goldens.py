@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Four-state output goldens for the theme fixture (exampleSite).
+"""Four-state output goldens for the private fixture overlay.
 
-The pages listed in tests/goldens/manifest.json are built with Hugo, normalised
+The pages listed in tests/goldens/manifest.json are built by mounting
+tests/site/ over exampleSite, normalised
 (fingerprint hashes, SRI attributes, Hugo version, absolute build paths) and
 compared line-for-line (indentation-insensitive, blank lines dropped) against tests/goldens/<name>. One golden per output state
 per surface: html, print, markdown, rss, llms.
@@ -9,7 +10,7 @@ per surface: html, print, markdown, rss, llms.
   bin/check-goldens.py                # compare (default)
   bin/check-goldens.py --update       # rewrite the goldens from the current build
   bin/check-goldens.py --hugo PATH    # build with another Hugo binary
-  bin/check-goldens.py --public DIR   # reuse an existing exampleSite build
+  bin/check-goldens.py --public DIR   # reuse an existing private-fixture build
 
 Goldens are shared between the CI Hugo versions; a version-specific difference
 must be normalised here (never by keeping two copies silently). Update goldens
@@ -22,10 +23,10 @@ import argparse
 import difflib
 import json
 import re
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
+
+from test_site import build_fixture_public
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -57,10 +58,11 @@ def normalise(text: str) -> str:
 
 
 def build(hugo: str) -> Path:
-    dest = Path(tempfile.mkdtemp(prefix="oink-goldens-")) / "public"
-    result = subprocess.run(
-        [hugo, "--source", str(EXAMPLE), "--destination", str(dest), "--printPathWarnings", "--panicOnWarning", "--quiet"],
-        capture_output=True, text=True,
+    dest, result = build_fixture_public(
+        hugo,
+        "--printPathWarnings",
+        "--panicOnWarning",
+        "--quiet",
     )
     if result.returncode != 0:
         print(result.stdout + result.stderr, file=sys.stderr)

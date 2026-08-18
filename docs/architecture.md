@@ -64,9 +64,16 @@ every level, and `params.images` is the site-wide social card.
 | Directory | `cascade: { images: [<path>] }` on the section `_index.md` | yes | yes |
 | Site | `params.images` | no | yes |
 
-`images: []` opts a page out; the same on a `cascade` opts a whole section out.
-Either way the site card still applies, because declining a thumbnail is not
-declining a card.
+`images: []` clears the explicit value a page or a `cascade` would otherwise
+contribute; it does not suppress bundled-image discovery. A matching
+`**featured*`, `*feature*`, `{*cover*,*thumbnail*}` resource still applies. A
+page with neither an explicit nor a bundled image renders no thumbnail, while
+its metadata may still fall back to the site card in `params.images`.
+
+OINK shares one representative image. If `images` contains several entries,
+only the first selected entry is used. Processable local raster resources are
+cropped for the thumbnail; accepted non-processable resources such as SVG are
+rendered in the same fixed frame without a Hugo image operation.
 
 `featured-image-resolve.html` is the only place that decides, and it ranks a
 bundled resource above `images` inherited from a cascade: Hugo merges a cascade

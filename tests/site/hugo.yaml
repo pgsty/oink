@@ -1,0 +1,21 @@
+# Behaviour fixtures live outside exampleSite so the published example stays
+# small. Check scripts merge this file with exampleSite/hugo.yaml to mount the
+# fixtures only for regression builds.
+module:
+  mounts:
+    - source: content
+      target: content
+    - source: ../tests/site/content
+      target: content
+    - source: assets
+      target: assets
+    - source: ../tests/site/assets
+      target: assets
+    - source: layouts
+      target: layouts
+    - source: ../tests/site/layouts
+      target: layouts
+    - source: static
+      target: static
+    - source: ../tests/site/static
+      target: static

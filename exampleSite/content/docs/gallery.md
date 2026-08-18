@@ -83,19 +83,19 @@ image.
 
 Sources resolve exactly as for a plain image: page resource (a file next to the
 page in its bundle) → global resource in `assets/` → static path `/images/…` →
-remote URL. Local resources carry their intrinsic size so nothing shifts; remote
-images are not downloaded at build time and their size is unknown.
+remote URL. This example site keeps its shared demo images together in
+`static/images/` because they do not need build-time processing.
 
 ````markdown {title="Source"}
 ```gallery
-![OINK documentation overview (global resource)](images/content-primitives/oink.webp) # From assets/images/…, so it can be processed at build time
-![The classic Docsy layout (static path)](/images/docsy.webp) # From static/images/…, published as is
+![OINK documentation overview](/images/oink.webp) # From static/images/…, published as is
+![OINK release notes](/images/releasenote.webp) # Shared from the same simple directory
 ```
 ````
 
 ```gallery
-![OINK documentation overview (global resource)](images/content-primitives/oink.webp) # From assets/images/…, so it can be processed at build time
-![The classic Docsy layout (static path)](/images/docsy.webp) # From static/images/…, published as is
+![OINK documentation overview](/images/oink.webp) # From static/images/…, published as is
+![OINK release notes](/images/releasenote.webp) # Shared from the same simple directory
 ```
 
 A missing page or global resource fails the build; static paths and remote URLs

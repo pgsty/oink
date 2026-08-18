@@ -7,6 +7,8 @@ import os
 import re
 import subprocess
 import tempfile
+
+from test_site import fixture_config_args
 from pathlib import Path
 
 
@@ -292,7 +294,7 @@ def build_example(hugo: str) -> list[str]:
         })
         result = subprocess.run(
             [hugo, "--source", str(ROOT / "exampleSite"), "--themesDir", str(ROOT.parent),
-             "--destination", str(public), "--panicOnWarning"],
+             "--destination", str(public), *fixture_config_args(), "--panicOnWarning"],
             cwd=ROOT,
             env=env,
             text=True,

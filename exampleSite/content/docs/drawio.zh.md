@@ -6,7 +6,7 @@ weight: 140
 search_keywords: [drawio-server, Draw.io, diagrams.net, drawio, mxfile, 可编辑图, SVG, 编辑按钮]
 ---
 
-Draw.io 集成没有围栏也没有 shortcode，用的是普通 Markdown 图片。Draw.io 导出时勾上「Include a copy of my diagram」，SVG 或 PNG 里会带一份 `mxfile` 源码；主题的运行时识别这份副本后，给图片加一个编辑按钮。适合需要读者取走修改的图；只用于展示的图按普通[图片](/zh/docs/image/)处理。
+Draw.io 集成没有围栏也没有 shortcode，用的是普通 Markdown 图片。Draw.io 导出时勾上「Include a copy of my diagram」，SVG 或 PNG 里会带一份 `mxfile` 源码；主题的运行时识别这份副本后，给图片加一个编辑按钮。适合需要读者取走修改的图；只用于展示的图按普通[图片](/zh/docs/image/)处理。下面的例子只给源码，本页不自带任何图形文件。
 
 ## 最简例子 {#minimal}
 
@@ -17,22 +17,16 @@ Draw.io 集成没有围栏也没有 shortcode，用的是普通 Markdown 图片�
 {width="620" height="140"}
 ```
 
-![Hugo 构建流水线：content 目录经 Hugo 产出 public 目录](pipeline.drawio.svg)
-{width="620" height="140"}
-
-这张图嵌着一份 `mxfile` 副本，因此被包进了 `.drawio` 容器。鼠标移到图上时，右下角出现一个铅笔按钮；点击后在当前页面盖一层全屏 iframe，加载站点配置的编辑器。
+导出时带上 `mxfile` 副本的图会被包进 `.drawio` 容器。鼠标移到图上时，右下角出现一个铅笔按钮；点击后在当前页面盖一层全屏 iframe，加载站点配置的编辑器。
 
 ## 副本检测 {#detection}
 
-运行时的判断依据只有一条：文件内容里有没有 `mxfile` 字样，与文件名无关。下面这张同样是 SVG、同样是块级图片，但它是手写的，没有副本，也就没有按钮。
+运行时的判断依据只有一条：文件内容里有没有 `mxfile` 字样，与文件名无关。写法完全相同的手绘 SVG —— 同样是块级图片、同样的属性行 —— 因为没有副本，也就没有按钮。
 
 ```markdown {title="源码"}
 ![文档外壳的三栏：侧栏、正文、目录](plain-shell.svg)
 {width="620" height="140"}
 ```
-
-![文档外壳的三栏：侧栏、正文、目录](plain-shell.svg)
-{width="620" height="140"}
 
 ## 带图注 {#caption}
 
@@ -43,9 +37,6 @@ Draw.io 图片走的是普通图片渲染钩子，[图片](/zh/docs/image/)的�
 {caption="内容、配置与主题模板汇进 Hugo，产出 public/ 目录" width="620" height="140"}
 ```
 
-![Hugo 构建流水线](pipeline.drawio.svg)
-{caption="内容、配置与主题模板汇进 Hugo，产出 public/ 目录" width="620" height="140"}
-
 ## 编号成书里的图 {#numbered}
 
 加 `{#id num=…}` 得到一张可交叉引用的编号图，与别的图片一样能被 `xref` 引用、进入图目录。
@@ -54,9 +45,6 @@ Draw.io 图片走的是普通图片渲染钩子，[图片](/zh/docs/image/)的�
 ![Hugo 构建流水线](pipeline.drawio.svg)
 {#fig_pipeline num="1-1" caption="从内容到静态站点" width="620" height="140"}
 ```
-
-![Hugo 构建流水线](pipeline.drawio.svg)
-{#fig_pipeline num="1-1" caption="从内容到静态站点" width="620" height="140"}
 
 编号与交叉引用的完整规则见[书籍出版](https://oink.pgsty.com/zh/docs/write/book/)。
 
@@ -68,9 +56,6 @@ Draw.io 图片走的是普通图片渲染钩子，[图片](/zh/docs/image/)的�
 ![Hugo 构建流水线（PNG 导出）](pipeline.drawio.png)
 {width="620" height="140"}
 ```
-
-![Hugo 构建流水线（PNG 导出）](pipeline.drawio.png)
-{width="620" height="140"}
 
 文档里优先用 SVG：缩放不失真，文字是真实文本（可被搜索、可被读屏器读取），改动的 diff 也读得懂。图特别复杂、或目标平台不支持 SVG 时用 PNG。只有 PNG 能走 Hugo 的图片处理，`command=` / `options=` 用在 SVG 上会构建失败。
 
@@ -140,7 +125,7 @@ params:
 - 导出时忘了勾「Include a copy of my diagram」，图就只是一张图，没有按钮。
 - 编辑依赖编辑器，且不写回仓库：离线环境里图片正常显示，按钮点了没有反应；编辑器保存等于浏览器下载，替换文件与提交都要手动做。
 - 按钮只在悬停时出现：触屏设备上没有 hover，读者不容易发现它，不要把可编辑当成关键功能来讲。
-- 配色不跟随深浅色：导出的 SVG 颜色是固定的；把填充设成 `none`、线条与文字用中性灰，两种模式下都能看（本页这两张图就是这么做的）。
+- 配色不跟随深浅色：导出的 SVG 颜色是固定的；把填充设成 `none`、线条与文字用中性灰，两种模式下都能看。
 
 ## 相关 {#related}
 

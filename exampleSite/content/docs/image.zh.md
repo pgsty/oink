@@ -12,19 +12,19 @@ image_zoom: true
 ## 最简例子 {#minimal}
 
 ```markdown {title="源码"}
-![OINK 文档外壳：侧栏、正文与目录三栏](oink-shell.webp)
+![OINK 文档外壳：侧栏、正文与目录三栏](/images/oink.webp)
 ```
 
-![OINK 文档外壳：侧栏、正文与目录三栏](oink-shell.webp)
+![OINK 文档外壳：侧栏、正文与目录三栏](/images/oink.webp)
 
-这张图与本页放在同一目录（页面包）中，主题读取它的固有尺寸并写入 `width`/`height`，页面加载时不发生跳版；所有图片懒加载。替代文字供屏幕阅读器与搜索引擎使用，应当始终填写；空 alt 表示装饰性图片，缩放会跳过它。
+这张共享演示图放在 `static/images/`，发布时原样复制。Hugo 读不到静态图片的固有尺寸，需要稳定占位框时应显式写 `width`/`height`；所有图片都会懒加载。替代文字供屏幕阅读器与搜索引擎使用，应当始终填写；空 alt 表示装饰性图片，缩放会跳过它。
 
 ## 图片来源 {#sources}
 来源按以下顺序解析，写法相同：
 
 | 放法 | 源码里怎么写 | 适合 |
 | --- | --- | --- |
-| 与页面同目录（页面包 `index.md` + 图片） | `![…](oink-shell.webp)` | 只有这一页用的截图；随页面一起移动、翻译共用 |
+| 与页面同目录（页面包 `index.md` + 图片） | `![…](screenshot.webp)` | 只有这一页用的截图；随页面一起移动、翻译共用 |
 | 全局资源 `assets/images/…` | `![…](images/logo/oink.webp)` | 多页共用、还要做处理（缩放 / 裁切）的图 |
 | 静态目录 `static/images/…` | `![…](/images/oink.webp)` | 不需要处理的大图、下载物；主题拿不到尺寸时可以用 `width`/`height` 补 |
 | 远程 URL | `![…](https://example.com/a.png)` | 少用：构建期不会下载，也不能处理 |
@@ -35,18 +35,16 @@ image_zoom: true
 位于文字中间的是行内图片，渲染为一个 `<img>`，不能带属性；独立成段的是块级图片，可以带属性行。
 
 ```markdown {title="源码"}
-这一枚小图 ![文档外壳缩略图](oink-mini.webp) 夹在句子里，是行内图片。
+这一枚小图 ![状态图标](icon.webp) 夹在句子里，是行内图片。
 
-![文档外壳缩略图](oink-mini.webp)
+![OINK 文档站首页概览](/images/oink.webp)
 {width="100" height="64"}
 ```
 
-这一枚小图 ![文档外壳缩略图](oink-mini.webp) 夹在句子里，是行内图片。
-
-![文档外壳缩略图](oink-mini.webp)
+![OINK 文档站首页概览](/images/oink.webp)
 {width="100" height="64"}
 
-行内图片按自身尺寸显示（这里是 50×32）。没有固有尺寸的 SVG 行内插入时会被拉伸到容器宽度，SVG 应作为块级图片使用并给出 `width`/`height`。
+行内图片按自身尺寸显示。没有固有尺寸的 SVG 行内插入时会被拉伸到容器宽度，SVG 应作为块级图片使用并给出 `width`/`height`。
 
 > [!NOTE]
 > 块级图片依赖站点设置 `markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false`（本站已配置；见[配置总览](https://oink.pgsty.com/zh/docs/customize/config/)）。缺少它时 Goldmark 会把独立图片包进 `<p>`，属性行也会被当作正文。
@@ -56,11 +54,11 @@ image_zoom: true
 属性行加 `caption="…"`，图片渲染为 `<figure>` + `<figcaption>`。图注是纯文本，不解析 Markdown。
 
 ```markdown {title="源码"}
-![发布卡片：版本号、发布日期与资产按钮](release-note.webp)
+![发布卡片：版本号、发布日期与资产按钮](/images/releasenote.webp)
 {caption="发布卡片由 data/download 与页面的 release 记录生成"}
 ```
 
-![发布卡片：版本号、发布日期与资产按钮](release-note.webp)
+![发布卡片：版本号、发布日期与资产按钮](/images/releasenote.webp)
 {caption="发布卡片由 data/download 与页面的 release 记录生成"}
 
 Markdown 里的 `"标题"` 保持原义（悬停提示），不会成为图注。
@@ -79,21 +77,15 @@ Markdown 里的 `"标题"` 保持原义（悬停提示），不会成为图注�
 
 ## 处理型图片 {#processing}
 
-页面资源与全局资源可以在构建期由 Hugo 处理：`command` 与 `options` 必须同时给出，命令是 `Fit` `Resize` `Fill` `Crop` 之一，选项是 Hugo 的图片处理字符串。渲染出的 `src` 是派生图；启用缩放时对话框打开原图。
+页面资源与全局资源可以在构建期由 Hugo 处理：`command` 与 `options` 必须同时给出，命令是 `Fit` `Resize` `Fill` `Crop` 之一，选项是 Hugo 的图片处理字符串。渲染出的 `src` 是派生图；启用缩放时对话框打开原图。下面只展示源码，假设 `screenshot.webp` 与页面放在一起；公开样例使用的两张共享图统一留在 `static/images/`。
 
 ```markdown {title="源码"}
-![文档外壳缩略图](oink-shell.webp)
+![文档外壳缩略图](screenshot.webp)
 {command="Fit" options="300x150" caption="Fit 300x150：按比例装进 300×150 的框"}
 
-![文档外壳左半边](oink-shell.webp)
+![文档外壳左半边](screenshot.webp)
 {command="Fill" options="300x150 Left" caption="Fill 300x150 Left：填满框，从左侧裁"}
 ```
-
-![文档外壳缩略图](oink-shell.webp)
-{command="Fit" options="300x150" caption="Fit 300x150：按比例装进 300×150 的框"}
-
-![文档外壳左半边](oink-shell.webp)
-{command="Fill" options="300x150 Left" caption="Fill 300x150 Left：填满框，从左侧裁"}
 
 静态路径、远程 URL 与 SVG 不能处理，对它们写 `command` 会构建失败。选项语法（锚点、质量、格式转换，如 `300x150 webp q80`）见 [Hugo 图片处理](https://gohugo.io/content-management/image-processing/)。
 
@@ -104,15 +96,15 @@ Markdown 里的 `"标题"` 保持原义（悬停提示），不会成为图注�
 - 有图注的 figure 整体可点：属性行加 `link="…"`（必须同时有 `caption` 或 `num`）。
 
 ```markdown {title="源码"}
-[![点击进入亮点特性页](oink-shell.webp)](https://oink.pgsty.com/zh/docs/about/features/)
+[![点击进入亮点特性页](/images/oink.webp)](https://oink.pgsty.com/zh/docs/about/features/)
 
-![发布卡片](release-note.webp)
+![发布卡片](/images/releasenote.webp)
 {caption="点击图片查看发布与下载页的说明" link="https://oink.pgsty.com/zh/docs/write/releases/"}
 ```
 
-[![点击进入亮点特性页](oink-shell.webp)](https://oink.pgsty.com/zh/docs/about/features/)
+[![点击进入亮点特性页](/images/oink.webp)](https://oink.pgsty.com/zh/docs/about/features/)
 
-![发布卡片](release-note.webp)
+![发布卡片](/images/releasenote.webp)
 {caption="点击图片查看发布与下载页的说明" link="https://oink.pgsty.com/zh/docs/write/releases/"}
 
 带链接的图不参与缩放。没有图注只写 `link=` 会构建失败，报错中提示改用 `[![…](…)](…)`。
@@ -122,13 +114,13 @@ Markdown 里的 `"标题"` 保持原义（悬停提示），不会成为图注�
 编号图用于书籍与长篇手册：属性行加 `num`，可选 `#id`。编号是作者书写的字符串（`2-1`、`3.4`），主题不自动计数；图注前加本地化的「图 2-1」前缀，`#id` 缺省为 `fig-<num>`。正文用普通链接 `[图 2-1](#fig-2-1)` 或 `xref` shortcode 引用；全书图目录见[书籍出版](https://oink.pgsty.com/zh/docs/write/book/)。
 
 ```markdown {title="源码"}
-![发布卡片](release-note.webp)
+![发布卡片](/images/releasenote.webp)
 {#fig-release num="2-1" caption="发布卡片：版本、日期与资产"}
 
 见[图 2-1](#fig-release)。
 ```
 
-![发布卡片](release-note.webp)
+![发布卡片](/images/releasenote.webp)
 {#fig-release num="2-1" caption="发布卡片：版本、日期与资产"}
 
 见[图 2-1](#fig-release)。
@@ -156,21 +148,21 @@ params:
 不缩放的图：行内图、alt 为空的装饰图、带链接的图、`data-no-zoom` 标记的图。运行时只在页面确有候选图时加载；打印 / Markdown / RSS 中没有对话框。
 
 ```markdown {title="源码：装饰图不缩放"}
-![](oink-shell.webp)
+![](/images/oink.webp)
 {width="150" height="75"}
 ```
 
-![](oink-shell.webp)
+![](/images/oink.webp)
 {width="150" height="75"}
 
 ## 深浅色图片 {#dark-mode}
 主题没有按深浅色切换图片的参数。需要两张图时，各写一个 `class`，在站点 CSS 中按 `[data-bs-theme="dark"]` 显示其一：
 
 ```markdown {title="源码"}
-![侧栏（浅色）](oink-shell.webp)
+![侧栏（浅色）](/images/oink.webp)
 {class="only-light"}
 
-![侧栏（深色）](oink-shell.webp)
+![侧栏（深色）](/images/oink.webp)
 {class="only-dark"}
 ```
 

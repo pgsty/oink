@@ -165,7 +165,7 @@ both, or neither, fails the build.
 
 ```markdown {title="Source"}
 {{</* cards */>}}
-{{</* card title="The OINK shell" link="https://oink.pgsty.com/docs/about/features/" image="images/content-primitives/oink.webp" image_alt="An OINK documentation page: sidebar, article and table of contents" */>}}
+{{</* card title="The OINK shell" link="https://oink.pgsty.com/docs/about/features/" image="/images/oink.webp" image_alt="An OINK documentation page: sidebar, article and table of contents" */>}}
 Sidebar, article, table of contents — each can be turned off on its own.
 {{</* /card */>}}
 {{</* card title="Release notes" link="https://oink.pgsty.com/docs/write/releases/" image="/images/releasenote.webp" decorative=true */>}}
@@ -175,7 +175,7 @@ A decorative cover: `decorative=true` emits an empty alt and screen readers skip
 ```
 
 {{< cards >}}
-{{< card title="The OINK shell" link="https://oink.pgsty.com/docs/about/features/" image="images/content-primitives/oink.webp" image_alt="An OINK documentation page: sidebar, article and table of contents" >}}
+{{< card title="The OINK shell" link="https://oink.pgsty.com/docs/about/features/" image="/images/oink.webp" image_alt="An OINK documentation page: sidebar, article and table of contents" >}}
 Sidebar, article, table of contents — each can be turned off on its own.
 {{< /card >}}
 {{< card title="Release notes" link="https://oink.pgsty.com/docs/write/releases/" image="/images/releasenote.webp" decorative=true >}}

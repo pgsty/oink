@@ -1,11 +1,12 @@
 ---
 title: Blog
 type: blog
+description: Blog section examples
+weight: 20
+icon: fa-solid fa-blog
 cascade:
   type: blog
   images: [/images/oink.webp]
 ---
 
-Long-form entries use the blog shell while sharing the same semantic roles.
-
-![Blog index content image](/media/content-primitives-static.svg)
+![OINK blog example](/images/oink.webp)

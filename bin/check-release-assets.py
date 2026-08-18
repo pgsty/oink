@@ -10,6 +10,8 @@ import re
 import subprocess
 import tempfile
 
+from test_site import fixture_config_args
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -32,6 +34,8 @@ def run(
     destination: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     command = [hugo, "--source", str(source), "--logLevel", "warn"]
+    if source == EXAMPLE:
+        command.extend(fixture_config_args())
     if destination is not None:
         command.extend(["--destination", str(destination)])
     return subprocess.run(

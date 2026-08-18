@@ -1,7 +1,9 @@
 ---
-title: 场景组件手册
-description: 编号媒体、交叉引用、书籍导航与整书打印的最小样例。
+title: OINK 书籍样例
+description: 用于编写书籍的例子
 type: book
+icon: fa-solid fa-book
+weight: 30
 book_kind: book
 book_number: B
 outputs: [HTML, print, markdown]
@@ -10,6 +12,8 @@ cascade:
 ---
 
 {{< book-toc depth=3 >}}
+
+这本小书把完整的出版能力压缩在可读范围内：三章、两张共享图片，每章各演示一种带编号内容。
 
 ## 图目录
 

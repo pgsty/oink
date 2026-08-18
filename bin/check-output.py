@@ -15,9 +15,9 @@ Over the built exampleSite (--public, default exampleSite/public):
   4. output security — bin/check-output-security.py over the same build (the
      fixture opts into third-party embeds) plus a synthetic negative fixture that must
      be rejected.
-  5. social cards — a page's featured image reaches og:image and twitter:image,
-     the two agree, twitter:card follows, and a local card URL names a file the
-     build actually shipped.
+  5. social cards — exactly one featured image reaches Open Graph, schema, and
+     Twitter metadata, all three agree, twitter:card follows, and a local card
+     URL names a file the build actually shipped.
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -172,6 +173,7 @@ def check_security(public: Path) -> list[str]:
 
 
 OG_IMAGE = re.compile(r'<meta property="og:image" content="([^"]+)"')
+SCHEMA_IMAGE = re.compile(r'<meta itemprop="image" content="([^"]+)"')
 TWITTER_CARD = re.compile(r'<meta name="twitter:card" content="([^"]+)"')
 TWITTER_IMAGE = re.compile(r'<meta name="twitter:image" content="([^"]+)"')
 BASE_URL = "https://example.org/"
@@ -194,15 +196,24 @@ def check_social_cards(public: Path) -> list[str]:
         name = page.relative_to(public).as_posix()
         text = page.read_text(encoding="utf-8", errors="replace")
         images = OG_IMAGE.findall(text)
+        schema = SCHEMA_IMAGE.findall(text)
         card = TWITTER_CARD.search(text)
         twitter = TWITTER_IMAGE.findall(text)
         if not images:
+            if schema:
+                errors.append(f"{name}: schema image {schema[0]} without og:image")
             if twitter:
                 errors.append(f"{name}: twitter:image {twitter[0]} without og:image")
             if card and card.group(1) != "summary":
                 errors.append(f"{name}: no image but twitter:card is {card.group(1)!r}")
             continue
         carried += 1
+        if len(images) != 1:
+            errors.append(f"{name}: expected one representative og:image, found {len(images)}")
+        if len(twitter) != 1:
+            errors.append(f"{name}: expected one twitter:image, found {len(twitter)}")
+        if schema != images:
+            errors.append(f"{name}: schema images {schema} disagree with og:image {images}")
         if not twitter:
             errors.append(f"{name}: og:image {images[0]} never reached twitter:image")
         elif twitter[0] != images[0]:
@@ -218,6 +229,119 @@ def check_social_cards(public: Path) -> list[str]:
                 errors.append(f"{name}: og:image {image} names a file the build did not ship")
     if not carried:
         errors.append("no page carried og:image — the featured image never reached the social card")
+    return errors
+
+
+def check_featured_image_contract(hugo: str) -> list[str]:
+    """Pin empty-list discovery, single-card metadata, and SVG resources."""
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-output-featured-") as temp:
+        site = Path(temp)
+
+        def write(relative: str, body: str) -> None:
+            path = site / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(body, encoding="utf-8")
+
+        write(
+            "hugo.yaml",
+            f"""baseURL: {BASE_URL}
+title: Featured image fixture
+theme: {ROOT.name}
+disableKinds: [RSS, sitemap, taxonomy, term]
+params:
+  images: [/site-card.svg]
+""",
+        )
+        write(
+            "content/blog/_index.md",
+            "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n",
+        )
+        write(
+            "content/blog/resource/index.md",
+            "---\ntitle: Bundled raster\ndate: 2026-01-04\nimages: []\n---\n\nEmpty images still discovers the bundle.\n",
+        )
+        raster = site / "content/blog/resource/featured.webp"
+        raster.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(EXAMPLE / "static/images/oink.webp", raster)
+        write(
+            "content/blog/vector/index.md",
+            "---\ntitle: Bundled vector\ndate: 2026-01-03\nimages: [feature.svg]\n---\n\nAn SVG resource is framed without image processing.\n",
+        )
+        write(
+            "content/blog/vector/feature.svg",
+            '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320"><rect width="640" height="320" fill="#2f6793"/></svg>\n',
+        )
+        write(
+            "content/blog/empty.md",
+            "---\ntitle: Empty configured image\ndate: 2026-01-02\nimages: []\n---\n\nNo bundle means no thumbnail.\n",
+        )
+        write(
+            "content/blog/single.md",
+            "---\ntitle: Single social image\ndate: 2026-01-01\nimages: [/first.svg, /second.svg]\n---\n\nOnly the first configured image is shared.\n",
+        )
+        for name, color in (("site-card", "#17385c"), ("first", "#2f6793"), ("second", "#d58b46")):
+            write(
+                f"static/{name}.svg",
+                f'<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320"><rect width="640" height="320" fill="{color}"/></svg>\n',
+            )
+
+        public = site / "public"
+        result = subprocess.run(
+            [
+                hugo,
+                "--source",
+                str(site),
+                "--themesDir",
+                str(ROOT.parent),
+                "--destination",
+                str(public),
+                "--printPathWarnings",
+                "--panicOnWarning",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return [f"featured-image fixture failed to build: {result.stdout}{result.stderr}"]
+
+        expected = {
+            "blog/resource/index.html": f"{BASE_URL}blog/resource/featured.webp",
+            "blog/vector/index.html": f"{BASE_URL}blog/vector/feature.svg",
+            "blog/empty/index.html": f"{BASE_URL}site-card.svg",
+            "blog/single/index.html": f"{BASE_URL}first.svg",
+        }
+        for relative, image in expected.items():
+            source = (public / relative).read_text(encoding="utf-8")
+            actual = OG_IMAGE.findall(source)
+            if actual != [image]:
+                errors.append(f"{relative}: expected one og:image {image}, got {actual}")
+            twitter = TWITTER_IMAGE.findall(source)
+            if twitter != [image]:
+                errors.append(f"{relative}: expected one twitter:image {image}, got {twitter}")
+            schema = SCHEMA_IMAGE.findall(source)
+            if schema != [image]:
+                errors.append(f"{relative}: expected one schema image {image}, got {schema}")
+
+        listing = (public / "blog/index.html").read_text(encoding="utf-8")
+        if re.search(r'/blog/resource/featured_hu_[0-9a-f]+\.webp', listing) is None:
+            errors.append("blog list did not process the bundled raster discovered after images: []")
+        if 'src="/blog/vector/feature.svg"' not in listing:
+            errors.append("blog list did not render the non-processable SVG resource as-is")
+        posts_start = listing.find('<div class="td-blog-posts">')
+        empty_link = listing.find('href="/blog/empty/"', posts_start)
+        empty_start = listing.rfind('<li class="td-blog-posts-list__item">', 0, empty_link)
+        empty_end = listing.find("</li>", empty_link)
+        if min(empty_link, empty_start, empty_end) < 0:
+            errors.append(
+                "blog list is missing the empty-image fixture entry "
+                f"(link={empty_link}, start={empty_start}, end={empty_end})"
+            )
+        elif "<img " in listing[empty_start:empty_end]:
+            errors.append("images: [] without a bundle rendered the site social card as a thumbnail")
     return errors
 
 
@@ -298,6 +422,7 @@ def main() -> int:
     errors += html_errors
     errors += check_security(args.public)
     errors += check_social_cards(args.public)
+    errors += check_featured_image_contract(args.hugo)
     errors += check_config_image_policy(args.hugo)
     if errors:
         print("Output checks failed:")

@@ -1,8 +1,9 @@
 ---
 title: Docs
 linkTitle: Docs
-description: Every component you can write in Markdown — one page each, examples first, parameter tables at the end.
+description: Markdown Component Examples
 icon: fa-solid fa-cubes
+weight: 10
 search_keywords: [components, cheatsheet, Markdown syntax, shortcode, native form]
 cascade:
   type: docs

@@ -1,37 +1,33 @@
-# Numbered evidence
-> The first chapter carries stable IDs and output-aware labels.
+# Establish the baseline
+> Start a technical book with visible assumptions and measurable evidence.
 ---
 LLMS index: [llms.txt](/llms.txt)
 ---
-Forward reference: [Figure 1-1](#office_2003).
-Cross-chapter heading: [the stable heading](/book/chapter-two/#stable-heading).
-**Figure 1-1.** A stable\, manually numbered figure\.
-![OINK mark used as a fixture](/icons/logo.svg)
-**Figure 1-2.** A page\-resource bitmap\: the shared resolver supplies intrinsic dimensions and the resource alt\.
-![A resolved page\-resource bitmap](/book/chapter-one/diagram.png)
-**Figure 1-3.** A page\-resource SVG\: it resolves without error and claims no intrinsic size\.
-![A page\-resource SVG\: it resolves without error and claims no intrinsic size\.](/book/chapter-one/vector.svg)
-**Table 1-1.** Output behavior by surface\.
-| Surface | Label | Anchor |
+A useful handbook starts with a shared picture of the system and names the facts
+that later chapters will rely on.
+## Describe the system {#describe-system}
+**Figure 1-1.** The documentation shell provides navigation\, content\, and local context\.
+![OINK documentation site overview](/images/oink.webp)
+**Table 1-1.** A compact baseline for the sample system\.
+| Surface | Question | Expected result |
 | --- | --- | --- |
-| HTML | Visible | Stable |
-| Print | Visible | Stable |
-**Equation 1.1.** A direct ToMath escape hatch\.
+| Navigation | Can readers find all three chapters? | Yes |
+| Content | Are numbered objects linkable? | Yes |
+| Output | Do HTML, print, and Markdown agree? | Yes |
+**Equation 1.1.** Coverage as verified surfaces over planned surfaces\.
 $$
-X \approx \frac{C}{R+Z}
+C = \frac{V}{P}
 $$
-**Example 1-1.** A labeled example stays out of the page outline\.
+**Example 1-1.** Query a small evidence table before publishing\.
 ```sql
-SELECT book_number FROM chapters ORDER BY weight;
+SELECT surface, verified
+FROM book_evidence
+ORDER BY surface;
 ```
-```sql {num="1-2" caption="A native numbered example: one fence plus attributes." #example-native}
-SELECT title FROM chapters WHERE book_number = '1';
-```
-See [Example 1-1](#example-query) and [Example 1-2](#example-native).
-- [\@pgsty](https://github.com/pgsty) — Theme fixture
-- [\@gohugoio](https://github.com/gohugoio) — Static site generator
-- [\@getbootstrap](https://github.com/getbootstrap) — Interface foundation
-## Chapter details {#chapter-details}
-This heading participates in the depth-three book table of contents.
-## Shared heading {#shared-heading}
-This deliberately repeated heading ID is page-local outside the aggregate.
+Together, [Figure 1-1](#fig-overview),
+[Table 1-1](#tbl-baseline), and
+[Equation 1.1](#eq-coverage) form the baseline. Chapter two turns
+that evidence into a release workflow.
+## Keep the chapter readable {#keep-readable}
+The prose explains why each object exists; the numbered objects make it easy to
+refer to the exact evidence from another chapter or output format.

@@ -11,6 +11,8 @@ import re
 import subprocess
 import tempfile
 
+from test_site import fixture_config
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -51,7 +53,9 @@ def build(
     ]
     if layout_dir is not None:
         command.extend(["--layoutDir", str(layout_dir)])
-    if config is not None:
+    if source == EXAMPLE:
+        command.extend(["--config", fixture_config(*([config] if config else []))])
+    elif config is not None:
         command.extend(["--config", f"{source / 'hugo.yaml'},{config}"])
     process_env = os.environ.copy()
     if env:

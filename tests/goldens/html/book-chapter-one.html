@@ -40,27 +40,28 @@ document.documentElement.setAttribute('data-theme', theme);
 <link rel="alternate" type="text/markdown" href="https://example.org/book/chapter-one/index.md">
 <link rel="prev" href="/book/">
 <link rel="next" href="/book/chapter-two/"><meta name="robots" content="index, follow">
-<title>Numbered evidence | Oink Example</title>
-<meta name="description" content="The first chapter carries stable IDs and output-aware labels.">
+<title>Establish the baseline | Oink Example</title>
+<meta name="description" content="Start a technical book with visible assumptions and measurable evidence.">
 <link rel="canonical" href="https://example.org/book/chapter-one/">
 <link rel="alternate" hreflang="en-US" href="https://example.org/book/chapter-one/">
 <link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/book/chapter-one/">
 <meta property="og:locale:alternate" content="zh_CN">
 <meta property="og:url" content="https://example.org/book/chapter-one/">
 <meta property="og:site_name" content="Oink Example">
-<meta property="og:title" content="Numbered evidence">
-<meta property="og:description" content="The first chapter carries stable IDs and output-aware labels.">
+<meta property="og:title" content="Establish the baseline">
+<meta property="og:description" content="Start a technical book with visible assumptions and measurable evidence.">
 <meta property="og:locale" content="en_US">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
+<meta property="article:section" content="book">
 <meta property="og:image" content="https://example.org/images/oink.webp">
-<meta itemprop="name" content="Numbered evidence">
-<meta itemprop="description" content="The first chapter carries stable IDs and output-aware labels.">
-<meta itemprop="wordCount" content="143">
+<meta itemprop="name" content="Establish the baseline">
+<meta itemprop="description" content="Start a technical book with visible assumptions and measurable evidence.">
+<meta itemprop="wordCount" content="148">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
-<meta name="twitter:title" content="Numbered evidence">
-<meta name="twitter:description" content="The first chapter carries stable IDs and output-aware labels.">
+<meta name="twitter:title" content="Establish the baseline">
+<meta name="twitter:description" content="Start a technical book with visible assumptions and measurable evidence.">
 <link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
 <link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
 <script>
@@ -85,7 +86,7 @@ html.setAttribute('data-td-kbd-zen', '');
 })();
 </script><script defer src="/js/third_party/lunr.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 </head>
-<body class="td-section td-book td-book-content--normal td-shell-chrome td-shell-chrome--navbar">
+<body class="td-page td-book td-book-content--normal td-shell-chrome td-shell-chrome--navbar">
 <a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
 <header class="td-site-header d-print-none" data-td-header>
 <div class="td-site-container">
@@ -139,6 +140,13 @@ data-td-navbar-region="desktop" data-td-navbar-label="Blog"
 data-td-navbar-external="false">
 <i class="fa-solid fa-blog" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Blog</span></a>
+<a class="nav-link active" href="/book/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Book"
+data-td-navbar-region="desktop" data-td-navbar-label="Book"
+data-td-navbar-external="false">
+<i class="fa-solid fa-book" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Book</span></a>
 <a class="nav-link" href="https://pigsty.com/"
 data-td-navbar-level="0" data-td-navbar-kind="link"
 aria-label="Pigsty"
@@ -216,23 +224,31 @@ aria-label="Close navigation" aria-controls="td-shell-sidebar"><i class="td-shel
 <div class="td-shell-root">
 <button type="button" class="td-shell-root__trigger" data-td-shell-root-toggle
 aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
-<span class="td-shell-root__icon"></span>
-<span class="td-shell-root__title">Scenario Components Handbook</span>
+<span class="td-shell-root__icon"><i class="fa-solid fa-book" aria-hidden="true"></i></span>
+<span class="td-shell-root__title">OINK Book Demo</span>
 <i class="td-shell-icon td-shell-icon--chevrons-up-down fa-solid fa-sort" aria-hidden="true"></i>
 </button>
-<div class="td-shell-root__pop" hidden><a class="td-shell-root__item" href="/blog/">
-<span class="td-shell-root__icon"></span>
-<span class="td-shell-root__meta">
-<span class="td-shell-root__item-title">Blog</span>
-</span>
-<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
-</a><a class="td-shell-root__item" href="/docs/">
+<div class="td-shell-root__pop" hidden><a class="td-shell-root__item" href="/docs/">
 <span class="td-shell-root__icon"><i class="fa-solid fa-cubes" aria-hidden="true"></i></span>
 <span class="td-shell-root__meta">
 <span class="td-shell-root__item-title">Docs</span>
-<span class="td-shell-root__item-desc">Every component you can write in Markdown — one page each, examples first, parameter tables at the end.</span>
+<span class="td-shell-root__item-desc">Markdown Component Examples</span>
 </span>
 <span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item" href="/blog/">
+<span class="td-shell-root__icon"><i class="fa-solid fa-blog" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">Blog</span>
+<span class="td-shell-root__item-desc">Blog section examples</span>
+</span>
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item td-is-active" href="/book/" aria-current="page">
+<span class="td-shell-root__icon"><i class="fa-solid fa-book" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">OINK Book Demo</span>
+<span class="td-shell-root__item-desc">Press components</span>
+</span>
+<span class="td-shell-root__check"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </a><a class="td-shell-root__item" href="/fixtures/">
 <span class="td-shell-root__icon"><i class="fa-solid fa-flask" aria-hidden="true"></i></span>
 <span class="td-shell-root__meta">
@@ -240,13 +256,6 @@ aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
 <span class="td-shell-root__item-desc">Narrow pages that pin theme behaviour for the check scripts and the output goldens.</span>
 </span>
 <span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
-</a><a class="td-shell-root__item td-is-active" href="/book/" aria-current="page">
-<span class="td-shell-root__icon"></span>
-<span class="td-shell-root__meta">
-<span class="td-shell-root__item-title">Scenario Components Handbook</span>
-<span class="td-shell-root__item-desc">A minimal fixture for numbered media, references, book navigation, and aggregate print.</span>
-</span>
-<span class="td-shell-root__check"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </a>
 </div>
 </div>
@@ -259,30 +268,37 @@ data-td-sidebar-icon-policy="all" data-td-sidebar-root-id="/book/">
 <li class="td-shell-tree__item td-has-child td-active-path td-shell-tree__item--root"
 id="m-book-li">
 <div class="td-shell-tree__row td-shell-tree__row--root">
-<a href="/book/" title="Scenario Components Handbook"
+<a href="/book/" title="OINK Book Demo"
 class="td-shell-tree__link"
-id="m-book"><span class="td-book-number">B</span><span>Scenario Components Handbook</span></a>
+id="m-book"><i class="fa-solid fa-book" aria-hidden="true"></i><span class="td-book-number">B</span><span>OINK Book Demo</span></a>
 </div><div id="m-book-children" class="td-shell-tree__children td-shell-tree__children--static">
 <div class="td-shell-tree__children-inner">
 <ul class="td-shell-tree__list td-shell-tree__list--1"><li class="td-shell-tree__item td-leaf td-active-path"
 id="m-bookchapter-one-li">
 <div class="td-shell-tree__row td-shell-active">
-<a href="/book/chapter-one/" aria-current="page" title="Numbered evidence"
+<a href="/book/chapter-one/" aria-current="page" title="Establish the baseline"
 class="td-shell-tree__link active"
-id="m-bookchapter-one"><span class="td-book-number">1</span><span>Numbered evidence</span></a>
+id="m-bookchapter-one"><span class="td-book-number">1</span><span>Establish the baseline</span></a>
 </div>
 <div class="td-shell-tree__headings" data-td-book-headings>
 <ul>
-<li><a href="#chapter-details">Chapter details</a></li>
-<li><a href="#shared-heading">Shared heading</a></li>
+<li><a href="#describe-system">Describe the system</a></li>
+<li><a href="#keep-readable">Keep the chapter readable</a></li>
 </ul>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-bookchapter-two-li">
 <div class="td-shell-tree__row">
-<a href="/book/chapter-two/" title="Draft chapter"
+<a href="/book/chapter-two/" title="Release workflow"
 class="td-shell-tree__link"
-id="m-bookchapter-two"><span class="td-book-number">2</span><span>Draft chapter</span> <span class="td-book-draft-badge">Draft</span></a>
+id="m-bookchapter-two"><span class="td-book-number">2</span><span>Release workflow</span> <span class="td-book-draft-badge">Draft</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-bookchapter-three-li">
+<div class="td-shell-tree__row">
+<a href="/book/chapter-three/" title="Operate and review"
+class="td-shell-tree__link"
+id="m-bookchapter-three"><span class="td-book-number">3</span><span>Operate and review</span></a>
 </div>
 </li></ul>
 </div>
@@ -407,9 +423,9 @@ title="Expand sidebar" aria-label="Expand sidebar"><i class="td-shell-icon td-sh
 <nav aria-label="breadcrumb" class="td-breadcrumbs">
 <ol class="breadcrumb">
 <li class="breadcrumb-item">
-<a href="/book/">Scenario Components Handbook</a></li>
+<a href="/book/">OINK Book Demo</a></li>
 <li class="breadcrumb-item active" aria-current="page">
-Numbered evidence</li>
+Establish the baseline</li>
 </ol>
 </nav>
 <span class="td-shell-topline__spacer"></span><div class="td-page-actions d-print-none" data-td-page-actions data-td-page-context
@@ -442,7 +458,7 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook
 <i class="fa-brands fa-markdown" aria-hidden="true"></i><span>View markdown</span>
 </a></li>
 <li class="td-page-actions__separator" role="separator"></li>
-<li><a class="td-page-actions__item" data-td-action="print_section" href="/_print/book/chapter-one/">
+<li><a class="td-page-actions__item" data-td-action="print_section" href="/_print/book/">
 <i class="fa-solid fa-print" aria-hidden="true"></i><span>Print entire section</span>
 </a></li>
 </ul>
@@ -451,59 +467,60 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook
 </div>
 <div class="td-content">
 <div class="td-page-heading">
-<h1><span class="td-book-number">1</span> Numbered evidence</h1>
+<h1><span class="td-book-number">1</span> Establish the baseline</h1>
 </div>
-<div class="lead">The first chapter carries stable IDs and output-aware labels.</div>
+<div class="lead">Start a technical book with visible assumptions and measurable evidence.</div>
 <header class="td-article-meta">
 </header>
-<p>Forward reference: <a class="td-book-xref td-book-xref--fig" href="#office_2003" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>.</p>
-<p>Cross-chapter heading: <a class="td-book-xref" href="/book/chapter-two/#stable-heading">the stable heading</a>.</p>
-<figure id="office_2003" class="td-figure td-book-figure td-book-figure--fig fixture-figure" data-td-book-kind="fig" data-td-book-num="1-1"><img class="td-book-figure__image" src="/icons/logo.svg" alt="OINK mark used as a fixture" width="120" height="120" data-td-image-zoom loading="lazy" decoding="async">
-<figcaption><span class="td-fig-label">Figure 1-1</span> <span class="td-fig-caption">A stable, manually numbered figure.</span></figcaption>
+<p>A useful handbook starts with a shared picture of the system and names the facts
+that later chapters will rely on.</p>
+<h2 id="describe-system">Describe the system<a class="td-heading-self-link" href="#describe-system" aria-label="Link to this heading"></a>
+</h2>
+<figure id="fig-overview" class="td-figure td-book-figure td-book-figure--fig" data-td-book-kind="fig" data-td-book-num="1-1"><img class="td-book-figure__image" src="/images/oink.webp" alt="OINK documentation site overview" width="600" height="300" data-td-image-zoom loading="lazy" decoding="async">
+<figcaption><span class="td-fig-label">Figure 1-1</span> <span class="td-fig-caption">The documentation shell provides navigation, content, and local context.</span></figcaption>
 </figure>
-<figure id="resolved_bitmap" class="td-figure td-book-figure td-book-figure--fig" data-td-book-kind="fig" data-td-book-num="1-2"><img class="td-book-figure__image" src="/book/chapter-one/diagram.png" alt="A resolved page-resource bitmap" width="48" height="24" data-td-image-zoom loading="lazy" decoding="async">
-<figcaption><span class="td-fig-label">Figure 1-2</span> <span class="td-fig-caption">A page-resource bitmap: the shared resolver supplies intrinsic dimensions and the resource alt.</span></figcaption>
-</figure>
-<figure id="resolved_vector" class="td-figure td-book-figure td-book-figure--fig" data-td-book-kind="fig" data-td-book-num="1-3"><img class="td-book-figure__image" src="/book/chapter-one/vector.svg" alt="A page-resource SVG: it resolves without error and claims no intrinsic size." data-td-image-zoom loading="lazy" decoding="async">
-<figcaption><span class="td-fig-label">Figure 1-3</span> <span class="td-fig-caption">A page-resource SVG: it resolves without error and claims no intrinsic size.</span></figcaption>
-</figure>
-<figure id="tbl-1-1" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="1-1">
+<figure id="tbl-baseline" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="1-1">
 <div class="td-book-figure__body"><div class="td-table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
 <table>
 <thead>
 <tr>
 <th scope="col">Surface</th>
-<th scope="col">Label</th>
-<th scope="col">Anchor</th>
+<th scope="col">Question</th>
+<th scope="col">Expected result</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>HTML</td>
-<td>Visible</td>
-<td>Stable</td>
+<td>Navigation</td>
+<td>Can readers find all three chapters?</td>
+<td>Yes</td>
 </tr>
 <tr>
-<td>Print</td>
-<td>Visible</td>
-<td>Stable</td>
+<td>Content</td>
+<td>Are numbered objects linkable?</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>Do HTML, print, and Markdown agree?</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<figcaption><span class="td-tbl-label">Table 1-1</span> <span class="td-tbl-caption">Output behavior by surface.</span></figcaption>
+<figcaption><span class="td-tbl-label">Table 1-1</span> <span class="td-tbl-caption">A compact baseline for the sample system.</span></figcaption>
 </figure>
-<figure id="eq-1.1" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="1.1">
-<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>X</mi><mo>≈</mo><mfrac><mi>C</mi><mrow><mi>R</mi><mo>+</mo><mi>Z</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">X \approx \frac{C}{R+Z}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1297em;vertical-align:-0.7693em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">Z</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7693em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
-<figcaption><span class="td-eq-label">Equation 1.1</span> <span class="td-eq-caption">A direct ToMath escape hatch.</span></figcaption>
+<figure id="eq-coverage" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="1.1">
+<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>C</mi><mo>=</mo><mfrac><mi>V</mi><mi>P</mi></mfrac></mrow><annotation encoding="application/x-tex">C = \frac{V}{P}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
+<figcaption><span class="td-eq-label">Equation 1.1</span> <span class="td-eq-caption">Coverage as verified surfaces over planned surfaces.</span></figcaption>
 </figure>
-<figure id="example-query" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="1-1">
-<figcaption><span class="td-eg-label">Example 1-1</span> <span class="td-eg-caption">A labeled example stays out of the page outline.</span></figcaption>
-<div class="td-book-figure__body"><div class="td-code td-code--untitled" id="td-code-d97916df-eg7-fence-0" data-td-code data-td-code-auto-id
-data-td-language="sql" data-td-line-count="1"><div class="td-code__utilities td-code__utilities--compact">
+<figure id="eg-baseline" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="1-1">
+<figcaption><span class="td-eg-label">Example 1-1</span> <span class="td-eg-caption">Query a small evidence table before publishing.</span></figcaption>
+<div class="td-book-figure__body"><div class="td-code td-code--untitled" id="td-code-d97916df-eg3-fence-0" data-td-code data-td-code-auto-id
+data-td-language="sql" data-td-line-count="3"><div class="td-code__utilities td-code__utilities--compact">
 <button class="td-code__copy" type="button" hidden data-td-code-copy
-data-td-code-target="td-code-d97916df-eg7-fence-0" data-td-copy-mode="all"
+data-td-code-target="td-code-d97916df-eg3-fence-0" data-td-copy-mode="all"
 data-td-label-copy="Copy code"
 data-td-label-copied="Copied"
 data-td-label-error="Copy failed"
@@ -511,68 +528,31 @@ aria-label="Copy code" title="Copy code">
 <i class="fa-regular fa-copy" aria-hidden="true"></i>
 </button>
 </div>
-<div class="td-code__viewport" id="td-code-d97916df-eg7-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">book_number</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">chapters</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span></span></span></code></pre></div></div>
+<div class="td-code__viewport" id="td-code-d97916df-eg3-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">surface</span><span class="p">,</span><span class="w"> </span><span class="n">verified</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="n">book_evidence</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">surface</span><span class="p">;</span></span></span></code></pre></div></div>
 <span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
 </div>
 </div>
 </figure>
-<figure id="example-native" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="1-2">
-<figcaption><span class="td-eg-label">Example 1-2</span> <span class="td-eg-caption">A native numbered example: one fence plus attributes.</span></figcaption>
-<div class="td-code td-code--untitled" id="td-code-d97916df-fence-0" data-td-code data-td-code-auto-id
-data-td-language="sql" data-td-line-count="1"><div class="td-code__utilities td-code__utilities--compact">
-<button class="td-code__copy" type="button" hidden data-td-code-copy
-data-td-code-target="td-code-d97916df-fence-0" data-td-copy-mode="all"
-data-td-label-copy="Copy code"
-data-td-label-copied="Copied"
-data-td-label-error="Copy failed"
-aria-label="Copy code" title="Copy code">
-<i class="fa-regular fa-copy" aria-hidden="true"></i>
-</button>
-</div>
-<div class="td-code__viewport" id="td-code-d97916df-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">chapters</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">book_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="p">;</span></span></span></code></pre></div></div>
-<span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
-</div>
-</figure><p>See <a class="td-book-xref td-book-xref--eg" href="#example-query" data-td-book-kind="eg" data-td-book-num="1-1">Example 1-1</a> and <a class="td-book-xref td-book-xref--eg" href="#example-native" data-td-book-kind="eg" data-td-book-num="1-2">Example 1-2</a>.</p>
-<section class="td-contributor-wall" aria-labelledby="contributors-37fcd1e0a43a0357f4381d4e27a1ee8d-10" data-td-contributor-count="3">
-<div class="td-contributor-wall__summary" id="contributors-37fcd1e0a43a0357f4381d4e27a1ee8d-10">
-<span class="td-contributor-wall__count">3</span>
-<span>contributors</span>
-<span class="td-contributor-wall__source">GitHub</span>
-</div>
-<ul class="td-contributor-wall__grid" role="list"><li class="td-contributor-wall__item">
-<a class="td-contributor-wall__link" href="https://github.com/pgsty" aria-label="Pigsty · @pgsty · Theme fixture" title="Pigsty · @pgsty · Theme fixture">
-<span class="td-contributor-wall__avatar td-contributor-wall__avatar--placeholder" aria-hidden="true">P</span>
-<span class="td-contributor-wall__handle" aria-hidden="true">pgsty</span>
-</a>
-</li><li class="td-contributor-wall__item">
-<a class="td-contributor-wall__link" href="https://github.com/gohugoio" aria-label="@gohugoio · Static site generator" title="@gohugoio · Static site generator">
-<img class="td-contributor-wall__avatar" src="/icons/logo.svg" alt="" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">
-<span class="td-contributor-wall__handle" aria-hidden="true">gohugoio</span>
-</a>
-</li><li class="td-contributor-wall__item">
-<a class="td-contributor-wall__link" href="https://github.com/getbootstrap" aria-label="@getbootstrap · Interface foundation" title="@getbootstrap · Interface foundation">
-<img class="td-contributor-wall__avatar" src="/icons/logo.svg" alt="" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">
-<span class="td-contributor-wall__handle" aria-hidden="true">getbootstrap</span>
-</a>
-</li>
-</ul>
-</section>
-<h2 id="chapter-details">Chapter details<a class="td-heading-self-link" href="#chapter-details" aria-label="Link to this heading"></a>
+<p>Together, <a class="td-book-xref td-book-xref--fig" href="#fig-overview" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>,
+<a class="td-book-xref td-book-xref--tbl" href="#tbl-baseline" data-td-book-kind="tbl" data-td-book-num="1-1">Table 1-1</a>, and
+<a class="td-book-xref td-book-xref--eq" href="#eq-coverage" data-td-book-kind="eq" data-td-book-num="1.1">Equation 1.1</a> form the baseline. Chapter two turns
+that evidence into a release workflow.</p>
+<h2 id="keep-readable">Keep the chapter readable<a class="td-heading-self-link" href="#keep-readable" aria-label="Link to this heading"></a>
 </h2>
-<p>This heading participates in the depth-three book table of contents.</p>
-<h2 id="shared-heading">Shared heading<a class="td-heading-self-link" href="#shared-heading" aria-label="Link to this heading"></a>
-</h2>
-<p>This deliberately repeated heading ID is page-local outside the aggregate.</p>
+<p>The prose explains why each object exists; the numbered objects make it easy to
+refer to the exact evidence from another chapter or output format.</p>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next">
 <a class="td-pager__link td-pager__link--prev" href="/book/"
-aria-label="Previous - Scenario Components Handbook" title="Scenario Components Handbook" data-td-pager-prev>
-<span class="td-pager__arrow" aria-hidden="true">←</span><span class="td-pager__title" dir="auto">Scenario Components Handbook</span>
+aria-label="Previous - OINK Book Demo" title="OINK Book Demo" data-td-pager-prev>
+<span class="td-pager__arrow" aria-hidden="true">←</span><span class="td-pager__title" dir="auto">OINK Book Demo</span>
 </a>
 <a class="td-pager__link td-pager__link--next" href="/book/chapter-two/"
-aria-label="Next - Draft chapter" title="Draft chapter" data-td-pager-next>
-<span class="td-pager__title" dir="auto">Draft chapter</span><span class="td-pager__arrow" aria-hidden="true">→</span>
+aria-label="Next - Release workflow" title="Release workflow" data-td-pager-next>
+<span class="td-pager__title" dir="auto">Release workflow</span><span class="td-pager__arrow" aria-hidden="true">→</span>
 </a>
 </nav>
 </div>
@@ -601,8 +581,8 @@ data-td-label-collapse="Collapse section: Content"><span class="td-shell-aside-g
 <div class="td-shell-toc__body" id="td-shell-toc-body">
 <nav id="TableOfContents">
 <ul>
-<li><a href="#chapter-details">Chapter details</a></li>
-<li><a href="#shared-heading">Shared heading</a></li>
+<li><a href="#describe-system">Describe the system</a></li>
+<li><a href="#keep-readable">Keep the chapter readable</a></li>
 </ul>
 </nav>
 </div>
@@ -693,7 +673,7 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 </footer>
 </div>
 <script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
-<script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"Copy Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":"/book/chapter-one/index.md"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-one%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-one%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"View markdown","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":"/book/chapter-one/index.md"},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/book/chapter-one/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/book/chapter-one/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/book/chapter-one/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Every component you can write in Markdown — one page each, examples first, parameter tables at the end.","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","pigsty"],"version":1}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"Copy Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":"/book/chapter-one/index.md"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-one%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fbook%2Fchapter-one%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"View markdown","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":"/book/chapter-one/index.md"},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/book/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/book/chapter-one/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/book/chapter-one/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Blog section examples","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="/third_party/katex/katex.min.<hash>.css" integrity="<sri>" crossorigin="anonymous">

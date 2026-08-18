@@ -12,6 +12,8 @@ import sys
 import tempfile
 from urllib.parse import urlparse
 
+from test_site import fixture_config_args
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
@@ -38,6 +40,7 @@ def build(base_url: str, public: Path) -> None:
             str(public),
             "--baseURL",
             base_url,
+            *fixture_config_args(),
             "--printPathWarnings",
             "--panicOnWarning",
         ],
@@ -76,7 +79,7 @@ def build(base_url: str, public: Path) -> None:
             "starter Landing Markdown is not semantic source")
     require("td-book-toc" in book and "Figure 1-1" in book and "Table 1-1" in book,
             "starter Book contract is incomplete")
-    require("data-td-book-headings" in chapter and "#stable-heading" in chapter,
+    require("data-td-book-headings" in chapter and "#delivery-states" in chapter,
             "starter Book headings are incomplete")
 
     prefix = "/preview/" if "/preview/" in base_url else "/"

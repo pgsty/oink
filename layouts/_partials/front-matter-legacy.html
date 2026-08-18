@@ -20,7 +20,7 @@
   (slice "manualLinkTitle" "manual_link_title")
   (slice "manualLinkTarget" "manual_link_target")
   (slice "manualLinkRelref" "manual_link_relref")
-  (slice "default_featured" "images: [<path>] on the page, or cascade: { images: [<path>] } on the section _index.md; images: [] opts a page or section out")
+  (slice "default_featured" "images: [<path>] on the page, or cascade: { images: [<path>] } on the section _index.md; images: [] drops an inherited default but still allows bundled featured resources")
 -}}
   {{- if isset $params (lower (index . 0)) -}}
     {{- errorf "front matter %s was renamed: use %s at %s" (index . 0) (index . 1) $path -}}

@@ -3,6 +3,7 @@ title: 内容组件
 description: 日常行内内容组件的回归样例。
 outputs: [HTML, markdown]
 weight: 30
+lastmod: 2026-08-18
 ---
 
 状态 {{< badge text="Beta" tone="warning" >}} 与正文保持在同一行。

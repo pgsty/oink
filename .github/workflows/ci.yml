@@ -173,7 +173,7 @@ jobs:
         run: python3 bin/check-site-markup.py --site exampleSite
 
       - name: Check four-state goldens
-        run: python3 bin/check-goldens.py --public exampleSite/public
+        run: python3 bin/check-goldens.py
 
       - name: Build the system typography preset
         working-directory: exampleSite

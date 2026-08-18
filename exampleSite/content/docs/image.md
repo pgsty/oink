@@ -15,16 +15,16 @@ a derivative processed by Hugo. The theme has no image shortcode.
 ## Shortest form {#minimal}
 
 ```markdown {title="Source"}
-![The OINK documentation shell: sidebar, article and table of contents](oink-shell.webp)
+![The OINK documentation shell: sidebar, article and table of contents](/images/oink.webp)
 ```
 
-![The OINK documentation shell: sidebar, article and table of contents](oink-shell.webp)
+![The OINK documentation shell: sidebar, article and table of contents](/images/oink.webp)
 
-This image lives in the same directory as the page (a page bundle). The theme
-reads its intrinsic dimensions and writes `width`/`height`, so nothing shifts
-while the page loads; every image is lazy-loaded. Alternative text serves
-screen readers and search engines and should always be written. An empty alt
-marks a decorative image, and zoom skips it.
+This shared demo image lives in `static/images/` and is published as-is. Static
+images do not expose intrinsic dimensions to Hugo; add `width`/`height` when a
+stable placeholder box matters. Every image is lazy-loaded. Alternative text
+serves screen readers and search engines and should always be written. An empty
+alt marks a decorative image, and zoom skips it.
 
 ## Where images come from {#sources}
 
@@ -32,7 +32,7 @@ Sources resolve in this order and are all written the same way:
 
 | Placement | In the source | Good for |
 | --- | --- | --- |
-| Next to the page (bundle: `index.md` + image) | `![…](oink-shell.webp)` | Screenshots only this page uses; they travel with the page and are shared by translations |
+| Next to the page (bundle: `index.md` + image) | `![…](screenshot.webp)` | Screenshots only this page uses; they travel with the page and are shared by translations |
 | Global resource `assets/images/…` | `![…](images/logo/oink.webp)` | Images several pages share, especially ones that need processing |
 | Static directory `static/images/…` | `![…](/images/oink.webp)` | Large images and downloads that need no processing; supply `width`/`height` since the theme cannot measure them |
 | Remote URL | `![…](https://example.com/a.png)` | Rare: nothing is downloaded at build time and nothing can be processed |
@@ -50,18 +50,16 @@ takes no attributes. An image that stands alone as a paragraph is a block image
 and can carry an attribute line.
 
 ```markdown {title="Source"}
-This little one ![shell thumbnail](oink-mini.webp) sits inside a sentence — an inline image.
+This little one ![status icon](icon.webp) sits inside a sentence — an inline image.
 
-![shell thumbnail](oink-mini.webp)
+![OINK documentation site overview](/images/oink.webp)
 {width="100" height="64"}
 ```
 
-This little one ![shell thumbnail](oink-mini.webp) sits inside a sentence — an inline image.
-
-![shell thumbnail](oink-mini.webp)
+![OINK documentation site overview](/images/oink.webp)
 {width="100" height="64"}
 
-An inline image renders at its own size (50×32 here). An SVG without intrinsic
+An inline image renders at its own size. An SVG without intrinsic
 dimensions stretches to the container width when inlined, so use SVGs as block
 images and give them `width`/`height`.
 
@@ -78,11 +76,11 @@ Add `caption="…"` to the attribute line and the image renders as `<figure>` +
 `<figcaption>`. The caption is plain text and is not parsed as Markdown.
 
 ```markdown {title="Source"}
-![Release card: version, publication date and asset buttons](release-note.webp)
+![Release card: version, publication date and asset buttons](/images/releasenote.webp)
 {caption="The release card is generated from data/download and the page's release record"}
 ```
 
-![Release card: version, publication date and asset buttons](release-note.webp)
+![Release card: version, publication date and asset buttons](/images/releasenote.webp)
 {caption="The release card is generated from data/download and the page's release record"}
 
 Markdown's `"title"` keeps its own meaning (a hover tooltip); it never becomes
@@ -109,21 +107,16 @@ Page resources and global resources can be processed by Hugo at build time.
 `command` and `options` must both be given: the command is one of `Fit`,
 `Resize`, `Fill`, `Crop`, and the options are Hugo's image-processing string.
 The rendered `src` is the derivative; with zoom enabled the dialog opens the
-original.
+original. This source-only example assumes `screenshot.webp` sits next to the
+page; the public example keeps its two shared images in `static/images/`.
 
 ```markdown {title="Source"}
-![shell thumbnail](oink-shell.webp)
+![shell thumbnail](screenshot.webp)
 {command="Fit" options="300x150" caption="Fit 300x150: scaled to fit inside a 300×150 box"}
 
-![the left half of the shell](oink-shell.webp)
+![the left half of the shell](screenshot.webp)
 {command="Fill" options="300x150 Left" caption="Fill 300x150 Left: fills the box, cropped from the left"}
 ```
-
-![shell thumbnail](oink-shell.webp)
-{command="Fit" options="300x150" caption="Fit 300x150: scaled to fit inside a 300×150 box"}
-
-![the left half of the shell](oink-shell.webp)
-{command="Fill" options="300x150 Left" caption="Fill 300x150 Left: fills the box, cropped from the left"}
 
 Static paths, remote URLs and SVGs cannot be processed; writing `command` for
 one fails the build. For the option syntax — anchors, quality, format
@@ -140,15 +133,15 @@ Two spellings for two situations:
   attribute line (it requires `caption` or `num`).
 
 ```markdown {title="Source"}
-[![Go to the highlights page](oink-shell.webp)](https://oink.pgsty.com/docs/about/features/)
+[![Go to the highlights page](/images/oink.webp)](https://oink.pgsty.com/docs/about/features/)
 
-![Release card](release-note.webp)
+![Release card](/images/releasenote.webp)
 {caption="Click the image for the release and download page" link="https://oink.pgsty.com/docs/write/releases/"}
 ```
 
-[![Go to the highlights page](oink-shell.webp)](https://oink.pgsty.com/docs/about/features/)
+[![Go to the highlights page](/images/oink.webp)](https://oink.pgsty.com/docs/about/features/)
 
-![Release card](release-note.webp)
+![Release card](/images/releasenote.webp)
 {caption="Click the image for the release and download page" link="https://oink.pgsty.com/docs/write/releases/"}
 
 A linked image does not take part in zoom. Writing `link=` without a caption
@@ -165,13 +158,13 @@ shortcode; for a book-wide list of figures see
 [publishing books](https://oink.pgsty.com/docs/write/book/).
 
 ```markdown {title="Source"}
-![Release card](release-note.webp)
+![Release card](/images/releasenote.webp)
 {#fig-release num="2-1" caption="Release card: version, date and assets"}
 
 See [Figure 2-1](#fig-release).
 ```
 
-![Release card](release-note.webp)
+![Release card](/images/releasenote.webp)
 {#fig-release num="2-1" caption="Release card: version, date and assets"}
 
 See [Figure 2-1](#fig-release).
@@ -205,11 +198,11 @@ linked images, and images marked `data-no-zoom`. The runtime loads only when
 the page really has a candidate; print, Markdown and RSS have no dialog.
 
 ```markdown {title="Source: a decorative image does not zoom"}
-![](oink-shell.webp)
+![](/images/oink.webp)
 {width="150" height="75"}
 ```
 
-![](oink-shell.webp)
+![](/images/oink.webp)
 {width="150" height="75"}
 
 ## Light and dark images {#dark-mode}
@@ -219,10 +212,10 @@ two, give each one a `class` and show one of them from site CSS keyed on
 `[data-bs-theme="dark"]`:
 
 ```markdown {title="Source"}
-![Sidebar (light)](oink-shell.webp)
+![Sidebar (light)](/images/oink.webp)
 {class="only-light"}
 
-![Sidebar (dark)](oink-shell.webp)
+![Sidebar (dark)](/images/oink.webp)
 {class="only-dark"}
 ```
 

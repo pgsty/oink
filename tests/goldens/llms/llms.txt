@@ -2,8 +2,9 @@
 > A complete example of OINK's composable landing page.
 ## Site index
 - [Home page](https://example.org/)
-- [Docs](https://example.org/docs/): Every component you can write in Markdown — one page each, examples first, parameter tables at the end.
-- [Blog](https://example.org/blog/)
+- [Docs](https://example.org/docs/): Markdown Component Examples
+- [Blog](https://example.org/blog/): Blog section examples
+- [Book](https://example.org/book/index.md): Press components
 ## Documentation index
 - [Callouts](https://example.org/docs/callout/): Write notes, warnings and collapsible asides — with colour, icon and title — as `> [!NOTE]` blockquotes, no shortcode involved.
 - [Images](https://example.org/docs/image/): Plain Markdown image syntax plus one attribute line gives you captions, sizing, zoom, links, numbering and Hugo image processing.

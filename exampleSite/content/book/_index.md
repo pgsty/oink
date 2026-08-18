@@ -1,7 +1,9 @@
 ---
-title: Scenario Components Handbook
-description: A minimal fixture for numbered media, references, book navigation, and aggregate print.
+title: OINK Book Demo
+description: Press components
 type: book
+icon: fa-solid fa-book
+weight: 30
 book_kind: book
 book_number: B
 outputs: [HTML, print, markdown]
@@ -10,6 +12,9 @@ cascade:
 ---
 
 {{< book-toc depth=3 >}}
+
+This small book keeps the complete publishing example readable: three chapters,
+two shared images, and one of each numbered content type per chapter.
 
 ## Figures
 

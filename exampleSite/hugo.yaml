@@ -145,10 +145,16 @@ languages:
           name: Blog
           pageRef: /blog
           weight: 20
+        - identifier: book
+          name: Book
+          pageRef: /book
+          weight: 30
+          params:
+            icon: fa-solid fa-book
         - identifier: pigsty
           name: Pigsty
           url: https://pigsty.com/
-          weight: 30
+          weight: 40
           params:
             icon: fa-solid fa-database
 
@@ -225,9 +231,15 @@ languages:
           name: 博客
           pageRef: /blog
           weight: 20
+        - identifier: book
+          name: 书籍
+          pageRef: /book
+          weight: 30
+          params:
+            icon: fa-solid fa-book
         - identifier: pigsty
           name: Pigsty
           url: https://pigsty.com/
-          weight: 30
+          weight: 40
           params:
             icon: fa-solid fa-database

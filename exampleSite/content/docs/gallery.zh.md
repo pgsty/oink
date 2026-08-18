@@ -66,18 +66,18 @@ image_zoom: true
 带链接的项不参与缩放，点击已有别的含义。同一个画廊里两种项可以混排：有链接的打开页面，没有链接的打开大图。
 
 ## 图片来源 {#sources}
-来源解析顺序与普通图片一致：页面资源（页面包里的同目录文件）→ 全局资源 `assets/` → 静态路径 `/images/…` → 远程 URL。本地资源带上固有尺寸，加载时不跳版；远程图构建期不下载，也取不到尺寸。
+来源解析顺序与普通图片一致：页面资源（页面包里的同目录文件）→ 全局资源 `assets/` → 静态路径 `/images/…` → 远程 URL。本站的共享演示图不需要构建期处理，因此统一放在 `static/images/`，避免为样例增加额外目录。
 
 ````markdown {title="源码"}
 ```gallery
-![OINK 文档总览（全局资源）](images/content-primitives/oink.webp) # assets/images/… 下的图，可以做构建期处理
-![Docsy 的经典布局（静态路径）](/images/docsy.webp) # static/images/… 下的图，原样发布
+![OINK 文档总览](/images/oink.webp) # 来自 static/images/…，原样发布
+![OINK 发布说明](/images/releasenote.webp) # 与上一张图共用同一个简单目录
 ```
 ````
 
 ```gallery
-![OINK 文档总览（全局资源）](images/content-primitives/oink.webp) # assets/images/… 下的图，可以做构建期处理
-![Docsy 的经典布局（静态路径）](/images/docsy.webp) # static/images/… 下的图，原样发布
+![OINK 文档总览](/images/oink.webp) # 来自 static/images/…，原样发布
+![OINK 发布说明](/images/releasenote.webp) # 与上一张图共用同一个简单目录
 ```
 
 页面资源与全局资源找不到时构建失败；静态路径与远程 URL 不检查存在性。

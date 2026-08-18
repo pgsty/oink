@@ -282,6 +282,7 @@ def check_example(public: Path) -> list[str]:
         "root": public / "book/index.html",
         "one": public / "book/chapter-one/index.html",
         "two": public / "book/chapter-two/index.html",
+        "three": public / "book/chapter-three/index.html",
         "root_md": public / "book/index.md",
         "one_md": public / "book/chapter-one/index.md",
         "one_print": public / "_print/book/chapter-one/index.html",
@@ -295,83 +296,54 @@ def check_example(public: Path) -> list[str]:
     source = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
     documents = load_book_documents(public)
     errors.extend(validate_documents(documents))
-    require(set(documents) == {"/book/", "/book/chapter-one/", "/book/chapter-two/"}, "Book fixture page set changed", errors)
+    expected_pages = {
+        "/book/",
+        "/book/chapter-one/",
+        "/book/chapter-two/",
+        "/book/chapter-three/",
+    }
+    require(set(documents) == expected_pages, "Book example must contain exactly three chapters", errors)
 
     one = documents.get("/book/chapter-one/")
     two = documents.get("/book/chapter-two/")
+    three = documents.get("/book/chapter-three/")
     root = documents.get("/book/")
-    if one and two and root:
+    if one and two and three and root:
         require("td-book-content--normal" in one.body_classes, "Book default reading width is not normal", errors)
-        require(one.sidebar_links[:3] == ["/book/", "/book/chapter-one/", "/book/chapter-two/"], "Book sidebar order changed", errors)
-        require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
-        require(two.pager == {"prev": "/book/chapter-one/"}, "last Book page pager is wrong", errors)
-        require(two.has_sidebar_headings, "active Book page has no sidebar heading branch", errors)
         require(
-            set(one.targets)
-            == {
-                "office_2003",
-                "resolved_bitmap",
-                "resolved_vector",
-                "tbl-1-1",
-                "eq-1.1",
-                "example-query",
-                "example-native",
-            },
-            f"numbered target registry changed: {sorted(one.targets)}",
+            one.sidebar_links[:4]
+            == ["/book/", "/book/chapter-one/", "/book/chapter-two/", "/book/chapter-three/"],
+            "Book sidebar order changed",
             errors,
         )
-        figure = one.targets.get("office_2003")
-        if figure:
+        require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
+        require(two.pager == {"prev": "/book/chapter-one/", "next": "/book/chapter-three/"}, "middle Book page pager is wrong", errors)
+        require(three.pager == {"prev": "/book/chapter-two/"}, "last Book page pager is wrong", errors)
+        require(two.has_sidebar_headings, "active Book page has no sidebar heading branch", errors)
+        target_sets = {
+            "one": (one, {"fig-overview", "tbl-baseline", "eq-coverage", "eg-baseline"}),
+            "two": (two, {"fig-release", "tbl-release", "eq-readiness", "eg-manifest"}),
+            "three": (three, {"fig-operations", "tbl-operations", "eq-budget", "eg-review"}),
+        }
+        for name, (document, expected) in target_sets.items():
+            require(set(document.targets) == expected, f"chapter {name} target registry changed: {sorted(document.targets)}", errors)
+
+        for document, target_id, image_src in (
+            (one, "fig-overview", "/images/oink.webp"),
+            (two, "fig-release", "/images/releasenote.webp"),
+            (three, "fig-operations", "/images/oink.webp"),
+        ):
+            figure = document.targets.get(target_id)
+            if not figure:
+                continue
             images = figure["images"]
-            require(len(images) == 1, "fixture figure image is missing", errors)
+            require(len(images) == 1, f"{target_id} image is missing", errors)
             if images:
                 image = images[0]
-                require(image.get("src") == "/icons/logo.svg", "fixture figure src changed", errors)
-                require(image.get("width") == "120" and image.get("height") == "120", "figure dimensions were lost", errors)
-
-        # `fig src=` resolves through the shared image resolver: a bare page-resource
-        # name becomes the resource permalink (it used to be relURL'd to the site
-        # root), intrinsic dimensions are supplied, and resource `params.alt` fills
-        # in when the shortcode declares no alt.
-        bitmap = one.targets.get("resolved_bitmap")
-        if bitmap:
-            images = bitmap["images"]
-            require(len(images) == 1, "resolved bitmap figure image is missing", errors)
-            if images:
-                image = images[0]
+                require(image.get("src") == image_src, f"{target_id} src changed", errors)
                 require(
-                    image.get("src") == "/book/chapter-one/diagram.png",
-                    f"fig src did not resolve as a page resource: {image.get('src')!r}",
-                    errors,
-                )
-                require(
-                    image.get("width") == "48" and image.get("height") == "24",
-                    "fig did not inherit intrinsic dimensions from the resource",
-                    errors,
-                )
-                require(
-                    image.get("alt") == "A resolved page-resource bitmap",
-                    f"fig did not use the resource alt metadata: {image.get('alt')!r}",
-                    errors,
-                )
-
-        # An SVG page resource resolves without error but has no intrinsic size:
-        # Hugo reports it as an image resource without metadata, so the figure must
-        # not invent width/height.
-        vector = one.targets.get("resolved_vector")
-        if vector:
-            images = vector["images"]
-            require(len(images) == 1, "resolved vector figure image is missing", errors)
-            if images:
-                image = images[0]
-                require(
-                    image.get("src") == "/book/chapter-one/vector.svg",
-                    f"SVG fig src did not resolve as a page resource: {image.get('src')!r}",
-                    errors,
-                )
-                require(
-                    "width" not in image and "height" not in image,
-                    "SVG figure claimed intrinsic dimensions it cannot have",
+                    image.get("width") == "600" and image.get("height") == "300",
+                    f"{target_id} dimensions were lost",
                     errors,
                 )
 
@@ -379,87 +351,92 @@ def check_example(public: Path) -> list[str]:
     require(toc is not None, "Book table of contents is missing", errors)
     if toc:
         toc_source = toc.group(0)
-        for marker in ("/book/chapter-one/", "/book/chapter-two/", "#chapter-details", "#stable-heading", "#shared-heading"):
+        for marker in (
+            "/book/chapter-one/",
+            "/book/chapter-two/",
+            "/book/chapter-three/",
+            "#describe-system",
+            "#delivery-states",
+            "#observe-result",
+        ):
             require(marker in toc_source, f"depth-three Book ToC lost {marker}", errors)
         for marker in ("/docs/", "/blog/", "/landing-demo/"):
             require(marker not in toc_source, f"Book ToC escaped its root through {marker}", errors)
         require("<ol class=td-book-toc__headings" in toc_source or '<ol class="td-book-toc__headings' in toc_source, "Book ToC lost heading lists", errors)
         require("<ol class=td-book-toc__headings><ol" not in toc_source, "Book ToC contains an empty wrapper list", errors)
 
+    for kind in ("fig", "tbl", "eq", "eg"):
+        require(
+            f'td-book-figures--{kind}' in source["root"],
+            f"Book index lost the {kind} list",
+            errors,
+        )
     for marker in (
-        'class="td-book-figures td-book-figures--fig"',
-        "Figure 1-1",
-        "/book/chapter-one/#office_2003",
-        'class="td-book-figures td-book-figures--tbl"',
-        "Table 1-1",
-        'class="td-book-figures td-book-figures--eq"',
-        'class="td-book-figures td-book-figures--eg"',
-        "Example 1-1",
-        "/book/chapter-one/#example-native",
+        "Figure 1-1", "Figure 2-1", "Figure 3-1",
+        "Table 1-1", "Table 2-1", "Table 3-1",
+        "Equation 1.1", "Equation 2.1", "Equation 3.1",
+        "Example 1-1", "Example 2-1", "Example 3-1",
+        "/book/chapter-one/#fig-overview",
+        "/book/chapter-two/#fig-release",
+        "/book/chapter-three/#fig-operations",
     ):
         require(marker in source["root"], f"Book figure list lost {marker}", errors)
-    for marker in ("td-book-draft-badge", "td-book-draft", "data-td-book-headings", "#stable-heading"):
+    for marker in ("td-book-draft-badge", "td-book-draft", "data-td-book-headings", "#delivery-states"):
         require(marker in source["two"], f"draft/sidebar output lost {marker}", errors)
-    for marker in ("td-table-scroll", 'class="katex-display"', "third_party/katex/katex.min."):
-        require(marker in source["one"], f"interactive Book page lost {marker}", errors)
-    for marker in (
-        'id="example-query"',
-        'class="td-book-figure td-book-figure--eg"',
-        'id="example-native"',
-        'data-td-book-num="1-2"',
-        "Example 1-1",
-        "Example 1-2",
-        'class="td-contributor-wall"',
-        'data-td-contributor-count="3"',
-        'class="td-contributor-wall__avatar td-contributor-wall__avatar--placeholder"',
-        ">P</span>",
-    ):
-        require(marker in source["one"], f"Book presentation component lost {marker}", errors)
-    require("https://github.com/pgsty.png" not in source["one"], "contributors defaulted to a remote GitHub avatar", errors)
-    require("A labeled example stays out of the page outline." not in (toc.group(0) if toc else ""), "example caption leaked into Book ToC", errors)
+    for name in ("one", "two", "three"):
+        for marker in ("td-table-scroll", 'class="katex-display"', "third_party/katex/katex.min.", "td-book-figure--eg"):
+            require(marker in source[name], f"chapter {name} lost {marker}", errors)
+    require("Query a small evidence table before publishing." not in (toc.group(0) if toc else ""), "example caption leaked into Book ToC", errors)
 
     for marker in (
-        "**Figure 1-1.** A stable\\, manually numbered figure\\.",
-        "![OINK mark used as a fixture](/icons/logo.svg)",
-        "**Table 1-1.** Output behavior by surface\\.",
-        "**Equation 1.1.** A direct ToMath escape hatch\\.",
-        "**Example 1-1.** A labeled example stays out of the page outline\\.",
-        '```sql {num="1-2" caption="A native numbered example: one fence plus attributes." #example-native}',
-        "- [\\@pgsty](https://github.com/pgsty) — Theme fixture",
-        "[the stable heading](/book/chapter-two/#stable-heading)",
+        "**Figure 1-1.**",
+        "![OINK documentation site overview](/images/oink.webp)",
+        "**Table 1-1.**",
+        "**Equation 1.1.**",
+        "**Example 1-1.**",
+        "SELECT surface, verified",
     ):
         require(marker in source["one_md"], f"Markdown Book output lost {marker}", errors)
     for forbidden in ("<figure", "td-book-figure", "katex-html", "td-table-scroll"):
         require(forbidden not in source["one_md"], f"Markdown Book output leaked {forbidden}", errors)
-    for marker in ("- [1 Numbered evidence]", "  - [Chapter details]", "- [Figure 1-1]", "- [Table 1-1]", "- [Example 1-1]", "- [Example 1-2]", "- [Equation 1.1]"):
+    for marker in (
+        "- [1 Establish the baseline]",
+        "- [2 Release workflow]",
+        "- [3 Operate and review]",
+        "- [Figure 1-1]", "- [Figure 2-1]", "- [Figure 3-1]",
+        "- [Table 1-1]", "- [Table 2-1]", "- [Table 3-1]",
+        "- [Equation 1.1]", "- [Equation 2.1]", "- [Equation 3.1]",
+        "- [Example 1-1]", "- [Example 2-1]", "- [Example 3-1]",
+    ):
         require(marker in source["root_md"], f"Markdown Book index lost {marker}", errors)
 
     require("td-table-scroll--static" in source["one_print"], "print Book table wrapper is not marked static", errors)
     require(re.search(r'td-table-scroll[^>]*(tabindex|role=)', source["one_print"]) is None, "print Book table kept an interactive scroll viewport", errors)
     for marker in (
-        'id="office_2003"',
-        'id="tbl-1-1"',
-        'id="eq-1.1"',
+        'id="fig-overview"',
+        'id="tbl-baseline"',
+        'id="eq-coverage"',
         "Figure 1-1",
         "Table 1-1",
         'class="td-book-figure td-book-figure--eg"',
-        'class="td-contributor-wall"',
     ):
         require(marker in source["one_print"], f"chapter print lost {marker}", errors)
     aggregate = parse_html(source["book_print"])
-    require(aggregate.book_pages == ["/book", "/book/chapter-one", "/book/chapter-two"], "whole-Book print order changed", errors)
+    require(
+        aggregate.book_pages == ["/book", "/book/chapter-one", "/book/chapter-two", "/book/chapter-three"],
+        "whole-Book print order changed",
+        errors,
+    )
     duplicate_aggregate_ids = sorted(key for key, count in Counter(aggregate.ids).items() if count > 1)
     require(not duplicate_aggregate_ids, f"whole-Book print contains duplicate IDs: {duplicate_aggregate_ids}", errors)
-    for element_id in ("office_2003", "tbl-1-1", "eq-1.1"):
+    for element_id in (
+        "fig-overview", "tbl-baseline", "eq-coverage", "eg-baseline",
+        "fig-release", "tbl-release", "eq-readiness", "eg-manifest",
+        "fig-operations", "tbl-operations", "eq-budget", "eg-review",
+    ):
         require(source["book_print"].count(f'id={element_id}') + source["book_print"].count(f'id="{element_id}"') == 1, f"whole-Book print does not preserve one {element_id!r}", errors)
-    namespaced_headings = re.findall(r'id="(pg-[0-9a-f]+--(?:stable-heading|shared-heading))"', source["book_print"])
-    require(len(namespaced_headings) == 3, f"whole-Book print did not namespace repeated headings: {namespaced_headings}", errors)
-    for heading_id in namespaced_headings:
-        require(f'href="#{heading_id}"' in source["book_print"], f"whole-Book print has no local link to {heading_id!r}", errors)
-    for marker in ('href="#office_2003"',):
+    for marker in ('href="#fig-overview"', 'href="#eq-readiness"', 'href="#eg-baseline"'):
         require(marker in source["book_print"], f"whole-Book print did not localize {marker}", errors)
-    for marker in ('id="stable-heading"', 'id="shared-heading"', 'href="#stable-heading"', 'href="#shared-heading"'):
-        require(marker not in source["book_print"], f"whole-Book print retained unscoped heading marker {marker}", errors)
     for marker in ("td-pager", "data-td-pager-prev", "data-td-pager-next"):
         require(marker not in source["book_print"], f"whole-Book print retained interactive marker {marker}", errors)
     # The table wrapper stays in print (the caption/matrix/figure selectors hang

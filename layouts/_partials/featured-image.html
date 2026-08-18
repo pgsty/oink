@@ -3,17 +3,27 @@
 {{ $p := .p }}
 {{ $class := .class | default "ms-3" }}
 {{/* The shared resolver owns precedence and the URL policy. A selected page or
-     global resource can be cropped to the requested box; a remote URL cannot,
-     so it is used as-is and framed by CSS. */ -}}
+     global resource is cropped only when Hugo can process it. SVG and other
+     non-processable resources follow the same framed path as static or remote
+     URLs instead of calling an unsupported image operation. */ -}}
 {{ $found := partialCached "featured-image-resolve.html" $p $p.RelPermalink }}
 {{ with $found.resource }}
-{{ $image := .Fill (printf "%dx%d" $w $h ) }}
+{{ if reflect.IsImageResourceProcessable . }}
+{{ $image := .Fill (printf "%dx%d" $w $h) }}
 <figure class="{{ $class }}" style="width: {{ $image.Width }}px">
 <img src="{{ $image.RelPermalink }}" alt="Featured Image for {{ $p.Title }}" width="{{ $image.Width }}" height="{{ $image.Height }}" loading="lazy">
 {{ with $image.Params.byline }}
  <figcaption class="mt-2 mt-md-0"><small class="text-body-secondary">{{ . | html }}</small></figcaption>
 {{ end }}
 </figure>
+{{ else }}
+<figure class="{{ $class }}" style="width: {{ $w }}px">
+<img src="{{ .RelPermalink }}" alt="Featured Image for {{ $p.Title }}" width="{{ $w }}" height="{{ $h }}" style="object-fit: cover;" loading="lazy">
+{{ with .Params.byline }}
+ <figcaption class="mt-2 mt-md-0"><small class="text-body-secondary">{{ . | html }}</small></figcaption>
+{{ end }}
+</figure>
+{{ end }}
 {{ else }}
 {{ with $found.href }}
 <figure class="{{ $class }}" style="width: {{ $w }}px">

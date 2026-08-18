@@ -1,8 +1,9 @@
 ---
 title: 文档
 linkTitle: 文档
-description: 写文档时可用的全部组件，一个组件一页，例子由浅入深，参数表在页尾。
+description: Markdown 组件样例
 icon: fa-solid fa-cubes
+weight: 10
 search_keywords: [组件, components, 速查, cheatsheet, Markdown 语法, shortcode, 原生形态]
 cascade:
   type: docs

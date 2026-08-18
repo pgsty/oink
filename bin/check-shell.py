@@ -300,12 +300,12 @@ def build_example(hugo: str) -> list[str]:
         )
         if result.returncode:
             return ["fixture failed to build:\n" + result.stdout + result.stderr]
-        page = public / "docs/content-primitives/index.html"
+        page = public / "fixtures/content-primitives/index.html"
         require(page.is_file(), "feedback fixture page is missing", errors)
         if page.is_file():
             source = page.read_text()
             for marker in (
-                'data-td-page-path="/docs/content-primitives/"',
+                'data-td-page-path="/fixtures/content-primitives/"',
                 'data-td-language="en"',
                 'data-td-feedback-choice="solved"',
                 'data-td-feedback-choice="not_solved"',
@@ -347,8 +347,8 @@ def build_example(hugo: str) -> list[str]:
                 r'<a href="([^"]+)"[^>]*\bclass="td-shell-tree__link(?: active)?"',
                 tree,
             )
-            require(first_tree_link is not None and first_tree_link.group(1) == "/docs/",
-                    "rendered Docs tree does not start with its root landing", errors)
+            require(first_tree_link is not None and first_tree_link.group(1) == "/fixtures/",
+                    "rendered tree does not start with its root landing", errors)
             require('class="td-shell-sidebar__brand-row"' in source,
                     "rendered sidebar lost its identity row", errors)
             require('class="td-shell-iconbtn td-shell-sidebar__search"' in source

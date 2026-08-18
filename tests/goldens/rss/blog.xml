@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
-<title>Blog on OINK Landing Example</title>
+<title>Blog on Oink Example</title>
 <link>https://example.org/blog/</link>
-<description>Recent content in Blog on OINK Landing Example</description>
+<description>Recent content in Blog on Oink Example</description>
 <generator>Hugo</generator>
-<language>en</language>
+<language>en-US</language>
 <lastBuildDate>Thu, 13 Aug 2026 00:00:00 +0000</lastBuildDate>
 <atom:link href="https://example.org/blog/index.xml" rel="self" type="application/rss+xml" />
 <item>
@@ -34,7 +34,7 @@
 <link>https://example.org/blog/typography/</link>
 <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
 <guid>https://example.org/blog/typography/</guid>
-<description>&lt;p&gt;Good documentation typography separates reading comfort from interface density.&#xA;The theme can evolve article prose without forcing the sidebar, search dialog,&#xA;or terminal components to use the same font. 中文博客正文也应保持稳定、清晰的回退。&lt;/p&gt;&#xA;&lt;h2 id=&#34;a-stable-foundation&#34;&gt;A stable foundation&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;Semantic roles reduce selector-level overrides and keep future editorial work&#xA;bounded. Code such as &lt;code&gt;hugo --minify&lt;/code&gt; remains visually distinct from prose.&lt;/p&gt;</description>
+<description>&lt;p&gt;Good documentation typography separates reading comfort from interface density.&#xA;The theme can evolve article prose without forcing the sidebar, search dialog,&#xA;or terminal components to use the same font.&lt;/p&gt;&#xA;&lt;h2 id=&#34;a-stable-foundation&#34;&gt;A stable foundation&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;Semantic roles reduce selector-level overrides and keep future editorial work&#xA;bounded. Code such as &lt;code&gt;hugo --minify&lt;/code&gt; remains visually distinct from prose.&lt;/p&gt;</description>
 </item>
 <item>
 <title>An older regression article</title>

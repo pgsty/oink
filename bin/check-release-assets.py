@@ -198,7 +198,7 @@ def check_example(public: Path) -> list[str]:
         errors,
     )
 
-    base = (public / "docs/release-assets-base/index.html").read_text(encoding="utf-8")
+    base = (public / "fixtures/release-assets-base/index.html").read_text(encoding="utf-8")
     require(
         'href="https://downloads.example.org/releases/stable/OINK%20manual%20%28final%29.zip"'
         in base,

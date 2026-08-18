@@ -6,7 +6,7 @@
 {{- end -}}
 {{- $surface := or .IsHome (partial "shell/chrome-enabled.html" .) (and $isLanding $landingSearch) -}}
 {{- $format := lower (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $serveSearch := false -}}
+{{- $serveSearch := true -}}
 {{- if isset .Site.Params "offline_search_on_serve" -}}
   {{- $serveSearch = .Site.Params.offline_search_on_serve -}}
 {{- end -}}

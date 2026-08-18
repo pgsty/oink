@@ -3,13 +3,11 @@ title: A typography regression article
 description: A compact fixture for long-form reading and CJK fallback.
 date: 2026-08-11
 weight: 10
-images:
-  - /media/content-primitives-static.svg
 ---
 
 Good documentation typography separates reading comfort from interface density.
 The theme can evolve article prose without forcing the sidebar, search dialog,
-or terminal components to use the same font. 中文博客正文也应保持稳定、清晰的回退。
+or terminal components to use the same font. 
 
 ## A stable foundation
 

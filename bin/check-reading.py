@@ -109,10 +109,10 @@ def check_math(public: Path) -> list[str]:
             errors,
         )
 
-    math_path = public / "docs/math-passthrough/index.html"
-    math_markdown_path = public / "docs/math-passthrough/index.md"
-    plain_path = public / "docs/content-primitives/index.html"
-    print_path = public / "_print/docs/index.html"
+    math_path = public / "fixtures/math-passthrough/index.html"
+    math_markdown_path = public / "fixtures/math-passthrough/index.md"
+    plain_path = public / "fixtures/content-primitives/index.html"
+    print_path = public / "_print/fixtures/index.html"
     for path in (math_path, math_markdown_path, plain_path, print_path):
         require(path.exists(), f"fixture output is missing: {path.relative_to(public)}", errors)
     if not all(path.exists() for path in (math_path, math_markdown_path, plain_path, print_path)):
@@ -150,19 +150,21 @@ def check_math(public: Path) -> list[str]:
 
 def check_pager_outputs(public: Path) -> list[str]:
     errors: list[str] = []
-    root_path = public / "docs/index.html"
-    require(root_path.exists(), "docs root fixture is missing", errors)
+    # The nested-section fixture lives under /fixtures/; /docs/ is the flat
+    # component reference and exercises no nesting.
+    root_path = public / "fixtures/index.html"
+    require(root_path.exists(), "fixtures root fixture is missing", errors)
     if not root_path.exists():
         return errors
 
     root = parse_navigation(root_path.read_text())
     sequence = root.sidebar_links
-    require(len(sequence) >= 10, "docs sidebar sequence is unexpectedly short", errors)
-    require(sequence[0] == "/docs/", "docs section index is not first", errors)
+    require(len(sequence) >= 10, "fixtures sidebar sequence is unexpectedly short", errors)
+    require(sequence[0] == "/fixtures/", "fixtures section index is not first", errors)
     nested = [
-        "/docs/guides/",
-        "/docs/guides/first/",
-        "/docs/guides/opt-out/",
+        "/fixtures/guides/",
+        "/fixtures/guides/first/",
+        "/fixtures/guides/opt-out/",
     ]
     require(
         all(item in sequence for item in nested)
@@ -172,7 +174,7 @@ def check_pager_outputs(public: Path) -> list[str]:
         errors,
     )
 
-    opt_out = "/docs/guides/opt-out/"
+    opt_out = "/fixtures/guides/opt-out/"
     for index, url in enumerate(sequence):
         path = page_path(public, url)
         require(path.exists(), f"sidebar destination has no HTML output: {url}", errors)
@@ -208,7 +210,7 @@ def check_pager_outputs(public: Path) -> list[str]:
             errors,
         )
 
-    first_nested = (public / "docs/guides/first/index.html").read_text()
+    first_nested = (public / "fixtures/guides/first/index.html").read_text()
     require("Nested guides" in first_nested, "pager card lost its optional parent section", errors)
 
     blog_cases = {
@@ -228,15 +230,15 @@ def check_pager_outputs(public: Path) -> list[str]:
             require(actual == expected[direction], f"{relative} {direction} sidebar order changed", errors)
             require(head == expected[direction], f"{relative} head {direction} sidebar order changed", errors)
 
-    print_page = public / "_print/docs/index.html"
+    print_page = public / "_print/fixtures/index.html"
     require(print_page.exists(), "docs print fixture is missing", errors)
     if print_page.exists():
         source = print_page.read_text()
         for marker in ("td-pager", "data-td-pager-prev", "data-td-pager-next", 'rel="prev"', 'rel="next"'):
             require(marker not in source, f"print output contains pager marker {marker}", errors)
     for relative in (
-        "docs/guides/first/index.md",
-        "docs/guides/opt-out/index.md",
+        "fixtures/guides/first/index.md",
+        "fixtures/guides/opt-out/index.md",
     ):
         path = public / relative
         require(path.exists(), f"Markdown pager fixture is missing: {relative}", errors)

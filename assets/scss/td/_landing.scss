@@ -1802,6 +1802,13 @@
       display: none;
     }
 
+    // The question wrapper: one flex item that grows, wraps, and keeps
+    // inline code / links flowing as text.
+    > span {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
     i {
       flex: 0 0 auto;
       color: var(--td-copper);

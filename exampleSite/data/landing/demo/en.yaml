@@ -73,7 +73,7 @@ sections:
           period: forever
           desc: Full open-source access.
           features: [All components, Community support]
-          cta: { label: Download, url: /docs/download-demo/ }
+          cta: { label: Download, url: /fixtures/download-demo/ }
         - name: Professional
           featured: true
           price: $24K

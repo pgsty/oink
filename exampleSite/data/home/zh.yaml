@@ -1,0 +1,254 @@
+# OINK 按这个顺序拼出首页。增删、重排、关闭任何一节都不用改模板。
+# 映射形式的条目可以用 `key` 指向另一个数据块，同一种类型因此可以出现多次。
+sections:
+  - hero
+  - metrics
+  - capabilities
+  - cards
+  - type: logo-wall
+    key: components
+  - type: logo_wall
+    key: ecosystem
+  - gallery
+  - testimonials
+  - contributors
+  - faq
+  - markdown
+  - principles
+  - type: logo-wall
+    key: showcase
+  - cta
+
+hero:
+  eyebrow: 可组合 · 本地优先 · 只需 Hugo
+  title: 把文档写得**更清楚**。
+  desc: OINK 把 `data/home.yaml` 变成一张落地页。普通文本字段支持 [Markdown 链接](https://gohugo.io/content-management/data-sources/)。
+  note: 不需要 npm、CDN 或任何 JavaScript 框架。
+  actions:
+    - label: 阅读文档
+      url: docs/
+      icon: fa-solid fa-book-open
+      style: primary
+    - label: 在 GitHub 上查看
+      url: https://github.com/pgsty/oink
+      icon: fa-brands fa-github
+      style: ghost
+      external: true
+
+metrics:
+  eyebrow: 一眼看完
+  title: 表面很小，覆盖很广
+  desc: 指标可以带链接与补充说明。
+  columns: 4
+  items:
+    - { value: 12, label: 区块类型, icon: fa-solid fa-layer-group }
+    - { value: 1, label: 数据文件, icon: fa-solid fa-file-code }
+    - { value: 0, label: 运行时依赖, icon: fa-solid fa-plug }
+    - { value: 100%, label: 由 Hugo 渲染, icon: fa-solid fa-bolt }
+
+capabilities:
+  eyebrow: 原有的专用区块
+  title: 保留富有表现力的版式
+  desc: 复杂的特性行仍然可配置，与新的通用区块并存。
+  items:
+    - ref: 01 / 区块分发
+      title: 重排顺序不必改 HTML
+      url: https://gohugo.io/templates/partial/
+      external: true
+      motto: 一个小分发器，一组独立的 partial
+      bullets:
+        - 把区块名字写进 `sections` 数组。
+        - 用 `key` 让同一种类型指向不同数据。
+        - '临时下线写 `enabled: false`。'
+      value: 结构现在是数据，不再是写死的模板。
+      visual:
+        type: code
+        title: data/home.yaml
+        aria_label: 落地页区块配置
+        lines:
+          - { class: c, prefix: '# ', text: 拼出这一页 }
+          - { class: p, prefix: '- ', text: hero }
+          - { class: ok, prefix: '- ', text: logo_wall }
+          - { class: ok, prefix: '- ', text: faq }
+
+cards:
+  eyebrow: 通用卡片
+  title: 常见情况直接配置
+  desc: 特性、优势、服务，任何一组短内容都可以用卡片。
+  columns: 3
+  link_label: 了解更多
+  items:
+    - name: 支持 Markdown
+      icon: fa-brands fa-markdown
+      meta: 富文本
+      desc: 描述里可以写**强调**、`代码`与[链接](https://commonmark.org/)。
+      url: https://commonmark.org/
+      external: true
+    - name: 链接可省略
+      icon: fa-solid fa-link-slash
+      meta: 数据健壮
+      desc: 不写 `url`，卡片仍然是有效、可读的内容。
+    - name: 可复用
+      icon: fa-solid fa-repeat
+      meta: 多个实例
+      desc: 两个区块条目用同一种 `type`，指向不同的 `key`。
+
+components:
+  eyebrow: 组件参考
+  title: 工程内容，按需加载
+  text: 每个组件一页，并且在 HTML、打印、Markdown 与 RSS 四种输出下都有确定形态。
+  layout: grid
+  columns: 3
+  # 按「别处少见」到「天天都用」排序。
+  items:
+    - { title: ECharts,   icon: fa-solid fa-chart-line,           desc: '`echarts` 数据围栏',        url: docs/echarts/ }
+    - { title: 信息图,     icon: fa-solid fa-chart-pie,            desc: '声明式 AntV 模板',          url: docs/infographic/ }
+    - { title: 思维导图,   icon: fa-solid fa-sitemap,              desc: '大纲变成导图',              url: docs/markmap/ }
+    - { title: Asciinema, icon: fa-solid fa-terminal,             desc: '终端录像，本地播放器',       url: docs/asciinema/ }
+    - { title: PlantUML,  icon: fa-solid fa-project-diagram,      desc: 'UML，需自建渲染服务',        url: docs/plantuml/ }
+    - { title: Draw.io,   icon: fa-solid fa-pen-ruler,            desc: '可回编辑的图',              url: docs/drawio/ }
+    - { title: Mermaid,   icon: fa-solid fa-diagram-project,      desc: '本地渲染的图表运行时',       url: docs/mermaid/ }
+    - { title: 公式,       icon: fa-solid fa-square-root-variable, desc: '构建期 KaTeX',              url: docs/math/ }
+    - { title: 文件树,     icon: fa-solid fa-folder-tree,          desc: '`filetree` 数据围栏',       url: docs/filetree/ }
+    - { title: 画廊,       icon: fa-solid fa-images,               desc: '`gallery` 数据围栏',        url: docs/gallery/ }
+    - { title: 代码块,     icon: fa-solid fa-code,                 desc: 'Chroma · 行号 · 复制 · 折叠', url: docs/code/ }
+    - { title: 图片,       icon: fa-solid fa-image,                desc: '图注 · 尺寸 · 缩放',        url: docs/image/ }
+    - { title: 表格,       icon: fa-solid fa-table,                desc: '标题 · 编号 · 矩阵',        url: docs/table/ }
+    - { title: 参数表,     icon: fa-solid fa-table-list,           desc: '表格加 `{.fields}`',        url: docs/fields/ }
+    - { title: 提示块,     icon: fa-solid fa-circle-info,          desc: '`> [!NOTE]` · 十种类型',     url: docs/callout/ }
+    - { title: 标签页,     icon: fa-solid fa-folder,               desc: '围栏加 `{tab=}`',           url: docs/tabs/ }
+    - { title: 步骤,       icon: fa-solid fa-list-ol,              desc: '列表加 `{.steps}`',         url: docs/steps/ }
+    - { title: 卡片,       icon: fa-solid fa-table-cells-large,    desc: '列表加 `{.cards}`',         url: docs/cards/ }
+    - { title: 徽章,       icon: fa-solid fa-tag,                  desc: '行内状态，五种 tone',        url: docs/badge/ }
+    - { title: 按键,       icon: fa-solid fa-keyboard,             desc: '键位与组合键',              url: docs/kbd/ }
+    - { title: 引用,       icon: fa-solid fa-file-import,          desc: '引入文件、参数与注释',       url: docs/include/ }
+
+showcase:
+  eyebrow: 样例站点
+  title: 十二个站点，同一套主题
+  text: 英文站、中文站与双语站；文档树、书籍、公司主页与两页项目站。它们都以 Hugo Module 的方式钉住 OINK。
+  layout: grid
+  columns: 3
+  items:
+    - { title: pigsty.io,          icon: fa-solid fa-database,      desc: 'Pigsty 文档 · 英文',   url: 'https://pigsty.io/',          external: true }
+    - { title: pigsty.cc,          icon: fa-solid fa-database,      desc: 'Pigsty 文档 · 中文',   url: 'https://pigsty.cc/',          external: true }
+    - { title: pgsty.com,          icon: fa-solid fa-building,      desc: '公司主页',             url: 'https://pgsty.com/',          external: true }
+    - { title: silo.pgsty.com,     icon: fa-solid fa-hard-drive,    desc: 'S3 对象存储',          url: 'https://silo.pgsty.com/',     external: true }
+    - { title: oink.pgsty.com,     icon: fa-solid fa-book,          desc: '主题文档站',           url: 'https://oink.pgsty.com/',     external: true }
+    - { title: capslock.vonng.com, icon: fa-solid fa-keyboard,      desc: '两页项目站',           url: 'https://capslock.vonng.com/', external: true }
+    - { title: pig.pgsty.com,      icon: fa-solid fa-box,           desc: '扩展管理器',           url: 'https://pig.pgsty.com/',      external: true }
+    - { title: sow.pgsty.com,      icon: fa-solid fa-boxes-stacked, desc: 'APT / YUM 仓库',       url: 'https://sow.pgsty.com/',      external: true }
+    - { title: exp.pgsty.com,      icon: fa-solid fa-chart-line,    desc: 'PG Exporter 指标',     url: 'https://exp.pgsty.com/',      external: true }
+    - { title: pgsql.cc,           icon: fa-solid fa-server,        desc: 'PostgreSQL 生态',      url: 'https://pgsql.cc/',           external: true }
+    - { title: pgsty.pro,          icon: fa-solid fa-gem,           desc: 'Pigsty v5.0 · 双语',   url: 'https://pgsty.pro/',          external: true }
+    - { title: tpme.vonng.com,     icon: fa-solid fa-book-open,     desc: '双语书籍',             url: 'https://tpme.vonng.com/',     external: true }
+
+ecosystem:
+  eyebrow: Logo 墙
+  title: 与熟悉的工具协作
+  desc: '`icon` 接受 Font Awesome class、图片路径，或者一个简单符号。'
+  columns: 4
+  items:
+    - { name: Hugo, desc: 静态站点生成器, icon: fa-solid fa-bolt, url: https://gohugo.io/, external: true }
+    - { name: Markdown, desc: 内容格式, icon: fa-brands fa-markdown, url: https://commonmark.org/, external: true }
+    - { name: Git, desc: 版本控制, icon: fa-brands fa-git-alt }
+    - { name: 离线, desc: 一切都在本地, icon: ◉ }
+
+gallery:
+  eyebrow: 画廊
+  title: 展示页面、产品或示例
+  desc: 用 `image` 给出截图；素材还没准备好时先用图标顶上。
+  columns: 3
+  link_label: 打开示例
+  items:
+    - title: 文档门户
+      badge: 信息架构
+      icon: fa-solid fa-book
+      desc: 给[文档](docs/)一个明确的入口。
+      url: docs/
+    - title: API 参考
+      badge: OpenAPI
+      icon: fa-solid fa-code
+      desc: 让说明文字与生成的参考资料并排。
+    - title: 工程博客
+      badge: 动态
+      icon: fa-solid fa-newspaper
+      desc: 发布版本、解释与决策。
+
+testimonials:
+  eyebrow: 留言墙
+  title: 让用户说话
+  desc: 每条引用支持姓名、头像或图标、身份、来源链接与 Markdown 正文。
+  columns: 2
+  items:
+    - name: Ada Example
+      icon: A
+      desc: 文档工程师
+      comment: “配置文件足够好读，**内容负责人**自己就能改首页。”
+      source: 来源
+      url: https://example.org/
+      external: true
+    - name: Lin Example
+      icon: L
+      desc: 开源项目维护者
+      comment: “改两行 YAML 就把画廊与 FAQ 调换了顺序。”
+
+contributors:
+  eyebrow: 贡献者
+  title: 记下背后的人
+  desc: 生产站点用图片作头像；这里用符号，示例因此自成一体。
+  columns: 3
+  items:
+    - { name: Alex, icon: A, desc: 主题架构, url: https://github.com/ }
+    - { name: Bo, icon: B, desc: 无障碍审阅 }
+    - { name: Casey, icon: C, desc: 文档与示例 }
+
+faq:
+  eyebrow: 常见问题
+  title: 大家都会问的几件事
+  desc: 答案是块级 Markdown，列表与多个段落都能照常使用。
+  items:
+    - question: 可以只用一个 `data/home.yaml` 吗？
+      answer: 可以。单语言站点用一个文件即可；多语言站点用 `data/home/en.yaml`、`data/home/zh.yaml` 这样的形式。
+      open: true
+    - question: 同一种区块可以出现多次吗？
+      answer: |
+        可以，给每个条目不同的 `key`：
+
+        - `{ type: gallery, key: products }`
+        - `{ type: gallery, key: case_studies }`
+    - question: 没写 `url` 会怎样？
+      answer: 这一项按普通内容渲染，不会留下空链接或坏链接。
+
+markdown:
+  eyebrow: 自由 Markdown
+  title: 特殊内容的逃生口
+  desc: 预定义的集合表达不了时，用 Markdown 区块。
+  body: |
+    这一整块都由数据渲染而来，支持段落、[链接](https://gohugo.io/)与列表：
+
+    - 不需要自定义模板；
+    - 就是普通的 Goldmark 渲染；
+    - 与落地页其余部分同样的宽度与节奏。
+
+principles:
+  eyebrow: 设计原则
+  title: 行为可预期
+  columns: 3
+  items:
+    - icon: fa-solid fa-sliders
+      title: 内容优先
+      desc: 多数改动只是 YAML 里的纯文本。
+    - icon: fa-solid fa-universal-access
+      title: 默认无障碍
+      desc: 语义化区块、受控的外链，以及原生的 FAQ 折叠控件。
+    - icon: fa-solid fa-code-branch
+      title: 向后兼容
+      desc: 没有 `sections` 时，既有的首页数据保持原来的顺序。
+
+cta:
+  title: 拼出你自己的落地页。
+  desc: 拷走这个文件，换掉示例内容，重排区块列表。
+  label: 开始使用
+  url: docs/
+  style: primary

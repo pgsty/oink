@@ -13,7 +13,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLE = ROOT / "exampleSite"
-PAGE_IMAGE = EXAMPLE / "content/docs/media-primitives/page.png"
+PAGE_IMAGE = EXAMPLE / "content/fixtures/media-primitives/page.png"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -27,26 +27,26 @@ def run_hugo(hugo: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 def check_outputs(public: Path) -> list[str]:
     errors: list[str] = []
-    page = (public / "docs/media-primitives/index.html").read_text()
-    markdown = (public / "docs/media-primitives/index.md").read_text()
-    print_page = (public / "_print/docs/index.html").read_text()
+    page = (public / "fixtures/media-primitives/index.html").read_text()
+    markdown = (public / "fixtures/media-primitives/index.md").read_text()
+    print_page = (public / "_print/fixtures/index.html").read_text()
 
     for marker in (
         # attribute line + {command=/options=}: processed figure, Zoom marker
         # carrying the full-size original
         '<figure class="td-figure">',
-        '<img src="/docs/media-primitives/page_hu_9fe7555f90baf6dd.png" alt="Blue and gold page-resource test pattern" width="48" height="30" data-td-image-zoom="/docs/media-primitives/page.png" loading="lazy" decoding="async">',
+        '<img src="/fixtures/media-primitives/page_hu_9fe7555f90baf6dd.png" alt="Blue and gold page-resource test pattern" width="48" height="30" data-td-image-zoom="/fixtures/media-primitives/page.png" loading="lazy" decoding="async">',
         '<img src="/media/content-primitives-global_hu_aaa8925533bfdda.png" alt="Green and violet global-resource test pattern" width="32" height="20" data-td-image-zoom="/media/content-primitives-global.png" loading="lazy" decoding="async">',
         # resource metadata: alt from params.alt, byline inside the figcaption
         '<span class="td-fig-caption">Alt text and the byline come from the resource metadata.</span>',
         '<small class="td-figure__byline">OINK fixture byline</small>',
         # plain block image: bare img, advisory title kept, zoom marker
-        '<img class="td-image" src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async">',
+        '<img class="td-image" src="/fixtures/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title" width="64" height="40" data-td-image-zoom loading="lazy" decoding="async">',
         # block image + {caption=} becomes a figure
         '<img src="/media/content-primitives-static.svg" alt="Static preview" data-td-image-zoom loading="lazy" decoding="async">',
         '<figcaption> <span class="td-fig-caption">A static image with a caption becomes a figure</span></figcaption>',
         # {link=} wraps the image in an anchor inside the figure and is not zoomable
-        '<a class="td-figure__link" href="/docs/"><img src="/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="64" height="40" loading="lazy" decoding="async"></a>',
+        '<a class="td-figure__link" href="/docs/"><img src="/fixtures/media-primitives/page.png" alt="Blue and gold page-resource test pattern" width="64" height="40" loading="lazy" decoding="async"></a>',
         '<span class="td-fig-caption">A linked figure keeps the anchor inside the figure</span>',
         '<span class="td-fig-caption">The attribute line can process too</span>',
     ):
@@ -56,7 +56,7 @@ def check_outputs(public: Path) -> list[str]:
     # version's opaque hash.
     require(
         re.search(
-            r'<img class="td-image" src="/docs/media-primitives/page_hu_[0-9a-f]+\.png" alt="" width="24" height="24" loading="lazy" decoding="async">',
+            r'<img class="td-image" src="/fixtures/media-primitives/page_hu_[0-9a-f]+\.png" alt="" width="24" height="24" loading="lazy" decoding="async">',
             page,
         )
         is not None,
@@ -243,13 +243,13 @@ def check_subpath(hugo: str) -> list[str]:
         if result.returncode != 0:
             errors.append(f"media subpath fixture failed to build: {result.stdout}{result.stderr}")
             return errors
-        page = (destination / "docs/media-primitives/index.html").read_text()
+        page = (destination / "fixtures/media-primitives/index.html").read_text()
         for marker in (
-            'src="/manual/docs/media-primitives/page_',
-            'data-td-image-zoom="/manual/docs/media-primitives/page.png"',
+            'src="/manual/fixtures/media-primitives/page_',
+            'data-td-image-zoom="/manual/fixtures/media-primitives/page.png"',
             'src="/manual/media/content-primitives-global_',
             'data-td-image-zoom="/manual/media/content-primitives-global.png"',
-            '<img class="td-image" src="/manual/docs/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title"',
+            '<img class="td-image" src="/manual/fixtures/media-primitives/page.png" alt="Blue and gold page-resource test pattern" title="Advisory title"',
             '<img src="/manual/media/content-primitives-static.svg" alt="Static preview"',
         ):
             require(marker in page, f"media subpath fixture missing {marker}", errors)

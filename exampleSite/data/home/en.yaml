@@ -6,6 +6,8 @@ sections:
   - metrics
   - capabilities
   - cards
+  - type: logo-wall
+    key: components
   - type: logo_wall
     key: ecosystem
   - gallery
@@ -14,6 +16,8 @@ sections:
   - faq
   - markdown
   - principles
+  - type: logo-wall
+    key: showcase
   - cta
 
 hero:
@@ -89,6 +93,59 @@ cards:
       icon: fa-solid fa-repeat
       meta: Multiple instances
       desc: Point two Section entries at different keys with the same `type`.
+
+components:
+  eyebrow: Component reference
+  title: Engineering content, loaded on demand
+  text: Each component has its own page and a defined shape in HTML, print, Markdown and RSS.
+  layout: grid
+  columns: 3
+  # Ordered by distinctiveness: the ones you rarely find elsewhere first,
+  # then the ones you reach for every day.
+  items:
+    - { title: ECharts,     icon: fa-solid fa-chart-line,           desc: '`echarts` data fence',          url: docs/echarts/ }
+    - { title: Infographic, icon: fa-solid fa-chart-pie,            desc: 'declarative AntV templates',    url: docs/infographic/ }
+    - { title: Markmap,     icon: fa-solid fa-sitemap,              desc: 'mind maps from an outline',     url: docs/markmap/ }
+    - { title: Asciinema,   icon: fa-solid fa-terminal,             desc: 'terminal casts, local player',  url: docs/asciinema/ }
+    - { title: PlantUML,    icon: fa-solid fa-project-diagram,      desc: 'UML through your own server',   url: docs/plantuml/ }
+    - { title: Draw.io,     icon: fa-solid fa-pen-ruler,            desc: 'diagrams that stay editable',   url: docs/drawio/ }
+    - { title: Mermaid,     icon: fa-solid fa-diagram-project,      desc: 'local diagram runtime',         url: docs/mermaid/ }
+    - { title: Mathematics, icon: fa-solid fa-square-root-variable, desc: 'KaTeX at build time',           url: docs/math/ }
+    - { title: File trees,  icon: fa-solid fa-folder-tree,          desc: '`filetree` data fence',         url: docs/filetree/ }
+    - { title: Galleries,   icon: fa-solid fa-images,               desc: '`gallery` data fence',          url: docs/gallery/ }
+    - { title: Code blocks, icon: fa-solid fa-code,                 desc: 'Chroma · lines · copy · fold',  url: docs/code/ }
+    - { title: Images,      icon: fa-solid fa-image,                desc: 'captions · sizing · zoom',      url: docs/image/ }
+    - { title: Tables,      icon: fa-solid fa-table,                desc: 'captions · numbers · matrix',   url: docs/table/ }
+    - { title: Fields,      icon: fa-solid fa-table-list,           desc: 'a table plus `{.fields}`',      url: docs/fields/ }
+    - { title: Callouts,    icon: fa-solid fa-circle-info,          desc: '`> [!NOTE]` · 10 types',        url: docs/callout/ }
+    - { title: Tabs,        icon: fa-solid fa-folder,               desc: 'fences with `{tab=}`',          url: docs/tabs/ }
+    - { title: Steps,       icon: fa-solid fa-list-ol,              desc: 'a list plus `{.steps}`',        url: docs/steps/ }
+    - { title: Cards,       icon: fa-solid fa-table-cells-large,    desc: 'a list plus `{.cards}`',        url: docs/cards/ }
+    - { title: Badges,      icon: fa-solid fa-tag,                  desc: 'inline status, five tones',     url: docs/badge/ }
+    - { title: Keys,        icon: fa-solid fa-keyboard,             desc: 'key names and chords',          url: docs/kbd/ }
+    - { title: Include,     icon: fa-solid fa-file-import,          desc: 'files, params, build-time notes', url: docs/include/ }
+
+showcase:
+  eyebrow: Example sites
+  title: Twelve sites, one theme
+  text:
+    English, Chinese and bilingual sites; documentation trees, books, company
+    pages and two-page project sites. All pin OINK as a Hugo module.
+  layout: grid
+  columns: 3
+  items:
+    - { title: pigsty.io,          icon: fa-solid fa-database,      desc: 'Pigsty docs · English',        url: 'https://pigsty.io/',          external: true }
+    - { title: pigsty.cc,          icon: fa-solid fa-database,      desc: 'Pigsty docs · Chinese',        url: 'https://pigsty.cc/',          external: true }
+    - { title: pgsty.com,          icon: fa-solid fa-building,      desc: 'company site',                 url: 'https://pgsty.com/',          external: true }
+    - { title: silo.pgsty.com,     icon: fa-solid fa-hard-drive,    desc: 'S3 object storage',            url: 'https://silo.pgsty.com/',     external: true }
+    - { title: oink.pgsty.com,     icon: fa-solid fa-book,          desc: 'the theme documentation',      url: 'https://oink.pgsty.com/',     external: true }
+    - { title: capslock.vonng.com, icon: fa-solid fa-keyboard,      desc: 'two-page project site',        url: 'https://capslock.vonng.com/', external: true }
+    - { title: pig.pgsty.com,      icon: fa-solid fa-box,           desc: 'extension manager',            url: 'https://pig.pgsty.com/',      external: true }
+    - { title: sow.pgsty.com,      icon: fa-solid fa-boxes-stacked, desc: 'APT / YUM repositories',       url: 'https://sow.pgsty.com/',      external: true }
+    - { title: exp.pgsty.com,      icon: fa-solid fa-chart-line,    desc: 'PG Exporter metrics',          url: 'https://exp.pgsty.com/',      external: true }
+    - { title: pgsql.cc,           icon: fa-solid fa-server,        desc: 'PostgreSQL ecosystem',         url: 'https://pgsql.cc/',           external: true }
+    - { title: pgsty.pro,          icon: fa-solid fa-gem,           desc: 'Pigsty v5.0 · bilingual',      url: 'https://pgsty.pro/',          external: true }
+    - { title: tpme.vonng.com,     icon: fa-solid fa-book-open,     desc: 'bilingual book',               url: 'https://tpme.vonng.com/',     external: true }
 
 ecosystem:
   eyebrow: Logo wall

@@ -7,6 +7,15 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Keep a landing FAQ question on one line of its own. The `<summary>` is a flex
+  row holding the question and the toggle glyph, so a question carrying inline
+  Markdown -- code, a link, emphasis -- spread each fragment across the row as a
+  separate flex item. The question is now wrapped in one element that grows and
+  wraps as text. In the navbar, text that sits beside a utility icon (the GitHub
+  star count, the alternate-site label) took the 1rem icon box instead of the
+  menu label's size and weight, and the alternate-site label had no gap after
+  its icon. The sun glyph also carried the regular weight while the moon it
+  swaps with carried the solid one.
 - Share the featured image a page actually shows. Hugo's `opengraph.html`,
   `twitter_cards.html`, and `schema.html` resolve their images through the
   embedded `_partials/_funcs/get-page-images.html`, which the theme never
@@ -51,9 +60,18 @@ All notable changes to OINK are documented here. The project follows
   the root Chroma palette painted light-mode token colours onto it -- YAML keys
   at 2.53:1 and punctuation at 1.22:1. `bin/check-landing.py` now requires every
   always-dark landing surface to declare its colour scheme locally.
+- Restore the asciinema player's palette: the 1.0 namespace sweep renamed the
+  player's own `--term-*` custom properties to `--td-term-*`, so
+  `asciinema-player.css` fell back to its built-in black terminal inside the
+  theme's light window chrome. These properties are the runtime's API, like
+  Giscus' `data-*` attributes, and `bin/check-namespace.py` now records the
+  exception and fails if the theme stops setting them.
 
 ### Changed
 
+- Build the local search index and runtime under `hugo server` by default
+  (`offline_search_on_serve`), so a preview behaves like the deployed site. Set
+  it false on a site large enough for the indexing cost to slow the preview.
 - Move repository checks, migration utilities, and measurement tools from
   `scripts/` to `bin/`; this is a tooling-path change and does not alter the
   Hugo Module surface.

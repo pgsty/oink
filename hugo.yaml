@@ -8,9 +8,9 @@ params:
   # through layouts/_markup/render-codeblock.html instead. Set to false to fall
   # back to Hugo's inline highlight styles.
   highlight_classes: true
-  # `hugo server` skips the local index and search runtime by default. Set this
-  # true when a preview specifically needs to exercise local search.
-  offline_search_on_serve: false
+  # `hugo server` builds the local index and search runtime too, so a preview
+  # behaves like the deployed site. Set false to skip it on very large sites.
+  offline_search_on_serve: true
   # Local Lunr search. Off by default; a site opts in.
   offline_search: false
   offline_search_index: content # content | summary

@@ -1,0 +1,782 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+dir="ltr"
+lang="zh-CN"
+data-td-typography="technical" data-td-theme-init>
+<head>
+<meta name="generator" content="Hugo <version>">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#000000">
+<style>
+html { background: Canvas; color: CanvasText; }
+@media (prefers-color-scheme: dark) {
+html { background: #0b0d12; color: #e6e6e6; }
+}
+html[data-td-theme-init] * { transition: none !important; }
+[data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
+[data-td-theme-toggle] > [hidden] { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun { display: inline-block !important; }
+</style>
+<script>
+(function() {
+const themeKey = 'td-color-theme';
+let storedTheme = null;
+try {
+storedTheme = localStorage.getItem(themeKey);
+} catch (_) {
+}
+let theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+if (theme === 'auto') {
+theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+document.documentElement.setAttribute('data-bs-theme', theme);
+document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+document.documentElement.setAttribute('data-theme', theme);
+})();
+</script>
+<meta name="robots" content="index, follow">
+<title>Oink 示例站</title>
+<meta name="description" content="OINK 可组合落地页的完整示例。">
+<link rel="canonical" href="https://example.org/zh/">
+<link rel="alternate" hreflang="en-US" href="https://example.org/">
+<link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:url" content="https://example.org/zh/">
+<meta property="og:site_name" content="Oink 示例站">
+<meta property="og:title" content="Oink 示例站">
+<meta property="og:description" content="OINK 可组合落地页的完整示例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://example.org/images/oink.webp">
+<meta itemprop="name" content="Oink 示例站">
+<meta itemprop="description" content="OINK 可组合落地页的完整示例。">
+<meta itemprop="datePublished" content="2026-08-13T00:00:00+00:00">
+<meta itemprop="dateModified" content="2026-08-13T00:00:00+00:00">
+<meta itemprop="image" content="https://example.org/images/oink.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.org/images/oink.webp">
+<meta name="twitter:title" content="Oink 示例站">
+<meta name="twitter:description" content="OINK 可组合落地页的完整示例。">
+<link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
+<link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
+<script>
+(function () {
+var html = document.documentElement;
+try {
+if (sessionStorage.getItem('td-kbd-zen') === '1') {
+html.setAttribute('data-td-kbd-zen', '');
+}
+} catch (_) {}
+})();
+</script><script defer src="/js/third_party/lunr.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</head>
+<body class="td-home">
+<a class="td-skip-link d-print-none" href="#td-main-content">跳转到主要内容</a>
+<header class="td-site-header d-print-none" data-td-header>
+<div class="td-site-container">
+<nav class="td-site-nav" aria-label="主导航">
+<a href="/zh/" class="td-nav-brand" data-td-navbar-route
+aria-label="Oink 示例站 — 首页" aria-current="page">
+<img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
+<span class="td-nav-title">Oink 示例站</span>
+</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link" href="/zh/docs/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="文档"
+data-td-navbar-region="desktop" data-td-navbar-label="文档"
+data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+<i class="fa-solid fa-cubes" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">文档</span></a>
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/zh/docs/callout/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="提示块"
+data-td-navbar-region="desktop" data-td-navbar-label="提示块"
+data-td-navbar-external="false">
+<i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">提示块</span><small class="td-navbar-entry__description">用块引用写提示、警告与折叠</small></a>
+<a class="td-nav-menu__item-link" href="/zh/docs/code/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="代码块"
+data-td-navbar-region="desktop" data-td-navbar-label="代码块"
+data-td-navbar-external="false">
+<i class="fa-solid fa-code" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">代码块</span><small class="td-navbar-entry__description">标题、复制、行号与折叠</small></a>
+<a class="td-nav-menu__item-link" href="/zh/docs/table/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="表格"
+data-td-navbar-region="desktop" data-td-navbar-label="表格"
+data-td-navbar-external="false">
+<i class="fa-solid fa-table" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">表格</span><small class="td-navbar-entry__description">标题、矩阵、参数表与标签页</small></a>
+<a class="td-nav-menu__item-link" href="/zh/docs/mermaid/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Mermaid"
+data-td-navbar-region="desktop" data-td-navbar-label="Mermaid"
+data-td-navbar-external="false">
+<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Mermaid</span><small class="td-navbar-entry__description">用文本画图，本地渲染</small></a>
+</div>
+</div><a class="nav-link" href="/zh/blog/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="博客"
+data-td-navbar-region="desktop" data-td-navbar-label="博客"
+data-td-navbar-external="false">
+<i class="fa-solid fa-blog" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">博客</span></a>
+<a class="nav-link" href="https://pigsty.com/"
+data-td-navbar-level="0" data-td-navbar-kind="link"
+aria-label="Pigsty"
+data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
+data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
+<i class="fa-solid fa-database" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Pigsty</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
+</div><div class="td-nav-links td-nav-util-zone">
+<button type="button" class="td-nav-search-box" data-td-shell-search-open
+title="搜索…" aria-label="搜索…"
+aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i><span class="td-nav-search-box__hint">搜索…</span>
+<kbd class="td-nav-search-box__kbd" aria-hidden="true">/</kbd>
+</button>
+<div class="td-language-selector td-language-selector--menu td-nav-util td-site-nav__language">
+<a class="td-language-selector__trigger" href="https://example.org/"
+lang="en-US" hreflang="en-US" dir="ltr"
+title="切换语言: English"
+aria-label="切换语言: English" aria-haspopup="true" aria-expanded="false">
+<i class="fa-solid fa-language" aria-hidden="true"></i>
+<span>English</span>
+</a>
+<ul aria-label="选择语言">
+<li>
+<a class="td-language-selector__item" href="https://example.org/" lang="en-US" hreflang="en-US" dir="ltr">English</a>
+</li>
+<li>
+<span class="td-language-selector__item active" lang="zh-CN" dir="ltr" aria-current="page">简体中文</span>
+</li>
+</ul>
+</div><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
+<button type="button" class="td-nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i></button>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="切换配色">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>亮色</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>暗色</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>跟随系统</span>
+</button>
+</div>
+</div>
+<a href="https://github.com/pgsty/oink" class="td-nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="td-nav-count" data-td-github-stars>2.2k</span></a>
+</div>
+</nav>
+</div>
+</header>
+<div class="container-fluid td-default td-outer">
+<main id="td-main-content" class="td-main" tabindex="-1">
+<div class="td-landing-landing" data-td-landing><section id="hero" class="td-landing-hero" aria-labelledby="hero-title">
+<div class="td-landing-hero__glow" aria-hidden="true"></div>
+<div class="td-site-container">
+<div class="td-landing-hero__copy">
+<p class="td-landing-hero__eyebrow">
+<span class="td-landing-status-dot" aria-hidden="true"></span>
+<span>可组合 · 本地优先 · 只需 Hugo</span>
+</p>
+<h1 class="td-landing-hero__title" id="hero-title">把文档写得<strong>更清楚</strong>。</h1><p class="td-landing-hero__lead">OINK 把 <code>data/home.yaml</code> 变成一张落地页。普通文本字段支持 <a href="https://gohugo.io/content-management/data-sources/">Markdown 链接</a>。</p>
+<p class="td-landing-hero__note"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>不需要 npm、CDN 或任何 JavaScript 框架。</span></p>
+<div class="td-landing-hero__actions">
+<a class="td-landing-button td-landing-button--primary" href="/zh/docs/"><i class="fa-solid fa-book-open" aria-hidden="true"></i>
+<span>阅读文档</span>
+</a>
+<a class="td-landing-button td-landing-button--ghost" href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>
+<span>在 GitHub 上查看</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section id="metrics" class="td-landing-section td-landing-metrics" aria-labelledby="metrics-title">
+<div class="td-site-container"><header class="td-landing-section__head td-landing-section__head--compact">
+<p class="td-landing-section__eyebrow"><span>一眼看完</span><i aria-hidden="true"></i></p>
+<h2 id="metrics-title">表面很小，覆盖很广</h2>
+<p class="td-landing-section__description">指标可以带链接与补充说明。</p>
+</header>
+<div class="td-landing-metric-grid" style="--td-columns: 4">
+<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>12</strong><span>区块类型</span>
+</div>
+<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>数据文件</span>
+</div>
+<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>运行时依赖</span>
+</div>
+<div class="td-landing-metric"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong>100%</strong><span>由 Hugo 渲染</span>
+</div>
+</div>
+</div>
+</section>
+<section id="capabilities" class="td-landing-section td-landing-capabilities" aria-labelledby="capabilities-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>原有的专用区块</span><i aria-hidden="true"></i></p>
+<h2 id="capabilities-title">保留富有表现力的版式</h2>
+<p class="td-landing-section__description">复杂的特性行仍然可配置，与新的通用区块并存。</p>
+</header>
+<article class="td-landing-module">
+<div class="td-landing-module__copy"><p class="td-landing-module__ref">01 / 区块分发</p>
+<h3><a href="https://gohugo.io/templates/partial/" target="_blank" rel="noopener noreferrer">重排顺序不必改 HTML</a></h3><p class="td-landing-module__motto">◇ 一个小分发器，一组独立的 partial</p>
+<ul><li>把区块名字写进 <code>sections</code> 数组。</li><li>用 <code>key</code> 让同一种类型指向不同数据。</li><li>临时下线写 <code>enabled: false</code>。</li></ul><p class="td-landing-module__value">结构现在是数据，不再是写死的模板。</p>
+</div>
+<div class="td-landing-codeplate" data-bs-theme="dark" aria-label="落地页区块配置">
+<div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home.yaml</b></div>
+<pre><code><span class="c"># </span>拼出这一页
+<span class="p">- </span>hero
+<span class="ok">- </span>logo_wall
+<span class="ok">- </span>faq
+</code></pre>
+</div>
+</article>
+</div>
+</section>
+<section id="cards" class="td-landing-section td-landing-cards-section" aria-labelledby="cards-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>通用卡片</span><i aria-hidden="true"></i></p>
+<h2 id="cards-title">常见情况直接配置</h2>
+<p class="td-landing-section__description">特性、优势、服务，任何一组短内容都可以用卡片。</p>
+</header>
+<div class="td-landing-card-grid" style="--td-columns: 3">
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">富文本</p><h3>支持 Markdown</h3><div class="td-landing-card__description"><p>描述里可以写<strong>强调</strong>、<code>代码</code>与<a href="https://commonmark.org/">链接</a>。</p>
+</div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">了解更多
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">数据健壮</p><h3>链接可省略</h3><div class="td-landing-card__description"><p>不写 <code>url</code>，卡片仍然是有效、可读的内容。</p>
+</div>
+</article>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">多个实例</p><h3>可复用</h3><div class="td-landing-card__description"><p>两个区块条目用同一种 <code>type</code>，指向不同的 <code>key</code>。</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="components" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="components-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>组件参考</span><i aria-hidden="true"></i></p>
+<h2 id="components-title">工程内容，按需加载</h2>
+<p class="td-landing-section__description">每个组件一页，并且在 HTML、打印、Markdown 与 RSS 四种输出下都有确定形态。</p>
+</header>
+<div class="td-landing-logo-wall" style="--td-columns: 3"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>ECharts</h3><p><code>echarts</code> 数据围栏</p>
+</div><a class="td-landing-card-link" href="/zh/docs/echarts/"><span class="visually-hidden">ECharts</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>信息图</h3><p>声明式 AntV 模板</p>
+</div><a class="td-landing-card-link" href="/zh/docs/infographic/"><span class="visually-hidden">信息图</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-sitemap" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>思维导图</h3><p>大纲变成导图</p>
+</div><a class="td-landing-card-link" href="/zh/docs/markmap/"><span class="visually-hidden">思维导图</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-terminal" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>Asciinema</h3><p>终端录像，本地播放器</p>
+</div><a class="td-landing-card-link" href="/zh/docs/asciinema/"><span class="visually-hidden">Asciinema</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-project-diagram" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>PlantUML</h3><p>UML，需自建渲染服务</p>
+</div><a class="td-landing-card-link" href="/zh/docs/plantuml/"><span class="visually-hidden">PlantUML</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-pen-ruler" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>Draw.io</h3><p>可回编辑的图</p>
+</div><a class="td-landing-card-link" href="/zh/docs/drawio/"><span class="visually-hidden">Draw.io</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>Mermaid</h3><p>本地渲染的图表运行时</p>
+</div><a class="td-landing-card-link" href="/zh/docs/mermaid/"><span class="visually-hidden">Mermaid</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-square-root-variable" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>公式</h3><p>构建期 KaTeX</p>
+</div><a class="td-landing-card-link" href="/zh/docs/math/"><span class="visually-hidden">公式</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-folder-tree" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>文件树</h3><p><code>filetree</code> 数据围栏</p>
+</div><a class="td-landing-card-link" href="/zh/docs/filetree/"><span class="visually-hidden">文件树</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-images" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>画廊</h3><p><code>gallery</code> 数据围栏</p>
+</div><a class="td-landing-card-link" href="/zh/docs/gallery/"><span class="visually-hidden">画廊</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>代码块</h3><p>Chroma · 行号 · 复制 · 折叠</p>
+</div><a class="td-landing-card-link" href="/zh/docs/code/"><span class="visually-hidden">代码块</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-image" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>图片</h3><p>图注 · 尺寸 · 缩放</p>
+</div><a class="td-landing-card-link" href="/zh/docs/image/"><span class="visually-hidden">图片</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-table" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>表格</h3><p>标题 · 编号 · 矩阵</p>
+</div><a class="td-landing-card-link" href="/zh/docs/table/"><span class="visually-hidden">表格</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-table-list" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>参数表</h3><p>表格加 <code>{.fields}</code></p>
+</div><a class="td-landing-card-link" href="/zh/docs/fields/"><span class="visually-hidden">参数表</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>提示块</h3><p><code>&gt; [!NOTE]</code> · 十种类型</p>
+</div><a class="td-landing-card-link" href="/zh/docs/callout/"><span class="visually-hidden">提示块</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-folder" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>标签页</h3><p>围栏加 <code>{tab=}</code></p>
+</div><a class="td-landing-card-link" href="/zh/docs/tabs/"><span class="visually-hidden">标签页</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-list-ol" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>步骤</h3><p>列表加 <code>{.steps}</code></p>
+</div><a class="td-landing-card-link" href="/zh/docs/steps/"><span class="visually-hidden">步骤</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>卡片</h3><p>列表加 <code>{.cards}</code></p>
+</div><a class="td-landing-card-link" href="/zh/docs/cards/"><span class="visually-hidden">卡片</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-tag" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>徽章</h3><p>行内状态，五种 tone</p>
+</div><a class="td-landing-card-link" href="/zh/docs/badge/"><span class="visually-hidden">徽章</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-keyboard" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>按键</h3><p>键位与组合键</p>
+</div><a class="td-landing-card-link" href="/zh/docs/kbd/"><span class="visually-hidden">按键</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-file-import" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>引用</h3><p>引入文件、参数与注释</p>
+</div><a class="td-landing-card-link" href="/zh/docs/include/"><span class="visually-hidden">引用</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+</div>
+</div>
+</section>
+<section id="ecosystem" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="ecosystem-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>Logo 墙</span><i aria-hidden="true"></i></p>
+<h2 id="ecosystem-title">与熟悉的工具协作</h2>
+<p class="td-landing-section__description"><code>icon</code> 接受 Font Awesome class、图片路径，或者一个简单符号。</p>
+</header>
+<div class="td-landing-logo-wall" style="--td-columns: 4"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-bolt" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>Hugo</h3><p>静态站点生成器</p>
+</div><a class="td-landing-card-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Hugo</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>Markdown</h3><p>内容格式</p>
+</div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Markdown</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-brands fa-git-alt" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>Git</h3><p>版本控制</p>
+</div>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><span aria-hidden="true">◉</span></div>
+<div class="td-landing-logo-card__copy"><h3>离线</h3><p>一切都在本地</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="gallery" class="td-landing-section td-landing-gallery-section" aria-labelledby="gallery-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>画廊</span><i aria-hidden="true"></i></p>
+<h2 id="gallery-title">展示页面、产品或示例</h2>
+<p class="td-landing-section__description">用 <code>image</code> 给出截图；素材还没准备好时先用图标顶上。</p>
+</header>
+<div class="td-landing-gallery" style="--td-columns: 3"><article class="td-landing-gallery-card">
+<div class="td-landing-gallery-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">信息架构</p><h3>文档门户</h3><div class="td-landing-gallery-card__description"><p>给<a href="/zh/docs/">文档</a>一个明确的入口。</p>
+</div><a class="td-landing-card-link" href="/zh/docs/">打开示例
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</div>
+</article>
+<article class="td-landing-gallery-card">
+<div class="td-landing-gallery-card__media"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API 参考</h3><div class="td-landing-gallery-card__description"><p>让说明文字与生成的参考资料并排。</p>
+</div>
+</div>
+</article>
+<article class="td-landing-gallery-card">
+<div class="td-landing-gallery-card__media"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></div>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">动态</p><h3>工程博客</h3><div class="td-landing-gallery-card__description"><p>发布版本、解释与决策。</p>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="testimonials" class="td-landing-section td-landing-testimonials-section" aria-labelledby="testimonials-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>留言墙</span><i aria-hidden="true"></i></p>
+<h2 id="testimonials-title">让用户说话</h2>
+<p class="td-landing-section__description">每条引用支持姓名、头像或图标、身份、来源链接与 Markdown 正文。</p>
+</header>
+<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><p>“配置文件足够好读，<strong>内容负责人</strong>自己就能改首页。”</p>
+</blockquote>
+<figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">A</span></div>
+<div><strong>Ada Example</strong><span>文档工程师</span></div><a class="td-landing-card-link" href="/zh" target="_blank" rel="noopener noreferrer">来源
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</figcaption>
+</figure>
+<figure class="td-landing-testimonial"><blockquote><p>“改两行 YAML 就把画廊与 FAQ 调换了顺序。”</p>
+</blockquote>
+<figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">L</span></div>
+<div><strong>Lin Example</strong><span>开源项目维护者</span></div>
+</figcaption>
+</figure>
+</div>
+</div>
+</section>
+<section id="contributors" class="td-landing-section td-landing-contributors-section" aria-labelledby="contributors-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>贡献者</span><i aria-hidden="true"></i></p>
+<h2 id="contributors-title">记下背后的人</h2>
+<p class="td-landing-section__description">生产站点用图片作头像；这里用符号，示例因此自成一体。</p>
+</header>
+<div class="td-landing-contributor-grid" style="--td-columns: 3">
+<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
+<div class="td-landing-contributor__copy"><h3>Alex</h3><p>主题架构</p>
+</div><a class="td-landing-card-link" href="https://github.com/"><span class="visually-hidden">Alex</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">B</span></div>
+<div class="td-landing-contributor__copy"><h3>Bo</h3><p>无障碍审阅</p>
+</div>
+</article>
+<article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">C</span></div>
+<div class="td-landing-contributor__copy"><h3>Casey</h3><p>文档与示例</p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section id="faq" class="td-landing-section td-landing-faq-section" aria-labelledby="faq-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>常见问题</span><i aria-hidden="true"></i></p>
+<h2 id="faq-title">大家都会问的几件事</h2>
+<p class="td-landing-section__description">答案是块级 Markdown，列表与多个段落都能照常使用。</p>
+</header>
+<div class="td-landing-faq-list td-landing-faq-list--accordion">
+<details class="td-landing-faq" open>
+<summary><span>可以只用一个 <code>data/home.yaml</code> 吗？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>可以。单语言站点用一个文件即可；多语言站点用 <code>data/home/en.yaml</code>、<code>data/home/zh.yaml</code> 这样的形式。</p>
+</div>
+</details>
+<details class="td-landing-faq">
+<summary><span>同一种区块可以出现多次吗？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>可以，给每个条目不同的 <code>key</code>：</p>
+<ul>
+<li><code>{ type: gallery, key: products }</code></li>
+<li><code>{ type: gallery, key: case_studies }</code></li>
+</ul>
+</div>
+</details>
+<details class="td-landing-faq">
+<summary><span>没写 <code>url</code> 会怎样？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>这一项按普通内容渲染，不会留下空链接或坏链接。</p>
+</div>
+</details>
+</div>
+</div>
+</section>
+<section id="markdown" class="td-landing-section td-landing-markdown-section" aria-labelledby="markdown-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>自由 Markdown</span><i aria-hidden="true"></i></p>
+<h2 id="markdown-title">特殊内容的逃生口</h2>
+<p class="td-landing-section__description">预定义的集合表达不了时，用 Markdown 区块。</p>
+</header>
+<div class="td-landing-markdown"><p>这一整块都由数据渲染而来，支持段落、<a href="https://gohugo.io/">链接</a>与列表：</p>
+<ul>
+<li>不需要自定义模板；</li>
+<li>就是普通的 Goldmark 渲染；</li>
+<li>与落地页其余部分同样的宽度与节奏。</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="principles" class="td-landing-section td-landing-principles" aria-labelledby="principles-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>设计原则</span><i aria-hidden="true"></i></p>
+<h2 id="principles-title">行为可预期</h2>
+</header>
+<div class="td-landing-principle-grid" style="--td-columns: 3">
+<article>
+<span>01</span>
+<div class="td-landing-principle__icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
+<h3>内容优先</h3><p>多数改动只是 YAML 里的纯文本。</p>
+</article>
+<article>
+<span>02</span>
+<div class="td-landing-principle__icon"><i class="fa-solid fa-universal-access" aria-hidden="true"></i></div>
+<h3>默认无障碍</h3><p>语义化区块、受控的外链，以及原生的 FAQ 折叠控件。</p>
+</article>
+<article>
+<span>03</span>
+<div class="td-landing-principle__icon"><i class="fa-solid fa-code-branch" aria-hidden="true"></i></div>
+<h3>向后兼容</h3><p>没有 <code>sections</code> 时，既有的首页数据保持原来的顺序。</p>
+</article>
+</div>
+</div>
+</section>
+<section id="showcase" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="showcase-title">
+<div class="td-site-container"><header class="td-landing-section__head">
+<p class="td-landing-section__eyebrow"><span>样例站点</span><i aria-hidden="true"></i></p>
+<h2 id="showcase-title">十二个站点，同一套主题</h2>
+<p class="td-landing-section__description">英文站、中文站与双语站；文档树、书籍、公司主页与两页项目站。它们都以 Hugo Module 的方式钉住 OINK。</p>
+</header>
+<div class="td-landing-logo-wall" style="--td-columns: 3"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>pigsty.io</h3><p>Pigsty 文档 · 英文</p>
+</div><a class="td-landing-card-link" href="https://pigsty.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">pigsty.io</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>pigsty.cc</h3><p>Pigsty 文档 · 中文</p>
+</div><a class="td-landing-card-link" href="https://pigsty.cc/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">pigsty.cc</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-building" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>pgsty.com</h3><p>公司主页</p>
+</div><a class="td-landing-card-link" href="https://pgsty.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">pgsty.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-hard-drive" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>silo.pgsty.com</h3><p>S3 对象存储</p>
+</div><a class="td-landing-card-link" href="https://silo.pgsty.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">silo.pgsty.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>oink.pgsty.com</h3><p>主题文档站</p>
+</div><a class="td-landing-card-link" href="https://oink.pgsty.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">oink.pgsty.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-keyboard" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>capslock.vonng.com</h3><p>两页项目站</p>
+</div><a class="td-landing-card-link" href="https://capslock.vonng.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">capslock.vonng.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-box" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>pig.pgsty.com</h3><p>扩展管理器</p>
+</div><a class="td-landing-card-link" href="https://pig.pgsty.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">pig.pgsty.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>sow.pgsty.com</h3><p>APT / YUM 仓库</p>
+</div><a class="td-landing-card-link" href="https://sow.pgsty.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">sow.pgsty.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>exp.pgsty.com</h3><p>PG Exporter 指标</p>
+</div><a class="td-landing-card-link" href="https://exp.pgsty.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">exp.pgsty.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-server" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>pgsql.cc</h3><p>PostgreSQL 生态</p>
+</div><a class="td-landing-card-link" href="https://pgsql.cc/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">pgsql.cc</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-gem" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>pgsty.pro</h3><p>Pigsty v5.0 · 双语</p>
+</div><a class="td-landing-card-link" href="https://pgsty.pro/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">pgsty.pro</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>tpme.vonng.com</h3><p>双语书籍</p>
+</div><a class="td-landing-card-link" href="https://tpme.vonng.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">tpme.vonng.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+</div>
+</div>
+</section>
+<section id="cta" class="td-landing-section td-landing-cta-section" aria-label="拼出你自己的落地页。">
+<div class="td-site-container">
+<div class="td-landing-final-cta">
+<p><strong>拼出你自己的落地页。</strong><span>拷走这个文件，换掉示例内容，重排区块列表。</span>
+</p>
+<div class="td-landing-final-cta__actions"><a class="td-landing-button td-landing-button--primary" href="/zh/docs/">开始使用 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="d-print-none" data-td-shell-footer>
+<div class="td-site-footer" id="td-site-footer">
+<div class="td-site-footer__container">
+<div class="td-site-footer__inner">
+<div class="td-site-footer__brand"><a class="td-site-footer__logo" href="/zh/" aria-label="Oink 示例站">
+<img src="/icons/logo.svg" alt="" width="28" height="28">
+<span>Oink 示例站</span>
+</a><div class="td-site-footer__tagline"><strong>O</strong>pen <strong>I</strong>ndexed, <strong>N</strong>avigable <strong>K</strong>nowledge</div><div class="td-site-footer__slogan">面向工程文档、本地优先的 Hugo 主题</div>
+</div>
+<div class="td-site-footer__grid" style="--td-footer-cols: 4">
+<nav class="td-site-footer__column" aria-label="产品">
+<h2>产品</h2>
+<ul>
+<li><a href="https://oink.pgsty.com/zh/docs/about/" target="_blank" rel="noopener noreferrer">OINK 简介</a></li>
+<li><a href="https://oink.pgsty.com/zh/docs/about/features/" target="_blank" rel="noopener noreferrer">亮点特性</a></li>
+<li><a href="https://oink.pgsty.com/zh/docs/customize/config/" target="_blank" rel="noopener noreferrer">配置总览</a></li>
+<li><a href="https://oink.pgsty.com/zh/docs/about/showcase/" target="_blank" rel="noopener noreferrer">案例</a></li>
+<li><a href="https://pigsty.com/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="资源">
+<h2>资源</h2>
+<ul>
+<li><a href="/zh/docs/">文档</a></li>
+<li><a href="https://oink.pgsty.com/zh/docs/start/" target="_blank" rel="noopener noreferrer">快速上手</a></li>
+<li><a href="/zh/docs/">组件</a></li>
+<li><a href="/zh/landing-demo/">落地页示例</a></li>
+<li><a href="/zh/book/">书籍示例</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="社区">
+<h2>社区</h2>
+<ul>
+<li><a href="/zh/blog/">博客</a></li>
+<li><a href="/zh/blog/release/">发布说明</a></li>
+<li><a href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+<li><a href="https://github.com/pgsty/oink/issues" target="_blank" rel="noopener noreferrer">问题反馈</a></li>
+<li><a href="https://github.com/google/docsy/discussions" target="_blank" rel="noopener noreferrer">Docsy 讨论区</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="关于">
+<h2>关于</h2>
+<ul>
+<li><a href="https://oink.pgsty.com/zh/docs/about/" target="_blank" rel="noopener noreferrer">关于 OINK</a></li>
+<li><a href="https://oink.pgsty.com/zh/blog/release/" target="_blank" rel="noopener noreferrer">版本发布</a></li>
+<li><a href="https://github.com/pgsty/oink/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">许可证</a></li>
+<li><a href="https://oink.pgsty.com/zh/docs/about/license/" target="_blank" rel="noopener noreferrer">上游项目</a></li>
+<li><a href="https://pgsty.com/" target="_blank" rel="noopener noreferrer">PGSTY</a></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div class="td-shell-footline d-print-none">
+<div class="td-shell-footline__copy"><span class="td-footer__copyright">&copy; 2026
+<span class="td-footer__authors"><a href="https://oink.pgsty.com">OINK</a></span>
+</span><span class="td-footer__all_rights_reserved">保留所有权利</span></div>
+<div class="td-shell-footline__center">Powered by <a href="https://oink.pgsty.com">Oink</a></div>
+<div class="td-shell-footline__right">
+<div class="td-shell-footline__lang">
+<div class="td-language-selector td-language-selector--list td-shell-language-selector"
+role="group" aria-label="选择语言"><a class="td-language-selector__item" href="https://example.org/" lang="en-US" hreflang="en-US" dir="ltr">English</a><span class="td-language-selector__item active" lang="zh-CN" dir="ltr" aria-current="page">简体中文</span>
+</div>
+</div>
+<button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
+aria-expanded="true" aria-controls="td-site-footer"
+title="收起页脚链接" aria-label="收起页脚链接"
+data-td-label-collapse="收起页脚链接"
+data-td-label-expand="展开页脚链接"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
+</div>
+</div>
+</footer>
+</div>
+<script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"复制 Markdown 文本","disabledReason":"复制 Markdown 文本: 暂不可用","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["复制 Markdown 文本","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"复制 Markdown 文本","url":""},{"available":true,"description":"在 ChatGPT 中打开","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["在 ChatGPT 中打开","就本页提问","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"请阅读 %s 的内容，以便我就此向你提问。","target":"blank","title":"在 ChatGPT 中打开","url":"https://chatgpt.com/?hints=search\u0026prompt=%E8%AF%B7%E9%98%85%E8%AF%BB+https%3A%2F%2Fexample.org%2Fzh%2F+%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82"},{"available":true,"description":"在 Claude 中打开","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["在 Claude 中打开","就本页提问","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"请阅读 %s 的内容，以便我就此向你提问。","target":"blank","title":"在 Claude 中打开","url":"https://claude.ai/new?q=%E8%AF%B7%E9%98%85%E8%AF%BB+https%3A%2F%2Fexample.org%2Fzh%2F+%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82"},{"available":false,"description":"查阅 Markdown 源码","disabledReason":"查阅 Markdown 源码: 暂不可用","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["查阅 Markdown 源码","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"查阅 Markdown 源码","url":""},{"available":false,"description":"查阅编辑历史","disabledReason":"查阅编辑历史: 暂不可用","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["查阅编辑历史","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"查阅编辑历史","url":""},{"available":false,"description":"编辑当前页面","disabledReason":"编辑当前页面: 暂不可用","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["编辑当前页面","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"编辑当前页面","url":""},{"available":false,"description":"添加子页面","disabledReason":"添加子页面: 暂不可用","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["添加子页面","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"添加子页面","url":""},{"available":false,"description":"提交文档议题","disabledReason":"提交文档议题: 暂不可用","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["提交文档议题","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"提交文档议题","url":""},{"available":false,"description":"提交项目议题","disabledReason":"提交项目议题: 暂不可用","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["提交项目议题","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"提交项目议题","url":""},{"available":false,"description":"打印完整章节","disabledReason":"打印完整章节: 暂不可用","icon":"fa-solid fa-print","id":"print_section","keywords":["打印完整章节","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"打印完整章节","url":""},{"available":true,"description":"打印此页面","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["打印此页面","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"打印此页面","url":""},{"available":false,"description":"Version","disabledReason":"Version: 暂不可用","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"切换语言","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["切换语言","language"],"kind":"choice","options":[{"active":false,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/"},{"active":true,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/"}],"placements":{"page":false,"palette":true},"target":"self","title":"切换语言","url":""},{"available":true,"description":"切换配色","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["切换配色","亮色","暗色"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"跟随系统","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"亮色","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"暗色","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"切换配色","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"打开示例状态页","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","可用性","故障"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"示例服务状态","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["打印","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"打印本页","url":""},{"action":"","available":true,"description":"在示例站内跳转","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["组件","写作"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"打开提示块组件页","url":"/zh/docs/callout/"}],"language":"zh","quickLinks":[{"available":true,"description":"写文档时可用的全部组件，一个组件一页，例子由浅入深，参数表在页尾。","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["文档","docs"],"kind":"url","target":"self","title":"文档","url":"/zh/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["博客","blog"],"kind":"url","target":"self","title":"博客","url":"/zh/blog/"}],"rootOrder":["docs","blog","pigsty"],"version":1}</script>
+<script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<div id="td-shell-search" class="td-shell-search" hidden
+data-td-index-src="/offline-search-index.zh.<hash>.json"
+data-td-max-results="10"
+data-td-t-empty="未找到结果"
+data-td-t-loading="正在加载搜索索引……"
+data-td-t-results="找到 {count} 条结果"
+data-td-t-actions="操作"
+data-td-t-page-actions="页面操作"
+data-td-t-preferences="偏好设置"
+data-td-t-commands="命令"
+data-td-t-quick-links="快速链接"
+data-td-t-no-commands="未找到匹配命令"
+data-td-t-choice="请选择一项"
+data-td-t-action-failed="无法完成此操作"
+data-td-t-index-unavailable="页面索引暂不可用，操作仍可使用"
+data-td-t-pages="页面">
+<div class="td-shell-search__backdrop" data-td-shell-search-close></div>
+<div class="td-shell-search__panel" role="dialog" aria-modal="true" aria-label="搜索…">
+<div class="td-shell-search__head">
+<i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+<input type="search" class="td-shell-search__input" placeholder="搜索…"
+autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
+aria-controls="td-shell-search-results" aria-expanded="false"
+aria-label="搜索…" enterkeyhint="go">
+<button type="button" class="td-shell-search__esc" data-td-shell-search-close
+aria-label="关闭">
+<kbd>esc</kbd>
+</button>
+</div>
+<div id="td-shell-search-results" class="td-shell-search__list" role="listbox"
+aria-label="搜索…"></div>
+<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"
+data-td-shell-search-status></div>
+<div class="td-shell-search__foot" aria-hidden="true">
+<span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+<span><kbd>↵</kbd> 打开</span>
+<span><kbd>esc</kbd> 关闭</span>
+</div>
+</div>
+</div><script src="/js/page-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</body>
+</html>

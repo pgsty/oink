@@ -45,7 +45,7 @@ LITERAL_DECLARATION_ALLOWLIST = {
 SPECIAL_DECLARATION_VALUES = {
     "inherit",
     "$td-font-awesome-font-name",
-    "var(--td-term-font-family)",  # Asciinema player component alias.
+    "var(--term-font-family)",  # asciinema-player's own font token.
 }
 
 

@@ -69,7 +69,7 @@ def check_example(public: Path) -> list[str]:
         'class="td-site-footer',
         'data-td-navbar-columns="2"',
         'data-td-github-stars>2.2k',
-        'class="td-nav-util td-nav-alt-site"',
+        'td-language-selector--menu td-nav-util td-site-nav__language"',
         'class="td-footer__copyright"',
         'class="td-shell-footline__center">Powered by <a href="https://oink.pgsty.com">Oink</a>',
         'data-td-shell-search-open',

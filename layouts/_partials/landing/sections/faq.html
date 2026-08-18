@@ -19,7 +19,10 @@
       </article>
       {{- else }}
       <details class="td-landing-faq"{{ if .open }} open{{ end }}>
-        <summary>{{ partial "landing/markdown.html" (dict "page" $page "value" (.question | default .title)) }}<i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+        {{- /* The summary is a flex row (question, toggle glyph). The question is
+             wrapped so inline Markdown — `code`, links, emphasis — stays one
+             flex item instead of each fragment spreading across the row. */}}
+        <summary><span>{{ partial "landing/markdown.html" (dict "page" $page "value" (.question | default .title)) }}</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
         <div class="td-landing-faq__answer">
           {{- partial "landing/markdown-block.html" (dict "page" $page "value" (.answer | default .desc | default .text)) -}}
           {{- partial "landing/action.html" (dict "page" $page "item" . "label" (.link_label | default $data.link_label)) }}

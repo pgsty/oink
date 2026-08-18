@@ -82,8 +82,8 @@ as shown in [components.md](components.md). Enable passthrough explicitly when
 using `\(...\)`, `\[...\]`, or `$$...$$`; Hugo does not merge theme markup
 configuration into a consumer.
 
-Local search remains off during `hugo server` unless
-`offline_search_on_serve` is true. Feedback emits `docs_feedback` through an
+Local search also runs during `hugo server` unless
+`offline_search_on_serve` is false. Feedback emits `docs_feedback` through an
 existing analytics function, uses no submission endpoint, and does not replace
 Giscus. Sites changing provenance should override `page-annotation.html`, not a
 whole page template.

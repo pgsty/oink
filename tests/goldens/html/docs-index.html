@@ -1,7 +1,7 @@
 <!doctype html>
 <html itemscope itemtype="http://schema.org/WebPage"
 dir="ltr"
-lang="en"
+lang="en-US"
 data-td-typography="technical" data-td-theme-init>
 <head>
 <meta charset="utf-8">
@@ -33,27 +33,34 @@ if (theme === 'auto') {
 theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 document.documentElement.setAttribute('data-bs-theme', theme);
+document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+document.documentElement.setAttribute('data-theme', theme);
 })();
 </script>
 <link rel="alternate" type="text/html" href="https://example.org/_print/docs/">
 <link rel="alternate" type="application/rss&#43;xml" href="https://example.org/docs/index.xml">
-<link rel="next" href="/docs/components/callouts/"><meta name="robots" content="index, follow">
-<title>Documentation | OINK Landing Example</title>
-<meta name="description" content="This section exercises OINK’s documentation shell and typography roles.">
+<link rel="next" href="/docs/callout/"><meta name="robots" content="index, follow">
+<title>Docs | Oink Example</title>
+<meta name="description" content="Every component you can write in Markdown — one page each, examples first, parameter tables at the end.">
 <link rel="canonical" href="https://example.org/docs/">
-<link rel="alternate" hreflang="en" href="https://example.org/docs/">
+<link rel="alternate" hreflang="en-US" href="https://example.org/docs/">
+<link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/docs/">
+<meta property="og:locale:alternate" content="zh_CN">
 <meta property="og:url" content="https://example.org/docs/">
-<meta property="og:site_name" content="OINK Landing Example">
-<meta property="og:title" content="Documentation">
-<meta property="og:description" content="This section exercises OINK’s documentation shell and typography roles.">
-<meta property="og:locale" content="en">
+<meta property="og:site_name" content="Oink Example">
+<meta property="og:title" content="Docs">
+<meta property="og:description" content="Every component you can write in Markdown — one page each, examples first, parameter tables at the end.">
+<meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
-<meta itemprop="name" content="Documentation">
-<meta itemprop="description" content="This section exercises OINK’s documentation shell and typography roles.">
-<meta itemprop="wordCount" content="9">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Documentation">
-<meta name="twitter:description" content="This section exercises OINK’s documentation shell and typography roles.">
+<meta property="og:image" content="https://example.org/images/oink.webp">
+<meta itemprop="name" content="Docs">
+<meta itemprop="description" content="Every component you can write in Markdown — one page each, examples first, parameter tables at the end.">
+<meta itemprop="wordCount" content="809">
+<meta itemprop="image" content="https://example.org/images/oink.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.org/images/oink.webp">
+<meta name="twitter:title" content="Docs">
+<meta name="twitter:description" content="Every component you can write in Markdown — one page each, examples first, parameter tables at the end.">
 <link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
 <link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
 <script>
@@ -84,32 +91,46 @@ html.setAttribute('data-td-kbd-zen', '');
 <div class="td-site-container">
 <nav class="td-site-nav" aria-label="Main navigation">
 <a href="/" class="td-nav-brand" data-td-navbar-route
-aria-label="OINK Landing Example — Home">
+aria-label="Oink Example — Home">
 <img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
-<span class="td-nav-title">OINK Landing Example</span>
+<span class="td-nav-title">Oink Example</span>
 </a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
 <a class="nav-link td-nav-menu__parent-link active" href="/docs/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
-aria-label="Documentation"
-data-td-navbar-region="desktop" data-td-navbar-label="Documentation"
+aria-label="Docs"
+data-td-navbar-region="desktop" data-td-navbar-label="Docs"
 data-td-navbar-external="false" aria-current="page" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
-<i class="fa-solid fa-book" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Documentation</span></a>
+<i class="fa-solid fa-cubes" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Docs</span></a>
 <div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
-style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/content-primitives/"
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/callout/"
 data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Content primitives"
-data-td-navbar-region="desktop" data-td-navbar-label="Content primitives"
+aria-label="Callouts"
+data-td-navbar-region="desktop" data-td-navbar-label="Callouts"
 data-td-navbar-external="false">
-<i class="fa-solid fa-puzzle-piece" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Content primitives</span><small class="td-navbar-entry__description">Semantic authoring components</small></a>
-<a class="td-nav-menu__item-link" href="/docs/typography/"
+<i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Callouts</span><small class="td-navbar-entry__description">Notes, warnings and disclosures from a blockquote</small></a>
+<a class="td-nav-menu__item-link" href="/docs/code/"
 data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Typography"
-data-td-navbar-region="desktop" data-td-navbar-label="Typography"
+aria-label="Code blocks"
+data-td-navbar-region="desktop" data-td-navbar-label="Code blocks"
 data-td-navbar-external="false">
-<i class="fa-solid fa-font" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Typography</span><small class="td-navbar-entry__description">Theme typography roles</small></a>
+<i class="fa-solid fa-code" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Code blocks</span><small class="td-navbar-entry__description">Titles, copy, line numbers, folding</small></a>
+<a class="td-nav-menu__item-link" href="/docs/table/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Tables"
+data-td-navbar-region="desktop" data-td-navbar-label="Tables"
+data-td-navbar-external="false">
+<i class="fa-solid fa-table" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Tables</span><small class="td-navbar-entry__description">Captions, matrices, field lists, tabs</small></a>
+<a class="td-nav-menu__item-link" href="/docs/mermaid/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Mermaid"
+data-td-navbar-region="desktop" data-td-navbar-label="Mermaid"
+data-td-navbar-external="false">
+<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Mermaid</span><small class="td-navbar-entry__description">Diagrams rendered from text, locally</small></a>
 </div>
 </div><a class="nav-link" href="/blog/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
@@ -118,25 +139,40 @@ data-td-navbar-region="desktop" data-td-navbar-label="Blog"
 data-td-navbar-external="false">
 <i class="fa-solid fa-blog" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Blog</span></a>
-<a class="nav-link" href="https://github.com/pgsty/oink"
+<a class="nav-link" href="https://pigsty.com/"
 data-td-navbar-level="0" data-td-navbar-kind="link"
-aria-label="Source"
-data-td-navbar-region="desktop" data-td-navbar-label="Source"
+aria-label="Pigsty"
+data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
 data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
-<i class="fa-brands fa-github" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Source</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
+<i class="fa-solid fa-database" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Pigsty</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
 </div><div class="td-nav-links td-nav-util-zone">
 <button type="button" class="td-nav-search-box" data-td-shell-search-open
 title="Search…" aria-label="Search…"
 aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i><span class="td-nav-search-box__hint">Search…</span>
 <kbd class="td-nav-search-box__kbd" aria-hidden="true">/</kbd>
 </button>
-<a class="td-nav-util td-nav-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer"
-title="Example 中文站" aria-label="Example 中文站"><i class="fa-solid fa-language" aria-hidden="true"></i><span>Example 中文站</span></a><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
+<div class="td-language-selector td-language-selector--menu td-nav-util td-site-nav__language">
+<a class="td-language-selector__trigger" href="https://example.org/zh/docs/"
+lang="zh-CN" hreflang="zh-CN" dir="ltr"
+title="Switch language: 简体中文"
+aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false">
+<i class="fa-solid fa-language" aria-hidden="true"></i>
+<span>简体中文</span>
+</a>
+<ul aria-label="Choose language">
+<li>
+<span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
+</li>
+<li>
+<a class="td-language-selector__item" href="https://example.org/zh/docs/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</li>
+</ul>
+</div><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
 <button type="button" class="td-nav-util" data-td-nav-hover-trigger data-td-theme-toggle
-title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i></button>
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i></button>
 <div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
-<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>Light</span>
 </button>
 <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
 </button>
@@ -152,15 +188,15 @@ aria-controls="td-shell-sidebar" aria-expanded="false"><i class="td-shell-icon t
 </div>
 </header>
 <div class="container-fluid td-outer">
-<div class="td-main td-shell-layout td-shell-layout--w-normal td-shell-layout--no-toc"
+<div class="td-main td-shell-layout td-shell-layout--w-normal"
 style="--td-shell-sidebar-min: 220px; --td-shell-sidebar-max: 480px;">
 <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none">
 <div class="td-shell-sidebar__panel">
 <div class="td-shell-sidebar__header">
 <div class="td-shell-sidebar__brand-row">
-<a class="td-shell-sidebar__brand" href="/" aria-label="OINK Landing Example home">
+<a class="td-shell-sidebar__brand" href="/" aria-label="Oink Example home">
 <img src="/icons/logo.svg" alt="" width="20" height="20">
-<span class="td-shell-wordmark">OINK Landing Example</span>
+<span class="td-shell-wordmark">Oink Example</span>
 </a>
 <button type="button" class="td-shell-iconbtn td-shell-sidebar__search" data-td-shell-search-open
 title="Search…" aria-label="Search…"
@@ -181,8 +217,8 @@ aria-label="Close navigation" aria-controls="td-shell-sidebar"><i class="td-shel
 <div class="td-shell-root">
 <button type="button" class="td-shell-root__trigger" data-td-shell-root-toggle
 aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
-<span class="td-shell-root__icon"></span>
-<span class="td-shell-root__title">Documentation</span>
+<span class="td-shell-root__icon"><i class="fa-solid fa-cubes" aria-hidden="true"></i></span>
+<span class="td-shell-root__title">Docs</span>
 <i class="td-shell-icon td-shell-icon--chevrons-up-down fa-solid fa-sort" aria-hidden="true"></i>
 </button>
 <div class="td-shell-root__pop" hidden><a class="td-shell-root__item" href="/blog/">
@@ -192,11 +228,19 @@ aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
 </span>
 <span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </a><a class="td-shell-root__item td-is-active" href="/docs/" aria-current="page">
-<span class="td-shell-root__icon"></span>
+<span class="td-shell-root__icon"><i class="fa-solid fa-cubes" aria-hidden="true"></i></span>
 <span class="td-shell-root__meta">
-<span class="td-shell-root__item-title">Documentation</span>
+<span class="td-shell-root__item-title">Docs</span>
+<span class="td-shell-root__item-desc">Every component you can write in Markdown — one page each, examples first, parameter tables at the end.</span>
 </span>
 <span class="td-shell-root__check"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item" href="/fixtures/">
+<span class="td-shell-root__icon"><i class="fa-solid fa-flask" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">Fixtures</span>
+<span class="td-shell-root__item-desc">Narrow pages that pin theme behaviour for the check scripts and the output goldens.</span>
+</span>
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </a><a class="td-shell-root__item" href="/book/">
 <span class="td-shell-root__icon"></span>
 <span class="td-shell-root__meta">
@@ -216,175 +260,157 @@ data-td-sidebar-icon-policy="all" data-td-sidebar-root-id="/docs/">
 <li class="td-shell-tree__item td-has-child td-active-path td-shell-tree__item--root"
 id="m-docs-li">
 <div class="td-shell-tree__row td-shell-active td-shell-tree__row--root">
-<a href="/docs/" aria-current="page" title="Documentation"
+<a href="/docs/" aria-current="page" title="Docs"
 class="td-shell-tree__link active"
-id="m-docs"><span>Documentation</span></a>
+id="m-docs"><i class="fa-solid fa-cubes" aria-hidden="true"></i><span>Docs</span></a>
 </div><div id="m-docs-children" class="td-shell-tree__children td-shell-tree__children--static">
 <div class="td-shell-tree__children-inner">
 <ul class="td-shell-tree__list td-shell-tree__list--1"><li class="td-shell-tree__item td-leaf"
-id="m-docscomponentscallouts-li">
+id="m-docscallout-li">
 <div class="td-shell-tree__row">
-<a href="/docs/components/callouts/" title="Callouts"
+<a href="/docs/callout/" title="Callouts"
 class="td-shell-tree__link"
-id="m-docscomponentscallouts"><span>Callouts</span></a>
+id="m-docscallout"><span>Callouts</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docstypography-li">
+id="m-docsimage-li">
 <div class="td-shell-tree__row">
-<a href="/docs/typography/" title="Typography fixture"
+<a href="/docs/image/" title="Images"
 class="td-shell-tree__link"
-id="m-docstypography"><span>Typography fixture</span></a>
+id="m-docsimage"><span>Images</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscode-blocks-li">
+id="m-docscode-li">
 <div class="td-shell-tree__row">
-<a href="/docs/code-blocks/" title="Enhanced code blocks"
+<a href="/docs/code/" title="Code blocks"
 class="td-shell-tree__link"
-id="m-docscode-blocks"><span>Enhanced code blocks</span></a>
+id="m-docscode"><span>Code blocks</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscomponentssteps-li">
+id="m-docstabs-li">
 <div class="td-shell-tree__row">
-<a href="/docs/components/steps/" title="Steps"
+<a href="/docs/tabs/" title="Tabs"
 class="td-shell-tree__link"
-id="m-docscomponentssteps"><span>Steps</span></a>
+id="m-docstabs"><span>Tabs</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsmath-passthrough-li">
+id="m-docstable-li">
 <div class="td-shell-tree__row">
-<a href="/docs/math-passthrough/" title="Math passthrough"
+<a href="/docs/table/" title="Tables"
 class="td-shell-tree__link"
-id="m-docsmath-passthrough"><span>Math passthrough</span></a>
+id="m-docstable"><span>Tables</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscomponentslists-li">
+id="m-docsfields-li">
 <div class="td-shell-tree__row">
-<a href="/docs/components/lists/" title="Cards, FileTree, Gallery"
+<a href="/docs/fields/" title="Fields"
 class="td-shell-tree__link"
-id="m-docscomponentslists"><span>Cards / FileTree / Gallery</span></a>
+id="m-docsfields"><span>Fields</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscontent-primitives-li">
+id="m-docssteps-li">
 <div class="td-shell-tree__row">
-<a href="/docs/content-primitives/" title="Content primitives"
+<a href="/docs/steps/" title="Steps"
 class="td-shell-tree__link"
-id="m-docscontent-primitives"><span>Content primitives</span></a>
+id="m-docssteps"><span>Steps</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsmedia-primitives-li">
+id="m-docscards-li">
 <div class="td-shell-tree__row">
-<a href="/docs/media-primitives/" title="Media primitives"
+<a href="/docs/cards/" title="Cards"
 class="td-shell-tree__link"
-id="m-docsmedia-primitives"><span>Media primitives</span></a>
+id="m-docscards"><span>Cards</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsimage-zoom-li">
+id="m-docsfiletree-li">
 <div class="td-shell-tree__row">
-<a href="/docs/image-zoom/" title="Image Zoom"
+<a href="/docs/filetree/" title="File trees"
 class="td-shell-tree__link"
-id="m-docsimage-zoom"><span>Image Zoom</span></a>
+id="m-docsfiletree"><span>File trees</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsimage-zoom-disabled-li">
+id="m-docsmath-li">
 <div class="td-shell-tree__row">
-<a href="/docs/image-zoom-disabled/" title="Image Zoom disabled"
+<a href="/docs/math/" title="Mathematics"
 class="td-shell-tree__link"
-id="m-docsimage-zoom-disabled"><span>Image Zoom disabled</span></a>
+id="m-docsmath"><span>Mathematics</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsimage-zoom-exclusions-li">
+id="m-docsmermaid-li">
 <div class="td-shell-tree__row">
-<a href="/docs/image-zoom-exclusions/" title="Image Zoom exclusions"
+<a href="/docs/mermaid/" title="Mermaid"
 class="td-shell-tree__link"
-id="m-docsimage-zoom-exclusions"><span>Image Zoom exclusions</span></a>
+id="m-docsmermaid"><span>Mermaid</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscomponentscards-li">
+id="m-docsplantuml-li">
 <div class="td-shell-tree__row">
-<a href="/docs/components/cards/" title="Cards (rich)"
+<a href="/docs/plantuml/" title="PlantUML"
 class="td-shell-tree__link"
-id="m-docscomponentscards"><span>Cards (rich)</span></a>
-</div>
-</li><li class="td-shell-tree__item td-has-child"
-id="m-docsguides-li">
-<div class="td-shell-tree__row">
-<a href="/docs/guides/" title="Nested guides"
-class="td-shell-tree__link"
-id="m-docsguides"><span>Nested guides</span></a>
-<button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
-aria-expanded="false" aria-controls="m-docsguides-children"
-aria-label="Expand section: Nested guides"
-data-td-label-expand="Expand section: Nested guides"
-data-td-label-collapse="Collapse section: Nested guides"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
-</div><div id="m-docsguides-children" class="td-shell-tree__children">
-<div class="td-shell-tree__children-inner">
-<ul class="td-shell-tree__list td-shell-tree__list--2"><li class="td-shell-tree__item td-leaf"
-id="m-docsguidesfirst-li">
-<div class="td-shell-tree__row">
-<a href="/docs/guides/first/" title="First nested guide"
-class="td-shell-tree__link"
-id="m-docsguidesfirst"><i class="fa-solid fa-route" aria-hidden="true"></i><span>First nested guide</span></a>
-</div>
-</li><li class="td-shell-tree__item td-shell-tree__heading" id="m-docsguidesdivider-li">
-<span class="td-shell-tree__heading-label" id="m-docsguidesdivider"><span>Reference group</span></span>
-</li><li class="td-shell-tree__item td-leaf"
-id="m-docsguidesopt-out-li">
-<div class="td-shell-tree__row">
-<a href="/docs/guides/opt-out/" title="Pager opt-out"
-class="td-shell-tree__link"
-id="m-docsguidesopt-out"><span>Pager opt-out</span></a>
-</div>
-</li></ul>
-</div>
+id="m-docsplantuml"><span>PlantUML</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscomponentstables-li">
+id="m-docsmarkmap-li">
 <div class="td-shell-tree__row">
-<a href="/docs/components/tables/" title="Tables"
+<a href="/docs/markmap/" title="Markmap"
 class="td-shell-tree__link"
-id="m-docscomponentstables"><span>Tables</span></a>
+id="m-docsmarkmap"><span>Markmap</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docscomponentsdata-fences-li">
+id="m-docsdrawio-li">
 <div class="td-shell-tree__row">
-<a href="/docs/components/data-fences/" title="Data fences"
+<a href="/docs/drawio/" title="Draw.io"
 class="td-shell-tree__link"
-id="m-docscomponentsdata-fences"><span>Data fences</span></a>
+id="m-docsdrawio"><span>Draw.io</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsdownload-demo-li">
+id="m-docsecharts-li">
 <div class="td-shell-tree__row">
-<a href="/docs/download-demo/" title="Download data demo"
+<a href="/docs/echarts/" title="ECharts"
 class="td-shell-tree__link"
-id="m-docsdownload-demo"><span>Download data demo</span></a>
+id="m-docsecharts"><span>ECharts</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-docsinfographic-li">
+<div class="td-shell-tree__row">
+<a href="/docs/infographic/" title="Infographic"
+class="td-shell-tree__link"
+id="m-docsinfographic"><span>Infographic</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-docsgallery-li">
 <div class="td-shell-tree__row">
-<a href="/docs/gallery/" title="Gallery"
+<a href="/docs/gallery/" title="Galleries"
 class="td-shell-tree__link"
-id="m-docsgallery"><span>Gallery</span></a>
+id="m-docsgallery"><span>Galleries</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsgallery-disabled-li">
+id="m-docsbadge-li">
 <div class="td-shell-tree__row">
-<a href="/docs/gallery-disabled/" title="Gallery with Zoom disabled"
+<a href="/docs/badge/" title="Badges"
 class="td-shell-tree__link"
-id="m-docsgallery-disabled"><span>Gallery with Zoom disabled</span></a>
+id="m-docsbadge"><span>Badges</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsrelease-assets-base-li">
+id="m-docskbd-li">
 <div class="td-shell-tree__row">
-<a href="/docs/release-assets-base/" title="Release assets with an explicit base"
+<a href="/docs/kbd/" title="Keys"
 class="td-shell-tree__link"
-id="m-docsrelease-assets-base"><span>Release assets with an explicit base</span></a>
+id="m-docskbd"><span>Keys</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-docsdownload-pending-li">
+id="m-docsinclude-li">
 <div class="td-shell-tree__row">
-<a href="/docs/download-pending/" title="Unpublished download demo"
+<a href="/docs/include/" title="Include"
 class="td-shell-tree__link"
-id="m-docsdownload-pending"><span>Unpublished download demo</span></a>
+id="m-docsinclude"><span>Include</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-docsasciinema-li">
+<div class="td-shell-tree__row">
+<a href="/docs/asciinema/" title="Asciinema"
+class="td-shell-tree__link"
+id="m-docsasciinema"><span>Asciinema</span></a>
 </div>
 </li></ul>
 </div>
@@ -396,6 +422,22 @@ id="m-docsdownload-pending"><span>Unpublished download demo</span></a>
 <div class="td-shell-sidebar__aside" data-td-shell-aside-slot hidden></div>
 </div><div class="td-shell-sidebar__footer">
 <div class="td-shell-sidebar__footer-start">
+<div class="td-language-selector td-language-selector--menu td-shell-language-selector">
+<a class="td-language-selector__trigger" href="https://example.org/zh/docs/"
+lang="zh-CN" hreflang="zh-CN" dir="ltr"
+title="Switch language: 简体中文"
+aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false"><i class="td-shell-icon td-shell-icon--languages fa-solid fa-language" aria-hidden="true"></i>
+<span>简体中文</span>
+</a>
+<ul aria-label="Choose language">
+<li>
+<span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
+</li>
+<li>
+<a class="td-language-selector__item" href="https://example.org/zh/docs/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</li>
+</ul>
+</div>
 </div>
 <div class="td-shell-sidebar__footer-end">
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
@@ -448,6 +490,10 @@ aria-label="Keyboard shortcuts">
 <dd>Reading mode</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>Y</kbd></span></dt>
+<dd>Switch language</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
 <dt><span class="td-kbd-sequence"><kbd>T</kbd></span></dt>
 <dd>Switch theme</dd>
 </div>
@@ -461,9 +507,9 @@ aria-label="Keyboard shortcuts">
 </div>
 <div class="td-shell-sidebar__theme td-nav-hover-menu" data-td-nav-hover>
 <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-nav-hover-trigger data-td-theme-toggle
-title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i></button>
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i></button>
 <div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
-<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-regular fa-sun" aria-hidden="true"></i><span>Light</span>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>Light</span>
 </button>
 <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
 </button>
@@ -515,117 +561,370 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fdocs
 </div>
 <div class="td-content">
 <div class="td-page-heading">
-<h1>Documentation</h1>
+<h1>Docs</h1>
 </div>
+<div class="lead">Every component you can write in Markdown — one page each, examples first, parameter tables at the end.</div>
 <header class="td-article-meta">
 </header>
-<p>This section exercises OINK&rsquo;s documentation shell and typography roles.</p>
+<p>This section answers one question: how do I write this component in Markdown?
+Every page has the same shape — the shortest example, progressively richer
+examples, the output matrix, the parameter table, the limits. For syntax at a
+glance, use the cheatsheet below.</p>
+<h2 id="two-forms">Two forms<a class="td-heading-self-link" href="#two-forms" aria-label="Link to this heading"></a>
+</h2>
+<p>A component&rsquo;s first form is Markdown itself: blockquotes, lists, tables,
+images, fences — plus a single <code>{…}</code> attribute line right after them. The
+native form stays readable on GitHub and in any Markdown editor, and the
+Markdown output keeps the source rather than the rendered HTML.</p>
+<p>Whatever the native form cannot express is a shortcode: tabs in running text,
+parameter tables with block-level descriptions, cards with icons and badges,
+terminal recordings. Five rules cover them:</p>
+<ul>
+<li>Every shortcode is written <code>{{&lt; name &gt;}}</code>. Only <code>{{% steps %}}</code> uses
+the <code>%</code> delimiter, because its body is page-level Markdown.</li>
+<li>Nested names (<code>tab</code>, <code>card</code>, <code>field</code>) are valid only inside their parent.</li>
+<li>A bad parameter never degrades silently. The build fails, and the error names
+the file and the line.</li>
+<li>Public string parameters (captions, labels, titles) are plain text and are
+not parsed as Markdown. Only bodies are Markdown: <code>tab</code>, <code>card</code> and <code>field</code>
+bodies, files pulled in by <code>include</code>, and the Book <code>fig</code> / <code>tbl</code> / <code>eg</code>
+bodies.</li>
+<li>A component the page never used ships no runtime. The scripts are
+concatenated from what this page actually used; print, Markdown and RSS
+output load nothing at all.</li>
+</ul>
+<h2 id="prerequisites">Site prerequisites<a class="td-heading-self-link" href="#prerequisites" aria-label="Link to this heading"></a>
+</h2>
+<p>Components depend on three Goldmark settings. This example site already has
+them; copy the snippet when starting from scratch:</p>
+<div class="td-code td-code--titled" id="td-code-7e884e68-fence-0" data-td-code data-td-code-auto-id
+data-td-language="yaml" data-td-line-count="8" role="group" aria-labelledby="td-code-7e884e68-fence-0-title">
+<div class="td-code__header">
+<span class="td-code__filename" id="td-code-7e884e68-fence-0-title" title="hugo.yaml">hugo.yaml</span><div class="td-code__utilities">
+<button class="td-code__copy" type="button" hidden data-td-code-copy
+data-td-code-target="td-code-7e884e68-fence-0" data-td-copy-mode="all"
+data-td-label-copy="Copy code"
+data-td-label-copied="Copied"
+data-td-label-error="Copy failed"
+aria-label="Copy code" title="Copy code">
+<i class="fa-regular fa-copy" aria-hidden="true"></i>
+</button>
+</div>
+</div>
+<div class="td-code__viewport" id="td-code-7e884e68-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">markup</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">goldmark</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">renderer</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">unsafe</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="c"># keep HTML that content emits</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">parser</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">attribute</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">block</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="c"># enable {…} attribute lines</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">wrapStandAloneImageWithinParagraph</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="c"># standalone images are not wrapped in &lt;p&gt;</span></span></span></code></pre></div></div>
+<span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
+</div>
+<ul>
+<li><code>renderer.unsafe: true</code> — Goldmark drops raw HTML in content by default;
+with it off, HTML nested inside component bodies disappears.</li>
+<li><code>parser.attribute.block: true</code> — the master switch for attribute lines. With
+it off, <code>{.steps}</code> and <code>{caption=&quot;…&quot;}</code> are just a line of text.</li>
+<li><code>parser.wrapStandAloneImageWithinParagraph: false</code> — a standalone image is no
+longer wrapped in <code>&lt;p&gt;</code>, so it can become a captioned figure and an attribute
+line can follow it.</li>
+</ul>
+<p>A few components have their own prerequisites: mathematics needs Goldmark
+passthrough, PlantUML and Draw.io need a rendering server you run yourself.
+Each page says so.</p>
+<h2 id="cheatsheet">Cheatsheet<a class="td-heading-self-link" href="#cheatsheet" aria-label="Link to this heading"></a>
+</h2>
+<p>Values in the <em>Form</em> column: native = Markdown syntax plus an attribute line;
+fence = a fenced block with a language tag; shortcode = <code>{{&lt; … &gt;}}</code>. The
+<em>Runtime</em> column says whether the component ships JavaScript to the page.</p>
+<div class="td-table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+<table>
+<thead>
+<tr>
+<th scope="col">Component</th>
+<th scope="col">In one line</th>
+<th scope="col">Shortest form</th>
+<th scope="col">Form</th>
+<th scope="col">Runtime</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/docs/callout/">Callouts</a></td>
+<td>Separate prerequisites, warnings and asides from the prose</td>
+<td><code>&gt; [!NOTE]</code></td>
+<td>native</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/image/">Images</a></td>
+<td>Captions, sizing, zoom, numbering and build-time processing</td>
+<td><code>![alt](oink.webp)</code></td>
+<td>native</td>
+<td>site switch</td>
+</tr>
+<tr>
+<td><a href="/docs/code/">Code blocks</a></td>
+<td>Highlighting, titles, copy, folding, linkable lines</td>
+<td><code>```sh</code></td>
+<td>fence</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/tabs/">Tabs</a></td>
+<td>One thing, several platforms or languages</td>
+<td>attribute <code>{tab=&quot;Linux&quot;}</code></td>
+<td>native + shortcode</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/table/">Tables</a></td>
+<td>Plain tables plus full-width, matrix, caption and numbering</td>
+<td><code>{.full-width}</code></td>
+<td>native</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/fields/">Fields</a></td>
+<td>Parameter lists with type / required / default chips</td>
+<td><code>{.fields meta=&quot;type default&quot;}</code></td>
+<td>native + shortcode</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/steps/">Steps</a></td>
+<td>A procedure with an order</td>
+<td><code>{.steps}</code></td>
+<td>native + shortcode</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/cards/">Cards</a></td>
+<td>A set of parallel destinations</td>
+<td><code>{.cards}</code></td>
+<td>native + shortcode</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/filetree/">File trees</a></td>
+<td>Directory structure with an aligned comment column</td>
+<td><code>```filetree</code></td>
+<td>fence</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/math/">Mathematics</a></td>
+<td>KaTeX inline and display formulas</td>
+<td><code>$$ … $$</code></td>
+<td>native</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/mermaid/">Mermaid</a></td>
+<td>Flowcharts, sequence diagrams, Gantt charts</td>
+<td><code>```mermaid</code></td>
+<td>fence</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/plantuml/">PlantUML</a></td>
+<td>UML diagrams; needs a rendering server</td>
+<td><code>```plantuml</code></td>
+<td>fence</td>
+<td>site switch</td>
+</tr>
+<tr>
+<td><a href="/docs/markmap/">Markmap</a></td>
+<td>A Markdown outline becomes a mind map</td>
+<td><code>```markmap</code></td>
+<td>fence</td>
+<td>site switch</td>
+</tr>
+<tr>
+<td><a href="/docs/drawio/">Draw.io</a></td>
+<td>Diagrams that stay editable; needs a server</td>
+<td><code>![alt](arch.drawio.svg)</code></td>
+<td>native</td>
+<td>site switch</td>
+</tr>
+<tr>
+<td><a href="/docs/echarts/">ECharts</a></td>
+<td>Declarative statistical charts</td>
+<td><code>```echarts</code></td>
+<td>fence</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/infographic/">Infographic</a></td>
+<td>AntV infographics</td>
+<td><code>```infographic</code></td>
+<td>fence</td>
+<td>per page</td>
+</tr>
+<tr>
+<td><a href="/docs/gallery/">Galleries</a></td>
+<td>A set of images sharing one zoom dialog</td>
+<td><code>```gallery</code></td>
+<td>fence</td>
+<td>site switch</td>
+</tr>
+<tr>
+<td><a href="/docs/badge/">Badges</a></td>
+<td>Inline status markers</td>
+<td><code>{{&lt; badge text=&quot;Beta&quot; &gt;}}</code></td>
+<td>shortcode</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/kbd/">Keys</a></td>
+<td>Key names and chords</td>
+<td><code>{{&lt; kbd &quot;Ctrl&quot; &quot;K&quot; &gt;}}</code></td>
+<td>shortcode</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/include/">Include</a></td>
+<td>Pull in files, print site parameters, drop build-time notes</td>
+<td><code>{{&lt; include file=&quot;parts/x.md&quot; &gt;}}</code></td>
+<td>shortcode</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="/docs/asciinema/">Asciinema</a></td>
+<td>Terminal recordings</td>
+<td><code>{{&lt; asciinema file=&quot;images/x.cast&quot; &gt;}}</code></td>
+<td>shortcode</td>
+<td>per page</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Four notes on the <em>Runtime</em> column:</p>
+<ul>
+<li>A code block loads <code>code-block.js</code> only when a block on the page has a copy
+or fold control; a file tree loads <code>filetree.js</code> only when the tree has a
+comment column, which is the runtime that drags the split.</li>
+<li>Images and galleries share one zoom dialog runtime. It needs <code>ui.image_zoom</code>
+on for the site and at least one eligible image on the page.</li>
+<li>Mathematics is rendered to HTML and MathML by KaTeX at build time. The page
+gains a KaTeX stylesheet and its fonts, and no script.</li>
+<li>With <code>params.drawio.enable</code> on, the Draw.io runtime loads on every page
+whether or not this page uses it.</li>
+</ul>
+<p>Every component has a defined shape in all four outputs — HTML, print, Markdown
+and RSS. See the <em>Output</em> section on each page.</p>
 <div class="td-section-index td-section-index--cards td-content-cards" style="--td-card-columns: 2">
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/components/callouts/">Callouts</a>
-</div><p class="td-content-card__description">GitHub / Obsidian style callouts rendered by the blockquote render hook.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/callout/">Callouts</a>
+</div><p class="td-content-card__description">Write notes, warnings and collapsible asides — with colour, icon and title — as <code>&gt; [!NOTE]</code> blockquotes, no shortcode involved.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/typography/">Typography fixture</a>
-</div><p class="td-content-card__description">Representative prose, labels, and code for theme regression checks.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/image/">Images</a>
+</div><p class="td-content-card__description">Plain Markdown image syntax plus one attribute line gives you captions, sizing, zoom, links, numbering and Hugo image processing.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/code-blocks/">Enhanced code blocks</a>
-</div><p class="td-content-card__description">Regression fixtures for the shared Chroma shell and code groups.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/code/">Code blocks</a>
+</div><p class="td-content-card__description">A plain Markdown fence plus one attribute line gives you a filename title, exact copy, line numbers, highlighting, wrapping, folding and linkable lines.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/components/steps/">Steps</a>
-</div><p class="td-content-card__description">Ordered-list steps (native form) and heading steps (full form).</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/tabs/">Tabs</a>
+</div><p class="td-content-card__description">A <code>{tab=}</code> attribute on adjacent fences or tables makes a tab set; add a group and it becomes linkable, synchronized and remembered.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/math-passthrough/">Math passthrough</a>
-</div><p class="td-content-card__description">Regression fixtures for delimiter-style server-rendered mathematics.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/table/">Tables</a>
+</div><p class="td-content-card__description">A plain GFM table plus one attribute line becomes a captioned table, a compatibility matrix, a field list, a numbered table or a tab set; wide tables scroll on their own.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/components/lists/">Cards / FileTree / Gallery</a>
-</div><p class="td-content-card__description">List-based native forms selected by a trailing marker.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/fields/">Fields</a>
+</div><p class="td-content-card__description">A plain table plus <code>{.fields}</code> documents configuration keys, command flags and API fields — name, type, default and description each in place, readable on a narrow screen, every entry individually linkable.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/content-primitives/">Content primitives</a>
-</div><p class="td-content-card__description">Regression fixtures for inline everyday content primitives.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/steps/">Steps</a>
+</div><p class="td-content-card__description">An ordered list plus <code>{.steps}</code> becomes a numbered procedure with dots and a connecting rule; switch to the steps shortcode when each step needs a heading in the table of contents.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/media-primitives/">Media primitives</a>
-</div><p class="td-content-card__description">Regression fixtures for shared image resolution and the processed image shortcode.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/cards/">Cards</a>
+</div><p class="td-content-card__description">A link list plus <code>{.cards}</code> lays out a grid of navigation cards; switch to the shortcode when you need icons, badges or images.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/image-zoom/">Image Zoom</a>
-</div><p class="td-content-card__description">Regression fixtures for opt-in native image preview.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/filetree/">File trees</a>
+</div><p class="td-content-card__description">A <code>filetree</code> fence draws an annotated directory structure — aligned comment column, per-entry icons, collapsible directories, a draggable split.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/image-zoom-disabled/">Image Zoom disabled</a>
-</div><p class="td-content-card__description">A page-level false value wins over the enabled example site.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/math/">Mathematics</a>
+</div><p class="td-content-card__description">Inline and display mathematics with KaTeX, rendered at build time — the reader downloads no script.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/image-zoom-exclusions/">Image Zoom exclusions</a>
-</div><p class="td-content-card__description">A page with only ineligible images must not load the runtime.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/mermaid/">Mermaid</a>
+</div><p class="td-content-card__description">A <code>mermaid</code> fence turns text into flowcharts, sequence diagrams, Gantt charts, class diagrams and state diagrams — rendered locally, theme-aware, diff-friendly.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/components/cards/">Cards (rich)</a>
-</div><p class="td-content-card__description">The <code>{{&lt;/* cards */&gt;}}</code> / <code>{{&lt;/* card */&gt;}}</code> full form with icons, badges, images and Markdown bodies.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/plantuml/">PlantUML</a>
+</div><p class="td-content-card__description">A <code>plantuml</code> fence writes sequence, class, component, activity and use-case diagrams; rendering requires a PlantUML server you configure yourself.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/guides/">Nested guides</a>
-</div><p class="td-content-card__description">A section fixture that proves tree-order navigation across levels.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/markmap/">Markmap</a>
+</div><p class="td-content-card__description">A <code>markmap</code> fence turns a Markdown outline into an expandable, zoomable mind map — and the source stays a readable outline.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/components/tables/">Tables</a>
-</div><p class="td-content-card__description">Table family — fields, matrix, caption, numbered, tabs, full-width.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/drawio/">Draw.io</a>
+</div><p class="td-content-card__description">Put a <code>.drawio.svg</code> that carries an editable copy on the page as an ordinary image; hovering gives the reader a button that opens the Draw.io editor.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/components/data-fences/">Data fences</a>
-</div><p class="td-content-card__description">Declarative charts, infographics and checksum lists as fenced code blocks.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/echarts/">ECharts</a>
+</div><p class="td-content-card__description">Write ECharts options as YAML or JSON in an <code>echarts</code> fence; Hugo validates them at build time and the browser draws a theme-aware chart with the local ECharts.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/download-demo/">Download data demo</a>
-</div><p class="td-content-card__description">Rolling and pinned channels render from one validated data record.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/infographic/">Infographic</a>
+</div><p class="td-content-card__description">An <code>infographic</code> fence picks an AntV template and renders a title plus a list of items as a flow, timeline, funnel, grid or hierarchy.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/gallery/">Gallery</a>
-</div><p class="td-content-card__description">Regression fixtures for a static-first responsive image Gallery.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/gallery/">Galleries</a>
+</div><p class="td-content-card__description">A <code>gallery</code> fence arranges related screenshots in a responsive grid, each with an optional description or link, reusing the page&rsquo;s image zoom dialog.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/gallery-disabled/">Gallery with Zoom disabled</a>
-</div><p class="td-content-card__description">Gallery remains complete when page-level Image Zoom is disabled.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/badge/">Badges</a>
+</div><p class="td-content-card__description">Put a semantic status label next to a feature name, a version or a table cell — five tones, no custom colours.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/release-assets-base/">Release assets with an explicit base</a>
-</div><p class="td-content-card__description">Asset tables can remain useful outside release pages without inventing version facts.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/kbd/">Keys</a>
+</div><p class="td-content-card__description">Write shortcuts with <code>kbd</code> — one shortcode, a list of key names, a semantic key sequence that stays readable in print and in Markdown output.</p></div>
 </article>
 <article class="td-content-card td-section-index__card">
 <div class="td-content-card__body">
-<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/download-pending/">Unpublished download demo</a>
-</div><p class="td-content-card__description">Pinned release facts remain visible without exposing download actions.</p></div>
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/include/">Include</a>
+</div><p class="td-content-card__description">Pull an external file in with include, print a site parameter with param, and write a note that reaches no output at all with comment.</p></div>
+</article>
+<article class="td-content-card td-section-index__card">
+<div class="td-content-card__body">
+<div class="td-content-card__head"><a class="td-content-card__title" href="/docs/asciinema/">Asciinema</a>
+</div><p class="td-content-card__description">Put a .cast terminal recording on the page — the text stays selectable text, and the player ships with the theme rather than coming from a CDN.</p></div>
 </article>
 </div>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next">
-<a class="td-pager__link td-pager__link--next" href="/docs/components/callouts/"
+<a class="td-pager__link td-pager__link--next" href="/docs/callout/"
 aria-label="Next - Callouts" title="Callouts" data-td-pager-next>
 <span class="td-pager__title" dir="auto">Callouts</span><span class="td-pager__arrow" aria-hidden="true">→</span>
 </a>
@@ -636,11 +935,36 @@ aria-label="Next - Callouts" title="Callouts" data-td-pager-next>
 </main>
 <aside class="td-shell-toc d-print-none" aria-label="Content">
 <div class="td-shell-toc__panel">
-<div class="td-shell-toc__actions">
-<button type="button" class="td-shell-toc__title-btn" data-td-shell-right-toggle
-title="Hide table of contents" aria-label="Hide table of contents"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></button>
-</div>
 <div class="td-shell-aside" data-td-shell-aside>
+<div class="td-shell-aside-group td-shell-aside-group--toc">
+<div class="td-shell-aside-group__row"><button type="button" class="td-shell-aside-group__rail-toggle" data-td-shell-right-toggle
+title="Hide table of contents" aria-label="Hide table of contents"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></button>
+<button type="button" class="td-shell-tree__row td-shell-aside-group__head"
+data-td-shell-tree-toggle data-td-shell-aside-keep-open
+aria-expanded="true" aria-controls="td-shell-aside-toc"
+aria-label="Collapse section: Content"
+data-td-label-expand="Expand section: Content"
+data-td-label-collapse="Collapse section: Content"><span class="td-shell-aside-group__icon td-shell-aside-group__icon--toc" aria-hidden="true"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></span>
+<span class="td-shell-aside-group__title">Content</span>
+<span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
+</button>
+</div>
+<div id="td-shell-aside-toc" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<div class="td-shell-toc__inner" data-proofer-ignore>
+<div class="td-shell-toc__body" id="td-shell-toc-body">
+<nav id="TableOfContents">
+<ul>
+<li><a href="#two-forms">Two forms</a></li>
+<li><a href="#prerequisites">Site prerequisites</a></li>
+<li><a href="#cheatsheet">Cheatsheet</a></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </aside>
@@ -653,23 +977,50 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <div class="td-site-footer" id="td-site-footer">
 <div class="td-site-footer__container">
 <div class="td-site-footer__inner">
-<div class="td-site-footer__brand"><a class="td-site-footer__logo" href="/" aria-label="Oink">
+<div class="td-site-footer__brand"><a class="td-site-footer__logo" href="/" aria-label="Oink Example">
 <img src="/icons/logo.svg" alt="" width="28" height="28">
-<span>Oink</span>
-</a><div class="td-site-footer__tagline">A Hugo documentation theme.</div>
+<span>Oink Example</span>
+</a><div class="td-site-footer__tagline"><strong>O</strong>pen <strong>I</strong>ndexed, <strong>N</strong>avigable <strong>K</strong>nowledge</div><div class="td-site-footer__slogan">A local-first Hugo theme for engineering documentation</div>
 </div>
-<div class="td-site-footer__grid" style="--td-footer-cols: 2">
-<nav class="td-site-footer__column" aria-label="Documentation">
-<h2>Documentation</h2>
+<div class="td-site-footer__grid" style="--td-footer-cols: 4">
+<nav class="td-site-footer__column" aria-label="Product">
+<h2>Product</h2>
 <ul>
-<li><a href="/docs/">Docs</a></li>
-<li><a href="/blog/">Blog</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/" target="_blank" rel="noopener noreferrer">OINK overview</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/features/" target="_blank" rel="noopener noreferrer">Highlights</a></li>
+<li><a href="https://oink.pgsty.com/docs/customize/config/" target="_blank" rel="noopener noreferrer">Configuration</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/showcase/" target="_blank" rel="noopener noreferrer">Showcase</a></li>
+<li><a href="https://pigsty.com/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
 </ul>
 </nav>
-<nav class="td-site-footer__column" aria-label="Project">
-<h2>Project</h2>
+<nav class="td-site-footer__column" aria-label="Resources">
+<h2>Resources</h2>
 <ul>
+<li><a href="/docs/">Documentation</a></li>
+<li><a href="https://oink.pgsty.com/docs/start/" target="_blank" rel="noopener noreferrer">Get started</a></li>
+<li><a href="/docs/">Components</a></li>
+<li><a href="/landing-demo/">Landing demo</a></li>
+<li><a href="/book/">Book example</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="Community">
+<h2>Community</h2>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/blog/release/">Release notes</a></li>
 <li><a href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+<li><a href="https://github.com/pgsty/oink/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+<li><a href="https://github.com/google/docsy/discussions" target="_blank" rel="noopener noreferrer">Docsy discussions</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="About">
+<h2>About</h2>
+<ul>
+<li><a href="https://oink.pgsty.com/docs/about/" target="_blank" rel="noopener noreferrer">About OINK</a></li>
+<li><a href="https://oink.pgsty.com/blog/release/" target="_blank" rel="noopener noreferrer">Releases</a></li>
+<li><a href="https://github.com/pgsty/oink/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/license/" target="_blank" rel="noopener noreferrer">Upstream projects</a></li>
+<li><a href="https://pgsty.com/" target="_blank" rel="noopener noreferrer">PGSTY</a></li>
 </ul>
 </nav>
 </div>
@@ -683,7 +1034,9 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <div class="td-shell-footline__center">Powered by <a href="https://oink.pgsty.com">Oink</a></div>
 <div class="td-shell-footline__right">
 <div class="td-shell-footline__lang">
-<a class="td-shell-alt-site" href="https://example.cn/" target="_blank" rel="noopener noreferrer">Example 中文站</a>
+<div class="td-language-selector td-language-selector--list td-shell-language-selector"
+role="group" aria-label="Choose language"><span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span><a class="td-language-selector__item" href="https://example.org/zh/docs/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</div>
 </div>
 <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
 aria-expanded="true" aria-controls="td-site-footer"
@@ -694,7 +1047,8 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 </div>
 </footer>
 </div>
-<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/docs/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":false,"description":"Switch language","disabledReason":"Switch language: unavailable","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en","title":"English","url":"https://example.org/docs/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open content primitives","url":"/docs/content-primitives/"}],"language":"en","quickLinks":[{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-book","id":"quick_docs","keywords":["Documentation","docs"],"kind":"url","target":"self","title":"Documentation","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","source"],"version":1}</script>
+<script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fdocs%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/docs/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/docs/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/docs/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Every component you can write in Markdown — one page each, examples first, parameter tables at the end.","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","pigsty"],"version":1}</script>
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden

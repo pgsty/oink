@@ -62,13 +62,13 @@ def bundle_path(public: Path, page: str) -> tuple[Path | None, str]:
 
 def check_outputs(public: Path) -> list[str]:
     errors: list[str] = []
-    zoom_path, zoom = bundle_path(public, "docs/image-zoom/index.html")
-    disabled_path, disabled = bundle_path(public, "docs/image-zoom-disabled/index.html")
-    excluded_path, excluded = bundle_path(public, "docs/image-zoom-exclusions/index.html")
-    plain_path, plain = bundle_path(public, "docs/content-primitives/index.html")
-    markdown = (public / "docs/image-zoom/index.md").read_text()
-    print_page = (public / "_print/docs/index.html").read_text()
-    media = (public / "docs/media-primitives/index.html").read_text()
+    zoom_path, zoom = bundle_path(public, "fixtures/image-zoom/index.html")
+    disabled_path, disabled = bundle_path(public, "fixtures/image-zoom-disabled/index.html")
+    excluded_path, excluded = bundle_path(public, "fixtures/image-zoom-exclusions/index.html")
+    plain_path, plain = bundle_path(public, "fixtures/content-primitives/index.html")
+    markdown = (public / "fixtures/image-zoom/index.md").read_text()
+    print_page = (public / "_print/fixtures/index.html").read_text()
+    media = (public / "fixtures/media-primitives/index.html").read_text()
     blog_path, blog = bundle_path(public, "blog/index.html")
 
     for marker in (
@@ -85,7 +85,7 @@ def check_outputs(public: Path) -> list[str]:
         'data-td-image-zoom="/media/content-primitives-global.png"',
         # A decorative processed image is simply not marked: an empty alt is
         # already disqualifying, so no explicit opt-out is emitted for it.
-        '<img src="/docs/image-zoom/legacy-empty_hu_',
+        '<img src="/fixtures/image-zoom/legacy-empty_hu_',
         "Linked image remains a link",
     ):
         require(marker in zoom, f"enabled Zoom fixture missing {marker}", errors)

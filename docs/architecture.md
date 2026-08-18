@@ -8,8 +8,10 @@ Compatibility floor: Hugo Extended 0.160.1
 The repository root is a Hugo Module and a complete theme, not a site or an npm
 workspace. Hugo Extended compiles SCSS and templates. All browser runtimes and
 third-party assets are committed; a normal build performs no network fetch.
-`exampleSite/` is the small CI fixture. The bilingual product documentation and
-browser suite live in the sibling `oink.pgsty.com` repository.
+`exampleSite/` is bilingual: `content/docs/` is a flat component reference in
+English and Chinese, and `content/fixtures/` carries the narrow pages that pin
+behaviour. The full product documentation and the browser suite live in the
+sibling `oink.pgsty.com` repository.
 
 Generated `public/` and `resources/` trees are never source. Vendored files in
 `assets/third_party/`, Font Awesome glyph definitions, and font families are

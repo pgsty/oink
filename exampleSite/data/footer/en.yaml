@@ -1,17 +1,36 @@
-# Fat-footer fixture: exercises the data/footer/<lang>.yaml resolution path and
-# the column grid on every layout. Kept small on purpose.
+# Fat footer (data/footer/<lang>.yaml): brand block plus four link columns,
+# mirroring the OINK documentation site. Local example pages link relatively;
+# guides that only exist on oink.pgsty.com and GitHub are external.
 brand:
-  name: Oink
-  tagline: A Hugo documentation theme.
+  name: Oink Example
+  tagline: '**O**pen **I**ndexed, **N**avigable **K**nowledge'
+  slogan: A local-first Hugo theme for engineering documentation
 columns:
-  - title: Documentation
+  - title: Product
     links:
-      - label: Docs
-        url: /docs/
-      - label: Blog
-        url: /blog/
-  - title: Project
+      - { label: OINK overview, url: 'https://oink.pgsty.com/docs/about/', external: true }
+      - { label: Highlights, url: 'https://oink.pgsty.com/docs/about/features/', external: true }
+      - { label: Configuration, url: 'https://oink.pgsty.com/docs/customize/config/', external: true }
+      - { label: Showcase, url: 'https://oink.pgsty.com/docs/about/showcase/', external: true }
+      - { label: Pigsty, url: 'https://pigsty.com/', external: true }
+  - title: Resources
     links:
-      - label: GitHub
-        url: https://github.com/pgsty/oink
-        external: true
+      - { label: Documentation, url: /docs/ }
+      - { label: Get started, url: 'https://oink.pgsty.com/docs/start/', external: true }
+      - { label: Components, url: /docs/ }
+      - { label: Landing demo, url: /landing-demo/ }
+      - { label: Book example, url: /book/ }
+  - title: Community
+    links:
+      - { label: Blog, url: /blog/ }
+      - { label: Release notes, url: /blog/release/ }
+      - { label: GitHub, url: 'https://github.com/pgsty/oink', external: true }
+      - { label: Issues, url: 'https://github.com/pgsty/oink/issues', external: true }
+      - { label: Docsy discussions, url: 'https://github.com/google/docsy/discussions', external: true }
+  - title: About
+    links:
+      - { label: About OINK, url: 'https://oink.pgsty.com/docs/about/', external: true }
+      - { label: Releases, url: 'https://oink.pgsty.com/blog/release/', external: true }
+      - { label: License, url: 'https://github.com/pgsty/oink/blob/main/LICENSE', external: true }
+      - { label: Upstream projects, url: 'https://oink.pgsty.com/docs/about/license/', external: true }
+      - { label: PGSTY, url: 'https://pgsty.com/', external: true }

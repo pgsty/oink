@@ -91,8 +91,8 @@ def visible_text(source: str) -> str:
 
 def check_example(public: Path) -> list[str]:
     errors: list[str] = []
-    demo_path = public / "docs/download-demo/index.html"
-    pending_path = public / "docs/download-pending/index.html"
+    demo_path = public / "fixtures/download-demo/index.html"
+    pending_path = public / "fixtures/download-pending/index.html"
     for path in (demo_path, pending_path):
         require(path.exists(), f"download fixture is missing: {path.name}", errors)
     if not demo_path.exists() or not pending_path.exists():
@@ -168,8 +168,8 @@ def check_example(public: Path) -> list[str]:
         require("OinkAssetList" not in source, "unpublished download bundled disabled asset runtime", errors)
         require("OINK code block: unable to copy code:" in source, "unpublished rolling channel lost code runtime", errors)
 
-    demo_md = (public / "docs/download-demo/index.md").read_text(encoding="utf-8")
-    pending_md = (public / "docs/download-pending/index.md").read_text(encoding="utf-8")
+    demo_md = (public / "fixtures/download-demo/index.md").read_text(encoding="utf-8")
+    pending_md = (public / "fixtures/download-pending/index.md").read_text(encoding="utf-8")
     for marker in (
         "## Install script",
         "```bash\ncurl -fsSL https://repo.example.org/demo | bash\n```",
@@ -189,7 +189,7 @@ def check_example(public: Path) -> list[str]:
         ("download-demo", "git clone --branch v2.4.1"),
         ("download-pending", "curl -fsSL https://repo.example.org/oink/install"),
     ):
-        path = public / f"_print/docs/{name}/index.html"
+        path = public / f"_print/fixtures/{name}/index.html"
         require(path.exists(), f"download print fixture is missing: {name}", errors)
         if path.exists():
             source = path.read_text(encoding="utf-8")

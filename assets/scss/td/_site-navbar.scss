@@ -469,6 +469,15 @@
     }
   }
 
+  // Text that sits beside a utility icon (star count, alt-site label) uses
+  // the same size and weight as the menu labels, not the 1rem icon box.
+  .td-nav-github .td-nav-count,
+  .td-nav-alt-site > span {
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
   .td-site-nav__language.td-language-selector--menu {
     padding: 0;
 
@@ -491,7 +500,10 @@
   display: none;
 }
 
+// Icon + label link (single-language sites); the label needs the same
+// breathing room after its icon as the GitHub star count.
 .td-site-header .td-nav-alt-site {
+  gap: 6px;
   white-space: nowrap;
 }
 

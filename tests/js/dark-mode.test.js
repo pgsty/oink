@@ -25,8 +25,13 @@ function classes() {
     addEventListener(name, callback) { this.listeners.set(name, callback); },
   };
   let registryExecutor = null;
+  // Swagger UI keys its dark theme on `html.dark-mode` and DocSearch on
+  // `html[data-theme]`; the runtime mirrors the resolved mode onto both, so the
+  // root stub has to carry a class list for that mirror to land on.
+  const rootClasses = classes();
   const fakeDocument = {
     documentElement: {
+      classList: rootClasses,
       setAttribute(name, value) { attributes.set(name, value); },
       getAttribute(name) { return attributes.get(name); },
       removeAttribute(name) { attributes.delete(name); },
@@ -68,6 +73,8 @@ function classes() {
   });
 
   assert.equal(attributes.get('data-bs-theme'), 'light');
+  assert.equal(rootClasses.has('dark-mode'), false);
+  assert.equal(attributes.get('data-theme'), 'light');
   assert.equal(attributes.has('data-td-theme-init'), false);
   assert.equal(typeof registryExecutor, 'function');
   callbacks.get('DOMContentLoaded')();
@@ -80,12 +87,16 @@ function classes() {
   registryExecutor({ value: { value: 'dark' } });
   assert.equal(storage.get('td-color-theme'), 'dark');
   assert.equal(attributes.get('data-bs-theme'), 'dark');
+  assert.equal(rootClasses.has('dark-mode'), true);
+  assert.equal(attributes.get('data-theme'), 'dark');
   assert.equal(light.attributes.get('aria-pressed'), 'false');
 
   storage.set('td-color-theme', 'auto');
   media.matches = true;
   callbacks.get('media:change')();
   assert.equal(attributes.get('data-bs-theme'), 'dark');
+  assert.equal(rootClasses.has('dark-mode'), true);
+  assert.equal(attributes.get('data-theme'), 'dark');
 
   console.log('shared theme executor checks passed');
 })();

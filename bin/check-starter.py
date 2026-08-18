@@ -50,9 +50,9 @@ def build(base_url: str, public: Path) -> None:
 
     home = read(public, "index.html")
     docs = read(public, "docs/index.html")
-    math = read(public, "docs/math-passthrough/index.html")
-    download = read(public, "docs/download-demo/index.html")
-    pending = read(public, "docs/download-pending/index.html")
+    math = read(public, "fixtures/math-passthrough/index.html")
+    download = read(public, "fixtures/download-demo/index.html")
+    pending = read(public, "fixtures/download-pending/index.html")
     release = read(public, "blog/release/pig-1.10.0/index.html")
     release_index = read(public, "blog/release/index.html")
     landing = read(public, "landing-demo/index.html")
@@ -104,7 +104,7 @@ def build(base_url: str, public: Path) -> None:
     require(commands.get("example_status", {}).get("url") == "https://status.example.org/",
             "starter URL command changed")
     require(commands.get("print_example", {}).get("action") == "print", "starter built-in command changed")
-    require(commands.get("example_docs", {}).get("url") == f"{prefix}docs/content-primitives/",
+    require(commands.get("example_docs", {}).get("url") == f"{prefix}docs/callout/",
             "starter internal command ignored the deployment prefix")
 
 

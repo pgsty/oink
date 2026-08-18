@@ -11,8 +11,12 @@ that absorbs ideas from FumaDocs, Hextra, and Nextra: Docsy's content model and
 primitives, and typography system are OINK's own.
 
 There is **no site, no npm workspace, and no build step** here. Hugo Extended is
-the only build tool. `exampleSite/` is a deliberately minimal fixture site used
-by the check scripts and CI — not a showcase.
+the only build tool. `exampleSite/` is bilingual (`en` + `zh`) and has two
+trees: `content/docs/` is the component reference — 21 pages, one per
+component, flat and ordered by weight, no intermediate section — and
+`content/fixtures/` holds the narrow pages that pin theme behaviour for the
+check scripts and the goldens. The fixtures section is its own sidebar root
+(`sidebar_root_for: self`) and stays out of the navigation.
 
 ### Two-repo model
 

@@ -68,9 +68,9 @@ def build(
 
 def check_example(public: Path) -> list[str]:
     errors: list[str] = []
-    page_path = public / "docs/content-primitives/index.html"
-    print_path = public / "_print/docs/index.html"
-    markdown_path = public / "docs/content-primitives/index.md"
+    page_path = public / "fixtures/content-primitives/index.html"
+    print_path = public / "_print/fixtures/index.html"
+    markdown_path = public / "fixtures/content-primitives/index.md"
     docs_path = public / "docs/index.html"
     not_found_path = public / "404.html"
     for path in (page_path, print_path, markdown_path, docs_path, not_found_path):
@@ -121,20 +121,22 @@ def check_example(public: Path) -> list[str]:
     if divider_match:
         require(divider_match.group("id") != "m--li", "sidebar divider has an empty DOM id", errors)
     require(
-        not (public / "docs/guides/divider/index.html").exists(),
+        not (public / "fixtures/guides/divider/index.html").exists(),
         "render-never sidebar divider emitted a page",
         errors,
     )
-    pager_source = (public / "docs/guides/first/index.html").read_text(encoding="utf-8")
+    pager_source = (public / "fixtures/guides/first/index.html").read_text(encoding="utf-8")
     pager = re.search(r'<nav class="td-pager.*?</nav>', pager_source, re.S)
     require(not pager or "Reference group" not in pager.group(0), "pager points at a sidebar divider", errors)
     require("Reference group" not in print_page, "sidebar divider leaked into print aggregation", errors)
 
-    search_indexes = list(public.glob("offline-search-index.*.json"))
-    require(len(search_indexes) == 1, "offline search fixture did not emit one language index", errors)
-    if search_indexes:
+    search_indexes = sorted(public.glob("offline-search-index.*.json"))
+    languages = {path.name.split(".")[1] for path in search_indexes}
+    require(languages == {"en", "zh"}, "offline search fixture did not emit one index per language", errors)
+    english = [path for path in search_indexes if path.name.split(".")[1] == "en"]
+    if english:
         require(
-            '"keywords":["scenario-hook-keyword"]' in search_indexes[0].read_text(encoding="utf-8"),
+            '"keywords":["scenario-hook-keyword"]' in english[0].read_text(encoding="utf-8"),
             "search keyword extension hook was not merged",
             errors,
         )

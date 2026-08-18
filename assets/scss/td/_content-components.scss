@@ -116,18 +116,21 @@
   background: var(--td-asciinema-surface);
 }
 
+// `--term-*` is asciinema-player's own theming API: its stylesheet reads
+// these names, so they stay unprefixed (see bin/check-namespace.py). Renaming
+// them to `--td-term-*` leaves the player on its built-in black palette.
 .td-asciinema .ap-player {
-  --td-term-font-family: var(--td-asciinema-font-family);
+  --term-font-family: var(--td-asciinema-font-family);
   overflow: hidden;
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  font-family: var(--td-term-font-family);
+  font-family: var(--term-font-family);
 }
 
 .td-asciinema .ap-term pre.ap-term-text {
   border: 0;
-  background: var(--td-term-color-background);
+  background: var(--term-color-background);
   box-shadow: none;
 }
 
@@ -136,7 +139,7 @@
 }
 
 .td-asciinema .ap-term {
-  background: var(--td-term-color-background);
+  background: var(--term-color-background);
   box-shadow: none;
 }
 
@@ -146,13 +149,13 @@
   border-block-start: 1px solid
     color-mix(
       in srgb,
-      var(--td-term-color-foreground) 20%,
-      var(--td-term-color-background)
+      var(--term-color-foreground) 20%,
+      var(--term-color-background)
     );
   background: color-mix(
     in srgb,
-    var(--td-term-color-background) 88%,
-    var(--td-term-color-foreground)
+    var(--term-color-background) 88%,
+    var(--term-color-foreground)
   );
   backdrop-filter: blur(10px);
 }
@@ -164,7 +167,7 @@
   &:hover {
     background: color-mix(
       in srgb,
-      var(--td-term-color-foreground) 10%,
+      var(--term-color-foreground) 10%,
       transparent
     );
   }
@@ -198,34 +201,34 @@
   stroke: color-mix(
     in srgb,
     var(--td-asciinema-accent) 72%,
-    var(--td-term-color-foreground)
+    var(--term-color-foreground)
   );
 }
 
 .ap-player.asciinema-player-theme-td-dark {
-  --td-term-color-foreground: #dbe7f5;
-  --td-term-color-background: #0a0f16;
-  --td-term-color-0: #1c2736;
-  --td-term-color-1: #e06c6c;
-  --td-term-color-2: #55c98a;
-  --td-term-color-3: #e0a35c;
-  --td-term-color-4: #5da2dd;
-  --td-term-color-5: #c792ea;
-  --td-term-color-6: #6cd5e0;
-  --td-term-color-7: #dbe7f5;
+  --term-color-foreground: #dbe7f5;
+  --term-color-background: #0a0f16;
+  --term-color-0: #1c2736;
+  --term-color-1: #e06c6c;
+  --term-color-2: #55c98a;
+  --term-color-3: #e0a35c;
+  --term-color-4: #5da2dd;
+  --term-color-5: #c792ea;
+  --term-color-6: #6cd5e0;
+  --term-color-7: #dbe7f5;
 }
 
 .ap-player.asciinema-player-theme-td-light {
-  --td-term-color-foreground: #16222e;
-  --td-term-color-background: #f6f9fc;
-  --td-term-color-0: #16222e;
-  --td-term-color-1: #c2403a;
-  --td-term-color-2: #178a53;
-  --td-term-color-3: #b4762e;
-  --td-term-color-4: #2b6ca3;
-  --td-term-color-5: #8f4e9e;
-  --td-term-color-6: #0e7f8a;
-  --td-term-color-7: #5d7189;
+  --term-color-foreground: #16222e;
+  --term-color-background: #f6f9fc;
+  --term-color-0: #16222e;
+  --term-color-1: #c2403a;
+  --term-color-2: #178a53;
+  --term-color-3: #b4762e;
+  --term-color-4: #2b6ca3;
+  --term-color-5: #8f4e9e;
+  --term-color-6: #0e7f8a;
+  --term-color-7: #5d7189;
 }
 
 // Markmap highlights fenced code inside its nodes with highlight.js, whose

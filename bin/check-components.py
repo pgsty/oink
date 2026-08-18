@@ -68,11 +68,11 @@ def build_site(hugo: str, pages: dict[str, str], *, prefix: str, extra_files: di
 
 def check_outputs(public: Path) -> list[str]:
     errors: list[str] = []
-    callouts = (public / "docs/components/callouts/index.html").read_text()
-    callouts_md = (public / "docs/components/callouts/index.md").read_text()
-    fences = (public / "docs/components/data-fences/index.html").read_text()
-    fences_md = (public / "docs/components/data-fences/index.md").read_text()
-    print_page = (public / "_print/docs/index.html").read_text()
+    callouts = (public / "fixtures/callouts/index.html").read_text()
+    callouts_md = (public / "fixtures/callouts/index.md").read_text()
+    fences = (public / "fixtures/data-fences/index.html").read_text()
+    fences_md = (public / "fixtures/data-fences/index.md").read_text()
+    print_page = (public / "_print/fixtures/index.html").read_text()
 
     for kind in CANONICAL_TYPES:
         require(f'<div class="td-callout td-callout--{kind}" role="note">' in callouts, f"callout fixture lacks the {kind} type", errors)

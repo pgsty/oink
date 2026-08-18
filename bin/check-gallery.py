@@ -52,10 +52,10 @@ def fence(*lines: str, attrs: str = "") -> str:
 
 def check_outputs(public: Path) -> list[str]:
     errors: list[str] = []
-    bundle, html = bundle_path(public, "docs/gallery/index.html")
-    disabled_bundle, disabled = bundle_path(public, "docs/gallery-disabled/index.html")
-    markdown = (public / "docs/gallery/index.md").read_text()
-    print_page = (public / "_print/docs/index.html").read_text()
+    bundle, html = bundle_path(public, "fixtures/gallery/index.html")
+    disabled_bundle, disabled = bundle_path(public, "fixtures/gallery-disabled/index.html")
+    markdown = (public / "fixtures/gallery/index.md").read_text()
+    print_page = (public / "_print/fixtures/index.html").read_text()
 
     gallery = gallery_block(html)
     require(bool(gallery), "Gallery grid is missing", errors)
@@ -90,7 +90,7 @@ def check_outputs(public: Path) -> list[str]:
         require(bool(tag), f"Gallery lacks the {name} image", errors)
     # The fence resolves sources through the shared resolver, so a page resource
     # becomes its permalink and carries the dimensions Hugo knows.
-    require('src="/docs/gallery/page.png"' in page_tag, "Gallery page resource URL is wrong", errors)
+    require('src="/fixtures/gallery/page.png"' in page_tag, "Gallery page resource URL is wrong", errors)
     require('width="64" height="40"' in page_tag, "Gallery page resource lacks dimensions", errors)
     require('src="/media/content-primitives-global.png"' in global_tag, "Gallery global resource URL is wrong", errors)
     require('width="64" height="40"' in global_tag, "Gallery global resource lacks dimensions", errors)
@@ -103,7 +103,7 @@ def check_outputs(public: Path) -> list[str]:
     # at emit time. A `{link=…}` item becomes an anchor and is not zoomable,
     # which is what the browser runtime would decide anyway.
     require(gallery.count("data-td-image-zoom") == 3, "Gallery did not mark exactly its zoomable images", errors)
-    require('<a class="td-gallery__link" href="/docs/gallery/">' in gallery, "Gallery link item lost its anchor", errors)
+    require('<a class="td-gallery__link" href="/fixtures/gallery/">' in gallery, "Gallery link item lost its anchor", errors)
     require("data-td-image-zoom" not in remote_tag, "Gallery marked a linked image as zoomable", errors)
 
     order = (
@@ -120,7 +120,7 @@ def check_outputs(public: Path) -> list[str]:
         "```gallery",
         "![Blue and gold local dashboard overview](page.png) # Local page resource with intrinsic dimensions.",
         "![Tall static SVG settings overview](/media/content-primitives-tall.svg) # واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي",
-        "![Remote deployment history view](https://example.invalid/gallery/remote.webp?view=full) # 远程图片保持静态 URL，构建过程不会下载它。 {link=/docs/gallery/}",
+        "![Remote deployment history view](https://example.invalid/gallery/remote.webp?view=full) # 远程图片保持静态 URL，构建过程不会下载它。 {link=/fixtures/gallery/}",
     ):
         require(marker in markdown, f"Gallery Markdown fixture missing {marker}", errors)
     require(markdown.count("![") == 4, "Gallery Markdown lost an image", errors)
@@ -211,13 +211,13 @@ def check_subpath(hugo: str) -> list[str]:
         if result.returncode != 0:
             errors.append(f"Gallery subpath fixture failed to build: {result.stdout}{result.stderr}")
             return errors
-        gallery = gallery_block((destination / "docs/gallery/index.html").read_text())
+        gallery = gallery_block((destination / "fixtures/gallery/index.html").read_text())
         for marker in (
-            'src="/manual/docs/gallery/page.png"',
+            'src="/manual/fixtures/gallery/page.png"',
             'src="/manual/media/content-primitives-global.png"',
             'src="/manual/media/content-primitives-tall.svg"',
             'src="https://example.invalid/gallery/remote.webp?view=full"',
-            'href="/manual/docs/gallery/"',
+            'href="/manual/fixtures/gallery/"',
         ):
             require(marker in gallery, f"Gallery subpath fixture missing {marker}", errors)
     return errors

@@ -50,15 +50,15 @@ def temp_page_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_conf
 
 def check_outputs(public: Path) -> list[str]:
     errors: list[str] = []
-    page = (public / "docs/content-primitives/index.html").read_text()
-    markdown = (public / "docs/content-primitives/index.md").read_text()
-    print_page = (public / "_print/docs/index.html").read_text()
-    lists = (public / "docs/components/lists/index.html").read_text()
-    lists_markdown = (public / "docs/components/lists/index.md").read_text()
-    steps = (public / "docs/components/steps/index.html").read_text()
-    steps_markdown = (public / "docs/components/steps/index.md").read_text()
-    tables = (public / "docs/components/tables/index.html").read_text()
-    tables_markdown = (public / "docs/components/tables/index.md").read_text()
+    page = (public / "fixtures/content-primitives/index.html").read_text()
+    markdown = (public / "fixtures/content-primitives/index.md").read_text()
+    print_page = (public / "_print/fixtures/index.html").read_text()
+    lists = (public / "fixtures/lists/index.html").read_text()
+    lists_markdown = (public / "fixtures/lists/index.md").read_text()
+    steps = (public / "fixtures/steps/index.html").read_text()
+    steps_markdown = (public / "fixtures/steps/index.md").read_text()
+    tables = (public / "fixtures/tables/index.html").read_text()
+    tables_markdown = (public / "fixtures/tables/index.md").read_text()
     bundle_match = re.search(r'<script src="([^"]*/page-[^"]+\.js)"', lists)
     require(bundle_match is not None, "lists fixture has no feature bundle", errors)
     lists_bundle = ""
@@ -184,7 +184,7 @@ def check_outputs(public: Path) -> list[str]:
     for marker in (
         '<ul class="cards">',
         '<li><a href="/docs/">Install</a> — Deploy from scratch in five minutes.</li>',
-        '<li><a href="/docs/typography/">Reference</a></li>',
+        '<li><a href="/fixtures/typography/">Reference</a></li>',
         '<li>\n<p><a href="/docs/">Install</a></p>\n<p>Deploy from scratch in five minutes.</p>\n</li>',
         '<ul class="td-gallery td-gallery--described">',
         '<input checked="" disabled="" type="checkbox"> Render the static status',
@@ -285,7 +285,7 @@ def check_subpath(hugo: str) -> list[str]:
         if result.returncode != 0:
             errors.append(f"subpath fixture failed to build: {result.stdout}{result.stderr}")
         else:
-            page = (destination / "docs/content-primitives/index.html").read_text()
+            page = (destination / "fixtures/content-primitives/index.html").read_text()
             require('href="/manual/release/"' in page, "Badge internal link is not subpath-safe", errors)
     return errors
 

@@ -77,8 +77,8 @@ params:
     from_year: 2026
   # footer_center_info defaults to Powered by Oink and accepts inline Markdown.
   offline_search: true
-  # `hugo server` skips the index by default; opt in only when testing search.
-  offline_search_on_serve: false
+  # `hugo server` builds the search index too (default); set false to skip it.
+  offline_search_on_serve: true
   ui:
     dark_mode:
       show_menu: true
@@ -195,8 +195,9 @@ Sites can locally host their own faces and override the documented
 - [oink.pgsty.com](https://oink.pgsty.com/) —
   [source](https://github.com/pgsty/oink.pgsty.com) — the bilingual
   documentation, feature showcase, and regression site.
-- [`exampleSite/`](exampleSite/) — a minimal composable landing page that runs
-  directly from this checkout with `cd exampleSite && hugo server`.
+- [`exampleSite/`](exampleSite/) — a bilingual example site: a composable
+  landing page plus a flat component reference under `/docs/`, running directly
+  from this checkout with `cd exampleSite && hugo server`.
 
 ## Documentation
 

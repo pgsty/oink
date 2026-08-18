@@ -43,7 +43,7 @@ Font Awesome class pair. Unknown policies warn and use `all`.
 ## Search schema and ranking contract
 
 `params.offline_search` enables a local, per-language index on home and shell
-surfaces. `hugo server` omits it unless `offline_search_on_serve` is true. Print
+surfaces, under `hugo server` too unless `offline_search_on_serve` is false. Print
 and plain non-shell pages omit the dialog, index reference, Lunr, and Palette.
 
 Page metadata is `search_keywords`, `search_boost`, and `search_exclude`.

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="620" height="140" viewBox="0 0 620 140" content="&lt;mxfile host=&quot;app.diagrams.net&quot; agent=&quot;OINK docs&quot; version=&quot;26.0.0&quot;&gt;
+  &lt;diagram id=&quot;oink-pipeline&quot; name=&quot;Page-1&quot;&gt;
+    &lt;mxGraphModel dx=&quot;820&quot; dy=&quot;480&quot; grid=&quot;0&quot; gridSize=&quot;10&quot; guides=&quot;1&quot; tooltips=&quot;1&quot; connect=&quot;1&quot; arrows=&quot;1&quot; fold=&quot;1&quot; page=&quot;1&quot; pageScale=&quot;1&quot; pageWidth=&quot;850&quot; pageHeight=&quot;1100&quot; math=&quot;0&quot; shadow=&quot;0&quot;&gt;
+      &lt;root&gt;
+        &lt;mxCell id=&quot;0&quot; /&gt;
+        &lt;mxCell id=&quot;1&quot; parent=&quot;0&quot; /&gt;
+        &lt;mxCell id=&quot;n1&quot; value=&quot;content/&quot; style=&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8B8B8B;fontColor=#8B8B8B;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+          &lt;mxGeometry x=&quot;20&quot; y=&quot;40&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot; /&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id=&quot;n2&quot; value=&quot;Hugo&quot; style=&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8B8B8B;fontColor=#8B8B8B;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+          &lt;mxGeometry x=&quot;240&quot; y=&quot;40&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot; /&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id=&quot;n3&quot; value=&quot;public/&quot; style=&quot;rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8B8B8B;fontColor=#8B8B8B;&quot; vertex=&quot;1&quot; parent=&quot;1&quot;&gt;
+          &lt;mxGeometry x=&quot;460&quot; y=&quot;40&quot; width=&quot;140&quot; height=&quot;60&quot; as=&quot;geometry&quot; /&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id=&quot;e1&quot; value=&quot;&quot; style=&quot;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#8B8B8B;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;n1&quot; target=&quot;n2&quot;&gt;
+          &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot; /&gt;
+        &lt;/mxCell&gt;
+        &lt;mxCell id=&quot;e2&quot; value=&quot;&quot; style=&quot;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#8B8B8B;&quot; edge=&quot;1&quot; parent=&quot;1&quot; source=&quot;n2&quot; target=&quot;n3&quot;&gt;
+          &lt;mxGeometry relative=&quot;1&quot; as=&quot;geometry&quot; /&gt;
+        &lt;/mxCell&gt;
+      &lt;/root&gt;
+    &lt;/mxGraphModel&gt;
+  &lt;/diagram&gt;
+&lt;/mxfile&gt;">
+  <g>
+    <rect x="20" y="40" width="140" height="60" rx="8" fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+    <text x="90" y="75" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#8B8B8B">content/</text>
+    <path d="M 160 70 L 232 70" stroke="#8B8B8B" stroke-width="1.5" fill="none"/>
+    <path d="M 240 70 L 231 65 L 231 75 Z" fill="#8B8B8B"/>
+    <rect x="240" y="40" width="140" height="60" rx="8" fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+    <text x="310" y="75" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#8B8B8B">Hugo</text>
+    <path d="M 380 70 L 452 70" stroke="#8B8B8B" stroke-width="1.5" fill="none"/>
+    <path d="M 460 70 L 451 65 L 451 75 Z" fill="#8B8B8B"/>
+    <rect x="460" y="40" width="140" height="60" rx="8" fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+    <text x="530" y="75" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#8B8B8B">public/</text>
+  </g>
+</svg>

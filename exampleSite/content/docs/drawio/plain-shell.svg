@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="140" viewBox="0 0 620 140">
+  <g>
+    <rect x="20" y="30" width="150" height="80" rx="8" fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+    <text x="95" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#8B8B8B">侧栏</text>
+    <rect x="190" y="30" width="240" height="80" rx="8" fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+    <text x="310" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#8B8B8B">正文</text>
+    <rect x="450" y="30" width="150" height="80" rx="8" fill="none" stroke="#8B8B8B" stroke-width="1.5"/>
+    <text x="525" y="76" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#8B8B8B">目录 TOC</text>
+  </g>
+</svg>

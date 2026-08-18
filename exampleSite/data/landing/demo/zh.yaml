@@ -1,0 +1,158 @@
+sections:
+  - type: hero
+    data:
+      eyebrow: 场景组件
+      title: 任何一页都可以是落地页
+      title_size: 4.25rem
+      lead: 这一页复用站点导航栏、命令面板、通栏区块注册表与胖页尾。
+      actions:
+        - { label: 阅读文档, url: /zh/docs/, style: primary }
+      image: { src: /icons/logo.svg, dark: /icons/logo.svg, alt: OINK 标识 }
+      media: { ratio: "1fr 240px", max_width: 240px, hide_below: md }
+  - type: metrics
+    key: landing-metrics
+    data:
+      title: 运行时特性
+      animate: true
+      items:
+        - { value: 2189, compact: true, label: Star 数, source: { label: 本地 CI 数据, url: https://example.org/ } }
+        - { value: 32, suffix: "+", label: 语言文件 }
+  - type: capabilities
+    key: landing-capabilities
+    data:
+      title: 媒体变体
+      items:
+        - title: 跟随深浅色的图片
+          bullets: [替代文字必填, 尺寸可选]
+          visual: { type: image, src: /icons/logo.svg, src_dark: /icons/logo.svg#dark, alt: OINK 主题标识, width: 256, height: 256 }
+        - title: 数据卡片
+          bullets: [视觉类型严格校验]
+          visual: { type: card, icon: fa-solid fa-layer-group, title: 一张可复用的卡片, lines: [本地数据, 语义化标记] }
+  - type: cards
+    key: landing-cards
+    data:
+      title: 按语言取数据
+      columns: 2
+      items:
+        - { title: 没有侧栏, desc: 画布刻意做成通栏。, icon: fa-solid fa-expand }
+        - { title: 严格查找, desc: 落地页数据缺失就让构建失败。, icon: fa-solid fa-shield }
+  - type: faq
+    key: landing-faq
+    data:
+      title: 平铺式 FAQ
+      style: flat
+      items:
+        - { question: 需要 JavaScript 吗？, answer: 不需要，平铺式 FAQ 是静态 HTML。 }
+        - { question: 还支持折叠式吗？, answer: 支持，折叠式仍然是默认。 }
+  - type: logo-wall
+    key: landing-marquee
+    data:
+      title: 纯 CSS 跑马灯
+      layout: marquee
+      direction: left
+      speed: fast
+      rows: 2
+      items:
+        - { title: PostgreSQL, icon: fa-solid fa-database, url: /zh/docs/ }
+        - { title: Hugo, icon: fa-solid fa-bolt }
+        - { title: OINK, icon: fa-solid fa-layer-group }
+  - type: cta
+    data:
+      title: 一套外壳，多种场景
+      desc: CTA 支持多个动作，旧的单动作写法同样有效。
+      actions:
+        - { label: 文档, url: /zh/docs/, style: primary }
+        - { label: 源码, url: https://github.com/pgsty/oink, external: true, style: ghost }
+  - type: pricing
+    data:
+      eyebrow: 定价
+      title: 静态定价卡片
+      tiers:
+        - name: 社区版
+          price: 免费
+          period: 永久
+          desc: 完整的开源功能。
+          features: [全部组件, 社区支持]
+          cta: { label: 下载, url: /zh/fixtures/download-demo/ }
+        - name: 专业版
+          featured: true
+          price: ¥24 万
+          period: /年
+          desc: 面向生产团队的支持。
+          features: [优先响应, 发布包]
+          cta: { label: 联系我们, url: "mailto:example@example.org" }
+  - type: pricing-compare
+    data:
+      title: 版本对比
+      tiers: [社区版, 专业版]
+      groups:
+        - name: 支持
+          rows:
+            - { name: 优先响应, cells: [N, Y] }
+            - { name: 年度价格, price_row: true, cells: [免费, ¥24 万] }
+  - type: command-box
+    data:
+      title: 安装命令
+      code: curl -fsSL https://example.org/install | bash
+      lang: bash
+      note: 复制按钮由按需加载的落地页运行时提供。
+  - type: steps
+    data:
+      title: 三步完成
+      items:
+        - { title: 下载, desc: 取回发布包。 }
+        - { title: 配置, desc: 修改本地文件。, cmd: { code: oink configure } }
+        - { title: 发布, desc: 构建静态站点。 }
+  - type: timeline
+    data:
+      title: 项目时间线
+      items:
+        - { date: "2024", title: 原型, desc: 第一批数据驱动的区块上线。 }
+        - { date: "2026", title: 场景组件, desc: 落地页成为一套可复用的外壳。 }
+  - type: code-plate
+    data:
+      title: Chroma 代码板
+      aria_label: 示例配置
+      lang: yaml
+      code: |
+        layout: landing
+        landing: demo
+  - type: preview
+    key: landing-preview
+    data:
+      title: 写下什么，得到什么
+      file: guide.md
+      source: |
+        > [!TIP] 只有 Markdown
+        > 带类型标记的块引用就是提示块。
+
+        1. 写 Markdown
+        2. 运行 `hugo`
+        {.steps}
+
+        ```bash {tab="macOS"}
+        brew install hugo
+        ```
+
+        ```bash {tab="Linux"}
+        apt install hugo
+        ```
+  - type: case-study
+    data:
+      title: 迁移结果
+      stats:
+        - { value: 12, label: 可复用区块 }
+        - { value: 0, label: 远程请求 }
+      quote: “一份 YAML 取代了一个定制页面模板。”
+      source: 示例站维护者
+  - type: download
+    data:
+      title: 同一份数据，落地页呈现
+      keys: [demo, pending]
+  - type: bar-chart
+    data:
+      title: 数值归一化
+      unit: 单位
+      items:
+        - { label: 大整数, value: 1120, group: large }
+        - { label: 小数, value: 43.5, group: small, note: 混合数值类型按浮点数比较。 }

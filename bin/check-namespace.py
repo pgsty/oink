@@ -55,6 +55,8 @@ THIRD_PARTY_CLASS = re.compile(
     r"|frac-line$|op-|large-op$|sqrt$|svg-align$|hide-tail$|accent|overline$|underline$"
     r"|mtable$|col-align|arraycolsep$|rlap$|llap$|inner$|fix$|vbox$|thinbox$|eqn-num$|tag$"
     r"|newline$|boxpad$|angl|cd-|fbox$|fcolorbox$|not$|textbf$|textit$|mspace$|mathdefault$"
+    r"|math(rm|bf|it|bb|cal|frak|scr|sf|tt)$|text(rm|sf|tt|bb)?$|boldsymbol$|amsrm$|mainrm$"
+    r"|stretchy$|x-arrow|halfarrow-|brace-|mult$|delim-size\d$|mtr-glue$|vertical-separator$"
     # Chroma / Hugo highlighting
     r"|chroma$|highlight$|line$|lnt?$|lntable$|lntd$|lnlinks$|hl$|cl$|language-|[a-z]{1,3}\d?$"
     # Hugo / Goldmark
@@ -82,6 +84,18 @@ THIRD_PARTY_DATA = {
     # The shared attribute policy permits site-owned classes.
     "data-note",
 }
+
+# Custom properties a third-party runtime reads from its own stylesheet: the
+# theme sets them to theme its player, so they cannot carry a --td- prefix.
+# asciinema-player.css reads --term-* (palette, font, metrics); renaming them
+# leaves the player on its built-in black-on-white defaults inside an OINK
+# terminal surface, which is how the 0.5 sweep broke it.
+THIRD_PARTY_PROPERTY = re.compile(
+    r"^--term-(color-(foreground|background|\d+)|font-family|line-height|cols|rows)$"
+)
+PLAYER_THEME_RE = re.compile(
+    r"asciinema-player-theme-(td-light|td-dark)\s*\{[^}]*--term-color-background\s*:"
+)
 
 CLASS_RE = re.compile(r'class="([^"]*)"')
 # Only a real attribute assignment counts; prose such as "data-driven
@@ -144,7 +158,7 @@ def check_css(public: Path) -> list[str]:
             continue
         seen += 1
         for name in set(CUSTOM_PROPERTY_RE.findall(path.read_text(encoding="utf-8", errors="ignore"))):
-            if not name.startswith(ALLOWED_PROPERTY_PREFIX):
+            if not name.startswith(ALLOWED_PROPERTY_PREFIX) and not THIRD_PARTY_PROPERTY.match(name):
                 errors.append(f"{path.name}: custom property {name} is outside the --td- namespace")
     if seen == 0:
         errors.append("no theme stylesheet found in the build")
@@ -216,12 +230,27 @@ def check_sources() -> list[str]:
         if marker not in feedback:
             errors.append(f"feedback.js does not read the namespaced identity through {marker}")
 
-    # Same family as the asciinema `--term-*` exception, one level up: two
-    # vendored runtimes carry a complete dark palette of their own but key it
-    # on their own switch, not on `data-bs-theme`. The theme reaches those
-    # palettes only by mirroring its resolved mode onto both names, at first
-    # paint and on every later toggle. Drop either and the runtime silently
-    # stays light -- Swagger UI's body text falls to 1.86:1 on the dark page.
+    # The other half of the THIRD_PARTY_PROPERTY exception: asciinema's palette
+    # reaches the player only under the player's own names. A --td-term-*
+    # variant compiles, passes every other check, and leaves the terminal on
+    # asciinema's built-in black inside a light OINK window — the 0.5 break.
+    scss = "\n".join(
+        path.read_text(encoding="utf-8") for path in sorted((ROOT / "assets/scss").rglob("*.scss"))
+    )
+    themed = set(PLAYER_THEME_RE.findall(scss))
+    for variant in ("td-light", "td-dark"):
+        if variant not in themed:
+            errors.append(
+                f"asciinema-player-theme-{variant} does not set --term-color-background "
+                "(the player reads --term-*, never --td-term-*)"
+            )
+
+    # Same family as the asciinema exception, one level up: two vendored
+    # runtimes carry a complete dark palette of their own but key it on their
+    # own switch, not on `data-bs-theme`. The theme reaches those palettes only
+    # by mirroring its resolved mode onto both names, at first paint and on
+    # every later toggle. Drop either and the runtime silently stays light --
+    # Swagger UI's body text falls to 1.86:1 on the dark page.
     theme_runtime = (ROOT / "assets/js/dark-mode.js").read_text(encoding="utf-8")
     head = (ROOT / "layouts/_partials/head.html").read_text(encoding="utf-8")
     for label, source in (("dark-mode.js", theme_runtime), ("head.html", head)):

@@ -15,6 +15,10 @@ EXAMPLE = ROOT / "exampleSite"
 MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
 
 
+# Landing display surfaces that keep a dark canvas regardless of the site theme.
+ALWAYS_DARK_SURFACES = ("td-landing-codeplate", "td-landing-preview__pane--source")
+
+
 def require(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
@@ -273,6 +277,25 @@ def check_sources() -> list[str]:
     # the only implementation.
     require(not (ROOT / "layouts/_partials/home").exists(), "layouts/_partials/home/ adapters must stay deleted", errors)
     require(not (ROOT / "layouts/_partials/home-data.html").exists(), "home-data.html adapter must stay deleted", errors)
+
+    # Landing surfaces that are dark in both site themes have to declare that
+    # locally. Without it the root Chroma palette -- emitted unscoped so code
+    # stays readable on sites without dark mode, see `_chroma.scss` -- paints
+    # light-mode token colours onto a permanently dark plate, which is how the
+    # code plate reached 1.22:1 on punctuation before this check existed.
+    for partial in sorted((ROOT / "layouts/_partials/landing").rglob("*.html")):
+        body = partial.read_text()
+        for tag in re.findall(r"<[a-z]+\b[^>]*>", body):
+            classes = re.search(r'class="([^"]*)"', tag)
+            if not classes:
+                continue
+            tokens = set(classes.group(1).split())
+            surface = next((s for s in ALWAYS_DARK_SURFACES if s in tokens), None)
+            if surface and 'data-bs-theme="dark"' not in tag:
+                errors.append(
+                    f"{partial.relative_to(ROOT)}: .{surface} is dark in both themes "
+                    'but does not carry data-bs-theme="dark"'
+                )
     return errors
 
 

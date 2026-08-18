@@ -7,6 +7,14 @@
 // The light palette is emitted at the root rather than under
 // `[data-bs-theme='light']`: that attribute only exists once dark mode is
 // enabled, and code has to stay readable on sites that leave it off.
+//
+// The cost of that decision: a light declaration survives into dark mode for
+// every property the dark palette does not itself declare. Chroma's generated
+// styles do not agree on which roles carry a colour, so `chroma/_dark.scss`
+// carries explicit `(layer reset)` lines for the roles GitHub's dark style
+// leaves at its inherited default. `check-code-blocks.py` compares the two
+// palettes property by property so a regenerated palette cannot reopen the
+// hole silently.
 
 @import 'chroma/light';
 

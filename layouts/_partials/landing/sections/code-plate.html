@@ -5,7 +5,7 @@
 <section id="{{ $id }}" class="td-landing-section td-landing-code-plate-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id "compact" true) }}
-    <div class="td-landing-codeplate" aria-label="{{ $data.aria_label | default $data.title | default "Code" }}"{{ if $interactive }} data-td-reveal{{ end }}>
+    <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="{{ $data.aria_label | default $data.title | default "Code" }}"{{ if $interactive }} data-td-reveal{{ end }}>
       <div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>{{ $data.title | default $data.aria_label }}</b></div>
       {{- if $hasCode }}
         {{- $code := strings.TrimRight "\r\n" (printf "%v" $data.code) -}}{{- if not $code }}{{ errorf "%s: code-plate.code must not be empty" $page.Path }}{{ end -}}

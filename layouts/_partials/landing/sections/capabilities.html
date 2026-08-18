@@ -28,7 +28,7 @@
           {{- errorf "%s: capabilities item %d has unsupported visual.type %q" $page.Path (add $index 1) $visualType -}}
         {{- end -}}
         {{- if eq $visualType "code" }}
-      <div class="td-landing-codeplate" aria-label="{{ .aria_label | default .title }}">
+      <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="{{ .aria_label | default .title }}">
         <div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>{{ .title }}</b></div>
         <pre><code>{{ partial "landing/code-lines.html" (dict "lines" .lines "position" (printf "%s: capabilities item %d visual" $page.Path (add $index 1))) }}</code></pre>
       </div>

@@ -5,6 +5,22 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Fixed
+
+- Restore readable blockquote text inside highlighted Markdown in dark mode:
+  the light Chroma palette is emitted at the root so code stays legible on
+  sites without dark mode, and GitHub's dark style declares `GenericEmph`
+  (`.ge`) with a font style but no colour, so the light near-black `#1f2328`
+  survived onto the dark code canvas at a 1.22:1 contrast ratio. The dark
+  palette now carries an explicit layer reset, and `bin/check-code-blocks.py`
+  compares the two palettes property by property instead of only comparing
+  which selectors exist.
+- Scope the landing code plate to the dark palette. The plate keeps a dark
+  canvas in both site themes, but carried no `data-bs-theme`, so in light mode
+  the root Chroma palette painted light-mode token colours onto it -- YAML keys
+  at 2.53:1 and punctuation at 1.22:1. `bin/check-landing.py` now requires every
+  always-dark landing surface to declare its colour scheme locally.
+
 ### Changed
 
 - Move repository checks, migration utilities, and measurement tools from

@@ -15,13 +15,13 @@ params:
 `include` 只有一个必填参数 `file`：
 
 ```markdown {title="源码"}
-{{</* include file="parts/install-oink.zh.md" */>}}
+{{</* include file="parts/install-oink.md" */>}}
 ```
 
-被引的文件是一段普通 Markdown，与本页放在同一个页面包里：
+被引的文件是一段普通 Markdown，放在 `assets/` 下。中英两个版本引的是同一份英文片段：
 
-````markdown {title="content/docs/include/parts/install-oink.zh.md"}
-把 OINK 安装到一个已有的 Hugo 站点，三条命令：
+````markdown {title="assets/parts/install-oink.md"}
+Installing OINK into an existing Hugo site takes three commands:
 
 ```sh
 hugo mod init github.com/you/your-site
@@ -30,14 +30,14 @@ hugo server
 ```
 
 > [!NOTE]
-> `hugo mod get` 需要本机安装 Go；用离线归档或 submodule 时不需要。
+> `hugo mod get` needs Go on the machine; an offline archive or a submodule does not.
 
-当前发布版本是 {{</* param version */>}}。
+The current release is {{</* param version */>}}.
 ````
 
 渲染结果与写在本页里相同：代码块有复制按钮，提示块是提示块。
 
-{{< include file="parts/install-oink.zh.md" >}}
+{{< include file="parts/install-oink.md" >}}
 
 被引的文件不是一篇独立页面：它不出现在侧栏、不参与翻译配对、没有自己的 URL。
 
@@ -48,26 +48,26 @@ hugo server
 | --- | --- | --- |
 | 1 | 当前页面的页面资源（页面包里的文件） | `file="config.yaml"` |
 | 2 | 全局资源 `assets/` 下的文件 | `file="snippets/dsn.txt"` |
-| 3 | `content/` 下的文件：`/` 开头是内容根目录，否则相对当前页面所在目录 | `file="parts/install-oink.zh.md"`、`file="/shared/notice.zh.md"` |
+| 3 | `content/` 下的文件：`/` 开头是内容根目录，否则相对当前页面所在目录 | `file="notes/caveat.md"`、`file="/shared/notice.md"` |
 
 三处都找不到时构建失败，不输出占位内容。路径里含 `..` 也让构建失败：引用只能在 `content/` 与 `assets/` 中取文件。
 
-引 Markdown 片段时写文件在磁盘上的真名，中文片段带 `.zh.`，如 `parts/install-oink.zh.md`。写成 `parts/install-oink.md` 也能构建通过，但会命中第 1 步：Hugo 把 `.zh.md` 资源按去掉语言后缀的名字挂在中文页上，此时 `include` 得到的是已渲染的 HTML 而不是源码，Markdown 输出里会出现 `<div class="td-code">`。非 Markdown 文件（`.yaml`、`.sh`、`.txt`）没有这个区别，两条路径取到同一份原文。
+Markdown 片段按源码读入，写文件在磁盘上的真名即可。有一个坑只属于第 1 步：Hugo 把带语言后缀的页面资源（如 `notice.zh.md`）按去掉后缀的名字挂在页面上，于是向页面包要 `notice.md` 时，`include` 拿到的是已渲染的 HTML 而不是源码，Markdown 输出里会出现 `<div class="td-code">`。`assets/` 与 `content/` 下写什么名字就取什么文件。非 Markdown 文件（`.yaml`、`.sh`、`.txt`）没有这个区别。
 
 ## 引入代码文件 {#code}
 
 加 `code=true` 让文件按代码块渲染，`lang=` 指定高亮语言。引用仓库里的真实配置文件，文档与实际文件不会不一致。
 
 ```markdown {title="源码"}
-{{</* include file="parts/module.zh.yml" code=true lang="yaml" */>}}
+{{</* include file="parts/module.yml" code=true lang="yaml" */>}}
 ```
 
-{{< include file="parts/module.zh.yml" code=true lang="yaml" >}}
+{{< include file="parts/module.yml" code=true lang="yaml" >}}
 
 代码块与围栏走同一条渲染管线：高亮、行号、复制按钮都有。围栏属性（`title=`、`collapse`、`hl_lines=`）传不进来，需要它们时把文件内容写成普通[代码块](/zh/docs/code/)。
 
 ## 片段内容 {#snippet-content}
-片段是页面级 Markdown，在当前页面的上下文里渲染：提示块、表格、列表、图片、步骤与 shortcode 都可以用。上面那段片段结尾的「当前发布版本是 v0.5.0」，是片段里的 `{{</* param version */>}}` 在本页展开的结果。
+片段是页面级 Markdown，在当前页面的上下文里渲染：提示块、表格、列表、图片、步骤与 shortcode 都可以用。上面那段片段结尾的「The current release is v0.5.0」，是片段里的 `{{</* param version */>}}` 在本页展开的结果 —— 片段是英文的，`param` 取的却是本页的上下文。
 
 一个片段被两页引用时，两页各自渲染一遍，各自生成标题锚点与代码块 ID，互不冲突。
 
@@ -180,7 +180,7 @@ Markdown 输出里片段是源码而不是 HTML，片段里的 shortcode 保持 
 ## 限制与常见问题 {#limits}
 
 - `include` 不是模板：不能向片段传变量、不能条件引入、不能给引入的代码块加围栏属性（`title=`、`collapse`）。按平台分版本时写两个片段配[标签页](/zh/docs/tabs/)。
-- 片段的语言要自己维护：`include` 不做语言回退。中文页引中文片段，英文页引英文片段，两份文件并列存放（`install-oink.zh.md` 与 `install-oink.md`）。
+- 片段的语言要自己维护：`include` 不做语言回退，写什么路径就取什么文件。可以像本页一样中英共用同一份英文片段，也可以每种语言各写一份、各自指向自己那份。
 - `param` 只打印标量：结构化数据（版本矩阵、下载列表）用 `data/` 目录里的数据配对应组件渲染。
 - `comment` 不是「暂时不发布」：内容每次构建都被丢弃，临时下线整页用 `draft: true`。
 - 不把 `include` 当目录页：一页引入十个片段时，读者需要的是十条链接。

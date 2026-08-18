@@ -20,12 +20,12 @@ Content that appears on one page belongs on that page.
 `include` takes one required parameter, `file`:
 
 ```markdown {title="Source"}
-{{</* include file="parts/install-oink.en.md" */>}}
+{{</* include file="parts/install-oink.md" */>}}
 ```
 
-The file it pulls in is ordinary Markdown living in the same page bundle:
+The file it pulls in is ordinary Markdown living under `assets/`:
 
-````markdown {title="content/docs/include/parts/install-oink.en.md"}
+````markdown {title="assets/parts/install-oink.md"}
 Installing OINK into an existing Hugo site takes three commands:
 
 ```sh
@@ -43,7 +43,7 @@ The current release is {{</* param version */>}}.
 The result is what you would get by writing it here: the code block has its copy
 button and the callout is a callout.
 
-{{< include file="parts/install-oink.en.md" >}}
+{{< include file="parts/install-oink.md" >}}
 
 The file that gets included is not a page of its own: it is absent from the
 sidebar, it takes no part in translation pairing, and it has no URL.
@@ -56,19 +56,19 @@ sidebar, it takes no part in translation pairing, and it has no URL.
 | --- | --- | --- |
 | 1 | A page resource — a file in this page's bundle | `file="config.yaml"` |
 | 2 | A global resource under `assets/` | `file="snippets/dsn.txt"` |
-| 3 | A file under `content/`: a leading `/` is the content root, otherwise relative to the page's directory | `file="parts/install-oink.en.md"`, `file="/shared/notice.md"` |
+| 3 | A file under `content/`: a leading `/` is the content root, otherwise relative to the page's directory | `file="notes/caveat.md"`, `file="/shared/notice.md"` |
 
 Missing in all three, the build fails; nothing is emitted as a placeholder. A
 `..` in the path fails the build too: include reads from `content/` and
 `assets/` and nowhere else.
 
-For a Markdown fragment, write the file's real name on disk, language suffix
-included — `parts/install-oink.en.md`, `parts/install-oink.zh.md`. A bare
-`parts/install-oink.md` also builds, but it matches step 1: Hugo attaches a
-language-suffixed resource under its stripped name, so `include` receives
-already-rendered HTML instead of the source, and `<div class="td-code">` turns
-up in the Markdown output. Non-Markdown files (`.yaml`, `.sh`, `.txt`) do not
-have this distinction — both paths read the same bytes.
+A Markdown fragment is read as source, so write the file's real name on disk.
+One trap belongs to step 1 alone: Hugo attaches a language-suffixed page
+resource such as `notice.zh.md` under its stripped name, so asking a bundle for
+`notice.md` hands `include` already-rendered HTML instead of the source, and
+`<div class="td-code">` turns up in the Markdown output. Under `assets/` and
+`content/` the name you write is the file you get. Non-Markdown files
+(`.yaml`, `.sh`, `.txt`) never have this distinction.
 
 ## Including code files {#code}
 
@@ -225,8 +225,9 @@ Any other parameter name fails the build, with the file and line in the error.
   `collapse`). For per-platform variants, write two fragments and use
   [tabs](/docs/tabs/).
 - Fragment languages are yours to maintain: `include` does no language
-  fallback. A Chinese page includes a Chinese fragment, an English page an
-  English one, and the two files sit side by side.
+  fallback and takes the exact path you write. Share one fragment across
+  languages — this page's Chinese translation includes the same English file —
+  or write one per language and point each page at its own.
 - `param` prints scalars only: structured data — version matrices, download
   lists — belongs in `data/` and is rendered by the matching component.
 - `comment` is not "unpublish for now": the content is discarded on every build.

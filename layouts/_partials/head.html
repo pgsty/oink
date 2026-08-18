@@ -45,6 +45,11 @@
     }
 
     document.documentElement.setAttribute('data-bs-theme', theme);
+    {{/* Swagger UI and Algolia DocSearch carry their own dark palettes keyed
+         on their own switch; mirror the resolved theme before first paint so
+         neither flashes its light palette. dark-mode.js keeps them in sync. */ -}}
+    document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+    document.documentElement.setAttribute('data-theme', theme);
   })();
 </script>
 {{ end -}}

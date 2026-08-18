@@ -36,12 +36,25 @@
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
+  // Vendored runtimes ship their own dark palettes but key them on their own
+  // switch rather than on `data-bs-theme`: Swagger UI on `html.dark-mode` and
+  // Algolia DocSearch on `html[data-theme='dark']`, which is where DocSearch
+  // redefines its whole `--docsearch-*` token set. Mirroring the resolved
+  // theme onto both is what makes those palettes reachable at all; the names
+  // are the runtimes' API, in the same family as asciinema's `--term-*`
+  // properties. Neither runtime is loaded on a page that does not use it.
+  const mirrorVendorTheme = theme => {
+    const root = document.documentElement
+    root.classList.toggle('dark-mode', theme === 'dark')
+    root.setAttribute('data-theme', theme)
+  }
+
   const setTheme = theme => {
-    if (theme === 'auto') {
-      document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
-    } else {
-      document.documentElement.setAttribute('data-bs-theme', theme)
-    }
+    const resolved = theme === 'auto'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : theme
+    document.documentElement.setAttribute('data-bs-theme', resolved)
+    mirrorVendorTheme(resolved)
     try {
       window.dispatchEvent(new CustomEvent('td-theme-change', {
         detail: { theme: document.documentElement.getAttribute('data-bs-theme') },

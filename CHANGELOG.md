@@ -7,6 +7,22 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Reach the dark palettes the vendored runtimes already ship. Swagger UI keys
+  its own 256-rule dark theme on `html.dark-mode`, and Algolia DocSearch
+  redefines its whole `--docsearch-*` token set under `html[data-theme='dark']`;
+  the theme set neither, so both stayed on their light palettes over a dark
+  page -- and because `.swagger-ui` paints no canvas of its own, that left its
+  body text at 1.86:1. The resolved colour mode is now mirrored onto both
+  switches, at first paint and on every later toggle, rather than forking
+  either vendored stylesheet. Markmap has no such palette to reach: it
+  highlights fenced code with highlight.js' light-only `default.min.css` and
+  renders bare token spans without the `.hljs` wrapper, so the stylesheet's own
+  background never lands and eight of its ten token groups sat below AA on the
+  dark canvas, the worst at 1.85:1. Those roles are mapped onto the same
+  github-dark values the code blocks use, so a snippet reads the same inside a
+  mind map as in a fence. `bin/check-namespace.py` records both vendor switches
+  next to the asciinema `--term-*` exception and fails if either mirror is
+  dropped.
 - Restore readable blockquote text inside highlighted Markdown in dark mode:
   the light Chroma palette is emitted at the root so code stays legible on
   sites without dark mode, and GitHub's dark style declares `GenericEmph`

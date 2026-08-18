@@ -1,3 +1,18 @@
+// Swagger UI ships a complete dark palette of its own -- 256 rules keyed on
+// `html.dark-mode` -- so the theme mirrors its resolved colour mode onto that
+// class rather than forking the vendored stylesheet's 159 colours (see
+// `assets/js/dark-mode.js`). Without the mirror the panel stayed on its light
+// palette, and since `.swagger-ui` paints no canvas of its own that left its
+// body text at 1.86:1 on the dark page.
+//
+// The one global side effect of the vendor's dark block is repainting the
+// document canvas in its own grey. Keep the page on the theme's canvas token
+// so the API panel sits in an OINK window; the extra attribute outranks
+// `swagger-ui.css`, which `scripts.html` loads after the theme stylesheet.
+html.dark-mode[data-bs-theme='dark'] {
+  background: var(--bs-body-bg);
+}
+
 .swagger-ui .info .title small pre {
   background: #7d8492;
 }

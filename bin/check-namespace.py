@@ -215,6 +215,25 @@ def check_sources() -> list[str]:
     for marker in ("data(root, 'tdPagePath')", "data(root, 'tdLanguage')"):
         if marker not in feedback:
             errors.append(f"feedback.js does not read the namespaced identity through {marker}")
+
+    # Same family as the asciinema `--term-*` exception, one level up: two
+    # vendored runtimes carry a complete dark palette of their own but key it
+    # on their own switch, not on `data-bs-theme`. The theme reaches those
+    # palettes only by mirroring its resolved mode onto both names, at first
+    # paint and on every later toggle. Drop either and the runtime silently
+    # stays light -- Swagger UI's body text falls to 1.86:1 on the dark page.
+    theme_runtime = (ROOT / "assets/js/dark-mode.js").read_text(encoding="utf-8")
+    head = (ROOT / "layouts/_partials/head.html").read_text(encoding="utf-8")
+    for label, source in (("dark-mode.js", theme_runtime), ("head.html", head)):
+        for marker, vendor in (
+            ("classList.toggle('dark-mode'", "Swagger UI"),
+            ("setAttribute('data-theme'", "Algolia DocSearch"),
+        ):
+            if marker not in source:
+                errors.append(
+                    f"{label} does not mirror the colour mode onto {vendor}'s own switch "
+                    f"({marker}...)"
+                )
     return errors
 
 

@@ -228,6 +228,86 @@
   --td-term-color-7: #5d7189;
 }
 
+// Markmap highlights fenced code inside its nodes with highlight.js, whose
+// vendored `default.min.css` is a light-only theme with no dark counterpart --
+// unlike Swagger UI and DocSearch, which carry their own and only need the
+// theme mirrored onto their switch (see `assets/js/dark-mode.js`).
+//
+// The theme cannot simply let that stylesheet paint: markmap calls
+// `hljs.highlightAuto(...).value`, which returns bare token spans without the
+// `.hljs` wrapper, so the palette's own `background:#f3f3f3` never lands and
+// the tokens fall straight onto the transparent SVG. On the dark canvas that
+// left eight of its ten token groups below AA, the worst at 1.85:1.
+//
+// The roles are mapped onto the same github-dark values the code blocks use,
+// so a snippet reads the same inside a mind map as it does in a fence. Scoped
+// to `.markmap` so a consuming site's own highlight.js usage is untouched, and
+// two classes deep so it outranks the stylesheet markmap injects at runtime.
+[data-bs-theme='dark'] .markmap {
+  // Only reached if a future markmap emits the wrapper; the tokens below are
+  // what actually paints today.
+  .hljs {
+    background: var(--td-pre-bg);
+    color: var(--bs-body-color);
+  }
+
+  .hljs-comment {
+    color: #8b949e;
+  }
+
+  .hljs-punctuation,
+  .hljs-tag {
+    color: #e6edf3;
+  }
+
+  .hljs-attr,
+  .hljs-tag .hljs-name {
+    color: #79c0ff;
+  }
+
+  .hljs-deletion,
+  .hljs-number,
+  .hljs-quote,
+  .hljs-selector-class,
+  .hljs-selector-id,
+  .hljs-string,
+  .hljs-template-tag,
+  .hljs-type {
+    color: #a5d6ff;
+  }
+
+  .hljs-section,
+  .hljs-title {
+    color: #d2a8ff;
+  }
+
+  .hljs-link,
+  .hljs-operator,
+  .hljs-regexp,
+  .hljs-selector-attr,
+  .hljs-selector-pseudo,
+  .hljs-symbol,
+  .hljs-template-variable,
+  .hljs-variable {
+    color: #ff7b72;
+  }
+
+  .hljs-literal {
+    color: #79c0ff;
+  }
+
+  .hljs-addition,
+  .hljs-built_in,
+  .hljs-bullet,
+  .hljs-code {
+    color: #ffa657;
+  }
+
+  .hljs-meta {
+    color: #8b949e;
+  }
+}
+
 .td-content-card__body {
   padding: 1rem;
 

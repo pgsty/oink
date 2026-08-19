@@ -6,6 +6,7 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+import sys
 import tempfile
 
 from test_site import fixture_config_args
@@ -29,6 +30,9 @@ def check_sources() -> list[str]:
     docs_tree = (ROOT / "layouts/_partials/shell/docs-sidebar-tree.html").read_text()
     sidebar_node = (ROOT / "layouts/_partials/shell/sidebar-node.html").read_text()
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
+    share_items = (ROOT / "layouts/_partials/share/items.html").read_text()
+    share_bar = (ROOT / "layouts/_partials/share/bar.html").read_text()
+    share_styles = (ROOT / "assets/scss/td/_share.scss").read_text()
     annotation = (ROOT / "layouts/_partials/page-annotation.html").read_text()
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
     pager_styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
@@ -83,12 +87,45 @@ def check_sources() -> list[str]:
             "docs sidebar still skips its root row", errors)
 
     order = [
+        page_end.index('partial "share/bar.html"'),
         page_end.index('partial "feedback.html"'),
         page_end.index('partial "page-annotation.html"'),
         page_end.index('partial "pager.html"'),
         page_end.index('partial "comments.html"'),
     ]
     require(order == sorted(order), "page-end component order drifted", errors)
+
+    # The share bar is the one page-end block that points outward, so its
+    # contract is what it may *not* do: it emits plain links and one local
+    # copy button, and it leaves every non-HTML output alone.
+    require('partial "share/items.html"' in share_bar,
+            "share bar no longer renders the resolved descriptors", errors)
+    require('$page.IsPage' in share_items and 'reflect.IsSlice' in share_items
+            and 'errorf "invalid params.ui.share entry %q' in share_items,
+            "share targets are no longer a validated list on regular pages only", errors)
+    for marker in ("<iframe", "<script", "<img", "<link", "resources.GetRemote"):
+        require(marker.lower() not in (share_items + share_bar).lower(),
+                f"share bar emits or fetches {marker}", errors)
+    templates = re.findall(r'"template" "([^"]*)"', share_items)
+    require(len(templates) == 9 and all(
+                target.startswith(("https://", "mailto:")) or target == ""
+                for target in templates),
+            "a share target is not a plain https/mailto intent link", errors)
+    require('target="_blank" rel="noopener noreferrer"' in share_bar,
+            "share links lost their external-link attributes", errors)
+    require(share_bar.count('aria-label="{{ .label }}"') == 2
+            and 'aria-hidden="true"' in share_bar,
+            "share controls no longer name themselves for assistive technology", errors)
+    require('class="td-share d-print-none"' in share_bar
+            and 'eq $format "html"' in share_bar,
+            "share bar is no longer confined to the interactive HTML output", errors)
+    require('data-td-action="{{ .action }}"' in share_bar
+            and "data-td-page-context" in share_bar
+            and "data-td-page-context-status" in share_bar,
+            "share copy control is no longer a registry action with its own live region", errors)
+    require("min-height: 44px" in share_styles and "forced-colors" in share_styles
+            and "margin-inline" not in share_styles and "padding-left" not in share_styles,
+            "share controls lost their touch target, forced-colors, or logical properties", errors)
     require('partial "page-meta-lastmod.html"' in annotation,
             "annotation lost the legacy consumer override", errors)
     for template in (
@@ -463,13 +500,111 @@ params:
     return errors
 
 
+def build_share_fixture(hugo: str) -> list[str]:
+    """The share bar, end to end, on a site that opts every target in.
+
+    The last assertion is the feature's premise rather than a detail of it:
+    a build carrying nine share targets on every page still passes the
+    product-level trust check *without* --third-party, because everything the
+    bar emits is a plain link the reader may choose to follow.
+    """
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-share-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        public = root / "public"
+        (source / "content/blog").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"""baseURL: https://example.org/
+title: Share fixture
+theme: {ROOT.name}
+disableKinds: [sitemap, taxonomy, term]
+params:
+  offline_search: false
+  ui:
+    feedback: true
+    share: [x, facebook, linkedin, reddit, hackernews, telegram, weibo, email, copy]
+""",
+            encoding="utf-8",
+        )
+        (source / "content/blog/_index.md").write_text(
+            "---\ntitle: Blog\ncascade:\n  type: blog\n---\n\nList.\n",
+            encoding="utf-8",
+        )
+        (source / "content/blog/shared.md").write_text(
+            "---\ntitle: Shared & titled\ndate: 2026-08-19\n---\n\nBody.\n",
+            encoding="utf-8",
+        )
+        (source / "content/blog/quiet.md").write_text(
+            "---\ntitle: Quiet\ndate: 2026-08-18\nshare: false\n---\n\nBody.\n",
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(public), "--panicOnWarning"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if result.returncode:
+            return ["share fixture failed to build:\n" + result.stdout + result.stderr]
+
+        shared = (public / "blog/shared/index.html").read_text(encoding="utf-8")
+        for marker in (
+            'class="td-share d-print-none"',
+            'href="https://x.com/intent/post?url=https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F'
+            '&amp;text=Shared%20%26%20titled"',
+            'href="mailto:?subject=Shared%20%26%20titled'
+            '&amp;body=https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F"',
+            'data-td-action="copy_link" data-td-url="https://example.org/blog/shared/"',
+        ):
+            require(marker in shared, f"share fixture page lacks {marker}", errors)
+        require(shared.count('class="td-share__item td-share__item--') == 9,
+                "share fixture page did not render one control per target", errors)
+        rendered_order = [
+            shared.find("data-td-share"),
+            shared.find("data-td-feedback"),
+            shared.find("data-td-page-annotation"),
+            shared.find("data-td-pager"),
+        ]
+        require(all(index >= 0 for index in rendered_order)
+                and rendered_order == sorted(rendered_order),
+                "rendered share/feedback/annotation/pager order drifted", errors)
+
+        quiet = (public / "blog/quiet/index.html").read_text(encoding="utf-8")
+        require("td-share" not in quiet, "share: false still rendered a bar", errors)
+        for kind, relative in (("list", "blog/index.html"), ("home", "index.html")):
+            page = (public / relative).read_text(encoding="utf-8")
+            require("td-share" not in page, f"share bar leaked onto the {kind} page", errors)
+        feed = (public / "blog/index.xml").read_text(encoding="utf-8")
+        require("td-share" not in feed, "share bar leaked into the feed", errors)
+
+        trust = subprocess.run(
+            [sys.executable, str(ROOT / "bin/check-output-security.py"),
+             "--public", str(public), "--base-url", "https://example.org/"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        require(trust.returncode == 0,
+                "a site with every share target on no longer passes the trust check "
+                "without --third-party:\n" + trust.stdout.strip(), errors)
+    return errors
+
+
 def main() -> int:
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
-    errors = check_sources() + build_example(args.hugo) + build_self_root_fixture(args.hugo)
+    errors = (
+        check_sources()
+        + build_example(args.hugo)
+        + build_self_root_fixture(args.hugo)
+        + build_share_fixture(args.hugo)
+    )
     if errors:
         print("shell and page-end checks failed:")
         for error in errors:

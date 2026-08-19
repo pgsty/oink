@@ -80,6 +80,7 @@ PAGE_OVERRIDES = {
     "image_zoom": "ui.image_zoom",
     "reading_time": "ui.reading_time",
     "page_context_menu": "ui.page_context_menu",
+    "share": "ui.share",
     "translation_notice": "ui.translation_notice",
     "comments": "comments",
     "page_width": "page_width",
@@ -185,20 +186,29 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
+    "ui:\n  share: [x, hackernews, email, copy]",
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
     "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
     "body_class: product-td-no-left-sidebar-preview",
+    # The page key is the site key without ui.: a list replaces the site's,
+    # and the bare boolean opts one page out of an inherited one.
+    "share: [x, copy]",
+    "share: false",
 ]
 
 INVALID_SITE_CASES = [
     ("comments: definitely", "params.comments must be a boolean or a map"),
+    ("ui:\n  share: [x, mastodon]", 'invalid params.ui.share entry "mastodon"'),
+    ("ui:\n  share: true", "params.ui.share is the list of share targets, not a switch"),
+    ("ui:\n  share: x", "params.ui.share must be a list of share targets"),
     ("comments:\n  enable: definitely", "params.comments.enable must be a boolean"),
     ("comments:\n  type: true", "params.comments.type must be a string"),
 ]
 INVALID_PAGE_CASES = [
     ("comments: definitely", "front matter comments must be a boolean"),
+    ("share: [wechat]", 'invalid params.ui.share entry "wechat"'),
 ]
 
 

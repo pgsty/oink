@@ -1,0 +1,42 @@
+{{- /* Render the page-end share bar. The targets are resolved by
+     share/items.html; this partial owns only the markup, so a site that needs
+     another target overrides the resolver and keeps these classes, the print
+     rules, and the accessible names.
+
+     Every target is an ordinary link, so it works with no JavaScript at all.
+     The one control that needs a runtime is `copy`, which is the shared
+     `copy_link` action: the section is its own action context, carrying the
+     confirmed wording and the live region page-actions.js announces into.
+
+     The bar is an HTML-output affordance. Print, Markdown, and RSS carry no
+     interactive page end, and the `d-print-none` class is the second guard
+     for a browser printing the HTML page itself. */ -}}
+{{- $page := . -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $format "html" -}}
+{{- with partial "share/items.html" $page }}
+<section class="td-share d-print-none" data-td-share data-td-page-context
+  data-td-t-copied="{{ T "ui_copy_link_success" }}" data-td-t-copy-error="{{ T "ui_copy_link_error" }}">
+  <h2 class="td-share__label">{{ T "ui_share" }}</h2>
+  <div class="td-share__items" role="group" aria-label="{{ T "ui_share" }}">
+    {{- range . }}
+    {{- if .url }}
+    <a class="td-share__item td-share__item--{{ .id }}" href="{{ .url }}"
+      {{ if .blank }}target="_blank" rel="noopener noreferrer" {{ end -}}
+      title="{{ .label }}" aria-label="{{ .label }}">
+      <span class="td-share__icon"><i class="{{ .icon }}" aria-hidden="true"></i></span>
+    </a>
+    {{- else }}
+    <button type="button" class="td-share__item td-share__item--{{ .id }}"
+      data-td-action="{{ .action }}" data-td-url="{{ $page.Permalink }}"
+      title="{{ .label }}" aria-label="{{ .label }}">
+      <span class="td-share__icon"><i class="{{ .icon }}" aria-hidden="true"></i></span>
+      <span class="td-share__icon td-share__icon--done">{{ partialCached "shell/icon.html" "check" "check" }}</span>
+    </button>
+    {{- end }}
+    {{- end }}
+  </div>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-td-page-context-status></span>
+</section>
+{{ end -}}
+{{- end -}}

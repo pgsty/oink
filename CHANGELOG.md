@@ -7,6 +7,35 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- A page-end share bar, behind `params.ui.share`. The page end had no way to
+  hand an article on: a reader who finished a post could rate it, see where it
+  came from, page to the next one, and comment, but the one thing a reader
+  actually does with a good post -- send it to someone -- had no affordance at
+  all, so every site grew its own. `params.ui.share` takes a list drawn from
+  `x`, `facebook`, `linkedin`, `reddit`, `hackernews`, `telegram`, `weibo`,
+  `email`, and `copy`; it is empty by default, a section cascade scopes the bar
+  to the tree that wants it, a page's own list replaces the inherited one, and
+  `share: false` opts one page out. An unknown target fails the build rather
+  than disappearing. Only a regular page renders the bar -- a list, a term, and
+  the home page have no single thing being shared -- and print, Markdown, and
+  RSS carry none of it.
+
+  What the bar does *not* do is the reason it can exist here at all. There is
+  no share count, no platform SDK, no iframe, and no third-party script or
+  stylesheet, which is what those three normally arrive as: one request per
+  page to a company the reader never chose, on every page, whether or not
+  anyone shares anything. Every target is a plain `<a href>` intent link
+  carrying only the page's own permalink and title, with no campaign
+  parameters attached, plus one local copy button. Nothing is fetched when the
+  site builds or when the page loads; the only request a share can cause is
+  the navigation the reader starts by clicking. A build with every target
+  enabled passes `bin/check-output-security.py` with no `--third-party`
+  allowance, and `bin/check-shell.py` now proves that on each run.
+- `copy_link`, a built-in action that copies the page's canonical URL. The
+  share bar renders it, and because it is a registry action rather than a
+  widget the Command Palette carries it on every page of every site -- the
+  half of the share bar that turns out to be useful even where no bar is
+  configured.
 - Upstream attribution in the page annotation. A site that vendors third-party
   documentation had to reimplement the notice itself: the two keys OINK
   shipped, `upstream_attribution` and `downstream_modified`, rendered a bare
@@ -43,6 +72,10 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Page-end order is now Share, Feedback, Annotation, Pager, Comments. Share
+  leads because it is the only block that points outward, and because a reader
+  who has decided to pass a page on has decided it before being asked how the
+  page went. Sites that enable neither share nor feedback see no change.
 - `upstream_attribution` is now `upstream_link` and needs the companion keys
   above; `downstream_modified` is now `upstream_modified`. Both old names fail
   the build and name their replacement.

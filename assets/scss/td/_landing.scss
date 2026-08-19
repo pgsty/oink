@@ -1525,7 +1525,13 @@
   animation-name: td-landing-marquee-left;
 }
 
+// The card link names the tile's own destination, so the whole tile is the
+// click target: the anchor stretches an invisible overlay across the card. A
+// link authored inside the copy stays above that overlay, a tile without a
+// link keeps its flat non-interactive presentation, and the focus ring traces
+// the card rather than the arrow the anchor started as.
 .td-landing-logo-card {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 13px;
@@ -1537,6 +1543,47 @@
     align-self: center;
     margin: 0;
     padding: 8px;
+  }
+
+  a:not(.td-landing-card-link) {
+    position: relative;
+    z-index: 1;
+  }
+
+  > .td-landing-card-link {
+    &::after {
+      position: absolute;
+      content: '';
+      inset: 0;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &:has(> .td-landing-card-link) {
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+
+    &:hover {
+      border-color: var(--td-copper-dim);
+      box-shadow: var(--td-shadow);
+
+      .td-landing-card-link {
+        color: var(--td-blue-strong);
+
+        i {
+          transform: translateX(3px);
+        }
+      }
+    }
+  }
+
+  &:has(> .td-landing-card-link:focus-visible) {
+    outline: 2px solid var(--td-copper);
+    outline-offset: 3px;
   }
 }
 
@@ -2481,12 +2528,18 @@
   .td-landing-button,
   .td-landing-metric,
   .td-landing-card,
+  .td-landing-logo-card,
   .td-landing-gallery-card,
   .td-landing-testimonial,
   .td-landing-contributor,
   .td-landing-codeplate,
   .td-landing-shell-demo,
   .td-landing-component-board {
+    transition: none;
+  }
+
+  .td-landing-card-link i {
+    transform: none;
     transition: none;
   }
 

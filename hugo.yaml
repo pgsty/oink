@@ -65,8 +65,16 @@ params:
     section_index_columns: 2 # card columns when section_index is cards
     lastmod_commit: subject # subject | hash | none
     # Page provenance / revision block at the end of a page. Front matter
-    # `annotation: false` turns it off for one page.
+    # `annotation: false` turns it off for one page. Its upstream attribution
+    # line is driven by front matter (`upstream_link` plus `upstream_name`,
+    # `upstream_copyright`, `upstream_license`, `upstream_notice`); the theme
+    # declares no defaults for those because they are the site's own facts.
     annotation: true
+    # Language code of the authoritative version, so a translated page can say
+    # so and link to it; false disables the line. Front matter
+    # `translation_notice: false` opts out a page written natively in this
+    # language.
+    translation_notice: false
     # Reading time in the article header. Front matter `reading_time: false`
     # hides it for one page.
     reading_time: false
@@ -169,6 +177,10 @@ module:
   mounts:
     - source: assets
       target: assets
+    # The SPDX table behind the annotation's attribution line. A site's own
+    # data/licenses.yaml is merged over it.
+    - source: data
+      target: data
     - source: i18n
       target: i18n
     - source: layouts

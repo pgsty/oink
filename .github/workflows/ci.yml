@@ -103,6 +103,9 @@ jobs:
       - name: Check navigation and page-end composition
         run: python3 bin/check-shell.py
 
+      - name: Check the page annotation and upstream attribution contract
+        run: python3 bin/check-annotation.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

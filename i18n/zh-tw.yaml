@@ -83,8 +83,13 @@ ui_footer_expand: 展開頁腳連結
 post_byline_by: 作者：
 post_created: 建立
 post_last_mod: 最後更新於
-post_upstream_attribution: 上游文件原文與署名
-post_downstream_modified: 本頁包含{{ .Site.Title }}所作的下游修改。
+post_upstream: "{{ .work }}，{{ .copyright }}，依 {{ .license }} 授權使用，詳見{{ .notice }}。"
+post_upstream_adapted: 本頁改編自 {{ .work }}，{{ .copyright }}，依 {{ .license }} 授權，詳見{{ .notice }}與{{ .history }}。
+post_upstream_adapted_plain: 本頁改編自 {{ .work }}，{{ .copyright }}，依 {{ .license }} 授權，詳見{{ .notice }}。
+post_upstream_notice: 歸屬聲明
+post_upstream_history: 修改歷史
+post_translated: 本頁為譯文，如有出入以{{ .original }}為準。
+post_translated_original: 原文
 post_edit_this: 編輯目前頁面
 post_view_markdown: 檢視 Markdown 原始碼
 post_view_this: 檢視頁面原始碼

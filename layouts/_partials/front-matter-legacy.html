@@ -20,6 +20,8 @@
   (slice "manualLinkTitle" "manual_link_title")
   (slice "manualLinkTarget" "manual_link_target")
   (slice "manualLinkRelref" "manual_link_relref")
+  (slice "upstream_attribution" "upstream_link, beside upstream_name, upstream_copyright, upstream_license, and upstream_notice")
+  (slice "downstream_modified" "upstream_modified")
   (slice "default_featured" "images: [<path>] on the page, or cascade: { images: [<path>] } on the section _index.md; images: [] drops an inherited default but still allows bundled featured resources")
 -}}
   {{- if isset $params (lower (index . 0)) -}}

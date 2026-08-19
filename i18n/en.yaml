@@ -134,9 +134,13 @@ ui_footer_expand: Show footer links
 post_byline_by: By
 post_created: Created
 post_last_mod: Last modified
-post_upstream_attribution: Upstream source and attribution
-post_downstream_modified:
-  This page includes downstream modifications by {{ .Site.Title }}.
+post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
+post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
+post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
+post_upstream_notice: attribution
+post_upstream_history: change history
+post_translated: This page is a translation; the {{ .original }} governs.
+post_translated_original: original
 post_edit_this: Edit this page
 post_view_markdown: View markdown
 post_view_this: View page source

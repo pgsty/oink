@@ -167,7 +167,9 @@ def check_sources() -> list[str]:
         "table": (ROOT / "layouts/_partials/content/table-render.html").read_text(encoding="utf-8")
         + (ROOT / "layouts/_partials/content/table-body.html").read_text(encoding="utf-8"),
         "section": (ROOT / "layouts/_partials/section-index.html").read_text(encoding="utf-8"),
-        "lastmod": (ROOT / "layouts/_partials/page-meta-lastmod.html").read_text(encoding="utf-8"),
+        # The lastmod line moved into the annotation resolver; page-meta-lastmod.html
+        # renders whatever it returns.
+        "lastmod": (ROOT / "layouts/_partials/annotation-items.html").read_text(encoding="utf-8"),
         "page_end": (ROOT / "layouts/_partials/page-end.html").read_text(encoding="utf-8"),
         "annotation": (ROOT / "layouts/_partials/page-annotation.html").read_text(encoding="utf-8"),
         "docs_content": (ROOT / "layouts/_td-content.html").read_text(encoding="utf-8"),

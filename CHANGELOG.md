@@ -5,6 +5,50 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Added
+
+- Upstream attribution in the page annotation. A site that vendors third-party
+  documentation had to reimplement the notice itself: the two keys OINK
+  shipped, `upstream_attribution` and `downstream_modified`, rendered a bare
+  link and a fixed sentence, so every consumer wrote its own partial with the
+  project name, copyright, and licence hard-coded and untranslatable. The
+  annotation now resolves its lines from front matter through
+  `annotation-items.html` and renders one attribution line that names the work,
+  the copyright, the licence, and whether the page was changed, each linked and
+  each translated. `upstream_modified` adds no second line: the verb carries
+  the indication the licence asks for -- material is credited, or *adapted
+  from* its source -- and the credit gains a link to the page's commit history.
+  `upstream_link` is the one per-page fact; `upstream_name`,
+  `upstream_copyright`, `upstream_license` (an SPDX identifier resolved
+  through the new `data/licenses` table), `upstream_notice`, `upstream_ref`,
+  and `upstream_modified` resolve from site params, the `data/upstreams` entry
+  named by `upstream_source`, or the page, most specific last -- so a vendored
+  tree declares its constants once in a cascade and each page adds a line.
+  Because the constants normally cascade, a page inside such a tree that
+  carries no `upstream_link` fails the build instead of publishing an
+  unattributed copy; `upstream_link: ""` is the deliberate opt-out. An
+  incomplete attribution, an unknown SPDX identifier, and a non-boolean
+  `upstream_modified` all fail the build for the same reason: a partial notice
+  reads exactly like a complete one.
+- A translation notice. `params.ui.translation_notice` takes the language code
+  of the authoritative version; a page in another language that has a
+  translation there says so and links to it, and `translation_notice: false`
+  opts out a page written natively in this language. No front matter is needed
+  for the common case. It is the annotation's one inferred line, so it is the
+  one that carries a guard: a page with no authored text of its own -- a
+  generated taxonomy or term list, a section index that is only a title and a
+  child list -- has nothing to be a translation of and never shows it. The theme names no language in the
+  string, and the switch cascades, so a partly translated site scopes the
+  claim to the trees where it holds instead of asserting it site-wide.
+
+### Changed
+
+- `upstream_attribution` is now `upstream_link` and needs the companion keys
+  above; `downstream_modified` is now `upstream_modified`. Both old names fail
+  the build and name their replacement.
+- The theme mounts `data/`, which it did not before, so the licence table
+  reaches consuming sites. A site's own `data/licenses.yaml` merges over it.
+
 ### Fixed
 
 - Numbered examples frame their body. `eg` drew a caption bar and then left the

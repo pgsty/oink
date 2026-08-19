@@ -1,36 +1,16 @@
-{{ $upstream := .Params.upstream_attribution -}}
-{{ $modified := .Params.downstream_modified -}}
-{{ $showLastmod := not .Lastmod.IsZero -}}
-{{ $commitMode := (partial "ui-param.html" (dict "page" . "key" "lastmod_commit")) | default "subject" -}}
-{{ if not (in (slice "subject" "hash" "none") $commitMode) -}}
-  {{ errorf "invalid params.ui.lastmod_commit %q (allowed: subject | hash | none)" $commitMode -}}
-{{ end -}}
-{{ if or $showLastmod $upstream $modified -}}
+{{- /* Render the page annotation's lines. The lines themselves are resolved by
+     annotation-items.html; this partial owns only the markup, so a site that
+     needs a different line overrides the resolver and keeps these classes,
+     the print rules, and the icon column. The partial name is the older
+     override point and stays. */ -}}
+{{- $items := partial "annotation-items.html" . -}}
+{{- with $items }}
 <div class="td-page-meta__footer">
-  {{ if $showLastmod -}}
-  <div class="td-page-meta__item td-page-meta__lastmod">
-    <span class="td-page-meta__icon"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span>
-    <span>
-      {{- T "post_last_mod" }} {{ .Lastmod.Format .Site.Params.time_format_default -}}
-      {{- if ne $commitMode "none" -}}
-        {{- with .GitInfo -}}
-          {{- with $.Site.Params.github_repo }} · <a data-proofer-ignore href="{{ . }}/commit/{{ $.GitInfo.Hash }}">{{ if eq $commitMode "hash" }}commit {{ $.GitInfo.AbbreviatedHash }}{{ else }}{{ $.GitInfo.Subject }} ({{ $.GitInfo.AbbreviatedHash }}){{ end }}</a>{{ end -}}
-        {{- end -}}
-      {{- end -}}
-    </span>
+  {{- range . }}
+  <div class="td-page-meta__item td-page-meta__{{ .key }}">
+    <span class="td-page-meta__icon"><i class="{{ .icon }}" aria-hidden="true"></i></span>
+    <span>{{ .html | safeHTML }}</span>
   </div>
-  {{ end -}}
-  {{ with $upstream -}}
-  <div class="td-page-meta__item td-page-meta__upstream">
-    <span class="td-page-meta__icon"><i class="fa-solid fa-copyright" aria-hidden="true"></i></span>
-    <a href="{{ . }}" target="_blank" rel="noopener">{{ T "post_upstream_attribution" }}</a>
-  </div>
-  {{ end -}}
-  {{ if $modified -}}
-  <div class="td-page-meta__item td-page-meta__modified">
-    <span class="td-page-meta__icon"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i></span>
-    <span>{{ T "post_downstream_modified" . }}</span>
-  </div>
-  {{ end -}}
+  {{- end }}
 </div>
 {{ end -}}

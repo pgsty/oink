@@ -135,8 +135,13 @@ ui_footer_expand: 展开页脚链接
 post_byline_by: 撰文：
 post_created: 创建
 post_last_mod: 最后修改
-post_upstream_attribution: 上游文档原文与署名
-post_downstream_modified: 本页包含{{ .Site.Title }}所作的下游修改。
+post_upstream: "{{ .work }}，{{ .copyright }}，依 {{ .license }} 授权使用，详见{{ .notice }}。"
+post_upstream_adapted: 本页改编自 {{ .work }}，{{ .copyright }}，依 {{ .license }} 授权，详见{{ .notice }}与{{ .history }}。
+post_upstream_adapted_plain: 本页改编自 {{ .work }}，{{ .copyright }}，依 {{ .license }} 授权，详见{{ .notice }}。
+post_upstream_notice: 归属声明
+post_upstream_history: 修改历史
+post_translated: 本页为译文，如有出入以{{ .original }}为准。
+post_translated_original: 原文
 post_edit_this: 编辑当前页面
 post_view_markdown: 查阅 Markdown 源码
 post_view_this: 查看页面源码

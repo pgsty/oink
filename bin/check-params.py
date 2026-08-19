@@ -80,6 +80,7 @@ PAGE_OVERRIDES = {
     "image_zoom": "ui.image_zoom",
     "reading_time": "ui.reading_time",
     "page_context_menu": "ui.page_context_menu",
+    "translation_notice": "ui.translation_notice",
     "comments": "comments",
     "page_width": "page_width",
     "reading_width": "reading_width",
@@ -103,6 +104,8 @@ LEGACY_PAGE_KEYS = {
     "manuallinktarget",
     "manuallinkrelref",
     "default_featured",
+    "upstream_attribution",
+    "downstream_modified",
 }
 
 # Legacy site configuration: (YAML fragment under `params:`, expected message
@@ -167,6 +170,8 @@ LEGACY_PAGE_CASES = [
     ("manualLinkTitle: Example", "manual_link_title"),
     ("manualLinkTarget: _blank", "manual_link_target"),
     ("manualLinkRelref: /docs/", "manual_link_relref"),
+    ("upstream_attribution: https://example.org/doc/", "upstream_link"),
+    ("downstream_modified: true", "upstream_modified"),
     ("default_featured: /img/card.png", "images: [<path>] on the page"),
     ("body_class: td-no-left-sidebar", "sidebar_enabled: false"),
     ("ui: false", "front matter ui is not a page key"),
@@ -177,12 +182,12 @@ LEGACY_PAGE_CASES = [
 # The converged shapes must build; the bare-boolean shorthand of every kept
 # on/off map is part of the contract.
 ACCEPTED_SITE_CASES = [
-    "ui:\n  annotation: false\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  docs_sidebar_root: home",
+    "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
 ]
 ACCEPTED_PAGE_CASES = [
-    "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide",
+    "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
     "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
     "body_class: product-td-no-left-sidebar-preview",
 ]

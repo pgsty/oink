@@ -1,6 +1,6 @@
 {{- /* Stable consumer override slot for page provenance and revision notes.
-     The legacy lastmod partial remains the default implementation so existing
-     site overrides continue to work unchanged.
+     page-meta-lastmod.html remains the default implementation, and
+     annotation-items.html resolves the lines it renders.
      Site: params.ui.annotation (boolean). Page: front matter annotation. */ -}}
 {{- $enabled := true -}}
 {{- if isset .Site.Params.ui "annotation" -}}
@@ -15,8 +15,7 @@
     {{- errorf "front matter annotation must be a boolean; got %v at %s" $enabled .Path -}}
   {{- end -}}
 {{- end -}}
-{{- $hasDefault := or (not .Lastmod.IsZero) .Params.upstream_attribution .Params.downstream_modified -}}
-{{- if and $enabled $hasDefault -}}
+{{- if and $enabled (partial "annotation-items.html" .) -}}
 <section class="td-page-annotation" data-td-page-annotation aria-label="{{ T "ui_page_annotation" }}">
   {{ partial "page-meta-lastmod.html" . }}
 </section>

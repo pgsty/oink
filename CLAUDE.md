@@ -62,6 +62,7 @@ python3 bin/check-book-migrations.py             # dry-run/idempotency Book migr
 python3 bin/check-shared-scenarios.py            # shared scenario fixes and compatibility
 python3 bin/check-keyboard.py                    # keyboard navigation contract
 python3 bin/check-shell.py                       # navigation and page-end composition
+python3 bin/check-annotation.py                  # page annotation: upstream attribution, licence table, translation notice
 python3 bin/check-namespace.py                   # td- class / data-td- attribute / --td- property namespaces
 python3 bin/check-params.py                      # parameter shapes (bare booleans, no single-key maps, FM = site key minus ui.) + legacy-key build matrix
 python3 bin/check-site-markup.py --site exampleSite # consuming-site Goldmark prerequisites

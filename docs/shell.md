@@ -104,6 +104,66 @@ The stable global bindings are:
 The sidebar tree uses real focus and WASD/Arrow navigation without
 rewriting the document Tab order.
 
+## Page annotation
+
+The annotation is the block of provenance lines under the article. It is split
+in two so a site can replace either half: `annotation-items.html` resolves the
+lines and returns descriptors (`key`, `icon`, `html`), and
+`page-meta-lastmod.html` renders them. Override the resolver to change which
+lines appear; override the renderer to change the markup. `bin/check-annotation.py`
+is the executable contract.
+
+Three lines ship, in this order:
+
+| Line | Rendered when |
+| --- | --- |
+| Last modified | `Lastmod` is set; the commit link follows `params.ui.lastmod_commit` |
+| Upstream attribution | front matter `upstream_link` is non-empty |
+| Translated | `params.ui.translation_notice` names another language, this page has a translation in it, and this page has authored text of its own |
+
+`upstream_modified` does not add a line. The licence asks for an indication
+that the material was changed, not a second sentence, so the verb carries it --
+unmodified material is credited, modified material is *adapted from* its
+source -- and the credit gains a second link to the page's commit history,
+which stands as the record of what changed. One line, one obligation
+discharged.
+
+The attribution line exists to discharge a licence obligation, so its rules are
+strict rather than forgiving. `upstream_link` — the URL of the material the
+page is derived from — is read from front matter only; a cascade counts,
+site params do not, because a site-wide value would make every page claim the
+same source. Any other `upstream_*` key present without it fails the build, so
+cascading the constants over a vendored tree also makes every page in that tree
+that forgot its own source URL fail. `upstream_link: ""` is the per-page opt-out.
+
+The constants resolve site params → the `data/upstreams` entry named by
+`upstream_source` → front matter, most specific last: `upstream_name`,
+`upstream_copyright` (retained verbatim, rendered as text), `upstream_license`
+(an SPDX identifier resolved through `data/licenses`, which the theme mounts
+and a site merges over), `upstream_notice` (the page carrying the full notice),
+and the optional `upstream_ref`. All four of the first are required once
+`upstream_link` is set: a partial attribution reads like a complete one, so the
+build fails instead.
+
+The translation notice is the annotation's one *inferred* line: the site names
+the authoritative language and the theme infers that everything else is a
+translation of it. Inference gets a guard that declarations do not need: a
+page with no authored text of its own has nothing to be a translation of, so a
+generated taxonomy or term list, and a section index that is only a title and
+a child list, never carry the notice however the site is configured. Beyond that the theme
+does not guess: no language name appears in the string, and because
+`translation_notice` is a page key it cascades, so a partly translated site
+scopes the claim to the trees where it holds rather than declaring it
+site-wide. A page authored natively in this language opts out with
+`translation_notice: false`.
+
+The line carries only what a reader needs in place — the work, the copyright,
+the licence, whether it changed — and links to `upstream_notice` for the
+licence text, warranty disclaimer, upstream NOTICE, and snapshot pin. The
+theme does not model those per-licence differences because they do not belong
+in a footer line. Whether that notice page exists is the site's to check; the
+theme validates the values, not the destination.
+
 ## Compatibility and non-goals
 
 The docs, Book, Blog, and Swagger shells share one layout model. Page-end order

@@ -58,10 +58,12 @@ fixture budget is 2 MiB raw and 512 KiB gzip. Sites may override
 
 ## Command registry contract
 
-Built-in action IDs are `copy_markdown`, `open_chatgpt`, `open_claude`,
-`view_markdown`, `view_history`, `edit_page`, `create_child_page`,
-`create_issue`, `create_project_issue`, `print_section`, `print`,
-`switch_theme`, `switch_language`, `switch_version`, and `open_github`.
+Built-in action IDs are `copy_markdown`, `copy_link`, `open_chatgpt`,
+`open_claude`, `view_markdown`, `view_history`, `edit_page`,
+`create_child_page`, `create_issue`, `create_project_issue`, `print_section`,
+`print`, `switch_theme`, `switch_language`, `switch_version`, and
+`open_github`. `copy_link` copies the page's canonical URL; it is Palette-only,
+because the surface that renders it on the page is the share bar.
 
 Site commands are localized under
 `languages.<lang>.params.ui.command_palette.commands`. They may open a safe URL

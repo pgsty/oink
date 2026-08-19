@@ -1,4 +1,5 @@
-/** Bind the title split button and its menu to the shared action registry. */
+/** Bind every rendered `data-td-action` control -- the title split button and
+ *  its menu, the share bar's copy control -- to the shared action registry. */
 (function () {
   'use strict';
   if (!window.OinkActions) return;
@@ -11,11 +12,14 @@
   }
 
   function showCopied(button, root) {
+    // Every copy control sits inside a context root that carries the confirmed
+    // wording, but the flip must survive a control that does not.
+    var copied = (root && root.dataset.tdTCopied) || '';
     var label = button.querySelector('[data-td-page-copy-label]');
     button.classList.add('td-is-copied');
     if (label && !label.dataset.original) label.dataset.original = label.textContent;
-    if (label) label.textContent = root.dataset.tdTCopied || label.textContent;
-    announce(root, root.dataset.tdTCopied || 'Copied');
+    if (label && copied) label.textContent = copied;
+    announce(root, copied || 'Copied');
     window.setTimeout(function () {
       button.classList.remove('td-is-copied');
       if (label && label.dataset.original) label.textContent = label.dataset.original;
@@ -50,6 +54,21 @@
       control.addEventListener('click', function () {
         window.OinkActions.run(id, { source: 'page' })
           .then(function () { showCopied(feedback, root); })
+          .catch(function () {
+            announce(root, (root && root.dataset.tdTCopyError) || 'Copy failed');
+          });
+      });
+    } else if (id === 'copy_link') {
+      // The share bar's own control. `data-td-url` names the link explicitly;
+      // without it the registry falls back to the page's canonical URL, so a
+      // control that omits the attribute still copies rather than throwing.
+      control.addEventListener('click', function () {
+        var url = control.dataset.tdUrl || '';
+        window.OinkActions.run(id, {
+          source: 'page',
+          value: url ? { url: url } : null,
+        })
+          .then(function () { showCopied(control, root); })
           .catch(function () {
             announce(root, (root && root.dataset.tdTCopyError) || 'Copy failed');
           });

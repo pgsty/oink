@@ -138,6 +138,11 @@ ui_skip_to_content: 跳至主要內容
 ui_copy_markdown: 複製 Markdown 文字
 ui_copy_success: 已複製 Markdown
 ui_copy_error: 無法複製 Markdown
+ui_share: 分享
+ui_share_email: 郵件
+ui_copy_link: 複製連結
+ui_copy_link_success: 已複製連結
+ui_copy_link_error: 無法複製連結
 ui_code_copy: 複製
 ui_code_copy_label: 複製程式碼
 ui_code_copied: 已複製

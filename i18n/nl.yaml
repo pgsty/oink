@@ -297,3 +297,11 @@ post_upstream_notice: attribution
 post_upstream_history: change history
 post_translated: This page is a translation; the {{ .original }} governs.
 post_translated_original: original
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_share: Share
+ui_share_email: Email
+ui_copy_link: Copy link
+ui_copy_link_success: Link copied
+ui_copy_link_error: Could not copy the link

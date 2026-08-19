@@ -10,6 +10,7 @@
 
   var BUILTINS = new Set([
     'copy_markdown',
+    'copy_link',
     'open_chatgpt',
     'open_claude',
     'view_markdown',
@@ -207,6 +208,17 @@
         return fetchMarkdown(action.url)
           .then(writeClipboard)
           .then(function () { return { action: action }; });
+      }
+      if (id === 'copy_link') {
+        // The descriptor carries the page's canonical URL; a control may name
+        // its own instead. Either way it goes through the same scheme check as
+        // a navigation, so nothing but an http(s) URL reaches the clipboard.
+        var link = safeUrl(
+          (context.value && context.value.url) || action.url,
+          windowObject.location.href,
+        );
+        if (!link) return Promise.reject(failure('unsafe_url', action));
+        return writeClipboard(link).then(function () { return { action: action }; });
       }
       if (id === 'print') {
         windowObject.print();

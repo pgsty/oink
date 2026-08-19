@@ -70,6 +70,11 @@ ui_open_in_prompt: Read from %s so I can ask questions about it.
 ui_copy_markdown: Copy Markdown
 ui_copy_success: Markdown copied
 ui_copy_error: Could not copy Markdown
+ui_share: Share
+ui_share_email: Email
+ui_copy_link: Copy link
+ui_copy_link_success: Link copied
+ui_copy_link_error: Could not copy the link
 ui_code_copy: Copy
 ui_code_copy_label: Copy code
 ui_code_copied: Copied

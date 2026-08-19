@@ -8,6 +8,19 @@
   display: none;
 }
 
+// Container geometry shared by the column grid and by the copyright line that
+// follows it, so the copyright starts at the brand's left edge instead of the
+// viewport edge.
+.td-site-footer,
+.td-site-footer + .td-shell-footline {
+  --td-footer-max: 1280px;
+  --td-footer-gutter: 1.75rem;
+
+  @include media-breakpoint-down(sm) {
+    --td-footer-gutter: 1.15rem;
+  }
+}
+
 .td-site-footer {
   position: relative;
   z-index: 36;
@@ -23,9 +36,9 @@
   font-size: 0.875rem;
 
   &__container {
-    max-width: 1280px;
+    max-width: var(--td-footer-max);
     margin: 0 auto;
-    padding: clamp(2.5rem, 5vw, 4rem) 1.75rem 2rem;
+    padding: clamp(2.5rem, 5vw, 4rem) var(--td-footer-gutter) 2rem;
   }
 
   // Brand beside the columns on wide screens, stacked below them otherwise.
@@ -160,14 +173,28 @@
   }
 
   @include media-breakpoint-down(sm) {
-    &__container {
-      padding-inline: 1.15rem;
-    }
-
     &__grid {
       gap: 2rem 1.25rem;
     }
   }
+}
+
+// Below a fat footer the copyright line is that footer's last row, not a
+// separate band under it: same surface, an inset hairline instead of the page
+// border, and the same container geometry as the columns above. Collapsing the
+// grid (`[hidden]`) leaves this line as the whole footer, so it takes the full
+// border back.
+.td-site-footer + .td-shell-footline {
+  padding-block: 0.85rem;
+  padding-inline: calc(
+    max(0px, (100% - var(--td-footer-max)) / 2) + var(--td-footer-gutter)
+  );
+  border-top-color: color-mix(in srgb, var(--bs-border-color) 55%, transparent);
+  background: var(--bs-secondary-bg);
+}
+
+.td-site-footer[hidden] + .td-shell-footline {
+  border-top-color: var(--bs-border-color);
 }
 
 // The collapse arrow at the right edge of the copyright line. It hides the

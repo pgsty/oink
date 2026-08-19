@@ -48,6 +48,12 @@ All notable changes to OINK are documented here. The project follows
   the build and name their replacement.
 - The theme mounts `data/`, which it did not before, so the licence table
   reaches consuming sites. A site's own `data/licenses.yaml` merges over it.
+- The copyright line under a fat footer now reads as that footer's last row
+  rather than as a white band beneath it: it takes the same surface, separates
+  with an inset hairline instead of the page border, and starts its content at
+  the brand's left edge instead of the viewport's. Collapsing the column grid
+  leaves the line as the whole footer, so it takes the full border back. A
+  slim-only footer is unchanged.
 
 ### Fixed
 

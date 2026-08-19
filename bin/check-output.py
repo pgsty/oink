@@ -412,6 +412,36 @@ def self_test() -> list[str]:
     return errors
 
 
+def check_merge_markers(public: Path) -> list[str]:
+    """No unresolved merge marker reached the rendered output.
+
+    A conflict marker left in a template is not a template error: Hugo emits it
+    as literal text, every string-presence assertion still passes, and a golden
+    refreshed afterwards enshrines it. Only the product shows the damage, so
+    the guard belongs here. Authored content is safe from the match -- Goldmark
+    escapes `<` in prose and in fenced code -- so a raw marker at the start of a
+    line in the output came from a template.
+    """
+
+    errors: list[str] = []
+    # Leading whitespace is kept by Hugo, so the marker is rarely at column 0.
+    # Only the two markers that carry a ref are matched: a bare `=======` is a
+    # plausible line of authored ASCII art, and two of the three are enough to
+    # catch any real conflict.
+    pattern = re.compile(r"^[ \t]*(?:<{7}|>{7}) \S", re.M)
+    for path in sorted(public.rglob("*")):
+        if not path.is_file() or path.suffix not in (".html", ".xml", ".txt", ".md", ".json"):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for match in pattern.finditer(text):
+            line = text.count("\n", 0, match.start()) + 1
+            snippet = text[match.start():match.start() + 40].splitlines()[0]
+            errors.append(
+                f"{path.relative_to(public).as_posix()}:{line}: "
+                f"unresolved merge marker in the output ({snippet!r})")
+    return errors[:20]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
@@ -420,6 +450,7 @@ def main() -> int:
     errors = self_test()
     html_errors, bundles = check_html(args.public)
     errors += html_errors
+    errors += check_merge_markers(args.public)
     errors += check_security(args.public)
     errors += check_social_cards(args.public)
     errors += check_featured_image_contract(args.hugo)

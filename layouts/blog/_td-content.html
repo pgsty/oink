@@ -11,13 +11,13 @@
 			{{ partial "reading-time.html" . -}}
 		{{ end -}}
 	</header>
-<<<<<<< HEAD
 	{{ if eq $featured "wash" }}</div>
-	{{ end }}{{ .Render "_td-content-after-header" -}}
-=======
+	{{ end -}}
+	{{/* The wash is the backdrop of the article header, so it closes with the
+	     header. The series strip is navigation between articles rather than
+	     part of this one's heading, and stays outside it. */ -}}
 	{{ partial "series-strip.html" . -}}
 	{{ .Render "_td-content-after-header" -}}
->>>>>>> feat/b4-series
 	{{ partial "content/render.html" . }}
 	{{ partial "page-end.html" . -}}
 </div>

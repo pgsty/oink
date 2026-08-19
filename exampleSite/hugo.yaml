@@ -34,12 +34,23 @@ markup:
           block: [['\[', '\]'], ['$$', '$$']]
           inline: [['\(', '\)']]
 
+# A component reference should show every page action it can. `markdown` is what
+# makes Copy Markdown and View markdown available; without it those two rows drop
+# out of the page menu and the Palette, and a section index degrades to a lone
+# labelled "Actions" button. Section indexes get it too -- layouts/all.md already
+# renders a list page as its body plus a "Section pages" index.
 outputs:
   home: [HTML, LLMS]
   section: [HTML, print, RSS, markdown]
+  page: [HTML, markdown]
 
 params:
   description: Every block on this landing page comes from one YAML file.
+  # The page-derived actions -- edit, history, new child page, docs issue --
+  # all resolve from these three. github_project_repo is separate: an issue
+  # about the product rather than about the page.
+  github_repo: https://github.com/pgsty/oink
+  github_subdir: exampleSite
   github_project_repo: https://github.com/pgsty/oink
   # The site-wide social card. A page that names no image of its own shares
   # this one; it is never rendered as a per-page thumbnail. Sections that want
@@ -75,6 +86,8 @@ params:
     dark_mode:
       show_menu: true
     section_index: cards
+    # The blog index toolbar gets a form switch beside its feed button.
+    blog_index_toggle: true
     book_draft_banner: true
     sidebar_headings: 3
     quick_links: [docs, blog]
@@ -176,8 +189,6 @@ languages:
     title: Oink 示例站
     params:
       description: 这张落地页上的每一块，都来自一个 YAML 文件。
-      time_format_blog: 2006年1月2日
-      time_format_default: 2006年1月2日
       ui:
         command_palette:
           commands:

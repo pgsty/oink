@@ -1,8 +1,9 @@
-{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}
+{{- $page := .page -}}{{- $ok := true -}}{{- $data := .data -}}{{- $id := .id -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{- $tiers := $data.tiers | default (slice) -}}{{- $groups := $data.groups | default (slice) -}}
-{{- if or (not (reflect.IsSlice $tiers)) (not $tiers) }}{{ errorf "%s: pricing-compare.tiers must be a non-empty array" $page.Path }}{{ end -}}
-{{- if or (not (reflect.IsSlice $groups)) (not $groups) }}{{ errorf "%s: pricing-compare.groups must be a non-empty array" $page.Path }}{{ end -}}
+{{- if or (not (reflect.IsSlice $tiers)) (not $tiers) }}{{ warnf "%s: pricing-compare.tiers must be a non-empty array; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
+{{- if or (not (reflect.IsSlice $groups)) (not $groups) }}{{ warnf "%s: pricing-compare.groups must be a non-empty array; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-pricing-compare{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
@@ -11,19 +12,19 @@
         <thead><tr><th scope="col">{{ $data.feature_label | default "Feature" }}</th>{{ range $tiers }}<th scope="col">{{ . }}</th>{{ end }}</tr></thead>
         <tbody>
         {{- range $groupIndex, $group := $groups }}
-          {{- if not (reflect.IsMap $group) }}{{ errorf "%s: pricing-compare group %d must be a map" $page.Path (add $groupIndex 1) }}{{ end -}}
+          {{- if not (reflect.IsMap $group) }}{{ warnf "%s: pricing-compare group %d must be a map; skipping it" $page.Path (add $groupIndex 1) }}{{ continue }}{{ end -}}
           {{- $groupName := partial "landing/field.html" (dict "page" $page "record" $group "key" "name") -}}
           {{- if eq $groupName false }}{{ $groupName = partial "landing/field.html" (dict "page" $page "record" $group "key" "group") }}{{ end -}}
-          {{- if not $groupName }}{{ errorf "%s: pricing-compare group %d requires name" $page.Path (add $groupIndex 1) }}{{ end -}}
-          {{- if not (reflect.IsSlice $group.rows) }}{{ errorf "%s: pricing-compare group %d rows must be an array" $page.Path (add $groupIndex 1) }}{{ end -}}
+          {{- if not $groupName }}{{ warnf "%s: pricing-compare group %d requires name; skipping it" $page.Path (add $groupIndex 1) }}{{ continue }}{{ end -}}
+          {{- if not (reflect.IsSlice $group.rows) }}{{ warnf "%s: pricing-compare group %d rows must be an array; skipping it" $page.Path (add $groupIndex 1) }}{{ continue }}{{ end -}}
           <tr class="td-landing-pricing-table__group"><th scope="rowgroup" colspan="{{ add (len $tiers) 1 }}">{{ $groupName }}</th></tr>
           {{- range $rowIndex, $row := $group.rows }}
-            {{- if not (reflect.IsMap $row) }}{{ errorf "%s: pricing-compare group %d row %d must be a map" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ end -}}
+            {{- if not (reflect.IsMap $row) }}{{ warnf "%s: pricing-compare group %d row %d must be a map; skipping it" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ continue }}{{ end -}}
             {{- $name := partial "landing/field.html" (dict "page" $page "record" $row "key" "name") -}}
             {{- $cells := partial "landing/field.html" (dict "page" $page "record" $row "key" "cells") -}}
-            {{- if not $name }}{{ errorf "%s: pricing-compare group %d row %d requires name" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ end -}}
-            {{- if not (reflect.IsSlice $cells) }}{{ errorf "%s: pricing-compare group %d row %d cells must be an array" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ end -}}
-            {{- if ne (len $cells) (len $tiers) }}{{ errorf "%s: pricing-compare group %d row %d has %d cells for %d tiers" $page.Path (add $groupIndex 1) (add $rowIndex 1) (len $cells) (len $tiers) }}{{ end -}}
+            {{- if not $name }}{{ warnf "%s: pricing-compare group %d row %d requires name; skipping it" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ continue }}{{ end -}}
+            {{- if not (reflect.IsSlice $cells) }}{{ warnf "%s: pricing-compare group %d row %d cells must be an array; skipping it" $page.Path (add $groupIndex 1) (add $rowIndex 1) }}{{ continue }}{{ end -}}
+            {{- if ne (len $cells) (len $tiers) }}{{ warnf "%s: pricing-compare group %d row %d has %d cells for %d tiers; skipping it" $page.Path (add $groupIndex 1) (add $rowIndex 1) (len $cells) (len $tiers) }}{{ continue }}{{ end -}}
           <tr{{ if $row.price_row }} class="td-landing-pricing-table__price"{{ end }}><th scope="row">{{ $name }}</th>
             {{- range $cells }}<td>{{ if eq (upper (printf "%v" .)) "Y" }}<i class="fa-solid fa-check td-landing-value-yes" role="img" aria-label="{{ T "ui_pricing_included" }}"></i>{{ else if eq (upper (printf "%v" .)) "N" }}<i class="fa-solid fa-minus td-landing-value-no" role="img" aria-label="{{ T "ui_pricing_excluded" }}"></i>{{ else }}{{ . }}{{ end }}</td>{{ end -}}
           </tr>
@@ -34,3 +35,4 @@
     </div>
   </div>
 </section>
+{{- end -}}

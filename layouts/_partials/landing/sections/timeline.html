@@ -1,15 +1,17 @@
-{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
+{{- $page := .page -}}{{- $ok := true -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ errorf "%s: timeline.items must be a non-empty array" $page.Path }}{{ end -}}
+{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ warnf "%s: timeline.items must be a non-empty array; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-timeline-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     <ol class="td-landing-timeline"{{ if $interactive }} data-td-reveal{{ end }}>
       {{- range $index, $item := $items }}
-        {{- if not (reflect.IsMap $item) }}{{ errorf "%s: timeline item %d must be a map" $page.Path (add $index 1) }}{{ end -}}
-        {{- if or (not ($item.date | default "")) (not ($item.title | default "")) }}{{ errorf "%s: timeline item %d requires date and title" $page.Path (add $index 1) }}{{ end -}}
+        {{- if not (reflect.IsMap $item) }}{{ warnf "%s: timeline item %d must be a map; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+        {{- if or (not ($item.date | default "")) (not ($item.title | default "")) }}{{ warnf "%s: timeline item %d requires date and title; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
       <li>{{ with $item.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<time>{{ $item.date }}</time><div><h3>{{ if $item.url }}<a href="{{ $item.url }}">{{ end }}{{ partial "landing/markdown.html" (dict "page" $page "value" $item.title) }}{{ if $item.url }}</a>{{ end }}</h3>{{ with ($item.desc | default $item.text) }}{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}{{ end }}</div></li>
       {{- end }}
     </ol>
   </div>
 </section>
+{{- end -}}

@@ -3,7 +3,7 @@
 {{- $id := .id -}}
 {{- $animate := $data.animate | default false -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{- if and (isset $data "animate") (ne (printf "%T" $data.animate) "bool") }}{{ errorf "%s: metrics.animate must be a boolean" $page.Path }}{{ end -}}
+{{- if and (isset $data "animate") (ne (printf "%T" $data.animate) "bool") }}{{ warnf "%s: metrics.animate must be a boolean; leaving the metrics static" $page.Path }}{{ end -}}
 {{- if and $animate $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-metrics{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
@@ -17,17 +17,23 @@
           {{- $display := printf "%v" $item.value -}}
           {{- if $item.compact }}{{ $display = partial "landing/compact-number.html" $item.value }}{{ end -}}
           {{- if and $animate $interactive }}
-            {{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` (printf "%v" $item.value)) }}{{ errorf "%s: metrics item %d animate requires a numeric value" $page.Path (add $index 1) }}{{ end -}}
+            {{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` (printf "%v" $item.value)) -}}
+              {{- warnf "%s: metrics item %d animate requires a numeric value; leaving it static" $page.Path (add $index 1) -}}
+        <strong>{{ $display }}</strong>
+            {{- else -}}
         <strong data-td-count="{{ $item.value }}"{{ with $item.prefix }} data-td-count-prefix="{{ . }}"{{ end }}{{ with $item.suffix }} data-td-count-suffix="{{ . }}"{{ end }}>{{ $display }}</strong>
+            {{- end -}}
           {{- else }}<strong>{{ $display }}</strong>{{ end -}}
         {{- end }}
         {{- with $item.label }}<span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span>{{ end }}
         {{- with $item.desc }}<small>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</small>{{ end }}
         {{- with $item.source }}
-          {{- if not (reflect.IsMap .) }}{{ errorf "%s: metrics item %d source must be a map" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not (reflect.IsMap .) }}{{ warnf "%s: metrics item %d source must be a map; dropping the source" $page.Path (add $index 1) }}{{ else -}}
           {{- $sourceLabel := strings.TrimSpace (printf "%v" (.label | default "")) -}}
-          {{- if not $sourceLabel }}{{ errorf "%s: metrics item %d source requires label" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not $sourceLabel }}{{ warnf "%s: metrics item %d source requires label; dropping the source" $page.Path (add $index 1) }}{{ else -}}
           {{- with .url }}<a class="td-landing-metric__source" href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $sourceLabel }}">{{ $sourceLabel }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>{{ else }}<span class="td-landing-metric__source">{{ $sourceLabel }}</span>{{ end -}}
+          {{- end -}}
+          {{- end -}}
         {{- end }}
         {{- partial "landing/action.html" (dict "page" $page "item" $item "label" $data.link_label) }}
       </div>

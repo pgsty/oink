@@ -1,14 +1,14 @@
 {{- /* Markdown source beside its scoped rendered output. */ -}}
-{{- $page := .page -}}
+{{- $page := .page -}}{{- $ok := true -}}
 {{- $data := .data -}}
 {{- $id := .id -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{- $source := "" -}}
 {{- with index $data "source" -}}
-  {{- if ne (printf "%T" .) "string" }}{{ errorf "%s: preview.source must be a string" $page.Path }}{{ end -}}
+  {{- if ne (printf "%T" .) "string" }}{{ warnf "%s: preview.source must be a string; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
   {{- $source = strings.TrimRight "\r\n" . -}}
 {{- end -}}
-{{- if not (strings.TrimSpace $source) }}{{ errorf "%s: preview.source must not be empty" $page.Path }}{{ end -}}
+{{- if not (strings.TrimSpace $source) }}{{ warnf "%s: preview.source must not be empty; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
 {{- $file := strings.TrimSpace (printf "%v" ($data.file | default "page.md")) -}}
 {{- $sourceLabel := T "ui_preview_source" | default "Markdown" -}}
 {{- $renderedLabel := T "ui_preview_rendered" | default "Rendered" -}}
@@ -17,6 +17,7 @@
   "origin" (printf "%s: landing preview %s" $page.Path $id)
 ) -}}
 {{- partial "content/register-derived.html" (dict "page" $page "html" $rendered "raw" $source) -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-preview-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
@@ -36,3 +37,4 @@
     </div>
   </div>
 </section>
+{{- end -}}

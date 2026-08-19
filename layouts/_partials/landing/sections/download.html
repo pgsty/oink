@@ -1,8 +1,9 @@
-{{- $page := .page -}}{{- $section := .data -}}{{- $id := .id -}}
+{{- $page := .page -}}{{- $ok := true -}}{{- $section := .data -}}{{- $id := .id -}}
 {{- $keys := $section.keys | default (slice) -}}{{- with $section.key }}{{ $keys = $keys | append . }}{{ end -}}
-{{- if or (not (reflect.IsSlice $keys)) (not $keys) }}{{ errorf "%s: landing download requires key or keys" $page.Path }}{{ end -}}
-{{- $seen := slice -}}{{- range $keys }}{{ $key := strings.TrimSpace (printf "%v" .) }}{{ if not $key }}{{ errorf "%s: landing download keys must not be empty" $page.Path }}{{ end }}{{ if in $seen $key }}{{ errorf "%s: landing download has duplicate key %q" $page.Path $key }}{{ end }}{{ $seen = $seen | append $key }}{{ end -}}
+{{- if or (not (reflect.IsSlice $keys)) (not $keys) }}{{ warnf "%s: landing download requires key or keys; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
+{{- $seen := slice -}}{{- range $keys }}{{ $key := strings.TrimSpace (printf "%v" .) }}{{ if not $key }}{{ warnf "%s: landing download keys must not be empty; skipping it" $page.Path }}{{ continue }}{{ end }}{{ if in $seen $key }}{{ warnf "%s: landing download has duplicate key %q; skipping the repeat" $page.Path $key }}{{ continue }}{{ end }}{{ $seen = $seen | append $key }}{{ end -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-download-section{{ with $section.class }} {{ . }}{{ end }}"{{ with $section.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $section "id" $id) }}
@@ -25,3 +26,4 @@
     {{- end }}
   </div>
 </section>
+{{- end -}}

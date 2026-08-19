@@ -1,22 +1,33 @@
 {{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ errorf "%s: steps.items must be a non-empty array" $page.Path }}{{ end -}}
+{{- /* A section whose data does not parse warns and renders nothing; a bad
+       item is skipped and its siblings still render. The landing page keeps
+       every other section either way. */ -}}
+{{- $ok := true -}}
+{{- if or (not (reflect.IsSlice $items)) (not $items) -}}
+  {{- warnf "%s: steps.items must be a non-empty array; skipping the section" $page.Path -}}
+  {{- $ok = false -}}
+{{- end -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-steps-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     <ol class="td-landing-landing-steps"{{ if $interactive }} data-td-reveal{{ end }}>
       {{- range $index, $item := $items }}
-        {{- if not (reflect.IsMap $item) }}{{ errorf "%s: steps item %d must be a map" $page.Path (add $index 1) }}{{ end -}}
-        {{- if not ($item.title | default "") }}{{ errorf "%s: steps item %d requires title" $page.Path (add $index 1) }}{{ end -}}
+        {{- if not (reflect.IsMap $item) }}{{ warnf "%s: steps item %d must be a map; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+        {{- if not ($item.title | default "") }}{{ warnf "%s: steps item %d requires title; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
       <li>{{ with $item.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" $item.title) }}</h3>{{ with ($item.desc | default $item.text) }}<div>{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</div>{{ end }}
         {{- with $item.cmd }}
-          {{- if not (reflect.IsMap .) }}{{ errorf "%s: steps item %d cmd must be a map" $page.Path (add $index 1) }}{{ end -}}
-          {{- $code := strings.TrimSpace (printf "%v" (.code | default "")) -}}{{- if not $code }}{{ errorf "%s: steps item %d cmd.code is required" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not (reflect.IsMap .) }}{{ warnf "%s: steps item %d cmd must be a map; dropping the command" $page.Path (add $index 1) }}{{ else -}}
+          {{- $code := strings.TrimSpace (printf "%v" (.code | default "")) -}}{{- if not $code }}{{ warnf "%s: steps item %d cmd.code is required; dropping the command" $page.Path (add $index 1) }}{{ else -}}
           {{- if $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
         <div class="td-landing-step-command"><code>{{ $code }}</code>{{ if $interactive }}<button type="button" data-td-copy-text="{{ $code }}" data-td-label-copied="{{ T "ui_code_copied" }}" aria-label="{{ T "ui_code_copy_label" }}"><i class="fa-regular fa-copy" aria-hidden="true"></i><span data-td-copy-status aria-live="polite"></span></button>{{ end }}</div>
+          {{- end -}}
+          {{- end -}}
         {{- end }}
       </li>
       {{- end }}
     </ol>
   </div>
 </section>
+{{- end -}}

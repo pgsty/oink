@@ -2,7 +2,7 @@
 {{- $data := .data -}}
 {{- $id := .id -}}
 {{- $style := lower (strings.TrimSpace (printf "%v" ($data.style | default "accordion"))) -}}
-{{- if not (in (slice "accordion" "flat") $style) }}{{ errorf "%s: faq.style must be accordion or flat" $page.Path }}{{ end -}}
+{{- if not (in (slice "accordion" "flat") $style) }}{{ warnf "%s: faq.style must be accordion or flat; using accordion" $page.Path }}{{ $style = "accordion" }}{{ end -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-faq-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}

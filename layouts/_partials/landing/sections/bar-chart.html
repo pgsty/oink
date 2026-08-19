@@ -1,19 +1,20 @@
-{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
+{{- $page := .page -}}{{- $ok := true -}}{{- $data := .data -}}{{- $id := .id -}}{{- $items := $data.items | default (slice) -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ errorf "%s: bar-chart.items must be a non-empty array" $page.Path }}{{ end -}}
+{{- if or (not (reflect.IsSlice $items)) (not $items) }}{{ warnf "%s: bar-chart.items must be a non-empty array; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
 {{- $values := slice -}}{{- $max := 0.0 -}}
 {{- range $index, $item := $items -}}
-  {{- if not (reflect.IsMap $item) }}{{ errorf "%s: bar-chart item %d must be a map" $page.Path (add $index 1) }}{{ end -}}
-  {{- if not ($item.label | default "") }}{{ errorf "%s: bar-chart item %d requires label" $page.Path (add $index 1) }}{{ end -}}
-  {{- if not (isset $item "value") }}{{ errorf "%s: bar-chart item %d requires value" $page.Path (add $index 1) }}{{ end -}}
-  {{- $raw := printf "%v" $item.value -}}{{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` $raw) }}{{ errorf "%s: bar-chart item %d value must be numeric" $page.Path (add $index 1) }}{{ end -}}
+  {{- if not (reflect.IsMap $item) }}{{ warnf "%s: bar-chart item %d must be a map; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+  {{- if not ($item.label | default "") }}{{ warnf "%s: bar-chart item %d requires label; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+  {{- if not (isset $item "value") }}{{ warnf "%s: bar-chart item %d requires value; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+  {{- $raw := printf "%v" $item.value -}}{{- if not (findRE `^-?[0-9]+(?:[.][0-9]+)?$` $raw) }}{{ warnf "%s: bar-chart item %d value must be numeric; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
   {{- /* Always normalize to float before comparison: Go template comparisons
        across mixed numeric types can otherwise become lexicographic. */ -}}
-  {{- $value := float $item.value -}}{{- if lt $value 0.0 }}{{ errorf "%s: bar-chart item %d value must not be negative" $page.Path (add $index 1) }}{{ end -}}
+  {{- $value := float $item.value -}}{{- if lt $value 0.0 }}{{ warnf "%s: bar-chart item %d value must not be negative; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
   {{- if gt $value $max }}{{ $max = $value }}{{ end -}}
   {{- $values = $values | append (dict "item" $item "value" $value) -}}
 {{- end -}}
-{{- if le $max 0.0 }}{{ errorf "%s: bar-chart requires at least one value greater than zero" $page.Path }}{{ end -}}
+{{- if le $max 0.0 }}{{ warnf "%s: bar-chart requires at least one value greater than zero; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-bar-chart-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
@@ -24,3 +25,4 @@
     </div>{{ end }}</div>
   </div>
 </section>
+{{- end -}}

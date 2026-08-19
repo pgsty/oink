@@ -21,18 +21,25 @@
 {{- $imageStyle := "" -}}
 {{- $heroStyle := "" -}}
 {{- if isset $hero "title_size" -}}
-  {{- if ne (printf "%T" $hero.title_size) "string" }}{{ errorf "%s: hero.title_size must be a CSS length string" $page.Path }}{{ end -}}
-  {{- $titleSize := strings.TrimSpace $hero.title_size -}}
-  {{- if not (findRE `^[0-9]+(?:[.][0-9]+)?(?:rem|em|px)$` $titleSize) }}{{ errorf "%s: hero.title_size must be a CSS length in rem, em, or px" $page.Path }}{{ end -}}
-  {{- $heroStyle = printf "%s --td-hero-title-size: %s;" $heroStyle $titleSize -}}
+  {{- $titleSize := "" -}}
+  {{- if ne (printf "%T" $hero.title_size) "string" -}}
+    {{- warnf "%s: hero.title_size must be a CSS length string; using the default size" $page.Path -}}
+  {{- else -}}
+    {{- $titleSize = strings.TrimSpace $hero.title_size -}}
+    {{- if not (findRE `^[0-9]+(?:[.][0-9]+)?(?:rem|em|px)$` $titleSize) -}}
+      {{- warnf "%s: hero.title_size must be a CSS length in rem, em, or px; using the default size" $page.Path -}}
+      {{- $titleSize = "" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with $titleSize }}{{ $heroStyle = printf "%s --td-hero-title-size: %s;" $heroStyle . }}{{ end -}}
 {{- end -}}
 {{- $align := lower (strings.TrimSpace (printf "%v" ($hero.align | default "start"))) -}}
-{{- if not (in (slice "start" "center") $align) }}{{ errorf "%s: hero.align must be start or center" $page.Path }}{{ end -}}
-{{- if and (eq $align "center") $hero.image }}{{ errorf "%s: hero.align center is a text-only layout; drop hero.image or use align start" $page.Path }}{{ end -}}
+{{- if not (in (slice "start" "center") $align) }}{{ warnf "%s: hero.align must be start or center; using start" $page.Path }}{{ $align = "start" }}{{ end -}}
+{{- if and (eq $align "center") $hero.image }}{{ warnf "%s: hero.align center is a text-only layout; using align start so the image is kept" $page.Path }}{{ $align = "start" }}{{ end -}}
 {{- $media := $hero.media | default dict -}}
-{{- if and $media (not (reflect.IsMap $media)) }}{{ errorf "%s: hero.media must be a map" $page.Path }}{{ end -}}
+{{- if and $media (not (reflect.IsMap $media)) }}{{ warnf "%s: hero.media must be a map; dropping the media" $page.Path }}{{ $media = false }}{{ end -}}
 {{- $breakpoint := strings.TrimSpace (printf "%v" ($media.hide_below | default "")) -}}
-{{- if and $breakpoint (not (in (slice "sm" "md" "lg" "xl") $breakpoint)) }}{{ errorf "%s: hero.media.hide_below must be sm, md, lg, or xl" $page.Path }}{{ end -}}
+{{- if and $breakpoint (not (in (slice "sm" "md" "lg" "xl") $breakpoint)) }}{{ warnf "%s: hero.media.hide_below must be sm, md, lg, or xl; ignoring it" $page.Path }}{{ $breakpoint = "" }}{{ end -}}
 {{- with $media.ratio }}{{ $heroStyle = printf "%s --td-hero-columns: %s;" $heroStyle . }}{{ end -}}
 {{- with $media.max_width }}{{ $heroStyle = printf "%s --td-hero-media-max: %s;" $heroStyle . }}{{ end -}}
 {{- if $hasImage -}}

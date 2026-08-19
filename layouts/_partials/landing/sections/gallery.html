@@ -2,7 +2,7 @@
 {{- $data := .data -}}
 {{- $id := .id -}}
 {{- $layout := lower (strings.TrimSpace (printf "%v" ($data.layout | default "grid"))) -}}
-{{- if not (in (slice "grid" "marquee") $layout) }}{{ errorf "%s: gallery.layout must be grid or marquee" $page.Path }}{{ end -}}
+{{- if not (in (slice "grid" "marquee") $layout) }}{{ warnf "%s: gallery.layout must be grid or marquee; using grid" $page.Path }}{{ $layout = "grid" }}{{ end -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-gallery-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}

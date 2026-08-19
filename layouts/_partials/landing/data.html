@@ -7,31 +7,34 @@
 {{- $key := strings.TrimSpace (printf "%v" ($page.Params.landing | default "")) -}}
 {{- $data := dict -}}
 {{- if and $hasInline $key -}}
-  {{- errorf "%s: landing and sections are mutually exclusive" $position -}}
+  {{- warnf "%s: landing and sections are mutually exclusive; using the inline sections" $position -}}
+  {{- $key = "" -}}
 {{- end -}}
 {{- if $hasInline -}}
   {{- if not (reflect.IsSlice $page.Params.sections) -}}
-    {{- errorf "%s: landing sections must be an array" $position -}}
+    {{- warnf "%s: landing sections must be an array; rendering no sections" $position -}}
+  {{- else if not $page.Params.sections -}}
+    {{- warnf "%s: landing sections must not be empty; rendering no sections" $position -}}
+  {{- else -}}
+    {{- $data = dict "sections" $page.Params.sections -}}
   {{- end -}}
-  {{- if not $page.Params.sections -}}
-    {{- errorf "%s: landing sections must not be empty" $position -}}
-  {{- end -}}
-  {{- $data = dict "sections" $page.Params.sections -}}
 {{- else -}}
   {{- if not $key -}}
-    {{- errorf "%s: layout landing requires either landing: <key> or inline sections" $position -}}
+    {{- warnf "%s: layout landing requires either landing: <key> or inline sections; rendering no sections" $position -}}
+  {{- else if not (findRE `^[A-Za-z0-9][A-Za-z0-9_-]*$` $key) -}}
+    {{- warnf "%s: landing key %q contains unsupported characters; rendering no sections" $position $key -}}
+    {{- $key = "" -}}
   {{- end -}}
-  {{- if not (findRE `^[A-Za-z0-9][A-Za-z0-9_-]*$` $key) -}}
-    {{- errorf "%s: landing key %q contains unsupported characters" $position $key -}}
-  {{- end -}}
+  {{- if $key -}}
 
   {{- $root := index hugo.Data "landing" | default dict -}}
   {{- $raw := index $root $key | default false -}}
   {{- if not $raw -}}
-    {{- errorf "%s: data/landing/%s was not found" $position $key -}}
-  {{- end -}}
-  {{- if not (reflect.IsMap $raw) -}}
-    {{- errorf "%s: data/landing/%s must contain a map" $position $key -}}
+    {{- warnf "%s: data/landing/%s was not found; rendering no sections" $position $key -}}
+    {{- $raw = dict -}}
+  {{- else if not (reflect.IsMap $raw) -}}
+    {{- warnf "%s: data/landing/%s must contain a map; rendering no sections" $position $key -}}
+    {{- $raw = dict -}}
   {{- end -}}
 
   {{- /* A direct map with sections is the single-file form. Otherwise resolve
@@ -52,17 +55,22 @@
       {{- $data = . -}}
     {{- end }}{{ end }}{{ end }}{{ end -}}
   {{- end -}}
+  {{- end -}}
 {{- end -}}
+{{- /* Every failure above resolves to no sections rather than stopping the
+     build: the landing page renders its shell and the author sees the reason
+     in the log. */ -}}
 {{- if not (reflect.IsMap $data) -}}
-  {{- errorf "%s: data/landing/%s has no map for language %q" $position $key $page.Site.Language.Lang -}}
+  {{- warnf "%s: data/landing/%s has no map for language %q; rendering no sections" $position $key $page.Site.Language.Lang -}}
+  {{- $data = dict "sections" slice -}}
+{{- else if not (isset $data "sections") -}}
+  {{- warnf "%s: data/landing/%s must define sections; rendering no sections" $position $key -}}
+  {{- $data = dict "sections" slice -}}
+{{- else if not (reflect.IsSlice $data.sections) -}}
+  {{- warnf "%s: data/landing/%s sections must be an array; rendering no sections" $position $key -}}
+  {{- $data = dict "sections" slice -}}
+{{- else if not $data.sections -}}
+  {{- warnf "%s: data/landing/%s sections must not be empty; rendering no sections" $position $key -}}
 {{- end -}}
-{{- if not (isset $data "sections") -}}
-  {{- errorf "%s: data/landing/%s must define sections" $position $key -}}
-{{- end -}}
-{{- if not (reflect.IsSlice $data.sections) -}}
-  {{- errorf "%s: data/landing/%s sections must be an array" $position $key -}}
-{{- end -}}
-{{- if not $data.sections -}}
-  {{- errorf "%s: data/landing/%s sections must not be empty" $position $key -}}
-{{- end -}}
+{{- if not (isset $data "sections") }}{{ $data = dict "sections" slice }}{{ end -}}
 {{- return $data -}}

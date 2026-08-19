@@ -1,8 +1,9 @@
-{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}
+{{- $page := .page -}}{{- $ok := true -}}{{- $data := .data -}}{{- $id := .id -}}
 {{- $code := strings.TrimSpace (printf "%v" ($data.code | default "")) -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{- if not $code }}{{ errorf "%s: command-box.code is required" $page.Path }}{{ end -}}
+{{- if not $code }}{{ warnf "%s: command-box.code is required; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
 {{- if $interactive }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-command-box-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id "compact" true) }}
@@ -15,3 +16,4 @@
     {{- with $data.note }}<p class="td-landing-command-box__note">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
   </div>
 </section>
+{{- end -}}

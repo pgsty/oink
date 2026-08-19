@@ -1,40 +1,44 @@
-{{- $page := .page -}}{{- $data := .data -}}{{- $id := .id -}}
+{{- $page := .page -}}{{- $ok := true -}}{{- $data := .data -}}{{- $id := .id -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{- $tiers := $data.tiers | default (slice) -}}
-{{- if not (reflect.IsSlice $tiers) }}{{ errorf "%s: pricing.tiers must be an array" $page.Path }}{{ end -}}
-{{- if not $tiers }}{{ errorf "%s: pricing.tiers must not be empty" $page.Path }}{{ end -}}
+{{- if not (reflect.IsSlice $tiers) }}{{ warnf "%s: pricing.tiers must be an array; skipping the section" $page.Path }}{{ $ok = false }}{{ $tiers = slice }}{{ end -}}
+{{- if not $tiers }}{{ warnf "%s: pricing.tiers must not be empty; skipping the section" $page.Path }}{{ $ok = false }}{{ end -}}
 {{- $featured := 0 -}}
 {{- range $tiers }}{{ if .featured }}{{ $featured = add $featured 1 }}{{ end }}{{ end -}}
 {{- if gt $featured 1 }}{{ warnf "%s: pricing has %d featured tiers; one is recommended" $page.Path $featured }}{{ end -}}
+{{- if $ok -}}
 <section id="{{ $id }}" class="td-landing-section td-landing-pricing-section{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     <div class="td-landing-pricing-grid" style="--td-columns: {{ len $tiers }}"{{ if $interactive }} data-td-reveal{{ end }}>
       {{- range $index, $tier := $tiers }}
-        {{- if not (reflect.IsMap $tier) }}{{ errorf "%s: pricing tier %d must be a map" $page.Path (add $index 1) }}{{ end -}}
+        {{- if not (reflect.IsMap $tier) }}{{ warnf "%s: pricing tier %d must be a map; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
         {{- $name := partial "landing/field.html" (dict "page" $page "record" $tier "key" "name") -}}
         {{- $price := partial "landing/field.html" (dict "page" $page "record" $tier "key" "price") -}}
         {{- $period := partial "landing/field.html" (dict "page" $page "record" $tier "key" "period") -}}
         {{- $desc := partial "landing/field.html" (dict "page" $page "record" $tier "key" "desc") -}}
         {{- if eq $desc false }}{{ $desc = partial "landing/field.html" (dict "page" $page "record" $tier "key" "tagline") }}{{ end -}}
         {{- $features := partial "landing/field.html" (dict "page" $page "record" $tier "key" "features") -}}
-        {{- if or (eq $name false) (not (strings.TrimSpace (printf "%v" $name))) }}{{ errorf "%s: pricing tier %d requires name" $page.Path (add $index 1) }}{{ end -}}
-        {{- if or (eq $price false) (not (strings.TrimSpace (printf "%v" $price))) }}{{ errorf "%s: pricing tier %d requires price" $page.Path (add $index 1) }}{{ end -}}
-        {{- if and (ne $features false) (not (reflect.IsSlice $features)) }}{{ errorf "%s: pricing tier %d features must be an array" $page.Path (add $index 1) }}{{ end -}}
+        {{- if or (eq $name false) (not (strings.TrimSpace (printf "%v" $name))) }}{{ warnf "%s: pricing tier %d requires name; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+        {{- if or (eq $price false) (not (strings.TrimSpace (printf "%v" $price))) }}{{ warnf "%s: pricing tier %d requires price; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
+        {{- if and (ne $features false) (not (reflect.IsSlice $features)) }}{{ warnf "%s: pricing tier %d features must be an array; dropping them" $page.Path (add $index 1) }}{{ $features = false }}{{ end -}}
       <article class="td-landing-pricing-tier{{ if $tier.featured }} td-landing-pricing-tier--featured{{ end }}">
         {{- if $tier.featured }}<span class="td-landing-pricing-tier__badge">{{ T "ui_pricing_featured" }}</span>{{ end }}
         <header><h3>{{ $name }}</h3>{{ with $desc }}<p>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}</header>
         <p class="td-landing-pricing-tier__price"><strong>{{ $price }}</strong>{{ with $period }}<span>{{ . }}</span>{{ end }}</p>
         {{- with $features }}<ul>{{ range . }}<li><i class="fa-solid fa-check" aria-hidden="true"></i><span>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</span></li>{{ end }}</ul>{{ end }}
         {{- with $tier.cta }}
-          {{- if not (reflect.IsMap .) }}{{ errorf "%s: pricing tier %d cta must be a map" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not (reflect.IsMap .) }}{{ warnf "%s: pricing tier %d cta must be a map; dropping the call to action" $page.Path (add $index 1) }}{{ else -}}
           {{- $label := partial "landing/field.html" (dict "page" $page "record" . "key" "label") -}}
           {{- $url := partial "landing/field.html" (dict "page" $page "record" . "key" "url") -}}
-          {{- if or (eq $label false) (eq $url false) (not $label) (not $url) }}{{ errorf "%s: pricing tier %d cta requires label and url" $page.Path (add $index 1) }}{{ end -}}
+          {{- if or (eq $label false) (eq $url false) (not $label) (not $url) }}{{ warnf "%s: pricing tier %d cta requires label and url; dropping the call to action" $page.Path (add $index 1) }}{{ else -}}
         <a class="td-landing-button td-landing-button--{{ .style | default (cond $tier.featured "primary" "ghost") }}" href="{{ $url }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ $label }}</a>
+          {{- end -}}
+          {{- end -}}
         {{- end }}
       </article>
       {{- end }}
     </div>
   </div>
 </section>
+{{- end -}}

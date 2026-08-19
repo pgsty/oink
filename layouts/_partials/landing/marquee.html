@@ -6,9 +6,9 @@
 {{- $speed := lower (strings.TrimSpace (printf "%v" (.speed | default "normal"))) -}}
 {{- $rows := int (.rows | default 1) -}}
 {{- $interactive := eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-{{- if not (in (slice "left" "right") $direction) }}{{ errorf "%s: marquee direction must be left or right" $page.Path }}{{ end -}}
-{{- if not (in (slice "slow" "normal" "fast") $speed) }}{{ errorf "%s: marquee speed must be slow, normal, or fast" $page.Path }}{{ end -}}
-{{- if or (lt $rows 1) (gt $rows 8) }}{{ errorf "%s: marquee rows must be from 1 to 8" $page.Path }}{{ end -}}
+{{- if not (in (slice "left" "right") $direction) }}{{ warnf "%s: marquee direction must be left or right; using left" $page.Path }}{{ $direction = "left" }}{{ end -}}
+{{- if not (in (slice "slow" "normal" "fast") $speed) }}{{ warnf "%s: marquee speed must be slow, normal, or fast; using normal" $page.Path }}{{ $speed = "normal" }}{{ end -}}
+{{- if or (lt $rows 1) (gt $rows 8) }}{{ warnf "%s: marquee rows must be from 1 to 8; using 1" $page.Path }}{{ $rows = 1 }}{{ end -}}
 <div class="td-landing-marquee td-landing-marquee--{{ $direction }} td-landing-marquee--{{ $speed }}{{ if not $interactive }} td-landing-marquee--static{{ end }}"{{ if $interactive }} data-td-marquee data-td-marquee-rows="{{ $rows }}"{{ end }}>
   {{- if $interactive }}
   <label class="td-landing-marquee__pause">

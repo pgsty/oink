@@ -24,8 +24,10 @@
 
       {{- with $module.visual }}
         {{- $visualType := lower (strings.TrimSpace (printf "%v" (.type | default ""))) -}}
+        {{- /* An unknown visual falls through every branch below, so the item
+               keeps its text and simply shows no visual. */ -}}
         {{- if not (in (slice "code" "shell" "components" "image" "card") $visualType) -}}
-          {{- errorf "%s: capabilities item %d has unsupported visual.type %q" $page.Path (add $index 1) $visualType -}}
+          {{- warnf "%s: capabilities item %d has unsupported visual.type %q; dropping the visual" $page.Path (add $index 1) $visualType -}}
         {{- end -}}
         {{- if eq $visualType "code" }}
       <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="{{ .aria_label | default .title }}">
@@ -68,8 +70,8 @@
         {{- else if eq $visualType "image" }}
           {{- $src := strings.TrimSpace (printf "%v" (.src | default "")) -}}
           {{- $alt := strings.TrimSpace (printf "%v" (.alt | default "")) -}}
-          {{- if not $src }}{{ errorf "%s: capabilities item %d image visual requires src" $page.Path (add $index 1) }}{{ end -}}
-          {{- if not $alt }}{{ errorf "%s: capabilities item %d image visual requires alt" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not $src }}{{ warnf "%s: capabilities item %d image visual requires src; dropping the visual" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not $alt }}{{ warnf "%s: capabilities item %d image visual requires alt; rendering it decorative" $page.Path (add $index 1) }}{{ end -}}
           {{- $dark := strings.TrimSpace (printf "%v" (.src_dark | default $src)) -}}
           {{- if and $interactive (ne $dark $src) }}{{ $page.Store.Set "hasLanding" true }}{{ end -}}
           {{- /* Same trust boundary as an image in content (see landing/media.html). */ -}}
@@ -77,19 +79,23 @@
           {{- $srcURL := (partial "content/url.html" (dict "name" "landing" "parameter" "src" "position" $where "value" $src "kind" "image")).href -}}
           {{- $darkURL := $srcURL -}}
           {{- if ne $dark $src }}{{ $darkURL = (partial "content/url.html" (dict "name" "landing" "parameter" "src_dark" "position" $where "value" $dark "kind" "image")).href }}{{ end -}}
+      {{- /* `if`, not `with`: the block below still reads .width and .height
+             from the visual map, and `with` would rebind the dot. */ -}}
+      {{- if $srcURL }}
       <figure class="td-landing-module-image">
         <img src="{{ $srcURL }}" alt="{{ $alt }}" loading="lazy"
              {{- if and $interactive (ne $dark $src) }} data-td-theme-src-light="{{ $srcURL }}" data-td-theme-src-dark="{{ $darkURL }}"{{ end }}
              {{- with .width }} width="{{ . }}"{{ end }}{{ with .height }} height="{{ . }}"{{ end }}>
       </figure>
+      {{- end }}
         {{- else if eq $visualType "card" }}
           {{- $title := strings.TrimSpace (printf "%v" (.title | default "")) -}}
-          {{- if not $title }}{{ errorf "%s: capabilities item %d card visual requires title" $page.Path (add $index 1) }}{{ end -}}
-          {{- if and (isset . "lines") (not (reflect.IsSlice .lines)) }}{{ errorf "%s: capabilities item %d card visual lines must be an array" $page.Path (add $index 1) }}{{ end -}}
+          {{- if not $title }}{{ warnf "%s: capabilities item %d card visual requires title; leaving it untitled" $page.Path (add $index 1) }}{{ end -}}
+          {{- if and (isset . "lines") (not (reflect.IsSlice .lines)) }}{{ warnf "%s: capabilities item %d card visual lines must be an array; dropping them" $page.Path (add $index 1) }}{{ end -}}
       <aside class="td-landing-visual-card" aria-label="{{ $title | plainify }}">
         {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
         <h4>{{ partial "landing/markdown.html" (dict "page" $page "value" $title) }}</h4>
-        {{- with .lines }}<ul>{{ range . }}<li>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</li>{{ end }}</ul>{{ end }}
+        {{- with .lines }}{{ if reflect.IsSlice . }}<ul>{{ range . }}<li>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</li>{{ end }}</ul>{{ end }}{{ end }}
       </aside>
         {{- end }}
       {{- end }}

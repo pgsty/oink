@@ -32,13 +32,16 @@ def write(path: Path, content: str) -> None:
 
 
 def run(
-    hugo: str, source: Path, destination: Path | None = None
+    hugo: str, source: Path, destination: Path | None = None,
+    panic_on_warning: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [hugo, "--source", str(source), "--logLevel", "warn"]
     if source == EXAMPLE:
         command.extend(fixture_config_args())
     if destination is not None:
         command.extend(["--destination", str(destination)])
+    if panic_on_warning:
+        command.append("--panicOnWarning")
     return subprocess.run(
         command, cwd=ROOT, capture_output=True, text=True, check=False
     )
@@ -357,8 +360,11 @@ def check_invalid(hugo: str) -> list[str]:
             create_site(site, data)
             result = run(hugo, site)
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid landing case {name} unexpectedly built", errors)
+            # A malformed section warns and renders nothing while the rest of
+            # the page survives; only --panicOnWarning turns that into failure.
             require(expected in output, f"invalid landing case {name} did not report {expected!r}", errors)
+            require(run(hugo, site, panic_on_warning=True).returncode != 0,
+                    f"invalid landing case {name} survived --panicOnWarning", errors)
     return errors
 
 

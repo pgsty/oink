@@ -3,6 +3,7 @@ title: A typography regression article
 description: A compact fixture for long-form reading and CJK fallback.
 date: 2026-08-11
 weight: 10
+authors: [vonng, andy]
 ---
 
 Good documentation typography separates reading comfort from interface density.

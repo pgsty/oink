@@ -36,7 +36,7 @@ markup:
 
 outputs:
   home: [HTML, LLMS]
-  section: [HTML, print, RSS]
+  section: [HTML, print, RSS, markdown]
 
 params:
   description: Every block on this landing page comes from one YAML file.

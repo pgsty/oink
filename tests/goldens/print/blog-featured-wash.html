@@ -1,0 +1,188 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+dir="ltr"
+lang="en-US"
+data-td-typography="technical" data-td-theme-init>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#000000">
+<style>
+html { background: Canvas; color: CanvasText; }
+@media (prefers-color-scheme: dark) {
+html { background: #0b0d12; color: #e6e6e6; }
+}
+html[data-td-theme-init] * { transition: none !important; }
+[data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
+[data-td-theme-toggle] > [hidden] { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun { display: inline-block !important; }
+</style>
+<script>
+(function() {
+const themeKey = 'td-color-theme';
+let storedTheme = null;
+try {
+storedTheme = localStorage.getItem(themeKey);
+} catch (_) {
+}
+let theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+if (theme === 'auto') {
+theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+document.documentElement.setAttribute('data-bs-theme', theme);
+document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+document.documentElement.setAttribute('data-theme', theme);
+})();
+</script>
+<link rel="canonical" type="text/html" href="https://example.org/blog/featured-wash/">
+<meta name="robots" content="noindex, nofollow">
+<title>A wash featured image | Oink Example</title>
+<meta name="description" content="Pins the wash mode against the static image the section cascade carries.">
+<link rel="canonical" href="https://example.org/blog/featured-wash/">
+<link rel="alternate" hreflang="en-US" href="https://example.org/blog/featured-wash/">
+<link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/blog/featured-wash/">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:url" content="https://example.org/blog/featured-wash/">
+<meta property="og:site_name" content="Oink Example">
+<meta property="og:title" content="A wash featured image">
+<meta property="og:description" content="Pins the wash mode against the static image the section cascade carries.">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="article:section" content="blog">
+<meta property="article:published_time" content="2026-08-08T00:00:00+00:00">
+<meta property="article:modified_time" content="2026-08-08T00:00:00+00:00">
+<meta property="og:image" content="https://example.org/images/oink.webp">
+<meta itemprop="name" content="A wash featured image">
+<meta itemprop="description" content="Pins the wash mode against the static image the section cascade carries.">
+<meta itemprop="datePublished" content="2026-08-08T00:00:00+00:00">
+<meta itemprop="dateModified" content="2026-08-08T00:00:00+00:00">
+<meta itemprop="wordCount" content="25">
+<meta itemprop="image" content="https://example.org/images/oink.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.org/images/oink.webp">
+<meta name="twitter:title" content="A wash featured image">
+<meta name="twitter:description" content="Pins the wash mode against the static image the section cascade carries.">
+<link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
+<link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
+</head>
+<body class="td-page td-blog td-print-view">
+<a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
+<header class="td-site-header d-print-none" data-td-header>
+<div class="td-site-container">
+<nav class="td-site-nav" aria-label="Main navigation">
+<a href="/" class="td-nav-brand" data-td-navbar-route
+aria-label="Oink Example — Home">
+<img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
+<span class="td-nav-title">Oink Example</span>
+</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link" href="/docs/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Docs"
+data-td-navbar-region="desktop" data-td-navbar-label="Docs"
+data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+<i class="fa-solid fa-cubes" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Docs</span></a>
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/callout/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Callouts"
+data-td-navbar-region="desktop" data-td-navbar-label="Callouts"
+data-td-navbar-external="false">
+<i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Callouts</span><small class="td-navbar-entry__description">Notes, warnings and disclosures from a blockquote</small></a>
+<a class="td-nav-menu__item-link" href="/docs/code/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Code blocks"
+data-td-navbar-region="desktop" data-td-navbar-label="Code blocks"
+data-td-navbar-external="false">
+<i class="fa-solid fa-code" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Code blocks</span><small class="td-navbar-entry__description">Titles, copy, line numbers, folding</small></a>
+<a class="td-nav-menu__item-link" href="/docs/table/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Tables"
+data-td-navbar-region="desktop" data-td-navbar-label="Tables"
+data-td-navbar-external="false">
+<i class="fa-solid fa-table" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Tables</span><small class="td-navbar-entry__description">Captions, matrices, field lists, tabs</small></a>
+<a class="td-nav-menu__item-link" href="/docs/mermaid/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Mermaid"
+data-td-navbar-region="desktop" data-td-navbar-label="Mermaid"
+data-td-navbar-external="false">
+<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Mermaid</span><small class="td-navbar-entry__description">Diagrams rendered from text, locally</small></a>
+</div>
+</div><a class="nav-link active" href="/blog/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Blog"
+data-td-navbar-region="desktop" data-td-navbar-label="Blog"
+data-td-navbar-external="false">
+<i class="fa-solid fa-blog" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Blog</span></a>
+<a class="nav-link" href="/book/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Book"
+data-td-navbar-region="desktop" data-td-navbar-label="Book"
+data-td-navbar-external="false">
+<i class="fa-solid fa-book" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Book</span></a>
+<a class="nav-link" href="https://pigsty.com/"
+data-td-navbar-level="0" data-td-navbar-kind="link"
+aria-label="Pigsty"
+data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
+data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
+<i class="fa-solid fa-database" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Pigsty</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
+</div><div class="td-nav-links td-nav-util-zone">
+<div class="td-language-selector td-language-selector--menu td-nav-util td-site-nav__language">
+<a class="td-language-selector__trigger" href="https://example.org/zh/blog/featured-wash/"
+lang="zh-CN" hreflang="zh-CN" dir="ltr"
+title="Switch language: 简体中文"
+aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false">
+<i class="fa-solid fa-language" aria-hidden="true"></i>
+<span>简体中文</span>
+</a>
+<ul aria-label="Choose language">
+<li>
+<span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
+</li>
+<li>
+<a class="td-language-selector__item" href="https://example.org/zh/blog/featured-wash/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</li>
+</ul>
+</div><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
+<button type="button" class="td-nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i></button>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>Light</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
+</button>
+</div>
+</div>
+<a href="https://github.com/pgsty/oink" class="td-nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="td-nav-count" data-td-github-stars>2.2k</span></a>
+</div>
+</nav>
+</div>
+</header>
+<div class="container-fluid td-print-shell">
+<main id="td-main-content" class="td-print-document" tabindex="-1">
+<div class="td-content">
+<h1 class="title">A wash featured image</h1>
+<div class="lead">Pins the wash mode against the static image the section cascade carries.</div>
+<div class="lead">Pins the wash mode against the static image the section cascade carries.</div><p>The wash is resolved from the section cascade&rsquo;s <code>images</code> value, a static path
+Hugo cannot process, so it reaches the header at its original URL.</p>
+</div>
+</main>
+</div>
+<script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Ffeatured-wash%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Ffeatured-wash%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/blog/featured-wash/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/blog/featured-wash/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Blog section examples","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
+<script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/js/page-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</body>
+</html>

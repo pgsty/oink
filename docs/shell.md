@@ -164,6 +164,15 @@ theme does not model those per-licence differences because they do not belong
 in a footer line. Whether that notice page exists is the site's to check; the
 theme validates the values, not the destination.
 
+## Brand lockup
+
+`params.logo` is the mark and `params.wordmark` is the optional text half.
+The navbar, the docs sidebar brand row, and the mobile subnav render the mark
+always and put the wordmark beside it, falling back to the site title when no
+wordmark is configured. The text half is the part that collapses in the
+icon-mode range and at drawer widths; the mark does not, so the brand is
+present at every width.
+
 ## Compatibility and non-goals
 
 The docs, Book, Blog, and Swagger shells share one layout model. Page-end order

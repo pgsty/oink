@@ -182,10 +182,6 @@
     }
   }
 
-  &__logo-fallback {
-    display: none !important;
-  }
-
   &__menu {
     display: flex;
     align-items: center;
@@ -236,10 +232,6 @@
   @media (max-width: 479.98px) {
     .td-shell-brand-logo--wordmark {
       display: none;
-    }
-
-    .td-shell-subnav__logo-fallback {
-      display: block !important;
     }
 
     &__menu-link {

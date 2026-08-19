@@ -589,10 +589,6 @@
 }
 
 // Wordmark sites keep a plain logo in reserve for the compact state.
-.td-site-header .td-nav-logo--fallback {
-  display: none;
-}
-
 // One popover look everywhere: the language selector ships its own pop
 // styles for the sidebar, so realign the navbar copy with .td-nav-hover-menu.
 .td-site-header .td-site-nav__language {
@@ -777,10 +773,6 @@
     .td-nav-alt-site > span,
     .td-nav-github .td-nav-count {
       display: none;
-    }
-
-    .td-nav-logo--fallback {
-      display: block;
     }
 
     .td-nav-links > .nav-link .td-navbar-entry__label,

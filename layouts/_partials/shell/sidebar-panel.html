@@ -8,10 +8,10 @@
   <div class="td-shell-sidebar__header">
     <div class="td-shell-sidebar__brand-row">
       <a class="td-shell-sidebar__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
+        <img src="{{ $config.logoURL }}" alt="" width="20" height="20">
         {{- if $config.wordmarkURL }}
         <img class="td-shell-brand-logo--wordmark" src="{{ $config.wordmarkURL }}" alt="" width="100" height="40">
         {{- else }}
-        <img src="{{ $config.logoURL }}" alt="" width="20" height="20">
         <span class="td-shell-wordmark">{{ $config.brandName }}</span>
         {{- end }}
       </a>

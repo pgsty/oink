@@ -51,6 +51,16 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Show the brand mark beside a wordmark. A site that set `params.wordmark`
+  rendered the wordmark *instead of* its logo in the navbar, the docs sidebar
+  brand row, and the mobile subnav, with the mark demoted to a fallback that
+  only appeared in the icon-mode range -- so a site whose wordmark is set in
+  type, as wordmarks usually are, showed no mark at all at reading widths. The
+  lockup is now the other way round, which is how a lockup degrades: the mark
+  is the constant half and always renders, and the text half -- the wordmark,
+  or the site title when there is none -- is what collapses when the row runs
+  out of room. `td-nav-logo--fallback` and `td-shell-subnav__logo-fallback`
+  are gone with the behaviour they named.
 - Numbered examples frame their body. `eg` drew a caption bar and then left the
   listing outside it, so an example read as two unrelated blocks; the figure is
   now one framed unit whose caption is the header and whose body sits inside,

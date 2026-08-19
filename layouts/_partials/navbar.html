@@ -21,13 +21,13 @@
     <nav class="td-site-nav" aria-label="{{ T "ui_main_nav" }}">
       <a href="{{ .Site.Home.RelPermalink }}" class="td-nav-brand" data-td-navbar-route
          aria-label="{{ $config.brandName }} — {{ T "ui_home" }}"{{ if .IsHome }} aria-current="page"{{ end }}>
+        <img src="{{ $config.logoURL }}" alt="" class="td-nav-logo" width="22" height="22">
+        {{- /* The mark above is the constant half of the lockup. The text half
+             is the site's wordmark when it has one, else its title, and it is
+             the half that collapses in the icon-mode range. */ -}}
         {{- if $config.wordmarkURL }}
         <img src="{{ $config.wordmarkURL }}" alt="" class="td-nav-wordmark" width="100" height="40">
-        {{- /* Compact fallback for the icon-mode range, where the wordmark
-             would eat the row. */ -}}
-        <img src="{{ $config.logoURL }}" alt="" class="td-nav-logo td-nav-logo--fallback" width="22" height="22">
         {{- else }}
-        <img src="{{ $config.logoURL }}" alt="" class="td-nav-logo" width="22" height="22">
         <span class="td-nav-title">{{ $config.brandName }}</span>
         {{- end }}
       </a>

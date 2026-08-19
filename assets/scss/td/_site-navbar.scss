@@ -139,7 +139,9 @@
   .td-nav-wordmark {
     display: block;
     width: auto;
-    height: 30px;
+    // The text half of the lockup: ~70% of the 22px mark beside it, not
+    // sized to stand alone.
+    height: 16px;
   }
 
   .td-nav-title {

@@ -95,6 +95,7 @@
        readers reach printing via Cmd/Ctrl+P — no page or palette row. */ -}}
 {{- $noPlacement := dict "page" false "palette" false -}}
 {{- $copyTitle := T "ui_copy_markdown" -}}
+{{- $copyLinkTitle := T "ui_copy_link" -}}
 {{- $viewTitle := T "post_view_markdown" -}}
 {{- $chatgptTitle := T "ui_open_in_chatgpt" -}}
 {{- $claudeTitle := T "ui_open_in_claude" -}}
@@ -109,12 +110,19 @@
 {{- $languageTitle := T "ui_language_switch" -}}
 {{- $versionTitle := $p.Site.Params.version_menu | default "Version" -}}
 {{- $githubTitle := "GitHub" -}}
-{{- /* Keep choice actions in navbar order: version, language, theme. */ -}}
+{{- /* Keep choice actions in navbar order: version, language, theme.
+       `copy_link` is Palette-only: the share bar renders its own button,
+       so a page menu row would duplicate it on the one surface that
+       already has one, while the Palette gains it site-wide. */ -}}
 {{- $actions := slice
   (dict "id" "copy_markdown" "title" $copyTitle "description" $copyTitle
     "icon" "fa-regular fa-copy" "keywords" (slice $copyTitle "markdown" "copy")
     "kind" "copy" "available" (ne $markdownURL "") "disabledReason" (cond (ne $markdownURL "") "" (printf "%s: %s" $copyTitle $unavailable)) "url" $markdownURL
     "target" "self" "placements" $pageOnly "options" (slice))
+  (dict "id" "copy_link" "title" $copyLinkTitle "description" $copyLinkTitle
+    "icon" "fa-solid fa-link" "keywords" (slice $copyLinkTitle (T "ui_share") "link" "url" "permalink")
+    "kind" "copy" "available" true "disabledReason" "" "url" $p.Permalink
+    "target" "self" "placements" $paletteOnly "options" (slice))
   (dict "id" "open_chatgpt" "title" $chatgptTitle "description" $chatgptTitle
     "icon" "fa-brands fa-openai" "keywords" (slice $chatgptTitle $askKeyword "chatgpt" "gpt" "ai" "llm")
     "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $chatgptTitle $unavailable))

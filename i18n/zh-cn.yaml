@@ -72,6 +72,11 @@ ui_open_in_prompt: 请阅读 %s 的内容，以便我就此向你提问。
 ui_copy_markdown: 复制 Markdown 文本
 ui_copy_success: 已复制 Markdown
 ui_copy_error: 无法复制 Markdown
+ui_share: 分享
+ui_share_email: 邮件
+ui_copy_link: 复制链接
+ui_copy_link_success: 已复制链接
+ui_copy_link_error: 无法复制链接
 ui_code_copy: 复制
 ui_code_copy_label: 复制代码
 ui_code_copied: 已复制

@@ -58,10 +58,12 @@ fixture budget is 2 MiB raw and 512 KiB gzip. Sites may override
 
 ## Command registry contract
 
-Built-in action IDs are `copy_markdown`, `open_chatgpt`, `open_claude`,
-`view_markdown`, `view_history`, `edit_page`, `create_child_page`,
-`create_issue`, `create_project_issue`, `print_section`, `print`,
-`switch_theme`, `switch_language`, `switch_version`, and `open_github`.
+Built-in action IDs are `copy_markdown`, `copy_link`, `open_chatgpt`,
+`open_claude`, `view_markdown`, `view_history`, `edit_page`,
+`create_child_page`, `create_issue`, `create_project_issue`, `print_section`,
+`print`, `switch_theme`, `switch_language`, `switch_version`, and
+`open_github`. `copy_link` copies the page's canonical URL; it is Palette-only,
+because the surface that renders it on the page is the share bar.
 
 Site commands are localized under
 `languages.<lang>.params.ui.command_palette.commands`. They may open a safe URL
@@ -103,6 +105,23 @@ The stable global bindings are:
 
 The sidebar tree uses real focus and WASD/Arrow navigation without
 rewriting the document Tab order.
+
+## Share bar
+
+`params.ui.share` is a list drawn from `x`, `facebook`, `linkedin`, `reddit`,
+`hackernews`, `telegram`, `weibo`, `email`, and `copy`. It is empty by default,
+the page key is `share`, a page's own list replaces an inherited one, and
+`share: false` opts one page out. An unknown entry fails the build. Only a
+regular page renders the bar; lists, terms, and the home page never do, and it
+is absent from print, Markdown, and RSS.
+
+Everything the bar emits is a plain `<a href>` intent link carrying the page's
+own permalink and title, plus one local `copy_link` button: no share count, no
+platform SDK, no iframe, no third-party script or stylesheet, and no campaign
+parameters. Nothing is requested when the site builds or when the page loads,
+so a build passes `bin/check-output-security.py` without `--third-party`.
+`share/items.html` resolves the targets and `share/bar.html` renders them, the
+same split the annotation uses.
 
 ## Page annotation
 
@@ -226,7 +245,7 @@ present at every width.
 ## Compatibility and non-goals
 
 The docs, Book, Blog, and Swagger shells share one layout model. Page-end order
-is Feedback, Annotation, Pager, Comments. `page-annotation.html` preserves the
+is Share, Feedback, Annotation, Pager, Comments. `page-annotation.html` preserves the
 `page-meta-lastmod.html` override point. Feedback emits the structured
 `docs_feedback` event through an existing `gtag` function, stores the choice
 locally, sends no free text, and needs no endpoint. Giscus remains a separate

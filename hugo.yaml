@@ -122,6 +122,14 @@ params:
     # Draft state is always labeled in the sidebar; this optional banner adds
     # an explicit notice at the start of draft book pages.
     book_draft_banner: false
+    # Page-end share bar: a list drawn from
+    # x | facebook | linkedin | reddit | hackernews | telegram | weibo |
+    # email | copy. Empty means no bar. Every entry is a plain link (or the
+    # local copy button), never a platform script or a share count. Front
+    # matter `share: [x, copy]` replaces the list for one page and
+    # `share: false` turns its bar off; a section cascade scopes the bar to,
+    # say, the blog.
+    share: []
     # One-click structured docs feedback. The theme calls the site's existing
     # gtag integration when present; no endpoint or free-text form is used.
     feedback:

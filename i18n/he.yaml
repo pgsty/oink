@@ -308,3 +308,8 @@ ui_author_title: Author
 ui_series_title: Series
 ui_series_part: Part {{ .Part }} of {{ .Total }}
 ui_series_next: "Next: {{ .Link }}"
+ui_share: Share
+ui_share_email: Email
+ui_copy_link: Copy link
+ui_copy_link_success: Link copied
+ui_copy_link_error: Could not copy the link

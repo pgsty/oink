@@ -15,6 +15,7 @@
     "html/fixtures-media-primitives.html": "fixtures/media-primitives/index.html",
     "html/fixtures-gallery.html": "fixtures/gallery/index.html",
     "html/fixtures-guides.html": "fixtures/guides/index.html",
+    "html/fixtures-share.html": "fixtures/share/enabled/index.html",
     "markdown/fixtures-callouts.md": "fixtures/callouts/index.md",
     "markdown/fixtures-steps.md": "fixtures/steps/index.md",
     "markdown/fixtures-lists.md": "fixtures/lists/index.md",

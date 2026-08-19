@@ -1,6 +1,6 @@
 ---
 title: 版本发布
-description: 这个索引由严格的发布元数据驱动，页面 weight 会被忽略。
+description: OINK 的全部发布说明，从新到旧，每一篇都属于同一条系列。
 type: blog
 layout: releases
 cascade:
@@ -10,5 +10,5 @@ cascade:
   featured_image: wash
 ---
 
-这个样例演练展开式与简写式发布元数据、产品分组、日期排序，
-以及按数值比较的语义化版本排序。
+0.1.0 到 0.5.0 的真实发布说明。下面的索引由每一页的 `release` 元数据驱动，
+与页面权重无关；每一篇都属于 [OINK 版本发布](/zh/series/oink-releases/) 系列。

@@ -310,3 +310,17 @@ ui_share_email: Email
 ui_copy_link: Copy link
 ui_copy_link_success: Link copied
 ui_copy_link_error: Could not copy the link
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_list_separator: ", "
+
+# Footer text
+post_meta_by_in: "{{ .Date }}, By {{ .Authors }}, In {{ .Section }}"
+post_meta_in: "{{ .Date }}, In {{ .Section }}"
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_blog_index_toggle: Switch layout
+
+# Footer text

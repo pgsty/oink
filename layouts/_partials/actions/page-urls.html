@@ -34,8 +34,13 @@
   {{- $stub := resources.Get "stubs/new-page-template.md" -}}
   {{- $childQS := querify "value" $stub.Content "filename" "change-me.md" -}}
   {{- $childURL = printf "%s/new/%s?%s" $repo (path.Dir $repoPath) $childQS -}}
-  {{- with $p.Param "github_project_repo" }}{{ $projectIssueURL = printf "%s/issues/new" . }}{{ end -}}
 {{- end -}}
+{{- /* A project issue is filed against the product, not against the page, so
+       it needs no source path and no `github_repo`. Nesting it with the
+       page-derived links meant a site that declared only a project repository
+       -- the common shape for a docs site whose code lives elsewhere -- lost
+       the one action it had configured. */ -}}
+{{- with $p.Param "github_project_repo" }}{{ $projectIssueURL = printf "%s/issues/new" . }}{{ end -}}
 {{- return (dict
   "markdown" $markdownURL "printSection" $printURL
   "edit" $editURL "history" $historyURL "createChild" $childURL "createIssue" $issueURL

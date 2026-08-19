@@ -1,6 +1,6 @@
 ---
 title: OINK releases
-description: Every release note from 0.1.0 onward, in the order they were published.
+description: All five release notes, 0.1.0 through 0.5.0, in the order they were published.
 ---
 
 A series is an ordered path through independent articles. Members declare

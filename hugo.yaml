@@ -16,8 +16,10 @@ params:
   offline_search_index: content # content | summary
   offline_search_summary_length: 70
   offline_search_max_results: 10
-  time_format_blog: Monday, January 02, 2006
-  time_format_default: January 2, 2006
+  # ISO-8601, the one format every locale reads the same way. A weekday name
+  # is decoration a date line does not need.
+  time_format_blog: 2006-01-02
+  time_format_default: 2006-01-02
   # Branch used by the edit / history / new-page links derived from github_repo.
   github_branch: main
   page_width: normal # normal | wide | full
@@ -67,6 +69,14 @@ params:
     # blog root, or through its cascade) overrides it per section.
     blog_index: list # list | cards
     blog_index_columns: 3 # card columns when blog_index is cards
+    # Let a reader swap the index form from the blog index toolbar. Off by
+    # default: it puts both forms in the document. The hidden one loads no
+    # images, but its markup is real.
+    blog_index_toggle: false
+    # Posts per page on a blog index. Hugo ignores `pagination` set by a
+    # theme, so the list template passes this to .Paginate itself. Twelve
+    # divides by two, three, and four, so no card row is left short.
+    blog_index_size: 12
     lastmod_commit: subject # subject | hash | none
     # Page provenance / revision block at the end of a page. Front matter
     # `annotation: false` turns it off for one page. Its upstream attribution

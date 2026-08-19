@@ -251,6 +251,7 @@ def check_example(public: Path) -> list[str]:
     # OINK notes joined the fixtures here, so the order proves both rules
     # against a mixed corpus rather than a synthetic one.
     expected = [
+        "/blog/release/0.5.0/",
         "/blog/release/0.4.0/",
         "/blog/release/mcli-20260813/",
         "/blog/release/pig-1.10.0/",

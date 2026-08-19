@@ -1,6 +1,6 @@
 ---
 title: Releases
-description: Strict release metadata drives this index; page weight is ignored.
+description: Every OINK release note, newest first, each one a part of the same series.
 type: blog
 layout: releases
 cascade:
@@ -10,5 +10,6 @@ cascade:
   featured_image: wash
 ---
 
-This fixture exercises expanded and shorthand release metadata, product groups,
-date ordering, and numeric semantic-version ordering.
+Real release notes, 0.1.0 through 0.5.0. The index below is drawn from each
+page's `release` metadata rather than from its weight, and every note is part
+of the [OINK releases](/series/oink-releases/) series.

@@ -16,29 +16,33 @@
     "allowed" (slice "list" "cards") "fallback" "list"
     "key" "params.ui.blog_index" "where" (cond (isset .Params "blog_index") .Path "")) -}}
 {{ $columns := (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) | default 3 -}}
+{{ $size := (partial "ui-param.html" (dict "page" . "key" "blog_index_size")) | default 12 -}}
 
+{{/* With the reader toggle live both forms are in the document and CSS shows
+     one; `data-td-blog-default` records which one the site published, so the
+     first paint matches the configuration and only a stored choice overrides
+     it. Without the toggle only the configured form is rendered at all. */ -}}
+{{ $toggle := partial "shell/blog-index-toggle.html" . -}}
 {{ if .Pages -}}
-<div class="td-blog-posts">
-  {{ $pager := .Paginate ($blogPages.GroupByDate "2006") -}}
+<div class="td-blog-posts" data-td-blog-default="{{ $mode }}">
+  {{ $pager := .Paginate ($blogPages.GroupByDate "2006") $size -}}
   {{ range $pager.PageGroups -}}
   <h2>{{ T "post_posts_in" }} {{ .Key }}</h2>
-  {{ if eq $mode "cards" -}}
-  <div class="td-content-cards td-blog-cards" style="--td-card-columns: {{ $columns }}">
+  {{ if or (eq $mode "cards") $toggle -}}
+  <div class="td-content-cards td-blog-cards" data-td-blog-form="cards" style="--td-card-columns: {{ $columns }}">
     {{ range .Pages -}}
     {{ partial "shell/blog-card.html" . -}}
     {{ end -}}
   </div>
-  {{ else -}}
-  <ul class="td-blog-posts-list">
+  {{ end -}}
+  {{ if or (ne $mode "cards") $toggle -}}
+  <ul class="td-blog-posts-list" data-td-blog-form="list">
     {{ range .Pages -}}
     {{ $post := . -}}
     <li class="td-blog-posts-list__item">
       <div class="td-blog-posts-list__body">
         <h3 class="h5 mt-0 mb-1"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-        <p class="mb-2 mb-md-3"><small class="text-body-secondary">
-          {{- .Date.Format ($.Param "time_format_blog") }} {{ T "ui_in"}} <a class="td-blog-posts-list__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>
-          {{- with partial "authors-resolve.html" $post }} {{ partial "byline.html" (dict "page" $post "variant" "row" "authors" .) }}{{ end }}
-        </small></p>
+        {{ partial "shell/blog-meta.html" (dict "page" $post) }}
         <header class="td-article-meta">
           {{- partial "taxonomy-terms-article-wrapper.html" . -}}
           {{ if partial "reading-time-enabled.html" . -}}

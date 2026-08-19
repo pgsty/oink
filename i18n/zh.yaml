@@ -222,3 +222,8 @@ contributors_count: 位贡献者
 ui_series_title: 系列
 ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
 ui_series_next: "下一篇：{{ .Link }}"
+
+ui_list_separator: 、
+post_meta_by_in: "{{ .Date }}，由 {{ .Authors }} 发布于 {{ .Section }}"
+post_meta_in: "{{ .Date }}，发布于 {{ .Section }}"
+ui_blog_index_toggle: 切换布局

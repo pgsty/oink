@@ -130,6 +130,8 @@ ui_in: in
 
 # Used in sentences such as "All Tags"
 ui_all: all
+ui_list_separator: ", "
+ui_blog_index_toggle: Switch layout
 
 # Footer text
 footer_all_rights_reserved: All Rights Reserved
@@ -155,6 +157,9 @@ post_create_child_page: Create child page
 post_create_issue: Create docs issue
 post_create_project_issue: Create project issue
 post_posts_in: Posts in
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "{{ .Date }}, By {{ .Authors }}, In {{ .Section }}"
+post_meta_in: "{{ .Date }}, In {{ .Section }}"
 post_reading_time: minute read
 post_less_than_a_minute_read: less than a minute
 

@@ -20,6 +20,10 @@
           && window.matchMedia('(min-width: 1200px)').matches) {
         html.setAttribute('data-td-shell-toc', 'collapsed');
       }
+      var blogIndex = localStorage.getItem('td-blog-index');
+      if (blogIndex === 'cards' || blogIndex === 'list') {
+        html.setAttribute('data-td-blog-index', blogIndex);
+      }
       {{- end }}
       {{ if $keyboardNav -}}
       if (sessionStorage.getItem('td-kbd-zen') === '1') {

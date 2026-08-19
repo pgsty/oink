@@ -292,6 +292,33 @@ def check_sources() -> list[str]:
             and '"key" "params.ui.blog_index"' in blog_list
             and '"fallback" "list"' in blog_list,
             "blog index form is not validated against its enum with a documented fallback", errors)
+
+    # The reader's switch. Both forms have to be in the document for it, the
+    # published one has to be recorded so the first paint matches the site, and
+    # the control has to ship hidden so a page without JavaScript shows nothing
+    # it cannot honour.
+    gate = (ROOT / "layouts/_partials/shell/blog-index-toggle.html").read_text()
+    title_menu_source = (ROOT / "layouts/_partials/actions/title-menu.html").read_text()
+    prepaint = (ROOT / "layouts/_partials/shell/prepaint.html").read_text()
+    shell_js = (ROOT / "assets/js/docs-shell.js").read_text()
+    require('"key" "params.ui.blog_index_toggle"' in gate and '"fallback" false' in gate,
+            "the index switch is not an opt-in parameter with a documented fallback", errors)
+    require('eq $page.Kind "section"' in gate and "not $page.Layout" in gate,
+            "the index switch is offered where blog/list.html does not render", errors)
+    require('data-td-blog-form="cards"' in blog_list and 'data-td-blog-form="list"' in blog_list
+            and 'data-td-blog-default="{{ $mode }}"' in blog_list
+            and 'or (eq $mode "cards") $toggle' in blog_list
+            and 'or (ne $mode "cards") $toggle' in blog_list,
+            "the index does not render both forms for the switch, or lost its published default", errors)
+    require(title_menu_source.index("data-td-blog-index-toggle")
+            < title_menu_source.index('title="RSS"'),
+            "the index switch is no longer left of the feed button", errors)
+    require("hidden" in title_menu_source.split("data-td-blog-index-toggle")[0].rsplit("<button", 1)[-1],
+            "the index switch is not hidden until the runtime reveals it", errors)
+    require("td-blog-index" in prepaint,
+            "the reader's index form is not restored before the first paint", errors)
+    require("data-td-blog-index-toggle" in shell_js and "toggle.hidden = false" in shell_js,
+            "the shell runtime does not claim the index switch", errors)
     require('class="td-content-cards td-blog-cards"' in blog_list
             and "--td-card-columns:" in blog_list,
             "blog card index does not reuse the shared card grid", errors)
@@ -303,6 +330,26 @@ def check_sources() -> list[str]:
             "blog card lost the external semantics of manual_link", errors)
     require("figcaption" not in blog_card and 'alt=""' in blog_card,
             "blog card carries a byline or names an image the title already names", errors)
+    # A card reads date, section, tags, description -- in that order, and with
+    # no author. The byline is what the space went to.
+    require('"authors" false' in blog_card,
+            "the card meta line grew a byline it has no room for", errors)
+    require('isset .Site.Taxonomies "tags"' in blog_card
+            and '.GetTerms "tags"' in blog_card
+            and "td-blog-card__tags" in blog_card,
+            "the card no longer offers the post's tags", errors)
+    require(0 <= blog_card.find('shell/blog-meta.html')
+            < blog_card.find("td-blog-card__tags")
+            < blog_card.find("td-blog-card__summary"),
+            "the card order is no longer date, tags, description", errors)
+    require(".Description | default" in blog_card,
+            "the card summarises the body where the author wrote a description", errors)
+    require("min-block-size: calc(3 * 1.55em)" in blog_styles
+            and "-webkit-line-clamp: 3" in blog_styles,
+            "the card description no longer reserves its three lines", errors)
+    require('"key" "blog_index_size"' in blog_list
+            and "$blogPages.GroupByDate \"2006\") $size" in blog_list,
+            "the blog index no longer passes its own pager size, which Hugo ignores from a theme", errors)
     require("td-blog-cards" in blog_styles
             and "aspect-ratio: 16 / 9" in blog_styles
             and "-webkit-line-clamp: 3" in blog_styles
@@ -885,7 +932,7 @@ def build_example(hugo: str) -> list[str]:
                 '(<a href="https://github.com/Vonng">@Vonng</a>) | '
                 '<a href="https://vonng.com/wechat">WeChat</a></b> |\n'
                 '\t\t<time datetime="2026-08-09" class="text-body-secondary">'
-                'Sunday, August 09, 2026</time>\n'
+                '2026-08-09</time>\n'
                 '\t</div>' in legacy_source,
                 "the 0.4 `author` string byline changed shape", errors)
             require("td-byline--authors" not in legacy_source,
@@ -1136,13 +1183,22 @@ def build_blog_index_forms(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-blog-index-") as temporary:
         root = Path(temporary)
+        # Both arms pin the switch off. This compares the two published forms
+        # against each other; with the reader's switch on, every index carries
+        # both at once and there is nothing to compare.
+        rows_overlay = root / "rows.yaml"
+        rows_overlay.write_text(
+            "params:\n  ui:\n    blog_index: list\n    blog_index_toggle: false\n",
+            encoding="utf-8",
+        )
         overlay = root / "cards.yaml"
         overlay.write_text(
-            "params:\n  ui:\n    blog_index: cards\n    blog_index_columns: 4\n",
+            "params:\n  ui:\n    blog_index: cards\n    blog_index_columns: 4\n"
+            "    blog_index_toggle: false\n",
             encoding="utf-8",
         )
         rendered: dict[str, str] = {}
-        for name, extra in (("rows", ()), ("cards", (overlay,))):
+        for name, extra in (("rows", (rows_overlay,)), ("cards", (overlay,))):
             public = root / name
             result = subprocess.run(
                 [hugo, "--source", str(ROOT / "exampleSite"), "--themesDir", str(ROOT.parent),

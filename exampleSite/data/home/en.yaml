@@ -1,6 +1,7 @@
-# OINK composes the homepage in exactly this order. Remove, reorder, or disable
-# any entry without changing a template. A map entry can point at a differently
-# named data block with `key`, which also allows multiple instances of one type.
+# This file is the page. `sections` is the running order; every key below it is
+# one block. Delete an entry and the block goes, move an entry and the block
+# moves. A map entry can point at a differently named data block with `key`,
+# which is how the three logo walls below share a single section type.
 sections:
   - hero
   - metrics
@@ -21,83 +22,103 @@ sections:
   - cta
 
 hero:
-  eyebrow: Composable · Local-first · Hugo-only
-  title: Build **clearer** documentation.
-  desc: OINK turns `data/home.yaml` into a landing page. Ordinary text fields support [Markdown links](https://gohugo.io/content-management/data-sources/).
+  eyebrow: Hugo-only · Local-first · Zero npm
+  # Two title lines; each renders as its own block and does not wrap.
+  title_lines:
+    - Plain Markdown in.
+    - Modern docs out.
+  desc: >
+    Search, i18n, versioning, charts, and math — built into the theme.
+    The entire build step is one command: `hugo`.
   note: No npm, CDN, or JavaScript framework required.
   actions:
-    - label: Read the docs
+    - label: Browse the components
       url: docs/
       icon: fa-solid fa-book-open
       style: primary
-    - label: View on GitHub
-      url: https://github.com/pgsty/oink
-      icon: fa-brands fa-github
+    - label: Read this page's YAML
+      url: https://github.com/pgsty/oink/blob/main/exampleSite/data/home/en.yaml
+      icon: fa-solid fa-file-code
       style: ghost
       external: true
 
 metrics:
-  eyebrow: At a glance
-  title: Small surface, broad reach
-  desc: Metrics accept optional links and supporting text.
+  eyebrow: Count it yourself
+  title: What this page cost
+  desc: Four numbers, all of them checkable against the repository.
   columns: 4
   items:
-    - { value: 12, label: Section types, icon: fa-solid fa-layer-group }
-    - { value: 1, label: Data file, icon: fa-solid fa-file-code }
-    - { value: 0, label: Runtime dependencies, icon: fa-solid fa-plug }
-    - { value: 100%, label: Hugo-rendered, icon: fa-solid fa-bolt }
+    - value: 1
+      label: Data file
+      desc: '`data/home/en.yaml`'
+      icon: fa-solid fa-file-code
+    - value: 14
+      label: Blocks on this page
+      desc: from a registry of 22 section types
+      icon: fa-solid fa-layer-group
+    - value: 0
+      label: Templates edited
+      desc: order is data, not markup
+      icon: fa-solid fa-code
+    - value: 0
+      label: Runtime dependencies
+      desc: no npm, no CDN, no PostCSS
+      icon: fa-solid fa-plug
 
 capabilities:
-  eyebrow: Existing specialist section
-  title: Keep the expressive layouts
-  desc: Complex feature rows remain configurable alongside the new generic sections.
+  eyebrow: How it works
+  title: The section list is the layout
+  desc: One dispatcher reads the array; each entry renders through its own partial.
   items:
-    - ref: 01 / SECTION DISPATCH
-      title: Reorder without editing HTML
+    - ref: 01 / SECTION LIST
+      title: Move a line, move a section
       url: https://gohugo.io/templates/partial/
       external: true
-      motto: A small dispatcher, independent partials
+      motto: One dispatcher, one partial per section type
       bullets:
-        - Put Section names in the `sections` array.
-        - Use `key` to reuse one type with different data.
-        - 'Set `enabled: false` for temporary removal.'
-      value: Structure is data now, not a hard-coded template.
+        - Name a section in the `sections` array and it renders.
+        - Point two entries at different `key` values to reuse one type.
+        - 'Take a block down with `enabled: false` — no deletion required.'
+      value: Page structure is data. Reordering it is a text edit, not a template change.
       visual:
         type: code
-        title: data/home.yaml
+        title: data/home/en.yaml
         aria_label: Landing page section configuration
         lines:
-          - { class: c, prefix: '# ', text: compose the page }
+          - { class: c, prefix: '# ', text: this page, in order }
           - { class: p, prefix: '- ', text: hero }
-          - { class: ok, prefix: '- ', text: logo_wall }
-          - { class: ok, prefix: '- ', text: faq }
+          - { class: ok, prefix: '- ', text: metrics }
+          - { class: ok, prefix: '- ', text: capabilities }
 
 cards:
-  eyebrow: Generic cards
-  title: Configure the common case
-  desc: Use cards for features, benefits, services, or any short collection.
+  eyebrow: Cards
+  title: Three map entries, three cards
+  desc: The general-purpose collection — features, benefits, services, any short list of things.
   columns: 3
   link_label: Learn more
   items:
     - name: Markdown-aware
       icon: fa-brands fa-markdown
       meta: Rich text
-      desc: Descriptions can contain **emphasis**, `code`, and [links](https://commonmark.org/).
+      desc: Descriptions carry **emphasis**, `code`, and [links](https://commonmark.org/).
       url: https://commonmark.org/
       external: true
     - name: Link-optional
       icon: fa-solid fa-link-slash
       meta: Robust data
-      desc: Leave out `url` and the card remains valid, readable content.
+      desc: This card has no `url`, and is still valid, readable content.
     - name: Reusable
       icon: fa-solid fa-repeat
       meta: Multiple instances
-      desc: Point two Section entries at different keys with the same `type`.
+      desc: Two entries, one `type`, different `key` — the pattern used three times below.
 
 components:
   eyebrow: Component reference
-  title: Engineering content, loaded on demand
-  text: Each component has its own page and a defined shape in HTML, print, Markdown and RSS.
+  title: Twenty-one components, loaded only where used
+  text:
+    Each has its own page and a defined shape in HTML, print, Markdown and RSS.
+    The runtime behind a chart, a diagram, or a terminal cast ships on the pages
+    that use it and nowhere else — this landing page loads none of them.
   layout: grid
   columns: 3
   # Ordered by distinctiveness: the ones you rarely find elsewhere first,
@@ -125,12 +146,123 @@ components:
     - { title: Keys,        icon: fa-solid fa-keyboard,             desc: 'key names and chords',          url: docs/kbd/ }
     - { title: Include,     icon: fa-solid fa-file-import,          desc: 'files, params, build-time notes', url: docs/include/ }
 
+ecosystem:
+  eyebrow: Dependencies
+  title: The complete list, not an excerpt
+  desc: 'Nothing else is installed, downloaded, or phoned home to. `icon` takes a Font Awesome class, an image path, or a bare symbol.'
+  columns: 4
+  items:
+    - { name: Hugo Extended, desc: The only build tool, icon: fa-solid fa-bolt, url: https://gohugo.io/, external: true }
+    - { name: Markdown, desc: The content format, icon: fa-brands fa-markdown, url: https://commonmark.org/, external: true }
+    - { name: Git, desc: The whole pipeline, icon: fa-brands fa-git-alt }
+    - { name: Nothing else, desc: No lockfile to audit, icon: ◉ }
+
+gallery:
+  eyebrow: Gallery
+  title: Pages, products, or examples
+  desc: Point each tile at a screenshot with `image`; icons stand in while the artwork is still being made, as they do here.
+  columns: 3
+  link_label: Open example
+  items:
+    - title: Documentation portal
+      badge: Information architecture
+      icon: fa-solid fa-book
+      desc: One deliberate route into the [documentation](docs/).
+      url: docs/
+    - title: API reference
+      badge: OpenAPI
+      icon: fa-solid fa-code
+      desc: Prose beside generated reference material.
+    - title: Engineering blog
+      badge: Updates
+      icon: fa-solid fa-newspaper
+      desc: Releases, explanations, and the decisions behind them.
+
+testimonials:
+  eyebrow: Comment wall
+  title: Placeholder quotes, real markup
+  desc: Both quotes below are sample data. Each one takes a name, an avatar or icon, a role, a source link, and a Markdown comment.
+  columns: 2
+  items:
+    - name: Ada Example
+      icon: A
+      desc: Documentation engineer
+      comment: “The configuration is readable enough that **content owners** change the homepage themselves.”
+      source: Source
+      url: https://example.org/
+      external: true
+    - name: Lin Example
+      icon: L
+      desc: Open-source maintainer
+      comment: “We moved the gallery above the FAQ by moving two lines.”
+
+contributors:
+  eyebrow: Contributors
+  title: Credit the people, not the tooling
+  desc: Production sites point `icon` at an avatar image; single letters keep this example self-contained.
+  columns: 3
+  items:
+    - { name: Alex, icon: A, desc: Theme architecture, url: https://github.com/ }
+    - { name: Bo, icon: B, desc: Accessibility review }
+    - { name: Casey, icon: C, desc: Documentation and examples }
+
+faq:
+  eyebrow: FAQ
+  title: What people ask about this page
+  desc: Answers are block Markdown, so lists and multiple paragraphs work as written.
+  items:
+    - question: Is it really one file?
+      answer: >
+        Everything between the navbar and the footer is. Navigation comes from
+        `hugo.yaml`, the footer from `data/footer/en.yaml`, and every block in
+        between from `data/home/en.yaml`.
+      open: true
+    - question: Does each language need its own file?
+      answer: A single-language site can use one `data/home.yaml`. This site is bilingual, so it uses `data/home/en.yaml` and `data/home/zh.yaml`.
+    - question: Can one section type appear more than once?
+      answer: |
+        Yes — give each entry a different `key`:
+
+        - `{ type: gallery, key: products }`
+        - `{ type: gallery, key: case_studies }`
+
+        The three logo walls on this page are one section type reading three different blocks.
+    - question: What happens when `url` is missing?
+      answer: The item renders as ordinary content — no empty link, no broken link. Two of the three cards above have no `url`.
+
+markdown:
+  eyebrow: Free-form Markdown
+  title: The escape hatch
+  desc: When no predefined collection fits, write Markdown straight into the data file.
+  body: |
+    This paragraph is a `body:` string in the same YAML file as everything above it. It takes paragraphs, [links](https://gohugo.io/), and lists:
+
+    - no custom template;
+    - ordinary Goldmark rendering;
+    - the same width and vertical rhythm as every other block.
+
+principles:
+  eyebrow: Principles
+  title: Predictable by design
+  columns: 3
+  items:
+    - icon: fa-solid fa-sliders
+      title: Content first
+      desc: Most changes are plain text in a data file.
+    - icon: fa-solid fa-universal-access
+      title: Accessible defaults
+      desc: Semantic sections, guarded external links, and native FAQ disclosure controls.
+    - icon: fa-solid fa-code-branch
+      title: Backward compatible
+      desc: Home data without a `sections` list keeps the order it always had.
+
 showcase:
   eyebrow: Example sites
-  title: Twelve sites, one theme
+  title: Thirteen sites, one theme
   text:
-    English, Chinese and bilingual sites; documentation trees, books, company
-    pages and two-page project sites. All pin OINK as a Hugo module.
+    English, Chinese and bilingual; documentation trees, two translated books, a
+    company page, and a project site that is two pages long. Every one of them
+    pins OINK as a Hugo module.
   layout: grid
   columns: 3
   items:
@@ -145,114 +277,12 @@ showcase:
     - { title: exp.pgsty.com,      icon: fa-solid fa-chart-line,    desc: 'PG Exporter metrics',          url: 'https://exp.pgsty.com/',      external: true }
     - { title: pgsql.cc,           icon: fa-solid fa-server,        desc: 'PostgreSQL ecosystem',         url: 'https://pgsql.cc/',           external: true }
     - { title: pgsty.pro,          icon: fa-solid fa-gem,           desc: 'Pigsty v5.0 · bilingual',      url: 'https://pgsty.pro/',          external: true }
-    - { title: tpme.vonng.com,     icon: fa-solid fa-book-open,     desc: 'bilingual book',               url: 'https://tpme.vonng.com/',     external: true }
-
-ecosystem:
-  eyebrow: Logo wall
-  title: Works with familiar tools
-  desc: '`icon` accepts a Font Awesome class, an image path, or a simple symbol.'
-  columns: 4
-  items:
-    - { name: Hugo, desc: Static site generator, icon: fa-solid fa-bolt, url: https://gohugo.io/, external: true }
-    - { name: Markdown, desc: Content format, icon: fa-brands fa-markdown, url: https://commonmark.org/, external: true }
-    - { name: Git, desc: Version control, icon: fa-brands fa-git-alt }
-    - { name: Offline, desc: Everything local, icon: ◉ }
-
-gallery:
-  eyebrow: Gallery
-  title: Showcase pages, products, or examples
-  desc: Supply screenshots through `image`, or use icons while the artwork is still being prepared.
-  columns: 3
-  link_label: Open example
-  items:
-    - title: Documentation portal
-      badge: Information architecture
-      icon: fa-solid fa-book
-      desc: Present a focused route into the [documentation](docs/).
-      url: docs/
-    - title: API reference
-      badge: OpenAPI
-      icon: fa-solid fa-code
-      desc: Pair prose with generated reference material.
-    - title: Engineering blog
-      badge: Updates
-      icon: fa-solid fa-newspaper
-      desc: Publish releases, explanations, and decisions.
-
-testimonials:
-  eyebrow: Comment wall
-  title: Let users speak
-  desc: Each quote supports a name, avatar or icon, role, source URL, and Markdown comment.
-  columns: 2
-  items:
-    - name: Ada Example
-      icon: A
-      desc: Documentation engineer
-      comment: “The configuration is readable enough that **content owners** can change the homepage themselves.”
-      source: Source
-      url: https://example.org/
-      external: true
-    - name: Lin Example
-      icon: L
-      desc: Open-source maintainer
-      comment: “We reordered the Gallery and FAQ with a two-line YAML change.”
-
-contributors:
-  eyebrow: Contributors
-  title: Credit the people behind the work
-  desc: Use image paths for avatars in production; symbols keep this example self-contained.
-  columns: 3
-  items:
-    - { name: Alex, icon: A, desc: Theme architecture, url: https://github.com/ }
-    - { name: Bo, icon: B, desc: Accessibility review }
-    - { name: Casey, icon: C, desc: Documentation and examples }
-
-faq:
-  eyebrow: FAQ
-  title: Common questions
-  desc: Answers use block Markdown, so lists and multiple paragraphs work as expected.
-  items:
-    - question: Can I use one `data/home.yaml` file?
-      answer: Yes. Single-language sites can use one file; multilingual sites can use `data/home/en.yaml`, `data/home/zh.yaml`, and so on.
-      open: true
-    - question: Can I repeat a Section type?
-      answer: |
-        Yes. Give each entry a different `key`:
-
-        - `{ type: gallery, key: products }`
-        - `{ type: gallery, key: case_studies }`
-    - question: What happens when `url` is missing?
-      answer: The item renders as normal content without an empty or broken link.
-
-markdown:
-  eyebrow: Free-form Markdown
-  title: An escape hatch for unique content
-  desc: Use the Markdown Section when a predefined collection is unnecessary.
-  body: |
-    This entire block is rendered from data. It supports paragraphs, [links](https://gohugo.io/), and lists:
-
-    - no custom template required;
-    - regular Goldmark rendering;
-    - the same landing-page width and visual rhythm.
-
-principles:
-  eyebrow: Principles
-  title: Predictable by design
-  columns: 3
-  items:
-    - icon: fa-solid fa-sliders
-      title: Content first
-      desc: Most changes are plain text in YAML.
-    - icon: fa-solid fa-universal-access
-      title: Accessible defaults
-      desc: Semantic sections, guarded links, and native FAQ disclosure controls.
-    - icon: fa-solid fa-code-branch
-      title: Backward compatible
-      desc: Existing home data keeps its previous order when `sections` is absent.
+    - { title: ddia.vonng.com,     icon: fa-solid fa-book-open,     desc: 'a translated book',            url: 'https://ddia.vonng.com/',     external: true }
+    - { title: tpme.vonng.com,     icon: fa-solid fa-book-open,     desc: 'a translated book',            url: 'https://tpme.vonng.com/',     external: true }
 
 cta:
-  title: Assemble your landing page.
-  desc: Copy this file, replace the sample content, and reorder the Section list.
-  label: Get started
+  title: Take the file.
+  desc: Copy `data/home/en.yaml`, delete the blocks you do not need, and rewrite the rest.
+  label: Read the docs
   url: docs/
   style: primary

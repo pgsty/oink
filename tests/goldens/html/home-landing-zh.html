@@ -40,7 +40,7 @@ document.documentElement.setAttribute('data-theme', theme);
 </script>
 <meta name="robots" content="index, follow">
 <title>Oink 示例站</title>
-<meta name="description" content="OINK 可组合落地页的完整示例。">
+<meta name="description" content="这张落地页上的每一块，都来自一个 YAML 文件。">
 <link rel="canonical" href="https://example.org/zh/">
 <link rel="alternate" hreflang="en-US" href="https://example.org/">
 <link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/">
@@ -48,19 +48,19 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:url" content="https://example.org/zh/">
 <meta property="og:site_name" content="Oink 示例站">
 <meta property="og:title" content="Oink 示例站">
-<meta property="og:description" content="OINK 可组合落地页的完整示例。">
+<meta property="og:description" content="这张落地页上的每一块，都来自一个 YAML 文件。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Oink 示例站">
-<meta itemprop="description" content="OINK 可组合落地页的完整示例。">
+<meta itemprop="description" content="这张落地页上的每一块，都来自一个 YAML 文件。">
 <meta itemprop="datePublished" content="2026-08-18T00:00:00+00:00">
 <meta itemprop="dateModified" content="2026-08-18T00:00:00+00:00">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
 <meta name="twitter:title" content="Oink 示例站">
-<meta name="twitter:description" content="OINK 可组合落地页的完整示例。">
+<meta name="twitter:description" content="这张落地页上的每一块，都来自一个 YAML 文件。">
 <link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
 <link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
 <script>
@@ -189,16 +189,18 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <div class="td-landing-hero__copy">
 <p class="td-landing-hero__eyebrow">
 <span class="td-landing-status-dot" aria-hidden="true"></span>
-<span>可组合 · 本地优先 · 只需 Hugo</span>
+<span>只用 Hugo · 本地优先 · 零 npm</span>
 </p>
-<h1 class="td-landing-hero__title" id="hero-title">把文档写得<strong>更清楚</strong>。</h1><p class="td-landing-hero__lead">OINK 把 <code>data/home.yaml</code> 变成一张落地页。普通文本字段支持 <a href="https://gohugo.io/content-management/data-sources/">Markdown 链接</a>。</p>
+<h1 class="td-landing-hero__title" id="hero-title">
+<span>输入纯 Markdown。</span>
+<span>输出现代文档。</span></h1><p class="td-landing-hero__lead">搜索、多语言、版本、图表、公式——全都在主题里。整个构建步骤只有一条命令：<code>hugo</code>。</p>
 <p class="td-landing-hero__note"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>不需要 npm、CDN 或任何 JavaScript 框架。</span></p>
 <div class="td-landing-hero__actions">
 <a class="td-landing-button td-landing-button--primary" href="/zh/docs/"><i class="fa-solid fa-book-open" aria-hidden="true"></i>
-<span>阅读文档</span>
+<span>浏览组件</span>
 </a>
-<a class="td-landing-button td-landing-button--ghost" href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>
-<span>在 GitHub 上查看</span>
+<a class="td-landing-button td-landing-button--ghost" href="https://github.com/pgsty/oink/blob/main/exampleSite/data/home/zh.yaml" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-code" aria-hidden="true"></i>
+<span>读一读这页的 YAML</span>
 </a>
 </div>
 </div>
@@ -206,39 +208,39 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </section>
 <section id="metrics" class="td-landing-section td-landing-metrics" aria-labelledby="metrics-title">
 <div class="td-site-container"><header class="td-landing-section__head td-landing-section__head--compact">
-<p class="td-landing-section__eyebrow"><span>一眼看完</span><i aria-hidden="true"></i></p>
-<h2 id="metrics-title">表面很小，覆盖很广</h2>
-<p class="td-landing-section__description">指标可以带链接与补充说明。</p>
+<p class="td-landing-section__eyebrow"><span>自己数一遍</span><i aria-hidden="true"></i></p>
+<h2 id="metrics-title">这一页的全部成本</h2>
+<p class="td-landing-section__description">四个数字，每个都能在仓库里对上。</p>
 </header>
 <div class="td-landing-metric-grid" style="--td-columns: 4">
-<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>12</strong><span>区块类型</span>
+<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>数据文件</span><small><code>data/home/zh.yaml</code></small>
 </div>
-<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>数据文件</span>
+<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>14</strong><span>本页区块</span><small>从 22 种区块类型里挑出来的</small>
 </div>
-<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>运行时依赖</span>
+<div class="td-landing-metric"><i class="fa-solid fa-code" aria-hidden="true"></i><strong>0</strong><span>改过的模板</span><small>顺序是数据，不是标记</small>
 </div>
-<div class="td-landing-metric"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong>100%</strong><span>由 Hugo 渲染</span>
+<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>运行时依赖</span><small>不装 npm，不连 CDN，不跑 PostCSS</small>
 </div>
 </div>
 </div>
 </section>
 <section id="capabilities" class="td-landing-section td-landing-capabilities" aria-labelledby="capabilities-title">
 <div class="td-site-container"><header class="td-landing-section__head">
-<p class="td-landing-section__eyebrow"><span>原有的专用区块</span><i aria-hidden="true"></i></p>
-<h2 id="capabilities-title">保留富有表现力的版式</h2>
-<p class="td-landing-section__description">复杂的特性行仍然可配置，与新的通用区块并存。</p>
+<p class="td-landing-section__eyebrow"><span>它是怎么拼出来的</span><i aria-hidden="true"></i></p>
+<h2 id="capabilities-title">区块列表就是版式</h2>
+<p class="td-landing-section__description">一个分发器读这个数组，每个条目走自己的 partial。</p>
 </header>
 <article class="td-landing-module">
-<div class="td-landing-module__copy"><p class="td-landing-module__ref">01 / 区块分发</p>
-<h3><a href="https://gohugo.io/templates/partial/" target="_blank" rel="noopener noreferrer">重排顺序不必改 HTML</a></h3><p class="td-landing-module__motto">◇ 一个小分发器，一组独立的 partial</p>
-<ul><li>把区块名字写进 <code>sections</code> 数组。</li><li>用 <code>key</code> 让同一种类型指向不同数据。</li><li>临时下线写 <code>enabled: false</code>。</li></ul><p class="td-landing-module__value">结构现在是数据，不再是写死的模板。</p>
+<div class="td-landing-module__copy"><p class="td-landing-module__ref">01 / 区块列表</p>
+<h3><a href="https://gohugo.io/templates/partial/" target="_blank" rel="noopener noreferrer">挪动一行，就挪动一整块</a></h3><p class="td-landing-module__motto">◇ 一个分发器，一种区块一个 partial</p>
+<ul><li>把区块名字写进 <code>sections</code> 数组，它就会渲染。</li><li>两个条目指向不同的 <code>key</code>，同一种类型就能复用。</li><li>临时下线写 <code>enabled: false</code>，数据不必删。</li></ul><p class="td-landing-module__value">页面结构现在是数据。重排它是改文本，不是改模板。</p>
 </div>
 <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="落地页区块配置">
-<div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home.yaml</b></div>
-<pre><code><span class="c"># </span>拼出这一页
+<div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home/zh.yaml</b></div>
+<pre><code><span class="c"># </span>这一页，按顺序
 <span class="p">- </span>hero
-<span class="ok">- </span>logo_wall
-<span class="ok">- </span>faq
+<span class="ok">- </span>metrics
+<span class="ok">- </span>capabilities
 </code></pre>
 </div>
 </article>
@@ -246,9 +248,9 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </section>
 <section id="cards" class="td-landing-section td-landing-cards-section" aria-labelledby="cards-title">
 <div class="td-site-container"><header class="td-landing-section__head">
-<p class="td-landing-section__eyebrow"><span>通用卡片</span><i aria-hidden="true"></i></p>
-<h2 id="cards-title">常见情况直接配置</h2>
-<p class="td-landing-section__description">特性、优势、服务，任何一组短内容都可以用卡片。</p>
+<p class="td-landing-section__eyebrow"><span>卡片</span><i aria-hidden="true"></i></p>
+<h2 id="cards-title">三个映射条目，三张卡片</h2>
+<p class="td-landing-section__description">通用的集合区块——特性、优势、服务，任何一组短内容都可以放进来。</p>
 </header>
 <div class="td-landing-card-grid" style="--td-columns: 3">
 <article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">富文本</p><h3>支持 Markdown</h3><div class="td-landing-card__description"><p>描述里可以写<strong>强调</strong>、<code>代码</code>与<a href="https://commonmark.org/">链接</a>。</p>
@@ -256,10 +258,10 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">数据健壮</p><h3>链接可省略</h3><div class="td-landing-card__description"><p>不写 <code>url</code>，卡片仍然是有效、可读的内容。</p>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">数据健壮</p><h3>链接可省略</h3><div class="td-landing-card__description"><p>这张卡没写 <code>url</code>，它仍然是有效、可读的内容。</p>
 </div>
 </article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">多个实例</p><h3>可复用</h3><div class="td-landing-card__description"><p>两个区块条目用同一种 <code>type</code>，指向不同的 <code>key</code>。</p>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">多个实例</p><h3>可复用</h3><div class="td-landing-card__description"><p>两个条目，同一种 <code>type</code>，不同的 <code>key</code>——下面这一招用了三次。</p>
 </div>
 </article>
 </div>
@@ -268,8 +270,8 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <section id="components" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="components-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>组件参考</span><i aria-hidden="true"></i></p>
-<h2 id="components-title">工程内容，按需加载</h2>
-<p class="td-landing-section__description">每个组件一页，并且在 HTML、打印、Markdown 与 RSS 四种输出下都有确定形态。</p>
+<h2 id="components-title">二十一个组件，只在用到的页面加载</h2>
+<p class="td-landing-section__description">每个组件一页，并且在 HTML、打印、Markdown 与 RSS 四种输出下都有确定形态。图表、示意图、终端录像背后的运行时，只随用到它的页面下发，别处一律没有——这张落地页一个都没加载。</p>
 </header>
 <div class="td-landing-logo-wall" style="--td-columns: 3"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></div>
 <div class="td-landing-logo-card__copy"><h3>ECharts</h3><p><code>echarts</code> 数据围栏</p>
@@ -402,13 +404,13 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </section>
 <section id="ecosystem" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="ecosystem-title">
 <div class="td-site-container"><header class="td-landing-section__head">
-<p class="td-landing-section__eyebrow"><span>Logo 墙</span><i aria-hidden="true"></i></p>
-<h2 id="ecosystem-title">与熟悉的工具协作</h2>
-<p class="td-landing-section__description"><code>icon</code> 接受 Font Awesome class、图片路径，或者一个简单符号。</p>
+<p class="td-landing-section__eyebrow"><span>依赖</span><i aria-hidden="true"></i></p>
+<h2 id="ecosystem-title">全部依赖都在这里，没有省略</h2>
+<p class="td-landing-section__description">除此之外不装、不下载、也不回连任何东西。<code>icon</code> 接受 Font Awesome class、图片路径，或者一个裸符号。</p>
 </header>
 <div class="td-landing-logo-wall" style="--td-columns: 4"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-bolt" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>Hugo</h3><p>静态站点生成器</p>
-</div><a class="td-landing-card-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Hugo</span>
+<div class="td-landing-logo-card__copy"><h3>Hugo Extended</h3><p>唯一的构建工具</p>
+</div><a class="td-landing-card-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Hugo Extended</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </article>
@@ -419,11 +421,11 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </a>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-brands fa-git-alt" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>Git</h3><p>版本控制</p>
+<div class="td-landing-logo-card__copy"><h3>Git</h3><p>整条流水线</p>
 </div>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><span aria-hidden="true">◉</span></div>
-<div class="td-landing-logo-card__copy"><h3>离线</h3><p>一切都在本地</p>
+<div class="td-landing-logo-card__copy"><h3>别无其它</h3><p>没有 lockfile 要审</p>
 </div>
 </article>
 </div>
@@ -433,7 +435,7 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>画廊</span><i aria-hidden="true"></i></p>
 <h2 id="gallery-title">展示页面、产品或示例</h2>
-<p class="td-landing-section__description">用 <code>image</code> 给出截图；素材还没准备好时先用图标顶上。</p>
+<p class="td-landing-section__description">用 <code>image</code> 给每格指一张截图；素材还没做好时先用图标顶着，就像这里。</p>
 </header>
 <div class="td-landing-gallery" style="--td-columns: 3"><article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
@@ -451,7 +453,7 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">动态</p><h3>工程博客</h3><div class="td-landing-gallery-card__description"><p>发布版本、解释与决策。</p>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">动态</p><h3>工程博客</h3><div class="td-landing-gallery-card__description"><p>发布版本、解释，以及背后的决策。</p>
 </div>
 </div>
 </article>
@@ -461,8 +463,8 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <section id="testimonials" class="td-landing-section td-landing-testimonials-section" aria-labelledby="testimonials-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>留言墙</span><i aria-hidden="true"></i></p>
-<h2 id="testimonials-title">让用户说话</h2>
-<p class="td-landing-section__description">每条引用支持姓名、头像或图标、身份、来源链接与 Markdown 正文。</p>
+<h2 id="testimonials-title">占位的引用，真实的标记</h2>
+<p class="td-landing-section__description">下面两条都是示例数据。每条支持姓名、头像或图标、身份、来源链接与 Markdown 正文。</p>
 </header>
 <div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><p>“配置文件足够好读，<strong>内容负责人</strong>自己就能改首页。”</p>
 </blockquote>
@@ -472,7 +474,7 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </a>
 </figcaption>
 </figure>
-<figure class="td-landing-testimonial"><blockquote><p>“改两行 YAML 就把画廊与 FAQ 调换了顺序。”</p>
+<figure class="td-landing-testimonial"><blockquote><p>“把画廊挪到常见问题前面，我们只挪了两行。”</p>
 </blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">L</span></div>
 <div><strong>Lin Example</strong><span>开源项目维护者</span></div>
@@ -484,8 +486,8 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <section id="contributors" class="td-landing-section td-landing-contributors-section" aria-labelledby="contributors-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>贡献者</span><i aria-hidden="true"></i></p>
-<h2 id="contributors-title">记下背后的人</h2>
-<p class="td-landing-section__description">生产站点用图片作头像；这里用符号，示例因此自成一体。</p>
+<h2 id="contributors-title">记下人，而不是工具</h2>
+<p class="td-landing-section__description">生产站点让 <code>icon</code> 指向头像图片；这里用单个字母，示例因此自成一体。</p>
 </header>
 <div class="td-landing-contributor-grid" style="--td-columns: 3">
 <article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
@@ -508,13 +510,18 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <section id="faq" class="td-landing-section td-landing-faq-section" aria-labelledby="faq-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>常见问题</span><i aria-hidden="true"></i></p>
-<h2 id="faq-title">大家都会问的几件事</h2>
+<h2 id="faq-title">关于这一页，大家都会问</h2>
 <p class="td-landing-section__description">答案是块级 Markdown，列表与多个段落都能照常使用。</p>
 </header>
 <div class="td-landing-faq-list td-landing-faq-list--accordion">
 <details class="td-landing-faq" open>
-<summary><span>可以只用一个 <code>data/home.yaml</code> 吗？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>可以。单语言站点用一个文件即可；多语言站点用 <code>data/home/en.yaml</code>、<code>data/home/zh.yaml</code> 这样的形式。</p>
+<summary><span>真的只有一个文件？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>导航栏与页脚之间的部分是。导航来自 <code>hugo.yaml</code>，页脚来自 <code>data/footer/zh.yaml</code>，中间每一块都来自 <code>data/home/zh.yaml</code>。</p>
+</div>
+</details>
+<details class="td-landing-faq">
+<summary><span>每种语言都得有一个文件吗？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>单语言站点用一个 <code>data/home.yaml</code> 就够。本站是双语，所以用 <code>data/home/en.yaml</code> 与 <code>data/home/zh.yaml</code>。</p>
 </div>
 </details>
 <details class="td-landing-faq">
@@ -524,11 +531,12 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <li><code>{ type: gallery, key: products }</code></li>
 <li><code>{ type: gallery, key: case_studies }</code></li>
 </ul>
+<p>本页那三面 Logo 墙，就是同一种区块读三份不同的数据。</p>
 </div>
 </details>
 <details class="td-landing-faq">
 <summary><span>没写 <code>url</code> 会怎样？</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>这一项按普通内容渲染，不会留下空链接或坏链接。</p>
+<div class="td-landing-faq__answer"><p>这一项按普通内容渲染——不留空链接，也不留坏链接。上面三张卡片里，有两张就没写 <code>url</code>。</p>
 </div>
 </details>
 </div>
@@ -537,14 +545,14 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <section id="markdown" class="td-landing-section td-landing-markdown-section" aria-labelledby="markdown-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>自由 Markdown</span><i aria-hidden="true"></i></p>
-<h2 id="markdown-title">特殊内容的逃生口</h2>
-<p class="td-landing-section__description">预定义的集合表达不了时，用 Markdown 区块。</p>
+<h2 id="markdown-title">逃生口</h2>
+<p class="td-landing-section__description">预定义的集合表达不了时，把 Markdown 直接写进数据文件。</p>
 </header>
-<div class="td-landing-markdown"><p>这一整块都由数据渲染而来，支持段落、<a href="https://gohugo.io/">链接</a>与列表：</p>
+<div class="td-landing-markdown"><p>这一段是同一个 YAML 文件里的一个 <code>body:</code> 字符串。它支持段落、<a href="https://gohugo.io/">链接</a>与列表：</p>
 <ul>
 <li>不需要自定义模板；</li>
 <li>就是普通的 Goldmark 渲染；</li>
-<li>与落地页其余部分同样的宽度与节奏。</li>
+<li>与上面每一块同样的宽度与竖向节奏。</li>
 </ul>
 </div>
 </div>
@@ -558,7 +566,7 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <article>
 <span>01</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
-<h3>内容优先</h3><p>多数改动只是 YAML 里的纯文本。</p>
+<h3>内容优先</h3><p>多数改动只是数据文件里的纯文本。</p>
 </article>
 <article>
 <span>02</span>
@@ -568,7 +576,7 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <article>
 <span>03</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-code-branch" aria-hidden="true"></i></div>
-<h3>向后兼容</h3><p>没有 <code>sections</code> 时，既有的首页数据保持原来的顺序。</p>
+<h3>向后兼容</h3><p>没有 <code>sections</code> 列表的首页数据，保持它一直以来的顺序。</p>
 </article>
 </div>
 </div>
@@ -576,8 +584,8 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 <section id="showcase" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="showcase-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>样例站点</span><i aria-hidden="true"></i></p>
-<h2 id="showcase-title">十二个站点，同一套主题</h2>
-<p class="td-landing-section__description">英文站、中文站与双语站；文档树、书籍、公司主页与两页项目站。它们都以 Hugo Module 的方式钉住 OINK。</p>
+<h2 id="showcase-title">十三个站点，同一套主题</h2>
+<p class="td-landing-section__description">英文站、中文站与双语站；文档树、两本译作、一个公司主页，还有一个只有两页的项目站。它们都以 Hugo Module 的方式钉住 OINK。</p>
 </header>
 <div class="td-landing-logo-wall" style="--td-columns: 3"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
 <div class="td-landing-logo-card__copy"><h3>pigsty.io</h3><p>Pigsty 文档 · 英文</p>
@@ -646,7 +654,13 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </a>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>tpme.vonng.com</h3><p>双语书籍</p>
+<div class="td-landing-logo-card__copy"><h3>ddia.vonng.com</h3><p>书籍译本</p>
+</div><a class="td-landing-card-link" href="https://ddia.vonng.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">ddia.vonng.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>tpme.vonng.com</h3><p>书籍译本</p>
 </div><a class="td-landing-card-link" href="https://tpme.vonng.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">tpme.vonng.com</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
@@ -654,12 +668,12 @@ title="切换配色" aria-label="切换配色" aria-expanded="false"><i class="t
 </div>
 </div>
 </section>
-<section id="cta" class="td-landing-section td-landing-cta-section" aria-label="拼出你自己的落地页。">
+<section id="cta" class="td-landing-section td-landing-cta-section" aria-label="把这个文件拿走。">
 <div class="td-site-container">
 <div class="td-landing-final-cta">
-<p><strong>拼出你自己的落地页。</strong><span>拷走这个文件，换掉示例内容，重排区块列表。</span>
+<p><strong>把这个文件拿走。</strong><span>拷走 <code>data/home/zh.yaml</code>，删掉你用不上的区块，剩下的重写一遍。</span>
 </p>
-<div class="td-landing-final-cta__actions"><a class="td-landing-button td-landing-button--primary" href="/zh/docs/">开始使用 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+<div class="td-landing-final-cta__actions"><a class="td-landing-button td-landing-button--primary" href="/zh/docs/">阅读文档 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
 </div>
 </div>
 </div>

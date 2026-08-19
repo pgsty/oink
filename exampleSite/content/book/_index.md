@@ -1,6 +1,6 @@
 ---
-title: OINK Book Demo
-description: Press components
+title: Book
+description: Book Press Kit
 type: book
 icon: fa-solid fa-book
 weight: 30

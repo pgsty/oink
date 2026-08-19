@@ -1,4 +1,4 @@
 ---
 title: Oink Example
-description: A complete example of OINK's composable landing page.
+description: Every block on this landing page comes from one YAML file.
 ---

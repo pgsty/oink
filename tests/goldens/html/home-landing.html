@@ -40,7 +40,7 @@ document.documentElement.setAttribute('data-theme', theme);
 </script>
 <meta name="robots" content="index, follow">
 <title>Oink Example</title>
-<meta name="description" content="A complete example of OINK&#39;s composable landing page.">
+<meta name="description" content="Every block on this landing page comes from one YAML file.">
 <link rel="canonical" href="https://example.org/">
 <link rel="alternate" hreflang="en-US" href="https://example.org/">
 <link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/">
@@ -48,19 +48,19 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:url" content="https://example.org/">
 <meta property="og:site_name" content="Oink Example">
 <meta property="og:title" content="Oink Example">
-<meta property="og:description" content="A complete example of OINK&#39;s composable landing page.">
+<meta property="og:description" content="Every block on this landing page comes from one YAML file.">
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Oink Example">
-<meta itemprop="description" content="A complete example of OINK&#39;s composable landing page.">
+<meta itemprop="description" content="Every block on this landing page comes from one YAML file.">
 <meta itemprop="datePublished" content="2026-08-18T00:00:00+00:00">
 <meta itemprop="dateModified" content="2026-08-18T00:00:00+00:00">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
 <meta name="twitter:title" content="Oink Example">
-<meta name="twitter:description" content="A complete example of OINK&#39;s composable landing page.">
+<meta name="twitter:description" content="Every block on this landing page comes from one YAML file.">
 <link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
 <link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
 <script>
@@ -189,16 +189,18 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <div class="td-landing-hero__copy">
 <p class="td-landing-hero__eyebrow">
 <span class="td-landing-status-dot" aria-hidden="true"></span>
-<span>Composable · Local-first · Hugo-only</span>
+<span>Hugo-only · Local-first · Zero npm</span>
 </p>
-<h1 class="td-landing-hero__title" id="hero-title">Build <strong>clearer</strong> documentation.</h1><p class="td-landing-hero__lead">OINK turns <code>data/home.yaml</code> into a landing page. Ordinary text fields support <a href="https://gohugo.io/content-management/data-sources/">Markdown links</a>.</p>
+<h1 class="td-landing-hero__title" id="hero-title">
+<span>Plain Markdown in.</span>
+<span>Modern docs out.</span></h1><p class="td-landing-hero__lead">Search, i18n, versioning, charts, and math — built into the theme. The entire build step is one command: <code>hugo</code>.</p>
 <p class="td-landing-hero__note"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>No npm, CDN, or JavaScript framework required.</span></p>
 <div class="td-landing-hero__actions">
 <a class="td-landing-button td-landing-button--primary" href="/docs/"><i class="fa-solid fa-book-open" aria-hidden="true"></i>
-<span>Read the docs</span>
+<span>Browse the components</span>
 </a>
-<a class="td-landing-button td-landing-button--ghost" href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i>
-<span>View on GitHub</span>
+<a class="td-landing-button td-landing-button--ghost" href="https://github.com/pgsty/oink/blob/main/exampleSite/data/home/en.yaml" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-file-code" aria-hidden="true"></i>
+<span>Read this page&rsquo;s YAML</span>
 </a>
 </div>
 </div>
@@ -206,39 +208,39 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </section>
 <section id="metrics" class="td-landing-section td-landing-metrics" aria-labelledby="metrics-title">
 <div class="td-site-container"><header class="td-landing-section__head td-landing-section__head--compact">
-<p class="td-landing-section__eyebrow"><span>At a glance</span><i aria-hidden="true"></i></p>
-<h2 id="metrics-title">Small surface, broad reach</h2>
-<p class="td-landing-section__description">Metrics accept optional links and supporting text.</p>
+<p class="td-landing-section__eyebrow"><span>Count it yourself</span><i aria-hidden="true"></i></p>
+<h2 id="metrics-title">What this page cost</h2>
+<p class="td-landing-section__description">Four numbers, all of them checkable against the repository.</p>
 </header>
 <div class="td-landing-metric-grid" style="--td-columns: 4">
-<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>12</strong><span>Section types</span>
+<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>Data file</span><small><code>data/home/en.yaml</code></small>
 </div>
-<div class="td-landing-metric"><i class="fa-solid fa-file-code" aria-hidden="true"></i><strong>1</strong><span>Data file</span>
+<div class="td-landing-metric"><i class="fa-solid fa-layer-group" aria-hidden="true"></i><strong>14</strong><span>Blocks on this page</span><small>from a registry of 22 section types</small>
 </div>
-<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>Runtime dependencies</span>
+<div class="td-landing-metric"><i class="fa-solid fa-code" aria-hidden="true"></i><strong>0</strong><span>Templates edited</span><small>order is data, not markup</small>
 </div>
-<div class="td-landing-metric"><i class="fa-solid fa-bolt" aria-hidden="true"></i><strong>100%</strong><span>Hugo-rendered</span>
+<div class="td-landing-metric"><i class="fa-solid fa-plug" aria-hidden="true"></i><strong>0</strong><span>Runtime dependencies</span><small>no npm, no CDN, no PostCSS</small>
 </div>
 </div>
 </div>
 </section>
 <section id="capabilities" class="td-landing-section td-landing-capabilities" aria-labelledby="capabilities-title">
 <div class="td-site-container"><header class="td-landing-section__head">
-<p class="td-landing-section__eyebrow"><span>Existing specialist section</span><i aria-hidden="true"></i></p>
-<h2 id="capabilities-title">Keep the expressive layouts</h2>
-<p class="td-landing-section__description">Complex feature rows remain configurable alongside the new generic sections.</p>
+<p class="td-landing-section__eyebrow"><span>How it works</span><i aria-hidden="true"></i></p>
+<h2 id="capabilities-title">The section list is the layout</h2>
+<p class="td-landing-section__description">One dispatcher reads the array; each entry renders through its own partial.</p>
 </header>
 <article class="td-landing-module">
-<div class="td-landing-module__copy"><p class="td-landing-module__ref">01 / SECTION DISPATCH</p>
-<h3><a href="https://gohugo.io/templates/partial/" target="_blank" rel="noopener noreferrer">Reorder without editing HTML</a></h3><p class="td-landing-module__motto">◇ A small dispatcher, independent partials</p>
-<ul><li>Put Section names in the <code>sections</code> array.</li><li>Use <code>key</code> to reuse one type with different data.</li><li>Set <code>enabled: false</code> for temporary removal.</li></ul><p class="td-landing-module__value">Structure is data now, not a hard-coded template.</p>
+<div class="td-landing-module__copy"><p class="td-landing-module__ref">01 / SECTION LIST</p>
+<h3><a href="https://gohugo.io/templates/partial/" target="_blank" rel="noopener noreferrer">Move a line, move a section</a></h3><p class="td-landing-module__motto">◇ One dispatcher, one partial per section type</p>
+<ul><li>Name a section in the <code>sections</code> array and it renders.</li><li>Point two entries at different <code>key</code> values to reuse one type.</li><li>Take a block down with <code>enabled: false</code> — no deletion required.</li></ul><p class="td-landing-module__value">Page structure is data. Reordering it is a text edit, not a template change.</p>
 </div>
 <div class="td-landing-codeplate" data-bs-theme="dark" aria-label="Landing page section configuration">
-<div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home.yaml</b></div>
-<pre><code><span class="c"># </span>compose the page
+<div class="td-landing-codeplate__head"><span><i></i><i></i><i></i></span><b>data/home/en.yaml</b></div>
+<pre><code><span class="c"># </span>this page
 <span class="p">- </span>hero
-<span class="ok">- </span>logo_wall
-<span class="ok">- </span>faq
+<span class="ok">- </span>metrics
+<span class="ok">- </span>capabilities
 </code></pre>
 </div>
 </article>
@@ -246,20 +248,20 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </section>
 <section id="cards" class="td-landing-section td-landing-cards-section" aria-labelledby="cards-title">
 <div class="td-site-container"><header class="td-landing-section__head">
-<p class="td-landing-section__eyebrow"><span>Generic cards</span><i aria-hidden="true"></i></p>
-<h2 id="cards-title">Configure the common case</h2>
-<p class="td-landing-section__description">Use cards for features, benefits, services, or any short collection.</p>
+<p class="td-landing-section__eyebrow"><span>Cards</span><i aria-hidden="true"></i></p>
+<h2 id="cards-title">Three map entries, three cards</h2>
+<p class="td-landing-section__description">The general-purpose collection — features, benefits, services, any short list of things.</p>
 </header>
 <div class="td-landing-card-grid" style="--td-columns: 3">
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">Rich text</p><h3>Markdown-aware</h3><div class="td-landing-card__description"><p>Descriptions can contain <strong>emphasis</strong>, <code>code</code>, and <a href="https://commonmark.org/">links</a>.</p>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div><p class="td-landing-card__meta">Rich text</p><h3>Markdown-aware</h3><div class="td-landing-card__description"><p>Descriptions carry <strong>emphasis</strong>, <code>code</code>, and <a href="https://commonmark.org/">links</a>.</p>
 </div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer">Learn more
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">Robust data</p><h3>Link-optional</h3><div class="td-landing-card__description"><p>Leave out <code>url</code> and the card remains valid, readable content.</p>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-link-slash" aria-hidden="true"></i></div><p class="td-landing-card__meta">Robust data</p><h3>Link-optional</h3><div class="td-landing-card__description"><p>This card has no <code>url</code>, and is still valid, readable content.</p>
 </div>
 </article>
-<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">Multiple instances</p><h3>Reusable</h3><div class="td-landing-card__description"><p>Point two Section entries at different keys with the same <code>type</code>.</p>
+<article class="td-landing-card"><div class="td-landing-card__media"><i class="fa-solid fa-repeat" aria-hidden="true"></i></div><p class="td-landing-card__meta">Multiple instances</p><h3>Reusable</h3><div class="td-landing-card__description"><p>Two entries, one <code>type</code>, different <code>key</code> — the pattern used three times below.</p>
 </div>
 </article>
 </div>
@@ -268,8 +270,8 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="components" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="components-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>Component reference</span><i aria-hidden="true"></i></p>
-<h2 id="components-title">Engineering content, loaded on demand</h2>
-<p class="td-landing-section__description">Each component has its own page and a defined shape in HTML, print, Markdown and RSS.</p>
+<h2 id="components-title">Twenty-one components, loaded only where used</h2>
+<p class="td-landing-section__description">Each has its own page and a defined shape in HTML, print, Markdown and RSS. The runtime behind a chart, a diagram, or a terminal cast ships on the pages that use it and nowhere else — this landing page loads none of them.</p>
 </header>
 <div class="td-landing-logo-wall" style="--td-columns: 3"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-chart-line" aria-hidden="true"></i></div>
 <div class="td-landing-logo-card__copy"><h3>ECharts</h3><p><code>echarts</code> data fence</p>
@@ -402,28 +404,28 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </section>
 <section id="ecosystem" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="ecosystem-title">
 <div class="td-site-container"><header class="td-landing-section__head">
-<p class="td-landing-section__eyebrow"><span>Logo wall</span><i aria-hidden="true"></i></p>
-<h2 id="ecosystem-title">Works with familiar tools</h2>
-<p class="td-landing-section__description"><code>icon</code> accepts a Font Awesome class, an image path, or a simple symbol.</p>
+<p class="td-landing-section__eyebrow"><span>Dependencies</span><i aria-hidden="true"></i></p>
+<h2 id="ecosystem-title">The complete list, not an excerpt</h2>
+<p class="td-landing-section__description">Nothing else is installed, downloaded, or phoned home to. <code>icon</code> takes a Font Awesome class, an image path, or a bare symbol.</p>
 </header>
 <div class="td-landing-logo-wall" style="--td-columns: 4"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-bolt" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>Hugo</h3><p>Static site generator</p>
-</div><a class="td-landing-card-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Hugo</span>
+<div class="td-landing-logo-card__copy"><h3>Hugo Extended</h3><p>The only build tool</p>
+</div><a class="td-landing-card-link" href="https://gohugo.io/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Hugo Extended</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-brands fa-markdown" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>Markdown</h3><p>Content format</p>
+<div class="td-landing-logo-card__copy"><h3>Markdown</h3><p>The content format</p>
 </div><a class="td-landing-card-link" href="https://commonmark.org/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">Markdown</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-brands fa-git-alt" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>Git</h3><p>Version control</p>
+<div class="td-landing-logo-card__copy"><h3>Git</h3><p>The whole pipeline</p>
 </div>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><span aria-hidden="true">◉</span></div>
-<div class="td-landing-logo-card__copy"><h3>Offline</h3><p>Everything local</p>
+<div class="td-landing-logo-card__copy"><h3>Nothing else</h3><p>No lockfile to audit</p>
 </div>
 </article>
 </div>
@@ -432,12 +434,12 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="gallery" class="td-landing-section td-landing-gallery-section" aria-labelledby="gallery-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>Gallery</span><i aria-hidden="true"></i></p>
-<h2 id="gallery-title">Showcase pages, products, or examples</h2>
-<p class="td-landing-section__description">Supply screenshots through <code>image</code>, or use icons while the artwork is still being prepared.</p>
+<h2 id="gallery-title">Pages, products, or examples</h2>
+<p class="td-landing-section__description">Point each tile at a screenshot with <code>image</code>; icons stand in while the artwork is still being made, as they do here.</p>
 </header>
 <div class="td-landing-gallery" style="--td-columns: 3"><article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-book" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Information architecture</p><h3>Documentation portal</h3><div class="td-landing-gallery-card__description"><p>Present a focused route into the <a href="/docs/">documentation</a>.</p>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Information architecture</p><h3>Documentation portal</h3><div class="td-landing-gallery-card__description"><p>One deliberate route into the <a href="/docs/">documentation</a>.</p>
 </div><a class="td-landing-card-link" href="/docs/">Open example
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
@@ -445,13 +447,13 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-code" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API reference</h3><div class="td-landing-gallery-card__description"><p>Pair prose with generated reference material.</p>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">OpenAPI</p><h3>API reference</h3><div class="td-landing-gallery-card__description"><p>Prose beside generated reference material.</p>
 </div>
 </div>
 </article>
 <article class="td-landing-gallery-card">
 <div class="td-landing-gallery-card__media"><i class="fa-solid fa-newspaper" aria-hidden="true"></i></div>
-<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Updates</p><h3>Engineering blog</h3><div class="td-landing-gallery-card__description"><p>Publish releases, explanations, and decisions.</p>
+<div class="td-landing-gallery-card__body"><p class="td-landing-gallery-card__badge">Updates</p><h3>Engineering blog</h3><div class="td-landing-gallery-card__description"><p>Releases, explanations, and the decisions behind them.</p>
 </div>
 </div>
 </article>
@@ -461,10 +463,10 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="testimonials" class="td-landing-section td-landing-testimonials-section" aria-labelledby="testimonials-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>Comment wall</span><i aria-hidden="true"></i></p>
-<h2 id="testimonials-title">Let users speak</h2>
-<p class="td-landing-section__description">Each quote supports a name, avatar or icon, role, source URL, and Markdown comment.</p>
+<h2 id="testimonials-title">Placeholder quotes, real markup</h2>
+<p class="td-landing-section__description">Both quotes below are sample data. Each one takes a name, an avatar or icon, a role, a source link, and a Markdown comment.</p>
 </header>
-<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><p>“The configuration is readable enough that <strong>content owners</strong> can change the homepage themselves.”</p>
+<div class="td-landing-testimonial-grid" style="--td-columns: 2"><figure class="td-landing-testimonial"><blockquote><p>“The configuration is readable enough that <strong>content owners</strong> change the homepage themselves.”</p>
 </blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">A</span></div>
 <div><strong>Ada Example</strong><span>Documentation engineer</span></div><a class="td-landing-card-link" href="/" target="_blank" rel="noopener noreferrer">Source
@@ -472,7 +474,7 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </a>
 </figcaption>
 </figure>
-<figure class="td-landing-testimonial"><blockquote><p>“We reordered the Gallery and FAQ with a two-line YAML change.”</p>
+<figure class="td-landing-testimonial"><blockquote><p>“We moved the gallery above the FAQ by moving two lines.”</p>
 </blockquote>
 <figcaption><div class="td-landing-testimonial__avatar"><span aria-hidden="true">L</span></div>
 <div><strong>Lin Example</strong><span>Open-source maintainer</span></div>
@@ -484,8 +486,8 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="contributors" class="td-landing-section td-landing-contributors-section" aria-labelledby="contributors-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>Contributors</span><i aria-hidden="true"></i></p>
-<h2 id="contributors-title">Credit the people behind the work</h2>
-<p class="td-landing-section__description">Use image paths for avatars in production; symbols keep this example self-contained.</p>
+<h2 id="contributors-title">Credit the people, not the tooling</h2>
+<p class="td-landing-section__description">Production sites point <code>icon</code> at an avatar image; single letters keep this example self-contained.</p>
 </header>
 <div class="td-landing-contributor-grid" style="--td-columns: 3">
 <article class="td-landing-contributor"><div class="td-landing-contributor__avatar"><span aria-hidden="true">A</span></div>
@@ -508,27 +510,33 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="faq" class="td-landing-section td-landing-faq-section" aria-labelledby="faq-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>FAQ</span><i aria-hidden="true"></i></p>
-<h2 id="faq-title">Common questions</h2>
-<p class="td-landing-section__description">Answers use block Markdown, so lists and multiple paragraphs work as expected.</p>
+<h2 id="faq-title">What people ask about this page</h2>
+<p class="td-landing-section__description">Answers are block Markdown, so lists and multiple paragraphs work as written.</p>
 </header>
 <div class="td-landing-faq-list td-landing-faq-list--accordion">
 <details class="td-landing-faq" open>
-<summary><span>Can I use one <code>data/home.yaml</code> file?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>Yes. Single-language sites can use one file; multilingual sites can use <code>data/home/en.yaml</code>, <code>data/home/zh.yaml</code>, and so on.</p>
+<summary><span>Is it really one file?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>Everything between the navbar and the footer is. Navigation comes from <code>hugo.yaml</code>, the footer from <code>data/footer/en.yaml</code>, and every block in between from <code>data/home/en.yaml</code>.</p>
 </div>
 </details>
 <details class="td-landing-faq">
-<summary><span>Can I repeat a Section type?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>Yes. Give each entry a different <code>key</code>:</p>
+<summary><span>Does each language need its own file?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>A single-language site can use one <code>data/home.yaml</code>. This site is bilingual, so it uses <code>data/home/en.yaml</code> and <code>data/home/zh.yaml</code>.</p>
+</div>
+</details>
+<details class="td-landing-faq">
+<summary><span>Can one section type appear more than once?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
+<div class="td-landing-faq__answer"><p>Yes — give each entry a different <code>key</code>:</p>
 <ul>
 <li><code>{ type: gallery, key: products }</code></li>
 <li><code>{ type: gallery, key: case_studies }</code></li>
 </ul>
+<p>The three logo walls on this page are one section type reading three different blocks.</p>
 </div>
 </details>
 <details class="td-landing-faq">
 <summary><span>What happens when <code>url</code> is missing?</span><i class="fa-solid fa-plus" aria-hidden="true"></i></summary>
-<div class="td-landing-faq__answer"><p>The item renders as normal content without an empty or broken link.</p>
+<div class="td-landing-faq__answer"><p>The item renders as ordinary content — no empty link, no broken link. Two of the three cards above have no <code>url</code>.</p>
 </div>
 </details>
 </div>
@@ -537,14 +545,14 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="markdown" class="td-landing-section td-landing-markdown-section" aria-labelledby="markdown-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>Free-form Markdown</span><i aria-hidden="true"></i></p>
-<h2 id="markdown-title">An escape hatch for unique content</h2>
-<p class="td-landing-section__description">Use the Markdown Section when a predefined collection is unnecessary.</p>
+<h2 id="markdown-title">The escape hatch</h2>
+<p class="td-landing-section__description">When no predefined collection fits, write Markdown straight into the data file.</p>
 </header>
-<div class="td-landing-markdown"><p>This entire block is rendered from data. It supports paragraphs, <a href="https://gohugo.io/">links</a>, and lists:</p>
+<div class="td-landing-markdown"><p>This paragraph is a <code>body:</code> string in the same YAML file as everything above it. It takes paragraphs, <a href="https://gohugo.io/">links</a>, and lists:</p>
 <ul>
-<li>no custom template required;</li>
-<li>regular Goldmark rendering;</li>
-<li>the same landing-page width and visual rhythm.</li>
+<li>no custom template;</li>
+<li>ordinary Goldmark rendering;</li>
+<li>the same width and vertical rhythm as every other block.</li>
 </ul>
 </div>
 </div>
@@ -558,17 +566,17 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <article>
 <span>01</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-sliders" aria-hidden="true"></i></div>
-<h3>Content first</h3><p>Most changes are plain text in YAML.</p>
+<h3>Content first</h3><p>Most changes are plain text in a data file.</p>
 </article>
 <article>
 <span>02</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-universal-access" aria-hidden="true"></i></div>
-<h3>Accessible defaults</h3><p>Semantic sections, guarded links, and native FAQ disclosure controls.</p>
+<h3>Accessible defaults</h3><p>Semantic sections, guarded external links, and native FAQ disclosure controls.</p>
 </article>
 <article>
 <span>03</span>
 <div class="td-landing-principle__icon"><i class="fa-solid fa-code-branch" aria-hidden="true"></i></div>
-<h3>Backward compatible</h3><p>Existing home data keeps its previous order when <code>sections</code> is absent.</p>
+<h3>Backward compatible</h3><p>Home data without a <code>sections</code> list keeps the order it always had.</p>
 </article>
 </div>
 </div>
@@ -576,8 +584,8 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 <section id="showcase" class="td-landing-section td-landing-logo-wall-section" aria-labelledby="showcase-title">
 <div class="td-site-container"><header class="td-landing-section__head">
 <p class="td-landing-section__eyebrow"><span>Example sites</span><i aria-hidden="true"></i></p>
-<h2 id="showcase-title">Twelve sites, one theme</h2>
-<p class="td-landing-section__description">English, Chinese and bilingual sites; documentation trees, books, company pages and two-page project sites. All pin OINK as a Hugo module.</p>
+<h2 id="showcase-title">Thirteen sites, one theme</h2>
+<p class="td-landing-section__description">English, Chinese and bilingual; documentation trees, two translated books, a company page, and a project site that is two pages long. Every one of them pins OINK as a Hugo module.</p>
 </header>
 <div class="td-landing-logo-wall" style="--td-columns: 3"><article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
 <div class="td-landing-logo-card__copy"><h3>pigsty.io</h3><p>Pigsty docs · English</p>
@@ -646,7 +654,13 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </a>
 </article>
 <article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
-<div class="td-landing-logo-card__copy"><h3>tpme.vonng.com</h3><p>bilingual book</p>
+<div class="td-landing-logo-card__copy"><h3>ddia.vonng.com</h3><p>a translated book</p>
+</div><a class="td-landing-card-link" href="https://ddia.vonng.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">ddia.vonng.com</span>
+<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
+</article>
+<article class="td-landing-logo-card"><div class="td-landing-logo-card__media"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
+<div class="td-landing-logo-card__copy"><h3>tpme.vonng.com</h3><p>a translated book</p>
 </div><a class="td-landing-card-link" href="https://tpme.vonng.com/" target="_blank" rel="noopener noreferrer"><span class="visually-hidden">tpme.vonng.com</span>
 <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
 </a>
@@ -654,12 +668,12 @@ title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"
 </div>
 </div>
 </section>
-<section id="cta" class="td-landing-section td-landing-cta-section" aria-label="Assemble your landing page.">
+<section id="cta" class="td-landing-section td-landing-cta-section" aria-label="Take the file.">
 <div class="td-site-container">
 <div class="td-landing-final-cta">
-<p><strong>Assemble your landing page.</strong><span>Copy this file, replace the sample content, and reorder the Section list.</span>
+<p><strong>Take the file.</strong><span>Copy <code>data/home/en.yaml</code>, delete the blocks you do not need, and rewrite the rest.</span>
 </p>
-<div class="td-landing-final-cta__actions"><a class="td-landing-button td-landing-button--primary" href="/docs/">Get started <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+<div class="td-landing-final-cta__actions"><a class="td-landing-button td-landing-button--primary" href="/docs/">Read the docs <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
 </div>
 </div>
 </div>

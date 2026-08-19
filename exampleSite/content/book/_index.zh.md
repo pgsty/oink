@@ -1,6 +1,6 @@
 ---
-title: OINK 书籍样例
-description: 用于编写书籍的例子
+title: 书籍
+description: 在线书籍套件
 type: book
 icon: fa-solid fa-book
 weight: 30

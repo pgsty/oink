@@ -5,14 +5,19 @@
   Input dict:
     attributes  the hook's .Attributes map (Goldmark block attributes)
     allowed     slice of attribute names this hook consumes
-    position    .Position for error messages
-    kind        hook name for error messages ("table", "image", ...)
+    position    .Position for the warning messages
+    kind        hook name for the warning messages ("table", "image", ...)
 
   Rules (plan/design/components.md v5 §1.4):
     - allowed keys are returned under "consumed" (present keys only);
     - "class" is token-validated and passed through (site CSS is legitimate);
     - data-* and aria-* pass through unchanged;
-    - style, on*, and any other unknown key are build errors.
+    - style, srcdoc, on*, and any other unknown key warn and are dropped.
+      Nothing here stops the build: refusing to emit the attribute is the
+      protection, and --panicOnWarning keeps it fatal on publish. `on*` is
+      listed for completeness -- Goldmark strips an event handler from a block
+      attribute before this partial runs, so in practice the warning fires for
+      it only when a shortcode passes its own parameters through.
 
   Output dict: consumed (map), class (string), classes (slice), generic (map).
 */ -}}

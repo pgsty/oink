@@ -172,7 +172,10 @@ component parameters are not trusted as raw HTML. The shared attribute policy:
 - consumes a component-specific allowlist;
 - validates `class` as tokens;
 - passes `data-*` and `aria-*`;
-- rejects `style`, `on*`, `srcdoc`, and unknown keys.
+- warns on and drops `style`, `srcdoc`, `on*`, and unknown keys — the
+  protection is refusing to emit the attribute, not stopping the build, and
+  Goldmark has already removed an event handler from a block attribute before
+  the policy runs.
 
 The URL resolver rejects dangerous schemes and protocol-relative URLs where a
 local or explicit absolute URL is required. Remote URLs remain supported where

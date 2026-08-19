@@ -285,7 +285,10 @@ Recurring rules from those contracts:
   URL renders nothing, and neither needs to take the site down. Render hooks
   share one attribute policy (`content/attributes.html`): allowlisted keys are
   consumed, `class` (token-validated), `data-*`, and `aria-*` pass through;
-  `style`/`on*` and unknown keys warn and are dropped.
+  `style`, `srcdoc`, and unknown keys warn and are dropped. `on*` is refused
+  too, but Goldmark strips an event handler from a block attribute before the
+  policy sees it, so that warning fires only for a shortcode parameter — no
+  event handler reaches the output either way.
 - Public string parameters (captions, labels, titles) are plain text; only
   Markdown *bodies* (tab, card, field, image caption, Book bodies) are Markdown.
   Those bodies render as their own Goldmark document, so a footnote reference

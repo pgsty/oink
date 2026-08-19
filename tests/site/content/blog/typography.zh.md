@@ -3,6 +3,8 @@ title: 一篇排版回归文章
 description: 面向长文阅读与中日韩回退的紧凑样例。
 date: 2026-08-11
 weight: 10
+authors: [vonng, andy]
+series: [typography-notes]
 ---
 
 好的文档排版把阅读的舒适度与界面的信息密度分开。正文字体可以单独演进，

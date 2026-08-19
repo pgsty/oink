@@ -1,0 +1,25 @@
+{{- /* The head of an author's archive page: portrait, name, biography.
+
+An author profile has no store of its own. The term page *is* the profile:
+its `title` is the display name, its `description` is the one-line
+introduction, its body is the long one, and its `images` or bundled portrait
+is the avatar -- the same four keys any page carries, so a bilingual profile
+is an `_index.zh.md` and nothing more.
+
+The name is the page's `<h1>`; the biography follows as ordinary rendered
+content, so heading levels inside it stay beneath it.
+
+Input: an `authors` term page. Returns: markup. */ -}}
+{{- $descriptor := partial "authors-descriptor.html" . -}}
+<div class="td-content td-shell-blog-index td-author-profile">
+  <div class="td-author-profile__head">
+    {{ partial "authors-avatar.html" (dict "author" $descriptor "size" 96 "class" "td-author-profile__avatar") }}
+    <div class="td-author-profile__identity">
+      <h1 class="td-author-profile__name">{{ .Title }}</h1>
+      {{- with .Description }}
+      <p class="td-author-profile__description">{{ . | markdownify }}</p>
+      {{- end }}
+    </div>
+  </div>
+  {{ with partial "content/render.html" . }}<div class="td-shell-term-summary">{{ . }}</div>{{ end }}
+</div>

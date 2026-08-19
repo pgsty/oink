@@ -52,6 +52,8 @@ ui_categories_title: 分类
 ui_category_title: 分类
 ui_modules_title: 模块
 ui_module_title: 模块
+ui_authors_title: 作者
+ui_author_title: 作者
 ui_theme_toggle: 切换配色
 ui_language: 语言切换
 ui_theme: 主题颜色
@@ -71,6 +73,11 @@ ui_open_in_prompt: 请阅读 %s 的内容，以便我就此向你提问。
 ui_copy_markdown: 复制 Markdown 文本
 ui_copy_success: 已复制 Markdown
 ui_copy_error: 无法复制 Markdown
+ui_share: 分享
+ui_share_email: 邮件
+ui_copy_link: 复制链接
+ui_copy_link_success: 已复制链接
+ui_copy_link_error: 无法复制链接
 ui_code_copy: 复制
 ui_code_copy_label: 复制代码
 ui_code_copied: 已复制
@@ -210,3 +217,8 @@ book_toc: 全书目录
 book_draft: 草稿
 book_draft_notice: 本章仍在修订中。
 contributors_count: 位贡献者
+
+# Article series
+ui_series_title: 系列
+ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
+ui_series_next: "下一篇：{{ .Link }}"

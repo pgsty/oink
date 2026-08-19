@@ -1,6 +1,6 @@
 {{- /* Compile localized site commands into inert data. Configuration can
      reference a built-in action or a safe URL, never executable code. */ -}}
-{{- $allowedActions := slice "copy_markdown" "open_chatgpt" "open_claude" "view_markdown" "view_history" "edit_page" "create_issue" "print" "switch_theme" "switch_language" "switch_version" "open_github" -}}
+{{- $allowedActions := slice "copy_markdown" "copy_link" "open_chatgpt" "open_claude" "view_markdown" "view_history" "edit_page" "create_issue" "print" "switch_theme" "switch_language" "switch_version" "open_github" -}}
 {{- $allowedKeys := slice "id" "title" "description" "icon" "keywords" "url" "action" -}}
 {{- $defaultSite := site -}}
 {{- range hugo.Sites -}}

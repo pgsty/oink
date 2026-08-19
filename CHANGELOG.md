@@ -7,6 +7,75 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- The featured image on the article itself. The theme resolved one image per
+  page and rendered it in list rows and social cards, but never on the post,
+  so authors wrote the hero by hand: across the eleven consuming sites, 559
+  articles open with a literal `[![featured](...)](...)` above their first
+  paragraph, duplicating the `images` value the front matter already carries.
+  `params.ui.featured_image` renders it instead -- `banner` frames it above the
+  title in a fixed 16:9 figure so a run of articles keeps one rhythm, `wash`
+  lays it behind the article header at a tenth of its opacity, masked to
+  nothing before the text starts, so a post takes a colour from its subject
+  without spending any contrast on it. It draws from
+  `featured-image-resolve.html` like every other consumer, so the image at the
+  top of an article and the image its card carries cannot disagree, and it adds
+  no runtime, no Page Store flag, and no bundle member. The default is `none`
+  and blog articles are the only pages that call it, so a site that renders
+  nothing today renders exactly the same bytes. Front matter `featured_image`
+  turns one page or, in a cascade, one section on or off; an article with no
+  image renders nothing in either mode, because a section can carry the switch
+  for posts that do not all carry art.
+- Multiple authors, with profiles and bylines, from one taxonomy declaration.
+  `taxonomies: {author: authors}` is the entire switch -- the theme adds no
+  parameter. An author's profile is the term page: `title` is the display
+  name, `description` the one-line introduction, the body the long one, and
+  the avatar whatever `featured-image-resolve.html` selects for that page, so
+  `images:` and a bundled portrait follow the same rules an article's featured
+  image follows and a bilingual profile is an `_index.zh.md` beside it. There
+  is deliberately no `data/authors` second authority to disagree with the
+  page. An article head renders portraits and linked names in the order the
+  page listed them -- `GetTerms` preserves the front matter sequence, so
+  `authors:` is both the set and the order -- a list row renders the names,
+  and the blog feed declares `xmlns:dc` and emits one `<dc:creator>` per
+  author per item beside the untouched site-level `managingEditor`. Names are
+  separated by CSS gap rather than punctuation, because a connector word is a
+  per-locale decision and there are 32 of them. A term a post names but no one
+  gave a profile page still bylines: link title, initial, archive link. The
+  0.4 `author:` string is untouched where `authors` is absent -- 853 pages
+  across the family sites carry it and 180 put Markdown in it, so that branch
+  renders byte for byte as it did and neither form warns about the other.
+  Because the byline is now the author surface, the generic taxonomy chip row
+  skips the reserved plurals `authors` and `series` unless a site names them
+  in `params.taxonomy.page_header`.
+- A page-end share bar, behind `params.ui.share`. The page end had no way to
+  hand an article on: a reader who finished a post could rate it, see where it
+  came from, page to the next one, and comment, but the one thing a reader
+  actually does with a good post -- send it to someone -- had no affordance at
+  all, so every site grew its own. `params.ui.share` takes a list drawn from
+  `x`, `facebook`, `linkedin`, `reddit`, `hackernews`, `telegram`, `weibo`,
+  `email`, and `copy`; it is empty by default, a section cascade scopes the bar
+  to the tree that wants it, a page's own list replaces the inherited one, and
+  `share: false` opts one page out. An unknown target fails the build rather
+  than disappearing. Only a regular page renders the bar -- a list, a term, and
+  the home page have no single thing being shared -- and print, Markdown, and
+  RSS carry none of it.
+
+  What the bar does *not* do is the reason it can exist here at all. There is
+  no share count, no platform SDK, no iframe, and no third-party script or
+  stylesheet, which is what those three normally arrive as: one request per
+  page to a company the reader never chose, on every page, whether or not
+  anyone shares anything. Every target is a plain `<a href>` intent link
+  carrying only the page's own permalink and title, with no campaign
+  parameters attached, plus one local copy button. Nothing is fetched when the
+  site builds or when the page loads; the only request a share can cause is
+  the navigation the reader starts by clicking. A build with every target
+  enabled passes `bin/check-output-security.py` with no `--third-party`
+  allowance, and `bin/check-shell.py` now proves that on each run.
+- `copy_link`, a built-in action that copies the page's canonical URL. The
+  share bar renders it, and because it is a registry action rather than a
+  widget the Command Palette carries it on every page of every site -- the
+  half of the share bar that turns out to be useful even where no bar is
+  configured.
 - Upstream attribution in the page annotation. A site that vendors third-party
   documentation had to reimplement the notice itself: the two keys OINK
   shipped, `upstream_attribution` and `downstream_modified`, rendered a bare
@@ -40,9 +109,46 @@ All notable changes to OINK are documented here. The project follows
   child list -- has nothing to be a translation of and never shows it. The theme names no language in the
   string, and the switch cascades, so a partly translated site scopes the
   claim to the trees where it holds instead of asserting it site-wide.
+- A card form for the blog index. `params.ui.blog_index: cards` renders a blog
+  section's list page as a grid of the shared content cards --
+  `params.ui.blog_index_columns` wide, two between the md and xl breakpoints,
+  one below md -- instead of the row list, which stays the default. A site
+  whose posts lead with an image had no way to show it at more than
+  250x125 px; a card gives it a 16:9 crop above the title, the date and
+  section line, and a three-line summary, and nothing else. Year grouping,
+  pagination, and `manual_link` external semantics are the same in both forms,
+  so the choice is presentational: the row output is unchanged to the byte.
+  Front matter `blog_index` on the blog root, or its cascade, overrides the
+  site value per section. The card's lead image goes through Hugo's `.Fill`
+  whenever the resource can be processed, so a grid of posts does not download
+  a full-size original per card. There is no reader-side switch between the
+  forms, and term and taxonomy pages keep the row list.
+- Article series. Declaring the taxonomy -- `taxonomies: {series: series}` --
+  is the whole switch: no theme parameter, no metadata file, no cover model.
+  The term page `content/series/<name>/_index.md` is the introduction, and a
+  `_index.zh.md` beside it makes the pair bilingual. An article names
+  `series: [<name>]` and may add `series_weight` to place itself, and gets a
+  strip above its body naming the series, its position, the next part, and the
+  whole list behind a `<details>` -- no JavaScript, no bundle member. Reading
+  order is the theme's own, because a term page cannot supply it: an unweighted
+  term arrives newest first, a mixed one puts unweighted members before weight
+  1, and the taxonomy weight reaches neither `Page.Weight` nor `GroupByParam`.
+  `series-pages.html` resolves it once -- weighted members ascending, the rest
+  by ascending date, `Path` breaking a tie -- and the strip and the term page
+  both read it, so they can never disagree about which article is part 2. A
+  series term page therefore changes from reverse-date to reading order, which
+  is the feature. A member of several series shows one strip, for the first
+  term it names; a series of one shows none. `series` and `authors` both stay
+  out of the default taxonomy chips row, since each has a surface of its own.
+  A series is a reading path through articles that stand alone: numbering,
+  cross-references, and aggregate output remain Book's.
 
 ### Changed
 
+- Page-end order is now Share, Feedback, Annotation, Pager, Comments. Share
+  leads because it is the only block that points outward, and because a reader
+  who has decided to pass a page on has decided it before being asked how the
+  page went. Sites that enable neither share nor feedback see no change.
 - `upstream_attribution` is now `upstream_link` and needs the companion keys
   above; `downstream_modified` is now `upstream_modified`. Both old names fail
   the build and name their replacement.

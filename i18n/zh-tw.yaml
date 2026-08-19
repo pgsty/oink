@@ -50,6 +50,8 @@ ui_categories_title: 分類
 ui_category_title: 分類
 ui_modules_title: 模組
 ui_module_title: 模組
+ui_authors_title: 作者
+ui_author_title: 作者
 ui_theme_toggle: 切換配色
 ui_language: 語言切換
 ui_theme: 主題顏色
@@ -138,6 +140,11 @@ ui_skip_to_content: 跳至主要內容
 ui_copy_markdown: 複製 Markdown 文字
 ui_copy_success: 已複製 Markdown
 ui_copy_error: 無法複製 Markdown
+ui_share: 分享
+ui_share_email: 郵件
+ui_copy_link: 複製連結
+ui_copy_link_success: 已複製連結
+ui_copy_link_error: 無法複製連結
 ui_code_copy: 複製
 ui_code_copy_label: 複製程式碼
 ui_code_copied: 已複製
@@ -211,3 +218,8 @@ book_toc: 全書目錄
 book_draft: 草稿
 book_draft_notice: 本章仍在修訂中。
 contributors_count: 位貢獻者
+
+# Article series
+ui_series_title: 系列
+ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
+ui_series_next: "下一篇：{{ .Link }}"

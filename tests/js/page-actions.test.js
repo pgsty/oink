@@ -250,9 +250,77 @@ async function testTitleMenu() {
   assert.equal(status.textContent, 'Markdown copied');
 }
 
+/* Scenario 3: the share bar's copy control — its own context root, its own
+   wording, and no dependency on the title menu being present. */
+async function testShareCopy() {
+  const status = { textContent: '' };
+  const root = {
+    dataset: { tdTCopied: 'Link copied', tdTCopyError: 'Could not copy the link' },
+    querySelector(selector) {
+      return selector === '[data-td-page-context-status]' ? status : null;
+    },
+  };
+  const events = { run: [], timers: [] };
+  let outcome = Promise.resolve();
+  const share = control('copy_link', root);
+  share.dataset.tdUrl = 'https://example.org/blog/post/';
+  const bare = control('copy_link', null); // no context root, no data-td-url
+  const fakeWindow = {
+    OinkActions: {
+      get(id) {
+        return id === 'copy_link'
+          ? { id, kind: 'copy', available: true, url: 'https://example.org/blog/post/' }
+          : null;
+      },
+      preloadMarkdown() { return Promise.resolve(); },
+      run(id, context) { events.run.push({ id, context }); return outcome; },
+      resolveUrl() { return null; },
+    },
+    requestAnimationFrame(callback) { callback(); },
+    setTimeout(callback) { events.timers.push(callback); },
+  };
+  const fakeDocument = {
+    querySelectorAll() { return [share, bare]; },
+    querySelector() { return null; },
+  };
+  vm.runInNewContext(source, { window: fakeWindow, document: fakeDocument, Promise });
+
+  // The control's own URL wins, and the confirmation flips the button itself.
+  share.listeners.get('click').handler();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(events.run[0].id, 'copy_link');
+  assert.equal(events.run[0].context.source, 'page');
+  assert.equal(events.run[0].context.value.url, 'https://example.org/blog/post/');
+  assert.equal(share.classList.contains('td-is-copied'), true);
+  assert.equal(status.textContent, 'Link copied');
+  events.timers[0]();
+  assert.equal(share.classList.contains('td-is-copied'), false);
+
+  // No data-td-url and no context root: the registry falls back to the
+  // descriptor's URL and nothing throws on the way in or out.
+  bare.listeners.get('click').handler();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(events.run[1].id, 'copy_link');
+  assert.equal(events.run[1].context.source, 'page');
+  assert.equal(events.run[1].context.value, null);
+  assert.equal(bare.classList.contains('td-is-copied'), true);
+
+  // A denied clipboard announces the failure wording instead of the success.
+  outcome = Promise.reject(new Error('clipboard_failed'));
+  status.textContent = '';
+  share.listeners.get('click').handler();
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(status.textContent, 'Could not copy the link');
+}
+
 (async () => {
   await testBindings();
   await testTitleMenu();
+  await testShareCopy();
   console.log('page action DOM binding checks passed');
 })().catch((error) => {
   console.error(error);

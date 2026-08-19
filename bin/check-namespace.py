@@ -62,7 +62,7 @@ THIRD_PARTY_CLASS = re.compile(
     # Chroma / Hugo highlighting
     r"|chroma$|highlight$|line$|lnt?$|lntable$|lntd$|lnlinks$|hl$|cl$|language-|[a-z]{1,3}\d?$"
     # Hugo / Goldmark
-    r"|footnotes$|footnote-|task-list-item$"
+    r"|footnotes$|footnote-|task-list-item$|pagination-default$"
     # Giscus, Swagger UI, ReDoc, Mermaid, asciinema, external SVG loader
     r"|giscus|swagger|redoc|mermaid|ap-|markmap|drawio|DocSearch|gsc?-|gsc"
     r")"

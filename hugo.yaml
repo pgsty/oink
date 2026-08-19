@@ -63,6 +63,10 @@ params:
     breadcrumb: true
     section_index: list # list | cards
     section_index_columns: 2 # card columns when section_index is cards
+    # Form of the blog section list pages. Front matter `blog_index` (on the
+    # blog root, or through its cascade) overrides it per section.
+    blog_index: list # list | cards
+    blog_index_columns: 3 # card columns when blog_index is cards
     lastmod_commit: subject # subject | hash | none
     # Page provenance / revision block at the end of a page. Front matter
     # `annotation: false` turns it off for one page. Its upstream attribution
@@ -90,6 +94,12 @@ params:
     shell_types: [docs, book, blog, swagger]
     docs_section: docs
     blog_section: blog
+    # How a blog article presents the featured image `images` selects:
+    # none | banner (a framed figure above the title) | wash (the image
+    # behind the article header at a low opacity). Front matter
+    # `featured_image` overrides it for one page or, in a cascade, one
+    # section. An article that carries no image renders nothing either way.
+    featured_image: none
     # Root of the docs sidebar tree: section (the docs section itself) or
     # home (the whole site).
     docs_sidebar_root: section
@@ -112,6 +122,14 @@ params:
     # Draft state is always labeled in the sidebar; this optional banner adds
     # an explicit notice at the start of draft book pages.
     book_draft_banner: false
+    # Page-end share bar: a list drawn from
+    # x | facebook | linkedin | reddit | hackernews | telegram | weibo |
+    # email | copy. Empty means no bar. Every entry is a plain link (or the
+    # local copy button), never a platform script or a share count. Front
+    # matter `share: [x, copy]` replaces the list for one page and
+    # `share: false` turns its bar off; a section cascade scopes the bar to,
+    # say, the blog.
+    share: []
     # One-click structured docs feedback. The theme calls the site's existing
     # gtag integration when present; no endpoint or free-text form is used.
     feedback:

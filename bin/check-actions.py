@@ -24,6 +24,7 @@ CONTRACT_SCRIPT = ROOT / "bin" / "check-navigation-contract.py"
 # the navbar control order — version, language, theme (keyboard-nav contract).
 BUILTINS = [
     "copy_markdown",
+    "copy_link",
     "open_chatgpt",
     "open_claude",
     "view_markdown",
@@ -431,6 +432,22 @@ def main() -> int:
                     require(
                         html.count('data-td-action="print"') == 0,
                         f"{deployment}/{lang} print action must not render on the page",
+                    )
+                    # copy_link is Palette-only: it renders on a page only
+                    # where the share bar puts it, and this fixture has none.
+                    require(
+                        html.count('data-td-action="copy_link"') == 0,
+                        f"{deployment}/{lang} copy_link action must not render without a share bar",
+                    )
+                    require(
+                        page_placed["copy_link"]["url"].startswith("https://")
+                        and page_placed["copy_link"]["url"].endswith(
+                            f"{prefix}{lang}/docs/guides/tutorial/"
+                        )
+                        and page_placed["copy_link"]["placements"]
+                        == {"page": False, "palette": True},
+                        f"{deployment}/{lang} copy_link does not carry the page permalink for the Palette: "
+                        + page_placed["copy_link"]["url"],
                     )
                     require(
                         html.count("data-td-page-actions-toggle") == 1,

@@ -538,7 +538,8 @@
         }
         var completedInPlace = result && (
           result.theme ||
-          (result.action && result.action.id === 'copy_markdown')
+          (result.action &&
+            (result.action.id === 'copy_markdown' || result.action.id === 'copy_link'))
         );
         if (completedInPlace) {
           choiceState = null;

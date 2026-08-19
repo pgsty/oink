@@ -23,7 +23,7 @@
   {{- $pages = $pages | first $limit }}
 {{- end }}
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>{{ with .Title }}{{ . }} on {{ end }}{{ .Site.Title }}</title>
     <link>{{ .Permalink }}</link>
@@ -51,6 +51,9 @@
         <link>{{ .Permalink }}</link>
         <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
         {{ with $authorEmail }}<author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>{{ end }}
+        {{- /* RSS 2.0 `author` is an address, so a per-item byline needs Dublin
+               Core. The site-level managingEditor above is untouched. */ -}}
+        {{ range partial "authors-resolve.html" . }}<dc:creator>{{ .name | transform.XMLEscape | safeHTML }}</dc:creator>{{ end }}
         <guid>{{ .Permalink }}</guid>
         <description>{{ $description | transform.XMLEscape | safeHTML }}</description>
       </item>

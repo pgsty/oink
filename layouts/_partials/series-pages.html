@@ -1,0 +1,51 @@
+{{- /*
+  Reading order for one series term.
+
+  A term page's default order cannot carry it. Hugo hands out the members of a
+  fully weighted term ascending, but a term with no weights arrives newest
+  first -- the reverse of "part 1 -> part N" -- and in a term where only some
+  members are weighted the unweighted ones sort *before* weight 1. The theme
+  therefore owns the order, and the article strip and the term page both read
+  it from here.
+
+  Two things a taxonomy weight is not, both measured on Hugo 0.164.0: it is
+  not Page.Weight, which is the page's own weight and stays 0; and it is not
+  reachable through GroupByParam, which finds no such parameter and returns no
+  groups at all. `index .Params "series_weight"` reads it and `where` matches
+  on it, so the ordering is built from those two.
+
+  Mirrors the weighted-first contract of shell/blog-pages.html, turned around
+  to point forward:
+
+    1. members that declare series_weight, ascending by that value;
+    2. the rest by date ascending -- publication order is reading order;
+    3. Path breaks a tie, which keeps bilingual pairs stable.
+
+  A series is clearest when every member declares a weight or none does; the
+  mixed form is defined here rather than left to Hugo, not encouraged.
+
+  Input: a series term page. Returns: its members, in reading order.
+*/ -}}
+{{- $pages := .Pages -}}
+{{- $ordered := slice -}}
+{{- $dateLayout := "2006-01-02T15:04:05.999999999Z07:00" -}}
+
+{{- $weighted := where $pages "Params.series_weight" "!=" nil -}}
+{{- $weights := slice -}}
+{{- range $weighted -}}
+  {{- $weights = $weights | append (index .Params "series_weight") -}}
+{{- end -}}
+{{- range $weight := (sort (uniq $weights)) -}}
+  {{- range sort (where $weighted "Params.series_weight" $weight) "Path" "asc" -}}
+    {{- $ordered = $ordered | append . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $unweighted := where $pages "Params.series_weight" "==" nil -}}
+{{- range $unweighted.GroupByDate $dateLayout "asc" -}}
+  {{- range sort .Pages "Path" "asc" -}}
+    {{- $ordered = $ordered | append . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $ordered -}}

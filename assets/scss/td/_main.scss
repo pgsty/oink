@@ -15,6 +15,7 @@
 
 @import 'support/utilities';
 @import 'blog';
+@import 'byline';
 @import 'code';
 @import 'chroma';
 @import 'footer';
@@ -26,6 +27,7 @@
 @import 'contributors';
 @import 'alerts';
 @import 'content';
+@import 'share';
 @import 'giscus';
 @import 'search';
 @import 'language-selector';
@@ -49,6 +51,7 @@
 @import 'shell/toc';
 @import 'shell/search';
 @import 'shell/blog';
+@import 'shell/featured';
 @import 'shell/page-context';
 @import 'shell/kbd-nav';
 

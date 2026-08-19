@@ -1,7 +1,14 @@
 {{- /* One page-end composition for every reading layout. Do not reproduce
-     this order in individual content templates. */ -}}
+     this order in individual content templates.
+
+     The order follows what a reader does after the last paragraph: hand the
+     page on, say whether it helped, see where it came from, go to the next
+     one, and join the discussion. Share leads because it is the only block
+     that points outward, and because a reader who has decided to pass a page
+     on has decided it before being asked how it went. */ -}}
 {{- $commentsState := partial "comments-state.html" . -}}
 <div class="td-page-end">
+  {{ partial "share/bar.html" . }}
   {{ partial "feedback.html" . }}
   {{ partial "page-annotation.html" . }}
   {{ partial "pager.html" . }}

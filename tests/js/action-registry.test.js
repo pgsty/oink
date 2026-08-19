@@ -9,6 +9,7 @@ const registryModule = require(
 
 const builtinIds = [
   'copy_markdown',
+  'copy_link',
   'open_chatgpt',
   'open_claude',
   'view_markdown',
@@ -117,6 +118,10 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     kind: 'copy',
     url: '/preview/en/docs/page/index.md',
   });
+  replace('copy_link', {
+    kind: 'copy',
+    url: 'https://example.org/preview/en/docs/page/',
+  });
   replace('open_chatgpt', {
     kind: 'url',
     url: 'https://chatgpt.com/?prompt=build-time',
@@ -207,6 +212,20 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
   await registry.run('copy_markdown', { source: 'palette' });
   assert.equal(events.fetched.length, 1, 'markdown was fetched more than once');
   assert.deepEqual(events.copied, ['# Page', '# Page']);
+
+  // copy_link writes a URL, so it never touches the Markdown output.
+  await registry.run('copy_link', { source: 'palette' });
+  assert.equal(events.copied[2], 'https://example.org/preview/en/docs/page/');
+  await registry.run('copy_link', {
+    source: 'page',
+    value: { url: '/preview/en/docs/other/' },
+  });
+  assert.equal(events.copied[3], 'https://example.org/preview/en/docs/other/');
+  assert.equal(events.fetched.length, 1, 'copy_link fetched a document');
+  await assert.rejects(
+    registry.run('copy_link', { value: { url: 'javascript:alert(1)' } }),
+    { code: 'unsafe_url' },
+  );
 
   await registry.run('view_markdown');
   assert.deepEqual(events.opened[0], {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
 <channel>
 <title>Blog on Oink Example</title>
 <link>https://example.org/blog/</link>
@@ -33,6 +33,7 @@
 <title>A typography regression article</title>
 <link>https://example.org/blog/typography/</link>
 <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+<dc:creator>Ruohang Feng</dc:creator><dc:creator>Andy Pavlo</dc:creator>
 <guid>https://example.org/blog/typography/</guid>
 <description>&lt;p&gt;Good documentation typography separates reading comfort from interface density.&#xA;The theme can evolve article prose without forcing the sidebar, search dialog,&#xA;or terminal components to use the same font.&lt;/p&gt;&#xA;&lt;h2 id=&#34;a-stable-foundation&#34;&gt;A stable foundation&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;Semantic roles reduce selector-level overrides and keep future editorial work&#xA;bounded. Code such as &lt;code&gt;hugo --minify&lt;/code&gt; remains visually distinct from prose.&lt;/p&gt;</description>
 </item>
@@ -40,8 +41,16 @@
 <title>An older regression article</title>
 <link>https://example.org/blog/older/</link>
 <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+<dc:creator>Nolan Vega</dc:creator><dc:creator>Ghost</dc:creator>
 <guid>https://example.org/blog/older/</guid>
 <description>&lt;p&gt;Blog navigation keeps Hugo&amp;rsquo;s existing time order instead of using the docs tree.&lt;/p&gt;</description>
+</item>
+<item>
+<title>A legacy byline article</title>
+<link>https://example.org/blog/legacy-byline/</link>
+<pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/legacy-byline/</guid>
+<description>&lt;p&gt;Sites that never declare the &lt;code&gt;authors&lt;/code&gt; taxonomy keep the string byline they&#xA;wrote in 0.4. This page pins that path byte for byte: it must render the same&#xA;markdownified &lt;code&gt;&amp;lt;b&amp;gt;&lt;/code&gt; and pipe separator after the taxonomy byline lands.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Expanded release metadata</title>
@@ -56,6 +65,34 @@
 <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
 <guid>https://example.org/blog/release/pig-1.10.0/</guid>
 <description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/download/v1.10.0/checksums.txt&#34;&gt;Checksums&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/compare/v1.9.0...v1.10.0&#34;&gt;Compare changes&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;h2 id=&#34;release-assets&#34;&gt;Release assets&#xA;&lt;/h2&gt;&#xA;### `.rpm`&#xA;&#xA;| File | Checksum |&#xA;| --- | --- |&#xA;| [pig\-1\.10\.0\-1\.aarch64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.aarch64.rpm) | SHA-256 · `e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1` |&#xA;| [pig\-1\.10\.0\-1\.x86\_64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.x86_64.rpm) | SHA-256 · `34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8` |</description>
+</item>
+<item>
+<title>Write-ahead logging</title>
+<link>https://example.org/blog/series-wal/</link>
+<pubDate>Fri, 07 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/series-wal/</guid>
+<description>&lt;p&gt;The first part of the series carries the highest date, so a term page that&#xA;trusted Hugo&amp;rsquo;s default order would open the series here only by accident.&lt;/p&gt;</description>
+</item>
+<item>
+<title>Multiversion concurrency control</title>
+<link>https://example.org/blog/series-mvcc/</link>
+<pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/series-mvcc/</guid>
+<description>&lt;p&gt;The second part is older than the first, which is the point: weight decides,&#xA;and the date only orders what carries no weight.&lt;/p&gt;</description>
+</item>
+<item>
+<title>The buffer manager</title>
+<link>https://example.org/blog/series-buffers/</link>
+<pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/series-buffers/</guid>
+<description>&lt;p&gt;Last in reading order and second in alphabetical order: the fixture keeps path&#xA;order, date order, and weight order pulling in different directions.&lt;/p&gt;</description>
+</item>
+<item>
+<title>Vacuum and bloat</title>
+<link>https://example.org/blog/series-vacuum/</link>
+<pubDate>Sun, 02 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/series-vacuum/</guid>
+<description>&lt;p&gt;Unweighted members follow every weighted one, in publication order &amp;ndash; oldest&#xA;first, which is the reverse of the order a term page hands them out.&lt;/p&gt;</description>
 </item>
 </channel>
 </rss>

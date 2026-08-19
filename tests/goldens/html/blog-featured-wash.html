@@ -1,0 +1,748 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+dir="ltr"
+lang="en-US"
+data-td-typography="technical" data-td-theme-init>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#000000">
+<style>
+html { background: Canvas; color: CanvasText; }
+@media (prefers-color-scheme: dark) {
+html { background: #0b0d12; color: #e6e6e6; }
+}
+html[data-td-theme-init] * { transition: none !important; }
+[data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
+[data-td-theme-toggle] > [hidden] { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun { display: inline-block !important; }
+</style>
+<script>
+(function() {
+const themeKey = 'td-color-theme';
+let storedTheme = null;
+try {
+storedTheme = localStorage.getItem(themeKey);
+} catch (_) {
+}
+let theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+if (theme === 'auto') {
+theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+document.documentElement.setAttribute('data-bs-theme', theme);
+document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+document.documentElement.setAttribute('data-theme', theme);
+})();
+</script>
+<link rel="alternate" type="text/html" href="https://example.org/_print/blog/featured-wash/">
+<meta name="robots" content="index, follow">
+<title>A wash featured image | Oink Example</title>
+<meta name="description" content="Pins the wash mode against the static image the section cascade carries.">
+<link rel="canonical" href="https://example.org/blog/featured-wash/">
+<link rel="alternate" hreflang="en-US" href="https://example.org/blog/featured-wash/">
+<link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/blog/featured-wash/">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta property="og:url" content="https://example.org/blog/featured-wash/">
+<meta property="og:site_name" content="Oink Example">
+<meta property="og:title" content="A wash featured image">
+<meta property="og:description" content="Pins the wash mode against the static image the section cascade carries.">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="article:section" content="blog">
+<meta property="article:published_time" content="2026-08-08T00:00:00+00:00">
+<meta property="article:modified_time" content="2026-08-08T00:00:00+00:00">
+<meta property="og:image" content="https://example.org/images/oink.webp">
+<meta itemprop="name" content="A wash featured image">
+<meta itemprop="description" content="Pins the wash mode against the static image the section cascade carries.">
+<meta itemprop="datePublished" content="2026-08-08T00:00:00+00:00">
+<meta itemprop="dateModified" content="2026-08-08T00:00:00+00:00">
+<meta itemprop="wordCount" content="25">
+<meta itemprop="image" content="https://example.org/images/oink.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.org/images/oink.webp">
+<meta name="twitter:title" content="A wash featured image">
+<meta name="twitter:description" content="Pins the wash mode against the static image the section cascade carries.">
+<link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
+<link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
+<script>
+(function () {
+var html = document.documentElement;
+html.setAttribute('data-td-shell-no-anim', '');
+try {
+if (localStorage.getItem('td-shell-sidebar-collapsed') === '1'
+&& window.matchMedia('(min-width: 768px)').matches) {
+html.setAttribute('data-td-shell-sidebar', 'collapsed');
+}
+var width = parseInt(localStorage.getItem('td-shell-sidebar-w'), 10);
+if (width > 0) html.style.setProperty('--td-shell-sidebar-w', width + 'px');
+if (localStorage.getItem('td-shell-toc-collapsed') === '1'
+&& window.matchMedia('(min-width: 1200px)').matches) {
+html.setAttribute('data-td-shell-toc', 'collapsed');
+}
+if (sessionStorage.getItem('td-kbd-zen') === '1') {
+html.setAttribute('data-td-kbd-zen', '');
+}
+} catch (_) {}
+})();
+</script><script defer src="/js/third_party/lunr.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</head>
+<body class="td-page td-blog td-shell-chrome td-shell-chrome--navbar">
+<a class="td-skip-link d-print-none" href="#td-main-content">Skip to content</a>
+<header class="td-site-header d-print-none" data-td-header>
+<div class="td-site-container">
+<nav class="td-site-nav" aria-label="Main navigation">
+<a href="/" class="td-nav-brand" data-td-navbar-route
+aria-label="Oink Example — Home">
+<img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
+<span class="td-nav-title">Oink Example</span>
+</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link" href="/docs/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Docs"
+data-td-navbar-region="desktop" data-td-navbar-label="Docs"
+data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+<i class="fa-solid fa-cubes" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Docs</span></a>
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/callout/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Callouts"
+data-td-navbar-region="desktop" data-td-navbar-label="Callouts"
+data-td-navbar-external="false">
+<i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Callouts</span><small class="td-navbar-entry__description">Notes, warnings and disclosures from a blockquote</small></a>
+<a class="td-nav-menu__item-link" href="/docs/code/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Code blocks"
+data-td-navbar-region="desktop" data-td-navbar-label="Code blocks"
+data-td-navbar-external="false">
+<i class="fa-solid fa-code" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Code blocks</span><small class="td-navbar-entry__description">Titles, copy, line numbers, folding</small></a>
+<a class="td-nav-menu__item-link" href="/docs/table/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Tables"
+data-td-navbar-region="desktop" data-td-navbar-label="Tables"
+data-td-navbar-external="false">
+<i class="fa-solid fa-table" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Tables</span><small class="td-navbar-entry__description">Captions, matrices, field lists, tabs</small></a>
+<a class="td-nav-menu__item-link" href="/docs/mermaid/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Mermaid"
+data-td-navbar-region="desktop" data-td-navbar-label="Mermaid"
+data-td-navbar-external="false">
+<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Mermaid</span><small class="td-navbar-entry__description">Diagrams rendered from text, locally</small></a>
+</div>
+</div><a class="nav-link active" href="/blog/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Blog"
+data-td-navbar-region="desktop" data-td-navbar-label="Blog"
+data-td-navbar-external="false">
+<i class="fa-solid fa-blog" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Blog</span></a>
+<a class="nav-link" href="/book/"
+data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
+aria-label="Book"
+data-td-navbar-region="desktop" data-td-navbar-label="Book"
+data-td-navbar-external="false">
+<i class="fa-solid fa-book" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Book</span></a>
+<a class="nav-link" href="https://pigsty.com/"
+data-td-navbar-level="0" data-td-navbar-kind="link"
+aria-label="Pigsty"
+data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
+data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
+<i class="fa-solid fa-database" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Pigsty</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
+</div><div class="td-nav-links td-nav-util-zone">
+<button type="button" class="td-nav-search-box" data-td-shell-search-open
+title="Search…" aria-label="Search…"
+aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i><span class="td-nav-search-box__hint">Search…</span>
+<kbd class="td-nav-search-box__kbd" aria-hidden="true">/</kbd>
+</button>
+<div class="td-language-selector td-language-selector--menu td-nav-util td-site-nav__language">
+<a class="td-language-selector__trigger" href="https://example.org/zh/blog/featured-wash/"
+lang="zh-CN" hreflang="zh-CN" dir="ltr"
+title="Switch language: 简体中文"
+aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false">
+<i class="fa-solid fa-language" aria-hidden="true"></i>
+<span>简体中文</span>
+</a>
+<ul aria-label="Choose language">
+<li>
+<span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
+</li>
+<li>
+<a class="td-language-selector__item" href="https://example.org/zh/blog/featured-wash/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</li>
+</ul>
+</div><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
+<button type="button" class="td-nav-util" data-td-nav-hover-trigger data-td-theme-toggle
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i></button>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>Light</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
+</button>
+</div>
+</div>
+<a href="https://github.com/pgsty/oink" class="td-nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i><span class="td-nav-count" data-td-github-stars>2.2k</span></a><button class="td-nav-util td-site-nav__menu-toggle" type="button" data-td-shell-drawer-open
+title="Open navigation" aria-label="Open navigation"
+aria-controls="td-shell-sidebar" aria-expanded="false"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></button>
+</div>
+</nav>
+</div>
+</header>
+<div class="container-fluid td-outer">
+<div class="td-main td-shell-layout td-shell-layout--w-normal td-shell-layout--no-toc"
+style="--td-shell-sidebar-min: 220px; --td-shell-sidebar-max: 480px;">
+<aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none">
+<div class="td-shell-sidebar__panel">
+<div class="td-shell-sidebar__header">
+<div class="td-shell-sidebar__brand-row">
+<a class="td-shell-sidebar__brand" href="/" aria-label="Oink Example home">
+<img src="/icons/logo.svg" alt="" width="20" height="20">
+<span class="td-shell-wordmark">Oink Example</span>
+</a>
+<button type="button" class="td-shell-iconbtn td-shell-sidebar__search" data-td-shell-search-open
+title="Search…" aria-label="Search…"
+aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+<button type="button" class="td-shell-iconbtn td-shell-sidebar__collapse" data-td-shell-sidebar-toggle
+title="Collapse sidebar" aria-label="Collapse sidebar"><i class="td-shell-icon td-shell-icon--panel-left fa-solid fa-table-columns" aria-hidden="true"></i></button>
+</div>
+<div class="td-shell-sidebar__header-row td-shell-sidebar__header-row--drawer-only">
+<button type="button" class="td-shell-search-btn td-shell-search-btn--drawer" data-td-shell-search-open
+aria-controls="td-shell-search" aria-expanded="false">
+<i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+<span class="td-shell-search-btn__label">Search…</span>
+<span class="td-shell-search-btn__keys" aria-hidden="true"><kbd>/</kbd></span>
+</button>
+<button type="button" class="td-shell-iconbtn td-shell-sidebar__close" data-td-shell-drawer-close
+aria-label="Close navigation" aria-controls="td-shell-sidebar"><i class="td-shell-icon td-shell-icon--x fa-solid fa-xmark" aria-hidden="true"></i></button>
+</div>
+<div class="td-shell-root">
+<button type="button" class="td-shell-root__trigger" data-td-shell-root-toggle
+aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
+<span class="td-shell-root__icon"><i class="fa-solid fa-blog" aria-hidden="true"></i></span>
+<span class="td-shell-root__title">Blog</span>
+<i class="td-shell-icon td-shell-icon--chevrons-up-down fa-solid fa-sort" aria-hidden="true"></i>
+</button>
+<div class="td-shell-root__pop" hidden><a class="td-shell-root__item" href="/docs/">
+<span class="td-shell-root__icon"><i class="fa-solid fa-cubes" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">Docs</span>
+<span class="td-shell-root__item-desc">Markdown Component Examples</span>
+</span>
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item td-is-active" href="/blog/" aria-current="page">
+<span class="td-shell-root__icon"><i class="fa-solid fa-blog" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">Blog</span>
+<span class="td-shell-root__item-desc">Blog section examples</span>
+</span>
+<span class="td-shell-root__check"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item" href="/book/">
+<span class="td-shell-root__icon"><i class="fa-solid fa-book" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">OINK Book Demo</span>
+<span class="td-shell-root__item-desc">Press components</span>
+</span>
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a><a class="td-shell-root__item" href="/fixtures/">
+<span class="td-shell-root__icon"><i class="fa-solid fa-flask" aria-hidden="true"></i></span>
+<span class="td-shell-root__meta">
+<span class="td-shell-root__item-title">Fixtures</span>
+<span class="td-shell-root__item-desc">Narrow pages that pin theme behaviour for the check scripts and the output goldens.</span>
+</span>
+<span class="td-shell-root__check td-is-hidden"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</a>
+</div>
+</div>
+</div>
+<div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
+<div id="td-sidebar-menu" class="td-shell-tree-wrap">
+<nav class="td-shell-tree" id="td-section-nav" aria-label="Section navigation"
+data-td-sidebar-icon-policy="all" data-td-sidebar-root-id="/blog/">
+<ul class="td-shell-tree__list td-shell-tree__list--0">
+<li class="td-shell-tree__item td-has-child td-active-path td-shell-tree__item--root"
+id="m-blog-li">
+<div class="td-shell-tree__row td-shell-tree__row--root">
+<a href="/blog/" title="Blog"
+class="td-shell-tree__link"
+id="m-blog"><i class="fa-solid fa-blog" aria-hidden="true"></i><span>Blog</span></a>
+</div><div id="m-blog-children" class="td-shell-tree__children td-shell-tree__children--static">
+<div class="td-shell-tree__children-inner">
+<ul class="td-shell-tree__list td-shell-tree__list--1"><li class="td-shell-tree__item td-leaf"
+id="m-blogtypography-li">
+<div class="td-shell-tree__row">
+<a href="/blog/typography/" title="A typography regression article"
+class="td-shell-tree__link"
+id="m-blogtypography"><span>A typography regression article</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogolder-li">
+<div class="td-shell-tree__row">
+<a href="/blog/older/" title="An older regression article"
+class="td-shell-tree__link"
+id="m-blogolder"><span>An older regression article</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-bloglegacy-byline-li">
+<div class="td-shell-tree__row">
+<a href="/blog/legacy-byline/" title="A legacy byline article"
+class="td-shell-tree__link"
+id="m-bloglegacy-byline"><span>A legacy byline article</span></a>
+</div>
+</li><li class="td-shell-tree__item td-has-child"
+id="m-blogrelease-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/" title="Releases"
+class="td-shell-tree__link"
+id="m-blogrelease"><span>Releases</span></a>
+<button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
+aria-expanded="true" aria-controls="m-blogrelease-children"
+aria-label="Collapse section: Releases"
+data-td-label-expand="Expand section: Releases"
+data-td-label-collapse="Collapse section: Releases"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
+</div><div id="m-blogrelease-children" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<ul class="td-shell-tree__list td-shell-tree__list--2"><li class="td-shell-tree__item td-leaf"
+id="m-blogreleasepig-190-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/pig-1.9.0/" title="Pig 1.9.0"
+class="td-shell-tree__link"
+id="m-blogreleasepig-190"><span>Pig 1.9.0</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogreleaseshorthand-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/shorthand/" title="Shorthand release metadata"
+class="td-shell-tree__link"
+id="m-blogreleaseshorthand"><span>Shorthand release metadata</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogreleasemcli-20260813-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/mcli-20260813/" title="MCLI 20260813"
+class="td-shell-tree__link"
+id="m-blogreleasemcli-20260813"><span>MCLI 20260813</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogreleaseexpanded-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/expanded/" title="Expanded release metadata"
+class="td-shell-tree__link"
+id="m-blogreleaseexpanded"><span>Expanded release metadata</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogreleasepig-1100-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/pig-1.10.0/" title="Pig 1.10.0"
+class="td-shell-tree__link"
+id="m-blogreleasepig-1100"><span>Pig 1.10.0</span></a>
+</div>
+</li></ul>
+</div>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogseries-wal-li">
+<div class="td-shell-tree__row">
+<a href="/blog/series-wal/" title="Write-ahead logging"
+class="td-shell-tree__link"
+id="m-blogseries-wal"><span>Write-ahead logging</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogseries-mvcc-li">
+<div class="td-shell-tree__row">
+<a href="/blog/series-mvcc/" title="Multiversion concurrency control"
+class="td-shell-tree__link"
+id="m-blogseries-mvcc"><span>Multiversion concurrency control</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogseries-buffers-li">
+<div class="td-shell-tree__row">
+<a href="/blog/series-buffers/" title="The buffer manager"
+class="td-shell-tree__link"
+id="m-blogseries-buffers"><span>The buffer manager</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogseries-vacuum-li">
+<div class="td-shell-tree__row">
+<a href="/blog/series-vacuum/" title="Vacuum and bloat"
+class="td-shell-tree__link"
+id="m-blogseries-vacuum"><span>Vacuum and bloat</span></a>
+</div>
+</li></ul>
+</div>
+</div>
+</li>
+</ul>
+</nav>
+</div>
+<div class="td-shell-sidebar__aside" data-td-shell-aside-slot hidden></div>
+</div><div class="td-shell-sidebar__footer">
+<div class="td-shell-sidebar__footer-start">
+<div class="td-language-selector td-language-selector--menu td-shell-language-selector">
+<a class="td-language-selector__trigger" href="https://example.org/zh/blog/featured-wash/"
+lang="zh-CN" hreflang="zh-CN" dir="ltr"
+title="Switch language: 简体中文"
+aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false"><i class="td-shell-icon td-shell-icon--languages fa-solid fa-language" aria-hidden="true"></i>
+<span>简体中文</span>
+</a>
+<ul aria-label="Choose language">
+<li>
+<span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
+</li>
+<li>
+<a class="td-language-selector__item" href="https://example.org/zh/blog/featured-wash/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="td-shell-sidebar__footer-end">
+<div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
+<button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
+data-td-nav-hover-trigger data-td-nav-hover-open
+title="Keyboard shortcuts" aria-label="Keyboard shortcuts"
+aria-expanded="false"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i></button>
+<div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
+aria-label="Keyboard shortcuts">
+<div class="td-shell-keyboard-help__header"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i><strong>Keyboard shortcuts</strong>
+</div>
+<section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-navigation">
+<p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-navigation">Section navigation</p>
+<dl>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>W</kbd><kbd>S</kbd><kbd>↑</kbd><kbd>↓</kbd></span></dt>
+<dd>Move through sidebar</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>A</kbd><kbd>D</kbd><kbd>←</kbd><kbd>→</kbd></span></dt>
+<dd>Collapse or expand section</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>Enter</kbd><kbd>G</kbd></span></dt>
+<dd>Open focused page</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>J</kbd><kbd>K</kbd></span></dt>
+<dd>Previous or next heading</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>Q</kbd><kbd>E</kbd></span></dt>
+<dd>Previous or next page</dd>
+</div>
+</dl>
+</section>
+<section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-actions">
+<p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-actions">Actions</p>
+<dl>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>/</kbd><kbd>F</kbd></span></dt>
+<dd>Search</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>\</kbd><kbd>C</kbd></span></dt>
+<dd>Command palette</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>H</kbd></span></dt>
+<dd>Reading mode</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>Y</kbd></span></dt>
+<dd>Switch language</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>T</kbd></span></dt>
+<dd>Switch theme</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>R</kbd></span></dt>
+<dd>Cycle top-level pages</dd>
+</div>
+</dl>
+</section>
+</div>
+</div>
+<div class="td-shell-sidebar__theme td-nav-hover-menu" data-td-nav-hover>
+<button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-nav-hover-trigger data-td-theme-toggle
+title="Toggle color theme" aria-label="Toggle color theme" aria-expanded="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i></button>
+<div class="td-nav-hover-menu__pop" role="group" aria-label="Toggle color theme">
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>Light</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>Dark</span>
+</button>
+<button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>System</span>
+</button>
+</div>
+</div>
+<a class="td-shell-iconbtn" href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer"
+title="GitHub" aria-label="GitHub"><i class="td-shell-icon td-shell-icon--github fa-brands fa-github" aria-hidden="true"></i></a>
+</div>
+</div>
+<div class="td-shell-sidebar__resizer" data-td-shell-resizer aria-hidden="true"></div>
+</div>
+</aside>
+<div class="td-shell-drawer-backdrop d-md-none d-print-none" data-td-shell-drawer-close></div>
+<div class="td-shell-float d-print-none">
+<button type="button" class="td-shell-iconbtn" data-td-shell-sidebar-toggle
+title="Expand sidebar" aria-label="Expand sidebar"><i class="td-shell-icon td-shell-icon--panel-left fa-solid fa-table-columns" aria-hidden="true"></i></button>
+</div>
+<main id="td-main-content" class="td-shell-main" tabindex="-1">
+<article class="td-shell-article">
+<div class="td-shell-topline">
+<nav aria-label="breadcrumb" class="td-breadcrumbs">
+<ol class="breadcrumb">
+<li class="breadcrumb-item">
+<a href="/blog/">Blog</a></li>
+<li class="breadcrumb-item active" aria-current="page">
+A wash featured image</li>
+</ol>
+</nav>
+<span class="td-shell-topline__spacer"></span>
+<div class="td-page-actions d-print-none" data-td-page-actions data-td-page-context
+data-td-t-copied="Markdown copied" data-td-t-copy-error="Could not copy Markdown">
+<div class="td-page-actions__group">
+<button type="button" class="td-page-actions__toggle td-page-actions__toggle--solo"
+data-td-page-actions-toggle aria-expanded="false" aria-controls="td-page-actions-menu"
+aria-label="Actions"><span>Actions</span><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i>
+</button>
+</div>
+<ul class="td-page-actions__menu" id="td-page-actions-menu" data-td-page-actions-menu
+aria-label="Actions">
+<li><a class="td-page-actions__item" data-td-action="open_chatgpt" data-td-page-open-in="chatgpt"
+href="https://chatgpt.com/?hints=search&amp;prompt=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fblog%2Ffeatured-wash%2F&#43;so&#43;I&#43;can&#43;ask&#43;questions&#43;about&#43;it." target="_blank" rel="noopener noreferrer">
+<i class="fa-brands fa-openai" aria-hidden="true"></i><span>Open in ChatGPT</span>
+</a></li>
+<li><a class="td-page-actions__item" data-td-action="open_claude" data-td-page-open-in="claude"
+href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fblog%2Ffeatured-wash%2F&#43;so&#43;I&#43;can&#43;ask&#43;questions&#43;about&#43;it." target="_blank" rel="noopener noreferrer">
+<i class="fa-brands fa-claude" aria-hidden="true"></i><span>Open in Claude</span>
+</a></li>
+<li class="td-page-actions__separator" role="separator"></li>
+<li><a class="td-page-actions__item" data-td-action="print_section" href="/_print/blog/">
+<i class="fa-solid fa-print" aria-hidden="true"></i><span>Print entire section</span>
+</a></li>
+</ul>
+<span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-td-page-context-status></span>
+</div>
+</div>
+<div class="td-content">
+<div class="td-article-header td-article-header--wash"><div class="td-featured-wash" aria-hidden="true"><img src="/images/oink.webp" alt="" decoding="async"></div>
+<div class="td-page-heading">
+<h1>A wash featured image</h1>
+</div>
+<div class="lead">Pins the wash mode against the static image the section cascade carries.</div>
+<div class="td-byline mb-4">
+<time datetime="2026-08-08" class="text-body-secondary">Saturday, August 08, 2026</time>
+</div>
+<header class="td-article-meta">
+</header>
+</div>
+<p>The wash is resolved from the section cascade&rsquo;s <code>images</code> value, a static path
+Hugo cannot process, so it reaches the header at its original URL.</p>
+<div class="td-page-end">
+<section class="td-page-annotation" data-td-page-annotation aria-label="Page information">
+<div class="td-page-meta__footer">
+<div class="td-page-meta__item td-page-meta__lastmod">
+<span class="td-page-meta__icon"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span>
+<span>Last modified August 8, 2026</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</article>
+</main>
+<aside class="td-shell-toc d-print-none" aria-label="Content">
+<div class="td-shell-toc__panel">
+<div class="td-shell-toc__actions">
+<button type="button" class="td-shell-toc__title-btn" data-td-shell-right-toggle
+title="Hide table of contents" aria-label="Hide table of contents"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></button>
+</div>
+<div class="td-shell-aside" data-td-shell-aside>
+<div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="authors" data-td-taxonomy-root="/blog/">
+<button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
+aria-expanded="true" aria-controls="td-shell-taxonomy-authors-blog-children"
+aria-label="Collapse section: Authors"
+data-td-label-expand="Expand section: Authors"
+data-td-label-collapse="Collapse section: Authors">
+<span class="td-shell-aside-group__icon"><i class="fa-solid fa-shapes" aria-hidden="true"></i></span>
+<span class="td-shell-aside-group__title td-shell-tags-cloud__title">Authors</span>
+<span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
+</button>
+<div id="td-shell-taxonomy-authors-blog-children" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<div class="td-shell-tags-cloud__chips">
+<a class="td-shell-tag" href="/authors/andy/">
+<span>Andy Pavlo</span><span class="td-shell-tag__count">1</span>
+</a>
+<a class="td-shell-tag" href="/authors/ghost/">
+<span>Ghost</span><span class="td-shell-tag__count">1</span>
+</a>
+<a class="td-shell-tag" href="/authors/nolan/">
+<span>Nolan Vega</span><span class="td-shell-tag__count">1</span>
+</a>
+<a class="td-shell-tag" href="/authors/vonng/">
+<span>Ruohang Feng</span><span class="td-shell-tag__count">1</span>
+</a>
+</div>
+</div>
+</div>
+</div><div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="series" data-td-taxonomy-root="/blog/">
+<button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
+aria-expanded="true" aria-controls="td-shell-taxonomy-series-blog-children"
+aria-label="Collapse section: Series"
+data-td-label-expand="Expand section: Series"
+data-td-label-collapse="Collapse section: Series">
+<span class="td-shell-aside-group__icon"><i class="fa-solid fa-shapes" aria-hidden="true"></i></span>
+<span class="td-shell-aside-group__title td-shell-tags-cloud__title">Series</span>
+<span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
+</button>
+<div id="td-shell-taxonomy-series-blog-children" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<div class="td-shell-tags-cloud__chips">
+<a class="td-shell-tag" href="/series/pg-internals/">
+<span>Postgres internals</span><span class="td-shell-tag__count">4</span>
+</a>
+<a class="td-shell-tag" href="/series/typography-notes/">
+<span>Typography-Notes</span><span class="td-shell-tag__count">1</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<div class="td-shell-toc-float d-print-none">
+<button type="button" class="td-shell-iconbtn" data-td-shell-right-toggle
+title="Show table of contents" aria-label="Show table of contents"><i class="td-shell-icon td-shell-icon--menu fa-solid fa-bars" aria-hidden="true"></i></button>
+</div>
+</div>
+<footer class="d-print-none" data-td-shell-footer>
+<div class="td-site-footer" id="td-site-footer">
+<div class="td-site-footer__container">
+<div class="td-site-footer__inner">
+<div class="td-site-footer__brand"><a class="td-site-footer__logo" href="/" aria-label="Oink Example">
+<img src="/icons/logo.svg" alt="" width="28" height="28">
+<span>Oink Example</span>
+</a><div class="td-site-footer__tagline"><strong>O</strong>pen <strong>I</strong>ndexed, <strong>N</strong>avigable <strong>K</strong>nowledge</div><div class="td-site-footer__slogan">A local-first Hugo theme for engineering documentation</div>
+</div>
+<div class="td-site-footer__grid" style="--td-footer-cols: 4">
+<nav class="td-site-footer__column" aria-label="Product">
+<h2>Product</h2>
+<ul>
+<li><a href="https://oink.pgsty.com/docs/about/" target="_blank" rel="noopener noreferrer">OINK overview</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/features/" target="_blank" rel="noopener noreferrer">Highlights</a></li>
+<li><a href="https://oink.pgsty.com/docs/customize/config/" target="_blank" rel="noopener noreferrer">Configuration</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/showcase/" target="_blank" rel="noopener noreferrer">Showcase</a></li>
+<li><a href="https://pigsty.com/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="Resources">
+<h2>Resources</h2>
+<ul>
+<li><a href="/docs/">Documentation</a></li>
+<li><a href="https://oink.pgsty.com/docs/start/" target="_blank" rel="noopener noreferrer">Get started</a></li>
+<li><a href="/docs/">Components</a></li>
+<li><a href="/landing-demo/">Landing demo</a></li>
+<li><a href="/book/">Book example</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="Community">
+<h2>Community</h2>
+<ul>
+<li><a href="/blog/">Blog</a></li>
+<li><a href="/blog/release/">Release notes</a></li>
+<li><a href="https://github.com/pgsty/oink" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+<li><a href="https://github.com/pgsty/oink/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
+<li><a href="https://github.com/google/docsy/discussions" target="_blank" rel="noopener noreferrer">Docsy discussions</a></li>
+</ul>
+</nav>
+<nav class="td-site-footer__column" aria-label="About">
+<h2>About</h2>
+<ul>
+<li><a href="https://oink.pgsty.com/docs/about/" target="_blank" rel="noopener noreferrer">About OINK</a></li>
+<li><a href="https://oink.pgsty.com/blog/release/" target="_blank" rel="noopener noreferrer">Releases</a></li>
+<li><a href="https://github.com/pgsty/oink/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a></li>
+<li><a href="https://oink.pgsty.com/docs/about/license/" target="_blank" rel="noopener noreferrer">Upstream projects</a></li>
+<li><a href="https://pgsty.com/" target="_blank" rel="noopener noreferrer">PGSTY</a></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div class="td-shell-footline d-print-none">
+<div class="td-shell-footline__copy"><span class="td-footer__copyright">&copy; 2026
+<span class="td-footer__authors"><a href="https://oink.pgsty.com">OINK</a></span>
+</span><span class="td-footer__all_rights_reserved">All Rights Reserved</span></div>
+<div class="td-shell-footline__center">Powered by <a href="https://oink.pgsty.com">Oink</a></div>
+<div class="td-shell-footline__right">
+<div class="td-shell-footline__lang">
+<div class="td-language-selector td-language-selector--list td-shell-language-selector"
+role="group" aria-label="Choose language"><span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span><a class="td-language-selector__item" href="https://example.org/zh/blog/featured-wash/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+</div>
+</div>
+<button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
+aria-expanded="true" aria-controls="td-site-footer"
+title="Hide footer links" aria-label="Hide footer links"
+data-td-label-collapse="Hide footer links"
+data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
+</div>
+</div>
+</footer>
+</div>
+<script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/blog/featured-wash/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Ffeatured-wash%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Ffeatured-wash%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/blog/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/blog/featured-wash/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/blog/featured-wash/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Blog section examples","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
+<script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<div id="td-shell-search" class="td-shell-search" hidden
+data-td-index-src="/offline-search-index.en.<hash>.json"
+data-td-max-results="10"
+data-td-t-empty="No results found"
+data-td-t-loading="Loading search index…"
+data-td-t-results="{count} results found"
+data-td-t-actions="Actions"
+data-td-t-page-actions="Page actions"
+data-td-t-preferences="Preferences"
+data-td-t-commands="Commands"
+data-td-t-quick-links="Quick links"
+data-td-t-no-commands="No matching commands"
+data-td-t-choice="Choose an option"
+data-td-t-action-failed="Action could not be completed"
+data-td-t-index-unavailable="Page index unavailable; actions still work"
+data-td-t-pages="Pages">
+<div class="td-shell-search__backdrop" data-td-shell-search-close></div>
+<div class="td-shell-search__panel" role="dialog" aria-modal="true" aria-label="Search…">
+<div class="td-shell-search__head">
+<i class="td-shell-icon td-shell-icon--search fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+<input type="search" class="td-shell-search__input" placeholder="Search…"
+autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
+aria-controls="td-shell-search-results" aria-expanded="false"
+aria-label="Search…" enterkeyhint="go">
+<button type="button" class="td-shell-search__esc" data-td-shell-search-close
+aria-label="Close">
+<kbd>esc</kbd>
+</button>
+</div>
+<div id="td-shell-search-results" class="td-shell-search__list" role="listbox"
+aria-label="Search…"></div>
+<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"
+data-td-shell-search-status></div>
+<div class="td-shell-search__foot" aria-hidden="true">
+<span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+<span><kbd>↵</kbd> Open</span>
+<span><kbd>esc</kbd> Close</span>
+</div>
+</div>
+</div><script src="/js/page-<bundle>.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</body>
+</html>

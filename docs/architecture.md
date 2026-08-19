@@ -93,6 +93,22 @@ configured value reaches the shared image URL policy, resolves against page and
 global resources, and comes back in both relative and absolute form.
 `images-param.html` reads the parameter as a list whether a site wrote one.
 
+A blog article can present that same image above its own title.
+`params.ui.featured_image` is `none` by default, so a site that renders nothing
+today keeps rendering nothing; `banner` puts a figure above the title, and
+`wash` lays the image behind the article header at a low opacity so the page
+takes a colour from its subject without paying for it in contrast. Front matter
+`featured_image` overrides the mode for one page or, through a cascade, one
+section. `featured-image-mode.html` decides -- returning nothing for `none`,
+for a non-HTML output, and for an article that carries no image, because an
+absent image is a legal state -- and `featured-image-article.html` renders. The
+mode is a fourth consumer of the resolver, not a second decision: what a reader
+sees at the top of an article is what the list thumbnail and the social card
+carry. It is blog-only. The article partials are called from
+`blog/_td-content.html` and nowhere else, so docs, Book, landing, and Swagger
+pages are untouched; extending them later means adding the call, not changing
+the parameter.
+
 ## Output formats
 
 Every base template sets `Page.Store.tdOutputFormat` to `html`, `print`,

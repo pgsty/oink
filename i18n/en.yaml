@@ -51,6 +51,8 @@ ui_categories_title: Categories
 ui_category_title: Category
 ui_modules_title: Modules
 ui_module_title: Module
+ui_authors_title: Authors
+ui_author_title: Author
 ui_theme_toggle: Toggle color theme
 ui_language: Language
 ui_theme: Theme
@@ -70,6 +72,11 @@ ui_open_in_prompt: Read from %s so I can ask questions about it.
 ui_copy_markdown: Copy Markdown
 ui_copy_success: Markdown copied
 ui_copy_error: Could not copy Markdown
+ui_share: Share
+ui_share_email: Email
+ui_copy_link: Copy link
+ui_copy_link_success: Link copied
+ui_copy_link_error: Could not copy the link
 ui_code_copy: Copy
 ui_code_copy_label: Copy code
 ui_code_copied: Copied
@@ -209,3 +216,8 @@ book_toc: Book contents
 book_draft: Draft
 book_draft_notice: This chapter is still being revised.
 contributors_count: contributors
+
+# Article series
+ui_series_title: Series
+ui_series_part: Part {{ .Part }} of {{ .Total }}
+ui_series_next: "Next: {{ .Link }}"

@@ -58,10 +58,12 @@ fixture budget is 2 MiB raw and 512 KiB gzip. Sites may override
 
 ## Command registry contract
 
-Built-in action IDs are `copy_markdown`, `open_chatgpt`, `open_claude`,
-`view_markdown`, `view_history`, `edit_page`, `create_child_page`,
-`create_issue`, `create_project_issue`, `print_section`, `print`,
-`switch_theme`, `switch_language`, `switch_version`, and `open_github`.
+Built-in action IDs are `copy_markdown`, `copy_link`, `open_chatgpt`,
+`open_claude`, `view_markdown`, `view_history`, `edit_page`,
+`create_child_page`, `create_issue`, `create_project_issue`, `print_section`,
+`print`, `switch_theme`, `switch_language`, `switch_version`, and
+`open_github`. `copy_link` copies the page's canonical URL; it is Palette-only,
+because the surface that renders it on the page is the share bar.
 
 Site commands are localized under
 `languages.<lang>.params.ui.command_palette.commands`. They may open a safe URL
@@ -103,6 +105,23 @@ The stable global bindings are:
 
 The sidebar tree uses real focus and WASD/Arrow navigation without
 rewriting the document Tab order.
+
+## Share bar
+
+`params.ui.share` is a list drawn from `x`, `facebook`, `linkedin`, `reddit`,
+`hackernews`, `telegram`, `weibo`, `email`, and `copy`. It is empty by default,
+the page key is `share`, a page's own list replaces an inherited one, and
+`share: false` opts one page out. An unknown entry fails the build. Only a
+regular page renders the bar; lists, terms, and the home page never do, and it
+is absent from print, Markdown, and RSS.
+
+Everything the bar emits is a plain `<a href>` intent link carrying the page's
+own permalink and title, plus one local `copy_link` button: no share count, no
+platform SDK, no iframe, no third-party script or stylesheet, and no campaign
+parameters. Nothing is requested when the site builds or when the page loads,
+so a build passes `bin/check-output-security.py` without `--third-party`.
+`share/items.html` resolves the targets and `share/bar.html` renders them, the
+same split the annotation uses.
 
 ## Page annotation
 
@@ -164,6 +183,56 @@ theme does not model those per-licence differences because they do not belong
 in a footer line. Whether that notice page exists is the site's to check; the
 theme validates the values, not the destination.
 
+## Author bylines
+
+A site activates authors by declaring the taxonomy and nothing else:
+
+```yaml
+taxonomies:
+  author: authors
+```
+
+The theme adds no parameter for this. A site that never declares it keeps the
+0.4 behaviour exactly, including any `authors:` it already wrote in front
+matter, which stays an ordinary unread page parameter.
+
+`authors` is a reserved plural, in the same way `tags` and `categories` are
+names `taxonomy-label.html` already knows. A site is free to call its author
+taxonomy something else -- `author: writers` -- and it then behaves as an
+ordinary taxonomy: chips, generic term heading, no profile, no byline.
+
+The author profile is the term page, not a data file. `title` is the display
+name, `description` is the one-line introduction, the body is the long one, and
+the avatar is whatever `featured-image-resolve.html` selects for that page, so
+`images:` and a bundled `**featured*` / `*feature*` / `{*cover*,*thumbnail*}`
+resource work exactly as they do for an article. A bilingual profile is an
+`_index.zh.md` beside it. A term used by a post but never given a profile page
+still works: the name falls back to Hugo's link title, the avatar to an
+initial, and the link to the archive page that exists either way.
+
+`authors-resolve.html` is the one place that answers who wrote a page;
+`byline.html` renders it on the article head (portraits, names, date) and in a
+list row (names only -- the row has no space for portraits). Order comes from
+`GetTerms`, which preserves the front matter sequence, so `authors:` is both
+the set and the order and no weight key is involved. Names are separated by
+CSS gap, never by rendered punctuation, because a comma-and-`and` list needs a
+connector word in each of 32 locales.
+
+Where both are present, `authors` wins and `author` is ignored. Neither warns.
+853 pages across the family sites carry the 0.4 `author:` string and 180 put
+Markdown in it; that branch renders byte for byte as it did, and
+`tests/site/content/blog/legacy-byline.md` is the pin that proves it.
+
+The article byline is the author surface, so the generic taxonomy chip row
+skips the reserved plurals `authors` and `series` by default. A site that
+names either one in `params.taxonomy.page_header` gets the chips anyway --
+explicit configuration outranks a default exclusion.
+
+Output states: HTML renders the byline, the row names, and the profile head;
+the blog feed declares `xmlns:dc` and emits one `<dc:creator>` per author per
+item, beside the untouched site-level `managingEditor`; print and Markdown
+carry no byline, as they did not before.
+
 ## Brand lockup
 
 `params.logo` is the mark and `params.wordmark` is the optional text half.
@@ -176,7 +245,7 @@ present at every width.
 ## Compatibility and non-goals
 
 The docs, Book, Blog, and Swagger shells share one layout model. Page-end order
-is Feedback, Annotation, Pager, Comments. `page-annotation.html` preserves the
+is Share, Feedback, Annotation, Pager, Comments. `page-annotation.html` preserves the
 `page-meta-lastmod.html` override point. Feedback emits the structured
 `docs_feedback` event through an existing `gtag` function, stores the choice
 locally, sends no free text, and needs no endpoint. Giscus remains a separate
@@ -185,6 +254,17 @@ comment surface.
 Pager order follows the sidebar preorder for Docs and Book. Blog keeps
 explicitly weighted pages first and then reverse date. `pager: false` opts a
 page out. Print, Markdown, and RSS omit pager UI.
+
+Blog section list pages take one of two forms, chosen by the site:
+`params.ui.blog_index: list` (default) keeps the row list, `cards` renders the
+same year groups as a grid of shared content cards, `params.ui.blog_index_columns`
+wide. Front matter on the blog root, or its cascade, overrides it per section.
+The two forms group, paginate, and link identically — a card carries the lead
+image, title, date, section, and summary, and nothing else. Term and taxonomy
+pages keep the row form: they are filtered views, where a row and a count are
+the right shape. There is no reader-side switch between the forms, for the same
+reason the Palette keeps no history: a remembered view preference is
+personalization, and the form is the site's decision.
 
 There is no archive shell, arbitrary-depth flyout, second navigation authority,
 default query upload, or browser-side compatibility shim for removed config.
@@ -197,3 +277,55 @@ plain/print surfaces. `tests/fixtures/navigation/current.json` is the normalized
 output snapshot. `bin/check-shell.py`, JS tests, and the consumer browser
 suite cover page-end order, keyboard behavior, accessibility, and responsive
 layout.
+
+## Series contract
+
+A site activates article series by declaring the taxonomy, and that is the
+whole switch:
+
+```yaml
+taxonomies:
+  series: series
+```
+
+There is no `params.ui.series`, no per-series metadata file, and no cover
+model: the term page `content/series/<name>/_index.md` already holds the
+display name, the one-line description, and the long introduction, and a
+`_index.zh.md` beside it makes the pair bilingual. A term with no `_index.md`
+still works; it just falls back to the humanized term name. Where the taxonomy
+is not declared, `series:` in front matter stays an ordinary page parameter
+that no template reads.
+
+An article names its series and, optionally, its position:
+
+```yaml
+series: [pg-internals]
+series_weight: 2
+```
+
+**Reading order is the theme's, not Hugo's.** `series-pages.html` is the single
+resolver, and both the strip and the term page read it: members that declare
+`series_weight` come first in ascending order, the rest follow by ascending
+date, and `Path` breaks a tie. Hugo's own term order cannot be used for this --
+an unweighted term arrives newest first, a mixed term puts unweighted members
+*before* weight 1, `Page.Weight` never carries the taxonomy weight, and
+`GroupByParam` cannot see `series_weight` at all. Declare a weight on every
+member of a series or on none of them; the mixed form is defined, not
+recommended.
+
+`series-strip.html` renders above the article body, between the metadata row
+and the first paragraph: the series name, `Part N of M`, the next part, and the
+whole list behind a `<details>`. It has no JavaScript, no page-store flag, and
+no bundle member. A member of several series gets one strip, for the first term
+it names. A series of one gets none. The `series` term is kept out of the
+default taxonomy chips row -- along with `authors` -- because the strip already
+carries it; a site that names `series` in `params.taxonomy.page_header` opts
+back in.
+
+Output matrix: HTML renders the strip; printing keeps it and the existing print
+rule opens the disclosure; the Markdown and RSS outputs never see it, because
+it is a template product and not part of the page content.
+
+A series is a reading path through articles that stand on their own. Numbering,
+cross-references, and aggregate output are Book's: when a work needs those, it
+is a Book, not a series.

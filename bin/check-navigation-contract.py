@@ -208,6 +208,7 @@ def validate_contract(contract: dict[str, Any]) -> None:
         commands.get("builtin_action_ids")
         == [
             "copy_markdown",
+            "copy_link",
             "open_chatgpt",
             "open_claude",
             "view_markdown",

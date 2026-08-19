@@ -1,0 +1,104 @@
+{{- /* Resolve the page-end share bar's targets as descriptors, once per page.
+
+     This is the data half of the share bar; share/bar.html renders it. A site
+     that wants a different target, a different order, or another URL template
+     overrides this partial and keeps the theme's markup, icons, print rules,
+     and accessible names. A site that wants different markup overrides
+     share/bar.html instead.
+
+     Returns a slice of dicts: id (used for the `td-share__item--<id>` class),
+     label (the platform's own name, which is not translated), icon (one Font
+     Awesome class pair), url (the intent link, empty for the local control),
+     blank (whether the link opens in a new tab), and action (the registry
+     action ID a local control invokes, empty otherwise).
+
+     Configuration ------------------------------------------------------
+
+     `params.ui.share` is a list drawn from the fixed set below; the empty
+     default means no bar. The page key is the site key without its `ui.`
+     prefix, so a blog section cascade scopes the bar to the pages that want
+     it, a page's own list replaces the inherited one, and `share: false`
+     turns one page's bar off. An unknown entry fails the build: a silently
+     dropped target looks exactly like one the reader's platform lacks.
+
+     Trust boundary -----------------------------------------------------
+
+     Everything this produces is a plain `<a href>` the reader may choose to
+     click, plus one local copy button. There is no share count, no platform
+     SDK, no iframe, and no third-party script or stylesheet, so nothing here
+     reaches the network when the site is built or when the page loads -- the
+     only request a share can cause is the navigation the reader starts. An
+     intent URL carries the page's own public permalink and title and nothing
+     else: no identifiers, no campaign parameters. That is the whole reason
+     the bar can exist in a theme that refuses third-party embeds by default,
+     and `bin/check-output-security.py` (without `--third-party`) is where it
+     is proven. */ -}}
+
+{{- $page := . -}}
+{{- $path := $page.Path -}}
+{{- $allowed := slice "x" "facebook" "linkedin" "reddit" "hackernews" "telegram" "weibo" "email" "copy" -}}
+{{- $names := delimit $allowed " | " -}}
+{{- $items := slice -}}
+{{- $ids := slice -}}
+
+{{- $value := partial "ui-param.html" (dict "page" $page "key" "share") -}}
+{{- if eq (printf "%T" $value) "bool" -}}
+  {{- /* `false` is the opt-out; `true` cannot say which platforms. */ -}}
+  {{- if $value -}}
+    {{- errorf "params.ui.share is the list of share targets, not a switch (allowed: %s); use `share: false` to turn one page's bar off, at %s" $names $path -}}
+  {{- end -}}
+{{- else if $value -}}
+  {{- if not (reflect.IsSlice $value) -}}
+    {{- errorf "params.ui.share must be a list of share targets (allowed: %s); got %v at %s" $names $value $path -}}
+  {{- end -}}
+  {{- $ids = $value -}}
+{{- end -}}
+
+{{- /* Only a page of authored content is worth handing to someone: a list, a
+       term, or the home page has no single thing being shared. */ -}}
+{{- if and $ids $page.IsPage -}}
+  {{- /* Percent-encode once, here, and hand the same two values to every
+         template. Spaces become %20 rather than +, which a query string
+         accepts everywhere and a mailto: needs. */ -}}
+  {{- $url := replace (urlquery $page.Permalink) "+" "%20" -}}
+  {{- $title := replace (urlquery $page.Title) "+" "%20" -}}
+  {{- $catalog := dict
+    "x" (dict "label" "X" "icon" "fa-brands fa-x-twitter"
+      "form" "ut" "template" "https://x.com/intent/post?url=%s&text=%s")
+    "facebook" (dict "label" "Facebook" "icon" "fa-brands fa-facebook"
+      "form" "u" "template" "https://www.facebook.com/sharer/sharer.php?u=%s")
+    "linkedin" (dict "label" "LinkedIn" "icon" "fa-brands fa-linkedin-in"
+      "form" "u" "template" "https://www.linkedin.com/sharing/share-offsite/?url=%s")
+    "reddit" (dict "label" "Reddit" "icon" "fa-brands fa-reddit-alien"
+      "form" "ut" "template" "https://www.reddit.com/submit?url=%s&title=%s")
+    "hackernews" (dict "label" "Hacker News" "icon" "fa-brands fa-hacker-news"
+      "form" "ut" "template" "https://news.ycombinator.com/submitlink?u=%s&t=%s")
+    "telegram" (dict "label" "Telegram" "icon" "fa-brands fa-telegram"
+      "form" "ut" "template" "https://t.me/share/url?url=%s&text=%s")
+    "weibo" (dict "label" "Weibo" "icon" "fa-brands fa-weibo"
+      "form" "ut" "template" "https://service.weibo.com/share/share.php?url=%s&title=%s")
+    "email" (dict "label" (T "ui_share_email") "icon" "fa-solid fa-envelope"
+      "form" "tu" "template" "mailto:?subject=%s&body=%s")
+    "copy" (dict "label" (T "ui_copy_link") "icon" "fa-solid fa-link"
+      "form" "" "template" "")
+  -}}
+  {{- range $id := $ids -}}
+    {{- if not (in $allowed $id) -}}
+      {{- errorf "invalid params.ui.share entry %q at %s (allowed: %s)" $id $path $names -}}
+    {{- end -}}
+    {{- $entry := index $catalog $id -}}
+    {{- $href := "" -}}
+    {{- if eq $entry.form "ut" }}{{ $href = printf $entry.template $url $title -}}
+    {{- else if eq $entry.form "u" }}{{ $href = printf $entry.template $url -}}
+    {{- else if eq $entry.form "tu" }}{{ $href = printf $entry.template $title $url }}{{ end -}}
+    {{- $items = $items | append (dict
+      "id" $id
+      "label" $entry.label
+      "icon" $entry.icon
+      "url" $href
+      "blank" (hasPrefix $href "https://")
+      "action" (cond (eq $id "copy") "copy_link" "")) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $items -}}

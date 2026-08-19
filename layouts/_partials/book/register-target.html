@@ -4,14 +4,20 @@
 {{- $kind := .kind -}}
 {{- $position := .position | default $page.Path -}}
 {{- $ordinal := .ordinal | default 0 -}}
-{{- /* Identity and document order come from the source position (file:line:col)
-       so shortcode targets and render-hook targets (native forms) share one
-       namespace and one ordering; ordinal is the fallback. */ -}}
+{{- /* Document order comes from the source position (file:line:col) so
+       shortcode targets and render-hook targets (native forms) interleave in
+       one list instead of one form sorting ahead of the other; the ordinal is
+       the fallback. Hugo renders a position as a quoted string, so the quotes
+       come off before matching.
+
+       Identity stays keyed on the ordinal: every output format shares one Page
+       Store and only the first pass registers, but a print aggregate renders
+       the page from a string, where the same target reports a line number
+       short by the front matter. Ordinals are stable across those passes. */ -}}
 {{- $identity := printf "%s:%d" $page.Path $ordinal -}}
 {{- $orderKey := printf "%08d-00000" $ordinal -}}
-{{- with findRESubmatch `:(\d+):(\d+)$` (printf "%v" $position) -}}
+{{- with findRESubmatch `:(\d+):(\d+)$` (trim (printf "%v" $position) "\"") -}}
   {{- $m := index . 0 -}}
-  {{- $identity = printf "%s@%s:%s" $page.Path (index $m 1) (index $m 2) -}}
   {{- $orderKey = printf "%08d-%05d" (int (index $m 1)) (int (index $m 2)) -}}
 {{- end -}}
 {{- $targets := $page.Store.Get "tdBookTargets" | default (dict) -}}

@@ -74,6 +74,22 @@ All notable changes to OINK are documented here. The project follows
   fence carrying `{num=… caption=…}` keeps its content in the page document,
   where footnotes number and link like any other page footnote. Footnote-shaped
   text inside code is untouched.
+- List numbered Book objects in document order. The order key was derived from
+  each target's source position, but Hugo renders a position as a quoted
+  string, so the `file:line:col` match never fired and every target fell back
+  to its ordinal -- which counts shortcodes and render hooks separately. A
+  chapter that wrote one figure as `fig` and the next in native `{num=…}` form
+  therefore listed Figure 1-2 before Figure 1-1 in the list of figures. The
+  quotes now come off before matching. Identity stays keyed on the ordinal,
+  which is what a print aggregate -- rendering the page from a string, with
+  line numbers short by the front matter -- can still match.
+- Namespace footnote IDs in whole-Book print. Goldmark numbers footnotes per
+  page, so `fn:1` and `fnref:1` were emitted once per chapter into the single
+  print document: a book whose chapters each carry references produced
+  duplicate IDs, and every backlink resolved to whichever chapter happened to
+  render first. The aggregate now prefixes them with the page the way it
+  already prefixed heading IDs, leaving numbered `fig`/`tbl`/`eq`/`eg` anchors
+  byte-stable.
 
 ## [0.5.0] - 2026-08-18
 

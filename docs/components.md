@@ -173,8 +173,9 @@ in code -- `[^0-9]` in a listing or a code span -- is left alone.
 `book-toc` follows navigation order at depth 1 to 3. `book-figures`,
 `book-tables`, `book-equations`, and `book-examples` aggregate one registered
 kind each. Whole-Book print rewrites cross-page links to local fragments and
-namespaces ordinary heading IDs while preserving explicit numbered target IDs.
-It is enabled only by the consumer's output configuration.
+namespaces ordinary heading IDs -- and footnote IDs, which Goldmark numbers per
+page -- while preserving explicit numbered target IDs. It is enabled only by
+the consumer's output configuration.
 
 ### Release and download
 

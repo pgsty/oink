@@ -1,6 +1,6 @@
-{{- /* Goldmark heading IDs are unique only inside one page. Namespace those
-       IDs and their same-page links while assembling a whole Book, leaving
-       fig/tbl/eq and arbitrary non-heading anchors byte-stable. */ -}}
+{{- /* Goldmark heading and footnote IDs are unique only inside one page.
+       Namespace those IDs and their same-page links while assembling a whole
+       Book, leaving fig/tbl/eq and arbitrary non-heading anchors byte-stable. */ -}}
 {{- $page := .page -}}
 {{- $content := printf "%s" .content -}}
 {{- range $anchor := $page.Fragments.Identifiers -}}
@@ -9,4 +9,10 @@
   {{- $content = replace $content (printf `href="#%s"` $anchor) (printf `href="#%s"` $target) -}}
   {{- $content = replace $content (printf `href="%s#%s"` $page.RelPermalink $anchor) (printf `href="#%s"` $target) -}}
 {{- end -}}
+{{/* Footnotes are numbered per page (`fn:1`, `fnref:1`, `fnref2:1` for a repeat
+     reference), so every chapter that carries references would otherwise emit
+     the same IDs into one print document. The page prefix goes after the kind
+     so the IDs stay recognisable as footnotes. */ -}}
+{{- $prefix := partial "book/aggregate-heading-anchor.html" (dict "page" $page "anchor" "") -}}
+{{- $content = replaceRE `(id|href)="(#?)(fnref[0-9]*|fn):` (printf `${1}="${2}${3}:%s` $prefix) $content -}}
 {{- return ($content | safeHTML) -}}

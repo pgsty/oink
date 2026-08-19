@@ -48,8 +48,9 @@ and plain non-shell pages omit the dialog, index reference, Lunr, and Palette.
 
 Page metadata is `search_keywords`, `search_boost`, and `search_exclude`.
 `search_boost` defaults to 1 and multiplies the text score. Invalid values warn
-and use the default. `exclude_search` fails the build naming `search_exclude`;
-the camelCase `excludeSearch` alias does the same.
+and use the default. The renamed-key registries are gone, so the 0.4 spellings
+`exclude_search` and `excludeSearch` are simply unknown keys now;
+`check-params.py` keeps the theme from reading either.
 
 The index carries URL, title, taxonomies, excerpt, headings, description, body,
 root, section, type, keywords, boost, breadcrumb, and icon. The maintained
@@ -207,9 +208,10 @@ The attribution line exists to discharge a licence obligation, so its rules are
 strict rather than forgiving. `upstream_link` — the URL of the material the
 page is derived from — is read from front matter only; a cascade counts,
 site params do not, because a site-wide value would make every page claim the
-same source. Any other `upstream_*` key present without it fails the build, so
-cascading the constants over a vendored tree also makes every page in that tree
-that forgot its own source URL fail. `upstream_link: ""` is the per-page opt-out.
+same source. Any other `upstream_*` key present without it warns and the attribution is
+omitted, so cascading the constants over a vendored tree makes every page in
+that tree that forgot its own source URL say so in the log — and fail CI, which
+builds with `--panicOnWarning`. `upstream_link: ""` is the per-page opt-out.
 
 The constants resolve site params → the `data/upstreams` entry named by
 `upstream_source` → front matter, most specific last: `upstream_name`,

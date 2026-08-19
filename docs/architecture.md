@@ -43,22 +43,22 @@ Front matter never contains a `ui` map.
 
 `hugo.yaml` declares every default, and `validate.html` is the one place a
 value is checked: it warns with the offending value, the allowed range, and
-the fallback it used, then returns that fallback. New and converted code does
-not call `errorf` — a single one aborts the whole build, so one author's typo
+the fallback it used, then returns that fallback. **The theme does not call
+`errorf` anywhere** — a single one aborts the whole build, so one author's typo
 would serve HTTP 500 on every URL of the site rather than degrading the page
 they were editing. Every publishing gate builds with `--panicOnWarning`, which
-is what keeps a warning fatal where it counts. Roughly 480 older call sites
-still `errorf` and are being converted; see `plan/adr/0002`.
+is what keeps a warning fatal where it counts, and `check-params.py` fails if
+an `errorf` reappears. See `plan/adr/0002`.
 
 The renamed-key registries that used to stop the build are gone: all consumer
 sites are migrated, so they were pure carrying cost. A renamed key is now
 simply an unknown key, and `check-params.py` still refuses to let the theme
 read a removed one.
 
-Network-capable features are explicit and fail closed. PlantUML requires
+Network-capable features are explicit and degrade closed. PlantUML requires
 `plantuml.svg_image_url`, Draw.io requires `drawio.drawio_server`, and Algolia
-requires `appId`, `apiKey`, and `indexName`. These three are still among the
-unconverted `errorf` calls.
+requires `appId`, `apiKey`, and `indexName`; without them each warns and stays
+off, so nothing is requested.
 
 When Draw.io is enabled, `scripts.html` emits `#td-drawio-config` before the
 feature bundle. The runtime reads the configured server from that JSON element

@@ -46,8 +46,9 @@ follows the Landing-wide contract and omits all sections. The pane labels are
 theme i18n (`ui_preview_source`, `ui_preview_rendered`).
 
 `hero.align` is `start` (default) or `center`. `center` is a text-only layout
-— the copy block widens and centres, the title balances across lines — and
-combining it with `hero.image` fails the build.
+— the copy block widens and centres, the title balances across lines — so
+combining it with `hero.image` warns and falls back to `start`, keeping the
+image rather than dropping it.
 
 Each section entry may be a type string or a map with `type`, `key`, `id`,
 `enabled`, inline `data`, or a deliberate local `partial` escape hatch. IDs are

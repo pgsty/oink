@@ -6,27 +6,27 @@
 - [Blog](https://example.org/blog/index.md): Real OINK release notes and engineering posts, wired to every blog feature.
 - [Book](https://example.org/book/index.md): Book Press Kit
 ## Documentation index
-- [Callouts](https://example.org/docs/callout/): Write notes, warnings and collapsible asides — with colour, icon and title — as `> [!NOTE]` blockquotes, no shortcode involved.
-- [Images](https://example.org/docs/image/): Plain Markdown image syntax plus one attribute line gives you captions, sizing, zoom, links, numbering and Hugo image processing.
-- [Code blocks](https://example.org/docs/code/): A plain Markdown fence plus one attribute line gives you a filename title, exact copy, line numbers, highlighting, wrapping, folding and linkable lines.
-- [Tabs](https://example.org/docs/tabs/): A `{tab=}` attribute on adjacent fences or tables makes a tab set; add a group and it becomes linkable, synchronized and remembered.
-- [Tables](https://example.org/docs/table/): A plain GFM table plus one attribute line becomes a captioned table, a compatibility matrix, a field list, a numbered table or a tab set; wide tables scroll on their own.
-- [Fields](https://example.org/docs/fields/): A plain table plus `{.fields}` documents configuration keys, command flags and API fields — name, type, default and description each in place, readable on a narrow screen, every entry individually linkable.
-- [Steps](https://example.org/docs/steps/): An ordered list plus `{.steps}` becomes a numbered procedure with dots and a connecting rule; switch to the steps shortcode when each step needs a heading in the table of contents.
-- [Cards](https://example.org/docs/cards/): A link list plus `{.cards}` lays out a grid of navigation cards; switch to the shortcode when you need icons, badges or images.
-- [File trees](https://example.org/docs/filetree/): A `filetree` fence draws an annotated directory structure — aligned comment column, per-entry icons, collapsible directories, a draggable split.
-- [Mathematics](https://example.org/docs/math/): Inline and display mathematics with KaTeX, rendered at build time — the reader downloads no script.
-- [Mermaid](https://example.org/docs/mermaid/): A `mermaid` fence turns text into flowcharts, sequence diagrams, Gantt charts, class diagrams and state diagrams — rendered locally, theme-aware, diff-friendly.
-- [PlantUML](https://example.org/docs/plantuml/): A `plantuml` fence writes sequence, class, component, activity and use-case diagrams; rendering requires a PlantUML server you configure yourself.
-- [Markmap](https://example.org/docs/markmap/): A `markmap` fence turns a Markdown outline into an expandable, zoomable mind map — and the source stays a readable outline.
-- [Draw.io](https://example.org/docs/drawio/): Put a `.drawio.svg` that carries an editable copy on the page as an ordinary image; hovering gives the reader a button that opens the Draw.io editor.
-- [ECharts](https://example.org/docs/echarts/): Write ECharts options as YAML or JSON in an `echarts` fence; Hugo validates them at build time and the browser draws a theme-aware chart with the local ECharts.
-- [Infographic](https://example.org/docs/infographic/): An `infographic` fence picks an AntV template and renders a title plus a list of items as a flow, timeline, funnel, grid or hierarchy.
-- [Galleries](https://example.org/docs/gallery/): A `gallery` fence arranges related screenshots in a responsive grid, each with an optional description or link, reusing the page's image zoom dialog.
-- [Badges](https://example.org/docs/badge/): Put a semantic status label next to a feature name, a version or a table cell — five tones, no custom colours.
-- [Keys](https://example.org/docs/kbd/): Write shortcuts with `kbd` — one shortcode, a list of key names, a semantic key sequence that stays readable in print and in Markdown output.
-- [Include](https://example.org/docs/include/): Pull an external file in with include, print a site parameter with param, and write a note that reaches no output at all with comment.
-- [Asciinema](https://example.org/docs/asciinema/): Put a .cast terminal recording on the page — the text stays selectable text, and the player ships with the theme rather than coming from a CDN.
+- [Callouts](https://example.org/docs/callout/index.md): Write notes, warnings and collapsible asides — with colour, icon and title — as `> [!NOTE]` blockquotes, no shortcode involved.
+- [Images](https://example.org/docs/image/index.md): Plain Markdown image syntax plus one attribute line gives you captions, sizing, zoom, links, numbering and Hugo image processing.
+- [Code blocks](https://example.org/docs/code/index.md): A plain Markdown fence plus one attribute line gives you a filename title, exact copy, line numbers, highlighting, wrapping, folding and linkable lines.
+- [Tabs](https://example.org/docs/tabs/index.md): A `{tab=}` attribute on adjacent fences or tables makes a tab set; add a group and it becomes linkable, synchronized and remembered.
+- [Tables](https://example.org/docs/table/index.md): A plain GFM table plus one attribute line becomes a captioned table, a compatibility matrix, a field list, a numbered table or a tab set; wide tables scroll on their own.
+- [Fields](https://example.org/docs/fields/index.md): A plain table plus `{.fields}` documents configuration keys, command flags and API fields — name, type, default and description each in place, readable on a narrow screen, every entry individually linkable.
+- [Steps](https://example.org/docs/steps/index.md): An ordered list plus `{.steps}` becomes a numbered procedure with dots and a connecting rule; switch to the steps shortcode when each step needs a heading in the table of contents.
+- [Cards](https://example.org/docs/cards/index.md): A link list plus `{.cards}` lays out a grid of navigation cards; switch to the shortcode when you need icons, badges or images.
+- [File trees](https://example.org/docs/filetree/index.md): A `filetree` fence draws an annotated directory structure — aligned comment column, per-entry icons, collapsible directories, a draggable split.
+- [Mathematics](https://example.org/docs/math/index.md): Inline and display mathematics with KaTeX, rendered at build time — the reader downloads no script.
+- [Mermaid](https://example.org/docs/mermaid/index.md): A `mermaid` fence turns text into flowcharts, sequence diagrams, Gantt charts, class diagrams and state diagrams — rendered locally, theme-aware, diff-friendly.
+- [PlantUML](https://example.org/docs/plantuml/index.md): A `plantuml` fence writes sequence, class, component, activity and use-case diagrams; rendering requires a PlantUML server you configure yourself.
+- [Markmap](https://example.org/docs/markmap/index.md): A `markmap` fence turns a Markdown outline into an expandable, zoomable mind map — and the source stays a readable outline.
+- [Draw.io](https://example.org/docs/drawio/index.md): Put a `.drawio.svg` that carries an editable copy on the page as an ordinary image; hovering gives the reader a button that opens the Draw.io editor.
+- [ECharts](https://example.org/docs/echarts/index.md): Write ECharts options as YAML or JSON in an `echarts` fence; Hugo validates them at build time and the browser draws a theme-aware chart with the local ECharts.
+- [Infographic](https://example.org/docs/infographic/index.md): An `infographic` fence picks an AntV template and renders a title plus a list of items as a flow, timeline, funnel, grid or hierarchy.
+- [Galleries](https://example.org/docs/gallery/index.md): A `gallery` fence arranges related screenshots in a responsive grid, each with an optional description or link, reusing the page's image zoom dialog.
+- [Badges](https://example.org/docs/badge/index.md): Put a semantic status label next to a feature name, a version or a table cell — five tones, no custom colours.
+- [Keys](https://example.org/docs/kbd/index.md): Write shortcuts with `kbd` — one shortcode, a list of key names, a semantic key sequence that stays readable in print and in Markdown output.
+- [Include](https://example.org/docs/include/index.md): Pull an external file in with include, print a site parameter with param, and write a note that reaches no output at all with comment.
+- [Asciinema](https://example.org/docs/asciinema/index.md): Put a .cast terminal recording on the page — the text stays selectable text, and the player ships with the theme rather than coming from a CDN.
 ## Site locales
 - [English](https://example.org/)
 - [简体中文](https://example.org/zh/)

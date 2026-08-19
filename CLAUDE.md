@@ -227,11 +227,13 @@ from published modules. `VENDOR.json` records version, source, license files,
 artifact paths, and SHA-256 for each; updating a runtime means refreshing
 artifact + license + checksum together.
 
-The theme deliberately **errors the build** rather than silently reaching out:
-PlantUML without `params.plantuml.svg_image_url`, Diagrams.net without
+The theme **refuses to reach out** rather than guessing an endpoint: PlantUML
+without `params.plantuml.svg_image_url`, Diagrams.net without
 `params.drawio.drawio_server`, and Algolia without explicit
-`appId`/`apiKey`/`indexName` all `errorf`. Preserve that pattern for anything
-new that could imply a network call.
+`appId`/`apiKey`/`indexName` each warn and leave the feature off. The
+protection is never emitting the request, not stopping the build (see the
+error-posture rule below); preserve that shape for anything new that could
+imply a network call.
 
 ### Internationalization
 
@@ -287,8 +289,8 @@ Recurring rules from those contracts:
 - Public string parameters (captions, labels, titles) are plain text; only
   Markdown *bodies* (tab, card, field, image caption, Book bodies) are Markdown.
   Those bodies render as their own Goldmark document, so a footnote reference
-  in one fails the build: footnotes are page-level, and a numbered table or
-  fence that needs them uses the native `{num=… caption=…}` form.
+  in one warns and prints literally: footnotes are page-level, and a numbered
+  table or fence that needs them uses the native `{num=… caption=…}` form.
 - Icons are one Font Awesome class pair (`fa-solid fa-rocket`); no icon
   registry, no `oink-` prefixes — theme-generated classes stay `td-`, author
   markers are unprefixed.

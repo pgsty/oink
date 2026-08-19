@@ -1,4 +1,4 @@
-{{- /* Render who wrote a page, on the article head or in a list row.
+{{- /* Render who wrote a page, in its article head.
 
 Two paths, and which one runs is decided by the site's data, never by a
 parameter:
@@ -16,18 +16,14 @@ parameter:
 Names are separated by CSS gap, never by a rendered comma or "and". A
 punctuation list would need a connector word per locale, and there are 32.
 
-Input: `page`; optional `variant` (`article`, the default, or `row`) and
-`authors` (a pre-resolved list, for a caller that already needed to know
-whether the page has any). Returns: markup. */ -}}
+A list row or a card names its authors inside one translated sentence
+instead, which is `shell/blog-meta.html`; this partial is the article head.
+
+Input: `page`; optional `authors` (a pre-resolved list, for a caller that
+already needed to know whether the page has any). Returns: markup. */ -}}
 {{- $page := .page -}}
-{{- $variant := .variant | default "article" -}}
 {{- $authors := .authors -}}
 {{- if not $authors -}}{{ $authors = partial "authors-resolve.html" $page }}{{- end -}}
-{{- if eq $variant "row" -}}
-{{- with $authors -}}
-<span class="td-byline td-byline--row"><span class="td-byline__label">{{ T "post_byline_by" }}</span>{{ range . }}<a class="td-byline__author" href="{{ .url }}"><span class="td-byline__name">{{ .name }}</span></a>{{ end }}</span>
-{{- end -}}
-{{- else -}}
 {{- if $authors }}
 	<div class="td-byline td-byline--authors mb-4">
 		<span class="td-byline__label">{{ T "post_byline_by" }}</span>
@@ -41,5 +37,4 @@ whether the page has any). Returns: markup. */ -}}
 		{{ with $page.Params.author }}{{ T "post_byline_by" }} <b>{{ . | markdownify }}</b> |{{ end}}
 		<time datetime="{{  $page.Date.Format "2006-01-02" }}" class="text-body-secondary">{{ $page.Date.Format $page.Site.Params.time_format_blog  }}</time>
 	</div>
-{{- end -}}
 {{- end -}}

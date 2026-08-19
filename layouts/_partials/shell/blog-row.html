@@ -6,13 +6,7 @@
       <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
       {{ if $isExternal }}<i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}
     </h2>
-    {{- $authors := partial "authors-resolve.html" . }}
-    {{- if or (not .Date.IsZero) $authors }}
-    <p class="mb-2 mb-md-3"><small class="text-body-secondary">
-      {{- if not .Date.IsZero }}{{ .Date.Format (.Param "time_format_blog") }} {{ T "ui_in" }} <a class="td-blog-posts-list__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>{{ end }}
-      {{- with $authors }} {{ partial "byline.html" (dict "page" $ "variant" "row" "authors" .) }}{{ end }}
-    </small></p>
-    {{- end }}
+    {{ partial "shell/blog-meta.html" (dict "page" .) }}
     <header class="td-article-meta">
       {{- partial "taxonomy-terms-article-wrapper.html" . -}}
       {{- if partial "reading-time-enabled.html" . }}

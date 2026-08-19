@@ -59,16 +59,6 @@
     letter-spacing: 0.01em;
   }
 
-  &__section-link {
-    color: inherit;
-    transition: color var(--td-motion-duration-fast) ease;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--td-shell-primary);
-    }
-  }
-
   // On desktop, the thumbnail defines the summary row height.
   &__summary-row--with-image {
     height: 125px;
@@ -166,44 +156,56 @@
     object-fit: cover;
   }
 
+  // A card is a browsing surface, not a reading one: everything in it is a
+  // step down from body size so the title, the date, the tags, and three
+  // lines of description all fit without the card growing.
+  font-size: 14px;
+
   // The heading exists for the document outline; `.td-content-card__title`
   // on the link owns the type, so `.h5` must not size the row.
   &__heading {
     margin: 0;
-    font-size: 1rem;
+    font-size: 15px;
+    line-height: 1.4;
 
     i {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--td-shell-muted-fg);
     }
   }
 
-  &__meta {
-    margin: 0.35rem 0 0;
+  // Tags sit between the date line and the description, close enough to the
+  // date to read as metadata rather than as content.
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 0.3rem 0 0;
+    padding: 0;
+    list-style: none;
+    // Two rows of chips is the ceiling; a heavily tagged post does not get to
+    // push the description out of the card.
+    max-block-size: 3.1em;
+    overflow: hidden;
 
-    small {
-      font-size: 12.5px;
-      letter-spacing: 0.01em;
-    }
-  }
+    li { margin: 0; }
 
-  // The card face is the title link's ::after overlay; the section link has to
-  // lift itself back above it to stay clickable.
-  &__section-link {
-    position: relative;
-    z-index: 2;
-    color: inherit;
-    transition: color var(--td-motion-duration-fast) ease;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--td-shell-primary);
+    .td-taxonomy-term {
+      padding-block: 1px;
+      font-size: 11.5px;
+      line-height: 16px;
     }
   }
 
   &__summary {
     display: -webkit-box;
+    // Three lines, and the box is reserved whether or not the text fills it,
+    // so a short summary does not make its card shorter than its neighbours.
+    min-block-size: calc(3 * 1.55em);
+    margin-block-start: 0.4rem;
     overflow: hidden;
+    font-size: 13px;
+    line-height: 1.55;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
     line-clamp: 3;
@@ -232,6 +234,79 @@
   .td-blog-card__image {
     border-block-end-color: CanvasText;
   }
+}
+
+/* --------------------------------------------- post metadata line */
+
+// One line under a post title in a row, a card, or a term archive:
+// `shell/blog-meta.html` renders the same markup in all three, so the styling
+// lives once here instead of once per form.
+.td-blog-meta {
+  margin: 0.35rem 0 0.6rem;
+
+  small {
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+  }
+
+  &__author,
+  &__section {
+    color: inherit;
+    transition: color var(--td-motion-duration-fast) ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--td-shell-primary);
+    }
+  }
+}
+
+// Inside a card the whole face is the title link's ::after overlay, so the
+// links in this line have to lift themselves back above it to stay clickable.
+.td-blog-card .td-blog-meta {
+  margin-block: 0.3rem 0;
+
+  small {
+    font-size: 11.5px;
+  }
+
+  &__author,
+  &__section {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+/* ------------------------------------------- reader-chosen index form */
+
+// Both forms are rendered when `params.ui.blog_index_toggle` is on. The
+// published form is on the wrapper, the reader's choice on the root element,
+// and the reader's wins in both directions. Restoring `display` explicitly
+// matters: the two forms are a grid and a list, not the same box.
+.td-blog-posts[data-td-blog-default='list'] > [data-td-blog-form='cards'],
+.td-blog-posts[data-td-blog-default='cards'] > [data-td-blog-form='list'] {
+  display: none;
+}
+
+html[data-td-blog-index='list'] .td-blog-posts {
+  > [data-td-blog-form='cards'] { display: none; }
+  > [data-td-blog-form='list'] { display: block; }
+}
+
+html[data-td-blog-index='cards'] .td-blog-posts {
+  > [data-td-blog-form='list'] { display: none; }
+  > [data-td-blog-form='cards'] { display: grid; }
+}
+
+// The control carries both glyphs and shows the one for the form it switches
+// to, so it reads as a destination rather than as a state.
+.td-page-actions__form {
+  .td-page-actions__icon--form-list { display: none; }
+}
+
+html[data-td-blog-index='cards'] .td-page-actions__form {
+  .td-page-actions__icon { display: none; }
+  .td-page-actions__icon--form-list { display: inline-flex; }
 }
 
 /* -------------------------------------------- inline taxonomy terms */

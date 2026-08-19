@@ -19,13 +19,18 @@ page that shows the image at size.
 Input: a page. */ -}}
 {{- $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
 {{- $isExternal := isset .Params "manual_link" -}}
-{{- $summary := "" -}}
-{{- if $isExternal -}}
-  {{- $summary = .Description | default .Params.summary | plainify | htmlUnescape -}}
-{{- else -}}
+{{- /* The description is what the author wrote *about* the post, so it beats
+     the first 160 characters of the post itself -- which on a release note is
+     the date and tag line, not the news. The body is the fallback for a page
+     that describes itself only by starting. */ -}}
+{{- $summary := .Description | default .Params.summary | plainify | htmlUnescape -}}
+{{- if and (not $summary) (not $isExternal) -}}
   {{- $summary = .Plain | htmlUnescape | truncate 160 -}}
 {{- end -}}
+{{- $summary = $summary | truncate 200 -}}
 {{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}
+{{- $tags := slice -}}
+{{- if isset .Site.Taxonomies "tags" }}{{ $tags = .GetTerms "tags" }}{{ end -}}
 <article class="td-content-card td-blog-card">
   {{- with $found.resource }}
   {{- if reflect.IsImageResourceProcessable . }}
@@ -44,10 +49,15 @@ Input: a page. */ -}}
       <a class="td-content-card__title" href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
       {{- if $isExternal }}<i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}
     </h3>
-    {{- if not .Date.IsZero }}
-    <p class="td-blog-card__meta"><small class="text-body-secondary">
-      {{- .Date.Format (.Param "time_format_blog") }} {{ T "ui_in" }} <a class="td-blog-card__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>
-    </small></p>
+    {{ partial "shell/blog-meta.html" (dict "page" . "authors" false) }}
+    {{- /* The post's own tags, as the chips the article header uses. A card is
+         a browsing surface: the tag is often why a reader picks one. */ -}}
+    {{- with $tags }}
+    <ul class="td-blog-card__tags">
+      {{- range . }}
+      <li><a class="td-taxonomy-term" href="{{ .RelPermalink }}"><span class="td-taxonomy-label">{{ .LinkTitle }}</span></a></li>
+      {{- end }}
+    </ul>
     {{- end }}
     {{- with $summary }}
     <p class="td-content-card__description td-blog-card__summary">{{ . }}</p>

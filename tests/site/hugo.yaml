@@ -19,3 +19,11 @@ module:
       target: static
     - source: ../tests/site/static
       target: static
+
+# Taxonomy fixtures. exampleSite disables the taxonomy and term kinds so the
+# published example stays a component reference; the regression build needs
+# both, and the later file in the merge list replaces a scalar list outright.
+disableKinds: [sitemap]
+taxonomies:
+  author: authors
+  series: series

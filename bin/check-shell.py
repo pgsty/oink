@@ -278,6 +278,69 @@ def check_sources() -> list[str]:
             "detailed feedback no longer has a stable Giscus target", errors)
     require("key === 'l' || key === 'y'" in keyboard,
             "y is no longer the l language alias", errors)
+    errors.extend(check_series_sources())
+    return errors
+
+
+def check_series_sources() -> list[str]:
+    """The series strip is one placement, one resolver, and no runtime."""
+
+    errors: list[str] = []
+    strip = (ROOT / "layouts/_partials/series-strip.html").read_text()
+    order = (ROOT / "layouts/_partials/series-pages.html").read_text()
+    article = (ROOT / "layouts/blog/_td-content.html").read_text()
+    wrapper = (ROOT / "layouts/_partials/taxonomy-terms-article-wrapper.html").read_text()
+    print_styles = (ROOT / "assets/scss/td/_print.scss").read_text()
+    blog_styles = (ROOT / "assets/scss/td/shell/_blog.scss").read_text()
+
+    # The strip belongs between the article's metadata row and its first
+    # paragraph: after the meta header closes, before the content renders.
+    placement = [
+        article.index("</header>"),
+        article.index('partial "series-strip.html"'),
+        article.index('partial "content/render.html"'),
+    ]
+    require(placement == sorted(placement),
+            "the series strip is no longer between the article meta row and the content", errors)
+
+    # One resolver decides reading order; the strip and both term templates read
+    # it, so they can never disagree about which article is part 2.
+    require('partial "series-pages.html"' in strip,
+            "the series strip resolves its own order instead of reusing series-pages.html", errors)
+    for template in ("layouts/blog/term.html", "layouts/term.html"):
+        source = (ROOT / template).read_text()
+        require('partial "series-pages.html"' in source
+                and 'eq .Data.Plural "series"' in source
+                and ".Pages.ByDate.Reverse" in source,
+                f"{template} no longer switches a series term to reading order", errors)
+    require('where $pages "Params.series_weight"' in order
+            and ".GroupByParam" not in order,
+            "series reading order stopped reading the taxonomy weight from .Params", errors)
+
+    # Zero JavaScript: a disclosure, not a widget. No page-store flag, no
+    # bundle member, no behaviour attribute for a runtime to bind to.
+    require("<details" in strip and "<summary" in strip,
+            "the series list is no longer a plain disclosure", errors)
+    require("data-td-" not in strip and "<script" not in strip and "Store.Set" not in strip,
+            "the series strip grew a runtime hook", errors)
+    require('aria-current="page"' in strip,
+            "the series list no longer marks the reader's own place", errors)
+    # Print keeps the strip and opens the disclosure through the existing rule.
+    require("details:not([open]) > :not(summary)" in print_styles,
+            "print no longer expands closed disclosures, so the series list would print collapsed", errors)
+    require("d-print-none" not in strip,
+            "the series strip hides itself from print", errors)
+    require(".td-series-strip {" in blog_styles
+            and "margin-block" in blog_styles
+            and "padding-inline" in blog_styles,
+            "the series strip lost its own styles or its logical properties", errors)
+
+    # Both taxonomies that carry a surface of their own stay out of the default
+    # chips row; naming one in params.taxonomy.page_header still opts back in.
+    require('$reserved := slice "authors" "series"' in wrapper
+            and wrapper.count("in $reserved $taxo") == 2
+            and "page_header" in wrapper,
+            "the article chips row no longer reserves authors and series", errors)
     return errors
 
 

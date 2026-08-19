@@ -856,9 +856,8 @@ def build_example(hugo: str) -> list[str]:
                     and 'data-td-page-actions' in blog_source
                     and 'td-shell-topline--actions-only' in blog_source,
                     "blog root did not hide its breadcrumb while retaining actions", errors)
-            require('<span class="td-byline td-byline--row">' in blog_source
-                    and 'td-byline__avatar' not in blog_source,
-                    "the blog list row lost its author names, or grew portraits it has no "
+            require('td-byline' not in blog_source,
+                    "the card index grew a byline it has no room for: image, title, "
                     "room for", errors)
 
         # The 0.4 string byline, rendered against a site that *does* declare the
@@ -884,28 +883,44 @@ def build_example(hugo: str) -> list[str]:
         require(article.is_file(), "authors byline fixture page is missing", errors)
         if article.is_file():
             article_source = article.read_text()
-            order = [article_source.find('href="/authors/vonng/"'),
-                     article_source.find('href="/authors/andy/"')]
+            # `authors: [oink-maintainers, vonng]` -- GetTerms keeps the front
+            # matter sequence, so the collective author bylines first even
+            # though it sorts second.
+            order = [article_source.find('href="/authors/oink-maintainers/"'),
+                     article_source.find('href="/authors/vonng/"')]
             require(all(index >= 0 for index in order) and order == sorted(order),
                     "the article byline does not follow the front matter author order", errors)
             require("taxo-authors" not in article_source,
                     "the reserved `authors` plural still renders a generic chip row", errors)
 
+        # Two profiles, one per branch of the avatar contract: the collective
+        # author carries `images`, the individual carries none and falls back to
+        # an initial. Both are real pages in the example, not fixtures.
         profile = public / "authors/vonng/index.html"
-        require(profile.is_file(), "author profile fixture page is missing", errors)
+        require(profile.is_file(), "author profile page is missing", errors)
         if profile.is_file():
             profile_source = profile.read_text()
-            require('<h1 class="td-author-profile__name">Ruohang Feng</h1>' in profile_source
-                    and 'class="td-author-profile__avatar"' in profile_source
+            require('<h1 class="td-author-profile__name">Feng Ruohang</h1>' in profile_source
+                    and 'td-author-profile__avatar--placeholder' in profile_source
                     and 'class="td-blog-posts-list' in profile_source,
-                    "the author term page is not a profile above its archive", errors)
+                    "the author term page is not a profile above its archive, "
+                    "or lost the portrait-less fallback", errors)
+
+        portrait = public / "authors/oink-maintainers/index.html"
+        require(portrait.is_file(), "collective author profile page is missing", errors)
+        if portrait.is_file():
+            portrait_source = portrait.read_text()
+            require('class="td-author-profile__avatar"' in portrait_source
+                    and "td-author-profile__avatar--placeholder" not in portrait_source,
+                    "a profile with images no longer renders its portrait", errors)
 
         feed = public / "blog/index.xml"
         require(feed.is_file(), "blog feed fixture is missing", errors)
         if feed.is_file():
             feed_source = feed.read_text()
             require('xmlns:dc="http://purl.org/dc/elements/1.1/"' in feed_source
-                    and "<dc:creator>Ruohang Feng</dc:creator>" in feed_source,
+                    and "<dc:creator>Feng Ruohang</dc:creator>" in feed_source
+                    and "<dc:creator>OINK maintainers</dc:creator>" in feed_source,
                     "the blog feed lost its per-item dc:creator", errors)
 
         docs = public / "docs/index.html"
@@ -1126,9 +1141,9 @@ def build_blog_index_forms(hugo: str) -> list[str]:
             )
             if result.returncode:
                 return [f"blog index {name} form failed to build:\n" + result.stdout + result.stderr]
-            index = public / "blog/index.html"
+            index = public / "blog/oink/index.html"
             if not index.is_file():
-                return [f"blog index {name} form did not render blog/index.html"]
+                return [f"blog index {name} form did not render blog/oink/index.html"]
             rendered[name] = index.read_text(encoding="utf-8")
 
         rows, cards = rendered["rows"], rendered["cards"]

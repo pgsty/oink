@@ -216,11 +216,19 @@ def check_pager_outputs(public: Path) -> list[str]:
     first_nested = (public / "fixtures/guides/first/index.html").read_text()
     require("Nested guides" in first_nested, "pager card lost its optional parent section", errors)
 
+    # Blog order is weighted pages first, then reverse date, walked as a tree:
+    # the unweighted root posts, then each child section and its own posts. The
+    # real OINK posts under blog/oink/ sit between the root posts and the
+    # release section, which is what the chain below pins.
     blog_cases = {
         "blog/index.html": {"prev": None, "next": "/blog/typography/"},
         "blog/typography/index.html": {"prev": "/blog/", "next": "/blog/older/"},
-        "blog/older/index.html": {"prev": "/blog/typography/", "next": "/blog/legacy-byline/"},
-        "blog/legacy-byline/index.html": {"prev": "/blog/older/", "next": "/blog/release/"},
+        "blog/older/index.html": {"prev": "/blog/typography/", "next": "/blog/oink/"},
+        "blog/oink/index.html": {"prev": "/blog/older/", "next": "/blog/oink/oink-announcement/"},
+        "blog/legacy-byline/index.html": {
+            "prev": "/blog/oink/oink-implementation-diary/",
+            "next": "/blog/release/",
+        },
     }
     for relative, expected in blog_cases.items():
         path = public / relative

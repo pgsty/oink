@@ -3,7 +3,7 @@
 ## Site index
 - [Home page](https://example.org/)
 - [Docs](https://example.org/docs/): Markdown Component Examples
-- [Blog](https://example.org/blog/): Blog section examples
+- [Blog](https://example.org/blog/): Real OINK release notes and engineering posts, wired to every blog feature.
 - [Book](https://example.org/book/index.md): Book Press Kit
 ## Documentation index
 - [Callouts](https://example.org/docs/callout/): Write notes, warnings and collapsible asides — with colour, icon and title — as `> [!NOTE]` blockquotes, no shortcode involved.

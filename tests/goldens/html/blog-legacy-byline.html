@@ -37,7 +37,7 @@ document.documentElement.classList.toggle('dark-mode', theme === 'dark');
 document.documentElement.setAttribute('data-theme', theme);
 })();
 </script>
-<link rel="prev" href="/blog/older/">
+<link rel="prev" href="/blog/oink/oink-implementation-diary/">
 <link rel="next" href="/blog/release/"><meta name="robots" content="index, follow">
 <title>A legacy byline article | Oink Example</title>
 <meta name="description" content="The 0.4 `author` string, including the Markdown block form.">
@@ -243,7 +243,7 @@ aria-haspopup="true" aria-expanded="false" aria-label="Choose section">
 <span class="td-shell-root__icon"><i class="fa-solid fa-blog" aria-hidden="true"></i></span>
 <span class="td-shell-root__meta">
 <span class="td-shell-root__item-title">Blog</span>
-<span class="td-shell-root__item-desc">Blog section examples</span>
+<span class="td-shell-root__item-desc">Real OINK release notes and engineering posts, wired to every blog feature.</span>
 </span>
 <span class="td-shell-root__check"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </a><a class="td-shell-root__item" href="/book/">
@@ -290,6 +290,36 @@ id="m-blogolder-li">
 <a href="/blog/older/" title="An older regression article"
 class="td-shell-tree__link"
 id="m-blogolder"><span>An older regression article</span></a>
+</div>
+</li><li class="td-shell-tree__item td-has-child"
+id="m-blogoink-li">
+<div class="td-shell-tree__row">
+<a href="/blog/oink/" title="Oink Blog"
+class="td-shell-tree__link"
+id="m-blogoink"><i class="fa-solid fa-pen-nib" aria-hidden="true"></i><span>Oink</span></a>
+<button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
+aria-expanded="true" aria-controls="m-blogoink-children"
+aria-label="Collapse section: Oink"
+data-td-label-expand="Expand section: Oink"
+data-td-label-collapse="Collapse section: Oink"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></button>
+</div><div id="m-blogoink-children" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<ul class="td-shell-tree__list td-shell-tree__list--2"><li class="td-shell-tree__item td-leaf"
+id="m-blogoinkoink-announcement-li">
+<div class="td-shell-tree__row">
+<a href="/blog/oink/oink-announcement/" title="Introducing the OINK implementation preview"
+class="td-shell-tree__link"
+id="m-blogoinkoink-announcement"><span>Introducing OINK</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogoinkoink-implementation-diary-li">
+<div class="td-shell-tree__row">
+<a href="/blog/oink/oink-implementation-diary/" title="OINK implementation diary: from copied shells to one theme"
+class="td-shell-tree__link"
+id="m-blogoinkoink-implementation-diary"><span>OINK implementation diary</span></a>
+</div>
+</li></ul>
+</div>
 </div>
 </li><li class="td-shell-tree__item td-leaf td-active-path"
 id="m-bloglegacy-byline-li">
@@ -345,6 +375,34 @@ id="m-blogreleasepig-1100-li">
 <a href="/blog/release/pig-1.10.0/" title="Pig 1.10.0"
 class="td-shell-tree__link"
 id="m-blogreleasepig-1100"><span>Pig 1.10.0</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogrelease040-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/0.4.0/" title="Oink 0.4.0 — Scenario components for complete publishing workflows"
+class="td-shell-tree__link"
+id="m-blogrelease040"><span>Oink v0.4.0</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogrelease030-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/0.3.0/" title="Oink 0.3.0 — Authoring, navigation, and a lighter page"
+class="td-shell-tree__link"
+id="m-blogrelease030"><span>Oink v0.3.0</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogrelease020-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/0.2.0/" title="Oink 0.2.0 — Richer content and sharper presentation"
+class="td-shell-tree__link"
+id="m-blogrelease020"><span>Oink v0.2.0</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogrelease010-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/0.1.0/" title="Oink 0.1.0 — A stable local-first foundation"
+class="td-shell-tree__link"
+id="m-blogrelease010"><span>Oink v0.1.0</span></a>
 </div>
 </li></ul>
 </div>
@@ -547,6 +605,35 @@ By <b><a href="https://vonng.com">Ruohang Feng</a> (<a href="https://github.com/
 wrote in 0.4. This page pins that path byte for byte: it must render the same
 markdownified <code>&lt;b&gt;</code> and pipe separator after the taxonomy byline lands.</p>
 <div class="td-page-end">
+<section class="td-share d-print-none" data-td-share data-td-page-context
+data-td-t-copied="Link copied" data-td-t-copy-error="Could not copy the link">
+<h2 class="td-share__label">Share</h2>
+<div class="td-share__items" role="group" aria-label="Share">
+<a class="td-share__item td-share__item--x" href="https://x.com/intent/post?url=https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F&amp;text=A%20legacy%20byline%20article"
+target="_blank" rel="noopener noreferrer" title="X" aria-label="X">
+<span class="td-share__icon"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></span>
+</a>
+<a class="td-share__item td-share__item--linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F"
+target="_blank" rel="noopener noreferrer" title="LinkedIn" aria-label="LinkedIn">
+<span class="td-share__icon"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></span>
+</a>
+<a class="td-share__item td-share__item--hackernews" href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F&amp;t=A%20legacy%20byline%20article"
+target="_blank" rel="noopener noreferrer" title="Hacker News" aria-label="Hacker News">
+<span class="td-share__icon"><i class="fa-brands fa-hacker-news" aria-hidden="true"></i></span>
+</a>
+<a class="td-share__item td-share__item--email" href="mailto:?subject=A%20legacy%20byline%20article&amp;body=https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F"
+title="Email" aria-label="Email">
+<span class="td-share__icon"><i class="fa-solid fa-envelope" aria-hidden="true"></i></span>
+</a>
+<button type="button" class="td-share__item td-share__item--copy"
+data-td-action="copy_link" data-td-url="https://example.org/blog/legacy-byline/"
+title="Copy link" aria-label="Copy link">
+<span class="td-share__icon"><i class="fa-solid fa-link" aria-hidden="true"></i></span>
+<span class="td-share__icon td-share__icon--done"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
+</button>
+</div>
+<span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-td-page-context-status></span>
+</section>
 <section class="td-page-annotation" data-td-page-annotation aria-label="Page information">
 <div class="td-page-meta__footer">
 <div class="td-page-meta__item td-page-meta__lastmod">
@@ -557,9 +644,9 @@ markdownified <code>&lt;b&gt;</code> and pipe separator after the taxonomy bylin
 </section>
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next">
-<a class="td-pager__link td-pager__link--prev" href="/blog/older/"
-aria-label="Previous - An older regression article" title="An older regression article" data-td-pager-prev>
-<span class="td-pager__arrow" aria-hidden="true">←</span><span class="td-pager__title" dir="auto">An older regression article</span>
+<a class="td-pager__link td-pager__link--prev" href="/blog/oink/oink-implementation-diary/"
+aria-label="Previous - OINK implementation diary: from copied shells to one theme" title="OINK implementation diary" data-td-pager-prev>
+<span class="td-pager__arrow" aria-hidden="true">←</span><span class="td-pager__title" dir="auto">OINK implementation diary</span>
 </a>
 <a class="td-pager__link td-pager__link--next" href="/blog/release/"
 aria-label="Next - Releases" title="Releases" data-td-pager-next>
@@ -590,17 +677,33 @@ data-td-label-collapse="Collapse section: Authors">
 <div id="td-shell-taxonomy-authors-blog-children" class="td-shell-tree__children td-is-open">
 <div class="td-shell-tree__children-inner">
 <div class="td-shell-tags-cloud__chips">
-<a class="td-shell-tag" href="/authors/andy/">
-<span>Andy Pavlo</span><span class="td-shell-tag__count">1</span>
+<a class="td-shell-tag" href="/authors/oink-maintainers/">
+<span>OINK maintainers</span><span class="td-shell-tag__count">6</span>
+</a>
+<a class="td-shell-tag" href="/authors/vonng/">
+<span>Feng Ruohang</span><span class="td-shell-tag__count">3</span>
 </a>
 <a class="td-shell-tag" href="/authors/ghost/">
 <span>Ghost</span><span class="td-shell-tag__count">1</span>
 </a>
-<a class="td-shell-tag" href="/authors/nolan/">
-<span>Nolan Vega</span><span class="td-shell-tag__count">1</span>
-</a>
-<a class="td-shell-tag" href="/authors/vonng/">
-<span>Ruohang Feng</span><span class="td-shell-tag__count">1</span>
+</div>
+</div>
+</div>
+</div><div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="categories" data-td-taxonomy-root="/blog/">
+<button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
+aria-expanded="true" aria-controls="td-shell-taxonomy-categories-blog-children"
+aria-label="Collapse section: Categories"
+data-td-label-expand="Expand section: Categories"
+data-td-label-collapse="Collapse section: Categories">
+<span class="td-shell-aside-group__icon"><i class="fa-solid fa-folder" aria-hidden="true"></i></span>
+<span class="td-shell-aside-group__title td-shell-tags-cloud__title">Categories</span>
+<span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
+</button>
+<div id="td-shell-taxonomy-categories-blog-children" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<div class="td-shell-tags-cloud__chips">
+<a class="td-shell-tag" href="/categories/release/">
+<span>Release</span><span class="td-shell-tag__count">4</span>
 </a>
 </div>
 </div>
@@ -618,11 +721,36 @@ data-td-label-collapse="Collapse section: Series">
 <div id="td-shell-taxonomy-series-blog-children" class="td-shell-tree__children td-is-open">
 <div class="td-shell-tree__children-inner">
 <div class="td-shell-tags-cloud__chips">
+<a class="td-shell-tag" href="/series/oink-releases/">
+<span>OINK releases</span><span class="td-shell-tag__count">4</span>
+</a>
 <a class="td-shell-tag" href="/series/pg-internals/">
 <span>Postgres internals</span><span class="td-shell-tag__count">4</span>
 </a>
 <a class="td-shell-tag" href="/series/typography-notes/">
 <span>Typography-Notes</span><span class="td-shell-tag__count">1</span>
+</a>
+</div>
+</div>
+</div>
+</div><div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="tags" data-td-taxonomy-root="/blog/">
+<button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
+aria-expanded="true" aria-controls="td-shell-taxonomy-tags-blog-children"
+aria-label="Collapse section: Tags"
+data-td-label-expand="Expand section: Tags"
+data-td-label-collapse="Collapse section: Tags">
+<span class="td-shell-aside-group__icon"><i class="fa-solid fa-tags" aria-hidden="true"></i></span>
+<span class="td-shell-aside-group__title td-shell-tags-cloud__title">Tags</span>
+<span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
+</button>
+<div id="td-shell-taxonomy-tags-blog-children" class="td-shell-tree__children td-is-open">
+<div class="td-shell-tree__children-inner">
+<div class="td-shell-tags-cloud__chips">
+<a class="td-shell-tag" href="/tags/oink/">
+<span>Oink</span><span class="td-shell-tag__count">6</span>
+</a>
+<a class="td-shell-tag" href="/tags/release/">
+<span>Release</span><span class="td-shell-tag__count">4</span>
 </a>
 </div>
 </div>
@@ -711,7 +839,7 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 </footer>
 </div>
 <script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
-<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/blog/legacy-byline/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/blog/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/blog/legacy-byline/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/blog/legacy-byline/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Blog section examples","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/blog/legacy-byline/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fblog%2Flegacy-byline%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":false,"description":"View edit history","disabledReason":"View edit history: unavailable","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":""},{"available":false,"description":"Edit this page","disabledReason":"Edit this page: unavailable","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":""},{"available":false,"description":"Create child page","disabledReason":"Create child page: unavailable","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":""},{"available":false,"description":"Create docs issue","disabledReason":"Create docs issue: unavailable","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":""},{"available":false,"description":"Create project issue","disabledReason":"Create project issue: unavailable","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":""},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/blog/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/blog/legacy-byline/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/blog/legacy-byline/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Real OINK release notes and engineering posts, wired to every blog feature.","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden

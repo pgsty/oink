@@ -3,7 +3,7 @@ title: 一篇排版回归文章
 description: 面向长文阅读与中日韩回退的紧凑样例。
 date: 2026-08-11
 weight: 10
-authors: [vonng, andy]
+authors: [oink-maintainers, vonng]
 series: [typography-notes]
 ---
 

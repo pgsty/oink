@@ -3,7 +3,18 @@ title: Oink Example
 theme: oink
 defaultContentLanguage: en
 enableRobotsTXT: true
-disableKinds: [sitemap, taxonomy, term]
+disableKinds: [sitemap]
+
+# Four taxonomies, two of which the theme gives a surface of their own: an
+# `authors` term page is an author profile and drives the byline, a `series`
+# term page lists its members in reading order. Both are therefore left out of
+# the generic chip row under an article title, while tags and categories still
+# render there.
+taxonomies:
+  author: authors
+  series: series
+  tag: tags
+  category: categories
 
 # Hugo does not merge a theme module's Goldmark configuration into a consumer
 # site. Sites that author delimiter-style mathematics must enable passthrough

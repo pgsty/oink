@@ -32,6 +32,13 @@ AUTHOR_MARKERS = {
     "steps", "cards", "fields", "matrix", "full-width", "no-step-marker",
 }
 
+# Docsy heritage. `taxonomy` and `taxo-<plural>` are upstream Docsy class names
+# that consuming stylesheets already target; the theme emits its own
+# `td-taxonomy-*` beside them and styles the compound, so dropping these would
+# break a consumer override for no gain. They stayed invisible until the
+# example declared taxonomies of its own.
+DOCSY_HERITAGE_CLASS = re.compile(r"^(taxonomy|taxo-[a-z0-9-]+)$")
+
 # Classes emitted by third-party runtimes or by Hugo/Goldmark itself.
 THIRD_PARTY_CLASS = re.compile(
     r"^("
@@ -135,6 +142,7 @@ def check_html(public: Path) -> list[str]:
         if not name.startswith("td-")
         and name not in AUTHOR_MARKERS
         and not THIRD_PARTY_CLASS.match(name)
+        and not DOCSY_HERITAGE_CLASS.match(name)
         # exampleSite fixtures use their own site-local classes on purpose
         and "fixture" not in name
     )

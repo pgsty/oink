@@ -5,6 +5,9 @@ type: blog
 layout: releases
 cascade:
   type: blog
+  images: [/images/releasenote.webp]
+  # 题图以十分之一不透明度铺在文章头部背后。
+  featured_image: wash
 ---
 
 这个样例演练展开式与简写式发布元数据、产品分组、日期排序，

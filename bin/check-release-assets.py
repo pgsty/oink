@@ -244,12 +244,19 @@ def check_example(public: Path) -> list[str]:
     parser = ReleaseIndexParser()
     parser.feed(index_path.read_text(encoding="utf-8"))
     actual = [row["href"] for row in parser.rows]
+    # Date first, then numeric semantic version within a date. The four real
+    # OINK notes joined the fixtures here, so the order proves both rules
+    # against a mixed corpus rather than a synthetic one.
     expected = [
+        "/blog/release/0.4.0/",
         "/blog/release/mcli-20260813/",
         "/blog/release/pig-1.10.0/",
         "/blog/release/pig-1.9.0/",
+        "/blog/release/0.3.0/",
         "/blog/release/shorthand/",
         "/blog/release/expanded/",
+        "/blog/release/0.2.0/",
+        "/blog/release/0.1.0/",
     ]
     require(actual == expected, f"release index order is {actual}, expected {expected}", errors)
     require(parser.groups == [], "default release list unexpectedly groups products", errors)

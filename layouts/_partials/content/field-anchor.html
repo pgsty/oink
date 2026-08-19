@@ -21,7 +21,17 @@
 {{- $page := .page -}}
 {{- $identity := printf "%v" .identity -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $slug := anchorize (printf "%v" .name) -}}
+{{- /* Field names are identifiers, not prose. Goldmark's heading rule
+       (`anchorize`) deletes punctuation instead of converting it, which turns
+       `params.ui.typography` into `paramsuitypography` — an id no reader can
+       predict, and therefore one no reader can link to. Lowercase, then every
+       run of punctuation collapses to a single hyphen, so the anchor stays
+       derivable from the name by eye: `params.ui.typography` ->
+       `field-params-ui-typography`, `--dry-run` -> `field-dry-run`.
+       `_` counts as a word character because configuration keys carry meaning
+       in it, and Unicode letters survive, so CJK and Arabic names keep reading
+       as themselves. */ -}}
+{{- $slug := strings.Trim (replaceRE `[^\p{L}\p{N}_]+` "-" (lower (printf "%v" .name))) "-" -}}
 {{- if not $slug }}{{ $slug = "entry" }}{{ end -}}
 {{- $base := printf "field-%s" $slug -}}
 {{- $registry := $page.Store.Get "tdFieldAnchors" | default (dict) -}}
@@ -38,6 +48,12 @@
   {{- end -}}
 {{- end -}}
 {{- if not $id -}}
-  {{- errorf "fields: cannot allocate an anchor for field %q on %s (more than 64 entries share one name)" .name $page.Path -}}
+  {{- /* Past 64 entries sharing one name, fall back to the caller identity,
+         which is unique inside the page by construction, so the document still
+         has no duplicate id. Warn rather than stop the build: the page is
+         readable, only these anchors stop being guessable. */ -}}
+  {{- $id = printf "%s-%s" $base (strings.Trim (replaceRE `[^\p{L}\p{N}_]+` "-" (lower $identity)) "-") -}}
+  {{- warnf "fields: more than 64 entries on %s share the name %q; %q falls back to a position-derived anchor" $page.Path .name $id -}}
+  {{- $page.Store.SetInMap "tdFieldAnchors" (printf "%s|%s" $format $id) $identity -}}
 {{- end -}}
 {{- return $id -}}

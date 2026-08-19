@@ -177,6 +177,32 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Field anchors a reader can actually derive. Every Fields entry already
+  carried an id and a self-link, but the slug came from `anchorize`, Goldmark's
+  rule for prose headings, which *deletes* punctuation rather than converting
+  it. Field names are identifiers, and the ones worth linking to are the
+  punctuated ones: `params.ui.typography` anchored as
+  `#field-paramsuitypography`, `pg.exporter.port` as `#field-pgexporterport`,
+  `data-*` as `#field-data-`. The anchor existed and no one could guess it, so
+  in practice a parameter could not be linked from outside the page without
+  first reading the generated HTML. The slug now lowercases the name and
+  collapses each run of punctuation into a single hyphen, trimming what is left
+  at the ends: `#field-params-ui-typography`, `#field-pg-exporter-port`,
+  `#field-data`. `_` stays a word character, because configuration keys carry
+  meaning in it, and Unicode letters survive, so `搜索模式` still anchors as
+  itself. Names made only of word characters -- `offline_search`, `page_width`,
+  `enable` -- are byte-identical to before; the anchors that change are the ones
+  that were unusable. Duplicate names keep their positional `-2`, `-3` suffixes,
+  and print and RSS still emit no entry anchors at all.
+- Give each field description its own render scope. The scope prefixes every id
+  a nested render hook generates inside a shortcode body, so it has to be unique
+  per body -- and `fields` derived it from the field name, which is not: `a.b`
+  and `ab` collapse to one scope, so two `field` bodies containing a code block
+  emitted the same `td-code-…-fence-0` id. The scope is now the entry anchor,
+  which the anchor registry has already made unique, so the one allocation
+  answers both questions. Generated ids inside field descriptions change shape
+  accordingly (`…-fields0---dry-run-fence-0` becomes `…-field-dry-run-fence-0`);
+  they are generated, not authored, and nothing links to them.
 - Show the brand mark beside a wordmark. A site that set `params.wordmark`
   rendered the wordmark *instead of* its logo in the navbar, the docs sidebar
   brand row, and the mobile subnav, with the mark demoted to a fallback that

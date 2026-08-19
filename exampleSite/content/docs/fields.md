@@ -123,6 +123,13 @@ appears beside the name on hover. `page_width` in the first table above is
 [#field-page_width](#field-page_width) — a link you can send on its own when
 answering a question.
 
+The name becomes the anchor by one rule you can apply by eye: lowercase it, then
+collapse every run of punctuation into a single hyphen and drop any hyphen left
+at either end. `params.ui.typography` is `#field-params-ui-typography` and
+`--dry-run` is `#field-dry-run`; `offline_search` stays `#field-offline_search`,
+because `_` counts as part of a word the way configuration keys use it. Names in
+other scripts keep their own letters: `搜索模式` is `#field-搜索模式`.
+
 Duplicate names on one page get `-2`, `-3` suffixes, the same rule Goldmark uses
 for duplicate headings. Anchors are generated in HTML only: print and RSS
 assemble many pages into one document, where in-page anchors would collide.

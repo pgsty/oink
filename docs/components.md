@@ -28,7 +28,10 @@ markup:
 Only `{{% steps %}}` uses the percent delimiter; its body is page Markdown and
 headings enter the page outline. Every other shortcode uses angle delimiters.
 Container bodies pass through `content/render-block.html`, which scopes IDs
-created by nested render hooks.
+created by nested render hooks. A scope must be unique per body or those IDs
+collide: most containers use their ordinal, `tabs` uses its tab value (already
+unique by validation), and `fields` uses the entry anchor, not the field name --
+two names can slug alike, and the anchor registry is what resolves that.
 
 Public captions, labels, titles, and names are plain text. Markdown belongs in
 component bodies. Icons are one Font Awesome class pair. A component may expose
@@ -107,7 +110,12 @@ and images. `card` is valid only inside `cards`.
 Native fields use the first column as the field name and the last as its
 description. Middle columns map through `meta="type required default -"` or
 their headings. The full form is for block descriptions. `field` is valid only
-inside `fields`; every field gets a stable `field-<name>` anchor.
+inside `fields`; every field gets a stable `field-<name>` anchor, where the name
+is lowercased and each run of punctuation collapses to one hyphen
+(`params.ui.typography` -> `field-params-ui-typography`) so the anchor stays
+derivable from the name. Goldmark's heading rule is deliberately not used here:
+it deletes punctuation rather than converting it, which makes identifier-shaped
+names unlinkable in practice.
 
 ### Tables
 

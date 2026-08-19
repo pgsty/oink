@@ -98,6 +98,8 @@ search_keywords: [参数表, Fields, field, 配置项, 参数, API 字段, meta,
 
 每个条目获得一个 `field-<名称>` 形式的锚点，鼠标移上去时名称右边出现自链接图标。上面第一张表里的 `page_width` 就是 [#field-page_width](#field-page_width)，回答问题时可以把这一行的链接单独发出去。
 
+名称到锚点只有一条规则，肉眼就能套：转成小写，每一段标点压成一个连字符，首尾多出来的连字符去掉。`params.ui.typography` 是 `#field-params-ui-typography`，`--dry-run` 是 `#field-dry-run`；`offline_search` 仍是 `#field-offline_search`，因为下划线按配置键的用法算作词的一部分。非拉丁文名称保留原字：`搜索模式` 是 `#field-搜索模式`。
+
 同一页里重名的字段按 `-2`、`-3` 顺延，规则与 Goldmark 处理重名标题一致。锚点只在 HTML 里生成：打印和 RSS 会把很多页拼成一个文档，页内锚点在那里会冲突。
 
 ## shortcode 形态 {#shortcode}

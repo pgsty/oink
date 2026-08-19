@@ -108,7 +108,14 @@
       "default" $entry.default
     ) -}}
     {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%d#%s" $.Ordinal $key)) -}}
-    {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" (printf "fields%d-%s" $.Ordinal (anchorize $entry.name)) "content" $entry.description "origin" (printf "shortcode %q at %s" $.Name $.Position))) "descriptionMarkdown" false) -}}
+    {{- /* The anchor is also the render scope. A scope derived from the name
+           instead is not unique -- two names that slug alike (`a.b` and `a-b`)
+           produce one scope, and the ids that nested hooks generate inside both
+           descriptions collide, which is a duplicate id in the document, not
+           merely an ugly one. The anchor registry has already resolved exactly
+           that collision to allocate `field-a-b` and `field-a-b-2`, so reusing
+           its answer is the only source of uniqueness worth having here. */ -}}
+    {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" $anchor "content" $entry.description "origin" (printf "shortcode %q at %s" $.Name $.Position))) "descriptionMarkdown" false) -}}
   {{- end -}}
   {{- partial "content/fields-list.html" (dict
     "label" $label "labelID" $labelID "entries" $items "format" $outputFormat

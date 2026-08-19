@@ -518,6 +518,50 @@ def check_field_parity(html: str) -> list[str]:
     return errors
 
 
+def check_field_anchors(html: str) -> list[str]:
+    """A field anchor must be derivable from the field name by eye.
+
+    Field names are identifiers, so Goldmark's heading rule is the wrong one:
+    it deletes punctuation instead of converting it, and `params.ui.typography`
+    becomes `paramsuitypography`, which nobody can link to without reading the
+    generated HTML first. The rule is lowercase, then each run of punctuation
+    collapses to one hyphen (docs/components.md).
+    """
+    errors: list[str] = []
+    for name, anchor in (
+        ("params.ui.typography", "field-params-ui-typography"),
+        ("--dry-run", "field-dry-run"),
+        ("data-*", "field-data"),
+        ("offline_search", "field-offline_search"),
+        ("baseURL", "field-baseurl"),
+        ("搜索模式", "field-搜索模式"),
+    ):
+        require(f'<div class="td-field" id="{anchor}">' in html, f"field {name!r} did not anchor as {anchor!r}", errors)
+    return errors
+
+
+CODE_BLOCK_ID = re.compile(r'id="(td-code-[^"]*)"')
+
+
+def check_field_scopes(html: str) -> list[str]:
+    """Each field description must render in a scope of its own.
+
+    The scope prefixes every id a nested render hook generates, so it has to be
+    unique per entry, and no slug of the name is: `a.b` collides with `ab` under
+    Goldmark's heading rule and with `a-b` under the field rule. The anchor
+    registry is what resolves those collisions, so the anchor is the scope
+    (layouts/_shortcodes/fields.html). A name-derived scope puts the same id on
+    two code blocks, which is a duplicate id in the document.
+    """
+    errors: list[str] = []
+    for anchor in ("field-a-b", "field-ab", "field-a-b-2"):
+        require(f'<div class="td-field" id="{anchor}">' in html, f"the scope fixture lost its {anchor} entry", errors)
+    generated = CODE_BLOCK_ID.findall(html)
+    duplicates = sorted({value for value in generated if generated.count(value) > 1})
+    require(not duplicates, f"field descriptions generated duplicate ids: {duplicates}", errors)
+    return errors
+
+
 def check_table_family(hugo: str) -> list[str]:
     """Attribute policy, orphan attribute lines, class pass-through, include and param."""
     errors: list[str] = []
@@ -560,6 +604,30 @@ def check_table_family(hugo: str) -> list[str]:
             "## Shortcode container attributes\n\n"
             '{{< fields label="Shortcode attributes" id="sc-fields" class="site-fields" data-fixture="shortcode" >}}\n'
             '{{< field name="delta" >}}Fourth{{< /field >}}\n'
+            "{{< /fields >}}\n\n"
+            "## Anchors stay derivable from identifier-shaped names\n\n"
+            "| Field | Description |\n| --- | --- |\n"
+            "| `params.ui.typography` | Dotted configuration key |\n"
+            "| `--dry-run` | Command flag |\n"
+            "| `data-*` | Attribute glob |\n"
+            "| `offline_search` | Underscore is a word character |\n"
+            "| `baseURL` | Case folds like a heading |\n"
+            "| `搜索模式` | Non-Latin names keep their letters |\n"
+            "{.fields}\n\n"
+            "## Names that slug alike still render in distinct scopes\n\n"
+            # `a.b` collides with `ab` under Goldmark's heading rule and with
+            # `a-b` under the field rule, so one fixture covers both ways a
+            # name-derived scope stops being unique.
+            "{{< fields >}}\n"
+            '{{< field name="a.b" >}}\n'
+            "```text\nfirst\n```\n"
+            "{{< /field >}}\n"
+            '{{< field name="ab" >}}\n'
+            "```text\nsecond\n```\n"
+            "{{< /field >}}\n"
+            '{{< field name="a-b" >}}\n'
+            "```text\nthird\n```\n"
+            "{{< /field >}}\n"
             "{{< /fields >}}\n",
             encoding="utf-8",
         )
@@ -595,7 +663,10 @@ def check_table_family(hugo: str) -> list[str]:
         ):
             require(marker in html, f"table family fixture missing {marker}", errors)
         require("onclick" not in html, "an on* attribute reached the rendered table", errors)
-        errors += check_field_parity((destination / "docs/parity/index.html").read_text(encoding="utf-8"))
+        parity = (destination / "docs/parity/index.html").read_text(encoding="utf-8")
+        errors += check_field_parity(parity)
+        errors += check_field_anchors(parity)
+        errors += check_field_scopes(parity)
         require(html.count('data-td-language="yaml"') == 2 and 'data-td-language="js"' in html, "include code=true did not highlight the included files", errors)
         require("td-table--matrix" not in html and "<p>{.matrix}</p>" not in html, "an orphan attribute line was applied or printed", errors)
         require(html.count("<table") == 2, "table family fixture rendered a wrong number of tables", errors)

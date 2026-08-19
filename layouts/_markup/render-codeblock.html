@@ -4,15 +4,15 @@
        are consumed here; normalize.html treats the same keys as reserved. */ -}}
 {{- $hasTab := isset $attrs "tab" -}}
 {{- $tab := "" -}}{{ if $hasTab }}{{ $tab = strings.TrimSpace (printf "%v" (index $attrs "tab")) }}{{ end -}}
-{{- if and $hasTab (not $tab) }}{{ errorf "code block: tab label must not be empty at %s" .Position }}{{ end -}}
+{{- if and $hasTab (not $tab) }}{{ warnf "code block: tab label must not be empty at %s; ignoring tab" .Position }}{{ end -}}
 {{- $group := "" -}}{{ with index $attrs "group" }}{{ $group = printf "%v" . }}{{ end -}}
 {{- $value := "" -}}{{ with index $attrs "value" }}{{ $value = printf "%v" . }}{{ end -}}
-{{- if and (or (isset $attrs "group") (isset $attrs "value")) (not $tab) }}{{ errorf "code block: group/value require tab at %s" .Position }}{{ end -}}
+{{- if and (or (isset $attrs "group") (isset $attrs "value")) (not $tab) }}{{ warnf "code block: group/value require tab at %s; ignoring them" .Position }}{{ end -}}
 {{- $numRaw := "" -}}{{ with index $attrs "num" }}{{ $numRaw = printf "%v" . }}{{ end -}}
 {{- $caption := "" -}}{{ with index $attrs "caption" }}{{ $caption = strings.TrimSpace (printf "%v" .) }}{{ end -}}
-{{- if and $numRaw $tab }}{{ errorf "code block: num (Book example) and tab (tabs) are mutually exclusive at %s" .Position }}{{ end -}}
-{{- if and $caption (not $numRaw) }}{{ errorf "code block: caption requires num (numbered example) at %s" .Position }}{{ end -}}
-{{- if and $numRaw (not $caption) }}{{ errorf "code block: a numbered example requires caption at %s" .Position }}{{ end -}}
+{{- if and $numRaw $tab }}{{ warnf "code block: num (Book example) and tab (tabs) are mutually exclusive at %s; ignoring tab" .Position }}{{ $tab = "" }}{{ end -}}
+{{- if and $caption (not $numRaw) }}{{ warnf "code block: caption requires num (numbered example) at %s; ignoring caption" .Position }}{{ $caption = "" }}{{ end -}}
+{{- if and $numRaw (not $caption) }}{{ warnf "code block: a numbered example requires caption at %s; dropping the number" .Position }}{{ $numRaw = "" }}{{ end -}}
 {{- /* For a numbered example the author id names the <figure> (the Book
        target), not the code block root, so it is not passed to normalize. */ -}}
 {{- $egID := "" -}}

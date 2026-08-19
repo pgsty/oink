@@ -6,19 +6,40 @@
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "height" "theme" "full") "position" .Position "kind" "echarts") -}}
 {{- $height := index $policy.consumed "height" | default "400px" -}}
-{{- if not (findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $height) }}{{ errorf "echarts: height %q is not a safe CSS length at %s" $height .Position }}{{ end -}}
+{{- if not (findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $height) -}}
+  {{- warnf "echarts: height %q is not a safe CSS length at %s; using 400px" $height .Position -}}
+  {{- $height = "400px" -}}
+{{- end -}}
 {{- $theme := index $policy.consumed "theme" | default "" -}}
 {{- $fullValue := lower (index $policy.consumed "full" | default "false") -}}
-{{- if not (in (slice "true" "false") $fullValue) }}{{ errorf "echarts: full must be true or false; got %q at %s" $fullValue .Position }}{{ end -}}
+{{- if not (in (slice "true" "false") $fullValue) -}}
+  {{- warnf "echarts: full must be true or false; got %q at %s; using false" $fullValue .Position -}}
+  {{- $fullValue = "false" -}}
+{{- end -}}
 {{- $full := eq $fullValue "true" -}}
 {{- $config := strings.TrimSpace .Inner -}}
-{{- if not $config }}{{ errorf "echarts: the fence requires JSON or YAML options at %s" .Position }}{{ end -}}
-{{- $result := try (transform.Unmarshal $config) -}}
-{{- with $result.Err }}{{ errorf "echarts: options are not valid JSON/YAML at %s: %s" $.Position . }}{{ end -}}
-{{- $options := $result.Value -}}
-{{- if not (reflect.IsMap $options) }}{{ errorf "echarts: options must be a mapping at %s" .Position }}{{ end -}}
-{{- if in (slice "markdown" "rss" "print") $format -}}
-<pre class="td-echarts-source"><code class="language-echarts">{{ $config }}</code></pre>
+{{- /* Options that will not parse fall back to the same static source block
+       the non-interactive outputs already render: the reader still sees what
+       the author wrote, and nothing tries to chart a value it cannot read. */ -}}
+{{- $usable := true -}}
+{{- $options := dict -}}
+{{- if not $config -}}
+  {{- warnf "echarts: the fence requires JSON or YAML options at %s; rendering nothing" .Position -}}
+  {{- $usable = false -}}
+{{- else -}}
+  {{- $result := try (transform.Unmarshal $config) -}}
+  {{- if $result.Err -}}
+    {{- warnf "echarts: options are not valid JSON/YAML at %s: %s; rendering the source instead" .Position $result.Err -}}
+    {{- $usable = false -}}
+  {{- else if not (reflect.IsMap $result.Value) -}}
+    {{- warnf "echarts: options must be a mapping at %s; rendering the source instead" .Position -}}
+    {{- $usable = false -}}
+  {{- else -}}
+    {{- $options = $result.Value -}}
+  {{- end -}}
+{{- end -}}
+{{- if or (not $usable) (in (slice "markdown" "rss" "print") $format) -}}
+{{- with $config }}<pre class="td-echarts-source"><code class="language-echarts">{{ . }}</code></pre>{{ end -}}
 {{- else -}}
 {{- $id := printf "td-echarts-%s-f%d" (md5 $page.RelPermalink) .Ordinal -}}
 {{- $page.Store.Set "hasEcharts" true -}}

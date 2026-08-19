@@ -233,7 +233,11 @@ def check_data_fences(hugo: str) -> list[str]:
 
     invalid = (
         ("echarts-invalid-yaml", '```echarts\n{"series": [\n```\n', "not valid JSON/YAML"),
-        ("echarts-not-a-map", "```echarts\n- 1\n- 2\n```\n", "options must be a mapping"),
+        # A JSON array, not a YAML sequence: Hugo cannot sniff a bare `- x`
+        # list and reports it as an unknown format, which never reaches the
+        # mapping check this case exists to exercise.
+        ("echarts-not-a-map", "```echarts\n[1, 2]\n```\n", "options must be a mapping"),
+        ("echarts-unparseable", "```echarts\n- 1\n- 2\n```\n", "options are not valid JSON/YAML"),
         ("echarts-empty", "```echarts\n\n```\n", "requires JSON or YAML options"),
         ("echarts-unknown-attr", '```echarts {width="10px"}\nseries: []\n```\n', "unknown attribute"),
         ("echarts-height", '```echarts {height="wide"}\nseries: []\n```\n', "not a safe CSS length"),

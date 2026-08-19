@@ -17,7 +17,7 @@
   {{- $numRaw := index $policy.consumed "num" | default "" -}}
   {{- $idRaw := index $policy.consumed "id" | default "" -}}
   {{- $caption := strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
-  {{- if not $numRaw }}{{ errorf "math: id/caption attributes require num at %s" .Position }}{{ end -}}
+  {{- if not $numRaw }}{{ warnf "math: id/caption attributes require num at %s; ignoring them" .Position }}{{ end -}}
   {{- $num := partial "book/validate-num.html" (dict "name" "math" "value" $numRaw "position" .Position) -}}
   {{- $id := printf "eq-%s" $num -}}
   {{- if $idRaw }}{{ $id = partial "book/validate-id.html" (dict "name" "math" "value" $idRaw "position" .Position) }}{{ end -}}

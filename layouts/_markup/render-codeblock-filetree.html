@@ -13,14 +13,14 @@
   "position" .Position "kind" "filetree"
 ) -}}
 {{- $title := strings.TrimSpace (index $policy.consumed "title" | default "") -}}
-{{- if and (isset $policy.consumed "title") (not $title) }}{{ errorf "filetree: title must not be empty at %s" .Position }}{{ end -}}
+{{- if and (isset $policy.consumed "title") (not $title) }}{{ warnf "filetree: title must not be empty at %s; dropping it" .Position }}{{ end -}}
 {{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
-{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ errorf "filetree: tab label must not be empty at %s" .Position }}{{ end -}}
+{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ warnf "filetree: tab label must not be empty at %s; ignoring tab" .Position }}{{ end -}}
 {{- $group := index $policy.consumed "group" | default "" -}}
 {{- $value := index $policy.consumed "value" | default "" -}}
-{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "filetree: group/value require tab at %s" .Position }}{{ end -}}
+{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ warnf "filetree: group/value require tab at %s; ignoring them" .Position }}{{ end -}}
 {{- $inner := replace (printf "%s" .Inner) "\r" "" -}}
-{{- if not (strings.ContainsNonSpace $inner) }}{{ errorf "filetree: the fence requires tree entries at %s" .Position }}{{ end -}}
+{{- if not (strings.ContainsNonSpace $inner) }}{{ warnf "filetree: the fence requires tree entries at %s; rendering nothing" .Position }}{{ end -}}
 {{- $parsed := partial "content/filetree-parse.html" (dict "source" $inner "position" .Position) -}}
 {{- $nodes := $parsed.nodes -}}
 {{- $static := in (slice "print" "rss") $format -}}

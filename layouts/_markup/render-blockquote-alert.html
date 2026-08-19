@@ -34,9 +34,10 @@
 {{- with index $policy.consumed "icon" -}}
   {{- $value := strings.TrimSpace . -}}
   {{- if not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $value) -}}
-    {{- errorf "callout: icon must be one Font Awesome class pair such as \"fa-solid fa-rocket\"; got %q at %s" $value $.Position -}}
+    {{- warnf "callout: icon must be one Font Awesome class pair such as \"fa-solid fa-rocket\"; got %q at %s; using the type's own icon" $value $.Position -}}
+  {{- else -}}
+    {{- $icon = $value -}}
   {{- end -}}
-  {{- $icon = $value -}}
 {{- end -}}
 {{- if not (in $canonical $type) -}}
   {{- /* Unknown type: plain blockquote, marker kept visible so nothing is lost. */ -}}

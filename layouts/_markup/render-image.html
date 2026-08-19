@@ -17,7 +17,7 @@
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $destination := strings.TrimSpace .Destination -}}
-{{- if not $destination }}{{ errorf "image: empty destination at %s" .Position }}{{ end -}}
+{{- if not $destination }}{{ warnf "image: empty destination at %s; dropping the image" .Position }}{{ end -}}
 {{- $alt := .PlainText | default "" -}}
 {{- $title := .Title | default "" -}}
 {{- $isBlock := .IsBlock -}}
@@ -47,7 +47,8 @@
   {{- $hasCommand := isset $policy.consumed "command" -}}
   {{- $hasOptions := isset $policy.consumed "options" -}}
   {{- if ne $hasCommand $hasOptions -}}
-    {{- errorf "image: command and options must be given together at %s" .Position -}}
+    {{- warnf "image: command and options must be given together at %s; ignoring both" .Position -}}
+    {{- $hasCommand = false -}}
   {{- end -}}
   {{- if $hasCommand -}}
     {{- $processed := partial "content/image-process.html" (dict
@@ -61,12 +62,19 @@
     {{- $height = $processed.height -}}
   {{- end -}}
   {{- with index $policy.consumed "width" -}}
-    {{- if not (findRE `^[1-9][0-9]*$` .) }}{{ errorf "image: width must be a positive integer; got %q at %s" . $.Position }}{{ end -}}
-    {{- $width = int . -}}
+    {{- /* `int` would fail on a non-numeric value, so keep the resolved one. */ -}}
+    {{- if not (findRE `^[1-9][0-9]*$` .) -}}
+      {{- warnf "image: width must be a positive integer; got %q at %s; using the image's own width" . $.Position -}}
+    {{- else -}}
+      {{- $width = int . -}}
+    {{- end -}}
   {{- end -}}
   {{- with index $policy.consumed "height" -}}
-    {{- if not (findRE `^[1-9][0-9]*$` .) }}{{ errorf "image: height must be a positive integer; got %q at %s" . $.Position }}{{ end -}}
-    {{- $height = int . -}}
+    {{- if not (findRE `^[1-9][0-9]*$` .) -}}
+      {{- warnf "image: height must be a positive integer; got %q at %s; using the image's own height" . $.Position -}}
+    {{- else -}}
+      {{- $height = int . -}}
+    {{- end -}}
   {{- end -}}
   {{- with index $policy.consumed "num" -}}
     {{- $num = partial "book/validate-num.html" (dict "name" "image" "value" . "position" $.Position) -}}
@@ -82,13 +90,14 @@
   {{- /* Bare linked images already have native Markdown syntax. */ -}}
   {{- with index $policy.consumed "link" -}}
     {{- if not $figure -}}
-      {{- errorf "image: link requires caption or num; a linked image without a caption is written [![alt](src)](%s) at %s" . $.Position -}}
+      {{- warnf "image: link requires caption or num; a linked image without a caption is written [![alt](src)](%s) at %s; dropping the link" . $.Position -}}
+    {{- else -}}
+      {{- $linkURL := partial "content/url.html" (dict
+        "name" "image" "parameter" "link" "position" $.Position "value" . "kind" "link"
+      ) -}}
+      {{- $href = $linkURL.href -}}
+      {{- $external = $linkURL.external -}}
     {{- end -}}
-    {{- $linkURL := partial "content/url.html" (dict
-      "name" "image" "parameter" "link" "position" $.Position "value" . "kind" "link"
-    ) -}}
-    {{- $href = $linkURL.href -}}
-    {{- $external = $linkURL.external -}}
   {{- end -}}
 {{- end -}}
 {{- $plainBlock := and $isBlock (not $figure) -}}

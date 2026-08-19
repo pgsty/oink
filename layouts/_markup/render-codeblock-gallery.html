@@ -17,10 +17,10 @@
   "position" .Position "kind" "gallery"
 ) -}}
 {{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
-{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ errorf "gallery: tab label must not be empty at %s" .Position }}{{ end -}}
-{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "gallery: group/value require tab at %s" .Position }}{{ end -}}
+{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ warnf "gallery: tab label must not be empty at %s; ignoring tab" .Position }}{{ end -}}
+{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ warnf "gallery: group/value require tab at %s; ignoring them" .Position }}{{ end -}}
 {{- $inner := replace (printf "%s" .Inner) "\r" "" -}}
-{{- if not (strings.ContainsNonSpace $inner) }}{{ errorf "gallery: the fence requires at least one image at %s" .Position }}{{ end -}}
+{{- if not (strings.ContainsNonSpace $inner) }}{{ warnf "gallery: the fence requires at least one image at %s; rendering nothing" .Position }}{{ end -}}
 {{- $parsed := partial "content/gallery-parse.html" (dict "source" $inner "position" .Position "page" $page) -}}
 
 {{- $classes := slice "td-gallery" -}}

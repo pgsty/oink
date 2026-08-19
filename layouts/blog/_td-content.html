@@ -11,6 +11,7 @@
 			{{ partial "reading-time.html" . -}}
 		{{ end -}}
 	</header>
+	{{ partial "series-strip.html" . -}}
 	{{ .Render "_td-content-after-header" -}}
 	{{ partial "content/render.html" . }}
 	{{ partial "page-end.html" . -}}

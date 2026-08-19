@@ -209,3 +209,8 @@ book_toc: Book contents
 book_draft: Draft
 book_draft_notice: This chapter is still being revised.
 contributors_count: contributors
+
+# Article series
+ui_series_title: Series
+ui_series_part: Part {{ .Part }} of {{ .Total }}
+ui_series_next: "Next: {{ .Link }}"

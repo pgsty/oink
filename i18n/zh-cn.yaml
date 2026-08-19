@@ -209,3 +209,8 @@ book_toc: 全书目录
 book_draft: 草稿
 book_draft_notice: 本章仍在修订中。
 contributors_count: 位贡献者
+
+# Article series
+ui_series_title: 系列
+ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
+ui_series_next: "下一篇：{{ .Link }}"

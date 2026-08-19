@@ -40,6 +40,25 @@ All notable changes to OINK are documented here. The project follows
   child list -- has nothing to be a translation of and never shows it. The theme names no language in the
   string, and the switch cascades, so a partly translated site scopes the
   claim to the trees where it holds instead of asserting it site-wide.
+- Article series. Declaring the taxonomy -- `taxonomies: {series: series}` --
+  is the whole switch: no theme parameter, no metadata file, no cover model.
+  The term page `content/series/<name>/_index.md` is the introduction, and a
+  `_index.zh.md` beside it makes the pair bilingual. An article names
+  `series: [<name>]` and may add `series_weight` to place itself, and gets a
+  strip above its body naming the series, its position, the next part, and the
+  whole list behind a `<details>` -- no JavaScript, no bundle member. Reading
+  order is the theme's own, because a term page cannot supply it: an unweighted
+  term arrives newest first, a mixed one puts unweighted members before weight
+  1, and the taxonomy weight reaches neither `Page.Weight` nor `GroupByParam`.
+  `series-pages.html` resolves it once -- weighted members ascending, the rest
+  by ascending date, `Path` breaking a tie -- and the strip and the term page
+  both read it, so they can never disagree about which article is part 2. A
+  series term page therefore changes from reverse-date to reading order, which
+  is the feature. A member of several series shows one strip, for the first
+  term it names; a series of one shows none. `series` and `authors` both stay
+  out of the default taxonomy chips row, since each has a surface of its own.
+  A series is a reading path through articles that stand alone: numbering,
+  cross-references, and aggregate output remain Book's.
 
 ### Changed
 

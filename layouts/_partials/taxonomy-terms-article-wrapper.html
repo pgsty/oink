@@ -1,4 +1,10 @@
 {{ $context := . -}}
+{{/* Two taxonomies carry their own surface on an article -- `authors` the
+     byline, `series` the strip -- so the default "render every taxonomy" pass
+     skips them rather than repeating them as chips. A site that names one in
+     params.taxonomy.page_header still gets it: an explicit list is a choice,
+     this is only a default. */ -}}
+{{ $reserved := slice "authors" "series" -}}
 {{ if .Site.Params.taxonomy -}}
   {{ if .Site.Params.taxonomy.page_header -}}
     {{ range $index, $taxo := .Site.Params.taxonomy.page_header -}}
@@ -6,11 +12,15 @@
     {{ end }}
   {{ else -}}
     {{ range $taxo, $taxo_map := .Site.Taxonomies -}}
-      {{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) -}}
+      {{ if not (in $reserved $taxo) -}}
+        {{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) -}}
+      {{ end -}}
     {{ end }}
   {{ end -}}
 {{ else -}}
   {{ range $taxo, $taxo_map := .Site.Taxonomies -}}
-    {{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) -}}
+    {{ if not (in $reserved $taxo) -}}
+      {{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) -}}
+    {{ end -}}
   {{ end }}
 {{ end -}}

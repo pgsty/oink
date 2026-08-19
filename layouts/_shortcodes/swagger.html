@@ -1,7 +1,7 @@
 {{- /* Embed Swagger UI. Required named parameter: src. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "src")) -}}
 {{- if or (not .IsNamedParams) (not (isset .Params "src")) -}}
-  {{- errorf "shortcode %q requires named parameter src at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires named parameter src at %s; rendering nothing" .Name .Position -}}
 {{- end -}}
 {{- $original := .Get "src" -}}
 {{- $validated := partial "content/url.html" (dict

@@ -6,19 +6,19 @@
        rendered in the page context. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "file" "code" "lang")) -}}
 {{- if or (not .IsNamedParams) (not (isset .Params "file")) -}}
-  {{- errorf "shortcode %q requires named parameter file at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires named parameter file at %s; including nothing" .Name .Position -}}
 {{- end -}}
 {{- $file := strings.TrimSpace (printf "%v" (.Get "file")) -}}
-{{- if not $file }}{{ errorf "shortcode %q: file must not be empty at %s" .Name .Position }}{{ end -}}
-{{- if strings.Contains $file ".." }}{{ errorf "shortcode %q: file must not contain ..; got %q at %s" .Name $file .Position }}{{ end -}}
+{{- if not $file }}{{ warnf "shortcode %q: file must not be empty at %s; including nothing" .Name .Position }}{{ end -}}
+{{- if strings.Contains $file ".." }}{{ warnf "shortcode %q: file must not contain ..; got %q at %s; including nothing" .Name $file .Position }}{{ $file = "" }}{{ end -}}
 {{- $code := false -}}
 {{- if isset .Params "code" -}}
   {{- $code = .Get "code" -}}
-  {{- if ne (printf "%T" $code) "bool" }}{{ errorf "shortcode %q: code must be boolean at %s" .Name .Position }}{{ end -}}
+  {{- if ne (printf "%T" $code) "bool" }}{{ warnf "shortcode %q: code must be boolean at %s; including it as content" .Name .Position }}{{ $code = false }}{{ end -}}
 {{- end -}}
 {{- $lang := "" -}}
 {{- if isset .Params "lang" -}}
-  {{- if not $code }}{{ errorf "shortcode %q: lang requires code=true at %s" .Name .Position }}{{ end -}}
+  {{- if not $code }}{{ warnf "shortcode %q: lang requires code=true at %s; ignoring lang" .Name .Position }}{{ end -}}
   {{- $lang = strings.TrimSpace (printf "%v" (.Get "lang")) -}}
 {{- end -}}
 {{- /* Resolution order: page resource → asset (mount) → file under content/
@@ -48,7 +48,7 @@
     {{- $found = true -}}
   {{- end -}}
 {{- end -}}
-{{- if not $found }}{{ errorf "shortcode %q: file %q was not found (page resources, assets, or content/) at %s" .Name $file .Position }}{{ end -}}
+{{- if not $found }}{{ warnf "shortcode %q: file %q was not found (page resources, assets, or content/) at %s; including nothing" .Name $file .Position }}{{ end -}}
 {{- if $code -}}
   {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
   {{- if eq $format "markdown" -}}

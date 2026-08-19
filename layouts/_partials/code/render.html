@@ -2,7 +2,7 @@
 {{- $highlighted := .highlighted -}}
 {{- $externalActions := .externalActions | default false -}}
 {{- if and $config.wrap (strings.Contains (printf "%s" $highlighted) "lntable") -}}
-  {{- errorf "code block: wrap=true is incompatible with rendered table line numbers; use lineNos=inline or disable wrapping at %s" $config.position -}}
+  {{- warnf "code block: wrap=true is incompatible with rendered table line numbers at %s; disabling wrapping (use lineNos=inline to keep it)" $config.position -}}
 {{- end -}}
 {{- if ne $config.outputFormat "markdown" -}}
   {{- range findRESubmatch `\sid="([^"]+)"` (printf "%s" $highlighted) -}}

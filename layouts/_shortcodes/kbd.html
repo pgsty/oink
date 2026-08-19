@@ -1,21 +1,24 @@
 {{- /* Positional-only keyboard sequence with a pure Markdown fallback. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- if eq (len .Params) 0 -}}
-  {{- errorf "shortcode %q requires at least one key at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires at least one key at %s; rendering nothing" .Name .Position -}}
 {{- end -}}
 {{- $keys := slice -}}
 {{- range .Params -}}
   {{- if ne (printf "%T" .) "string" -}}
-    {{- errorf "shortcode %q: every key must be a string at %s" $.Name $.Position -}}
+    {{- warnf "shortcode %q: every key must be a string at %s; skipping it" $.Name $.Position -}}
+    {{- continue -}}
   {{- end -}}
   {{- $key := strings.TrimSpace . -}}
   {{- if not $key -}}
-    {{- errorf "shortcode %q: keys must not be empty at %s" $.Name $.Position -}}
+    {{- warnf "shortcode %q: keys must not be empty at %s; skipping it" $.Name $.Position -}}
+    {{- continue -}}
   {{- end -}}
   {{- $keys = $keys | append $key -}}
 {{- end -}}
 {{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if eq $outputFormat "markdown" -}}
+{{- if not $keys -}}
+{{- else if eq $outputFormat "markdown" -}}
   {{- $escaped := slice -}}
   {{- range $keys -}}
     {{- $escaped = $escaped | append (partial "content/markdown-escape.html" .) -}}

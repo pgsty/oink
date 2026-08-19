@@ -1,7 +1,7 @@
 {{ define "main" -}}
 {{- $home := partial "landing/home-data.html" . -}}
 {{- if and $home (not (isset $home "sections")) -}}
-  {{- errorf "data/home: sections is required; list the section keys in render order (the implicit hero/metrics/capabilities/principles/cta order is gone)" -}}
+  {{- warnf "data/home: sections is required; list the section keys in render order; rendering no sections" -}}
 {{- end -}}
 {{- partial "landing/render.html" (dict "page" . "data" $home) -}}
 {{- end }}

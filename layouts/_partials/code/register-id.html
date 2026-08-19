@@ -6,7 +6,7 @@
 {{- if isset $owners $id -}}
   {{- $existing := printf "%v" (index $owners $id) -}}
   {{- if ne $existing $owner -}}
-    {{- errorf "code component: duplicate id %q at %s (already owned by %s)" $id $position $existing -}}
+    {{- warnf "code component: duplicate id %q at %s (already owned by %s); keeping the first" $id $position $existing -}}
   {{- end -}}
 {{- else -}}
   {{- $page.Store.SetInMap "tdCodeIDOwners" $id $owner -}}

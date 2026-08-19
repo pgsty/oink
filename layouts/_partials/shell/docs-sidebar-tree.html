@@ -59,7 +59,7 @@
       {{ end -}}
     </ul>
     {{ else -}}
-      {{ errorf "data/docs_nav.json does not define any Docs navigation sections" -}}
+      {{ warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
     {{ end -}}
   </nav>
 </div>

@@ -2,5 +2,5 @@
 {{- $num := .num -}}
 {{- $keys := dict "fig" "book_figure" "tbl" "book_table" "eq" "book_equation" "eg" "book_example" -}}
 {{- $key := index $keys $kind -}}
-{{- if not $key }}{{ errorf "book label: unsupported kind %q" $kind }}{{ end -}}
+{{- if not $key }}{{ warnf "book label: unsupported kind %q; using the kind itself as the label" $kind }}{{ $key = $kind }}{{ end -}}
 {{- return printf "%s %s" (T $key) $num -}}

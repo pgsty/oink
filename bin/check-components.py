@@ -341,8 +341,17 @@ def check_openapi(hugo: str) -> list[str]:
         )
         with temp:
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid OpenAPI case {name} unexpectedly built", errors)
+            # Converted shortcodes warn and render nothing; unconverted ones
+            # still errorf. Both name the problem and fail --panicOnWarning.
             require(expected in output, f"invalid OpenAPI case {name} did not report {expected!r}: {output[-400:]}", errors)
+            strict, _strict_destination, strict_temp = build_site(
+                hugo,
+                {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}\n"},
+                prefix=f"oink-components-{name}-strict-",
+                panic_on_warning=True,
+            )
+            with strict_temp:
+                require(strict.returncode != 0, f"invalid OpenAPI case {name} survived --panicOnWarning", errors)
     return errors
 
 

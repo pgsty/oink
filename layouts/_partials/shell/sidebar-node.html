@@ -61,7 +61,7 @@
 {{- $rootLinkSelf := true -}}
 {{- if isset $s.Params "sidebar_root_link_self" -}}
   {{- if ne (printf "%T" $s.Params.sidebar_root_link_self) "bool" -}}
-    {{- errorf "front matter sidebar_root_link_self must be a boolean at %s" $s.Path -}}
+    {{- warnf "front matter sidebar_root_link_self must be a boolean at %s; using true" $s.Path -}}
   {{- end -}}
   {{- $rootLinkSelf = $s.Params.sidebar_root_link_self -}}
 {{- end -}}

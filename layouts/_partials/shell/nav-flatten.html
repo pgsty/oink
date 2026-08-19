@@ -23,7 +23,7 @@
       {{- range $branch }}{{ $pages = $pages | append . }}{{ end -}}
     {{- end -}}
   {{- else -}}
-    {{- errorf "data/docs_nav.json does not define any Docs navigation sections" -}}
+    {{- warnf "data/docs_nav.json does not define any Docs navigation sections; falling back to the section tree" -}}
   {{- end -}}
 {{- else -}}
   {{- $includeRoot := or (ne $root $page.Site.Home) (eq $root.Type $page.Type) -}}

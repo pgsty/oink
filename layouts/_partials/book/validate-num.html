@@ -1,14 +1,19 @@
+{{- /* Validate a Book target's num. Anything unusable warns and resolves to
+     the empty string; the caller then renders the component without a
+     number rather than stopping the build. */ -}}
 {{- $name := .name | default "book component" -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $value := .value -}}
+{{- $num := "" -}}
 {{- if ne (printf "%T" $value) "string" -}}
-  {{- errorf "shortcode %q: num must be a string at %s" $name $position -}}
-{{- end -}}
-{{- $num := strings.TrimSpace $value -}}
-{{- if not $num -}}
-  {{- errorf "shortcode %q: num must not be empty at %s" $name $position -}}
-{{- end -}}
-{{- if not (findRE `^[0-9A-Za-z.-]+$` $num) -}}
-  {{- errorf "shortcode %q: num must match [0-9A-Za-z.-]+; got %q at %s" $name $num $position -}}
+  {{- warnf "shortcode %q: num must be a string at %s; dropping it" $name $position -}}
+{{- else -}}
+  {{- $num = strings.TrimSpace $value -}}
+  {{- if not $num -}}
+    {{- warnf "shortcode %q: num must not be empty at %s; dropping it" $name $position -}}
+  {{- else if not (findRE `^[0-9A-Za-z.-]+$` $num) -}}
+    {{- warnf "shortcode %q: num must match [0-9A-Za-z.-]+; got %q at %s; dropping it" $name $num $position -}}
+    {{- $num = "" -}}
+  {{- end -}}
 {{- end -}}
 {{- return $num -}}

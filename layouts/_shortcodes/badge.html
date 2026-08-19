@@ -1,28 +1,35 @@
 {{- /* Semantic inline status label with static fallbacks for every output. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "text" "tone" "link")) -}}
+{{- /* A badge with no usable text renders nothing; the sentence around it
+       still reads. */ -}}
+{{- $badgeText := "" -}}
 {{- if not (and .IsNamedParams (isset .Params "text")) -}}
-  {{- errorf "shortcode %q requires parameter text at %s" .Name .Position -}}
-{{- end -}}
-{{- $textParam := .Get "text" -}}
-{{- if ne (printf "%T" $textParam) "string" -}}
-  {{- errorf "shortcode %q: text must be a string at %s" .Name .Position -}}
-{{- end -}}
-{{- $badgeText := strings.TrimSpace $textParam -}}
-{{- if not $badgeText -}}
-  {{- errorf "shortcode %q: text must not be empty at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires parameter text at %s; rendering nothing" .Name .Position -}}
+{{- else -}}
+  {{- $textParam := .Get "text" -}}
+  {{- if ne (printf "%T" $textParam) "string" -}}
+    {{- warnf "shortcode %q: text must be a string at %s; rendering nothing" .Name .Position -}}
+  {{- else -}}
+    {{- $badgeText = strings.TrimSpace $textParam -}}
+    {{- if not $badgeText -}}
+      {{- warnf "shortcode %q: text must not be empty at %s; rendering nothing" .Name .Position -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $tone := "neutral" -}}
 {{- if and .IsNamedParams (isset .Params "tone") -}}
   {{- $toneParam := .Get "tone" -}}
   {{- if ne (printf "%T" $toneParam) "string" -}}
-    {{- errorf "shortcode %q: tone must be a string at %s" .Name .Position -}}
+    {{- warnf "shortcode %q: tone must be a string at %s; using neutral" .Name .Position -}}
+  {{- else -}}
+    {{- $tone = strings.TrimSpace $toneParam -}}
   {{- end -}}
-  {{- $tone = strings.TrimSpace $toneParam -}}
 {{- end -}}
 {{- $tones := slice "neutral" "info" "success" "warning" "danger" -}}
 {{- if not (in $tones $tone) -}}
-  {{- errorf "shortcode %q: tone must be one of %s; got %q at %s" .Name (delimit $tones " | ") $tone .Position -}}
+  {{- warnf "shortcode %q: tone must be one of %s; got %q at %s; using neutral" .Name (delimit $tones " | ") $tone .Position -}}
+  {{- $tone = "neutral" -}}
 {{- end -}}
 
 {{- $link := false -}}
@@ -32,7 +39,8 @@
   ) -}}
 {{- end -}}
 {{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if eq $outputFormat "markdown" -}}
+{{- if not $badgeText -}}
+{{- else if eq $outputFormat "markdown" -}}
   {{- $markdownText := partial "content/markdown-escape.html" $badgeText -}}
   {{- if $link -}}
     {{- printf "[**%s**](%s)" $markdownText $link.markdown | safeHTML -}}

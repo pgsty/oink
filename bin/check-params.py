@@ -434,6 +434,28 @@ def check_blog_index_enum(hugo: str) -> list[str]:
     return errors
 
 
+
+def check_no_errorf() -> list[str]:
+    """The theme never calls errorf (ADR-0002).
+
+    One errorf aborts the whole build, so in `hugo server` a single author's
+    typo serves HTTP 500 on every URL of the site rather than degrading the
+    one page they were editing. Invalid input warns and falls back instead,
+    and --panicOnWarning at every publishing gate is what keeps it fatal
+    where that matters.
+    """
+    errors: list[str] = []
+    pattern = re.compile(r"\berrorf\s+\"")
+    for path in sorted((ROOT / "layouts").rglob("*")):
+        if not path.is_file() or path.suffix not in {".html", ".md", ".xml", ".txt"}:
+            continue
+        hits = len(pattern.findall(path.read_text(encoding="utf-8", errors="ignore")))
+        if hits:
+            relative = path.relative_to(ROOT).as_posix()
+            require(False, f"{relative} calls errorf {hits}x; warn and fall back instead (ADR-0002)", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--hugo", default="hugo")
@@ -442,7 +464,8 @@ def main() -> int:
 
     site, page, param_reads = scan_read_points()
     errors = (
-        check_shapes(site, page)
+        check_no_errorf()
+        + check_shapes(site, page)
         + check_page_parity(site, page, param_reads)
         + check_documented_defaults()
     )

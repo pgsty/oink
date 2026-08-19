@@ -68,7 +68,7 @@
 {{- if not (or $link (isset $page.Params "upstream_link")) -}}
   {{- range $companions -}}
     {{- if isset $page.Params . -}}
-      {{- errorf "front matter %s needs upstream_link, the URL of the material this page is derived from (set upstream_link: \"\" to opt this page out of an inherited one) at %s" . $path -}}
+      {{- warnf "front matter %s needs upstream_link, the URL of the material this page is derived from (set upstream_link: \"\" to opt this page out of an inherited one) at %s; omitting the attribution" . $path -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
@@ -83,7 +83,7 @@
   {{- with $source -}}
     {{- $registry = index (hugo.Data.upstreams | default dict) . | default dict -}}
     {{- if not $registry -}}
-      {{- errorf "upstream_source %q has no entry in data/upstreams at %s" . $path -}}
+      {{- warnf "upstream_source %q has no entry in data/upstreams at %s; omitting the attribution" . $path -}}
     {{- end -}}
   {{- end -}}
 
@@ -98,13 +98,13 @@
 
   {{- range $required := (slice "name" "copyright" "license" "notice") -}}
     {{- if not (index $fields $required) -}}
-      {{- errorf "upstream_link needs upstream_%s as well; a page that names a source must name who holds it, the licence it carries, and where the full notice lives (front matter, params, or a data/upstreams entry) at %s" $required $path -}}
+      {{- warnf "upstream_link needs upstream_%s as well; a page that names a source must name who holds it, the licence it carries, and where the full notice lives (front matter, params, or a data/upstreams entry) at %s; omitting the attribution" $required $path -}}
     {{- end -}}
   {{- end -}}
 
   {{- $licence := index (hugo.Data.licenses | default dict) (index $fields "license") -}}
   {{- if not $licence -}}
-    {{- errorf "upstream_license %q is not in data/licenses; use its SPDX identifier or add the entry at %s" (index $fields "license") $path -}}
+    {{- warnf "upstream_license %q is not in data/licenses; use its SPDX identifier or add the entry at %s; omitting the licence row" (index $fields "license") $path -}}
   {{- end -}}
 
   {{- $notice := index $fields "notice" -}}
@@ -118,7 +118,7 @@
   {{- if isset $registry "modified" }}{{ $modified = index $registry "modified" }}{{ end -}}
   {{- if isset $page.Params "upstream_modified" }}{{ $modified = index $page.Params "upstream_modified" }}{{ end -}}
   {{- if ne (printf "%T" $modified) "bool" -}}
-    {{- errorf "upstream_modified must be a boolean; got %v at %s" $modified $path -}}
+    {{- warnf "upstream_modified must be a boolean; got %v at %s; treating the page as unmodified" $modified $path -}}
   {{- end -}}
 
   {{- /* One line, not two: the licence asks for an indication that the
@@ -160,7 +160,7 @@
        guard; inferred ones do. */ -}}
 {{- $authority := partial "ui-param.html" (dict "page" $page "key" "translation_notice" "default" false) -}}
 {{- if and $authority (ne (printf "%T" $authority) "bool") (ne (printf "%T" $authority) "string") -}}
-  {{- errorf "translation_notice must be a language code or false; got %v at %s" $authority $path -}}
+  {{- warnf "translation_notice must be a language code or false; got %v at %s; omitting the notice" $authority $path -}}
 {{- end -}}
 {{- if and (eq (printf "%T" $authority) "string") (ne $page.Language.Lang $authority) $page.File (strings.TrimSpace $page.RawContent) -}}
   {{- $original := "" -}}

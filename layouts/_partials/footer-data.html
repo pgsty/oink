@@ -13,6 +13,6 @@
   {{- end -}}
 {{- end -}}
 {{- with (partial "landing/home-data.html" .).footer -}}
-  {{- errorf "data/home footer was moved: put the brand/columns map in data/footer/<lang>.yaml (or data/footer.yaml)" -}}
+  {{- warnf "data/home footer was moved: put the brand/columns map in data/footer/<lang>.yaml (or data/footer.yaml); ignoring it" -}}
 {{- end -}}
 {{- return $footer -}}

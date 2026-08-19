@@ -1,13 +1,13 @@
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
-{{- if not $inner }}{{ errorf "shortcode %q requires TeX content at %s" .Name .Position }}{{ end -}}
+{{- if not $inner }}{{ warnf "shortcode %q requires TeX content at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $hasNum := false -}}
 {{- if .IsNamedParams }}{{ $hasNum = isset .Params "num" }}{{ end -}}
 {{- if not $hasNum -}}
   {{- if .IsNamedParams -}}
     {{- range $name := slice "id" "caption" "class" -}}
-      {{- if isset $.Params $name }}{{ errorf "shortcode %q: parameter %q requires num at %s" $.Name $name $.Position }}{{ end -}}
+      {{- if isset $.Params $name }}{{ warnf "shortcode %q: parameter %q requires num at %s; ignoring it" $.Name $name $.Position }}{{ end -}}
     {{- end -}}
   {{- end -}}
   {{- if in (slice "markdown" "rss") $format -}}
@@ -21,11 +21,11 @@
   {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
   {{- $caption := "" -}}
   {{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
-  {{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption must be a string at %s" .Name .Position }}{{ end -}}
+  {{- if ne (printf "%T" $caption) "string" }}{{ warnf "shortcode %q: caption must be a string at %s; dropping it" .Name .Position }}{{ $caption = "" }}{{ end -}}
   {{- $caption = strings.TrimSpace $caption -}}
   {{- $class := "" -}}
   {{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
-  {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+  {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
   {{- partial "book/register-target.html" (dict "page" .Page "kind" "eq" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
   {{- $label := partial "book/label.html" (dict "kind" "eq" "num" $num) -}}
   {{- if in (slice "markdown" "rss") $format -}}

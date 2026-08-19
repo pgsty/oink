@@ -115,12 +115,12 @@ window.markmap = {
   {{ $plantumlSVG = eq (index .Site.Params.plantuml "svg") true -}}
 {{ end -}}
 {{ if and $plantumlEnabled (not $plantumlSVGURL) -}}
-  {{ errorf "params.plantuml.enable requires an explicit params.plantuml.svg_image_url; the theme does not default to a public PlantUML service" -}}
+  {{ warnf "params.plantuml.enable requires an explicit params.plantuml.svg_image_url; the theme does not default to a public PlantUML service, so PlantUML stays off" -}}{{ $plantumlEnabled = false -}}
 {{ end -}}
 {{ $drawioServer := "" -}}
 {{ if reflect.IsMap .Site.Params.drawio }}{{ $drawioServer = index .Site.Params.drawio "drawio_server" | default "" }}{{ end -}}
 {{ if and $drawioEnabled (not $drawioServer) -}}
-  {{ errorf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service" -}}
+  {{ warnf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service, so Diagrams.net stays off" -}}{{ $drawioEnabled = false -}}
 {{ end -}}
 {{ if $drawioEnabled -}}
 <script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer | jsonify | safeJS }}</script>
@@ -334,7 +334,7 @@ window.markmap = {
 
 {{ define "algolia/scripts" -}}
 {{ if not (and .appId .apiKey .indexName) -}}
-  {{ errorf "params.search.algolia requires explicit appId, apiKey, and indexName values; OINK does not use another project's DocSearch credentials" -}}
+  {{ warnf "params.search.algolia requires explicit appId, apiKey, and indexName values; OINK does not use another project's DocSearch credentials, so DocSearch stays off" -}}
 {{ end -}}
 {{ $docsearchJS := resources.Get "third_party/docsearch/docsearch.js" -}}
 {{ if hugo.IsProduction }}{{ $docsearchJS = $docsearchJS | fingerprint }}{{ end -}}

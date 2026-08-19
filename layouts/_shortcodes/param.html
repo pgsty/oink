@@ -1,18 +1,28 @@
 {{- /* Print a page parameter, falling back to site configuration. Positional: name.
-       Strict: a missing value fails the build; only scalars (string / number /
-       bool) are allowed; output is HTML-escaped plain text (v5 §1.2). */ -}}
+       A missing value or a non-scalar warns and prints nothing rather than
+       stopping the build; only scalars (string / number / bool) are printed,
+       and output is HTML-escaped plain text (v5 §1.2). */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- $name := .Get 0 -}}
+{{- $value := "" -}}
+{{- /* A separate flag, not the value itself: `false`, `0`, and "" are all
+       legitimate parameter values that must still print. */ -}}
+{{- $printable := false -}}
 {{- if not $name -}}
-  {{- errorf "%s: param requires a page or site parameter name" .Position -}}
+  {{- warnf "%s: param requires a page or site parameter name; printing nothing" .Position -}}
+{{- else -}}
+  {{- $resolved := .Page.Param $name -}}
+  {{- if eq $resolved nil -}}
+    {{- warnf "%s: param %q was not found in page front matter or site configuration; printing nothing" .Position $name -}}
+  {{- else -}}
+    {{- $type := printf "%T" $resolved -}}
+    {{- $scalar := slice "string" "bool" "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float32" "float64" -}}
+    {{- if not (in $scalar $type) -}}
+      {{- warnf "%s: param %q is a %s; only scalar values (string / number / bool) can be printed; printing nothing" .Position $name $type -}}
+    {{- else -}}
+      {{- $value = $resolved -}}
+      {{- $printable = true -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
-{{- $value := .Page.Param $name -}}
-{{- if eq $value nil -}}
-  {{- errorf "%s: param %q was not found in page front matter or site configuration" .Position $name -}}
-{{- end -}}
-{{- $type := printf "%T" $value -}}
-{{- $scalar := slice "string" "bool" "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float32" "float64" -}}
-{{- if not (in $scalar $type) -}}
-  {{- errorf "%s: param %q is a %s; only scalar values (string / number / bool) can be printed" .Position $name $type -}}
-{{- end -}}
-{{- printf "%v" $value | htmlEscape | safeHTML -}}
+{{- if $printable }}{{ printf "%v" $value | htmlEscape | safeHTML }}{{ end -}}

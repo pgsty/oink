@@ -40,11 +40,11 @@
 {{- $columns := 1 -}}
 {{- with $entry.Params.columns -}}
   {{- if not (findRE `^[1-4]$` (printf "%v" .)) -}}
-    {{- errorf "navbar menu %q: columns must be an integer from 1 to 4" $entry.Name -}}
+    {{- warnf "navbar menu %q: columns must be an integer from 1 to 4; using 1" $entry.Name -}}
   {{- end -}}
   {{- $columns = int . -}}
   {{- if or (lt $columns 1) (gt $columns 4) -}}
-    {{- errorf "navbar menu %q: columns must be from 1 to 4; got %d" $entry.Name $columns -}}
+    {{- warnf "navbar menu %q: columns must be from 1 to 4; got %d; using 1" $entry.Name $columns -}}{{- $columns = 1 -}}
   {{- end -}}
 {{- end -}}
 {{- /* No disclosure caret on desktop: the parent label navigates on click and

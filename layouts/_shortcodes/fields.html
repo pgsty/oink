@@ -18,20 +18,20 @@
       {{- $token = strings.TrimSpace $token -}}
       {{- if $token -}}
         {{- if not (findRE `^[A-Za-z0-9_-]+$` $token) -}}
-          {{- errorf "shortcode %q: class token %q contains unsupported characters at %s" $.Name $token $.Position -}}
+          {{- warnf "shortcode %q: class token %q contains unsupported characters at %s; ignoring it" $.Name $token $.Position -}}{{- continue -}}
         {{- end -}}
         {{- if not (in $classes $token) }}{{ $classes = $classes | append $token }}{{ end -}}
       {{- end -}}
     {{- end -}}
   {{- else if or (strings.HasPrefix $lower "on") (eq $lower "style") (eq $lower "srcdoc") -}}
-    {{- errorf "shortcode %q: unsafe attribute %q is not supported at %s" $.Name $name $.Position -}}
+    {{- warnf "shortcode %q: unsafe attribute %q is not supported at %s; ignoring it" $.Name $name $.Position -}}
   {{- else if or (strings.HasPrefix $lower "data-") (strings.HasPrefix $lower "aria-") -}}
     {{- if not (findRE `^[a-z][a-z0-9_:.-]*$` $lower) -}}
-      {{- errorf "shortcode %q: invalid attribute name %q at %s" $.Name $name $.Position -}}
+      {{- warnf "shortcode %q: invalid attribute name %q at %s; ignoring it" $.Name $name $.Position -}}
     {{- end -}}
     {{- $generic = merge $generic (dict $lower (printf "%v" $value)) -}}
   {{- else -}}
-    {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
+    {{- warnf "shortcode %q: unsupported parameter %q at %s; ignoring it" $.Name $name $.Position -}}
   {{- end -}}
 {{- end -}}
 
@@ -39,10 +39,10 @@
 {{- if and .IsNamedParams (isset .Params "id") -}}
   {{- $id = strings.TrimSpace (printf "%v" (.Get "id")) -}}
   {{- if not $id -}}
-    {{- errorf "shortcode %q: id must not be empty at %s" .Name .Position -}}
+    {{- warnf "shortcode %q: id must not be empty at %s; dropping it" .Name .Position -}}
   {{- end -}}
   {{- if findRE `[\s"'<>&]` $id -}}
-    {{- errorf "shortcode %q: id %q contains unsupported characters at %s" .Name $id .Position -}}
+    {{- warnf "shortcode %q: id %q contains unsupported characters at %s; dropping it" .Name $id .Position -}}
   {{- end -}}
 {{- end -}}
 
@@ -50,21 +50,21 @@
 {{- if and .IsNamedParams (isset .Params "label") -}}
   {{- $labelParam := .Get "label" -}}
   {{- if ne (printf "%T" $labelParam) "string" -}}
-    {{- errorf "shortcode %q: label must be a string at %s" .Name .Position -}}
+    {{- warnf "shortcode %q: label must be a string at %s; dropping it" .Name .Position -}}
   {{- end -}}
   {{- $label = strings.TrimSpace $labelParam -}}
   {{- if not $label -}}
-    {{- errorf "shortcode %q: label must not be empty at %s" .Name .Position -}}
+    {{- warnf "shortcode %q: label must not be empty at %s; dropping it" .Name .Position -}}
   {{- end -}}
 {{- end -}}
 
 {{- $innerOutput := strings.TrimSpace (printf "%s" .Inner) -}}
 {{- if $innerOutput -}}
-  {{- errorf "shortcode %q accepts field children only at %s" .Name .Position -}}
+  {{- warnf "shortcode %q accepts field children only at %s; ignoring the stray content" .Name .Position -}}
 {{- end -}}
 {{- $entries := .Scratch.Get "fieldEntries" | default (dict) -}}
 {{- if eq (len $entries) 0 -}}
-  {{- errorf "shortcode %q requires at least one field child at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires at least one field child at %s; rendering nothing" .Name .Position -}}
 {{- end -}}
 {{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 

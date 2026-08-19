@@ -2,31 +2,31 @@
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice
   "num" "id" "caption" "title" "class" "src" "link" "alt" "width" "height"
 )) -}}
-{{- if not (isset .Params "num") }}{{ errorf "shortcode %q requires parameter num at %s" .Name .Position }}{{ end -}}
+{{- if not (isset .Params "num") }}{{ warnf "shortcode %q requires parameter num at %s; rendering the figure unnumbered" .Name .Position }}{{ end -}}
 {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
 {{- $id := printf "fig-%s" $num -}}
 {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
 {{- $caption := "" -}}
 {{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
 {{- if isset .Params "title" -}}
-  {{- if $caption }}{{ errorf "shortcode %q: title and caption are mutually exclusive at %s" .Name .Position }}{{ end -}}
+  {{- if $caption }}{{ warnf "shortcode %q: title and caption are mutually exclusive at %s; using caption" .Name .Position }}{{ end -}}
   {{- $caption = .Get "title" -}}
 {{- end -}}
-{{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption/title must be a string at %s" .Name .Position }}{{ end -}}
+{{- if ne (printf "%T" $caption) "string" }}{{ warnf "shortcode %q: caption/title must be a string at %s; dropping it" .Name .Position }}{{ $caption = "" }}{{ end -}}
 {{- $caption = strings.TrimSpace $caption -}}
 {{- $class := "" -}}
 {{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
-{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $src := "" -}}
 {{- if isset .Params "src" }}{{ $src = .Get "src" }}{{ end -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
-{{- if and $src $inner }}{{ errorf "shortcode %q: src and inner content are mutually exclusive at %s" .Name .Position }}{{ end -}}
-{{- if not (or $src $inner) }}{{ errorf "shortcode %q requires src or inner content at %s" .Name .Position }}{{ end -}}
+{{- if and $src $inner }}{{ warnf "shortcode %q: src and inner content are mutually exclusive at %s; using src" .Name .Position }}{{ $inner = "" }}{{ end -}}
+{{- if not (or $src $inner) }}{{ warnf "shortcode %q requires src or inner content at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- $hasAlt := isset .Params "alt" -}}
 {{- $altParam := "" -}}
 {{- if $hasAlt -}}
   {{- $altParam = .Get "alt" -}}
-  {{- if ne (printf "%T" $altParam) "string" }}{{ errorf "shortcode %q: alt must be a string at %s" .Name .Position }}{{ end -}}
+  {{- if ne (printf "%T" $altParam) "string" }}{{ warnf "shortcode %q: alt must be a string at %s; treating the image as decorative" .Name .Position }}{{ $altParam = "" }}{{ end -}}
 {{- end -}}
 {{- $link := "" -}}
 {{- if isset .Params "link" }}{{ $link = .Get "link" }}{{ end -}}
@@ -35,7 +35,7 @@
 {{- range $name := slice "width" "height" -}}
   {{- if isset $.Params $name -}}
     {{- $value := printf "%v" ($.Get $name) -}}
-    {{- if not (findRE `^[1-9][0-9]*$` $value) }}{{ errorf "shortcode %q: %s must be a positive integer at %s" $.Name $name $.Position }}{{ end -}}
+    {{- if not (findRE `^[1-9][0-9]*$` $value) }}{{ warnf "shortcode %q: %s must be a positive integer at %s; ignoring it" $.Name $name $.Position }}{{ continue }}{{ end -}}
     {{- if eq $name "width" }}{{ $width = $value }}{{ else }}{{ $height = $value }}{{ end -}}
   {{- end -}}
 {{- end -}}

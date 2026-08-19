@@ -11,12 +11,12 @@
 {{- $page := .page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $tab := strings.TrimSpace (.tab | default "") -}}
-{{- if not $tab }}{{ errorf "tab: label must not be empty at %s" .position }}{{ end -}}
+{{- if not $tab }}{{ warnf "tab: label must not be empty at %s; using the block kind as its label" .position }}{{ $tab = (.kind | default "tab") }}{{ end -}}
 {{- $group := strings.TrimSpace (.group | default "") -}}
 {{- $value := strings.TrimSpace (.value | default "") -}}
-{{- if and $group (not (findRE `^[a-z][a-z0-9_-]*$` $group)) }}{{ errorf "tab: group must match ^[a-z][a-z0-9_-]*$; got %q at %s" $group .position }}{{ end -}}
-{{- if and $value (not (findRE `^[a-z0-9][a-z0-9_-]*$` $value)) }}{{ errorf "tab: value must match ^[a-z0-9][a-z0-9_-]*$; got %q at %s" $value .position }}{{ end -}}
-{{- if and $group (not $value) }}{{ errorf "tab: value is required when group is declared at %s" .position }}{{ end -}}
+{{- if and $group (not (findRE `^[a-z][a-z0-9_-]*$` $group)) }}{{ warnf "tab: group must match ^[a-z][a-z0-9_-]*$; got %q at %s; dropping the group" $group .position }}{{ $group = "" }}{{ end -}}
+{{- if and $value (not (findRE `^[a-z0-9][a-z0-9_-]*$` $value)) }}{{ warnf "tab: value must match ^[a-z0-9][a-z0-9_-]*$; got %q at %s; dropping the value" $value .position }}{{ $value = "" }}{{ end -}}
+{{- if and $group (not $value) }}{{ warnf "tab: value is required when group is declared at %s; the tab will not sync" .position }}{{ $group = "" }}{{ end -}}
 {{- if eq $format "html" }}{{ $page.Store.Set "hasTabs" true }}{{ end -}}
 <div class="td-tab-block td-tab-block--{{ .kind | default "block" }}" data-td-tab="{{ $tab }}"{{ with $group }} data-td-tab-group="{{ . }}"{{ end }}{{ with $value }} data-td-tab-value="{{ . }}"{{ end }} data-td-tab-kind="{{ .kind | default "block" }}">
 <div class="td-tab-block__title" data-td-tab-title>{{ $tab }}</div>

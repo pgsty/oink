@@ -31,7 +31,7 @@
       {{- $token = strings.TrimSpace $token -}}
       {{- if $token -}}
         {{- if not (findRE `^[A-Za-z0-9_-]+$` $token) -}}
-          {{- errorf "%s attributes: class token %q contains unsupported characters at %s" $kind $token $position -}}
+          {{- warnf "%s attributes: class token %q contains unsupported characters at %s; ignoring it" $kind $token $position -}}{{- continue -}}
         {{- end -}}
         {{- if not (in $classes $token) }}{{ $classes = $classes | append $token }}{{ end -}}
       {{- end -}}
@@ -39,14 +39,14 @@
   {{- else if in $allowed $lower -}}
     {{- $consumed = merge $consumed (dict $lower $text) -}}
   {{- else if or (strings.HasPrefix $lower "on") (eq $lower "style") (eq $lower "srcdoc") -}}
-    {{- errorf "%s attributes: unsafe attribute %q is not supported at %s" $kind $name $position -}}
+    {{- warnf "%s attributes: unsafe attribute %q is not supported at %s; ignoring it" $kind $name $position -}}
   {{- else if or (strings.HasPrefix $lower "data-") (strings.HasPrefix $lower "aria-") -}}
     {{- if not (findRE `^[a-z][a-z0-9_:.-]*$` $lower) -}}
-      {{- errorf "%s attributes: invalid attribute name %q at %s" $kind $name $position -}}
+      {{- warnf "%s attributes: invalid attribute name %q at %s; ignoring it" $kind $name $position -}}
     {{- end -}}
     {{- $generic = merge $generic (dict $lower $text) -}}
   {{- else -}}
-    {{- errorf "%s attributes: unknown attribute %q at %s (allowed: %s, class, data-*, aria-*)" $kind $name $position (delimit $allowed ", ") -}}
+    {{- warnf "%s attributes: unknown attribute %q at %s (allowed: %s, class, data-*, aria-*); ignoring it" $kind $name $position (delimit $allowed ", ") -}}
   {{- end -}}
 {{- end -}}
 {{- return (dict "consumed" $consumed "class" (delimit $classes " ") "classes" $classes "generic" $generic) -}}

@@ -22,7 +22,7 @@
   {{- $label := index $reference 1 -}}
   {{- $definition := printf "[^%s]:" $label -}}
   {{- if or (strings.Contains $page.RawContent $definition) (strings.Contains $content $definition) -}}
-    {{- errorf "%s: footnote reference [^%s] cannot be used inside a shortcode body — Hugo renders the body as its own document, so the reference prints literally when the definition sits on the page, and builds a second, colliding footnote list when it sits in the body. Author the block in its native form (a Markdown table, image, or fence followed by {num=\"…\" caption=\"…\"}) and keep footnotes in page Markdown." $origin $label -}}
+    {{- warnf "%s: footnote reference [^%s] cannot be used inside a shortcode body — Hugo renders the body as its own document, so the reference prints literally when the definition sits on the page, and builds a second, colliding footnote list when it sits in the body. Author the block in its native form (a Markdown table, image, or fence followed by {num=\"…\" caption=\"…\"}) and keep footnotes in page Markdown." $origin $label -}}
   {{- end -}}
 {{- end -}}
 {{- $previous := $page.Store.Get "tdRenderScope" | default "" -}}

@@ -16,7 +16,7 @@
 {{- $iconPolicy := .iconPolicy -}}
 {{- $s := $p.Site.GetPage $node.page -}}
 {{- if not $s -}}
-  {{- errorf "docs navigation: page %s was not found" $node.page -}}
+  {{- warnf "docs navigation: page %s was not found; skipping the entry" $node.page -}}
 {{- else -}}
   {{- $active := and (not $shouldDelayActive) (eq $node.url $currentURL) -}}
   {{- $activePath := and (not $shouldDelayActive) (in $activeURLs $node.url) -}}

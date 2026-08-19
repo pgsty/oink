@@ -800,7 +800,15 @@ def check_invalid_cases(hugo: str) -> list[str]:
             cwd=ROOT, capture_output=True, text=True, check=False,
         )
         output = result.stdout + result.stderr
-        require(result.returncode != 0, "param printed a map value", errors)
+        # param warns and prints nothing rather than stopping the build; what
+        # must hold is that the map never reaches the page and that publishing
+        # still fails.
+        require("only scalar values" in output, "param did not report the non-scalar value", errors)
+        strict = subprocess.run(
+            [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        require(strict.returncode != 0, "param survived --panicOnWarning", errors)
         require("only scalar values" in output, f"param map did not report the scalar rule: {output.strip()}", errors)
     return errors
 

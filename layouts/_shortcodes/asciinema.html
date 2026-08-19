@@ -5,12 +5,12 @@
   "idleTimeLimit" "poster" "markers" "pauseOnMarkers" "cols" "rows"
 )) -}}
 {{- $file := .Get "file" | default (.Get 0) -}}
-{{- if not $file }}{{ errorf "%s: asciinema requires a file parameter" .Position }}{{ end -}}
+{{- if not $file }}{{ warnf "%s: asciinema requires a file parameter; rendering nothing" .Position }}{{ end -}}
 {{- $title := .Get "title" | default $file -}}
 {{- $theme := .Get "theme" | default "auto" -}}
 {{- $fit := .Get "fit" | default "width" -}}
 {{- if not (in (slice "width" "height" "both" "none") $fit) -}}
-  {{- errorf "%s: asciinema fit must be width, height, both, or none" .Position -}}
+  {{- warnf "%s: asciinema fit must be width, height, both, or none; using width" .Position -}}{{- $fit = "width" -}}
 {{- end -}}
 {{- $src := "" -}}
 {{- if (urls.Parse $file).Scheme -}}

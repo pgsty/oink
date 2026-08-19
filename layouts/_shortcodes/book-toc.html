@@ -4,14 +4,18 @@
 {{- $depth := 2 -}}
 {{- if isset $params "depth" -}}
   {{- $value := .Get "depth" -}}
-  {{- if not (in (slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64") (printf "%T" $value)) }}{{ errorf "shortcode %q: depth must be an integer from 1 through 3; got %v at %s" .Name $value .Position }}{{ end -}}
-  {{- $depth = int $value -}}
+  {{- /* `int` would fail on a non-integer, so only cast a value that is one. */ -}}
+  {{- if not (in (slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64") (printf "%T" $value)) -}}
+    {{- warnf "shortcode %q: depth must be an integer from 1 through 3; got %v at %s; using 2" .Name $value .Position -}}
+  {{- else -}}
+    {{- $depth = int $value -}}
+  {{- end -}}
 {{- end -}}
-{{- if or (lt $depth 1) (gt $depth 3) }}{{ errorf "shortcode %q: depth must be an integer from 1 through 3; got %v at %s" .Name $depth .Position }}{{ end -}}
+{{- if or (lt $depth 1) (gt $depth 3) }}{{ warnf "shortcode %q: depth must be an integer from 1 through 3; got %v at %s; using 2" .Name $depth .Position }}{{ $depth = 2 }}{{ end -}}
 {{- $includeDraft := true -}}
 {{- if isset $params "drafts" -}}
   {{- $value := .Get "drafts" -}}
-  {{- if ne (printf "%T" $value) "bool" }}{{ errorf "shortcode %q: drafts must be boolean at %s" .Name .Position }}{{ end -}}
+  {{- if ne (printf "%T" $value) "bool" }}{{ warnf "shortcode %q: drafts must be boolean at %s; keeping the default" .Name .Position }}{{ else }}{{ $includeDraft = $value }}{{ end -}}
   {{- $includeDraft = $value -}}
 {{- end -}}
 {{- $root := partial "shell/sidebar-root.html" .Page -}}

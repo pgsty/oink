@@ -377,7 +377,9 @@ disableKinds: [home, RSS, sitemap, taxonomy, term]
         )
         result = build(hugo, source, temp_path / "public")
         output = result.stdout + result.stderr
-        require(result.returncode != 0, "non-array search hook unexpectedly built", errors)
+        # The hook warns and its keywords are ignored; publishing still fails.
+        require(build(hugo, source, temp_path / "public-strict", panic_on_warning=True).returncode != 0,
+                "non-array search hook survived --panicOnWarning", errors)
         require(
             "must return an array" in output,
             f"non-array search hook lacks a focused error; Hugo reported: {output.strip()}",

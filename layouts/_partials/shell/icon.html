@@ -29,5 +29,5 @@
 {{- with index $icons $name -}}
 <i class="td-shell-icon td-shell-icon--{{ $name }} {{ . }}" aria-hidden="true"></i>
 {{- else -}}
-{{- errorf "shell/icon.html: unknown icon %q" $name -}}
+{{- warnf "shell/icon.html: unknown icon %q; rendering no icon" $name -}}
 {{- end -}}

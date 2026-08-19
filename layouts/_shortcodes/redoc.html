@@ -1,12 +1,12 @@
 {{- /* Embed a ReDoc specification. Positional: one spec path/URL. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- if ne (len .Params) 1 -}}
-  {{- errorf "shortcode %q requires exactly one positional spec path or URL at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires exactly one positional spec path or URL at %s; rendering nothing" .Name .Position -}}
 {{- end -}}
 {{- $file := .Get 0 -}}
-{{- if ne (printf "%T" $file) "string" }}{{ errorf "shortcode %q: spec must be a string at %s" .Name .Position }}{{ end -}}
+{{- if ne (printf "%T" $file) "string" }}{{ warnf "shortcode %q: spec must be a string at %s; rendering nothing" .Name .Position }}{{ $file = "" }}{{ end -}}
 {{- $file = strings.TrimSpace $file -}}
-{{- if not $file }}{{ errorf "shortcode %q: spec must not be empty at %s" .Name .Position }}{{ end -}}
+{{- if not $file }}{{ warnf "shortcode %q: spec must not be empty at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- $url := "" -}}
 {{- .Page.Store.Set "hasRedoc" true -}}
 

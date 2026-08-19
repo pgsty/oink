@@ -2,48 +2,80 @@
        Awesome class pair), badge, image + image_alt | decorative; the body is
        the Markdown description, rendered here with RenderString (v5 §3.4). */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "title" "link" "icon" "badge" "image" "image_alt" "decorative")) -}}
+{{- /* A card that cannot be rendered warns and is skipped; the sibling cards
+       in the grid still render. */ -}}
+{{- $ok := true -}}
 {{- with .Parent -}}
-  {{- if ne .Name "cards" }}{{ errorf "shortcode %q must be enclosed by cards, not %q, at %s" $.Name .Name $.Position }}{{ end -}}
+  {{- if ne .Name "cards" -}}
+    {{- warnf "shortcode %q must be enclosed by cards, not %q, at %s; skipping the card" $.Name .Name $.Position -}}
+    {{- $ok = false -}}
+  {{- end -}}
 {{- else -}}
-  {{- errorf "shortcode %q must be enclosed by cards at %s" .Name .Position -}}
+  {{- warnf "shortcode %q must be enclosed by cards at %s; skipping the card" .Name .Position -}}
+  {{- $ok = false -}}
 {{- end -}}
-{{- if or (not .Params) (not .IsNamedParams) }}{{ errorf "shortcode %q requires named parameters (title, …) at %s" .Name .Position }}{{ end -}}
-{{- if not (isset .Params "title") }}{{ errorf "shortcode %q requires parameter title at %s" .Name .Position }}{{ end -}}
-{{- $title := .Get "title" -}}
-{{- if ne (printf "%T" $title) "string" }}{{ errorf "shortcode %q: title must be a string at %s" .Name .Position }}{{ end -}}
-{{- $title = strings.TrimSpace $title -}}
-{{- if not $title }}{{ errorf "shortcode %q: title must not be empty at %s" .Name .Position }}{{ end -}}
+{{- $title := "" -}}
+{{- if or (not .Params) (not .IsNamedParams) -}}
+  {{- warnf "shortcode %q requires named parameters (title, …) at %s; skipping the card" .Name .Position -}}
+  {{- $ok = false -}}
+{{- else if not (isset .Params "title") -}}
+  {{- warnf "shortcode %q requires parameter title at %s; skipping the card" .Name .Position -}}
+  {{- $ok = false -}}
+{{- else -}}
+  {{- $titleParam := .Get "title" -}}
+  {{- if ne (printf "%T" $titleParam) "string" -}}
+    {{- warnf "shortcode %q: title must be a string at %s; skipping the card" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $title = strings.TrimSpace $titleParam -}}
+    {{- if not $title -}}
+      {{- warnf "shortcode %q: title must not be empty at %s; skipping the card" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- $href := "" -}}
 {{- $external := false -}}
-{{- if isset .Params "link" -}}
+{{- if and $ok (isset .Params "link") -}}
   {{- $url := partial "content/url.html" (dict "name" .Name "parameter" "link" "position" .Position "value" (.Get "link") "kind" "link") -}}
   {{- $href = $url.href -}}
   {{- $external = $url.external -}}
 {{- end -}}
 {{- $icon := "" -}}
-{{- if isset .Params "icon" -}}
+{{- if and $ok (isset .Params "icon") -}}
   {{- $icon = strings.TrimSpace (printf "%v" (.Get "icon")) -}}
-  {{- if not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $icon) }}{{ errorf "shortcode %q: icon must be one Font Awesome class pair such as \"fa-solid fa-rocket\"; got %q at %s" .Name $icon .Position }}{{ end -}}
+  {{- if not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $icon) -}}
+    {{- warnf "shortcode %q: icon must be one Font Awesome class pair such as \"fa-solid fa-rocket\"; got %q at %s; dropping the icon" .Name $icon .Position -}}
+    {{- $icon = "" -}}
+  {{- end -}}
 {{- end -}}
 {{- $badge := "" -}}
 {{- if isset .Params "badge" }}{{ $badge = strings.TrimSpace (printf "%v" (.Get "badge")) }}{{ end -}}
 {{- $image := false -}}
-{{- if isset .Params "image" -}}
+{{- if and $ok (isset .Params "image") -}}
   {{- $decorative := false -}}
   {{- if isset .Params "decorative" -}}
-    {{- $decorative = .Get "decorative" -}}
-    {{- if ne (printf "%T" $decorative) "bool" }}{{ errorf "shortcode %q: decorative must be boolean at %s" .Name .Position }}{{ end -}}
+    {{- $decorativeParam := .Get "decorative" -}}
+    {{- if ne (printf "%T" $decorativeParam) "bool" -}}
+      {{- warnf "shortcode %q: decorative must be boolean at %s; treating the image as meaningful" .Name .Position -}}
+    {{- else -}}
+      {{- $decorative = $decorativeParam -}}
+    {{- end -}}
   {{- end -}}
   {{- $hasAlt := isset .Params "image_alt" -}}
-  {{- if and $hasAlt $decorative }}{{ errorf "shortcode %q: image_alt and decorative are mutually exclusive at %s" .Name .Position }}{{ end -}}
+  {{- if and $hasAlt $decorative -}}
+    {{- warnf "shortcode %q: image_alt and decorative are mutually exclusive at %s; keeping the alt text" .Name .Position -}}
+    {{- $decorative = false -}}
+  {{- end -}}
   {{- $image = partial "content/image-resolve.html" (dict
     "name" .Name "position" .Position "page" .Page "src" (.Get "image")
     "hasAlt" $hasAlt "alt" (cond $hasAlt (.Get "image_alt") "") "decorative" $decorative "requireAlt" true
   ) -}}
 {{- else if or (isset .Params "image_alt") (isset .Params "decorative") -}}
-  {{- errorf "shortcode %q: image_alt/decorative require image at %s" .Name .Position -}}
+  {{- warnf "shortcode %q: image_alt/decorative require image at %s; ignoring them" .Name .Position -}}
 {{- end -}}
 {{- $body := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- if $ok -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if eq $format "markdown" -}}
   {{- $line := cond (ne $href "") (printf "[%s](%s)" (partial "content/markdown-escape.html" $title) (partial "content/markdown-url.html" $href)) (printf "**%s**" (partial "content/markdown-escape.html" $title)) -}}
@@ -68,4 +100,5 @@
 {{- end }}
 </div>
 </article>
+{{- end -}}
 {{- end -}}

@@ -24,14 +24,14 @@
 {{- if isset $targets $id -}}
   {{- $existing := index $targets $id -}}
   {{- if not (and (eq $existing.identity $identity) (eq $existing.kind $kind) (eq $existing.num $num)) -}}
-    {{- errorf "book component: duplicate id %q at %s (already used by %s %s at %s)" $id $position $existing.kind $existing.num $existing.position -}}
+    {{- warnf "book component: duplicate id %q at %s (already used by %s %s at %s); keeping the first" $id $position $existing.kind $existing.num $existing.position -}}
   {{- end -}}
 {{- end -}}
 {{- $numbers := $page.Store.Get "tdBookTargetNums" | default (dict) -}}
 {{- $numberKey := printf "%s:%s" $kind $num -}}
 {{- if and (not (isset $targets $id)) (isset $numbers $numberKey) -}}
   {{- $existing := index $numbers $numberKey -}}
-  {{- if ne $existing.id $id }}{{ errorf "book component: duplicate %s number %q at %s (already uses id %q)" $kind $num $position $existing.id }}{{ end -}}
+  {{- if ne $existing.id $id }}{{ warnf "book component: duplicate %s number %q at %s (already uses id %q); keeping the first" $kind $num $position $existing.id }}{{ end -}}
 {{- end -}}
 {{- if not (isset $targets $id) -}}
 {{- $entry := dict

@@ -16,26 +16,26 @@
 {{- $group := "" -}}
 {{- if isset $params "group" -}}
   {{- $group = strings.TrimSpace (printf "%v" (.Get "group")) -}}
-  {{- if not (findRE `^[a-z][a-z0-9_-]*$` $group) }}{{ errorf "shortcode %q: group must match ^[a-z][a-z0-9_-]*$; got %q at %s" .Name $group .Position }}{{ end -}}
+  {{- if not (findRE `^[a-z][a-z0-9_-]*$` $group) }}{{ warnf "shortcode %q: group must match ^[a-z][a-z0-9_-]*$; got %q at %s; dropping the group" .Name $group .Position }}{{ $group = "" }}{{ end -}}
 {{- end -}}
 {{- $label := "" -}}
 {{- if isset $params "label" }}{{ $label = strings.TrimSpace (printf "%v" (.Get "label")) }}{{ end -}}
 {{- $innerOutput := strings.TrimSpace (printf "%s" .Inner) -}}
-{{- if $innerOutput }}{{ errorf "shortcode %q accepts tab children only at %s" .Name .Position }}{{ end -}}
+{{- if $innerOutput }}{{ warnf "shortcode %q accepts tab children only at %s; ignoring the stray content" .Name .Position }}{{ end -}}
 {{- $entries := .Scratch.Get "tabEntries" | default (dict) -}}
-{{- if eq (len $entries) 0 }}{{ errorf "shortcode %q requires at least one tab child at %s" .Name .Position }}{{ end -}}
+{{- if eq (len $entries) 0 }}{{ warnf "shortcode %q requires at least one tab child at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- $tabs := slice -}}
 {{- $seen := dict -}}
 {{- $i := 0 -}}
 {{- range $entries -}}
   {{- $value := .value -}}
   {{- if $group -}}
-    {{- if not $value }}{{ errorf "shortcode \"tab\": value is required because tabs declares group %q at %s" $group .position }}{{ end -}}
+    {{- if not $value }}{{ warnf "shortcode \"tab\": value is required because tabs declares group %q at %s; the tab will not sync" $group .position }}{{ end -}}
   {{- else -}}
-    {{- if $value }}{{ errorf "shortcode \"tab\": value is only allowed when tabs declares a group at %s" .position }}{{ end -}}
+    {{- if $value }}{{ warnf "shortcode \"tab\": value is only allowed when tabs declares a group at %s; ignoring it" .position }}{{ $value = "" }}{{ end -}}
     {{- $value = printf "tab%d" (add $i 1) -}}
   {{- end -}}
-  {{- if isset $seen $value }}{{ errorf "shortcode \"tab\": duplicate value %q at %s" $value .position }}{{ end -}}
+  {{- if isset $seen $value }}{{ warnf "shortcode \"tab\": duplicate value %q at %s; the later tab wins" $value .position }}{{ end -}}
   {{- $seen = merge $seen (dict $value true) -}}
   {{- $tabs = $tabs | append (merge . (dict "value" $value)) -}}
   {{- $i = add $i 1 -}}
@@ -43,8 +43,8 @@
 {{- $default := "" -}}
 {{- if isset $params "default" -}}
   {{- $default = strings.TrimSpace (printf "%v" (.Get "default")) -}}
-  {{- if not $group }}{{ errorf "shortcode %q: default requires group at %s" .Name .Position }}{{ end -}}
-  {{- if not (isset $seen $default) }}{{ errorf "shortcode %q: default %q does not match a tab value at %s" .Name $default .Position }}{{ end -}}
+  {{- if not $group }}{{ warnf "shortcode %q: default requires group at %s; ignoring default" .Name .Position }}{{ $default = "" }}{{ end -}}
+  {{- if not (isset $seen $default) }}{{ warnf "shortcode %q: default %q does not match a tab value at %s; ignoring default" .Name $default .Position }}{{ $default = "" }}{{ end -}}
 {{- end -}}
 {{- if not $default }}{{ $default = (index $tabs 0).value }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}

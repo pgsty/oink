@@ -33,5 +33,5 @@
 {{- end -}}
 
 {{ if gt (len $backends) 1 -}}
-  {{ errorf "params: more than one site-search backend is configured (%s); choose one" (delimit $backends ", ") -}}
+  {{ warnf "params: more than one site-search backend is configured (%s); choose one, using the first" (delimit $backends ", ") -}}
 {{ end -}}

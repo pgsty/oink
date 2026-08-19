@@ -1,14 +1,19 @@
+{{- /* Validate a Book target's id. Anything unusable warns and resolves to
+     the empty string; the caller then renders the component without a
+     target id rather than stopping the build. */ -}}
 {{- $name := .name | default "book component" -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $value := .value -}}
+{{- $id := "" -}}
 {{- if ne (printf "%T" $value) "string" -}}
-  {{- errorf "shortcode %q: id must be a string at %s" $name $position -}}
-{{- end -}}
-{{- $id := strings.TrimSpace $value -}}
-{{- if not $id -}}
-  {{- errorf "shortcode %q: id must not be empty at %s" $name $position -}}
-{{- end -}}
-{{- if not (findRE `^[A-Za-z][A-Za-z0-9_.:-]*$` $id) -}}
-  {{- errorf "shortcode %q: id must match [A-Za-z][A-Za-z0-9_.:-]*; got %q at %s" $name $id $position -}}
+  {{- warnf "shortcode %q: id must be a string at %s; dropping it" $name $position -}}
+{{- else -}}
+  {{- $id = strings.TrimSpace $value -}}
+  {{- if not $id -}}
+    {{- warnf "shortcode %q: id must not be empty at %s; dropping it" $name $position -}}
+  {{- else if not (findRE `^[A-Za-z][A-Za-z0-9_.:-]*$` $id) -}}
+    {{- warnf "shortcode %q: id must match [A-Za-z][A-Za-z0-9_.:-]*; got %q at %s; dropping it" $name $id $position -}}
+    {{- $id = "" -}}
+  {{- end -}}
 {{- end -}}
 {{- return $id -}}

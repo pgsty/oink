@@ -15,7 +15,7 @@
     {{ range (index $docsChildren $currentURL) -}}
         {{ $child := $page.Site.GetPage . -}}
         {{ if not $child -}}
-            {{ errorf "docs navigation: section index page %s was not found at %s" . $page.Path -}}
+            {{ warnf "docs navigation: section index page %s was not found at %s; skipping the entry" . $page.Path -}}
         {{ else -}}
             {{ $pages = $pages | append $child -}}
         {{ end -}}

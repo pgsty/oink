@@ -1,34 +1,46 @@
 {{- /* Register one validated field with the enclosing fields collector. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "name" "type" "required" "default")) -}}
+{{- /* A field that cannot be registered warns and is skipped; its siblings in
+       the list still render. */ -}}
+{{- $ok := true -}}
 {{- with .Parent -}}
   {{- if ne $.Parent.Name "fields" -}}
-    {{- errorf "shortcode %q must be enclosed by fields, not %q, at %s" $.Name $.Parent.Name $.Position -}}
+    {{- warnf "shortcode %q must be enclosed by fields, not %q, at %s; skipping the field" $.Name $.Parent.Name $.Position -}}
+    {{- $ok = false -}}
   {{- end -}}
 {{- else -}}
-  {{- errorf "shortcode %q must be enclosed by fields at %s" $.Name $.Position -}}
+  {{- warnf "shortcode %q must be enclosed by fields at %s; skipping the field" $.Name $.Position -}}
+  {{- $ok = false -}}
 {{- end -}}
 
+{{- $fieldName := "" -}}
 {{- if not (and .IsNamedParams (isset .Params "name")) -}}
-  {{- errorf "shortcode %q requires parameter name at %s" .Name .Position -}}
-{{- end -}}
-{{- $nameParam := .Get "name" -}}
-{{- if ne (printf "%T" $nameParam) "string" -}}
-  {{- errorf "shortcode %q: name must be a string at %s" .Name .Position -}}
-{{- end -}}
-{{- $fieldName := strings.TrimSpace $nameParam -}}
-{{- if not $fieldName -}}
-  {{- errorf "shortcode %q: name must not be empty at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires parameter name at %s; skipping the field" .Name .Position -}}
+  {{- $ok = false -}}
+{{- else -}}
+  {{- $nameParam := .Get "name" -}}
+  {{- if ne (printf "%T" $nameParam) "string" -}}
+    {{- warnf "shortcode %q: name must be a string at %s; skipping the field" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $fieldName = strings.TrimSpace $nameParam -}}
+    {{- if not $fieldName -}}
+      {{- warnf "shortcode %q: name must not be empty at %s; skipping the field" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $fieldType := "" -}}
 {{- if and .IsNamedParams (isset .Params "type") -}}
   {{- $typeParam := .Get "type" -}}
   {{- if ne (printf "%T" $typeParam) "string" -}}
-    {{- errorf "shortcode %q: type must be a string at %s" .Name .Position -}}
-  {{- end -}}
-  {{- $fieldType = strings.TrimSpace $typeParam -}}
-  {{- if not $fieldType -}}
-    {{- errorf "shortcode %q: type must not be empty at %s" .Name .Position -}}
+    {{- warnf "shortcode %q: type must be a string at %s; dropping the type" .Name .Position -}}
+  {{- else -}}
+    {{- $fieldType = strings.TrimSpace $typeParam -}}
+    {{- if not $fieldType -}}
+      {{- warnf "shortcode %q: type must not be empty at %s; dropping the type" .Name .Position -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 
@@ -36,9 +48,10 @@
 {{- if and .IsNamedParams (isset .Params "required") -}}
   {{- $requiredParam := .Get "required" -}}
   {{- if ne (printf "%T" $requiredParam) "bool" -}}
-    {{- errorf "shortcode %q: required must be boolean at %s" .Name .Position -}}
+    {{- warnf "shortcode %q: required must be boolean at %s; treating it as optional" .Name .Position -}}
+  {{- else -}}
+    {{- $required = $requiredParam -}}
   {{- end -}}
-  {{- $required = $requiredParam -}}
 {{- end -}}
 
 {{- $hasDefault := isset .Params "default" -}}
@@ -51,9 +64,9 @@
     "uint" "uint8" "uint16" "uint32" "uint64" "float32" "float64"
   -}}
   {{- if not (in $scalarTypes $defaultType) -}}
-    {{- errorf "shortcode %q: default must be a scalar value at %s" .Name .Position -}}
-  {{- end -}}
-  {{- if and (eq $defaultType "string") (eq $defaultParam "") -}}
+    {{- warnf "shortcode %q: default must be a scalar value at %s; dropping the default" .Name .Position -}}
+    {{- $hasDefault = false -}}
+  {{- else if and (eq $defaultType "string") (eq $defaultParam "") -}}
     {{- $defaultDisplay = `""` -}}
   {{- else -}}
     {{- $defaultDisplay = printf "%v" $defaultParam -}}
@@ -62,8 +75,10 @@
 
 {{- $description := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- if not $description -}}
-  {{- errorf "shortcode %q requires a non-empty description at %s" .Name .Position -}}
+  {{- warnf "shortcode %q requires a non-empty description at %s; skipping the field" .Name .Position -}}
+  {{- $ok = false -}}
 {{- end -}}
+{{- if $ok -}}
 {{- $entry := dict
   "name" $fieldName
   "type" $fieldType
@@ -74,3 +89,4 @@
   "position" .Position
 -}}
 {{- .Parent.Scratch.SetInMap "fieldEntries" (printf "%06d" .Ordinal) $entry -}}
+{{- end -}}

@@ -3,7 +3,7 @@
 {{- $pages := slice -}}
 {{- $target := $page.Site.GetPage $node.page -}}
 {{- if not $target -}}
-  {{- errorf "docs navigation: page %s was not found" $node.page -}}
+  {{- warnf "docs navigation: page %s was not found; skipping the entry" $node.page -}}
 {{- else -}}
   {{- if partial "shell/nav-page-enabled.html" $target -}}
     {{- $pages = $pages | append $target -}}

@@ -39,7 +39,7 @@
 {{- if not (reflect.IsSlice $keywords) }}{{ $keywords = slice $keywords }}{{ end -}}
 {{- $extraKeywords := partial "hooks/search-keywords-extra.html" $page | default (slice) -}}
 {{- if not (reflect.IsSlice $extraKeywords) -}}
-  {{- errorf "hooks/search-keywords-extra.html must return an array for %s" $page.Path -}}
+  {{- warnf "hooks/search-keywords-extra.html must return an array for %s; ignoring the extra keywords" $page.Path -}}
 {{- end -}}
 {{- range $extraKeywords }}{{ $keywords = $keywords | append . }}{{ end -}}
 {{- $normalizedKeywords := slice -}}

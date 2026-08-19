@@ -22,18 +22,18 @@
     {{- if reflect.IsMap $raw -}}
       {{- if isset $raw "enable" -}}
         {{- $enable := index $raw "enable" -}}
-        {{- if ne (printf "%T" $enable) "bool" }}{{ errorf "%s.enable must be a boolean; got %v" $where $enable }}{{ end -}}
+        {{- if ne (printf "%T" $enable) "bool" }}{{ warnf "%s.enable must be a boolean; got %v; using the default" $where $enable }}{{ $enable = true }}{{ end -}}
         {{- $pagePlacement = $enable -}}
       {{- end -}}
       {{- if isset $raw "assistant_links" -}}
         {{- $assistant := index $raw "assistant_links" -}}
-        {{- if ne (printf "%T" $assistant) "bool" }}{{ errorf "%s.assistant_links must be a boolean; got %v" $where $assistant }}{{ end -}}
+        {{- if ne (printf "%T" $assistant) "bool" }}{{ warnf "%s.assistant_links must be a boolean; got %v; leaving the assistant links off" $where $assistant }}{{ $assistant = false }}{{ end -}}
         {{- if eq $level "site" }}{{ $assistantLinks = $assistant }}{{ else }}{{ $assistantLinks = and $assistantLinks $assistant }}{{ end -}}
       {{- end -}}
     {{- else if eq (printf "%T" $raw) "bool" -}}
       {{- $pagePlacement = $raw -}}
     {{- else -}}
-      {{- errorf "%s must be a boolean or a map with enable and assistant_links; got %v" $where $raw -}}
+      {{- warnf "%s must be a boolean or a map with enable and assistant_links; got %v; using the default" $where $raw -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

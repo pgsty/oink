@@ -2,20 +2,20 @@
        or more fenced code blocks). Native single-fence form: a fence with
        {num="4-1" caption="…" #id}. Replaces the leaf `example` shortcode. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
-{{- if not (isset .Params "num") }}{{ errorf "shortcode %q requires parameter num at %s" .Name .Position }}{{ end -}}
-{{- if not (isset .Params "caption") }}{{ errorf "shortcode %q requires parameter caption at %s" .Name .Position }}{{ end -}}
+{{- if not (isset .Params "num") }}{{ warnf "shortcode %q requires parameter num at %s; rendering the example unnumbered" .Name .Position }}{{ end -}}
+{{- if not (isset .Params "caption") }}{{ warnf "shortcode %q requires parameter caption at %s; rendering it uncaptioned" .Name .Position }}{{ end -}}
 {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
 {{- $id := printf "eg-%s" $num -}}
 {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
 {{- $caption := .Get "caption" -}}
-{{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption must be a string at %s" .Name .Position }}{{ end -}}
+{{- if ne (printf "%T" $caption) "string" }}{{ warnf "shortcode %q: caption must be a string at %s; dropping it" .Name .Position }}{{ $caption = "" }}{{ end -}}
 {{- $caption = strings.TrimSpace $caption -}}
-{{- if not $caption }}{{ errorf "shortcode %q: caption must not be empty at %s" .Name .Position }}{{ end -}}
+{{- if not $caption }}{{ warnf "shortcode %q: caption must not be empty at %s; rendering it uncaptioned" .Name .Position }}{{ end -}}
 {{- $class := "" -}}
 {{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
-{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
-{{- if not $inner }}{{ errorf "shortcode %q requires inner content (the example body) at %s" .Name .Position }}{{ end -}}
+{{- if not $inner }}{{ warnf "shortcode %q requires inner content (the example body) at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- partial "book/register-target.html" (dict "page" .Page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $label := partial "book/label.html" (dict "kind" "eg" "num" $num) -}}

@@ -19,7 +19,7 @@
   {{- if or (not $trimmed) (hasPrefix $trimmed "#") }}{{ continue }}{{ end -}}
   {{- $matches := findRESubmatch `^([0-9A-Fa-f]+) ([ *])(.+)$` $rawLine -}}
   {{- if ne (len $matches) 1 -}}
-    {{- errorf "%s: release-assets line %d must be <hex><two spaces><name> or <hex><space>*<name>; got %q" $position $lineNumber $rawLine -}}
+    {{- warnf "%s: release-assets line %d must be <hex><two spaces><name> or <hex><space>*<name>; got %q; skipping the line" $position $lineNumber $rawLine -}}{{- continue -}}
     {{- continue -}}
   {{- end -}}
   {{- $match := index $matches 0 -}}
@@ -27,20 +27,20 @@
   {{- $binary := eq (index $match 2) "*" -}}
   {{- $name := index $match 3 -}}
   {{- if not (strings.TrimSpace $name) -}}
-    {{- errorf "%s: release-assets line %d has an empty filename" $position $lineNumber -}}
+    {{- warnf "%s: release-assets line %d has an empty filename; skipping the line" $position $lineNumber -}}{{- continue -}}
   {{- end -}}
   {{- if or (strings.Contains $name "/") (strings.Contains $name `\`) -}}
-    {{- errorf "%s: release-assets line %d filename must be one path segment; got %q" $position $lineNumber $name -}}
+    {{- warnf "%s: release-assets line %d filename must be one path segment; got %q; skipping the line" $position $lineNumber $name -}}{{- continue -}}
   {{- end -}}
   {{- $algorithm := index $algorithms (printf "%d" (len $hash)) | default false -}}
   {{- if not $algorithm -}}
-    {{- errorf "%s: release-assets line %d has unsupported hex length %d" $position $lineNumber (len $hash) -}}
+    {{- warnf "%s: release-assets line %d has unsupported hex length %d; skipping the line" $position $lineNumber (len $hash) -}}{{- continue -}}
   {{- end -}}
   {{- if and $override (ne $override $algorithm.id) -}}
-    {{- errorf "%s: release-assets line %d is %s by length, which conflicts with algo=%q" $position $lineNumber $algorithm.label $override -}}
+    {{- warnf "%s: release-assets line %d is %s by length, which conflicts with algo=%q; skipping the line" $position $lineNumber $algorithm.label $override -}}{{- continue -}}
   {{- end -}}
   {{- if and $seenAlgorithm (ne $seenAlgorithm $algorithm.id) -}}
-    {{- errorf "%s: release-assets mixes checksum algorithms (%s and %s); split them into separate blocks" $position $seenAlgorithm $algorithm.id -}}
+    {{- warnf "%s: release-assets mixes checksum algorithms (%s and %s); skipping the line, split them into separate blocks" $position $seenAlgorithm $algorithm.id -}}{{- continue -}}
   {{- end -}}
   {{- $seenAlgorithm = $algorithm.id -}}
   {{- $kind := partial "release/asset-kind.html" $name -}}
@@ -59,6 +59,6 @@
   ) -}}
 {{- end -}}
 {{- if not $entries -}}
-  {{- errorf "%s: release-assets requires at least one checksum line" $position -}}
+  {{- warnf "%s: release-assets requires at least one checksum line; rendering nothing" $position -}}
 {{- end -}}
 {{- return $entries -}}

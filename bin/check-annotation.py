@@ -296,7 +296,7 @@ def site_config(case: Case) -> str:
     )
 
 
-def build(hugo: str, case: Case) -> tuple[str, str]:
+def build(hugo: str, case: Case, panic_on_warning: bool = False) -> tuple[str, str]:
     """Return (build output on failure, rendered target page)."""
     with tempfile.TemporaryDirectory(prefix=f"oink-annotation-{case.name}-") as temp:
         source = Path(temp)
@@ -339,6 +339,7 @@ def build(hugo: str, case: Case) -> tuple[str, str]:
                 "--themesDir", str(ROOT.parent),
                 "--destination", str(source / "public"),
                 "--logLevel", "warn",
+                *(["--panicOnWarning"] if panic_on_warning else []),
             ],
             capture_output=True,
             text=True,
@@ -386,16 +387,20 @@ def main() -> int:
 
     errors = check_source()
 
-    def run(case: Case) -> tuple[Case, tuple[str, str]]:
-        return case, build(args.hugo, case)
+    def run(case: Case) -> tuple[Case, tuple[str, str], str]:
+        # An invalid case warns and omits the block; --panicOnWarning is what
+        # makes it fatal where publishing happens.
+        strict = build(args.hugo, case, panic_on_warning=True)[0] if case.error is not None else ""
+        return case, build(args.hugo, case), strict
 
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for case, (failure, html) in pool.map(run, CASES):
+        for case, (failure, html), strict in pool.map(run, CASES):
             if case.error is not None:
-                if not failure:
-                    errors.append(f"{case.name}: built without an error")
-                elif case.error not in failure:
-                    errors.append(f"{case.name}: error did not say {case.error!r}: {failure[-400:]}")
+                message = failure or strict
+                if case.error not in message:
+                    errors.append(f"{case.name}: did not report {case.error!r}: {message[-400:]}")
+                if not strict:
+                    errors.append(f"{case.name}: survived --panicOnWarning")
                 continue
             if failure:
                 errors.append(f"{case.name}: expected a clean build: {failure[-400:]}")

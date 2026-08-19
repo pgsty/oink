@@ -1,17 +1,17 @@
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
-{{- if not (isset .Params "num") }}{{ errorf "shortcode %q requires parameter num at %s" .Name .Position }}{{ end -}}
+{{- if not (isset .Params "num") }}{{ warnf "shortcode %q requires parameter num at %s; rendering the table unnumbered" .Name .Position }}{{ end -}}
 {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
 {{- $id := printf "tbl-%s" $num -}}
 {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
 {{- $caption := "" -}}
 {{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
-{{- if ne (printf "%T" $caption) "string" }}{{ errorf "shortcode %q: caption must be a string at %s" .Name .Position }}{{ end -}}
+{{- if ne (printf "%T" $caption) "string" }}{{ warnf "shortcode %q: caption must be a string at %s; dropping it" .Name .Position }}{{ $caption = "" }}{{ end -}}
 {{- $caption = strings.TrimSpace $caption -}}
 {{- $class := "" -}}
 {{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
-{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ errorf "shortcode %q: class contains unsafe characters at %s" .Name .Position }}{{ end -}}
+{{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
-{{- if not $inner }}{{ errorf "shortcode %q requires inner table content at %s" .Name .Position }}{{ end -}}
+{{- if not $inner }}{{ warnf "shortcode %q requires inner table content at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- partial "book/register-target.html" (dict "page" .Page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $label := partial "book/label.html" (dict "kind" "tbl" "num" $num) -}}

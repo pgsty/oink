@@ -1,12 +1,35 @@
 {{ $page := .Page -}}
-{{ $pages := (where .Site.Pages "Section" .Section).ByWeight -}}
-{{ $pages = (where $pages "Type" "!=" "search") }}
-{{ $pages = (where $pages ".Params.hide_summary" "!=" true) -}}
-{{ $pages = (where $pages ".Params.sidebar_divider" "!=" true) -}}
-{{ $pages = (where $pages ".Parent" "!=" nil) -}}
-{{ $pages = (where $pages ".Parent.File" "!=" nil) -}}
-{{ if $page.File -}}
-    {{ $pages = (where $pages "Parent.File.UniqueID" "==" $page.File.UniqueID) -}}
+{{/* data/docs_nav.json is the ordering authority wherever it declares a
+     section, the same one the sidebar and the pager read; a section index that
+     walked the content tree instead would list the same children in a
+     different order. Sites without the file, and sections the file does not
+     declare, fall through to the content tree unchanged. */ -}}
+{{ $pages := slice -}}
+{{ $docsNav := index hugo.Data "docs_nav" | default dict -}}
+{{ $docsChildren := index $docsNav "children_by_url" | default dict -}}
+{{ $currentURL := $page.RelPermalink -}}
+{{ with $page.Site.LanguagePrefix -}}
+    {{ $currentURL = strings.TrimPrefix . $currentURL -}}
+{{ end -}}
+{{ if and (in (slice "docs" "book") $page.Type) (isset $docsChildren $currentURL) -}}
+    {{ range (index $docsChildren $currentURL) -}}
+        {{ $child := $page.Site.GetPage . -}}
+        {{ if not $child -}}
+            {{ errorf "docs navigation: section index page %s was not found at %s" . $page.Path -}}
+        {{ else -}}
+            {{ $pages = $pages | append $child -}}
+        {{ end -}}
+    {{ end -}}
+{{ else -}}
+    {{ $pages = (where .Site.Pages "Section" .Section).ByWeight -}}
+    {{ $pages = (where $pages "Type" "!=" "search") }}
+    {{ $pages = (where $pages ".Params.hide_summary" "!=" true) -}}
+    {{ $pages = (where $pages ".Params.sidebar_divider" "!=" true) -}}
+    {{ $pages = (where $pages ".Parent" "!=" nil) -}}
+    {{ $pages = (where $pages ".Parent.File" "!=" nil) -}}
+    {{ if $page.File -}}
+        {{ $pages = (where $pages "Parent.File.UniqueID" "==" $page.File.UniqueID) -}}
+    {{ end -}}
 {{ end -}}
 {{ if not (or $page.Params.no_list (eq (len $pages) 0)) -}}
 {{ $mode := (partial "ui-param.html" (dict "page" $page "key" "section_index")) | default "list" -}}

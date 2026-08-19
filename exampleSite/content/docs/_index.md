@@ -74,35 +74,36 @@ Each page says so.
 
 ## Cheatsheet {#cheatsheet}
 
-Values in the *Form* column: native = Markdown syntax plus an attribute line;
-fence = a fenced block with a language tag; shortcode = `{{</* … */>}}`. The
-*Runtime* column says whether the component ships JavaScript to the page.
+The *Shortest form* column gives each component's minimal syntax: an attribute
+line after ordinary Markdown, a fenced block with a language tag, or a
+shortcode. Tabs, Fields, Steps and Cards also have a shortcode spelling; the
+column shows the native one.
 
-| Component | In one line | Shortest form | Form | Runtime |
-| --- | --- | --- | --- | --- |
-| [Callouts](/docs/callout/) | Separate prerequisites, warnings and asides from the prose | `> [!NOTE]` | native | none |
-| [Images](/docs/image/) | Captions, sizing, zoom, numbering and build-time processing | `![alt](oink.webp)` | native | site switch |
-| [Code blocks](/docs/code/) | Highlighting, titles, copy, folding, linkable lines | ```` ```sh ```` | fence | per page |
-| [Tabs](/docs/tabs/) | One thing, several platforms or languages | attribute `{tab="Linux"}` | native + shortcode | per page |
-| [Tables](/docs/table/) | Plain tables plus full-width, matrix, caption and numbering | `{.full-width}` | native | none |
-| [Fields](/docs/fields/) | Parameter lists with type / required / default chips | `{.fields meta="type default"}` | native + shortcode | none |
-| [Steps](/docs/steps/) | A procedure with an order | `{.steps}` | native + shortcode | none |
-| [Cards](/docs/cards/) | A set of parallel destinations | `{.cards}` | native + shortcode | none |
-| [File trees](/docs/filetree/) | Directory structure with an aligned comment column | ```` ```filetree ```` | fence | per page |
-| [Mathematics](/docs/math/) | KaTeX inline and display formulas | `$$ … $$` | native | per page |
-| [Mermaid](/docs/mermaid/) | Flowcharts, sequence diagrams, Gantt charts | ```` ```mermaid ```` | fence | per page |
-| [PlantUML](/docs/plantuml/) | UML diagrams; needs a rendering server | ```` ```plantuml ```` | fence | site switch |
-| [Markmap](/docs/markmap/) | A Markdown outline becomes a mind map | ```` ```markmap ```` | fence | site switch |
-| [Draw.io](/docs/drawio/) | Diagrams that stay editable; needs a server | `![alt](arch.drawio.svg)` | native | site switch |
-| [ECharts](/docs/echarts/) | Declarative statistical charts | ```` ```echarts ```` | fence | per page |
-| [Infographic](/docs/infographic/) | AntV infographics | ```` ```infographic ```` | fence | per page |
-| [Galleries](/docs/gallery/) | A set of images sharing one zoom dialog | ```` ```gallery ```` | fence | site switch |
-| [Badges](/docs/badge/) | Inline status markers | `{{</* badge text="Beta" */>}}` | shortcode | none |
-| [Keys](/docs/kbd/) | Key names and chords | `{{</* kbd "Ctrl" "K" */>}}` | shortcode | none |
-| [Include](/docs/include/) | Pull in files, print site parameters, drop build-time notes | `{{</* include file="parts/x.md" */>}}` | shortcode | none |
-| [Asciinema](/docs/asciinema/) | Terminal recordings | `{{</* asciinema file="images/x.cast" */>}}` | shortcode | per page |
+| Component | In one line | Shortest form |
+| --- | --- | --- |
+| [Callouts](/docs/callout/) | Separate prerequisites, warnings and asides from the prose | `> [!NOTE]` |
+| [Images](/docs/image/) | Captions, sizing, zoom, numbering and build-time processing | `![alt](oink.webp)` |
+| [Code blocks](/docs/code/) | Highlighting, titles, copy, folding, linkable lines | ```` ```sh ```` |
+| [Tabs](/docs/tabs/) | One thing, several platforms or languages | attribute `{tab="Linux"}` |
+| [Tables](/docs/table/) | Plain tables plus full-width, matrix, caption and numbering | `{.full-width}` |
+| [Fields](/docs/fields/) | Parameter lists with type / required / default chips | `{.fields meta="type default"}` |
+| [Steps](/docs/steps/) | A procedure with an order | `{.steps}` |
+| [Cards](/docs/cards/) | A set of parallel destinations | `{.cards}` |
+| [File trees](/docs/filetree/) | Directory structure with an aligned comment column | ```` ```filetree ```` |
+| [Mathematics](/docs/math/) | KaTeX inline and display formulas | `$$ … $$` |
+| [Mermaid](/docs/mermaid/) | Flowcharts, sequence diagrams, Gantt charts | ```` ```mermaid ```` |
+| [PlantUML](/docs/plantuml/) | UML diagrams; needs a rendering server | ```` ```plantuml ```` |
+| [Markmap](/docs/markmap/) | A Markdown outline becomes a mind map | ```` ```markmap ```` |
+| [Draw.io](/docs/drawio/) | Diagrams that stay editable; needs a server | `![alt](arch.drawio.svg)` |
+| [ECharts](/docs/echarts/) | Declarative statistical charts | ```` ```echarts ```` |
+| [Infographic](/docs/infographic/) | AntV infographics | ```` ```infographic ```` |
+| [Galleries](/docs/gallery/) | A set of images sharing one zoom dialog | ```` ```gallery ```` |
+| [Badges](/docs/badge/) | Inline status markers | `{{</* badge text="Beta" */>}}` |
+| [Keys](/docs/kbd/) | Key names and chords | `{{</* kbd "Ctrl" "K" */>}}` |
+| [Include](/docs/include/) | Pull in files, print site parameters, drop build-time notes | `{{</* include file="parts/x.md" */>}}` |
+| [Asciinema](/docs/asciinema/) | Terminal recordings | `{{</* asciinema file="images/x.cast" */>}}` |
 
-Four notes on the *Runtime* column:
+Four notes on when a runtime actually loads:
 
 - A code block loads `code-block.js` only when a block on the page has a copy
   or fold control; a file tree loads `filetree.js` only when the tree has a

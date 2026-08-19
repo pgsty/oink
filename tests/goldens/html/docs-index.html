@@ -55,7 +55,7 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Docs">
 <meta itemprop="description" content="Markdown Component Examples">
-<meta itemprop="wordCount" content="809">
+<meta itemprop="wordCount" content="748">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
@@ -643,9 +643,10 @@ passthrough, PlantUML and Draw.io need a rendering server you run yourself.
 Each page says so.</p>
 <h2 id="cheatsheet">Cheatsheet<a class="td-heading-self-link" href="#cheatsheet" aria-label="Link to this heading"></a>
 </h2>
-<p>Values in the <em>Form</em> column: native = Markdown syntax plus an attribute line;
-fence = a fenced block with a language tag; shortcode = <code>{{&lt; … &gt;}}</code>. The
-<em>Runtime</em> column says whether the component ships JavaScript to the page.</p>
+<p>The <em>Shortest form</em> column gives each component&rsquo;s minimal syntax: an attribute
+line after ordinary Markdown, a fenced block with a language tag, or a
+shortcode. Tabs, Fields, Steps and Cards also have a shortcode spelling; the
+column shows the native one.</p>
 <div class="td-table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
 <table>
 <thead>
@@ -653,8 +654,6 @@ fence = a fenced block with a language tag; shortcode = <code>{{&lt; … &gt;}}<
 <th scope="col">Component</th>
 <th scope="col">In one line</th>
 <th scope="col">Shortest form</th>
-<th scope="col">Form</th>
-<th scope="col">Runtime</th>
 </tr>
 </thead>
 <tbody>
@@ -662,153 +661,111 @@ fence = a fenced block with a language tag; shortcode = <code>{{&lt; … &gt;}}<
 <td><a href="/docs/callout/">Callouts</a></td>
 <td>Separate prerequisites, warnings and asides from the prose</td>
 <td><code>&gt; [!NOTE]</code></td>
-<td>native</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/image/">Images</a></td>
 <td>Captions, sizing, zoom, numbering and build-time processing</td>
 <td><code>![alt](oink.webp)</code></td>
-<td>native</td>
-<td>site switch</td>
 </tr>
 <tr>
 <td><a href="/docs/code/">Code blocks</a></td>
 <td>Highlighting, titles, copy, folding, linkable lines</td>
 <td><code>```sh</code></td>
-<td>fence</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/tabs/">Tabs</a></td>
 <td>One thing, several platforms or languages</td>
 <td>attribute <code>{tab=&quot;Linux&quot;}</code></td>
-<td>native + shortcode</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/table/">Tables</a></td>
 <td>Plain tables plus full-width, matrix, caption and numbering</td>
 <td><code>{.full-width}</code></td>
-<td>native</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/fields/">Fields</a></td>
 <td>Parameter lists with type / required / default chips</td>
 <td><code>{.fields meta=&quot;type default&quot;}</code></td>
-<td>native + shortcode</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/steps/">Steps</a></td>
 <td>A procedure with an order</td>
 <td><code>{.steps}</code></td>
-<td>native + shortcode</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/cards/">Cards</a></td>
 <td>A set of parallel destinations</td>
 <td><code>{.cards}</code></td>
-<td>native + shortcode</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/filetree/">File trees</a></td>
 <td>Directory structure with an aligned comment column</td>
 <td><code>```filetree</code></td>
-<td>fence</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/math/">Mathematics</a></td>
 <td>KaTeX inline and display formulas</td>
 <td><code>$$ … $$</code></td>
-<td>native</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/mermaid/">Mermaid</a></td>
 <td>Flowcharts, sequence diagrams, Gantt charts</td>
 <td><code>```mermaid</code></td>
-<td>fence</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/plantuml/">PlantUML</a></td>
 <td>UML diagrams; needs a rendering server</td>
 <td><code>```plantuml</code></td>
-<td>fence</td>
-<td>site switch</td>
 </tr>
 <tr>
 <td><a href="/docs/markmap/">Markmap</a></td>
 <td>A Markdown outline becomes a mind map</td>
 <td><code>```markmap</code></td>
-<td>fence</td>
-<td>site switch</td>
 </tr>
 <tr>
 <td><a href="/docs/drawio/">Draw.io</a></td>
 <td>Diagrams that stay editable; needs a server</td>
 <td><code>![alt](arch.drawio.svg)</code></td>
-<td>native</td>
-<td>site switch</td>
 </tr>
 <tr>
 <td><a href="/docs/echarts/">ECharts</a></td>
 <td>Declarative statistical charts</td>
 <td><code>```echarts</code></td>
-<td>fence</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/infographic/">Infographic</a></td>
 <td>AntV infographics</td>
 <td><code>```infographic</code></td>
-<td>fence</td>
-<td>per page</td>
 </tr>
 <tr>
 <td><a href="/docs/gallery/">Galleries</a></td>
 <td>A set of images sharing one zoom dialog</td>
 <td><code>```gallery</code></td>
-<td>fence</td>
-<td>site switch</td>
 </tr>
 <tr>
 <td><a href="/docs/badge/">Badges</a></td>
 <td>Inline status markers</td>
 <td><code>{{&lt; badge text=&quot;Beta&quot; &gt;}}</code></td>
-<td>shortcode</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/kbd/">Keys</a></td>
 <td>Key names and chords</td>
 <td><code>{{&lt; kbd &quot;Ctrl&quot; &quot;K&quot; &gt;}}</code></td>
-<td>shortcode</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/include/">Include</a></td>
 <td>Pull in files, print site parameters, drop build-time notes</td>
 <td><code>{{&lt; include file=&quot;parts/x.md&quot; &gt;}}</code></td>
-<td>shortcode</td>
-<td>none</td>
 </tr>
 <tr>
 <td><a href="/docs/asciinema/">Asciinema</a></td>
 <td>Terminal recordings</td>
 <td><code>{{&lt; asciinema file=&quot;images/x.cast&quot; &gt;}}</code></td>
-<td>shortcode</td>
-<td>per page</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Four notes on the <em>Runtime</em> column:</p>
+<p>Four notes on when a runtime actually loads:</p>
 <ul>
 <li>A code block loads <code>code-block.js</code> only when a block on the page has a copy
 or fold control; a file tree loads <code>filetree.js</code> only when the tree has a

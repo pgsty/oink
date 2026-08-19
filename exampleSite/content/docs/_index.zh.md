@@ -50,33 +50,33 @@ markup:
 
 ## 速查表 {#cheatsheet}
 
-「形态」列的取值：原生 = Markdown 语法加属性行；围栏 = 带语言标记的代码围栏；shortcode = `{{</* … */>}}`。「运行时」列说明这个组件是否往页面上下发 JavaScript。
+「最短写法」列给的是每个组件的最简语法：普通 Markdown 后跟一行属性、带语言标记的代码围栏，或者一个 shortcode。标签页、参数表、步骤、卡片另有 shortcode 写法，表里给的是原生形态。
 
-| 组件 | 一句话 | 最短写法 | 形态 | 运行时 |
-| --- | --- | --- | --- | --- |
-| [提示块](/zh/docs/callout/) | 把前提、警告与折叠说明从正文中分离 | `> [!NOTE]` | 原生 | 无 |
-| [图片](/zh/docs/image/) | 图注、尺寸、缩放、编号与构建期图片处理 | `![说明](oink.webp)` | 原生 | 需站点开关 |
-| [代码块](/zh/docs/code/) | 高亮、标题、复制、折叠、行链接 | ```` ```sh ```` | 围栏 | 按页加载 |
-| [标签页](/zh/docs/tabs/) | 同一件事的多个平台或语言版本 | 属性行 `{tab="Linux"}` | 原生 + shortcode | 按页加载 |
-| [表格](/zh/docs/table/) | 普通表格，加满宽、矩阵、标题与编号 | `{.full-width}` | 原生 | 无 |
-| [参数表](/zh/docs/fields/) | 参数清单，带类型 / 必填 / 默认值芯片 | `{.fields meta="type default"}` | 原生 + shortcode | 无 |
-| [步骤](/zh/docs/steps/) | 有先后的流程 | `{.steps}` | 原生 + shortcode | 无 |
-| [卡片](/zh/docs/cards/) | 一组并列的去处 | `{.cards}` | 原生 + shortcode | 无 |
-| [文件树](/zh/docs/filetree/) | 目录结构与对齐的注释列 | ```` ```filetree ```` | 围栏 | 按页加载 |
-| [公式](/zh/docs/math/) | KaTeX 行内与块级公式 | `$$ … $$` | 原生 | 按页加载 |
-| [Mermaid](/zh/docs/mermaid/) | 流程图、时序图、甘特图 | ```` ```mermaid ```` | 围栏 | 按页加载 |
-| [PlantUML](/zh/docs/plantuml/) | UML 图；需要自建渲染服务 | ```` ```plantuml ```` | 围栏 | 需站点开关 |
-| [思维导图](/zh/docs/markmap/) | Markdown 列表变成思维导图 | ```` ```markmap ```` | 围栏 | 需站点开关 |
-| [Draw.io](/zh/docs/drawio/) | 可回编辑的图；需要自建服务 | `![说明](arch.drawio.svg)` | 原生 | 需站点开关 |
-| [ECharts](/zh/docs/echarts/) | 声明式数据图表 | ```` ```echarts ```` | 围栏 | 按页加载 |
-| [Infographic](/zh/docs/infographic/) | AntV 信息图 | ```` ```infographic ```` | 围栏 | 按页加载 |
-| [画廊](/zh/docs/gallery/) | 一组图片共用一个缩放对话框 | ```` ```gallery ```` | 围栏 | 需站点开关 |
-| [徽章](/zh/docs/badge/) | 行内状态标记 | `{{</* badge text="Beta" */>}}` | shortcode | 无 |
-| [按键](/zh/docs/kbd/) | 键位与组合键 | `{{</* kbd "Ctrl" "K" */>}}` | shortcode | 无 |
-| [引用](/zh/docs/include/) | 引入文件、插入站点参数、构建期注释 | `{{</* include file="parts/x.md" */>}}` | shortcode | 无 |
-| [Asciinema](/zh/docs/asciinema/) | 终端录像 | `{{</* asciinema file="images/x.cast" */>}}` | shortcode | 按页加载 |
+| 组件 | 一句话 | 最短写法 |
+| --- | --- | --- |
+| [提示块](/zh/docs/callout/) | 把前提、警告与折叠说明从正文中分离 | `> [!NOTE]` |
+| [图片](/zh/docs/image/) | 图注、尺寸、缩放、编号与构建期图片处理 | `![说明](oink.webp)` |
+| [代码块](/zh/docs/code/) | 高亮、标题、复制、折叠、行链接 | ```` ```sh ```` |
+| [标签页](/zh/docs/tabs/) | 同一件事的多个平台或语言版本 | 属性行 `{tab="Linux"}` |
+| [表格](/zh/docs/table/) | 普通表格，加满宽、矩阵、标题与编号 | `{.full-width}` |
+| [参数表](/zh/docs/fields/) | 参数清单，带类型 / 必填 / 默认值芯片 | `{.fields meta="type default"}` |
+| [步骤](/zh/docs/steps/) | 有先后的流程 | `{.steps}` |
+| [卡片](/zh/docs/cards/) | 一组并列的去处 | `{.cards}` |
+| [文件树](/zh/docs/filetree/) | 目录结构与对齐的注释列 | ```` ```filetree ```` |
+| [公式](/zh/docs/math/) | KaTeX 行内与块级公式 | `$$ … $$` |
+| [Mermaid](/zh/docs/mermaid/) | 流程图、时序图、甘特图 | ```` ```mermaid ```` |
+| [PlantUML](/zh/docs/plantuml/) | UML 图；需要自建渲染服务 | ```` ```plantuml ```` |
+| [思维导图](/zh/docs/markmap/) | Markdown 列表变成思维导图 | ```` ```markmap ```` |
+| [Draw.io](/zh/docs/drawio/) | 可回编辑的图；需要自建服务 | `![说明](arch.drawio.svg)` |
+| [ECharts](/zh/docs/echarts/) | 声明式数据图表 | ```` ```echarts ```` |
+| [Infographic](/zh/docs/infographic/) | AntV 信息图 | ```` ```infographic ```` |
+| [画廊](/zh/docs/gallery/) | 一组图片共用一个缩放对话框 | ```` ```gallery ```` |
+| [徽章](/zh/docs/badge/) | 行内状态标记 | `{{</* badge text="Beta" */>}}` |
+| [按键](/zh/docs/kbd/) | 键位与组合键 | `{{</* kbd "Ctrl" "K" */>}}` |
+| [引用](/zh/docs/include/) | 引入文件、插入站点参数、构建期注释 | `{{</* include file="parts/x.md" */>}}` |
+| [Asciinema](/zh/docs/asciinema/) | 终端录像 | `{{</* asciinema file="images/x.cast" */>}}` |
 
-「运行时」列的四条细则：
+关于运行时何时下发，四条细则：
 
 - 代码块只在块上有复制或折叠按钮时加载 `code-block.js`；文件树只在树带注释列时加载 `filetree.js`，它负责拖动那条分栏线。
 - 图片与画廊共用一个缩放对话框运行时，需要站点开启 `ui.image_zoom`，且页面上确有候选图。

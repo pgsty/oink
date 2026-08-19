@@ -776,3 +776,37 @@
     });
   });
 })();
+
+/* Blog index form ---------------------------------------------------------
+   Both forms of a blog index are in the document when the site opts in; the
+   reader's choice lives on the root element so shell/prepaint.html can apply
+   it before the first paint, and CSS does the swapping. The button ships
+   hidden and is revealed here, so a page with no JavaScript shows no control
+   that cannot work. */
+(function () {
+  var toggle = document.querySelector('[data-td-blog-index-toggle]');
+  var posts = document.querySelector('.td-blog-posts[data-td-blog-default]');
+  if (!toggle || !posts) return;
+
+  var root = document.documentElement;
+
+  // Settle the attribute before revealing the control. Without a stored choice
+  // prepaint leaves it unset, and the button would then offer the form the
+  // page is already in. Writing the published form here makes the glyph and
+  // the pressed state right on the first paint the reader sees.
+  function apply(form) {
+    root.setAttribute('data-td-blog-index', form);
+    toggle.setAttribute('aria-pressed', form === 'cards' ? 'true' : 'false');
+  }
+
+  apply(root.getAttribute('data-td-blog-index')
+    || posts.getAttribute('data-td-blog-default')
+    || 'list');
+  toggle.hidden = false;
+
+  toggle.addEventListener('click', function () {
+    var next = root.getAttribute('data-td-blog-index') === 'cards' ? 'list' : 'cards';
+    apply(next);
+    try { localStorage.setItem('td-blog-index', next); } catch (_) { /* private mode */ }
+  });
+})();

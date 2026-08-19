@@ -48,7 +48,8 @@
             {{ if and $rssURL (or (eq . .FirstSection) (eq .Parent .FirstSection)) -}}
               {{ $feedURL = $rssURL -}}
             {{ end -}}
-            {{ $actionsHTML := partial "actions/title-menu.html" (dict "page" . "feedURL" $feedURL) -}}
+            {{ $indexToggle := partial "shell/blog-index-toggle.html" . -}}
+            {{ $actionsHTML := partial "actions/title-menu.html" (dict "page" . "feedURL" $feedURL "indexToggle" $indexToggle) -}}
             {{ if or $crumbs (strings.ContainsNonSpace $actionsHTML) -}}
             <div class="td-shell-topline{{ if not $crumbs }} td-shell-topline--actions-only{{ end }}">
               {{ if $crumbs }}{{ partial "breadcrumb.html" . }}{{ end }}

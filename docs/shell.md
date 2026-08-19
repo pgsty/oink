@@ -106,6 +106,27 @@ The stable global bindings are:
 The sidebar tree uses real focus and WASD/Arrow navigation without
 rewriting the document Tab order.
 
+The right-rail outline carries two states over one SVG path. The *range* is
+every heading currently on screen: a dash along the accent path lights it, and
+the dot parks on whichever end the reader is travelling towards — the bottom
+while moving down the page, the top after a reversal of more than 24px. The
+line positions the dot: the script publishes dash start, dash length, and a
+0/1 end selector, the animation runs on those registered properties, and the
+dot's offset is computed from the same in-flight values the dash is drawn
+with — so it caps the lit line at every frame, and a reversal is one fast
+flick along the line to its other end. The
+*cursor* is the one heading the reader is standing in; it takes
+`aria-current="location"` and a pill, and is folded into the range so it is
+never lit outside the accent.
+
+The cursor uses the same rule as `j`/`k`: the last heading whose top has
+crossed the root scroller's *computed* `scroll-padding-top` (parsing
+`--td-shell-nav-h` instead would read an authored `3.5rem` as 3.5px). Both
+sides read that resolved value, so a jump always lands on the entry it lights.
+A heading in the closing screenful cannot be brought to that line at all; where
+`location.hash` names one and it is still on screen, the request takes the
+cursor until it scrolls out of view.
+
 ## Share bar
 
 `params.ui.share` is a list drawn from the sixteen targets below. It is empty by

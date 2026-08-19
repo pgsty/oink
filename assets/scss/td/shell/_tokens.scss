@@ -57,6 +57,9 @@
 [data-bs-theme='light'] {
   --td-shell-primary: var(--bs-link-color);
   --td-shell-primary-dim: rgba(var(--bs-link-color-rgb), 0.1);
+  // Fainter than primary-dim: the outline cursor pill marks a place the
+  // reader already knows, so it only needs a breath of tint.
+  --td-shell-toc-pill-bg: rgba(var(--bs-link-color-rgb), 0.06);
   --td-shell-card: color-mix(
     in srgb,
     var(--bs-body-bg) 96%,
@@ -73,6 +76,7 @@
 [data-bs-theme='dark'] {
   --td-shell-primary: var(--bs-link-color);
   --td-shell-primary-dim: rgba(var(--bs-link-color-rgb), 0.13);
+  --td-shell-toc-pill-bg: rgba(var(--bs-link-color-rgb), 0.08);
   --td-shell-card: color-mix(in srgb, var(--bs-body-bg) 96%, #fff 4%);
   // Use the brighter secondary color for sidebar text in dark mode.
   --td-shell-muted-fg: var(--bs-secondary-color);

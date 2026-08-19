@@ -497,10 +497,27 @@
 
   /*
    * TOC track: each item owns an SVG segment, with cubic Bezier connectors at
-   * depth changes. A full-height accent path is clipped to the active range,
-   * and a 4px dot moves along that path with CSS motion-path properties.
-   * Indents are 20/32/44px and track x positions are 8/16/24px; the 0.5px
-   * offset keeps a 1px stroke aligned to device pixels.
+   * depth changes. A full-height accent path is lit along the active range by
+   * its dash pattern, and a 4px dot moves along the same path with CSS
+   * motion-path properties. Indents are 20/32/44px and track x positions are
+   * 8/16/24px; the 0.5px offset keeps a 1px stroke aligned to device pixels.
+   *
+   * Two states ride that one path:
+   *
+   *   range  - every heading currently on screen. A dash along the accent
+   *            path lights it, and the dot rides its *leading* end: the
+   *            bottom while the reader is moving down the page, the top once
+   *            they turn around. The line positions the dot: the script only
+   *            hands CSS the dash geometry and a 0/1 end selector, and the
+   *            dot's offset is computed from the same animated values the
+   *            dash is drawn with, so it caps the lit line at every frame
+   *            and a turn is one fast flick along the line to its other end.
+   *   cursor - the one heading the reader is standing in, by the same "last
+   *            heading above the scroll line" rule keyboard-nav.js uses for
+   *            j/k, so a jump always lights the entry it landed on. It is
+   *            folded into the range, so its pill can never strand itself off
+   *            the lit path, and it stands in for the range mid-section when
+   *            no heading is on screen at all.
    */
   function initToc() {
     var body = document.getElementById('td-shell-toc-body');
@@ -512,6 +529,39 @@
     if (!tocNav || !links.length) return;
 
     var SVG_NS = 'http://www.w3.org/2000/svg';
+    // Reversing by less than this is scroll jitter, not a change of direction.
+    var TURN_SLACK = 24;
+    // Only used where getComputedStyle is missing; matches keyboard-nav.js.
+    var NAV_MARGIN = 24;
+
+    // The three values the overlay animates, typed so the transitions in
+    // _toc.scss interpolate them. Registered here rather than with a CSS
+    // @property rule, which the production minifier drops. Without support
+    // the rail snaps into place instead of animating, still glued.
+    if (window.CSS && window.CSS.registerProperty) {
+      try {
+        window.CSS.registerProperty({
+          name: '--td-shell-track-start',
+          syntax: '<length>',
+          inherits: true,
+          initialValue: '0px',
+        });
+        window.CSS.registerProperty({
+          name: '--td-shell-track-length',
+          syntax: '<length>',
+          inherits: true,
+          initialValue: '0px',
+        });
+        window.CSS.registerProperty({
+          name: '--td-shell-dot-lead',
+          syntax: '<number>',
+          inherits: true,
+          initialValue: '1',
+        });
+      } catch (e) {
+        // Already registered by an earlier boot: the values are compatible.
+      }
+    }
 
     // Depth is the number of ancestor <ul> elements plus one (Hugo starts at h2).
     function depthOf(a) {
@@ -531,6 +581,10 @@
     }
 
     var depths = links.map(depthOf);
+    var indexOf = new Map();
+    links.forEach(function (a, i) {
+      indexOf.set(a, i);
+    });
     var positions = []; // Per-item [top, bottom], relative to body without padding.
     var overlay = null;
     var dot = null;
@@ -554,6 +608,12 @@
       links.forEach(function (a, i) {
         var depth = depths[i];
         a.style.paddingInlineStart = itemOffset(depth) + 'px';
+        // Where the cursor pill starts, so it clears this item's own indent
+        // instead of cutting across the muted track beside it.
+        a.style.setProperty(
+          '--td-shell-toc-pill-x',
+          itemOffset(depth) - 6 + 'px',
+        );
 
         var l1 = lineOffset(depth);
         var l0 = i === 0 ? l1 : lineOffset(depths[i - 1]);
@@ -662,82 +722,198 @@
     links.forEach(function (a) {
       linkById.set(decodeURIComponent(a.hash.slice(1)), a);
     });
-    var headings = [];
-    linkById.forEach(function (_a, id) {
+    // Outline entries whose heading actually exists, carrying the link index so
+    // the cursor is expressed in the same coordinates as the accent range.
+    var targets = [];
+    var targetOfLink = new Map();
+    linkById.forEach(function (a, id) {
       var el = document.getElementById(id);
-      if (el) headings.push(el);
+      if (!el) return;
+      targetOfLink.set(indexOf.get(a), targets.length);
+      targets.push({ index: indexOf.get(a), el: el });
     });
-    if (!headings.length) return;
+    if (!targets.length) return;
 
     var visible = new Set();
-    var lastAbove = headings[0];
+    var cursor = -1; // Positional index into targets; -1 above the first.
+    var here = -1; // Cursor actually painted; see trackCursor below.
+    var forward = true; // Reading direction the dot leads in.
+    var pivot = 0; // Furthest scroll position reached in that direction.
+    var scrollLine = NAV_MARGIN; // Resolved scroll-padding-top of the root.
+
+    // Anchor jumps land a heading at the root scroller's computed
+    // scroll-padding-top, so read that same resolved value rather than parsing
+    // --td-shell-nav-h, whose authored `3.5rem` would parse as 3.5px.
+    function readScrollLine() {
+      if (!window.getComputedStyle) return NAV_MARGIN;
+      var raw = String(
+        window.getComputedStyle(html).getPropertyValue('scroll-padding-top') ||
+          '',
+      ).trim();
+      if (raw === '0') return 0;
+      var match = /^(-?(?:\d+(?:\.\d+)?|\.\d+))px$/.exec(raw);
+      return match ? Math.max(0, parseFloat(match[1])) : NAV_MARGIN;
+    }
+
+    // A heading in the closing screenful cannot be scrolled up to the reading
+    // line however hard the reader tries, so the positional rule below is
+    // structurally unable to select it. Where the reader has asked for one of
+    // those by name -- a TOC click, a heading link and a j/k jump all leave the
+    // id in location.hash -- honour the request instead, for as long as the
+    // heading is still on screen. Scroll it out of view and the pin is gone.
+    function strandedTarget() {
+      var hash = window.location.hash;
+      if (!hash) return -1;
+      var id;
+      try {
+        id = decodeURIComponent(hash.slice(1));
+      } catch (e) {
+        return -1;
+      }
+      var a = linkById.get(id);
+      if (!a) return -1;
+      var t = targetOfLink.get(indexOf.get(a));
+      if (t === undefined || t <= cursor) return -1;
+      var viewport = html.clientHeight;
+      var rect = targets[t].el.getBoundingClientRect();
+      if (rect.bottom < 0 || rect.top > viewport) return -1;
+      // Still reachable: leave it to the positional rule, which will get there.
+      var remaining = html.scrollHeight - viewport - (window.scrollY || 0);
+      return rect.top - scrollLine > remaining + 1 ? t : -1;
+    }
+
+    // Walk from the last known cursor instead of rescanning: scrolling moves it
+    // by an entry at a time, so this costs one measurement per frame, and an
+    // arbitrary jump or a reflow still converges on the right entry.
+    function trackCursor() {
+      var edge = scrollLine + 8;
+      var i = cursor;
+      while (
+        i + 1 < targets.length &&
+        targets[i + 1].el.getBoundingClientRect().top <= edge
+      ) {
+        i += 1;
+      }
+      while (i >= 0 && targets[i].el.getBoundingClientRect().top > edge) i -= 1;
+      cursor = i;
+      var stranded = strandedTarget();
+      var next = stranded >= 0 ? stranded : cursor;
+      if (next === here) return false;
+      here = next;
+      return true;
+    }
+
+    // Latch direction off the scroll position rather than off the range, so
+    // the dot is sent to the new leading end on the first repaint of a turn.
+    function trackDirection() {
+      var y = window.scrollY || window.pageYOffset || 0;
+      if (forward ? y >= pivot : y <= pivot) {
+        pivot = y;
+        return false;
+      }
+      if (Math.abs(y - pivot) <= TURN_SLACK) return false;
+      forward = !forward;
+      pivot = y;
+      return true;
+    }
 
     function paint() {
-      var actives = Array.from(visible);
-      if (!actives.length && lastAbove) actives = [lastAbove];
-      links.forEach(function (a) {
-        a.classList.remove('active');
-      });
-
-      var firstIdx = Infinity;
-      var lastIdx = -1;
-      actives.forEach(function (h) {
+      var first = Infinity;
+      var last = -1;
+      visible.forEach(function (h) {
         var a = linkById.get(h.id);
-        if (!a) return;
-        a.classList.add('active');
-        var idx = links.indexOf(a);
-        if (idx < firstIdx) firstIdx = idx;
-        if (idx > lastIdx) lastIdx = idx;
+        var i = a ? indexOf.get(a) : undefined;
+        if (i === undefined) return;
+        if (i < first) first = i;
+        if (i > last) last = i;
       });
 
-      if (lastIdx < 0 || !overlay) {
-        if (overlay) {
-          overlay.style.setProperty('--td-shell-track-top', '0px');
-          overlay.style.setProperty('--td-shell-track-bottom', '0px');
-          overlay.style.setProperty('--td-shell-dot-o', '0');
-        }
-        return;
+      var at = here >= 0 ? targets[here].index : -1;
+      if (at >= 0) {
+        if (at < first) first = at;
+        if (at > last) last = at;
       }
-      var trackTop = positions[firstIdx][0];
-      var trackBottom = positions[lastIdx][1];
-      overlay.style.setProperty('--td-shell-track-top', trackTop + 'px');
-      overlay.style.setProperty('--td-shell-track-bottom', trackBottom + 'px');
-      overlay.style.setProperty('--td-shell-dot-o', '1');
+      // Above the first heading with nothing on screen: light the opening entry
+      // rather than blanking the rail.
+      if (last < 0) {
+        first = 0;
+        last = 0;
+      }
+
+      links.forEach(function (a, i) {
+        a.classList.toggle('active', i >= first && i <= last);
+        if (i === at) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      });
+
+      if (!overlay) return;
+      // The range as distances along the accent path. The dash is drawn from
+      // these two values and the dot derives its own place from them in CSS,
+      // so the script never positions the dot — it only picks the end.
+      var from = distanceAtY(positions[first][0]);
+      var to = distanceAtY(positions[last][1]);
+      overlay.style.setProperty('--td-shell-track-start', from + 'px');
       overlay.style.setProperty(
-        '--td-shell-dot-d',
-        distanceAtY(trackTop) + 'px',
+        '--td-shell-track-length',
+        Math.max(to - from, 0) + 'px',
       );
+      overlay.style.setProperty('--td-shell-dot-o', '1');
+      overlay.style.setProperty('--td-shell-dot-lead', forward ? '1' : '0');
 
       // Keep the first active entry visible in a long, scrollable TOC.
-      var first = links[firstIdx];
-      if (first) {
+      var lead = links[first];
+      if (lead) {
         var container = body.getBoundingClientRect();
-        var link = first.getBoundingClientRect();
+        var link = lead.getBoundingClientRect();
         if (link.top < container.top || link.bottom > container.bottom) {
-          first.scrollIntoView({ block: 'nearest' });
+          lead.scrollIntoView({ block: 'nearest' });
         }
       }
     }
 
+    scrollLine = readScrollLine();
+    pivot = window.scrollY || window.pageYOffset || 0;
     build();
+    trackCursor();
 
     var observer = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            visible.add(entry.target);
-          } else {
-            visible.delete(entry.target);
-            // Keep the preceding section active between observed headings.
-            if (entry.boundingClientRect.top < 100) lastAbove = entry.target;
-          }
+          if (entry.isIntersecting) visible.add(entry.target);
+          else visible.delete(entry.target);
         });
         paint();
       },
       { rootMargin: '-80px 0px -25% 0px' },
     );
-    headings.forEach(function (h) {
-      observer.observe(h);
+    targets.forEach(function (t) {
+      observer.observe(t.el);
+    });
+
+    // The range comes from the observer, but the cursor and the direction are
+    // positional, so they need the scroll itself. One rAF per burst, and a
+    // repaint only when something actually moved.
+    var queued = 0;
+    function onScroll() {
+      if (queued) return;
+      queued = window.requestAnimationFrame(function () {
+        queued = 0;
+        var moved = trackCursor();
+        var turned = trackDirection();
+        if (moved || turned) paint();
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // A click on the closing entry may already be at the end of the document,
+    // so the pin above needs a nudge that does not depend on the page moving.
+    window.addEventListener('hashchange', onScroll);
+
+    // scroll-padding-top is breakpoint-dependent, so a resize can move the line
+    // the cursor is measured against without changing the rail's own geometry.
+    window.addEventListener('resize', function () {
+      scrollLine = readScrollLine();
+      trackCursor();
+      paint();
     });
 
     if ('ResizeObserver' in window) {

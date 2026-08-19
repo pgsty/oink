@@ -174,9 +174,40 @@ All notable changes to OINK are documented here. The project follows
   the build and name their replacement.
 - The theme mounts `data/`, which it did not before, so the licence table
   reaches consuming sites. A site's own `data/licenses.yaml` merges over it.
+- The outline's cursor pill is fainter. It shared `--td-shell-primary-dim`
+  with the sidebar's current-page marker, but the outline already says where
+  the reader is twice -- accent colour and the lit rail -- so the pill only
+  needs a breath of tint: `--td-shell-toc-pill-bg`, at roughly half the
+  shared value's opacity in both themes.
 
 ### Fixed
 
+- The outline dot no longer detaches from the accent line under fast
+  scrolling. The dot was tuned to arrive before the range on purpose -- 150ms
+  with a hard ease-out against the clip's 250ms ease-in-out -- so the accent
+  would read as dragged behind it, but a fast scroll retargets both every
+  frame and the "lead" became a visible gap between the dot and the line it
+  is supposed to cap. No pair of separate transitions can close that gap:
+  retargeting two curves every frame lets them drift, and mid-drift the dot
+  sits pinned to nothing. The dot now has no motion schedule of its own. The
+  accent is lit by the path's dash pattern, the dash's start and length are
+  registered custom properties animated on the overlay, and the dot's offset
+  along the same path is *computed* from those in-flight values -- start plus
+  none or all of the lit length -- so the line positions the dot and it caps
+  the lit line at every frame of every animation. The only thing the script
+  chooses is the end: a 0/1 selector with a fast transition of its own, so a
+  change of reading direction is one quick flick of the dot along the lit
+  line to its other end. The script registers the three properties with
+  `CSS.registerProperty` -- an `@property` rule would not survive the CSS
+  minifier -- and an engine without registered properties snaps the rail
+  into place, still glued. The line's own chase is retuned for the same
+  reason the dot was: it moved at 250ms ease-in-out, and a fast scroll
+  retargets that transition on every heading it passes, which restarts an
+  ease-in-out into the slow opening of its curve each time -- the lit line
+  fell whole entries behind the links the list had already coloured. It now
+  moves at the base duration with a hard ease-out, which makes its progress
+  up front, so every retarget advances the line at once and it stays under
+  the entries being highlighted however fast the page scrolls.
 - Field anchors a reader can actually derive. Every Fields entry already
   carried an id and a self-link, but the slug came from `anchorize`, Goldmark's
   rule for prose headings, which *deletes* punctuation rather than converting

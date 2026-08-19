@@ -201,12 +201,32 @@
     position: relative;
     z-index: 0; // Keep the z-index:-1 track SVG behind the text.
     display: block;
-    padding: 6px 0;
+    padding-block: 6px;
+    // Logical, not `padding: 6px 6px 6px 0`: the inline style that
+    // docs-shell.js writes is padding-inline-start, so a physical
+    // shorthand would hand RTL the indent and the pill gutter on the
+    // same side. The end value is trailing room for the pill.
+    padding-inline: 0 6px;
     font-size: 14px;
     line-height: 20px;
     color: var(--td-shell-muted-fg);
     overflow-wrap: anywhere;
     transition: color var(--td-motion-duration) ease;
+
+    // Pill behind the one entry the reader is standing in. It starts after
+    // this item's own indent (docs-shell.js writes --td-shell-toc-pill-x) and
+    // sits below the track SVG, so the rail reads through it unbroken.
+    // Deliberately no weight change: the accent geometry is measured once per
+    // resize, and re-wrapping an entry mid-scroll would desync it.
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -2;
+      inset-block: 1px;
+      inset-inline: var(--td-shell-toc-pill-x, 14px) 0;
+      border-radius: 6px;
+      transition: background-color var(--td-motion-duration) ease;
+    }
 
     &:hover {
       color: var(--bs-body-color);
@@ -215,6 +235,16 @@
 
     &.active {
       color: var(--td-shell-primary);
+    }
+
+    // Written by docs-shell.js on the heading the reader is inside, which is
+    // also where j/k lands. Ordered last so it survives :hover and .active.
+    &[aria-current='location'] {
+      color: var(--td-shell-primary);
+
+      &::before {
+        background: var(--td-shell-toc-pill-bg);
+      }
     }
   }
 
@@ -249,34 +279,60 @@
   }
 }
 
-// Clip the accent path to the active range with a base-duration transition.
+// The active range in path coordinates: a start distance
+// (--td-shell-track-start), a lit length (--td-shell-track-length), and which
+// end of it the dot leads from (--td-shell-dot-lead, 0 or 1). docs-shell.js
+// registers all three with CSS.registerProperty — an @property rule here
+// would not survive the CSS minifier — so the numbers themselves interpolate:
+// the transition runs on the overlay, and the dash and the dot both derive
+// their geometry from the one in-flight value, which is what pins the dot to
+// the end of the lit line at every frame of every animation. An engine
+// without registered properties snaps the rail into place, still glued.
+//
+// Light the accent path along the active range with its dash pattern.
 .td-shell-toc__active {
   position: absolute;
   top: 0;
   inset-inline-start: 0;
   z-index: 1;
   pointer-events: none;
+  // The range animates here, once — base duration, hard ease-out. The curve
+  // matters more than the duration: a fast scroll retargets this transition
+  // on every heading it passes, and an ease-out makes its progress up front,
+  // so each retarget still advances the line at once and the chase converges
+  // on the entries the list is highlighting. (An ease-in-out restarted
+  // mid-chase never leaves the slow opening of its curve — the line fell
+  // whole entries behind the links already coloured.) The end selector is
+  // faster still: a change of reading direction is one quick flick of the
+  // dot along the lit line to its other end.
+  transition:
+    --td-shell-track-start var(--td-motion-duration)
+      var(--td-shell-ease-dialog),
+    --td-shell-track-length var(--td-motion-duration)
+      var(--td-shell-ease-dialog),
+    --td-shell-dot-lead var(--td-motion-duration-fast)
+      var(--td-shell-ease-dialog);
 
   svg {
     display: block;
     overflow: visible;
-    clip-path: polygon(
-      0 var(--td-shell-track-top, 0px),
-      100% var(--td-shell-track-top, 0px),
-      100% var(--td-shell-track-bottom, 0px),
-      0 var(--td-shell-track-bottom, 0px)
-    );
-    transition: clip-path var(--td-motion-duration) ease;
   }
 
   path {
     stroke: var(--td-shell-primary);
     stroke-width: 1;
     fill: none;
+    // One dash the length of the range, parked at its start distance; the
+    // 99999px gap outruns any real path, so a second dash never appears.
+    // No transition here — the variables arrive already animated.
+    stroke-dasharray: var(--td-shell-track-length, 0px) 99999px;
+    stroke-dashoffset: calc(-1 * var(--td-shell-track-start, 0px));
   }
 }
 
-// A 4px dot follows the accent path through CSS motion-path properties.
+// A 4px dot capping the lit line, placed through CSS motion-path properties.
+// docs-shell.js parks it on whichever end of the active range the reader is
+// travelling towards, so it always leads rather than trails.
 .td-shell-toc__dot {
   position: absolute;
   top: 0;
@@ -285,11 +341,39 @@
   height: 4px;
   border-radius: 999px;
   background: var(--td-shell-primary);
-  offset-distance: var(--td-shell-dot-d, 0px);
+  box-shadow: 0 0 0 2px rgba(var(--bs-link-color-rgb), 0.2);
+  // The dot's place *is* the line's end: start plus none or all of the lit
+  // length, read from the same animated values the dash is drawn from. The
+  // line positions the dot; it has no motion schedule of its own to fall
+  // out of step with.
+  offset-distance: calc(
+    var(--td-shell-track-start, 0px) +
+      var(--td-shell-dot-lead, 1) * var(--td-shell-track-length, 0px)
+  );
   opacity: var(--td-shell-dot-o, 0);
-  transition:
-    offset-distance var(--td-motion-duration) ease,
-    opacity var(--td-motion-duration) ease;
+  transition: opacity var(--td-motion-duration) ease;
+}
+
+// Forced colors flattens fill/stroke and drops backgrounds, which would erase
+// every distinction the rail is built on. Restore them with system colors.
+@media (forced-colors: active) {
+  .td-shell-toc__rail line,
+  .td-shell-toc__rail path {
+    stroke: GrayText;
+  }
+
+  .td-shell-toc__active path {
+    stroke: Highlight;
+  }
+
+  .td-shell-toc__dot {
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .td-shell-toc__body #TableOfContents a[aria-current='location']::before {
+    border: 1px solid Highlight;
+  }
 }
 
 .td-shell-toc__panel > .td-shell-aside {

@@ -535,8 +535,12 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
             )
             result = run_site(hugo, source)
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid eq escape case {name} unexpectedly built", errors)
+            # Converted call sites warn and degrade; unconverted ones still
+            # errorf. The contract that holds for both: the problem is named,
+            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid eq escape case {name} did not report {expected!r}", errors)
+            require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                    f"invalid eq escape case {name} survived --panicOnWarning", errors)
     return errors
 
 

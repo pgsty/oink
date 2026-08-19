@@ -29,13 +29,16 @@ def write(path: Path, content: str) -> None:
 
 
 def run(
-    hugo: str, source: Path, destination: Path | None = None
+    hugo: str, source: Path, destination: Path | None = None,
+    panic_on_warning: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [hugo, "--source", str(source), "--logLevel", "warn"]
     if source == EXAMPLE:
         command.extend(fixture_config_args())
     if destination is not None:
         command.extend(["--destination", str(destination)])
+    if panic_on_warning:
+        command.append("--panicOnWarning")
     return subprocess.run(
         command, cwd=ROOT, capture_output=True, text=True, check=False
     )
@@ -316,9 +319,15 @@ def check_invalid(hugo: str) -> list[str]:
             create_site(site, data, body)
             result = run(hugo, site)
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid download case {name} unexpectedly built", errors)
+            # A malformed record warns and resolves to an empty block; the page
+            # still builds. --panicOnWarning is what keeps it fatal on publish.
+            require(result.returncode == 0,
+                    f"invalid download case {name} stopped the build instead of warning:\n{output[-400:]}", errors)
             require(expected in output, f"invalid download case {name} did not report {expected!r}", errors)
             require("content/docs/page.md:" in output, f"invalid download case {name} lost its source position", errors)
+            strict = run(hugo, site, panic_on_warning=True)
+            require(strict.returncode != 0,
+                    f"invalid download case {name} survived --panicOnWarning", errors)
     return errors
 
 

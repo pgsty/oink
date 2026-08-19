@@ -635,8 +635,12 @@ def check_invalid_components(hugo: str) -> list[str]:
             create_site(source, body)
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid Book case {name} unexpectedly built", errors)
+            # Converted call sites warn and degrade; unconverted ones still
+            # errorf. The contract that holds for both: the problem is named,
+            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
+            require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
+                    f"invalid Book case {name} survived --panicOnWarning", errors)
 
     config_cases = (
         ("headings", "    sidebar_headings: 1\n", "", False, "params.ui.sidebar_headings"),
@@ -712,8 +716,12 @@ def check_invalid_contributors(hugo: str) -> list[str]:
             write(source / "data/contributors.yaml", data)
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid contributors case {name} unexpectedly built", errors)
+            # Converted call sites warn and degrade; unconverted ones still
+            # errorf. The contract that holds for both: the problem is named,
+            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid contributors case {name} did not report {expected!r}", errors)
+            require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
+                    f"invalid contributors case {name} survived --panicOnWarning", errors)
     return errors
 
 

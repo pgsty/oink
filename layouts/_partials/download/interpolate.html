@@ -1,28 +1,44 @@
-{{- /* Expand the only permitted version facts inside a pinned channel. */ -}}
+{{- /* Expand the only permitted version facts inside a pinned channel.
+
+     A bad value warns and resolves to the empty string rather than stopping
+     the build. Empty is the safe result: resolve.html already drops a step
+     whose code is empty and a channel link whose url is empty, so the failure
+     costs that one element instead of every page on the site. Returning the
+     raw value instead would leak an unexpanded ${...} into the output. */ -}}
 {{- $value := .value -}}
 {{- $field := .field -}}
 {{- $kind := .kind -}}
 {{- $position := .position -}}
+{{- $ok := true -}}
+{{- $result := "" -}}
 {{- if ne (printf "%T" $value) "string" -}}
-  {{- errorf "%s: download %s must be a string" $position $field -}}
-{{- end -}}
-{{- $result := $value -}}
-{{- $result = replace $result "\r\n" "\n" -}}
-{{- $result = replace $result "\r" "\n" -}}
-{{- $tokens := findRE `\$\{[^}]*\}` $result -}}
-{{- if and $tokens (eq $kind "rolling") -}}
-  {{- errorf "%s: rolling download channel %s must not interpolate version facts" $position $field -}}
-{{- end -}}
-{{- range $tokens -}}
-  {{- if eq . "${version}" -}}
-    {{- $result = replace $result . $.version -}}
-  {{- else if eq . "${tag}" -}}
-    {{- $result = replace $result . $.tag -}}
-  {{- else -}}
-    {{- errorf "%s: download %s has unknown interpolation variable %q" $position $field . -}}
+  {{- warnf "%s: download %s must be a string; dropping it" $position $field -}}
+  {{- $ok = false -}}
+{{- else -}}
+  {{- $result = $value -}}
+  {{- $result = replace $result "\r\n" "\n" -}}
+  {{- $result = replace $result "\r" "\n" -}}
+  {{- $tokens := findRE `\$\{[^}]*\}` $result -}}
+  {{- if and $tokens (eq $kind "rolling") -}}
+    {{- warnf "%s: rolling download channel %s must not interpolate version facts; dropping it" $position $field -}}
+    {{- $ok = false -}}
+  {{- end -}}
+  {{- if $ok -}}
+    {{- range $tokens -}}
+      {{- if eq . "${version}" -}}
+        {{- $result = replace $result . $.version -}}
+      {{- else if eq . "${tag}" -}}
+        {{- $result = replace $result . $.tag -}}
+      {{- else -}}
+        {{- warnf "%s: download %s has unknown interpolation variable %q; dropping it" $position $field . -}}
+        {{- $ok = false -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and $ok (strings.Contains $result "${") -}}
+    {{- warnf "%s: download %s has malformed interpolation syntax; dropping it" $position $field -}}
+    {{- $ok = false -}}
   {{- end -}}
 {{- end -}}
-{{- if strings.Contains $result "${" -}}
-  {{- errorf "%s: download %s has malformed interpolation syntax" $position $field -}}
-{{- end -}}
+{{- if not $ok }}{{ $result = "" }}{{ end -}}
 {{- return $result -}}

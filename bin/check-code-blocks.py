@@ -498,10 +498,14 @@ def check_invalid_cases(hugo: str) -> list[str]:
             command = [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn"]
             result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
             output = result.stdout + result.stderr
-            if result.returncode == 0:
-                errors.append(f"invalid case {name} unexpectedly built")
-            elif expected not in output:
+            # Converted call sites warn and degrade; unconverted ones still
+            # errorf. The contract that holds for both: the problem is named,
+            # and the build fails under --panicOnWarning.
+            if expected not in output:
                 errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
+            strict = subprocess.run(command + ["--panicOnWarning"], cwd=ROOT, capture_output=True, text=True, check=False)
+            if strict.returncode == 0:
+                errors.append(f"invalid case {name} survived --panicOnWarning")
     return errors
 
 

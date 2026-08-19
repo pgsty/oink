@@ -704,13 +704,20 @@ def check_invalid_cases(hugo: str) -> list[str]:
                 check=False,
             )
             output = result.stdout + result.stderr
-            if result.returncode == 0:
-                errors.append(f"invalid case {name} unexpectedly built")
-            else:
-                if expected not in output:
-                    errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
-                if "content/docs/invalid.md:" not in output:
-                    errors.append(f"invalid case {name} did not report its position")
+            # Whether a bad value stops the build is no longer the contract --
+            # converted call sites warn and degrade, unconverted ones still
+            # errorf. What must hold either way is that the problem is named
+            # with its position and that it is fatal under --panicOnWarning.
+            if expected not in output:
+                errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
+            if "content/docs/invalid.md:" not in output:
+                errors.append(f"invalid case {name} did not report its position")
+            strict = subprocess.run(
+                [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning"],
+                cwd=ROOT, capture_output=True, text=True, check=False,
+            )
+            if strict.returncode == 0:
+                errors.append(f"invalid case {name} survived --panicOnWarning")
     # param with a map value needs front matter
     with tempfile.TemporaryDirectory(prefix="oink-primitives-param-map-") as temp:
         temp_path = Path(temp)

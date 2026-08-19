@@ -32,12 +32,15 @@ def run(
     hugo: str,
     source: Path,
     destination: Path | None = None,
+    panic_on_warning: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [hugo, "--source", str(source), "--logLevel", "warn"]
     if source == EXAMPLE:
         command.extend(fixture_config_args())
     if destination is not None:
         command.extend(["--destination", str(destination)])
+    if panic_on_warning:
+        command.append("--panicOnWarning")
     return subprocess.run(
         command,
         cwd=ROOT,
@@ -450,9 +453,13 @@ def check_invalid(hugo: str) -> list[str]:
             )
             result = run(hugo, site)
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid case {name} unexpectedly built", errors)
+            # Converted call sites warn and degrade; unconverted ones still
+            # errorf. The contract that holds for both: the problem is named,
+            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid case {name} did not report {expected!r}", errors)
             require("content/docs/invalid.md:" in output, f"invalid case {name} lost its source position", errors)
+            require(run(hugo, site, panic_on_warning=True).returncode != 0,
+                    f"invalid case {name} survived --panicOnWarning", errors)
     return errors
 
 

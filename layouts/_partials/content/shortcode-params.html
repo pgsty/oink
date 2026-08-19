@@ -1,10 +1,11 @@
 {{/* Reject unknown and mis-shaped shortcode parameters.
 
-     The contract's rule is strict failure over silent degradation
-     (docs/components.md). Without this, a typo like
-     `{{< fig num="1-1" captoin="…" >}}` builds cleanly and silently drops the
-     caption — exactly the failure the rule exists to prevent. Every shortcode
-     calls this, so the rule cannot be forgotten for a new one.
+     A typo like `{{< fig num="1-1" captoin="…" >}}` would otherwise build
+     cleanly and silently drop the caption. This warns instead, naming the
+     parameter and the position, and the shortcode renders without it — one
+     mistyped attribute costs that attribute, not every page of the site.
+     --panicOnWarning is what keeps it fatal on publish. Every shortcode calls
+     this, so the check cannot be forgotten for a new one.
 
      Parameters:
        shortcode  the calling shortcode's context (`.`)
@@ -28,15 +29,15 @@
 
 {{- if eq $form "none" -}}
   {{- if gt $count 0 -}}
-    {{- errorf "shortcode %q accepts no parameters at %s" $sc.Name $sc.Position -}}
+    {{- warnf "shortcode %q accepts no parameters at %s; ignoring them" $sc.Name $sc.Position -}}
   {{- end -}}
 {{- else if eq $form "positional" -}}
   {{- if $sc.IsNamedParams -}}
-    {{- errorf "shortcode %q accepts positional parameters only at %s" $sc.Name $sc.Position -}}
+    {{- warnf "shortcode %q accepts positional parameters only at %s; ignoring the named ones" $sc.Name $sc.Position -}}
   {{- end -}}
 {{- else -}}
   {{- if and (gt $count 0) (not $sc.IsNamedParams) (ne $form "any") -}}
-    {{- errorf "shortcode %q accepts named parameters only at %s" $sc.Name $sc.Position -}}
+    {{- warnf "shortcode %q accepts named parameters only at %s; ignoring the positional ones" $sc.Name $sc.Position -}}
   {{- end -}}
   {{/* A positional shorthand under "any" has integer keys, not names. */ -}}
   {{- if $sc.IsNamedParams -}}
@@ -44,7 +45,7 @@
       {{- $lower := lower $name -}}
       {{- $passthrough := and $attributes (or (eq $lower "class") (hasPrefix $lower "data-") (hasPrefix $lower "aria-")) -}}
       {{- if not (or (in $allowed $name) $passthrough) -}}
-        {{- errorf "shortcode %q: unsupported parameter %q at %s (allowed: %s)" $sc.Name $name $sc.Position (delimit $allowed ", ") -}}
+        {{- warnf "shortcode %q: unsupported parameter %q at %s (allowed: %s); ignoring it" $sc.Name $name $sc.Position (delimit $allowed ", ") -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

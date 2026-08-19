@@ -6,23 +6,31 @@
 {{- if eq $name "image" }}{{ $label = "image" }}{{ else if eq $name "gallery" }}{{ $label = "gallery fence" }}{{ end -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $page := .page -}}
+{{- /* Nothing here stops the build. An unusable src resolves to an empty one
+       and the caller renders no image; a bad optional field falls back. */ -}}
 {{- $sourceValue := .src -}}
+{{- $source := "" -}}
 {{- if ne (printf "%T" $sourceValue) "string" -}}
-  {{- errorf "%s: src must be a string at %s" $label $position -}}
-{{- end -}}
-{{- $source := strings.TrimSpace $sourceValue -}}
-{{- if not $source -}}
-  {{- errorf "%s: src must not be empty at %s" $label $position -}}
+  {{- warnf "%s: src must be a string at %s; dropping the image" $label $position -}}
+{{- else -}}
+  {{- $source = strings.TrimSpace $sourceValue -}}
+  {{- if not $source -}}
+    {{- warnf "%s: src must not be empty at %s; dropping the image" $label $position -}}
+  {{- end -}}
 {{- end -}}
 {{- $validated := partial "content/url.html" (dict
   "name" $name "parameter" "src" "position" $position "value" $source "kind" "image"
 ) -}}
 {{- $parsedResult := try (urls.Parse $source) -}}
-{{- with $parsedResult.Err -}}
-  {{- errorf "%s: invalid src %q at %s: %s" $label $source $position . -}}
+{{- $scheme := "" -}}
+{{- $parsed := urls.Parse "" -}}
+{{- if $parsedResult.Err -}}
+  {{- warnf "%s: invalid src %q at %s: %s; dropping the image" $label $source $position $parsedResult.Err -}}
+  {{- $source = "" -}}
+{{- else -}}
+  {{- $parsed = $parsedResult.Value -}}
+  {{- $scheme = lower $parsed.Scheme -}}
 {{- end -}}
-{{- $parsed := $parsedResult.Value -}}
-{{- $scheme := lower $parsed.Scheme -}}
 
 {{- $kind := "static" -}}
 {{- $resource := false -}}
@@ -63,11 +71,13 @@
 {{- $byline := "" -}}
 {{- if $resource -}}
   {{- if not (reflect.IsImageResource $resource) -}}
-    {{- errorf "%s: src %q resolved to a non-image %s resource at %s" $label $source $kind $position -}}
+    {{- warnf "%s: src %q resolved to a non-image %s resource at %s; dropping the image" $label $source $kind $position -}}
+    {{- $resource = false -}}
+  {{- else -}}
+    {{- $src = $resource.RelPermalink -}}
+    {{- $fullSrc = $resource.RelPermalink -}}
+    {{- $mediaType = $resource.MediaType.Type -}}
   {{- end -}}
-  {{- $src = $resource.RelPermalink -}}
-  {{- $fullSrc = $resource.RelPermalink -}}
-  {{- $mediaType = $resource.MediaType.Type -}}
   {{- $processable = reflect.IsImageResourceProcessable $resource -}}
   {{- if reflect.IsImageResourceWithMeta $resource -}}
     {{- $width = $resource.Width -}}
@@ -77,7 +87,7 @@
     {{- if isset . "alt" -}}
       {{- $metadataAlt := index . "alt" -}}
       {{- if ne (printf "%T" $metadataAlt) "string" -}}
-        {{- errorf "%s: image resource alt metadata must be a string at %s" $label $position -}}
+        {{- warnf "%s: image resource alt metadata must be a string at %s; ignoring it" $label $position -}}
       {{- end -}}
       {{- $resourceAlt = strings.TrimSpace $metadataAlt -}}
     {{- end -}}
@@ -100,20 +110,24 @@
 {{- if $hasAlt -}}
   {{- $altValue := .alt -}}
   {{- if ne (printf "%T" $altValue) "string" -}}
-    {{- errorf "%s: alt must be a string at %s" $label $position -}}
+    {{- warnf "%s: alt must be a string at %s; using the resource alt" $label $position -}}
+  {{- else -}}
+    {{- $alt = strings.TrimSpace $altValue -}}
   {{- end -}}
-  {{- $alt = strings.TrimSpace $altValue -}}
 {{- end -}}
 {{- $decorative := .decorative | default false -}}
 {{- if ne (printf "%T" $decorative) "bool" -}}
-  {{- errorf "%s: decorative must be boolean at %s" $label $position -}}
+  {{- warnf "%s: decorative must be boolean at %s; treating the image as meaningful" $label $position -}}
+  {{- $decorative = false -}}
 {{- end -}}
 {{- if and $decorative $hasAlt $alt -}}
-  {{- errorf "%s: decorative images must not define alt text at %s" $label $position -}}
+  {{- warnf "%s: decorative images must not define alt text at %s; dropping the alt text" $label $position -}}
 {{- end -}}
 {{- if $decorative }}{{ $alt = "" }}{{ end -}}
 {{- if and (.requireAlt | default false) (not $decorative) (not $alt) -}}
-  {{- errorf "%s requires meaningful alt text or decorative=true at %s" $label $position -}}
+  {{- warnf "%s requires meaningful alt text or decorative=true at %s; rendering it decorative" $label $position -}}
+  {{- $decorative = true -}}
+  {{- $alt = "" -}}
 {{- end -}}
 
 {{- return (dict

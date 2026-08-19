@@ -139,14 +139,15 @@ def check_outputs(public: Path) -> list[str]:
     return errors
 
 
-def temp_page_build(hugo: str, body: str, *, front: str = "") -> tuple[subprocess.CompletedProcess[str], str, str]:
+def temp_page_build(hugo: str, body: str, *, front: str = "", panic_on_warning: bool = False) -> tuple[subprocess.CompletedProcess[str], str, str]:
     with tempfile.TemporaryDirectory(prefix="oink-gallery-page-") as temp:
         temp_path = Path(temp)
         content = temp_path / "content/docs/gallery-test"
         content.mkdir(parents=True)
         (content / "index.md").write_text("---\ntitle: Gallery test\noutputs: [HTML, markdown]\n" + front + "---\n\n" + body)
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn")
+        extra = ["--panicOnWarning"] if panic_on_warning else []
+        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn", *extra)
         html = ""
         markdown = ""
         if result.returncode == 0:
@@ -200,8 +201,12 @@ def check_invalid_cases(hugo: str) -> list[str]:
     for name, body, expected in cases:
         result, _, _ = temp_page_build(hugo, body)
         output = f"{result.stdout}{result.stderr}"
-        require(result.returncode != 0, f"Gallery invalid case {name} built successfully", errors)
+        # Converted fences warn and degrade; unconverted ones still errorf.
+        # The contract that holds for both: the problem is named, and the
+        # build fails under --panicOnWarning.
         require(expected in output, f"Gallery invalid case {name} lacks {expected!r}: {output[:400]}", errors)
+        strict, _, _ = temp_page_build(hugo, body, panic_on_warning=True)
+        require(strict.returncode != 0, f"Gallery invalid case {name} survived --panicOnWarning", errors)
     return errors
 
 

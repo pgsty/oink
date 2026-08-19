@@ -46,7 +46,8 @@
   {{- /* the image, anchored at the start of the line */ -}}
   {{- $imageMatch := findRESubmatch `^!\[([^\]]*)\]\(([^)\s]+)\)\s*(.*)$` $line -}}
   {{- if not $imageMatch -}}
-    {{- errorf "gallery: line %d must start with a Markdown image such as %s; got %q at %s" $lineNo "![alt](src.png)" $line $position -}}
+    {{- warnf "gallery: line %d must start with a Markdown image such as %s; got %q at %s; skipping the line" $lineNo "![alt](src.png)" $line $position -}}
+    {{- continue -}}
   {{- end -}}
   {{- $alt := strings.TrimSpace (index (index $imageMatch 0) 1) -}}
   {{- $src := index (index $imageMatch 0) 2 -}}
@@ -61,19 +62,17 @@
     {{- $pairRE := `([A-Za-z][A-Za-z0-9_-]*)=(?:"([^"]*)"|'([^']*)'|([^\s"']+))` -}}
     {{- $leftover := strings.TrimSpace (replaceRE $pairRE "" $attrText) -}}
     {{- if $leftover -}}
-      {{- errorf "gallery: line %d: malformed attributes {%s} (expected key=value pairs) at %s" $lineNo $attrText $position -}}
+      {{- warnf "gallery: line %d: malformed attributes {%s} (expected key=value pairs) at %s; ignoring them" $lineNo $attrText $position -}}
     {{- end -}}
     {{- range $pair := findRESubmatch $pairRE $attrText -}}
       {{- $key := index $pair 1 -}}
       {{- $value := or (index $pair 2) (index $pair 3) (index $pair 4) -}}
       {{- if not (in (slice "link" "class") $key) -}}
-        {{- errorf "gallery: line %d: unknown attribute %q (allowed: link, class) at %s" $lineNo $key $position -}}
-      {{- end -}}
-      {{- if isset $attrs $key -}}
-        {{- errorf "gallery: line %d: attribute %q is set twice at %s" $lineNo $key $position -}}
-      {{- end -}}
-      {{- if not (strings.TrimSpace $value) -}}
-        {{- errorf "gallery: line %d: attribute %q must not be empty at %s" $lineNo $key $position -}}
+        {{- warnf "gallery: line %d: unknown attribute %q (allowed: link, class) at %s; ignoring it" $lineNo $key $position -}}
+      {{- else if isset $attrs $key -}}
+        {{- warnf "gallery: line %d: attribute %q is set twice at %s; keeping the first" $lineNo $key $position -}}
+      {{- else if not (strings.TrimSpace $value) -}}
+        {{- warnf "gallery: line %d: attribute %q must not be empty at %s; ignoring it" $lineNo $key $position -}}
       {{- end -}}
       {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
     {{- end -}}
@@ -85,19 +84,23 @@
     {{- $escaped := replace $rest "\\#" $hashEscape -}}
     {{- $descMatch := findRESubmatch `^#\s*(.*)$` $escaped -}}
     {{- if not $descMatch -}}
-      {{- errorf "gallery: line %d: text after the image must start with # (the description marker); got %q at %s" $lineNo $rest $position -}}
+      {{- /* Indexing the empty match below would fail, so stop here. */ -}}
+      {{- warnf "gallery: line %d: text after the image must start with # (the description marker); got %q at %s; dropping the text" $lineNo $rest $position -}}
+    {{- else -}}
+      {{- $description = strings.TrimSpace (replace (index (index $descMatch 0) 1) $hashEscape "#") -}}
+      {{- if not $description -}}
+        {{- warnf "gallery: line %d: the description after # must not be empty at %s; dropping it" $lineNo $position -}}
+      {{- else -}}
+        {{- $hasDescription = true -}}
+      {{- end -}}
     {{- end -}}
-    {{- $description = strings.TrimSpace (replace (index (index $descMatch 0) 1) $hashEscape "#") -}}
-    {{- if not $description -}}
-      {{- errorf "gallery: line %d: the description after # must not be empty at %s" $lineNo $position -}}
-    {{- end -}}
-    {{- $hasDescription = true -}}
   {{- end -}}
 
   {{- /* attributes */ -}}
   {{- $class := index $attrs "class" | default "" -}}
   {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) -}}
-    {{- errorf "gallery: line %d: class contains unsafe characters at %s" $lineNo $position -}}
+    {{- warnf "gallery: line %d: class contains unsafe characters at %s; dropping the class" $lineNo $position -}}
+    {{- $class = "" -}}
   {{- end -}}
   {{- $href := "" -}}
   {{- $external := false -}}
@@ -133,7 +136,7 @@
 {{- end -}}
 
 {{- if not $items -}}
-  {{- errorf "gallery: the fence requires at least one image at %s" $position -}}
+  {{- warnf "gallery: the fence requires at least one image at %s; rendering nothing" $position -}}
 {{- end -}}
 
 {{- return (dict "items" $items "hasDescription" $hasDescription) -}}

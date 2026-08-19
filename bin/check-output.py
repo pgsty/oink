@@ -331,7 +331,9 @@ params:
             errors.append("blog list did not process the bundled raster discovered after images: []")
         if 'src="/blog/vector/feature.svg"' not in listing:
             errors.append("blog list did not render the non-processable SVG resource as-is")
-        posts_start = listing.find('<div class="td-blog-posts">')
+        # The wrapper carries the published form as an attribute, so match the
+        # opening tag rather than a closed one.
+        posts_start = listing.find('<div class="td-blog-posts"')
         empty_link = listing.find('href="/blog/empty/"', posts_start)
         empty_start = listing.rfind('<li class="td-blog-posts-list__item">', 0, empty_link)
         empty_end = listing.find("</li>", empty_link)
@@ -389,10 +391,30 @@ def check_config_image_policy(hugo: str) -> list[str]:
                 check=False,
             )
             output = result.stdout + result.stderr
-            if result.returncode == 0:
-                errors.append(f"configured image case {name} unexpectedly built")
-            elif expected not in output:
+            # The URL validator warns and drops the value rather than stopping
+            # the build; refusing to emit it is the protection. What must hold
+            # is that the problem is named and that publishing still fails.
+            if expected not in output:
                 errors.append(f"configured image case {name} did not report {expected!r}: {output[-400:]}")
+            strict = subprocess.run(
+                [
+                    hugo,
+                    "--source",
+                    str(EXAMPLE),
+                    "--destination",
+                    str(Path(temp) / "public-strict"),
+                    "--logLevel",
+                    "warn",
+                    "--panicOnWarning",
+                ],
+                cwd=ROOT,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if strict.returncode == 0:
+                errors.append(f"configured image case {name} survived --panicOnWarning")
     return errors
 
 

@@ -377,13 +377,16 @@ def check_invalid_cases(hugo: str) -> list[str]:
             (content / "index.md").write_text(f"---\ntitle: Invalid media {name}\n---\n\n{body}")
             result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public"), "--logLevel", "warn")
             output = result.stdout + result.stderr
-            if result.returncode == 0:
-                errors.append(f"invalid media case {name} unexpectedly built")
-            else:
-                if expected not in output:
-                    errors.append(f"invalid media case {name} did not report {expected!r}: {output.strip()}")
-                if "content/docs/invalid/index.md:" not in output:
-                    errors.append(f"invalid media case {name} did not report its position")
+            # Converted hooks warn and drop the image; unconverted ones still
+            # errorf. Both must name the problem with its position and fail
+            # under --panicOnWarning.
+            if expected not in output:
+                errors.append(f"invalid media case {name} did not report {expected!r}: {output.strip()}")
+            if "content/docs/invalid/index.md:" not in output:
+                errors.append(f"invalid media case {name} did not report its position")
+            strict = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning")
+            if strict.returncode == 0:
+                errors.append(f"invalid media case {name} survived --panicOnWarning")
     return errors
 
 

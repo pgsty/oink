@@ -57,7 +57,8 @@
   {{- else -}}
     {{- $bullet := findRESubmatch `^(\s*)(?:[-*+]\s+)?(\S.*)$` $line -}}
     {{- if not $bullet -}}
-      {{- errorf "filetree: line %d is not a tree entry at %s" $lineNo $position -}}
+      {{- warnf "filetree: line %d is not a tree entry at %s; skipping the line" $lineNo $position -}}
+      {{- continue -}}
     {{- end -}}
     {{- $indent := replace (index (index $bullet 0) 1) "\t" "    " -}}
     {{- $width = strings.RuneCount $indent -}}
@@ -76,7 +77,9 @@
       {{- end -}}
     {{- end -}}
     {{- if or (not $stack) (ne $width (index $stack (sub (len $stack) 1))) -}}
-      {{- errorf "filetree: line %d dedents to an indentation level that was never opened at %s" $lineNo $position -}}
+      {{- /* The stack is now inconsistent, so this line cannot be placed. */ -}}
+      {{- warnf "filetree: line %d dedents to an indentation level that was never opened at %s; skipping the line" $lineNo $position -}}
+      {{- continue -}}
     {{- end -}}
   {{- end -}}
   {{- $depth := sub (len $stack) 1 -}}
@@ -90,21 +93,20 @@
     {{- $pairRE := `([A-Za-z][A-Za-z0-9_-]*)=(?:"([^"]*)"|'([^']*)'|([^\s"']+))` -}}
     {{- $leftover := strings.TrimSpace (replaceRE $pairRE "" $attrText) -}}
     {{- if $leftover -}}
-      {{- errorf "filetree: line %d: malformed attributes {%s} (expected key=value pairs) at %s" $lineNo $attrText $position -}}
+      {{- warnf "filetree: line %d: malformed attributes {%s} (expected key=value pairs) at %s; ignoring them" $lineNo $attrText $position -}}
     {{- end -}}
     {{- range $pair := findRESubmatch $pairRE $attrText -}}
       {{- $key := index $pair 1 -}}
       {{- $value := or (index $pair 2) (index $pair 3) (index $pair 4) -}}
       {{- if not (in (slice "icon" "tone" "open" "type") $key) -}}
-        {{- errorf "filetree: line %d: unknown attribute %q (allowed: icon, tone, open, type) at %s" $lineNo $key $position -}}
+        {{- warnf "filetree: line %d: unknown attribute %q (allowed: icon, tone, open, type) at %s; ignoring it" $lineNo $key $position -}}
+      {{- else if isset $attrs $key -}}
+        {{- warnf "filetree: line %d: attribute %q is set twice at %s; keeping the first" $lineNo $key $position -}}
+      {{- else if not (strings.TrimSpace $value) -}}
+        {{- warnf "filetree: line %d: attribute %q must not be empty at %s; ignoring it" $lineNo $key $position -}}
+      {{- else -}}
+        {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
       {{- end -}}
-      {{- if isset $attrs $key -}}
-        {{- errorf "filetree: line %d: attribute %q is set twice at %s" $lineNo $key $position -}}
-      {{- end -}}
-      {{- if not (strings.TrimSpace $value) -}}
-        {{- errorf "filetree: line %d: attribute %q must not be empty at %s" $lineNo $key $position -}}
-      {{- end -}}
-      {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
     {{- end -}}
   {{- end -}}
 
@@ -118,7 +120,8 @@
   {{- end -}}
   {{- $name := strings.TrimSpace (replace $escaped $hashEscape "#") -}}
   {{- if not $name -}}
-    {{- errorf "filetree: line %d has no entry name at %s" $lineNo $position -}}
+    {{- warnf "filetree: line %d has no entry name at %s; skipping the line" $lineNo $position -}}
+    {{- continue -}}
   {{- end -}}
 
   {{- /* link */ -}}
@@ -138,24 +141,29 @@
   {{- /* attribute validation */ -}}
   {{- $icon := index $attrs "icon" | default "" -}}
   {{- if and $icon (not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $icon)) -}}
-    {{- errorf "filetree: line %d: icon must be one Font Awesome class pair such as %q; got %q at %s" $lineNo "fa-solid fa-file-code" $icon $position -}}
+    {{- warnf "filetree: line %d: icon must be one Font Awesome class pair such as %q; got %q at %s; using the default icon" $lineNo "fa-solid fa-file-code" $icon $position -}}
+    {{- $icon = "" -}}
   {{- end -}}
   {{- $tone := index $attrs "tone" | default "" -}}
   {{- if and $tone (not (in $tones $tone)) -}}
-    {{- errorf "filetree: line %d: tone must be one of %s; got %q at %s" $lineNo (delimit $tones " | ") $tone $position -}}
+    {{- warnf "filetree: line %d: tone must be one of %s; got %q at %s; using neutral" $lineNo (delimit $tones " | ") $tone $position -}}
+    {{- $tone = "" -}}
   {{- end -}}
   {{- $type := index $attrs "type" | default "" -}}
   {{- if and $type (not (in (slice "dir" "file") $type)) -}}
-    {{- errorf "filetree: line %d: type must be dir or file; got %q at %s" $lineNo $type $position -}}
+    {{- warnf "filetree: line %d: type must be dir or file; got %q at %s; inferring it" $lineNo $type $position -}}
+    {{- $type = "" -}}
   {{- end -}}
   {{- $open := true -}}
   {{- $openSet := isset $attrs "open" -}}
   {{- if $openSet -}}
     {{- $openValue := index $attrs "open" -}}
     {{- if not (in (slice "true" "false") $openValue) -}}
-      {{- errorf "filetree: line %d: open must be true or false; got %q at %s" $lineNo $openValue $position -}}
+      {{- warnf "filetree: line %d: open must be true or false; got %q at %s; leaving it open" $lineNo $openValue $position -}}
+      {{- $openSet = false -}}
+    {{- else -}}
+      {{- $open = eq $openValue "true" -}}
     {{- end -}}
-    {{- $open = eq $openValue "true" -}}
   {{- end -}}
 
   {{- $nodes = $nodes | append (dict
@@ -174,7 +182,8 @@
 {{- end -}}
 
 {{- if not $nodes -}}
-  {{- errorf "filetree: the fence has no entries at %s" $position -}}
+  {{- /* Every line was blank or unparseable; the caller renders nothing. */ -}}
+  {{- warnf "filetree: the fence has no entries at %s; rendering nothing" $position -}}
 {{- end -}}
 
 {{- /* second pass: children, kind, row width */ -}}
@@ -196,7 +205,7 @@
     {{- end -}}
   {{- end -}}
   {{- if and $node.openSet (ne $kind "dir") -}}
-    {{- errorf "filetree: line %d: open is only valid on directories at %s" $node.line $position -}}
+    {{- warnf "filetree: line %d: open is only valid on directories at %s; ignoring it" $node.line $position -}}
   {{- end -}}
   {{- if $node.comment }}{{ $hasComments = true }}{{ end -}}
   {{- $width := add (add (mul $indentCh $node.depth) (strings.RuneCount $node.name)) $iconCh -}}

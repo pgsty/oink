@@ -19,3 +19,13 @@ module:
       target: static
     - source: ../tests/site/static
       target: static
+
+# Regression builds exercise taxonomy surfaces the published example does not
+# carry. Both keys override exampleSite/hugo.yaml wholesale: Hugo merges a
+# `--config a,b` list with the later file winning per key, so `disableKinds`
+# narrows here and the taxonomy map replaces Hugo's `tags`/`categories`
+# default (no fixture page uses either).
+disableKinds: [sitemap]
+taxonomies:
+  author: authors
+  series: series

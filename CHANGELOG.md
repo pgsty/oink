@@ -25,6 +25,28 @@ All notable changes to OINK are documented here. The project follows
   turns one page or, in a cascade, one section on or off; an article with no
   image renders nothing in either mode, because a section can carry the switch
   for posts that do not all carry art.
+- Multiple authors, with profiles and bylines, from one taxonomy declaration.
+  `taxonomies: {author: authors}` is the entire switch -- the theme adds no
+  parameter. An author's profile is the term page: `title` is the display
+  name, `description` the one-line introduction, the body the long one, and
+  the avatar whatever `featured-image-resolve.html` selects for that page, so
+  `images:` and a bundled portrait follow the same rules an article's featured
+  image follows and a bilingual profile is an `_index.zh.md` beside it. There
+  is deliberately no `data/authors` second authority to disagree with the
+  page. An article head renders portraits and linked names in the order the
+  page listed them -- `GetTerms` preserves the front matter sequence, so
+  `authors:` is both the set and the order -- a list row renders the names,
+  and the blog feed declares `xmlns:dc` and emits one `<dc:creator>` per
+  author per item beside the untouched site-level `managingEditor`. Names are
+  separated by CSS gap rather than punctuation, because a connector word is a
+  per-locale decision and there are 32 of them. A term a post names but no one
+  gave a profile page still bylines: link title, initial, archive link. The
+  0.4 `author:` string is untouched where `authors` is absent -- 853 pages
+  across the family sites carry it and 180 put Markdown in it, so that branch
+  renders byte for byte as it did and neither form warns about the other.
+  Because the byline is now the author surface, the generic taxonomy chip row
+  skips the reserved plurals `authors` and `series` unless a site names them
+  in `params.taxonomy.page_header`.
 - Upstream attribution in the page annotation. A site that vendors third-party
   documentation had to reimplement the notice itself: the two keys OINK
   shipped, `upstream_attribution` and `downstream_modified`, rendered a bare

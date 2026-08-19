@@ -219,7 +219,8 @@ def check_pager_outputs(public: Path) -> list[str]:
     blog_cases = {
         "blog/index.html": {"prev": None, "next": "/blog/typography/"},
         "blog/typography/index.html": {"prev": "/blog/", "next": "/blog/older/"},
-        "blog/older/index.html": {"prev": "/blog/typography/", "next": "/blog/release/"},
+        "blog/older/index.html": {"prev": "/blog/typography/", "next": "/blog/legacy-byline/"},
+        "blog/legacy-byline/index.html": {"prev": "/blog/older/", "next": "/blog/release/"},
     }
     for relative, expected in blog_cases.items():
         path = public / relative

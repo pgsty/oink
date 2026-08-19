@@ -51,6 +51,8 @@ ui_categories_title: Categories
 ui_category_title: Category
 ui_modules_title: Modules
 ui_module_title: Module
+ui_authors_title: Authors
+ui_author_title: Author
 ui_theme_toggle: Toggle color theme
 ui_language: Language
 ui_theme: Theme

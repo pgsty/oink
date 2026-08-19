@@ -1,8 +1,12 @@
 {{ define "main" -}}
+{{ if eq .Data.Plural "authors" -}}
+{{ partial "authors-profile.html" . }}
+{{ else -}}
 <div class="td-content td-shell-blog-index">
   <h1>{{ partial "taxonomy-label.html" (dict "page" . "key" .Data.Singular) }}: {{ .Title }}</h1>
   {{ with partial "content/render.html" . }}<div class="td-shell-term-summary">{{ . }}</div>{{ end }}
 </div>
+{{ end -}}
 <div class="td-blog-posts">
   <ul class="td-blog-posts-list">
     {{- range .Pages.ByDate.Reverse }}

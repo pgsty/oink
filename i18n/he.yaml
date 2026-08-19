@@ -300,3 +300,8 @@ post_upstream_notice: attribution
 post_upstream_history: change history
 post_translated: This page is a translation; the {{ .original }} governs.
 post_translated_original: original
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_authors_title: Authors
+ui_author_title: Author

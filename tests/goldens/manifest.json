@@ -36,6 +36,8 @@
     "markdown/book-chapter-one.md": "book/chapter-one/index.md",
     "html/home-landing.html": "index.html",
     "html/home-landing-zh.html": "zh/index.html",
+    "html/blog-legacy-byline.html": "blog/legacy-byline/index.html",
+    "html/authors-profile.html": "authors/vonng/index.html",
     "rss/blog.xml": "blog/index.xml",
     "llms/llms.txt": "llms.txt"
   }

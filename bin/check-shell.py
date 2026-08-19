@@ -307,6 +307,42 @@ def check_sources() -> list[str]:
             and "overflow-wrap: anywhere" in blog_styles
             and "forced-colors: active" in blog_styles,
             "blog card styles lost the grid, the 16:9 frame, the clamp, or forced colours", errors)
+
+    # Bylines. The 0.4 `author:` string is a fixed point: 853 pages across the
+    # family sites carry it and 180 of them put Markdown in it, so the legacy
+    # branch is compared as a literal, not paraphrased.
+    byline = (ROOT / "layouts/_partials/byline.html").read_text()
+    article = (ROOT / "layouts/blog/_td-content.html").read_text()
+    resolve = (ROOT / "layouts/_partials/authors-resolve.html").read_text()
+    rss = (ROOT / "layouts/blog/rss.xml").read_text()
+    chips = (ROOT / "layouts/_partials/taxonomy-terms-article-wrapper.html").read_text()
+    label = (ROOT / "layouts/_partials/taxonomy-label.html").read_text()
+    require('{{- partial "byline.html" (dict "page" .) }}' in article
+            and "td-byline" not in article,
+            "the blog article head no longer routes its byline through one renderer", errors)
+    require('{{ with $page.Params.author }}{{ T "post_byline_by" }} '
+            '<b>{{ . | markdownify }}</b> |{{ end}}' in byline
+            and '<div class="td-byline mb-4">' in byline,
+            "the 0.4 author string branch is no longer reproduced verbatim", errors)
+    require('isset .Site.Taxonomies "authors"' in resolve
+            and '.GetTerms "authors"' in resolve,
+            "author resolution is not gated on the site's own taxonomy declaration", errors)
+    body = resolve.split("*/ -}}", 1)[-1]
+    require('ui-param.html' not in body and ".Params." not in body,
+            "author resolution grew a theme parameter; the taxonomy is the whole switch", errors)
+    explicit = chips.split("page_header -}}", 1)[-1].split("{{ else -}}", 1)[0]
+    require('$reserved := slice "authors" "series"' in chips
+            and chips.count("if not (in $reserved $taxo)") == 2
+            and "$reserved" not in explicit,
+            "the reserved plurals are not excluded from exactly the two default chip paths "
+            "(an explicitly configured page_header must still render them)",
+            errors)
+    require('"author" "ui_author_title"' in label and '"authors" "ui_authors_title"' in label,
+            "the taxonomy label dictionary lost its author entries", errors)
+    require('xmlns:dc="http://purl.org/dc/elements/1.1/"' in rss
+            and "<dc:creator>" in rss
+            and "managingEditor" in rss,
+            "the blog feed lost per-item dc:creator or its site-level editor", errors)
     errors += check_featured_image_sources()
     return errors
 
@@ -468,6 +504,57 @@ def build_example(hugo: str) -> list[str]:
                     and 'data-td-page-actions' in blog_source
                     and 'td-shell-topline--actions-only' in blog_source,
                     "blog root did not hide its breadcrumb while retaining actions", errors)
+            require('<span class="td-byline td-byline--row">' in blog_source
+                    and 'td-byline__avatar' not in blog_source,
+                    "the blog list row lost its author names, or grew portraits it has no "
+                    "room for", errors)
+
+        # The 0.4 string byline, rendered against a site that *does* declare the
+        # taxonomy. Compared as an exact block, tabs included: the whole point
+        # of the fixture is that this markup cannot drift.
+        legacy = public / "blog/legacy-byline/index.html"
+        require(legacy.is_file(), "legacy byline fixture page is missing", errors)
+        if legacy.is_file():
+            legacy_source = legacy.read_text()
+            require(
+                '\t<div class="td-byline mb-4">\n'
+                '\t\tBy <b><a href="https://vonng.com">Ruohang Feng</a> '
+                '(<a href="https://github.com/Vonng">@Vonng</a>) | '
+                '<a href="https://vonng.com/wechat">WeChat</a></b> |\n'
+                '\t\t<time datetime="2026-08-09" class="text-body-secondary">'
+                'Sunday, August 09, 2026</time>\n'
+                '\t</div>' in legacy_source,
+                "the 0.4 `author` string byline changed shape", errors)
+            require("td-byline--authors" not in legacy_source,
+                    "a page with no `authors` fell into the taxonomy byline", errors)
+
+        article = public / "blog/typography/index.html"
+        require(article.is_file(), "authors byline fixture page is missing", errors)
+        if article.is_file():
+            article_source = article.read_text()
+            order = [article_source.find('href="/authors/vonng/"'),
+                     article_source.find('href="/authors/andy/"')]
+            require(all(index >= 0 for index in order) and order == sorted(order),
+                    "the article byline does not follow the front matter author order", errors)
+            require("taxo-authors" not in article_source,
+                    "the reserved `authors` plural still renders a generic chip row", errors)
+
+        profile = public / "authors/vonng/index.html"
+        require(profile.is_file(), "author profile fixture page is missing", errors)
+        if profile.is_file():
+            profile_source = profile.read_text()
+            require('<h1 class="td-author-profile__name">Ruohang Feng</h1>' in profile_source
+                    and 'class="td-author-profile__avatar"' in profile_source
+                    and 'class="td-blog-posts-list' in profile_source,
+                    "the author term page is not a profile above its archive", errors)
+
+        feed = public / "blog/index.xml"
+        require(feed.is_file(), "blog feed fixture is missing", errors)
+        if feed.is_file():
+            feed_source = feed.read_text()
+            require('xmlns:dc="http://purl.org/dc/elements/1.1/"' in feed_source
+                    and "<dc:creator>Ruohang Feng</dc:creator>" in feed_source,
+                    "the blog feed lost its per-item dc:creator", errors)
 
         docs = public / "docs/index.html"
         require(docs.is_file(), "docs root fixture is missing", errors)

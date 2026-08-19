@@ -365,8 +365,28 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
         stderr=subprocess.STDOUT,
         check=False,
     )
-    require(result.returncode != 0, f"invalid {name} command unexpectedly built")
+    # A malformed command warns and is dropped; only an unsafe URL still stops
+    # the build, because that is configuration trying to put an opaque scheme
+    # behind a Palette row rather than an author mistyping a label.
+    fatal = "unsafe URL" in expected
     require(expected in result.stdout, f"invalid {name} build missed {expected!r}:\n{result.stdout}")
+    if fatal:
+        require(result.returncode != 0, f"invalid {name} command unexpectedly built")
+        return
+    require(result.returncode == 0,
+            f"invalid {name} command stopped the build instead of warning:\n{result.stdout}")
+    strict = subprocess.run(
+        [
+            "hugo", "--source", str(site), "--themesDir", str(ROOT.parent),
+            "--destination", str(output) + "-strict",
+            "--cacheDir", str(workspace / "cache-invalid-strict"),
+            "--panicOnWarning",
+        ],
+        cwd=site,
+        env={**os.environ, "HUGO_ENVIRONMENT": "development"},
+        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    )
+    require(strict.returncode != 0, f"invalid {name} command survived --panicOnWarning")
 
 
 def main() -> int:

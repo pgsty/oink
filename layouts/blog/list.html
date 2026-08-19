@@ -11,8 +11,10 @@
 {{/* The form of the index is the site's decision, not the reader's: rows by
      default, cards where the posts lead with an image. Both forms group by
      year and paginate the same groups, so only the group body differs. */ -}}
-{{ $mode := (partial "ui-param.html" (dict "page" . "key" "blog_index")) | default "list" -}}
-{{ if not (in (slice "list" "cards") $mode) }}{{ errorf "invalid params.ui.blog_index %q at %s (allowed: list | cards)" $mode .Path }}{{ end -}}
+{{ $mode := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "blog_index")) "kind" "enum"
+    "allowed" (slice "list" "cards") "fallback" "list"
+    "key" "params.ui.blog_index" "where" .Path) -}}
 {{ $columns := (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) | default 3 -}}
 
 {{ if .Pages -}}

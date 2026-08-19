@@ -16,10 +16,7 @@
   {{ $navWrap := eq (partial "ui-param.html" (dict "page" . "key" "sidebar_item_overflow")) "wrap" -}}
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
   {{ $navbar := partial "shell/navbar-enabled.html" . -}}
-  {{ $pageWidth := .Param "page_width" | default "normal" -}}
-  {{ if not (in (slice "normal" "wide" "full") $pageWidth) -}}
-    {{ errorf "invalid params.page_width %q at %s (allowed: normal | wide | full)" $pageWidth .Path -}}
-  {{ end -}}
+  {{ $pageWidth := partial "shell/page-width.html" . -}}
   <body class="td-{{ .Kind }} td-swagger td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
     {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}

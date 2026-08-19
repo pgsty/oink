@@ -1,27 +1,40 @@
-{{- /* Reject malformed configuration before normalization can stringify it
-     into apparently valid command data. Localized records may remain partial. */ -}}
+{{- /* Check one configured command's shape before normalization can stringify
+     a malformed value into apparently valid command data. Localized records
+     may remain partial, so only the fields that are present are checked.
+
+     A malformed record warns and returns false; the caller drops it. One bad
+     entry costs its own row in the Palette, not the whole build.
+
+     Input: dict "record" <any> "scope" <string>. Returns: bool. */ -}}
 {{- $record := .record -}}
 {{- $scope := .scope | default "command" -}}
+{{- $valid := true -}}
 {{- if not (reflect.IsMap $record) -}}
-  {{- errorf "%s must be a map" $scope -}}
-{{- end -}}
-{{- range slice "id" "title" "description" "icon" "url" "action" -}}
-  {{- if isset $record . -}}
-    {{- $value := index $record . -}}
-    {{- if ne (printf "%T" $value) "string" -}}
-      {{- errorf "%s field %q must be a string" $scope . -}}
+  {{- warnf "%s must be a map; got %v; dropping it" $scope $record -}}
+  {{- $valid = false -}}
+{{- else -}}
+  {{- range slice "id" "title" "description" "icon" "url" "action" -}}
+    {{- if isset $record . -}}
+      {{- $value := index $record . -}}
+      {{- if ne (printf "%T" $value) "string" -}}
+        {{- warnf "%s field %q must be a string; got %v; dropping the command" $scope . $value -}}
+        {{- $valid = false -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if isset $record "keywords" -}}
+    {{- $keywords := index $record "keywords" -}}
+    {{- if not (reflect.IsSlice $keywords) -}}
+      {{- warnf "%s field %q must be an array of strings; got %v; dropping the command" $scope "keywords" $keywords -}}
+      {{- $valid = false -}}
+    {{- else -}}
+      {{- range $keywords -}}
+        {{- if ne (printf "%T" .) "string" -}}
+          {{- warnf "%s field %q must be an array of strings; got %v; dropping the command" $scope "keywords" . -}}
+          {{- $valid = false -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if isset $record "keywords" -}}
-  {{- $keywords := index $record "keywords" -}}
-  {{- if not (reflect.IsSlice $keywords) -}}
-    {{- errorf "%s field %q must be an array of strings" $scope "keywords" -}}
-  {{- end -}}
-  {{- range $keywords -}}
-    {{- if ne (printf "%T" .) "string" -}}
-      {{- errorf "%s field %q must be an array of strings" $scope "keywords" -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
-{{- return true -}}
+{{- return $valid -}}

@@ -1,16 +1,8 @@
 {{- /* Resolve the reading-time switch: params.ui.reading_time (boolean, off by
      default) with a front matter reading_time override. */ -}}
-{{- $enabled := false -}}
-{{- if isset .Site.Params.ui "reading_time" -}}
-  {{- $enabled = index .Site.Params.ui "reading_time" -}}
-  {{- if ne (printf "%T" $enabled) "bool" -}}
-    {{- errorf "params.ui.reading_time must be a boolean; got %v" $enabled -}}
-  {{- end -}}
-{{- end -}}
-{{- if isset .Params "reading_time" -}}
-  {{- $enabled = .Params.reading_time -}}
-  {{- if ne (printf "%T" $enabled) "bool" -}}
-    {{- errorf "front matter reading_time must be a boolean; got %v at %s" $enabled .Path -}}
-  {{- end -}}
-{{- end -}}
-{{- return $enabled -}}
+{{- $enabled := partial "validate.html" (dict
+    "value" (index .Site.Params.ui "reading_time") "kind" "bool"
+    "fallback" false "key" "params.ui.reading_time") -}}
+{{- return partial "validate.html" (dict
+    "value" (index .Params "reading_time") "kind" "bool"
+    "fallback" $enabled "key" "front matter reading_time" "where" .Path) -}}

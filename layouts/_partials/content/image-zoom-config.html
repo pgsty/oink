@@ -1,22 +1,10 @@
 {{- /* Resolve and validate the Image Zoom switch without losing explicit false.
      Site: params.ui.image_zoom (boolean). Page: front matter image_zoom
      (boolean), the site key with its ui. prefix dropped. */ -}}
-{{- $enabled := false -}}
-
-{{- if isset .Site.Params.ui "image_zoom" -}}
-  {{- $value := index .Site.Params.ui "image_zoom" -}}
-  {{- if ne (printf "%T" $value) "bool" -}}
-    {{- errorf "params.ui.image_zoom must be a boolean; got %v" $value -}}
-  {{- end -}}
-  {{- $enabled = $value -}}
-{{- end -}}
-
-{{- if isset .Params "image_zoom" -}}
-  {{- $value := index .Params "image_zoom" -}}
-  {{- if ne (printf "%T" $value) "bool" -}}
-    {{- errorf "front matter image_zoom must be a boolean; got %v at %s" $value .Path -}}
-  {{- end -}}
-  {{- $enabled = $value -}}
-{{- end -}}
-
+{{- $enabled := partial "validate.html" (dict
+    "value" (index .Site.Params.ui "image_zoom") "kind" "bool"
+    "fallback" false "key" "params.ui.image_zoom") -}}
+{{- $enabled = partial "validate.html" (dict
+    "value" (index .Params "image_zoom") "kind" "bool"
+    "fallback" $enabled "key" "front matter image_zoom" "where" .Path) -}}
 {{- return (dict "enable" $enabled) -}}

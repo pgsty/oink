@@ -12,25 +12,48 @@
 {{- $languageParams := site.Language.Params | default dict -}}
 {{- with $languageParams.ui }}{{ with .command_palette }}{{ with .commands }}{{ $currentCommands = . }}{{ end }}{{ end }}{{ end -}}
 {{- if not $currentCommands }}{{ with site.Params.ui.command_palette }}{{ with .commands }}{{ $currentCommands = . }}{{ end }}{{ end }}{{ end -}}
-{{- if and $defaultCommands (not (reflect.IsSlice $defaultCommands)) }}{{ errorf "params.ui.command_palette.commands must be an array" }}{{ end -}}
-{{- if and $currentCommands (not (reflect.IsSlice $currentCommands)) }}{{ errorf "params.ui.command_palette.commands must be an array" }}{{ end -}}
+{{- if and $defaultCommands (not (reflect.IsSlice $defaultCommands)) -}}
+  {{- warnf "params.ui.command_palette.commands must be an array; got %v; ignoring it" $defaultCommands -}}
+  {{- $defaultCommands = slice -}}
+{{- end -}}
+{{- if and $currentCommands (not (reflect.IsSlice $currentCommands)) -}}
+  {{- warnf "params.ui.command_palette.commands must be an array; got %v; ignoring it" $currentCommands -}}
+  {{- $currentCommands = slice -}}
+{{- end -}}
 {{- $records := dict -}}
 {{- $order := slice -}}
 {{- range $defaultCommands -}}
   {{- $validated := partial "actions/validate-command.html" (dict "record" . "scope" "command") -}}
-  {{- $id := .id | default "" | printf "%v" -}}
-  {{- if not (findRE `^[a-z][a-z0-9_-]*$` $id) }}{{ errorf "invalid command id %q" $id }}{{ end -}}
-  {{- if isset $records $id }}{{ errorf "duplicate command id %q" $id }}{{ end -}}
-  {{- $records = merge $records (dict $id .) -}}
-  {{- $order = $order | append $id -}}
+  {{- $id := "" -}}
+  {{- if $validated }}{{ $id = .id | default "" | printf "%v" }}{{ end -}}
+  {{- if and $validated (not (findRE `^[a-z][a-z0-9_-]*$` $id)) -}}
+    {{- warnf "invalid command id %q (allowed: lowercase letters, digits, - and _, starting with a letter); dropping the command" $id -}}
+    {{- $validated = false -}}
+  {{- end -}}
+  {{- if and $validated (isset $records $id) -}}
+    {{- warnf "duplicate command id %q; dropping the later one" $id -}}
+    {{- $validated = false -}}
+  {{- end -}}
+  {{- if $validated -}}
+    {{- $records = merge $records (dict $id .) -}}
+    {{- $order = $order | append $id -}}
+  {{- end -}}
 {{- end -}}
 {{- if ne site.Language.Lang $defaultSite.Language.Lang -}}
   {{- $localizedSeen := dict -}}
   {{- range $currentCommands -}}
     {{- $validated := partial "actions/validate-command.html" (dict "record" . "scope" "localized command") -}}
-    {{- $id := .id | default "" | printf "%v" -}}
-    {{- if not (findRE `^[a-z][a-z0-9_-]*$` $id) }}{{ errorf "invalid command id %q" $id }}{{ end -}}
-    {{- if isset $localizedSeen $id }}{{ errorf "duplicate localized command id %q" $id }}{{ end -}}
+    {{- $id := "" -}}
+    {{- if $validated }}{{ $id = .id | default "" | printf "%v" }}{{ end -}}
+    {{- if and $validated (not (findRE `^[a-z][a-z0-9_-]*$` $id)) -}}
+      {{- warnf "invalid localized command id %q; dropping the command" $id -}}
+      {{- $validated = false -}}
+    {{- end -}}
+    {{- if and $validated (isset $localizedSeen $id) -}}
+      {{- warnf "duplicate localized command id %q; dropping the later one" $id -}}
+      {{- $validated = false -}}
+    {{- end -}}
+    {{- if $validated -}}
     {{- $localizedSeen = merge $localizedSeen (dict $id true) -}}
     {{- $base := index $records $id | default dict -}}
     {{- if not (isset $records $id) }}{{ $order = $order | append $id }}{{ end -}}
@@ -45,24 +68,43 @@
     {{- range $existingID, $existingRecord := $records }}{{ $recordScratch.Set $existingID $existingRecord }}{{ end -}}
     {{- $recordScratch.Set $id $merged -}}
     {{- $records = $recordScratch.Values -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $commands := slice -}}
 {{- range $order -}}
   {{- $id := . -}}
   {{- $record := index $records $id -}}
+  {{- $keep := true -}}
   {{- range $key, $_ := $record -}}
-    {{- if not (in $allowedKeys $key) }}{{ errorf "command %q uses unsupported key %q" $id $key }}{{ end -}}
+    {{- if not (in $allowedKeys $key) -}}
+      {{- warnf "command %q uses unsupported key %q; dropping the command" $id $key -}}
+      {{- $keep = false -}}
+    {{- end -}}
   {{- end -}}
-  {{- if in $allowedActions $id }}{{ errorf "command id %q is reserved by a built-in action" $id }}{{ end -}}
+  {{- if in $allowedActions $id -}}
+    {{- warnf "command id %q is reserved by a built-in action; dropping the command" $id -}}
+    {{- $keep = false -}}
+  {{- end -}}
   {{- $rawURL := $record.url | default "" | printf "%v" -}}
   {{- $url := strings.TrimSpace $rawURL -}}
   {{- $action := $record.action | default "" | printf "%v" | strings.TrimSpace -}}
-  {{- if eq (ne $url "") (ne $action "") }}{{ errorf "command %q must define exactly one of url or action" $id }}{{ end -}}
-  {{- if and $action (not (in $allowedActions $action)) }}{{ errorf "command %q references unsupported action %q" $id $action }}{{ end -}}
+  {{- if eq (ne $url "") (ne $action "") -}}
+    {{- warnf "command %q must define exactly one of url or action; dropping the command" $id -}}
+    {{- $keep = false -}}
+  {{- end -}}
+  {{- if and $action (not (in $allowedActions $action)) -}}
+    {{- warnf "command %q references unsupported action %q; dropping the command" $id $action -}}
+    {{- $keep = false -}}
+  {{- end -}}
+  {{- if $keep -}}
   {{- if $url -}}
     {{- $parsed := urls.Parse $url -}}
     {{- $scheme := lower $parsed.Scheme -}}
+    {{- /* The one hard failure left here. An unsafe scheme in configuration
+         is the reserved case: it is not a typo that degrades a page, it is
+         an attempt to put executable or opaque content behind a Palette
+         row, and it should stop rather than be quietly dropped. */ -}}
     {{- if or (ne $rawURL $url) (findRE `[\x00-\x20\x7f]` $url) (strings.HasPrefix $url "//") (findRE `\\` $url) (and $scheme (not (in (slice "http" "https") $scheme))) -}}
       {{- errorf "command %q uses unsafe URL %q" $id $url -}}
     {{- end -}}
@@ -87,5 +129,6 @@
     "url" $url "action" $action "target" $target "available" true
     "disabledReason" "" "placements" (dict "page" false "palette" true)
   ) -}}
+  {{- end -}}
 {{- end -}}
 {{- return $commands -}}

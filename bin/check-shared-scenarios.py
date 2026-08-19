@@ -37,6 +37,7 @@ def build(
     layout_dir: Path | None = None,
     config: Path | None = None,
     env: dict[str, str] | None = None,
+    panic_on_warning: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [
         hugo,
@@ -51,6 +52,8 @@ def build(
         "--themesDir",
         str(ROOT.parent),
     ]
+    if panic_on_warning:
+        command.append("--panicOnWarning")
     if layout_dir is not None:
         command.extend(["--layoutDir", str(layout_dir)])
     if source == EXAMPLE:
@@ -262,7 +265,8 @@ def check_sources() -> list[str]:
     for marker in (
         '.Site.Params.ui "navbar_autohide"',
         '.Params "navbar_autohide"',
-        "navbar_autohide must be a boolean",
+        '"key" "params.ui.navbar_autohide"',
+        '"fallback" false',
     ):
         require(
             marker in sources["navbar_autohide"],
@@ -307,7 +311,7 @@ def check_invalid_config(hugo: str) -> list[str]:
         (
             "navbar-autohide",
             "    navbar_autohide: sometimes\n",
-            "navbar_autohide must be a boolean",
+            "params.ui.navbar_autohide must be true or false",
         ),
         (
             "feedback-enable",
@@ -317,7 +321,7 @@ def check_invalid_config(hugo: str) -> list[str]:
         (
             "annotation-value",
             "    annotation: sometimes\n",
-            "params.ui.annotation must be a boolean",
+            "params.ui.annotation must be true or false",
         ),
         (
             "annotation-legacy-map",
@@ -332,8 +336,18 @@ def check_invalid_config(hugo: str) -> list[str]:
             write(override, "params:\n  ui:\n" + value)
             result = build(hugo, EXAMPLE, temp_path / "public", config=override)
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid {name} config unexpectedly built", errors)
             require(expected in output, f"invalid {name} config did not report {expected!r}", errors)
+            # A renamed key still stops the build; a bad value warns, falls
+            # back, and only fails where warnings are fatal.
+            if "legacy" in name:
+                require(result.returncode != 0, f"legacy {name} config unexpectedly built", errors)
+            else:
+                require(result.returncode == 0,
+                        f"invalid {name} config stopped the build instead of warning", errors)
+                strict = build(hugo, EXAMPLE, temp_path / "strict", config=override,
+                               panic_on_warning=True)
+                require(strict.returncode != 0,
+                        f"invalid {name} config survived --panicOnWarning", errors)
 
     with tempfile.TemporaryDirectory(prefix="oink-components-invalid-search-serve-") as temp:
         temp_path = Path(temp)
@@ -342,8 +356,12 @@ def check_invalid_config(hugo: str) -> list[str]:
         result = build(hugo, EXAMPLE, temp_path / "public", config=override)
         output = result.stdout + result.stderr
         expected = "params.offline_search_on_serve must be a boolean"
-        require(result.returncode != 0, "invalid offline_search_on_serve config unexpectedly built", errors)
         require(expected in output, f"invalid offline_search_on_serve config did not report {expected!r}", errors)
+        require(result.returncode == 0,
+                "invalid offline_search_on_serve stopped the build instead of warning", errors)
+        strict = build(hugo, EXAMPLE, temp_path / "strict", config=override, panic_on_warning=True)
+        require(strict.returncode != 0,
+                "invalid offline_search_on_serve survived --panicOnWarning", errors)
 
     with tempfile.TemporaryDirectory(prefix="oink-components-search-hook-") as temp:
         temp_path = Path(temp)

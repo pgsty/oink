@@ -292,9 +292,9 @@ cascade:
     )
 
 
-def run_site(hugo: str, source: Path) -> subprocess.CompletedProcess[str]:
+def run_site(hugo: str, source: Path, *extra: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [hugo, "--source", str(source), "--logLevel", "warn"],
+        [hugo, "--source", str(source), "--logLevel", "warn", *extra],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -500,8 +500,16 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
             )
             result = run_site(hugo, source)
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid pager case {name} unexpectedly built", errors)
             require(expected in output, f"invalid pager case {name} did not report {expected!r}", errors)
+            # A renamed key still stops the build -- the migration boundary is
+            # unchanged. An out-of-range value warns and falls back.
+            if name.startswith("legacy-"):
+                require(result.returncode != 0, f"legacy pager case {name} unexpectedly built", errors)
+            else:
+                require(result.returncode == 0,
+                        f"invalid pager case {name} stopped the build instead of warning", errors)
+                require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                        f"invalid pager case {name} survived --panicOnWarning", errors)
     return errors
 
 

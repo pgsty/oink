@@ -18,8 +18,9 @@
      default means no bar. The page key is the site key without its `ui.`
      prefix, so a blog section cascade scopes the bar to the pages that want
      it, a page's own list replaces the inherited one, and `share: false`
-     turns one page's bar off. An unknown entry fails the build: a silently
-     dropped target looks exactly like one the reader's platform lacks.
+     turns one page's bar off. An unknown entry warns and is dropped: the
+     name is said out loud so it is not mistaken for a platform the
+     reader's device lacks, but a typo does not stop a dev server.
 
      Trust boundary -----------------------------------------------------
 
@@ -45,13 +46,14 @@
 {{- if eq (printf "%T" $value) "bool" -}}
   {{- /* `false` is the opt-out; `true` cannot say which platforms. */ -}}
   {{- if $value -}}
-    {{- errorf "params.ui.share is the list of share targets, not a switch (allowed: %s); use `share: false` to turn one page's bar off, at %s" $names $path -}}
+    {{- warnf "params.ui.share is the list of share targets, not a switch (allowed: %s); use `share: false` to turn one page's bar off; rendering no bar at %s" $names $path -}}
   {{- end -}}
 {{- else if $value -}}
-  {{- if not (reflect.IsSlice $value) -}}
-    {{- errorf "params.ui.share must be a list of share targets (allowed: %s); got %v at %s" $names $value $path -}}
+  {{- if reflect.IsSlice $value -}}
+    {{- $ids = $value -}}
+  {{- else -}}
+    {{- warnf "params.ui.share must be a list of share targets (allowed: %s); got %v; rendering no bar at %s" $names $value $path -}}
   {{- end -}}
-  {{- $ids = $value -}}
 {{- end -}}
 
 {{- /* Only a page of authored content is worth handing to someone: a list, a
@@ -84,8 +86,8 @@
   -}}
   {{- range $id := $ids -}}
     {{- if not (in $allowed $id) -}}
-      {{- errorf "invalid params.ui.share entry %q at %s (allowed: %s)" $id $path $names -}}
-    {{- end -}}
+      {{- warnf "invalid params.ui.share entry %q at %s (allowed: %s); dropping it" $id $path $names -}}
+    {{- else -}}
     {{- $entry := index $catalog $id -}}
     {{- $href := "" -}}
     {{- if eq $entry.form "ut" }}{{ $href = printf $entry.template $url $title -}}
@@ -98,6 +100,7 @@
       "url" $href
       "blank" (hasPrefix $href "https://")
       "action" (cond (eq $id "copy") "copy_link" "")) -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 

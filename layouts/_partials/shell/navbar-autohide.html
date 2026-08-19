@@ -8,7 +8,7 @@
 {{- if isset .Site.Params.ui "navbar_autohide" }}{{ $autohide = .Site.Params.ui.navbar_autohide }}{{ end -}}
 {{- if .IsHome }}{{ $autohide = false }}{{ end -}}
 {{- if isset .Params "navbar_autohide" }}{{ $autohide = .Params.navbar_autohide }}{{ end -}}
-{{- if ne (printf "%T" $autohide) "bool" -}}
-  {{- errorf "params.ui.navbar_autohide must be a boolean at %s" .Path -}}
-{{- end -}}
+{{- $autohide = partial "validate.html" (dict
+    "value" $autohide "kind" "bool" "fallback" false
+    "key" "params.ui.navbar_autohide" "where" .Path) -}}
 {{- return $autohide -}}

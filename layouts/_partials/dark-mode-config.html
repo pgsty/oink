@@ -25,16 +25,18 @@
     {{- $enable := index $raw "enable" -}}
     {{- $showMenu := index $raw "show_menu" -}}
     {{- if and (ne $enable nil) (ne (printf "%T" $enable) "bool") -}}
-      {{- errorf "params.ui.dark_mode.enable must be a boolean" -}}
+      {{- warnf "params.ui.dark_mode.enable must be a boolean; got %v; ignoring it" $enable -}}
+      {{- $enable = nil -}}
     {{- end -}}
     {{- if and (ne $showMenu nil) (ne (printf "%T" $showMenu) "bool") -}}
-      {{- errorf "params.ui.dark_mode.show_menu must be a boolean" -}}
+      {{- warnf "params.ui.dark_mode.show_menu must be a boolean; got %v; using false" $showMenu -}}
+      {{- $showMenu = false -}}
     {{- end -}}
     {{- $showMenu = eq $showMenu true -}}
     {{- if eq $enable nil }}{{ $enable = $showMenu }}{{ end -}}
     {{- $config = dict "enable" $enable "showMenu" (and $showMenu $enable) -}}
   {{- else -}}
-    {{- errorf "params.ui.dark_mode must be a boolean or a map with enable and show_menu" -}}
+    {{- warnf "params.ui.dark_mode must be a boolean or a map with enable and show_menu; got %v; using false" $raw -}}
   {{- end -}}
 {{- end -}}
 

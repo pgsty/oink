@@ -31,6 +31,7 @@ def build(
     hugo: str,
     source: Path,
     destination: Path,
+    *extra: str,
 ) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
@@ -43,6 +44,7 @@ def build(
             str(ROOT.parent),
             "--logLevel",
             "warn",
+            *extra,
         ],
         cwd=ROOT,
         capture_output=True,
@@ -651,8 +653,17 @@ def check_invalid_components(hugo: str) -> list[str]:
                 config.write_text(config.read_text(encoding="utf-8").replace("params:\n", "params:\n" + extra_params), encoding="utf-8")
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid Book config {name} unexpectedly built", errors)
             require(expected in output, f"invalid Book config {name} did not report {expected!r}", errors)
+            # A renamed key still stops the build; an out-of-range value warns
+            # and falls back, and only --panicOnWarning turns that into failure.
+            if name.startswith("legacy-"):
+                require(result.returncode != 0, f"legacy Book config {name} unexpectedly built", errors)
+            else:
+                require(result.returncode == 0,
+                        f"invalid Book config {name} stopped the build instead of warning", errors)
+                strict = build(hugo, source, source / "strict", "--panicOnWarning")
+                require(strict.returncode != 0,
+                        f"invalid Book config {name} survived --panicOnWarning", errors)
     return errors
 
 

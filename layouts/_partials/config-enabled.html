@@ -5,20 +5,23 @@
        plantuml: false            bare boolean
        plantuml: { enable: true } map with an `enable` member
 
+     Anything else warns and resolves to `false`. An opt-in feature that cannot
+     read its own switch is off, which is the state the theme ships anyway;
+     `--panicOnWarning` still turns the typo into a failure where it counts.
+
      Input: dict "value" <raw parameter> "key" "params.<name>".
-     Returns a boolean; anything else fails the build. */ -}}
+     Returns: bool. */ -}}
 {{- $value := .value -}}
 {{- $enabled := false -}}
 {{- if eq (printf "%T" $value) "bool" -}}
   {{- $enabled = $value -}}
 {{- else if reflect.IsMap $value -}}
   {{- if isset $value "enable" -}}
-    {{- $enabled = index $value "enable" -}}
-    {{- if ne (printf "%T" $enabled) "bool" -}}
-      {{- errorf "%s.enable must be a boolean; got %v" .key $enabled -}}
-    {{- end -}}
+    {{- $enabled = partial "validate.html" (dict
+        "value" (index $value "enable") "kind" "bool" "fallback" false
+        "key" (printf "%s.enable" .key)) -}}
   {{- end -}}
 {{- else if ne $value nil -}}
-  {{- errorf "%s must be a boolean or a map with enable; got %v" .key $value -}}
+  {{- warnf "%s must be a boolean or a map with enable; got %v -- using false" .key $value -}}
 {{- end -}}
 {{- return $enabled -}}

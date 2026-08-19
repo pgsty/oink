@@ -4,7 +4,8 @@
 {{ $hasGoogleSearch := ne (.Site.Params.gcs_engine_id | default "") "" -}}
 {{ $markmapEnabled := .Site.Params.markmap | default false -}}
 {{ if ne (printf "%T" $markmapEnabled) "bool" -}}
-  {{ errorf "params.markmap must be a boolean; got %v" $markmapEnabled -}}
+  {{ warnf "params.markmap must be a boolean; got %v; using false" $markmapEnabled -}}
+  {{ $markmapEnabled = false -}}
 {{ end -}}
 {{ $plantumlEnabled := partial "config-enabled.html" (dict "value" .Site.Params.plantuml "key" "params.plantuml") -}}
 {{ $drawioEnabled := partial "config-enabled.html" (dict "value" .Site.Params.drawio "key" "params.drawio") -}}
@@ -14,7 +15,8 @@
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{ $keyboardNavParam := (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) -}}
 {{ if and (ne $keyboardNavParam nil) (ne (printf "%T" $keyboardNavParam) "bool") -}}
-  {{ errorf "params.ui.keyboard_nav must be a boolean; got %v" $keyboardNavParam -}}
+  {{ warnf "params.ui.keyboard_nav must be a boolean; got %v; using true" $keyboardNavParam -}}
+  {{ $keyboardNavParam = nil -}}
 {{ end -}}
 {{/* Global action keys (language/theme/navbar/search) also belong on landing
      and ordinary pages; keyboard-nav.js keeps tree, pager, and zen bindings

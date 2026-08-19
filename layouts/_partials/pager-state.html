@@ -5,20 +5,24 @@
   {{- $types = index $page.Site.Params.ui "pager_types" -}}
 {{- end -}}
 {{- if not (reflect.IsSlice $types) -}}
-  {{- errorf "params.ui.pager_types must be an array of docs, book, and/or blog" -}}
+  {{- warnf "params.ui.pager_types must be an array of docs, book, and/or blog; got %v; using the default [docs book blog]" $types -}}
+  {{- $types = slice "docs" "book" "blog" -}}
 {{- end -}}
+{{- $keptTypes := slice -}}
 {{- range $types -}}
   {{- if or (ne (printf "%T" .) "string") (not (in (slice "docs" "book" "blog") .)) -}}
-    {{- errorf "invalid params.ui.pager_types value %q (allowed: docs | book | blog)" . -}}
+    {{- warnf "invalid params.ui.pager_types value %q (allowed: docs | book | blog); dropping it" . -}}
+  {{- else -}}
+    {{- $keptTypes = $keptTypes | append . -}}
   {{- end -}}
 {{- end -}}
+{{- $types = $keptTypes -}}
 
 {{- $enabled := and (eq $format "html") (in $types $page.Type) -}}
 {{- if isset $page.Params "pager" -}}
   {{- if ne (printf "%T" $page.Params.pager) "bool" -}}
-    {{- errorf "front matter pager must be a boolean at %s" $page.Path -}}
-  {{- end -}}
-  {{- if not $page.Params.pager }}{{ $enabled = false }}{{ end -}}
+    {{- warnf "front matter pager must be a boolean at %s; ignoring the override" $page.Path -}}
+  {{- else if not $page.Params.pager }}{{ $enabled = false }}{{ end -}}
 {{- end -}}
 
 {{- $prev := false -}}

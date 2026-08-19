@@ -169,6 +169,7 @@ def build_gate_case(
     site_value: str | None,
     page_value: str | None,
     body: str,
+    panic_on_warning: bool = False,
 ) -> tuple[subprocess.CompletedProcess[str], str]:
     with tempfile.TemporaryDirectory(prefix="oink-image-zoom-gate-") as temp:
         site = Path(temp)
@@ -181,7 +182,7 @@ def build_gate_case(
             '<rect width="64" height="40" fill="#1677ff"/></svg>\n'
         )
         destination = site / "public"
-        result = run_hugo(
+        arguments = [
             hugo,
             "--source",
             str(site),
@@ -191,7 +192,10 @@ def build_gate_case(
             str(destination),
             "--logLevel",
             "warn",
-        )
+        ]
+        if panic_on_warning:
+            arguments.append("--panicOnWarning")
+        result = run_hugo(*arguments)
         page = ""
         output = destination / "docs/index.html"
         if result.returncode == 0 and output.exists():
@@ -223,9 +227,9 @@ def check_config_matrix(hugo: str) -> list[str]:
         require(actual == expected_zoom, f"Zoom config case {name} resolved to {actual}", errors)
 
     invalid = (
-        ("site-string", '"true"', None, "params.ui.image_zoom must be a boolean"),
-        ("site-number", "1", None, "params.ui.image_zoom must be a boolean"),
-        ("page-string", None, '"false"', "front matter image_zoom must be a boolean"),
+        ("site-string", '"true"', None, "params.ui.image_zoom must be true or false"),
+        ("site-number", "1", None, "params.ui.image_zoom must be true or false"),
+        ("page-string", None, '"false"', "front matter image_zoom must be true or false"),
         ("site-legacy-map", "\n      enable: true", None, "params.ui.image_zoom.enable was flattened"),
         ("page-legacy-map", None, "\nparams:\n  ui:\n    image_zoom:\n      enable: false", "front matter ui.image_zoom is not a page key: use image_zoom"),
     )
@@ -237,8 +241,23 @@ def check_config_matrix(hugo: str) -> list[str]:
             body="No image required.\n",
         )
         output = result.stdout + result.stderr
-        require(result.returncode != 0, f"invalid Zoom config {name} unexpectedly built", errors)
         require(expected in output, f"invalid Zoom config {name} did not report its boolean path", errors)
+        # A renamed key still stops the build; a bad value warns and Zoom stays
+        # off, which is the shipped default anyway.
+        if "legacy" in name:
+            require(result.returncode != 0, f"legacy Zoom config {name} unexpectedly built", errors)
+        else:
+            require(result.returncode == 0,
+                    f"invalid Zoom config {name} stopped the build instead of warning", errors)
+            strict, _ = build_gate_case(
+                hugo,
+                site_value=site_value,
+                page_value=page_value,
+                body="No image required.\n",
+                panic_on_warning=True,
+            )
+            require(strict.returncode != 0,
+                    f"invalid Zoom config {name} survived --panicOnWarning", errors)
         if name.startswith("page"):
             require("/docs" in output, "invalid page Zoom config omitted its page", errors)
     return errors
@@ -335,7 +354,14 @@ def check_template_contracts() -> list[str]:
     require('partial "content/image-zoom-candidate.html"' in derived, "derived runtime registration does not scan Zoom candidates", errors)
     require('.Store.Set "hasImageZoom" true' in derived, "derived runtime registration does not set the Zoom flag", errors)
     require(".Content" not in scripts, "scripts.html forces page content rendering", errors)
-    require('printf "%T" $value' in config and '"bool"' in config, "Zoom config is not strict boolean", errors)
+    # The type check moved into the shared validator; what has to hold here is
+    # that both levels go through it and that the fallback is off.
+    require(config.count('partial "validate.html"') == 2
+            and '"kind" "bool"' in config
+            and '"key" "params.ui.image_zoom"' in config
+            and '"key" "front matter image_zoom"' in config
+            and '"fallback" false' in config,
+            "Zoom config is not a strict boolean through the shared validator", errors)
     # The scan answers "did the theme mark anything?" first and only falls back
     # to structure for images a site wrote as raw HTML; that fallback keeps the
     # exclusions so a page of decorative images pulls in no runtime.

@@ -41,10 +41,10 @@
 {{- $path := $page.Path -}}
 
 {{- /* Last modified ---------------------------------------------------- */ -}}
-{{- $commitMode := (partial "ui-param.html" (dict "page" $page "key" "lastmod_commit")) | default "subject" -}}
-{{- if not (in (slice "subject" "hash" "none") $commitMode) -}}
-  {{- errorf "invalid params.ui.lastmod_commit %q (allowed: subject | hash | none)" $commitMode -}}
-{{- end -}}
+{{- $commitMode := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $page "key" "lastmod_commit")) "kind" "enum"
+    "allowed" (slice "subject" "hash" "none") "fallback" "subject"
+    "key" "params.ui.lastmod_commit" "where" $page.Path) -}}
 {{- if not $page.Lastmod.IsZero -}}
   {{- $text := printf "%s %s" (T "post_last_mod") ($page.Lastmod.Format $page.Site.Params.time_format_default) -}}
   {{- if ne $commitMode "none" -}}

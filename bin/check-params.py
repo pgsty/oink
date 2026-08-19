@@ -207,7 +207,7 @@ INVALID_SITE_CASES = [
     ("ui:\n  share: [x, mastodon]", 'invalid params.ui.share entry "mastodon"'),
     ("ui:\n  share: true", "params.ui.share is the list of share targets, not a switch"),
     ("ui:\n  share: x", "params.ui.share must be a list of share targets"),
-    ("comments:\n  enable: definitely", "params.comments.enable must be a boolean"),
+    ("comments:\n  enable: definitely", "params.comments.enable must be true or false"),
     ("comments:\n  type: true", "params.comments.type must be a string"),
 ]
 INVALID_PAGE_CASES = [
@@ -453,8 +453,14 @@ def site_config(params: str) -> str:
     )
 
 
-def build_case(hugo: str, name: str, params: str, front_matter: str) -> str:
-    """Build a one-page site; return the combined output ("" on success)."""
+def build_case(hugo: str, name: str, params: str, front_matter: str,
+               panic_on_warning: bool = False) -> tuple[int, str]:
+    """Build a one-page site; return its exit code and combined output.
+
+    An invalid parameter no longer stops a build: it warns and falls back, so a
+    case is judged on what the output says rather than on whether Hugo exited.
+    `panic_on_warning` reproduces what every publishing gate does, which is
+    where a warning is still a hard failure."""
     with tempfile.TemporaryDirectory(prefix=f"oink-params-{name}-") as temp:
         source = Path(temp)
         (source / "content/docs").mkdir(parents=True)
@@ -463,13 +469,12 @@ def build_case(hugo: str, name: str, params: str, front_matter: str) -> str:
         (source / "content/docs/page.md").write_text(
             f"---\ntitle: Page\n{front_matter}\n---\n\nBody.\n", encoding="utf-8"
         )
-        result = subprocess.run(
-            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent), "--destination", str(source / "public"), "--logLevel", "warn"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        return "" if result.returncode == 0 else (result.stdout + result.stderr) or "build failed without output"
+        command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                   "--destination", str(source / "public"), "--logLevel", "warn"]
+        if panic_on_warning:
+            command.append("--panicOnWarning")
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        return result.returncode, (result.stdout + result.stderr)
 
 
 def check_builds(hugo: str) -> list[str]:
@@ -488,16 +493,31 @@ def check_builds(hugo: str) -> list[str]:
     for index, (fragment, expected) in enumerate(INVALID_PAGE_CASES):
         jobs.append((f"invalid-page-{index}", "", fragment, expected))
 
-    def run(job: tuple[str, str, str, str | None]) -> tuple[tuple[str, str, str, str | None], str]:
-        return job, build_case(hugo, job[0], job[1], job[2])
+    def run(job: tuple[str, str, str, str | None]):
+        name = job[0]
+        code, output = build_case(hugo, name, job[1], job[2])
+        # An invalid value must warn and keep building, and the same build must
+        # still fail where warnings are fatal. Both halves are the contract.
+        strict = None
+        if name.startswith("invalid-"):
+            strict = build_case(hugo, name + "-strict", job[1], job[2], panic_on_warning=True)[0]
+        return job, code, output, strict
 
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for (name, params, front, expected), output in pool.map(run, jobs):
+        for (name, params, front, expected), code, output, strict in pool.map(run, jobs):
             label = (params or front).replace("\n", " ")
             if expected is None:
-                require(output == "", f"accepted shape failed to build ({label}): {output[-400:]}", errors)
+                require(code == 0, f"accepted shape failed to build ({label}): {output[-400:]}", errors)
                 continue
-            require(output != "", f"legacy key built without an error ({label})", errors)
+            if name.startswith("invalid-"):
+                require(code == 0,
+                        f"invalid value stopped the build instead of warning ({label}): {output[-400:]}", errors)
+                require(expected in output,
+                        f"invalid value {label!r} did not warn with {expected!r}: {output[-400:]}", errors)
+                require(strict != 0,
+                        f"invalid value {label!r} survived --panicOnWarning", errors)
+                continue
+            require(code != 0, f"legacy key built without an error ({label})", errors)
             require(expected in output, f"legacy key {label!r} did not name its replacement {expected!r}: {output[-400:]}", errors)
     return errors
 
@@ -516,17 +536,18 @@ def check_blog_index_enum(hugo: str) -> list[str]:
             "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n", encoding="utf-8")
         (source / "content/blog/post.md").write_text(
             "---\ntitle: Post\ndate: 2026-08-19\n---\n\nBody.\n", encoding="utf-8")
-        result = subprocess.run(
-            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
-             "--destination", str(source / "public"), "--logLevel", "warn"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                   "--destination", str(source / "public"), "--logLevel", "warn"]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
         output = result.stdout + result.stderr
-        require(result.returncode != 0, "params.ui.blog_index accepted a form outside its enum", errors)
-        require("invalid params.ui.blog_index" in output and "list | cards" in output,
-                f"the blog index enum error does not name the allowed forms: {output[-400:]}", errors)
+        strict = subprocess.run(command + ["--panicOnWarning"], capture_output=True, text=True, check=False)
+        require(result.returncode == 0,
+                f"a form outside the enum stopped the build instead of warning: {output[-400:]}", errors)
+        require("invalid params.ui.blog_index" in output and "list | cards" in output
+                and "list" in output,
+                f"the blog index warning does not name the allowed forms and the fallback: {output[-400:]}", errors)
+        require(strict.returncode != 0,
+                "an invalid params.ui.blog_index survived --panicOnWarning", errors)
     return errors
 
 

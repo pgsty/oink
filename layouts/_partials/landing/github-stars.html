@@ -14,10 +14,14 @@
 {{- end -}}
 {{- if ne $value false -}}
   {{- if not (in (slice "string" "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float32" "float64") (printf "%T" $value)) -}}
-    {{- errorf "params.ui.github_stars must be a string or number" -}}
+    {{- warnf "params.ui.github_stars must be a string or number; got %v; ignoring it" $value -}}
+  {{- else -}}
+    {{- $label := partial "landing/compact-number.html" $value -}}
+    {{- if $label -}}
+      {{- $result = $label -}}
+    {{- else -}}
+      {{- warnf "params.ui.github_stars must not be empty; ignoring it" -}}
+    {{- end -}}
   {{- end -}}
-  {{- $label := partial "landing/compact-number.html" $value -}}
-  {{- if not $label }}{{ errorf "params.ui.github_stars must not be empty" }}{{ end -}}
-  {{- $result = $label -}}
 {{- end -}}
 {{- return $result -}}

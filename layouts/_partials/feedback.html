@@ -21,10 +21,12 @@
   {{- end -}}
 {{- end -}}
 {{- if ne (printf "%T" $enabled) "bool" -}}
-  {{- errorf "params.ui.feedback.enable must be a boolean at %s" .RelPermalink -}}
+  {{- warnf "params.ui.feedback.enable must be a boolean at %s; using false" .RelPermalink -}}
+  {{- $enabled = false -}}
 {{- end -}}
 {{- if ne (printf "%T" $showReasons) "bool" -}}
-  {{- errorf "params.ui.feedback.reasons must be a boolean at %s" .RelPermalink -}}
+  {{- warnf "params.ui.feedback.reasons must be a boolean at %s; using true" .RelPermalink -}}
+  {{- $showReasons = true -}}
 {{- end -}}
 {{- if $enabled -}}
   {{- .Page.Store.Set "hasFeedback" true -}}

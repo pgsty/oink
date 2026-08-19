@@ -288,9 +288,10 @@ def check_sources() -> list[str]:
     require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_list
             and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_list,
             "blog index form or column count is not a ui-param with a front matter override", errors)
-    require('in (slice "list" "cards") $mode' in blog_list
-            and 'errorf "invalid params.ui.blog_index %q' in blog_list,
-            "blog index form is not validated against its enum", errors)
+    require('"allowed" (slice "list" "cards")' in blog_list
+            and '"key" "params.ui.blog_index"' in blog_list
+            and '"fallback" "list"' in blog_list,
+            "blog index form is not validated against its enum with a documented fallback", errors)
     require('class="td-content-cards td-blog-cards"' in blog_list
             and "--td-card-columns:" in blog_list,
             "blog card index does not reuse the shared card grid", errors)
@@ -415,7 +416,8 @@ def check_sources() -> list[str]:
     require('partial "share/items.html"' in share_bar,
             "share bar no longer renders the resolved descriptors", errors)
     require('$page.IsPage' in share_items and 'reflect.IsSlice' in share_items
-            and 'errorf "invalid params.ui.share entry %q' in share_items,
+            and 'warnf "invalid params.ui.share entry %q' in share_items
+            and "dropping it" in share_items,
             "share targets are no longer a validated list on regular pages only", errors)
     for marker in ("<iframe", "<script", "<img", "<link", "resources.GetRemote"):
         require(marker.lower() not in (share_items + share_bar).lower(),
@@ -647,9 +649,10 @@ def check_featured_image_sources() -> list[str]:
             "hugo.yaml no longer declares the params.ui.featured_image default", errors)
     require('partial "ui-param.html" (dict "page" . "key" "featured_image")' in mode,
             "featured_image no longer resolves through ui-param.html, so front matter cannot override it", errors)
-    require('errorf "invalid params.ui.featured_image' in mode
-            and '(allowed: none | banner | wash)' in mode,
-            "an invalid featured_image mode no longer fails the build", errors)
+    require('"allowed" (slice "none" "banner" "wash")' in mode
+            and '"key" "params.ui.featured_image"' in mode
+            and '"fallback" "none"' in mode,
+            "an invalid featured_image mode no longer warns and falls back to none", errors)
     require('.Store.Get "tdOutputFormat"' in mode and '"html"' in mode,
             "the featured image is no longer guarded to HTML output", errors)
     require('partialCached "featured-image-resolve.html"' in mode
@@ -1079,10 +1082,19 @@ params:
             capture_output=True,
         )
         output = result.stdout + result.stderr
-        require(result.returncode != 0, "an invalid params.ui.featured_image built without an error", errors)
+        strict = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "strict"), "--logLevel", "warn", "--panicOnWarning"],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        require(result.returncode == 0,
+                f"an invalid params.ui.featured_image stopped the build instead of warning: {output[-400:]}", errors)
         require("invalid params.ui.featured_image" in output
-                and "none | banner | wash" in output,
-                f"the invalid featured_image error does not name the allowed modes: {output[-400:]}", errors)
+                and "none | banner | wash" in output
+                and "none" in output,
+                f"the featured_image warning does not name the allowed modes and the fallback: {output[-400:]}", errors)
+        require(strict.returncode != 0,
+                "an invalid params.ui.featured_image survived --panicOnWarning", errors)
     return errors
 
 

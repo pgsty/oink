@@ -11,9 +11,11 @@ of truth for activation and legacy Disqus fallback. */ -}}
 {{- end -}}
 {{- $pageOverride := isset .Params "comments" -}}
 {{- if $pageOverride -}}
-  {{- $enabledValue = .Params.comments -}}
-  {{- if ne (printf "%T" $enabledValue) "bool" -}}
-    {{- errorf "front matter comments must be a boolean; got %v at %s" $enabledValue .Path -}}
+  {{- if eq (printf "%T" .Params.comments) "bool" -}}
+    {{- $enabledValue = .Params.comments -}}
+  {{- else -}}
+    {{- warnf "front matter comments must be a boolean; got %v at %s; using the site value" .Params.comments .Path -}}
+    {{- $pageOverride = false -}}
   {{- end -}}
 {{- end -}}
 {{- $enabledText := printf "%v" $enabledValue | lower -}}
@@ -21,12 +23,14 @@ of truth for activation and legacy Disqus fallback. */ -}}
 
 {{- $commentTypeValue := index $comments "type" | default "" -}}
 {{- if ne (printf "%T" $commentTypeValue) "string" -}}
-  {{- errorf "params.comments.type must be a string; got %v" $commentTypeValue -}}
+  {{- warnf "params.comments.type must be a string; got %v; using giscus" $commentTypeValue -}}
+  {{- $commentTypeValue = "giscus" -}}
 {{- end -}}
 {{- $commentType := lower $commentTypeValue -}}
 {{- $giscus := index $comments "giscus" | default dict -}}
 {{- if not (reflect.IsMap $giscus) -}}
-  {{- errorf "params.comments.giscus must be a map; got %v" $giscus -}}
+  {{- warnf "params.comments.giscus must be a map; got %v; using an empty one" $giscus -}}
+  {{- $giscus = dict -}}
 {{- end -}}
 {{- $missing := slice -}}
 {{- $required := slice

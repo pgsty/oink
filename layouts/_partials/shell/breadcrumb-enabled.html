@@ -3,10 +3,9 @@
      and nested sections unchanged. The caller still owns the surrounding
      topline, so page actions keep the same position. */ -}}
 {{- $enabled := (partial "ui-param.html" (dict "page" . "key" "breadcrumb")) -}}
-{{- if eq $enabled nil }}{{ $enabled = true }}{{ end -}}
-{{- if ne (printf "%T" $enabled) "bool" -}}
-  {{- errorf "params.ui.breadcrumb must be a boolean; got %v at %s" $enabled .Path -}}
-{{- end -}}
+{{- $enabled = partial "validate.html" (dict
+    "value" $enabled "kind" "bool" "fallback" true
+    "key" "params.ui.breadcrumb" "where" .Path) -}}
 {{- with .Parent -}}
   {{- if and (not $.IsPage) .IsHome -}}
     {{- $enabled = false -}}

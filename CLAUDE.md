@@ -265,10 +265,25 @@ Recurring rules from those contracts:
 - Collector shortcodes evaluate `.Inner` so children register ordered data; the
   parent owns all rendering. Shortcodes do not write Page Store flags that other
   shortcodes read.
-- Invalid parameters `errorf` — strict failure over silent degradation. Render
-  hooks share one attribute policy (`content/attributes.html`): allowlisted
-  keys are consumed, `class` (token-validated), `data-*`, and `aria-*` pass
-  through, `style`/`on*`/unknown keys fail the build.
+- **The theme never calls `errorf`. Ever.** Invalid input `warnf`s and falls
+  back to the documented default, and the build keeps going. Use
+  `partial "validate.html"` (enum/bool/length shapes) rather than hand-rolling
+  the check; `shell/sidebar-icon-policy.html` and `search/boost.html` are the
+  reference call sites. Reach for `warnidf` when a site should be able to
+  accept a known warning via `ignoreLogs`.
+  Two facts make this safe, and both must stay true: one `errorf` aborts the
+  *whole* build, so in `hugo server` a single author's typo serves HTTP 500 on
+  every URL of the site, not just the broken page; and every gate that
+  publishes anything builds with `--panicOnWarning` (`ci.yml`,
+  `bin/sites/build-all.py`, the site repo's `pages.yml`), so a warning is
+  still a hard failure everywhere it counts. Warning is strictly better than
+  erroring: same enforcement at the gates, no shared preview outage.
+  Protection comes from refusing to emit bad output, not from halting — an
+  unsafe CSS length falls back to the default, a diagram without its server
+  URL renders nothing, and neither needs to take the site down. Render hooks
+  share one attribute policy (`content/attributes.html`): allowlisted keys are
+  consumed, `class` (token-validated), `data-*`, and `aria-*` pass through;
+  `style`/`on*` and unknown keys warn and are dropped.
 - Public string parameters (captions, labels, titles) are plain text; only
   Markdown *bodies* (tab, card, field, image caption, Book bodies) are Markdown.
   Those bodies render as their own Goldmark document, so a footnote reference

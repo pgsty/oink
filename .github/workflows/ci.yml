@@ -212,8 +212,12 @@ jobs:
       - name: Reject an invalid typography preset
         working-directory: exampleSite
         run: |
+          # The theme never errorf's; an invalid preset warns and falls back so
+          # `hugo server` survives it. --panicOnWarning is what turns that
+          # warning back into a hard failure here, which is the contract.
           if HUGO_PARAMS_UI_TYPOGRAPHY=invalid \
-            hugo --destination "$RUNNER_TEMP/oink-invalid" \
+            hugo --printPathWarnings --panicOnWarning \
+              --destination "$RUNNER_TEMP/oink-invalid" \
               >"$RUNNER_TEMP/oink-invalid.log" 2>&1; then
             echo "invalid typography preset unexpectedly built" >&2
             exit 1

@@ -1,21 +1,32 @@
+{{- /* The optional "other site" chrome entry: a label and an absolute URL.
+
+     Any malformed part warns and turns the entry off rather than stopping the
+     build. A chrome affordance that cannot be rendered safely is better absent
+     than fatal, and `--panicOnWarning` still fails CI. */ -}}
 {{- $page := . -}}
 {{- $raw := $page.Site.Params.ui.alt_site | default false -}}
 {{- $result := false -}}
 {{- if $raw -}}
   {{- if not (reflect.IsMap $raw) -}}
-    {{- errorf "params.ui.alt_site must be a map with label and url" -}}
+    {{- warnf "params.ui.alt_site must be a map with label and url; got %v; ignoring it" $raw -}}
+  {{- else -}}
+    {{- $label := strings.TrimSpace (printf "%v" ($raw.label | default "")) -}}
+    {{- $url := strings.TrimSpace (printf "%v" ($raw.url | default "")) -}}
+    {{- if or (not $label) (not $url) -}}
+      {{- warnf "params.ui.alt_site requires non-empty label and url; ignoring it" -}}
+    {{- else -}}
+      {{- $parsedResult := try (urls.Parse $url) -}}
+      {{- with $parsedResult.Err -}}
+        {{- warnf "params.ui.alt_site.url is invalid: %s; ignoring it" . -}}
+      {{- else -}}
+        {{- $parsed := $parsedResult.Value -}}
+        {{- if or (not (in (slice "http" "https") (lower $parsed.Scheme))) (not $parsed.Host) -}}
+          {{- warnf "params.ui.alt_site.url must be an absolute http(s) URL; got %q; ignoring it" $url -}}
+        {{- else -}}
+          {{- $result = dict "label" $label "url" $url -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
-  {{- $label := strings.TrimSpace (printf "%v" ($raw.label | default "")) -}}
-  {{- $url := strings.TrimSpace (printf "%v" ($raw.url | default "")) -}}
-  {{- if or (not $label) (not $url) -}}
-    {{- errorf "params.ui.alt_site requires non-empty label and url" -}}
-  {{- end -}}
-  {{- $parsedResult := try (urls.Parse $url) -}}
-  {{- with $parsedResult.Err }}{{ errorf "params.ui.alt_site.url is invalid: %s" . }}{{ end -}}
-  {{- $parsed := $parsedResult.Value -}}
-  {{- if or (not (in (slice "http" "https") (lower $parsed.Scheme))) (not $parsed.Host) -}}
-    {{- errorf "params.ui.alt_site.url must be an absolute http(s) URL" -}}
-  {{- end -}}
-  {{- $result = dict "label" $label "url" $url -}}
 {{- end -}}
 {{- return $result -}}

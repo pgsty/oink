@@ -1,3 +1,10 @@
+{{- /* The optional h2-h4 branch under the active Book row.
+
+     `params.ui.sidebar_headings` is `false` (the default), `true` (which means
+     depth 2), or an integer from 2 through 4. Anything else warns and falls
+     back to `false`: a sidebar that quietly grows a branch nobody asked for is
+     worse than one that stays as it was, and the warning still fails CI under
+     `--panicOnWarning`. */ -}}
 {{- $page := .page -}}
 {{- $current := .current -}}
 {{- if eq $page $current -}}
@@ -5,14 +12,21 @@
   {{- if ne $depthValue nil -}}
     {{- $valueType := printf "%T" $depthValue -}}
     {{- $integerTypes := slice "int" "int8" "int16" "int32" "int64" "uint" "uint8" "uint16" "uint32" "uint64" "float64" -}}
-    {{- if not (or (eq $valueType "bool") (in $integerTypes $valueType)) }}{{ errorf "params.ui.sidebar_headings must be false, true, or an integer from 2 through 4 at %s" $current.Path }}{{ end -}}
+    {{- $invalid := false -}}
+    {{- if not (or (eq $valueType "bool") (in $integerTypes $valueType)) -}}
+      {{- $invalid = true -}}
+    {{- else if and (eq $valueType "float64") (ne $depthValue (math.Floor $depthValue)) -}}
+      {{- $invalid = true -}}
+    {{- else if ne $valueType "bool" -}}
+      {{- if or (lt (int $depthValue) 2) (gt (int $depthValue) 4) }}{{ $invalid = true }}{{ end -}}
+    {{- end -}}
+    {{- if $invalid -}}
+      {{- warnf "params.ui.sidebar_headings must be false, true, or an integer from 2 through 4; got %v at %s; using false" $depthValue $current.Path -}}
+      {{- $depthValue = false -}}
+    {{- end -}}
     {{- if ne $depthValue false -}}
       {{- $depth := 2 -}}
-      {{- if ne $valueType "bool" }}
-        {{- if and (eq $valueType "float64") (ne $depthValue (math.Floor $depthValue)) }}{{ errorf "params.ui.sidebar_headings must be an integer from 2 through 4 at %s" $current.Path }}{{ end -}}
-        {{- $depth = int $depthValue -}}
-      {{- end -}}
-      {{- if or (lt $depth 2) (gt $depth 4) }}{{ errorf "params.ui.sidebar_headings must be false, true, or an integer from 2 through 4 at %s" $current.Path }}{{ end -}}
+      {{- if ne (printf "%T" $depthValue) "bool" }}{{ $depth = int $depthValue }}{{ end -}}
       {{- $html := $current.Fragments.ToHTML 2 $depth false -}}
       {{- if ne $html `<nav id="TableOfContents"></nav>` }}
     <div class="td-shell-tree__headings" data-td-book-headings>

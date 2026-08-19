@@ -1,0 +1,63 @@
+{{/* Validate one input value, warn on anything invalid, return a usable value.
+
+     OINK never calls errorf: a single errorf aborts the whole build, so in
+     `hugo server` one author's typo serves HTTP 500 on every URL of the site,
+     not just the page they were editing. Every publishing gate builds with
+     --panicOnWarning, so a warning is still a hard failure where it counts.
+
+     Input (dict):
+       value     the raw value to check (any type; nil means "not set")
+       kind      "enum" | "bool" | "length" | "number"   (default "enum")
+       allowed   slice of permitted values           (kind=enum)
+       fallback  value returned when validation fails (required)
+       key       name reported to the author, e.g. "params.ui.page_width"
+       where     optional position, e.g. .Path or .Position
+
+     Returns the validated value, or `fallback` after warning. A nil/empty
+     value is not an error -- it returns `fallback` silently, so callers can
+     pass an unset parameter straight through. */ -}}
+
+{{- $value := .value -}}
+{{- $kind := .kind | default "enum" -}}
+{{- $fallback := .fallback -}}
+{{- $key := .key | default "value" -}}
+{{- $where := .where | default "" -}}
+{{- $at := cond (ne (printf "%v" $where) "") (printf " at %v" $where) "" -}}
+
+{{- $result := $fallback -}}
+{{- if ne $value nil -}}
+  {{- $raw := printf "%v" $value -}}
+  {{- if eq $raw "" -}}
+    {{- /* Unset or blank: use the default without complaining. */ -}}
+  {{- else if eq $kind "bool" -}}
+    {{- if eq (printf "%T" $value) "bool" -}}
+      {{- $result = $value -}}
+    {{- else -}}
+      {{- warnf "%s must be true or false; got %q%s -- using %v" $key $raw $at $fallback -}}
+    {{- end -}}
+  {{- else if eq $kind "enum" -}}
+    {{- $allowed := .allowed | default slice -}}
+    {{- if in $allowed $raw -}}
+      {{- $result = $raw -}}
+    {{- else -}}
+      {{- warnf "invalid %s %q%s (allowed: %s) -- using %q"
+          $key $raw $at (delimit $allowed " | ") $fallback -}}
+    {{- end -}}
+  {{- else if eq $kind "length" -}}
+    {{- if findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $raw -}}
+      {{- $result = $raw -}}
+    {{- else -}}
+      {{- warnf "%s %q is not a safe CSS length%s -- using %q" $key $raw $at $fallback -}}
+    {{- end -}}
+  {{- else if eq $kind "number" -}}
+    {{- $n := $raw | float -}}
+    {{- if and (ne $n nil) (not (in (slice "+Inf" "Inf" "-Inf" "NaN") $raw)) -}}
+      {{- $result = $n -}}
+    {{- else -}}
+      {{- warnf "%s %q is not a number%s -- using %v" $key $raw $at $fallback -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnf "validate.html: unknown kind %q for %s -- using %v" $kind $key $fallback -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

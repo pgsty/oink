@@ -25,13 +25,14 @@
 {{- if isset .Site.Params.ui "docs_sidebar_root" -}}
   {{- $rawDocsRoot := index .Site.Params.ui "docs_sidebar_root" -}}
   {{- if ne (printf "%T" $rawDocsRoot) "string" -}}
-    {{- errorf "params.ui.docs_sidebar_root must be a string: home or section; got %v" $rawDocsRoot -}}
+    {{- warnf "params.ui.docs_sidebar_root must be a string: home or section; got %v; using section" $rawDocsRoot -}}
   {{- else -}}
     {{- $docsRoot = lower $rawDocsRoot -}}
   {{- end -}}
 {{- end -}}
 {{- if not (in (slice "home" "section") $docsRoot) -}}
-  {{- errorf "params.ui.docs_sidebar_root must be home or section; got %q" $docsRoot -}}
+  {{- warnf "params.ui.docs_sidebar_root must be home or section; got %q; using section" $docsRoot -}}
+  {{- $docsRoot = "section" -}}
 {{- end -}}
 {{- $shellTypes := .Site.Params.ui.shell_types | default (slice "docs" "book" "blog" "swagger") -}}
 {{- $quickLinks := .Site.Params.ui.quick_links | default (slice $docsSection $blogSection) -}}

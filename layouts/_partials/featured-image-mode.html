@@ -14,14 +14,15 @@ wrapper around an image that is not there. Three things reduce to "":
     a section turns the mode on through a cascade and individual posts opt in
     by carrying an image at all.
 
-An invalid mode fails the build rather than degrading to `none`, because a
-typo would otherwise read exactly like a deliberate opt-out.
+An invalid mode warns and falls back to `none`. A typo reads exactly like a
+deliberate opt-out, which is why it is said out loud; it is not worth stopping
+a dev server over, and `--panicOnWarning` still stops CI.
 
 Input: a page. Returns: "" | "banner" | "wash". */ -}}
-{{- $mode := (partial "ui-param.html" (dict "page" . "key" "featured_image")) | default "none" -}}
-{{- if not (in (slice "none" "banner" "wash") $mode) -}}
-  {{- errorf "invalid params.ui.featured_image %q at %s (allowed: none | banner | wash)" (printf "%v" $mode) .Path -}}
-{{- end -}}
+{{- $mode := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "featured_image")) "kind" "enum"
+    "allowed" (slice "none" "banner" "wash") "fallback" "none"
+    "key" "params.ui.featured_image" "where" .Path) -}}
 {{- $active := "" -}}
 {{- if and (ne $mode "none") (eq (.Store.Get "tdOutputFormat") "html") -}}
   {{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}

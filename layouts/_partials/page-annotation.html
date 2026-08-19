@@ -2,19 +2,12 @@
      page-meta-lastmod.html remains the default implementation, and
      annotation-items.html resolves the lines it renders.
      Site: params.ui.annotation (boolean). Page: front matter annotation. */ -}}
-{{- $enabled := true -}}
-{{- if isset .Site.Params.ui "annotation" -}}
-  {{- $enabled = index .Site.Params.ui "annotation" -}}
-  {{- if ne (printf "%T" $enabled) "bool" -}}
-    {{- errorf "params.ui.annotation must be a boolean; got %v" $enabled -}}
-  {{- end -}}
-{{- end -}}
-{{- if isset .Params "annotation" -}}
-  {{- $enabled = .Params.annotation -}}
-  {{- if ne (printf "%T" $enabled) "bool" -}}
-    {{- errorf "front matter annotation must be a boolean; got %v at %s" $enabled .Path -}}
-  {{- end -}}
-{{- end -}}
+{{- $enabled := partial "validate.html" (dict
+    "value" (index .Site.Params.ui "annotation") "kind" "bool"
+    "fallback" true "key" "params.ui.annotation") -}}
+{{- $enabled = partial "validate.html" (dict
+    "value" (index .Params "annotation") "kind" "bool"
+    "fallback" $enabled "key" "front matter annotation" "where" .Path) -}}
 {{- if and $enabled (partial "annotation-items.html" .) -}}
 <section class="td-page-annotation" data-td-page-annotation aria-label="{{ T "ui_page_annotation" }}">
   {{ partial "page-meta-lastmod.html" . }}

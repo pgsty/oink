@@ -1,10 +1,11 @@
-{{- /* Footer presentation for this page: `fat` (column grid plus the
-       copyright line), `slim` (line only), or `none`. Front matter — including
-       cascaded front matter — overrides params.ui.footer_style. */ -}}
+{{- /* Resolve the footer presentation for one page: fat, slim, or none.
+     Site `params.ui.footer_style`, overridden by front matter `footer_style`.
+     An invalid value warns and falls back to fat. */ -}}
 {{- $style := "fat" -}}
 {{- with .Site.Params.ui.footer_style }}{{ $style = . }}{{ end -}}
 {{- with .Params.footer_style }}{{ $style = . }}{{ end -}}
-{{- if not (in (slice "fat" "slim" "none") $style) -}}
-  {{- errorf "invalid params.ui.footer_style %q at %s (allowed: fat | slim | none)" $style .Path -}}
-{{- end -}}
-{{- return $style -}}
+{{- return partial "validate.html" (dict
+    "value" $style "kind" "enum"
+    "allowed" (slice "fat" "slim" "none")
+    "fallback" "fat"
+    "key" "params.ui.footer_style" "where" .Path) -}}

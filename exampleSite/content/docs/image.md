@@ -2,6 +2,7 @@
 title: Images
 linkTitle: Images
 description: Plain Markdown image syntax plus one attribute line gives you captions, sizing, zoom, links, numbering and Hugo image processing.
+icon: fa-solid fa-image
 weight: 20
 search_keywords: [Image, Figure, caption, zoom, image processing, imgproc, width, height, numbering]
 image_zoom: true

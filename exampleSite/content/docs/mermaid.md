@@ -2,6 +2,7 @@
 title: Mermaid
 linkTitle: Mermaid
 description: A `mermaid` fence turns text into flowcharts, sequence diagrams, Gantt charts, class diagrams and state diagrams — rendered locally, theme-aware, diff-friendly.
+icon: fa-solid fa-diagram-project
 weight: 110
 search_keywords: [Mermaid, flowchart, sequence, gantt, classDiagram, erDiagram, stateDiagram, diagram]
 ---

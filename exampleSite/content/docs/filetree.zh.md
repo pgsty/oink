@@ -2,6 +2,7 @@
 title: 文件树
 linkTitle: 文件树
 description: 用 `filetree` 围栏画带注释的目录结构：对齐的注释列、逐条目图标、可折叠目录、可拖动的分栏。
+icon: fa-solid fa-folder-tree
 weight: 90
 search_keywords: [文件树, FileTree, 目录树, tree, 目录结构, 仓库结构, 围栏, icon, tone, open]
 ---

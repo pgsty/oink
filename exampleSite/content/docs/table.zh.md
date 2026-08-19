@@ -2,6 +2,7 @@
 title: 表格
 linkTitle: 表格
 description: 普通 GFM 表格加一行属性，就得到标题、兼容矩阵、参数表、编号表或标签页；宽表格自己横向滚动，不撑宽页面。
+icon: fa-solid fa-table
 weight: 50
 search_keywords: [表格, Table, matrix, 矩阵, full-width, 全宽, caption, 表格标题, 编号表, 横向滚动, GFM]
 ---

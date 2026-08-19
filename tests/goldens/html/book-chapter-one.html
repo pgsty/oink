@@ -56,7 +56,7 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Establish the baseline">
 <meta itemprop="description" content="Start a technical book with visible assumptions and measurable evidence.">
-<meta itemprop="wordCount" content="148">
+<meta itemprop="wordCount" content="858">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
@@ -270,7 +270,7 @@ id="m-book-li">
 <div class="td-shell-tree__row td-shell-tree__row--root">
 <a href="/book/" title="OINK Book Demo"
 class="td-shell-tree__link"
-id="m-book"><i class="fa-solid fa-book" aria-hidden="true"></i><span class="td-book-number">B</span><span>OINK Book Demo</span></a>
+id="m-book"><i class="fa-solid fa-book" aria-hidden="true"></i><span>OINK Book Demo</span></a>
 </div><div id="m-book-children" class="td-shell-tree__children td-shell-tree__children--static">
 <div class="td-shell-tree__children-inner">
 <ul class="td-shell-tree__list td-shell-tree__list--1"><li class="td-shell-tree__item td-leaf td-active-path"
@@ -283,7 +283,11 @@ id="m-bookchapter-one"><span class="td-book-number">1</span><span>Establish the 
 <div class="td-shell-tree__headings" data-td-book-headings>
 <ul>
 <li><a href="#describe-system">Describe the system</a></li>
+<li><a href="#agree-evidence">Agree on the evidence</a></li>
+<li><a href="#show-evidence">Show the evidence</a></li>
+<li><a href="#measure-coverage">Measure the coverage</a></li>
 <li><a href="#keep-readable">Keep the chapter readable</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
@@ -299,6 +303,13 @@ id="m-bookchapter-three-li">
 <a href="/book/chapter-three/" title="Operate and review"
 class="td-shell-tree__link"
 id="m-bookchapter-three"><span class="td-book-number">3</span><span>Operate and review</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-bookchapter-four-li">
+<div class="td-shell-tree__row">
+<a href="/book/chapter-four/" title="Formulas and derivations"
+class="td-shell-tree__link"
+id="m-bookchapter-four"><span class="td-book-number">4</span><span>Formulas and derivations</span></a>
 </div>
 </li></ul>
 </div>
@@ -472,13 +483,46 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook
 <div class="lead">Start a technical book with visible assumptions and measurable evidence.</div>
 <header class="td-article-meta">
 </header>
+<blockquote>
+<p><em>Documentation is a love letter that you write to your future self.</em></p>
+<p>— Damian Conway, <em>Perl Best Practices</em> (2005)</p>
+</blockquote>
 <p>A useful handbook starts with a shared picture of the system and names the facts
-that later chapters will rely on.</p>
+that later chapters will rely on. A baseline is not an introduction. An
+introduction says what a book is about; a baseline says what the book will treat
+as true from here on. Every later chapter may assume it silently, and any claim
+that contradicts it has to say so out loud.<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></p>
 <h2 id="describe-system">Describe the system<a class="td-heading-self-link" href="#describe-system" aria-label="Link to this heading"></a>
 </h2>
+<p>Describe what a reader can see before describing what they cannot. The shell of
+a documentation site is three regions — navigation, content, and local context —
+and almost every question about a page turns out to be a question about which
+region should have answered it.</p>
 <figure id="fig-overview" class="td-figure td-book-figure td-book-figure--fig" data-td-book-kind="fig" data-td-book-num="1-1"><img class="td-book-figure__image" src="/images/oink.webp" alt="OINK documentation site overview" width="600" height="300" data-td-image-zoom loading="lazy" decoding="async">
 <figcaption><span class="td-fig-label">Figure 1-1</span> <span class="td-fig-caption">The documentation shell provides navigation, content, and local context.</span></figcaption>
 </figure>
+<p>The artifact a release produces is a second, narrower surface: one page per
+version, generated from the same content pipeline as the rest of the book.
+<a class="td-book-xref td-book-xref--fig" href="#fig-artifact" data-td-book-kind="fig" data-td-book-num="1-2">Figure 1-2</a> is that page, and chapter two
+follows the change that produced it.</p>
+<figure id="fig-artifact" class="td-figure td-book-figure td-book-figure--fig" data-td-book-kind="fig" data-td-book-num="1-2">
+<img src="/images/releasenote.webp" alt="A release note page listing version, date, and published assets" width="600" height="300" data-td-image-zoom loading="lazy" decoding="async"><figcaption><span class="td-fig-label">Figure 1-2</span> <span class="td-fig-caption">A release note is the narrowest surface in the system: one page, one version, no navigation of its own.</span></figcaption>
+</figure><div class="td-callout td-callout--tip" role="note">
+<div class="td-callout__title"><i class="td-callout__icon fa-solid fa-lightbulb" aria-hidden="true"></i><span class="td-callout__label">Terminology: surface, evidence, claim</span></div>
+<div class="td-callout__body">
+<p>A <strong>surface</strong> is anything a reader can reach: a rendered page, a printed
+sheet, an RSS item, a Markdown file served to a language model. Surfaces are
+counted, not described — a book that says &ldquo;the site works&rdquo; has not said which
+of them was checked.</p>
+<p><strong>Evidence</strong> is a value someone can recompute: the exit status of a build, the
+number of broken links, a checksum. A <strong>claim</strong> is a sentence in the prose. This
+book only makes claims that name their evidence, which is why the numbered
+tables carry queries rather than adjectives.</p>
+</div>
+</div><h2 id="agree-evidence">Agree on the evidence<a class="td-heading-self-link" href="#agree-evidence" aria-label="Link to this heading"></a>
+</h2>
+<p>Two readers disagree about whether a site is finished because they are counting
+different things. Write the count down first.</p>
 <figure id="tbl-baseline" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="1-1">
 <div class="td-book-figure__body"><div class="td-table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
 <table>
@@ -492,7 +536,7 @@ that later chapters will rely on.</p>
 <tbody>
 <tr>
 <td>Navigation</td>
-<td>Can readers find all three chapters?</td>
+<td>Can readers find all four chapters?</td>
 <td>Yes</td>
 </tr>
 <tr>
@@ -505,22 +549,71 @@ that later chapters will rely on.</p>
 <td>Do HTML, print, and Markdown agree?</td>
 <td>Yes</td>
 </tr>
+<tr>
+<td>Search</td>
+<td>Does every chapter carry its own keywords?</td>
+<td>Yes</td>
+</tr>
 </tbody>
 </table>
 </div>
 </div>
 <figcaption><span class="td-tbl-label">Table 1-1</span> <span class="td-tbl-caption">A compact baseline for the sample system.</span></figcaption>
 </figure>
-<figure id="eq-coverage" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="1.1">
-<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>C</mi><mo>=</mo><mfrac><mi>V</mi><mi>P</mi></mfrac></mrow><annotation encoding="application/x-tex">C = \frac{V}{P}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
-<figcaption><span class="td-eq-label">Equation 1.1</span> <span class="td-eq-caption">Coverage as verified surfaces over planned surfaces.</span></figcaption>
-</figure>
+<p>The same four surfaces are produced by different code paths and therefore fail
+in different ways. A table that records how each one is verified is worth more
+than a paragraph promising that all of them are.</p>
+<figure id="tbl-outputs" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="1-2"><div class="td-book-figure__body"><div class="td-table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+<table>
+<thead>
+<tr>
+<th scope="col">Output</th>
+<th scope="col">Emitted by</th>
+<th scope="col">Verified against</th>
+<th scope="col">Fails the build on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTML</td>
+<td>The page layouts</td>
+<td>A parsed DOM: no duplicate IDs, one bundle per feature set <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></td>
+<td>An unknown fence attribute</td>
+</tr>
+<tr>
+<td>Print</td>
+<td><code>layouts/**/*.print.html</code></td>
+<td>The same DOM with interactive affordances removed <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup></td>
+<td>An expanded disclosure that stayed closed</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td><code>layouts/all.md</code></td>
+<td>A byte-comparison against a stored golden <sup id="fnref1:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></td>
+<td>Any HTML that leaked into the text</td>
+</tr>
+<tr>
+<td>RSS</td>
+<td>The feed template</td>
+<td>The Markdown rules, minus page-local links</td>
+<td>An unresolvable relative link</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><figcaption><span class="td-tbl-label">Table 1-2</span> <span class="td-tbl-caption">What each output state is checked against, and what makes it fail.</span></figcaption></figure>
+<p>Note that <a class="td-book-xref td-book-xref--tbl" href="#tbl-outputs" data-td-book-kind="tbl" data-td-book-num="1-2">Table 1-2</a> names a file for every
+row. A row without a file is a hope, not a check.</p>
+<h2 id="show-evidence">Show the evidence<a class="td-heading-self-link" href="#show-evidence" aria-label="Link to this heading"></a>
+</h2>
+<p>A numbered example is a listing the prose can point at. Keep it short enough to
+read in one screen and real enough to run.</p>
 <figure id="eg-baseline" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="1-1">
 <figcaption><span class="td-eg-label">Example 1-1</span> <span class="td-eg-caption">Query a small evidence table before publishing.</span></figcaption>
-<div class="td-book-figure__body"><div class="td-code td-code--untitled" id="td-code-d97916df-eg3-fence-0" data-td-code data-td-code-auto-id
+<div class="td-book-figure__body"><div class="td-code td-code--untitled" id="td-code-d97916df-eg4-fence-0" data-td-code data-td-code-auto-id
 data-td-language="sql" data-td-line-count="3"><div class="td-code__utilities td-code__utilities--compact">
 <button class="td-code__copy" type="button" hidden data-td-code-copy
-data-td-code-target="td-code-d97916df-eg3-fence-0" data-td-copy-mode="all"
+data-td-code-target="td-code-d97916df-eg4-fence-0" data-td-copy-mode="all"
 data-td-label-copy="Copy code"
 data-td-label-copied="Copied"
 data-td-label-error="Copy failed"
@@ -528,21 +621,89 @@ aria-label="Copy code" title="Copy code">
 <i class="fa-regular fa-copy" aria-hidden="true"></i>
 </button>
 </div>
-<div class="td-code__viewport" id="td-code-d97916df-eg3-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">surface</span><span class="p">,</span><span class="w"> </span><span class="n">verified</span><span class="w">
+<div class="td-code__viewport" id="td-code-d97916df-eg4-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">SELECT</span><span class="w"> </span><span class="n">surface</span><span class="p">,</span><span class="w"> </span><span class="n">verified</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="n">book_evidence</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">surface</span><span class="p">;</span></span></span></code></pre></div></div>
 <span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
 </div>
 </div>
 </figure>
-<p>Together, <a class="td-book-xref td-book-xref--fig" href="#fig-overview" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>,
-<a class="td-book-xref td-book-xref--tbl" href="#tbl-baseline" data-td-book-kind="tbl" data-td-book-num="1-1">Table 1-1</a>, and
-<a class="td-book-xref td-book-xref--eq" href="#eq-coverage" data-td-book-kind="eq" data-td-book-num="1.1">Equation 1.1</a> form the baseline. Chapter two turns
-that evidence into a release workflow.</p>
+<p>The inventory that feeds that table is checked into the repository next to the
+content, so a reviewer can see the claim and its input in one diff.</p>
+<figure id="eg-inventory" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="1-2">
+<figcaption><span class="td-eg-label">Example 1-2</span> <span class="td-eg-caption">The inventory a baseline is computed from — four surfaces, one owner each.</span></figcaption>
+<div class="td-code td-code--untitled" id="td-code-d97916df-fence-0" data-td-code data-td-code-auto-id
+data-td-language="yaml" data-td-line-count="13"><div class="td-code__utilities td-code__utilities--compact">
+<button class="td-code__copy" type="button" hidden data-td-code-copy
+data-td-code-target="td-code-d97916df-fence-0" data-td-copy-mode="all"
+data-td-label-copy="Copy code"
+data-td-label-copied="Copied"
+data-td-label-error="Copy failed"
+aria-label="Copy code" title="Copy code">
+<i class="fa-regular fa-copy" aria-hidden="true"></i>
+</button>
+</div>
+<div class="td-code__viewport" id="td-code-d97916df-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">surfaces</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">navigation</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l">shell</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">checked_by</span><span class="p">:</span><span class="w"> </span><span class="l">bin/check-navigation-contract.py</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">content</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l">markup</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">checked_by</span><span class="p">:</span><span class="w"> </span><span class="l">bin/check-content-primitives.py</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">output</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l">layouts</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">checked_by</span><span class="p">:</span><span class="w"> </span><span class="l">bin/check-goldens.py</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">search</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l">search</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">checked_by</span><span class="p">:</span><span class="w"> </span><span class="l">bin/check-search.py</span></span></span></code></pre></div></div>
+<span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
+</div>
+</figure><h2 id="measure-coverage">Measure the coverage<a class="td-heading-self-link" href="#measure-coverage" aria-label="Link to this heading"></a>
+</h2>
+<p>Coverage is the one number this book quotes without qualification, because it is
+the one number whose inputs are both written down.</p>
+<figure id="eq-coverage" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="1.1">
+<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>C</mi><mo>=</mo><mfrac><mi>V</mi><mi>P</mi></mfrac></mrow><annotation encoding="application/x-tex">C = \frac{V}{P}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">V</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
+<figcaption><span class="td-eq-label">Equation 1.1</span> <span class="td-eq-caption">Coverage as verified surfaces over planned surfaces.</span></figcaption>
+</figure>
+<p>A single ratio hides how much of it rests on one lucky build. Weight each
+surface by how often it is exercised and the number stops flattering the parts
+nobody looks at.</p>
+<figure id="eq-weighted" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="1.2">
+<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mi>w</mi></msub><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>w</mi><mi>i</mi></msub><msub><mi>v</mi><mi>i</mi></msub></mrow><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>w</mi><mi>i</mi></msub></mrow></mfrac><mo separator="true">,</mo><mspace width="2em"/><msub><mi>w</mi><mi>i</mi></msub><mo>=</mo><msub><mrow><mi>log</mi><mo>⁡</mo></mrow><mn>2</mn></msub><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msub><mi>r</mi><mi>i</mi></msub><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+C_{w} = \frac{\sum_{i=1}^{n} w_i v_i}{\sum_{i=1}^{n} w_i},
+\qquad w_i = \log_{2}\left(1 + r_i\right)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.488em;vertical-align:-0.994em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.494em;"><span style="top:-2.3057em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8043em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2997em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.6897em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8043em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2997em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:2em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop"><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.207em;"><span style="top:-2.4559em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2441em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span></span></span></div>
+<figcaption><span class="td-eq-label">Equation 1.2</span> <span class="td-eq-caption">Weighted coverage, where r is how many times per week surface i is rebuilt.</span></figcaption>
+</figure><p>With <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub><mo>∈</mo><mo stretchy="false">{</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">v_i \in \{0, 1\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6891em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">1</span><span class="mclose">}</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">r_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> the weekly rebuild count,
+<a class="td-book-xref td-book-xref--eq" href="#eq-weighted" data-td-book-kind="eq" data-td-book-num="1.2">Equation 1.2</a> reduces to
+<a class="td-book-xref td-book-xref--eq" href="#eq-coverage" data-td-book-kind="eq" data-td-book-num="1.1">Equation 1.1</a> when every surface is rebuilt equally
+often. The gap between the two numbers is the part of the site that is only
+checked by accident.</p>
 <h2 id="keep-readable">Keep the chapter readable<a class="td-heading-self-link" href="#keep-readable" aria-label="Link to this heading"></a>
 </h2>
 <p>The prose explains why each object exists; the numbered objects make it easy to
-refer to the exact evidence from another chapter or output format.</p>
+refer to the exact evidence from another chapter or output format. Together,
+<a class="td-book-xref td-book-xref--fig" href="#fig-overview" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>,
+<a class="td-book-xref td-book-xref--tbl" href="#tbl-baseline" data-td-book-kind="tbl" data-td-book-num="1-1">Table 1-1</a>, and
+<a class="td-book-xref td-book-xref--eq" href="#eq-coverage" data-td-book-kind="eq" data-td-book-num="1.1">Equation 1.1</a> form the baseline. Chapter two turns
+that evidence into a release workflow.</p>
+<h2 id="references">References<a class="td-heading-self-link" href="#references" aria-label="Link to this heading"></a>
+</h2>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Damian Conway. <em>Perl Best Practices</em>. O&rsquo;Reilly Media, July 2005. ISBN 978-0-596-00173-5.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://ro-che.info/articles/2017-12-04-golden-tests">Golden testing</a>. <em>ro-che.info</em>, December 2017.&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://www.w3.org/TR/css-page-3/">Designing for print with CSS Paged Media</a>. W3C Working Draft, <em>w3.org</em>, October 2018.&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next">
@@ -582,7 +743,11 @@ data-td-label-collapse="Collapse section: Content"><span class="td-shell-aside-g
 <nav id="TableOfContents">
 <ul>
 <li><a href="#describe-system">Describe the system</a></li>
+<li><a href="#agree-evidence">Agree on the evidence</a></li>
+<li><a href="#show-evidence">Show the evidence</a></li>
+<li><a href="#measure-coverage">Measure the coverage</a></li>
 <li><a href="#keep-readable">Keep the chapter readable</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 </div>

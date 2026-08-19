@@ -2,6 +2,7 @@
 title: 代码块
 linkTitle: 代码块
 description: 普通 Markdown 围栏加一行属性，就得到文件名标题、精确复制、行号、高亮、换行、折叠与可链接的行。
+icon: fa-solid fa-code
 weight: 30
 search_keywords: [代码块, Code Block, 围栏, fence, 复制, copy, 行号, lineNos, 高亮, hl-lines, 折叠, collapse, 换行, wrap, Chroma, 语法高亮]
 ---

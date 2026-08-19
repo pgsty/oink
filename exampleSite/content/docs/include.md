@@ -2,6 +2,7 @@
 title: Include
 linkTitle: Include
 description: Pull an external file in with include, print a site parameter with param, and write a note that reaches no output at all with comment.
+icon: fa-solid fa-file-import
 weight: 200
 search_keywords: [include, file, snippet, reuse, readfile, param, interpolation, comment]
 params:

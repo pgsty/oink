@@ -2,6 +2,7 @@
 title: 标签页
 linkTitle: 标签页
 description: 给相邻的围栏或表格加一个 `{tab=}` 属性就得到标签页；加上 group 之后可分享链接、跨组同步、记住读者的选择。
+icon: fa-solid fa-window-restore
 weight: 40
 search_keywords: [标签页, Tabs, tab, group, value, 同步, 持久化, localStorage, hash, 选项卡]
 ---

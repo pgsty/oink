@@ -2,6 +2,7 @@
 title: Keys
 linkTitle: Keys
 description: Write shortcuts with `kbd` — one shortcode, a list of key names, a semantic key sequence that stays readable in print and in Markdown output.
+icon: fa-solid fa-keyboard
 weight: 190
 search_keywords: [Kbd, shortcut, keyboard, Ctrl, Cmd, chord]
 ---

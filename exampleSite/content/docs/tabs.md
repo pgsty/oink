@@ -2,6 +2,7 @@
 title: Tabs
 linkTitle: Tabs
 description: A `{tab=}` attribute on adjacent fences or tables makes a tab set; add a group and it becomes linkable, synchronized and remembered.
+icon: fa-solid fa-window-restore
 weight: 40
 search_keywords: [Tabs, tab, group, value, sync, persistence, localStorage, hash]
 ---

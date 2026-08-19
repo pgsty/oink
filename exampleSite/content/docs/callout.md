@@ -2,6 +2,7 @@
 title: Callouts
 linkTitle: Callouts
 description: Write notes, warnings and collapsible asides — with colour, icon and title — as `> [!NOTE]` blockquotes, no shortcode involved.
+icon: fa-solid fa-circle-info
 weight: 10
 search_keywords: [Callout, Alert, Admonition, note, tip, warning, caution, details, collapsible]
 ---

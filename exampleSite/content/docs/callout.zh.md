@@ -2,6 +2,7 @@
 title: 提示块
 linkTitle: 提示块
 description: 用 `> [!NOTE]` 这样的块引用写出带颜色、图标与标题的提示、警告与折叠块，不需要短代码。
+icon: fa-solid fa-circle-info
 weight: 10
 search_keywords: [提示块, Callout, Alert, Admonition, 告警, 折叠块, note, tip, warning, caution, details]
 ---

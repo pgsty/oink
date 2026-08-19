@@ -2,6 +2,7 @@
 title: ECharts
 linkTitle: ECharts
 description: Write ECharts options as YAML or JSON in an `echarts` fence; Hugo validates them at build time and the browser draws a theme-aware chart with the local ECharts.
+icon: fa-solid fa-chart-line
 weight: 150
 search_keywords: [ECharts, chart, bar, line, pie, height, theme, OinkEchartsFunctions]
 ---
@@ -326,6 +327,154 @@ next to the fence so they change together.
 
 That script is site code and deserves code review. Formatting a string template
 (`{b}`, `{c}`, `{d}`) can express does not need a function.
+
+## Charts that carry an argument {#complex}
+
+The charts above demonstrate options. A chart in a real document usually has to
+do one more thing: put one series in the foreground and keep the rest as context.
+Two option shapes cover most of that work.
+
+The first is a ranked bar with a data-driven colour. `itemStyle.color` accepts a
+function, so `$fn:` can return a gradient for the row being argued about and a
+flat colour for the others; `showBackground` draws the track behind every bar so
+short rows stay legible.
+
+````markdown {title="Source"}
+<script>
+  window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
+  window.OinkEchartsFunctions.starCount = function (p) {
+    return Number(p.value).toLocaleString('en-US');
+  };
+  window.OinkEchartsFunctions.starColour = function (p) {
+    if (p.name !== 'pgsty/pigsty') return '#7aa6c2';
+    return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: '#d94841' },
+      { offset: 1, color: '#f97316' }
+    ]);
+  };
+</script>
+
+```echarts {height="360px" full=true}
+grid: { left: 260, right: 88, top: 8, bottom: 28 }
+xAxis: { type: value, max: 6000, splitLine: { lineStyle: { type: dashed, opacity: 0.45 } } }
+yAxis:
+  type: category
+  inverse: true
+  axisLabel: { align: right, fontFamily: monospace, fontSize: 11 }
+  data: [pgsty/pigsty, polardb/PolarDB-for-PostgreSQL, tensorchord/pgvecto.rs, Tencent/TBase, apache/cloudberry, IvorySQL/IvorySQL]
+series:
+  - type: bar
+    barWidth: 18
+    showBackground: true
+    backgroundStyle: { color: "rgba(148, 163, 184, 0.16)" }
+    itemStyle: { color: "$fn:starColour", borderRadius: [0, 5, 5, 0] }
+    label: { show: true, position: right, formatter: "$fn:starCount", fontWeight: 600 }
+    data: [5521, 3191, 2181, 1439, 1315, 1051]
+```
+````
+
+<script>
+  window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
+  window.OinkEchartsFunctions.starCount = function (p) {
+    return Number(p.value).toLocaleString('en-US');
+  };
+  window.OinkEchartsFunctions.starColour = function (p) {
+    if (p.name !== 'pgsty/pigsty') return '#7aa6c2';
+    return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: '#d94841' },
+      { offset: 1, color: '#f97316' }
+    ]);
+  };
+</script>
+
+```echarts {height="360px" full=true}
+grid: { left: 260, right: 88, top: 8, bottom: 28 }
+xAxis: { type: value, max: 6000, splitLine: { lineStyle: { type: dashed, opacity: 0.45 } } }
+yAxis:
+  type: category
+  inverse: true
+  axisLabel: { align: right, fontFamily: monospace, fontSize: 11 }
+  data: [pgsty/pigsty, polardb/PolarDB-for-PostgreSQL, tensorchord/pgvecto.rs, Tencent/TBase, apache/cloudberry, IvorySQL/IvorySQL]
+series:
+  - type: bar
+    barWidth: 18
+    showBackground: true
+    backgroundStyle: { color: "rgba(148, 163, 184, 0.16)" }
+    itemStyle: { color: "$fn:starColour", borderRadius: [0, 5, 5, 0] }
+    label: { show: true, position: right, formatter: "$fn:starCount", fontWeight: 600 }
+    data: [5521, 3191, 2181, 1439, 1315, 1051]
+```
+
+`echarts` is a global in that callback because the runtime is already on the
+page — the function is called by the chart, after the library has loaded. Note
+the `full=true`: a chart with 260 pixels of axis labels does not fit the reading
+column.
+
+The second shape is a decomposition against a budget. Stack the parts with
+`stack:`, then draw the budget as a second bar pinned on top of the first with
+`barGap: "-100%"` and a low `z`, so it reads as a track rather than as data. An
+empty string in the category axis leaves a gap between groups, and `"-"` in a
+series skips that row.
+
+````markdown {title="Source"}
+```echarts {height="300px"}
+tooltip: { trigger: axis, axisPointer: { type: shadow }, formatter: "$fn:phaseSeconds" }
+legend: { top: 0, data: [Detect, Restart timeout, Failover] }
+grid: { left: 72, right: 24, top: 40, bottom: 28 }
+xAxis:
+  type: value
+  name: seconds
+  max: 100
+  minorTick: { show: true, splitNumber: 5 }
+  minorSplitLine: { show: true, lineStyle: { type: dotted, opacity: 0.2 } }
+yAxis:
+  type: category
+  axisLabel: { fontFamily: monospace, fontSize: 10 }
+  data: [safe-max, safe-avg, "", fast-max, fast-avg]
+series:
+  - { name: Detect, type: bar, stack: rto, barWidth: 18, z: 2, itemStyle: { color: "#b07aa1" }, data: [10, 5, "-", 5, 3] }
+  - { name: Restart timeout, type: bar, stack: rto, z: 2, itemStyle: { color: "#f28e2c" }, data: [45, 45, "-", 15, 15] }
+  - { name: Failover, type: bar, stack: rto, z: 2, itemStyle: { color: "#4e79a7" }, data: [18, 11, "-", 9, 6] }
+  - { name: Budget, type: bar, barGap: "-100%", barWidth: 18, z: 0, itemStyle: { color: "rgba(128,128,128,0.14)" }, data: [90, 90, "-", 30, 30] }
+```
+````
+
+<script>
+  window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
+  window.OinkEchartsFunctions.phaseSeconds = function (params) {
+    if (!params || !params.length || params[0].name === '') return '';
+    var rows = params
+      .filter(function (p) { return p.value !== '-' && p.value != null; })
+      .map(function (p) { return p.marker + ' ' + p.seriesName + ': ' + p.value + ' s'; });
+    return '<b>' + params[0].name + '</b><br/>' + rows.join('<br/>');
+  };
+</script>
+
+```echarts {height="300px"}
+tooltip: { trigger: axis, axisPointer: { type: shadow }, formatter: "$fn:phaseSeconds" }
+legend: { top: 0, data: [Detect, Restart timeout, Failover] }
+grid: { left: 72, right: 24, top: 40, bottom: 28 }
+xAxis:
+  type: value
+  name: seconds
+  max: 100
+  minorTick: { show: true, splitNumber: 5 }
+  minorSplitLine: { show: true, lineStyle: { type: dotted, opacity: 0.2 } }
+yAxis:
+  type: category
+  axisLabel: { fontFamily: monospace, fontSize: 10 }
+  data: [safe-max, safe-avg, "", fast-max, fast-avg]
+series:
+  - { name: Detect, type: bar, stack: rto, barWidth: 18, z: 2, itemStyle: { color: "#b07aa1" }, data: [10, 5, "-", 5, 3] }
+  - { name: Restart timeout, type: bar, stack: rto, z: 2, itemStyle: { color: "#f28e2c" }, data: [45, 45, "-", 15, 15] }
+  - { name: Failover, type: bar, stack: rto, z: 2, itemStyle: { color: "#4e79a7" }, data: [18, 11, "-", 9, 6] }
+  - { name: Budget, type: bar, barGap: "-100%", barWidth: 18, z: 0, itemStyle: { color: "rgba(128,128,128,0.14)" }, data: [90, 90, "-", 30, 30] }
+```
+
+The tooltip formatter drops the `-` entries, or the gap rows would show a
+tooltip with no content. The full version of this chart — four profiles, five
+phases — is [chapter three of the Book demo](/book/chapter-three/#failover-budget),
+where it sits next to the table and the equations that explain it.
 
 ## Where the data lives {#data}
 

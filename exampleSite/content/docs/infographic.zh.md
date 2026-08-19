@@ -2,6 +2,7 @@
 title: Infographic
 linkTitle: Infographic
 description: 用 `infographic` 围栏挑一个 AntV 模板，把标题与条目渲染成流程、时间线、漏斗、网格或层级信息图。
+icon: fa-solid fa-shapes
 weight: 160
 search_keywords: [Infographic, 信息图, AntV, 流程图, 时间线, 漏斗, timeline, funnel, 模板, template]
 ---

@@ -2,6 +2,7 @@
 title: 卡片
 linkTitle: 卡片
 description: 用带 `{.cards}` 的链接列表排出导航卡片网格；需要图标、徽章、图片时改用 shortcode。
+icon: fa-solid fa-id-card
 weight: 80
 search_keywords: [卡片, Cards, card, 链接卡片, 导航卡片, 栏目首页, section-index, 图标, 徽章]
 ---

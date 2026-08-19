@@ -2,6 +2,7 @@
 title: Tables
 linkTitle: Tables
 description: A plain GFM table plus one attribute line becomes a captioned table, a compatibility matrix, a field list, a numbered table or a tab set; wide tables scroll on their own.
+icon: fa-solid fa-table
 weight: 50
 search_keywords: [Table, matrix, full-width, caption, numbered table, horizontal scroll, GFM]
 ---

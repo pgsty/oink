@@ -2,6 +2,7 @@
 title: Asciinema
 linkTitle: Asciinema
 description: 把 .cast 终端录像放进页面：文字仍然是可选中的文字，播放器随主题分发，不连 CDN。
+icon: fa-solid fa-terminal
 weight: 210
 search_keywords: [Asciinema, 终端录像, cast, asciicast, 录屏, 演示, terminal recording, 播放器]
 ---

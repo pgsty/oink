@@ -2,6 +2,7 @@
 title: Draw.io
 linkTitle: Draw.io
 description: Put a `.drawio.svg` that carries an editable copy on the page as an ordinary image; hovering gives the reader a button that opens the Draw.io editor.
+icon: fa-solid fa-compass-drafting
 weight: 140
 search_keywords: [drawio-server, Draw.io, diagrams.net, drawio, mxfile, editable diagram, SVG, edit button]
 ---

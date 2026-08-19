@@ -2,6 +2,7 @@
 title: Code blocks
 linkTitle: Code blocks
 description: A plain Markdown fence plus one attribute line gives you a filename title, exact copy, line numbers, highlighting, wrapping, folding and linkable lines.
+icon: fa-solid fa-code
 weight: 30
 search_keywords: [Code Block, fence, copy, lineNos, hl-lines, collapse, wrap, Chroma, syntax highlighting]
 ---

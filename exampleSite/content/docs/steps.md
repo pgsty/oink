@@ -2,6 +2,7 @@
 title: Steps
 linkTitle: Steps
 description: An ordered list plus `{.steps}` becomes a numbered procedure with dots and a connecting rule; switch to the steps shortcode when each step needs a heading in the table of contents.
+icon: fa-solid fa-list-ol
 weight: 70
 search_keywords: [Steps, ordered list, procedure, tutorial, ol, start, TOC]
 ---

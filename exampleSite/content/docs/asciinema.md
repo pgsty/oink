@@ -2,6 +2,7 @@
 title: Asciinema
 linkTitle: Asciinema
 description: Put a .cast terminal recording on the page — the text stays selectable text, and the player ships with the theme rather than coming from a CDN.
+icon: fa-solid fa-terminal
 weight: 210
 search_keywords: [Asciinema, terminal recording, cast, asciicast, screencast, demo, player]
 ---

@@ -2,6 +2,7 @@
 title: 画廊
 linkTitle: 画廊
 description: 用 `gallery` 围栏把一组相关截图排成响应式网格，每张可带说明或链接，并复用页面的图片缩放对话框。
+icon: fa-solid fa-images
 weight: 170
 search_keywords: [画廊, Gallery, 图库, 截图网格, 围栏, 图片缩放, image zoom, link, class]
 image_zoom: true

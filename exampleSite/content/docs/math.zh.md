@@ -2,6 +2,7 @@
 title: 公式
 linkTitle: 公式
 description: 用 KaTeX 写行内与块级数学公式，构建期渲染完毕，读者不下载任何脚本。
+icon: fa-solid fa-square-root-variable
 weight: 100
 search_keywords: [公式, 数学, Math, KaTeX, LaTeX, TeX, passthrough, chem, mhchem, 化学式, 编号公式, eq]
 ---
@@ -37,6 +38,111 @@ h = \left\lceil \log_{f} N \right\rceil
 $$
 
 一行装不下的长公式在正文列内横向滚动，不会把版面撑宽；打印时保持静态。
+
+## 矩阵、分段与对齐 {#environments}
+
+KaTeX 的环境可以用在任何块级公式里。技术写作最常用的是三个：`bmatrix` 写向量与矩阵，`cases` 写分段定义，`aligned` 写跨若干行的推导。三者都在构建期渲染完毕——手机上的读者为此多下载的字节，不比读上面这句话更多。
+
+````markdown {title="源码"}
+$$
+\begin{bmatrix} a^{l}_{1} \\ \vdots \\ a^{l}_{d_l} \end{bmatrix}
+= \sigma\!\left(
+\begin{bmatrix}
+  w^{l}_{1,1} & \cdots & w^{l}_{1,d_{l-1}} \\
+  \vdots      & \ddots & \vdots \\
+  w^{l}_{d_l,1} & \cdots & w^{l}_{d_l,d_{l-1}}
+\end{bmatrix}
+\begin{bmatrix} a^{l-1}_{1} \\ \vdots \\ a^{l-1}_{d_{l-1}} \end{bmatrix}
++
+\begin{bmatrix} b^{l}_{1} \\ \vdots \\ b^{l}_{d_l} \end{bmatrix}
+\right)
+$$
+````
+
+$$
+\begin{bmatrix} a^{l}_{1} \\ \vdots \\ a^{l}_{d_l} \end{bmatrix}
+= \sigma\!\left(
+\begin{bmatrix}
+  w^{l}_{1,1} & \cdots & w^{l}_{1,d_{l-1}} \\
+  \vdots      & \ddots & \vdots \\
+  w^{l}_{d_l,1} & \cdots & w^{l}_{d_l,d_{l-1}}
+\end{bmatrix}
+\begin{bmatrix} a^{l-1}_{1} \\ \vdots \\ a^{l-1}_{d_{l-1}} \end{bmatrix}
++
+\begin{bmatrix} b^{l}_{1} \\ \vdots \\ b^{l}_{d_l} \end{bmatrix}
+\right)
+$$
+
+比正文栏更宽的公式会在自己的视口里横向滚动，而不会把页面撑宽；打印时它是静态的，所以宽矩阵要窄到一张 A4 放得下。
+
+`cases` 用来写"取值取决于落在哪一支"——延迟与超时的论证，本来就是这个形状：
+
+````markdown {title="源码"}
+$$
+T_{\text{detect}} =
+\begin{cases}
+0, & \text{崩溃恰好落在探测之前} \\[2pt]
+\tfrac{1}{2}\,t_{\text{loop}}, & \text{到达时刻服从均匀分布} \\[2pt]
+t_{\text{loop}}, & \text{崩溃恰好落在探测之后}
+\end{cases}
+$$
+````
+
+$$
+T_{\text{detect}} =
+\begin{cases}
+0, & \text{崩溃恰好落在探测之前} \\[2pt]
+\tfrac{1}{2}\,t_{\text{loop}}, & \text{到达时刻服从均匀分布} \\[2pt]
+t_{\text{loop}}, & \text{崩溃恰好落在探测之后}
+\end{cases}
+$$
+
+`aligned` 让推导始终对齐在它讨论的那个关系上：`&` 标出要对齐的列，`\\[4pt]` 给相邻两步之间留出呼吸的空间。
+
+````markdown {title="源码"}
+$$
+\begin{aligned}
+\delta^{l}_{j}
+&= \frac{\partial C}{\partial z^{l}_{j}}
+ = \sum_{k=1}^{d_{l+1}} \frac{\partial C}{\partial z^{l+1}_{k}} \frac{\partial z^{l+1}_{k}}{\partial z^{l}_{j}} \\[4pt]
+&= \sigma'\bigl(z^{l}_{j}\bigr) \sum_{k=1}^{d_{l+1}} \delta^{l+1}_{k}\, w^{l+1}_{kj}
+ = \sigma'\bigl(z^{l}_{j}\bigr) \Bigl[ \bigl(W^{l+1}\bigr)^{\mathsf{T}} \delta^{l+1} \Bigr]_{j}
+\end{aligned}
+$$
+````
+
+$$
+\begin{aligned}
+\delta^{l}_{j}
+&= \frac{\partial C}{\partial z^{l}_{j}}
+ = \sum_{k=1}^{d_{l+1}} \frac{\partial C}{\partial z^{l+1}_{k}} \frac{\partial z^{l+1}_{k}}{\partial z^{l}_{j}} \\[4pt]
+&= \sigma'\bigl(z^{l}_{j}\bigr) \sum_{k=1}^{d_{l+1}} \delta^{l+1}_{k}\, w^{l+1}_{kj}
+ = \sigma'\bigl(z^{l}_{j}\bigr) \Bigl[ \bigl(W^{l+1}\bigr)^{\mathsf{T}} \delta^{l+1} \Bigr]_{j}
+\end{aligned}
+$$
+
+要用 `aligned` 而不是 `align`：外层的 `$$` 已经把 KaTeX 置于块级模式，而带星号与不带星号的 `align` 是给那些自己给公式编号的文档用的。
+
+## 正文与表格里的公式 {#inline}
+
+行内公式保持所在段落的行高，于是定义可以留在需要它的那句话里：第 \(l\) 层的误差是 \(\delta^{l} \equiv \partial C / \partial z^{l}\)，形状为 \(d_l \times 1\)，把它往前推一层的递推式是 \(\delta^{l} = (W^{l+1})^{\mathsf{T}} \delta^{l+1} \odot \sigma'(z^{l})\)。
+
+表格单元格用同样的定界符，一张公式速查表就是这么写出来的——一行一个方程，不用图片：
+
+```markdown {title="源码"}
+| 方程 | 需要什么 | 编号 |
+| --- | --- | :---: |
+| \(\delta^{L} = \nabla_a C \odot \sigma'(z^{L})\) | 网络输出与标注 | BP1 |
+```
+
+| 方程 | 需要什么 | 编号 |
+| --- | --- | :---: |
+| \(\delta^{L} = \nabla_a C \odot \sigma'(z^{L})\) | 网络输出 \(a^{L}\) 与标注 \(y\) | BP1 |
+| \(\delta^{l} = \bigl(W^{l+1}\bigr)^{\mathsf{T}} \delta^{l+1} \odot \sigma'(z^{l})\) | 后一层的权值与误差 | BP2 |
+| \(\nabla_{W^{l}} C = \delta^{l} \bigl(a^{l-1}\bigr)^{\mathsf{T}}\) | 本层误差与前一层输出 | BP3 |
+| \(\nabla_{b^{l}} C = \delta^{l}\) | 只需要本层误差 | BP4 |
+
+公式里出现竖线（`\mid`、`\vert`、`|`）会把单元格截断，所以在表格里要写 `\mid` 或 `\vert`，不要直接写那个字符。
 
 ## `math` 围栏 {#math-fence}
 

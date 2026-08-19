@@ -5,7 +5,6 @@ type: book
 icon: fa-solid fa-book
 weight: 30
 book_kind: book
-book_number: B
 outputs: [HTML, print, markdown]
 cascade:
   type: book
@@ -13,7 +12,9 @@ cascade:
 
 {{< book-toc depth=3 >}}
 
-这本小书把完整的出版能力压缩在可读范围内：三章、两张共享图片，每章各演示一种带编号内容。
+四章，每一章都是一类书籍排版的完整样例：用表格承担论证的证据章、用清单承担论证的发布章、
+用图表承担论证的运行章，以及用数学承担论证的公式章。下面每一个带编号的图、表、公式与示例，
+都可以被任意一章引用，并且在打印与 Markdown 输出中同样成立。
 
 ## 图目录
 

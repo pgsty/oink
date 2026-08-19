@@ -2,6 +2,7 @@
 title: PlantUML
 linkTitle: PlantUML
 description: A `plantuml` fence writes sequence, class, component, activity and use-case diagrams; rendering requires a PlantUML server you configure yourself.
+icon: fa-solid fa-sitemap
 weight: 120
 search_keywords: [svg-image-url, PlantUML, UML, sequence, class, component, activity, usecase]
 ---

@@ -2,6 +2,7 @@
 title: Cards
 linkTitle: Cards
 description: A link list plus `{.cards}` lays out a grid of navigation cards; switch to the shortcode when you need icons, badges or images.
+icon: fa-solid fa-id-card
 weight: 80
 search_keywords: [Cards, card, link card, navigation card, section index, icon, badge]
 ---

@@ -2,6 +2,7 @@
 title: PlantUML
 linkTitle: PlantUML
 description: 用 `plantuml` 围栏写时序图、类图、组件图、活动图与用例图；渲染必须由你自己配置一个 PlantUML 服务。
+icon: fa-solid fa-sitemap
 weight: 120
 search_keywords: [svg-image-url, PlantUML, UML, sequence, class, component, activity, usecase, 时序图, 类图, 组件图, 活动图, 用例图]
 ---

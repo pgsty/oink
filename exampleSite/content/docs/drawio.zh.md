@@ -2,6 +2,7 @@
 title: Draw.io
 linkTitle: Draw.io
 description: 把带着可编辑副本的 `.drawio.svg` 当普通图片放进页面，读者鼠标移上去就能点开 Draw.io 编辑器改图。
+icon: fa-solid fa-compass-drafting
 weight: 140
 search_keywords: [drawio-server, Draw.io, diagrams.net, drawio, mxfile, 可编辑图, SVG, 编辑按钮]
 ---

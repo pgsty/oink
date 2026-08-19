@@ -2,6 +2,7 @@
 title: 图片
 linkTitle: 图片
 description: 用普通 Markdown 图片语法写图，加一行属性就得到图注、尺寸、缩放、链接、编号与 Hugo 图片处理。
+icon: fa-solid fa-image
 weight: 20
 search_keywords: [图片, Image, Figure, 图注, caption, 缩放, zoom, 图片处理, imgproc, width, height, 编号]
 image_zoom: true

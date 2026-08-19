@@ -2,6 +2,7 @@
 title: 参数表
 linkTitle: 参数表
 description: 用一张普通表格加 `{.fields}` 记录配置项、命令参数与 API 字段：名称、类型、默认值、说明各就各位，窄屏不挤，每条都能单独链接。
+icon: fa-solid fa-sliders
 weight: 60
 search_keywords: [参数表, Fields, field, 配置项, 参数, API 字段, meta, type, required, default, 定义列表, 锚点]
 ---

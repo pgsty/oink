@@ -283,6 +283,7 @@ def check_example(public: Path) -> list[str]:
         "one": public / "book/chapter-one/index.html",
         "two": public / "book/chapter-two/index.html",
         "three": public / "book/chapter-three/index.html",
+        "four": public / "book/chapter-four/index.html",
         "root_md": public / "book/index.md",
         "one_md": public / "book/chapter-one/index.md",
         "one_print": public / "_print/book/chapter-one/index.html",
@@ -301,29 +302,60 @@ def check_example(public: Path) -> list[str]:
         "/book/chapter-one/",
         "/book/chapter-two/",
         "/book/chapter-three/",
+        "/book/chapter-four/",
     }
-    require(set(documents) == expected_pages, "Book example must contain exactly three chapters", errors)
+    require(set(documents) == expected_pages, "Book example must contain exactly four chapters", errors)
 
     one = documents.get("/book/chapter-one/")
     two = documents.get("/book/chapter-two/")
     three = documents.get("/book/chapter-three/")
+    four = documents.get("/book/chapter-four/")
     root = documents.get("/book/")
-    if one and two and three and root:
+    if one and two and three and four and root:
         require("td-book-content--normal" in one.body_classes, "Book default reading width is not normal", errors)
         require(
-            one.sidebar_links[:4]
-            == ["/book/", "/book/chapter-one/", "/book/chapter-two/", "/book/chapter-three/"],
+            one.sidebar_links[:5]
+            == [
+                "/book/",
+                "/book/chapter-one/",
+                "/book/chapter-two/",
+                "/book/chapter-three/",
+                "/book/chapter-four/",
+            ],
             "Book sidebar order changed",
             errors,
         )
         require(one.pager == {"prev": "/book/", "next": "/book/chapter-two/"}, "Book pager does not follow sidebar pre-order", errors)
         require(two.pager == {"prev": "/book/chapter-one/", "next": "/book/chapter-three/"}, "middle Book page pager is wrong", errors)
-        require(three.pager == {"prev": "/book/chapter-two/"}, "last Book page pager is wrong", errors)
+        require(three.pager == {"prev": "/book/chapter-two/", "next": "/book/chapter-four/"}, "middle Book page pager is wrong", errors)
+        require(four.pager == {"prev": "/book/chapter-three/"}, "last Book page pager is wrong", errors)
         require(two.has_sidebar_headings, "active Book page has no sidebar heading branch", errors)
+        # Every chapter carries two or more of each numbered kind so the
+        # fixture exercises shortcode and native authoring side by side.
         target_sets = {
-            "one": (one, {"fig-overview", "tbl-baseline", "eq-coverage", "eg-baseline"}),
-            "two": (two, {"fig-release", "tbl-release", "eq-readiness", "eg-manifest"}),
-            "three": (three, {"fig-operations", "tbl-operations", "eq-budget", "eg-review"}),
+            "one": (one, {
+                "fig-overview", "fig-artifact",
+                "tbl-baseline", "tbl-outputs",
+                "eq-coverage", "eq-weighted",
+                "eg-baseline", "eg-inventory",
+            }),
+            "two": (two, {
+                "fig-release",
+                "tbl-release", "tbl-states",
+                "eq-readiness", "eq-propagation",
+                "eg-manifest", "eg-checksums", "eg-tag",
+            }),
+            "three": (three, {
+                "fig-operations",
+                "tbl-operations", "tbl-failure-model",
+                "eq-budget", "eq-detect", "eq-rto",
+                "eg-review", "eg-profile",
+            }),
+            "four": (four, {
+                "tbl-notation", "tbl-backprop",
+                "eq-layer", "eq-sigmoid", "eq-bp1",
+                "eg-network", "eg-training",
+            }),
         }
         for name, (document, expected) in target_sets.items():
             require(set(document.targets) == expected, f"chapter {name} target registry changed: {sorted(document.targets)}", errors)
@@ -355,9 +387,11 @@ def check_example(public: Path) -> list[str]:
             "/book/chapter-one/",
             "/book/chapter-two/",
             "/book/chapter-three/",
+            "/book/chapter-four/",
             "#describe-system",
             "#delivery-states",
             "#observe-result",
+            "#four-equations",
         ):
             require(marker in toc_source, f"depth-three Book ToC lost {marker}", errors)
         for marker in ("/docs/", "/blog/", "/landing-demo/"):
@@ -365,25 +399,60 @@ def check_example(public: Path) -> list[str]:
         require("<ol class=td-book-toc__headings" in toc_source or '<ol class="td-book-toc__headings' in toc_source, "Book ToC lost heading lists", errors)
         require("<ol class=td-book-toc__headings><ol" not in toc_source, "Book ToC contains an empty wrapper list", errors)
 
+    # Every list runs in document order, and each chapter authors some targets
+    # as shortcodes and some in native form: one form sorting ahead of the other
+    # would put Figure 1-2 before Figure 1-1.
+    expected_lists = {
+        "fig": ["Figure 1-1", "Figure 1-2", "Figure 2-1", "Figure 3-1"],
+        "tbl": [
+            "Table 1-1", "Table 1-2", "Table 2-1", "Table 2-2",
+            "Table 3-1", "Table 3-2", "Table 4-1", "Table 4-2",
+        ],
+        "eq": [
+            "Equation 1.1", "Equation 1.2", "Equation 2.1", "Equation 2.2",
+            "Equation 3.1", "Equation 3.2", "Equation 3.3",
+            "Equation 4.1", "Equation 4.2", "Equation 4.3",
+        ],
+        "eg": [
+            "Example 1-1", "Example 1-2", "Example 2-1", "Example 2-2",
+            "Example 2-3", "Example 3-1", "Example 3-2",
+            "Example 4-1", "Example 4-2",
+        ],
+    }
     for kind in ("fig", "tbl", "eq", "eg"):
         require(
             f'td-book-figures--{kind}' in source["root"],
             f"Book index lost the {kind} list",
             errors,
         )
+        listing = re.search(
+            rf'td-book-figures--{kind}"?>(.*?)</ol>', source["root"], re.DOTALL
+        )
+        require(listing is not None, f"Book index {kind} list is unreadable", errors)
+        if listing:
+            labels = re.findall(
+                r'td-book-label"?>([^<]+)<', listing.group(1)
+            )
+            require(
+                labels == expected_lists[kind],
+                f"Book {kind} list is not in document order: {labels}",
+                errors,
+            )
     for marker in (
-        "Figure 1-1", "Figure 2-1", "Figure 3-1",
-        "Table 1-1", "Table 2-1", "Table 3-1",
-        "Equation 1.1", "Equation 2.1", "Equation 3.1",
-        "Example 1-1", "Example 2-1", "Example 3-1",
+        "Figure 1-1", "Figure 1-2", "Figure 2-1", "Figure 3-1",
+        "Table 1-1", "Table 1-2", "Table 2-1", "Table 3-1", "Table 4-1", "Table 4-2",
+        "Equation 1.1", "Equation 1.2", "Equation 2.1", "Equation 3.1", "Equation 3.3", "Equation 4.1",
+        "Example 1-1", "Example 2-1", "Example 2-3", "Example 3-1", "Example 4-1",
         "/book/chapter-one/#fig-overview",
+        "/book/chapter-one/#fig-artifact",
         "/book/chapter-two/#fig-release",
         "/book/chapter-three/#fig-operations",
+        "/book/chapter-four/#tbl-backprop",
     ):
         require(marker in source["root"], f"Book figure list lost {marker}", errors)
     for marker in ("td-book-draft-badge", "td-book-draft", "data-td-book-headings", "#delivery-states"):
         require(marker in source["two"], f"draft/sidebar output lost {marker}", errors)
-    for name in ("one", "two", "three"):
+    for name in ("one", "two", "three", "four"):
         for marker in ("td-table-scroll", 'class="katex-display"', "third_party/katex/katex.min.", "td-book-figure--eg"):
             require(marker in source[name], f"chapter {name} lost {marker}", errors)
     require("Query a small evidence table before publishing." not in (toc.group(0) if toc else ""), "example caption leaked into Book ToC", errors)
@@ -403,10 +472,11 @@ def check_example(public: Path) -> list[str]:
         "- [1 Establish the baseline]",
         "- [2 Release workflow]",
         "- [3 Operate and review]",
-        "- [Figure 1-1]", "- [Figure 2-1]", "- [Figure 3-1]",
-        "- [Table 1-1]", "- [Table 2-1]", "- [Table 3-1]",
-        "- [Equation 1.1]", "- [Equation 2.1]", "- [Equation 3.1]",
-        "- [Example 1-1]", "- [Example 2-1]", "- [Example 3-1]",
+        "- [4 Formulas and derivations]",
+        "- [Figure 1-1]", "- [Figure 1-2]", "- [Figure 2-1]", "- [Figure 3-1]",
+        "- [Table 1-1]", "- [Table 1-2]", "- [Table 2-1]", "- [Table 3-1]", "- [Table 4-1]",
+        "- [Equation 1.1]", "- [Equation 1.2]", "- [Equation 2.1]", "- [Equation 3.1]", "- [Equation 4.1]",
+        "- [Example 1-1]", "- [Example 2-1]", "- [Example 3-1]", "- [Example 4-1]",
     ):
         require(marker in source["root_md"], f"Markdown Book index lost {marker}", errors)
 
@@ -423,16 +493,32 @@ def check_example(public: Path) -> list[str]:
         require(marker in source["one_print"], f"chapter print lost {marker}", errors)
     aggregate = parse_html(source["book_print"])
     require(
-        aggregate.book_pages == ["/book", "/book/chapter-one", "/book/chapter-two", "/book/chapter-three"],
+        aggregate.book_pages
+        == [
+            "/book",
+            "/book/chapter-one",
+            "/book/chapter-two",
+            "/book/chapter-three",
+            "/book/chapter-four",
+        ],
         "whole-Book print order changed",
         errors,
     )
     duplicate_aggregate_ids = sorted(key for key, count in Counter(aggregate.ids).items() if count > 1)
     require(not duplicate_aggregate_ids, f"whole-Book print contains duplicate IDs: {duplicate_aggregate_ids}", errors)
+    # Footnotes are numbered per page, so the aggregate must namespace them the
+    # way it namespaces heading IDs; chapters one to four all carry references.
+    require('id="fn:pg-' in source["book_print"], "whole-Book print did not namespace footnote IDs", errors)
+    require('id="fn:1"' not in source["book_print"], "whole-Book print kept a page-local footnote ID", errors)
     for element_id in (
-        "fig-overview", "tbl-baseline", "eq-coverage", "eg-baseline",
-        "fig-release", "tbl-release", "eq-readiness", "eg-manifest",
-        "fig-operations", "tbl-operations", "eq-budget", "eg-review",
+        "fig-overview", "fig-artifact", "tbl-baseline", "tbl-outputs",
+        "eq-coverage", "eq-weighted", "eg-baseline", "eg-inventory",
+        "fig-release", "tbl-release", "tbl-states", "eq-readiness",
+        "eq-propagation", "eg-manifest", "eg-checksums", "eg-tag",
+        "fig-operations", "tbl-operations", "tbl-failure-model",
+        "eq-budget", "eq-detect", "eq-rto", "eg-review", "eg-profile",
+        "tbl-notation", "tbl-backprop", "eq-layer", "eq-sigmoid",
+        "eq-bp1", "eg-network", "eg-training",
     ):
         require(source["book_print"].count(f'id={element_id}') + source["book_print"].count(f'id="{element_id}"') == 1, f"whole-Book print does not preserve one {element_id!r}", errors)
     for marker in ('href="#fig-overview"', 'href="#eq-readiness"', 'href="#eg-baseline"'):
@@ -751,7 +837,7 @@ def check_sources() -> list[str]:
         "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-td-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
         "layouts/_partials/book/print.html": ("nav-flatten.html", 'partialCached "print/page-content.html"', '"book" true', "data-td-book-page"),
         "layouts/_partials/print/page-content.html": ("tdBookAggregate", "namespace-print-headings.html", "static-image-output.html"),
-        "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink"),
+        "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink", "fnref[0-9]*|fn"),
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
         "layouts/_td-content.html": ('ne .Type "book"', "reading-time.html"),

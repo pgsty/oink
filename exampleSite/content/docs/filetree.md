@@ -2,6 +2,7 @@
 title: File trees
 linkTitle: File trees
 description: A `filetree` fence draws an annotated directory structure — aligned comment column, per-entry icons, collapsible directories, a draggable split.
+icon: fa-solid fa-folder-tree
 weight: 90
 search_keywords: [FileTree, directory tree, tree, repository layout, fence, icon, tone, open]
 ---

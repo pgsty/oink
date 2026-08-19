@@ -57,6 +57,8 @@ THIRD_PARTY_CLASS = re.compile(
     r"|newline$|boxpad$|angl|cd-|fbox$|fcolorbox$|not$|textbf$|textit$|mspace$|mathdefault$"
     r"|math(rm|bf|it|bb|cal|frak|scr|sf|tt)$|text(rm|sf|tt|bb)?$|boldsymbol$|amsrm$|mainrm$"
     r"|stretchy$|x-arrow|halfarrow-|brace-|mult$|delim-size\d$|mtr-glue$|vertical-separator$"
+    # KaTeX again: \vdots rules, small \sum, and the CJK fallback \text{} takes
+    r"|rule$|small-op$|cjk_fallback$"
     # Chroma / Hugo highlighting
     r"|chroma$|highlight$|line$|lnt?$|lntable$|lntd$|lnlinks$|hl$|cl$|language-|[a-z]{1,3}\d?$"
     # Hugo / Goldmark

@@ -2,6 +2,7 @@
 title: Mathematics
 linkTitle: Mathematics
 description: Inline and display mathematics with KaTeX, rendered at build time — the reader downloads no script.
+icon: fa-solid fa-square-root-variable
 weight: 100
 search_keywords: [Math, KaTeX, LaTeX, TeX, passthrough, chem, mhchem, chemistry, numbered equation, eq]
 ---
@@ -45,6 +46,127 @@ $$
 
 A formula too long for one line scrolls horizontally inside the reading column
 rather than widening the layout; in print it stays static.
+
+## Matrices, cases and alignment {#environments}
+
+KaTeX's environments work inside any display formula. Three of them carry most
+technical writing: `bmatrix` for a statement about vectors and matrices, `cases`
+for a piecewise definition, and `aligned` for a derivation that runs over several
+lines. All three are build-time output — a reader on a phone downloads no more
+than a reader of the sentence above.
+
+````markdown {title="Source"}
+$$
+\begin{bmatrix} a^{l}_{1} \\ \vdots \\ a^{l}_{d_l} \end{bmatrix}
+= \sigma\!\left(
+\begin{bmatrix}
+  w^{l}_{1,1} & \cdots & w^{l}_{1,d_{l-1}} \\
+  \vdots      & \ddots & \vdots \\
+  w^{l}_{d_l,1} & \cdots & w^{l}_{d_l,d_{l-1}}
+\end{bmatrix}
+\begin{bmatrix} a^{l-1}_{1} \\ \vdots \\ a^{l-1}_{d_{l-1}} \end{bmatrix}
++
+\begin{bmatrix} b^{l}_{1} \\ \vdots \\ b^{l}_{d_l} \end{bmatrix}
+\right)
+$$
+````
+
+$$
+\begin{bmatrix} a^{l}_{1} \\ \vdots \\ a^{l}_{d_l} \end{bmatrix}
+= \sigma\!\left(
+\begin{bmatrix}
+  w^{l}_{1,1} & \cdots & w^{l}_{1,d_{l-1}} \\
+  \vdots      & \ddots & \vdots \\
+  w^{l}_{d_l,1} & \cdots & w^{l}_{d_l,d_{l-1}}
+\end{bmatrix}
+\begin{bmatrix} a^{l-1}_{1} \\ \vdots \\ a^{l-1}_{d_{l-1}} \end{bmatrix}
++
+\begin{bmatrix} b^{l}_{1} \\ \vdots \\ b^{l}_{d_l} \end{bmatrix}
+\right)
+$$
+
+A formula wider than the reading column scrolls inside its own viewport instead
+of widening the page. In print it is static, so keep a wide matrix narrow enough
+to survive a sheet of A4.
+
+`cases` states a value that depends on which branch you are in — the shape most
+latency and timeout arguments actually have:
+
+````markdown {title="Source"}
+$$
+T_{\text{detect}} =
+\begin{cases}
+0, & \text{crash lands immediately before a probe} \\[2pt]
+\tfrac{1}{2}\,t_{\text{loop}}, & \text{uniformly distributed arrival} \\[2pt]
+t_{\text{loop}}, & \text{crash lands immediately after a probe}
+\end{cases}
+$$
+````
+
+$$
+T_{\text{detect}} =
+\begin{cases}
+0, & \text{crash lands immediately before a probe} \\[2pt]
+\tfrac{1}{2}\,t_{\text{loop}}, & \text{uniformly distributed arrival} \\[2pt]
+t_{\text{loop}}, & \text{crash lands immediately after a probe}
+\end{cases}
+$$
+
+`aligned` keeps a derivation on the relation it is about: the `&` marks the
+column that lines up, and `\\[4pt]` adds breathing room between steps.
+
+````markdown {title="Source"}
+$$
+\begin{aligned}
+\delta^{l}_{j}
+&= \frac{\partial C}{\partial z^{l}_{j}}
+ = \sum_{k=1}^{d_{l+1}} \frac{\partial C}{\partial z^{l+1}_{k}} \frac{\partial z^{l+1}_{k}}{\partial z^{l}_{j}} \\[4pt]
+&= \sigma'\bigl(z^{l}_{j}\bigr) \sum_{k=1}^{d_{l+1}} \delta^{l+1}_{k}\, w^{l+1}_{kj}
+ = \sigma'\bigl(z^{l}_{j}\bigr) \Bigl[ \bigl(W^{l+1}\bigr)^{\mathsf{T}} \delta^{l+1} \Bigr]_{j}
+\end{aligned}
+$$
+````
+
+$$
+\begin{aligned}
+\delta^{l}_{j}
+&= \frac{\partial C}{\partial z^{l}_{j}}
+ = \sum_{k=1}^{d_{l+1}} \frac{\partial C}{\partial z^{l+1}_{k}} \frac{\partial z^{l+1}_{k}}{\partial z^{l}_{j}} \\[4pt]
+&= \sigma'\bigl(z^{l}_{j}\bigr) \sum_{k=1}^{d_{l+1}} \delta^{l+1}_{k}\, w^{l+1}_{kj}
+ = \sigma'\bigl(z^{l}_{j}\bigr) \Bigl[ \bigl(W^{l+1}\bigr)^{\mathsf{T}} \delta^{l+1} \Bigr]_{j}
+\end{aligned}
+$$
+
+Use `aligned`, not `align`: the outer `$$` already puts KaTeX in display mode,
+and the starred and unstarred `align` environments are for documents that number
+their own lines.
+
+## Formulas inside prose and tables {#inline}
+
+An inline formula keeps the line height of the paragraph around it, so a
+definition can stay in the sentence that needs it: the error of layer \(l\) is
+\(\delta^{l} \equiv \partial C / \partial z^{l}\), a vector of shape
+\(d_l \times 1\), and the recursion that moves it one layer back is
+\(\delta^{l} = (W^{l+1})^{\mathsf{T}} \delta^{l+1} \odot \sigma'(z^{l})\).
+
+Table cells take the same delimiters, which is how a reference table of formulas
+is written — one row per equation, no images:
+
+```markdown {title="Source"}
+| Equation | What it needs | Number |
+| --- | --- | :---: |
+| \(\delta^{L} = \nabla_a C \odot \sigma'(z^{L})\) | The output and the label | BP1 |
+```
+
+| Equation | What it needs | Number |
+| --- | --- | :---: |
+| \(\delta^{L} = \nabla_a C \odot \sigma'(z^{L})\) | The output \(a^{L}\) and the label \(y\) | BP1 |
+| \(\delta^{l} = \bigl(W^{l+1}\bigr)^{\mathsf{T}} \delta^{l+1} \odot \sigma'(z^{l})\) | The next layer's weights and error | BP2 |
+| \(\nabla_{W^{l}} C = \delta^{l} \bigl(a^{l-1}\bigr)^{\mathsf{T}}\) | This layer's error, the previous layer's output | BP3 |
+| \(\nabla_{b^{l}} C = \delta^{l}\) | This layer's error, and nothing else | BP4 |
+
+A pipe inside a formula (`\mid`, `\vert`, `|`) ends the cell, so write
+`\mid` — or `\vert` — rather than the bare character in a table.
 
 ## The `math` fence {#math-fence}
 

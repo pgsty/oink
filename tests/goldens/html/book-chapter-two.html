@@ -56,7 +56,7 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Release workflow">
 <meta itemprop="description" content="Turn a reviewed change into a traceable release.">
-<meta itemprop="wordCount" content="140">
+<meta itemprop="wordCount" content="663">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
@@ -270,7 +270,7 @@ id="m-book-li">
 <div class="td-shell-tree__row td-shell-tree__row--root">
 <a href="/book/" title="OINK Book Demo"
 class="td-shell-tree__link"
-id="m-book"><i class="fa-solid fa-book" aria-hidden="true"></i><span class="td-book-number">B</span><span>OINK Book Demo</span></a>
+id="m-book"><i class="fa-solid fa-book" aria-hidden="true"></i><span>OINK Book Demo</span></a>
 </div><div id="m-book-children" class="td-shell-tree__children td-shell-tree__children--static">
 <div class="td-shell-tree__children-inner">
 <ul class="td-shell-tree__list td-shell-tree__list--1"><li class="td-shell-tree__item td-leaf"
@@ -290,7 +290,10 @@ id="m-bookchapter-two"><span class="td-book-number">2</span><span>Release workfl
 <div class="td-shell-tree__headings" data-td-book-headings>
 <ul>
 <li><a href="#delivery-states">Make delivery states explicit</a></li>
+<li><a href="#manifest">Write the manifest first</a></li>
+<li><a href="#readiness">Score the readiness</a></li>
 <li><a href="#handoff">Handoff</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
@@ -299,6 +302,13 @@ id="m-bookchapter-three-li">
 <a href="/book/chapter-three/" title="Operate and review"
 class="td-shell-tree__link"
 id="m-bookchapter-three"><span class="td-book-number">3</span><span>Operate and review</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-bookchapter-four-li">
+<div class="td-shell-tree__row">
+<a href="/book/chapter-four/" title="Formulas and derivations"
+class="td-shell-tree__link"
+id="m-bookchapter-four"><span class="td-book-number">4</span><span>Formulas and derivations</span></a>
 </div>
 </li></ul>
 </div>
@@ -476,7 +486,11 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Fbook
 <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i>
 <strong>Draft</strong>
 <span>This chapter is still being revised.</span>
-</aside><p>Chapter one established the baseline in <a class="td-book-xref td-book-xref--fig" href="/book/chapter-one/#fig-overview" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>. This chapter follows the same change through release.</p>
+</aside><blockquote>
+<p><em>If it isn&rsquo;t tagged, it didn&rsquo;t ship.</em></p>
+<p>— Release engineering folklore</p>
+</blockquote>
+<p>Chapter one established the baseline in <a class="td-book-xref td-book-xref--fig" href="/book/chapter-one/#fig-overview" data-td-book-kind="fig" data-td-book-num="1-1">Figure 1-1</a>. This chapter follows the same change through release, and insists on one property throughout: at every point, somebody can name the exact bytes under discussion.</p>
 <h2 id="delivery-states">Make delivery states explicit<a class="td-heading-self-link" href="#delivery-states" aria-label="Link to this heading"></a>
 </h2>
 <p>Local edits, commits, remote delivery, and production rollout are separate states.
@@ -510,16 +524,72 @@ Keeping them visible makes a release easier to audit.</p>
 <td>Running version</td>
 <td>Operator</td>
 </tr>
+<tr>
+<td>Document</td>
+<td>A version the reader can pin</td>
+<td>Author</td>
+</tr>
 </tbody>
 </table>
 </div>
 </div>
 <figcaption><span class="td-tbl-label">Table 2-1</span> <span class="td-tbl-caption">Evidence required at each delivery stage.</span></figcaption>
 </figure>
-<figure id="eq-readiness" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="2.1">
-<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>R</mi><mo>=</mo><mfrac><mrow><mi>B</mi><mo>+</mo><mi>T</mi><mo>+</mo><mi>D</mi></mrow><mn>3</mn></mfrac></mrow><annotation encoding="application/x-tex">R = \frac{B + T + D}{3}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
-<figcaption><span class="td-eq-label">Equation 2.1</span> <span class="td-eq-caption">A simple release-readiness score.</span></figcaption>
-</figure>
+<p>The five states below are not synonyms, and a release announcement that conflates
+them is the most common way a project loses a reader&rsquo;s trust. A green local build
+is none of them.</p>
+<figure id="tbl-states" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="2-2"><div class="td-book-figure__body"><div class="td-table-scroll" tabindex="0" role="region" aria-label="Scrollable table">
+<table>
+<thead>
+<tr>
+<th scope="col">State</th>
+<th scope="col">Reached when</th>
+<th scope="col">Reversible</th>
+<th scope="col">Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source complete</td>
+<td>The change is committed on the release branch</td>
+<td>Yes</td>
+<td>A commit hash</td>
+</tr>
+<tr>
+<td>Validated</td>
+<td>Every check in the suite passes on that commit <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></td>
+<td>Yes</td>
+<td>A CI run URL</td>
+</tr>
+<tr>
+<td>Published</td>
+<td>An immutable signed tag resolves through the proxy <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></td>
+<td><strong>No</strong></td>
+<td><code>GOPROXY</code> returning the version</td>
+</tr>
+<tr>
+<td>Documented</td>
+<td>The consuming site pins the published version</td>
+<td>Yes</td>
+<td>A diff in <code>go.mod</code></td>
+</tr>
+<tr>
+<td>Deployed</td>
+<td>The pinned version is what readers are served</td>
+<td>Yes</td>
+<td>A response header</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div><figcaption><span class="td-tbl-label">Table 2-2</span> <span class="td-tbl-caption">Release states, in order. Only one of them cannot be undone.</span></figcaption></figure>
+<p>The one irreversible row in <a class="td-book-xref td-book-xref--tbl" href="#tbl-states" data-td-book-kind="tbl" data-td-book-num="2-2">Table 2-2</a> is why
+publication happens last and why a mistake becomes a new patch version rather
+than a moved tag.</p>
+<h2 id="manifest">Write the manifest first<a class="td-heading-self-link" href="#manifest" aria-label="Link to this heading"></a>
+</h2>
+<p>Write down what you intend to ship before shipping it. The manifest is the thing
+a later reviewer diffs against reality.</p>
 <figure id="eg-manifest" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="2-1">
 <figcaption><span class="td-eg-label">Example 2-1</span> <span class="td-eg-caption">Record one immutable release manifest.</span></figcaption>
 <div class="td-book-figure__body"><div class="td-code td-code--untitled" id="td-code-b71c6238-eg4-fence-0" data-td-code data-td-code-auto-id
@@ -541,13 +611,112 @@ aria-label="Copy code" title="Copy code">
 </div>
 </div>
 </figure>
-<p>The manifest in <a class="td-book-xref td-book-xref--eg" href="#eg-manifest" data-td-book-kind="eg" data-td-book-num="2-1">Example 2-1</a> and the stages in
-<a class="td-book-xref td-book-xref--tbl" href="#tbl-release" data-td-book-kind="tbl" data-td-book-num="2-1">Table 2-1</a> describe different evidence and
-should not be collapsed into one status.</p>
+<p>Checksums belong beside the artifact, in the format the verifying tool already
+reads. Anything that has to be reformatted by hand before it can be checked will
+eventually not be checked.</p>
+<figure id="eg-checksums" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="2-2">
+<figcaption><span class="td-eg-label">Example 2-2</span> <span class="td-eg-caption">A checksum file in the format sha256sum -c consumes without edits.</span></figcaption>
+<div class="td-code td-code--untitled" id="td-code-b71c6238-fence-0" data-td-code data-td-code-auto-id
+data-td-language="text" data-td-line-count="2"><div class="td-code__utilities td-code__utilities--compact">
+<button class="td-code__copy" type="button" hidden data-td-code-copy
+data-td-code-target="td-code-b71c6238-fence-0" data-td-copy-mode="all"
+data-td-label-copy="Copy code"
+data-td-label-copied="Copied"
+data-td-label-error="Copy failed"
+aria-label="Copy code" title="Copy code">
+<i class="fa-regular fa-copy" aria-hidden="true"></i>
+</button>
+</div>
+<div class="td-code__viewport" id="td-code-b71c6238-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">9d3f0c1c7bd2f9b0a8b9a0f2c7c1c26f1e2ab0d1c4c6ba0d1e0a9f8c7b6a5d4e  oink-0.5.0.tar.gz
+</span></span><span class="line"><span class="cl">1a2b3c4d5e6f708192a3b4c5d6e7f80912a3b4c5d6e7f8091a2b3c4d5e6f70819  oink-0.5.0.zip</span></span></code></pre></div></div>
+<span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
+</div>
+</figure><p>The tag is the only step that cannot be taken back, so it is the only step this
+book shows as a transcript rather than as a file.</p>
+<figure id="eg-tag" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="2-3">
+<figcaption><span class="td-eg-label">Example 2-3</span> <span class="td-eg-caption">Publishing: annotate, sign, push, then verify through the proxy the reader will use.</span></figcaption>
+<div class="td-code td-code--untitled" id="td-code-b71c6238-fence-1" data-td-code data-td-code-auto-id
+data-td-language="console" data-td-line-count="6"><div class="td-code__utilities td-code__utilities--compact">
+<button class="td-code__copy" type="button" hidden data-td-code-copy
+data-td-code-target="td-code-b71c6238-fence-1" data-td-copy-mode="command"
+data-td-label-copy="Copy code"
+data-td-label-copied="Copied"
+data-td-label-error="Copy failed"
+aria-label="Copy code" title="Copy code">
+<i class="fa-regular fa-copy" aria-hidden="true"></i>
+</button>
+</div>
+<div class="td-code__viewport" id="td-code-b71c6238-fence-1-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> git tag -s v0.5.0 -m <span class="s1">&#39;oink v0.5.0&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="gp">$</span> git push origin v0.5.0
+</span></span><span class="line"><span class="cl"><span class="go">To github.com:pgsty/oink.git
+</span></span></span><span class="line"><span class="cl"><span class="go"> * [new tag]         v0.5.0 -&gt; v0.5.0
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span> <span class="nv">GOPROXY</span><span class="o">=</span>https://proxy.golang.org go list -m github.com/pgsty/oink@v0.5.0
+</span></span><span class="line"><span class="cl"><span class="go">github.com/pgsty/oink v0.5.0
+</span></span></span></code></pre></div></div>
+<span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
+</div>
+</figure><details class="td-callout td-callout--details td-callout--collapsible">
+<summary class="td-callout__title"><span class="td-callout__label">The verification output in full</span><i class="td-callout__marker fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+<div class="td-callout__body">
+<div class="td-code td-code--untitled" id="td-code-b71c6238-fence-2" data-td-code data-td-code-auto-id
+data-td-language="text" data-td-line-count="5"><div class="td-code__utilities td-code__utilities--compact">
+<button class="td-code__copy" type="button" hidden data-td-code-copy
+data-td-code-target="td-code-b71c6238-fence-2" data-td-copy-mode="all"
+data-td-label-copy="Copy code"
+data-td-label-copied="Copied"
+data-td-label-error="Copy failed"
+aria-label="Copy code" title="Copy code">
+<i class="fa-regular fa-copy" aria-hidden="true"></i>
+</button>
+</div>
+<div class="td-code__viewport" id="td-code-b71c6238-fence-2-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">gpg: Signature made Mon Aug 18 21:04:11 2026 CST
+</span></span><span class="line"><span class="cl">gpg:                using RSA key 6F2A1C3E7B9D0A45
+</span></span><span class="line"><span class="cl">gpg: Good signature from &#34;OINK Release &lt;release@example.org&gt;&#34; [ultimate]
+</span></span><span class="line"><span class="cl">go: downloading github.com/pgsty/oink v0.5.0
+</span></span><span class="line"><span class="cl">go: verifying github.com/pgsty/oink@v0.5.0: checksum matches</span></span></code></pre></div></div>
+<span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
+</div>
+</div>
+</details><h2 id="readiness">Score the readiness<a class="td-heading-self-link" href="#readiness" aria-label="Link to this heading"></a>
+</h2>
+<figure id="eq-readiness" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="2.1">
+<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>R</mi><mo>=</mo><mfrac><mrow><mi>B</mi><mo>+</mo><mi>T</mi><mo>+</mo><mi>D</mi></mrow><mn>3</mn></mfrac></mrow><annotation encoding="application/x-tex">R = \frac{B + T + D}{3}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.0463em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></div>
+<figcaption><span class="td-eq-label">Equation 2.1</span> <span class="td-eq-caption">A simple release-readiness score.</span></figcaption>
+</figure>
+<p>A tag is published once but fetched from many mirrors, and a reader hits
+whichever one is nearest. If a mirror carries the version with probability <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">p</span></span></span></span>
+and the client may fall back across <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span> of them, the version is resolvable with
+probability:</p>
+<figure id="eq-propagation" class="td-book-figure td-book-figure--eq" data-td-book-kind="eq" data-td-book-num="2.2">
+<div class="td-book-equation__body"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>P</mi><mtext>resolve</mtext></msub><mo stretchy="false">(</mo><mi>n</mi><mo stretchy="false">)</mo><mo>=</mo><mn>1</mn><mo>−</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup></mrow><annotation encoding="application/x-tex">
+P_{\text{resolve}}(n) = 1 - (1 - p)^{n}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">resolve</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">n</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7144em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span></span></span></span></span></span></div>
+<figcaption><span class="td-eq-label">Equation 2.2</span> <span class="td-eq-caption">Probability that at least one of n independent mirrors can already serve the tag.</span></figcaption>
+</figure><p>The exponent is why &ldquo;it works for me&rdquo; is not evidence of publication:
+<a class="td-book-xref td-book-xref--eq" href="#eq-propagation" data-td-book-kind="eq" data-td-book-num="2.2">Equation 2.2</a> is close to 1 for the author, who
+has the origin, long before it is close to 1 for a reader who does not.</p>
 <h2 id="handoff">Handoff<a class="td-heading-self-link" href="#handoff" aria-label="Link to this heading"></a>
 </h2>
-<p>Chapter three uses <a class="td-book-xref td-book-xref--eq" href="#eq-readiness" data-td-book-kind="eq" data-td-book-num="2.1">Equation 2.1</a> as the input to
-an operational review.</p>
+<p>The manifest in <a class="td-book-xref td-book-xref--eg" href="#eg-manifest" data-td-book-kind="eg" data-td-book-num="2-1">Example 2-1</a> and the stages in
+<a class="td-book-xref td-book-xref--tbl" href="#tbl-release" data-td-book-kind="tbl" data-td-book-num="2-1">Table 2-1</a> describe different evidence and
+should not be collapsed into one status. Chapter three uses
+<a class="td-book-xref td-book-xref--eq" href="#eq-readiness" data-td-book-kind="eq" data-td-book-num="2.1">Equation 2.1</a> as the input to an operational
+review, and re-reads
+<a class="td-book-xref td-book-xref--tbl" href="/book/chapter-one/#tbl-outputs" data-td-book-kind="tbl" data-td-book-num="1-2">the output matrix from chapter one</a>
+to decide which surfaces that review has to cover.</p>
+<h2 id="references">References<a class="td-heading-self-link" href="#references" aria-label="Link to this heading"></a>
+</h2>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://www.oreilly.com/library/view/continuous-delivery-reliable/9780321670250/">Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation</a>. Jez Humble and David Farley, Addison-Wesley, 2010.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://go.dev/ref/mod#checksum-database">Go Modules Reference: Version queries and the checksum database</a>. <em>go.dev</em>, retrieved 2026.&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next">
@@ -587,7 +756,10 @@ data-td-label-collapse="Collapse section: Content"><span class="td-shell-aside-g
 <nav id="TableOfContents">
 <ul>
 <li><a href="#delivery-states">Make delivery states explicit</a></li>
+<li><a href="#manifest">Write the manifest first</a></li>
+<li><a href="#readiness">Score the readiness</a></li>
 <li><a href="#handoff">Handoff</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
 </div>

@@ -2,6 +2,7 @@
 title: Infographic
 linkTitle: Infographic
 description: An `infographic` fence picks an AntV template and renders a title plus a list of items as a flow, timeline, funnel, grid or hierarchy.
+icon: fa-solid fa-shapes
 weight: 160
 search_keywords: [Infographic, AntV, flow, timeline, funnel, template]
 ---

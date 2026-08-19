@@ -2,6 +2,7 @@
 title: 徽章
 linkTitle: 徽章
 description: 在功能名、版本号或表格单元格旁边放一枚语义状态标签，五种 tone，不需要自定义颜色。
+icon: fa-solid fa-tag
 weight: 180
 search_keywords: [徽章, Badge, 状态标签, tone, Beta, 已弃用, neutral, info, success, warning, danger]
 ---

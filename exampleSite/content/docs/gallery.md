@@ -2,6 +2,7 @@
 title: Galleries
 linkTitle: Galleries
 description: A `gallery` fence arranges related screenshots in a responsive grid, each with an optional description or link, reusing the page's image zoom dialog.
+icon: fa-solid fa-images
 weight: 170
 search_keywords: [Gallery, screenshot grid, fence, image zoom, link, class]
 image_zoom: true

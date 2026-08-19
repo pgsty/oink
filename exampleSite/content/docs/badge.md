@@ -2,6 +2,7 @@
 title: Badges
 linkTitle: Badges
 description: Put a semantic status label next to a feature name, a version or a table cell — five tones, no custom colours.
+icon: fa-solid fa-tag
 weight: 180
 search_keywords: [Badge, status label, tone, Beta, deprecated, neutral, info, success, warning, danger]
 ---

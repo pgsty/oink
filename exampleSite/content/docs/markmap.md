@@ -2,6 +2,7 @@
 title: Markmap
 linkTitle: Markmap
 description: A `markmap` fence turns a Markdown outline into an expandable, zoomable mind map — and the source stays a readable outline.
+icon: fa-solid fa-brain
 weight: 130
 search_keywords: [Markmap, mind map, outline, tree diagram]
 ---

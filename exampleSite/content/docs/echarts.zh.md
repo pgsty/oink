@@ -2,6 +2,7 @@
 title: ECharts
 linkTitle: ECharts
 description: 在 `echarts` 围栏里用 YAML 或 JSON 写图表选项，Hugo 构建期校验，浏览器用本地 ECharts 画出跟随深浅色的统计图。
+icon: fa-solid fa-chart-line
 weight: 150
 search_keywords: [ECharts, 图表, 统计图, 柱状图, 折线图, 饼图, chart, bar, line, pie, height, theme, OinkEchartsFunctions]
 ---
@@ -297,6 +298,139 @@ series:
 鼠标悬停在任意一根柱子上，提示框里是该函数拼出的句子。名字未注册时该选项解析为 `undefined`，图按未设置该项绘制，构建与运行都不报错。脚本与围栏放在同一页的相邻位置，便于一起改动。
 
 这段脚本属于站点代码，按代码审查对待。字符串模板（`{b}` `{c}` `{d}`）能表达的格式不写成函数。
+
+## 承担论证的图表 {#complex}
+
+上面的例子演示的是选项。真实文档里的图表通常还要多做一件事：把某一个序列推到前景，让其余部分退成背景。两种选项写法就能覆盖其中大部分工作。
+
+第一种是带数据驱动配色的排序条形图。`itemStyle.color` 接受函数，于是 `$fn:` 可以给正在论证的那一行返回渐变、给其余行返回平色；`showBackground` 在每根条后面画出轨道，短的那几行也就不至于难以辨认。
+
+````markdown {title="源码"}
+<script>
+  window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
+  window.OinkEchartsFunctions.starCount = function (p) {
+    return Number(p.value).toLocaleString('zh-CN');
+  };
+  window.OinkEchartsFunctions.starColour = function (p) {
+    if (p.name !== 'pgsty/pigsty') return '#7aa6c2';
+    return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: '#d94841' },
+      { offset: 1, color: '#f97316' }
+    ]);
+  };
+</script>
+
+```echarts {height="360px" full=true}
+grid: { left: 260, right: 88, top: 8, bottom: 28 }
+xAxis: { type: value, max: 6000, splitLine: { lineStyle: { type: dashed, opacity: 0.45 } } }
+yAxis:
+  type: category
+  inverse: true
+  axisLabel: { align: right, fontFamily: monospace, fontSize: 11 }
+  data: [pgsty/pigsty, polardb/PolarDB-for-PostgreSQL, tensorchord/pgvecto.rs, Tencent/TBase, apache/cloudberry, IvorySQL/IvorySQL]
+series:
+  - type: bar
+    barWidth: 18
+    showBackground: true
+    backgroundStyle: { color: "rgba(148, 163, 184, 0.16)" }
+    itemStyle: { color: "$fn:starColour", borderRadius: [0, 5, 5, 0] }
+    label: { show: true, position: right, formatter: "$fn:starCount", fontWeight: 600 }
+    data: [5521, 3191, 2181, 1439, 1315, 1051]
+```
+````
+
+<script>
+  window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
+  window.OinkEchartsFunctions.starCount = function (p) {
+    return Number(p.value).toLocaleString('zh-CN');
+  };
+  window.OinkEchartsFunctions.starColour = function (p) {
+    if (p.name !== 'pgsty/pigsty') return '#7aa6c2';
+    return new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+      { offset: 0, color: '#d94841' },
+      { offset: 1, color: '#f97316' }
+    ]);
+  };
+</script>
+
+```echarts {height="360px" full=true}
+grid: { left: 260, right: 88, top: 8, bottom: 28 }
+xAxis: { type: value, max: 6000, splitLine: { lineStyle: { type: dashed, opacity: 0.45 } } }
+yAxis:
+  type: category
+  inverse: true
+  axisLabel: { align: right, fontFamily: monospace, fontSize: 11 }
+  data: [pgsty/pigsty, polardb/PolarDB-for-PostgreSQL, tensorchord/pgvecto.rs, Tencent/TBase, apache/cloudberry, IvorySQL/IvorySQL]
+series:
+  - type: bar
+    barWidth: 18
+    showBackground: true
+    backgroundStyle: { color: "rgba(148, 163, 184, 0.16)" }
+    itemStyle: { color: "$fn:starColour", borderRadius: [0, 5, 5, 0] }
+    label: { show: true, position: right, formatter: "$fn:starCount", fontWeight: 600 }
+    data: [5521, 3191, 2181, 1439, 1315, 1051]
+```
+
+回调里可以直接用全局的 `echarts`，因为运行时早已在页面上——函数是图表在库加载之后调用的。注意那个 `full=true`：轴标签占掉 260 像素的图表，正文栏是放不下的。
+
+第二种写法是"分解 vs. 预算"。用 `stack:` 把各部分堆起来，再用 `barGap: "-100%"` 和更低的 `z` 把预算画成压在第一根条上的第二根条，于是它读起来像轨道而不像数据。类目轴里的空字符串会在组与组之间留出空档，序列里的 `"-"` 则跳过那一行。
+
+````markdown {title="源码"}
+```echarts {height="300px"}
+tooltip: { trigger: axis, axisPointer: { type: shadow }, formatter: "$fn:phaseSeconds" }
+legend: { top: 0, data: [故障检测, 重启超时, 切换完成] }
+grid: { left: 72, right: 24, top: 40, bottom: 28 }
+xAxis:
+  type: value
+  name: 秒
+  max: 100
+  minorTick: { show: true, splitNumber: 5 }
+  minorSplitLine: { show: true, lineStyle: { type: dotted, opacity: 0.2 } }
+yAxis:
+  type: category
+  axisLabel: { fontFamily: monospace, fontSize: 10 }
+  data: [safe-max, safe-avg, "", fast-max, fast-avg]
+series:
+  - { name: 故障检测, type: bar, stack: rto, barWidth: 18, z: 2, itemStyle: { color: "#b07aa1" }, data: [10, 5, "-", 5, 3] }
+  - { name: 重启超时, type: bar, stack: rto, z: 2, itemStyle: { color: "#f28e2c" }, data: [45, 45, "-", 15, 15] }
+  - { name: 切换完成, type: bar, stack: rto, z: 2, itemStyle: { color: "#4e79a7" }, data: [18, 11, "-", 9, 6] }
+  - { name: RTO 预算, type: bar, barGap: "-100%", barWidth: 18, z: 0, itemStyle: { color: "rgba(128,128,128,0.14)" }, data: [90, 90, "-", 30, 30] }
+```
+````
+
+<script>
+  window.OinkEchartsFunctions = window.OinkEchartsFunctions || {};
+  window.OinkEchartsFunctions.phaseSeconds = function (params) {
+    if (!params || !params.length || params[0].name === '') return '';
+    var rows = params
+      .filter(function (p) { return p.value !== '-' && p.value != null; })
+      .map(function (p) { return p.marker + ' ' + p.seriesName + '：' + p.value + ' 秒'; });
+    return '<b>' + params[0].name + '</b><br/>' + rows.join('<br/>');
+  };
+</script>
+
+```echarts {height="300px"}
+tooltip: { trigger: axis, axisPointer: { type: shadow }, formatter: "$fn:phaseSeconds" }
+legend: { top: 0, data: [故障检测, 重启超时, 切换完成] }
+grid: { left: 72, right: 24, top: 40, bottom: 28 }
+xAxis:
+  type: value
+  name: 秒
+  max: 100
+  minorTick: { show: true, splitNumber: 5 }
+  minorSplitLine: { show: true, lineStyle: { type: dotted, opacity: 0.2 } }
+yAxis:
+  type: category
+  axisLabel: { fontFamily: monospace, fontSize: 10 }
+  data: [safe-max, safe-avg, "", fast-max, fast-avg]
+series:
+  - { name: 故障检测, type: bar, stack: rto, barWidth: 18, z: 2, itemStyle: { color: "#b07aa1" }, data: [10, 5, "-", 5, 3] }
+  - { name: 重启超时, type: bar, stack: rto, z: 2, itemStyle: { color: "#f28e2c" }, data: [45, 45, "-", 15, 15] }
+  - { name: 切换完成, type: bar, stack: rto, z: 2, itemStyle: { color: "#4e79a7" }, data: [18, 11, "-", 9, 6] }
+  - { name: RTO 预算, type: bar, barGap: "-100%", barWidth: 18, z: 0, itemStyle: { color: "rgba(128,128,128,0.14)" }, data: [90, 90, "-", 30, 30] }
+```
+
+提示框的格式化函数会丢掉值为 `-` 的条目，否则空档那一行也会弹出一个没有内容的提示框。这张图的完整版本——四套档位、五个阶段——在[书籍样例第三章](/zh/book/chapter-three/#failover-budget)，那里它与解释它的表格和公式排在一起。
 
 ## 数据位置 {#data}
 围栏正文是字面量。Hugo 不在其中展开 shortcode、front matter 变量或 `data/` 目录里的文件，数字写在围栏里。代价是数据不能共享，收益是图表源码与数据一起进入 Git，diff 能看出改动了哪个数值。

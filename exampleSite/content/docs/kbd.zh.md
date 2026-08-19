@@ -2,6 +2,7 @@
 title: 按键
 linkTitle: 按键
 description: 用 `kbd` 写快捷键：一个 shortcode 接一串按键名，输出语义化的按键序列，打印与 Markdown 输出里同样可读。
+icon: fa-solid fa-keyboard
 weight: 190
 search_keywords: [按键, Kbd, 快捷键, 键盘, shortcut, keyboard, Ctrl, Cmd, 组合键]
 ---

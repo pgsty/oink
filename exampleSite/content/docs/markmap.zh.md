@@ -2,6 +2,7 @@
 title: 思维导图
 linkTitle: 思维导图
 description: 用 `markmap` 围栏把一段 Markdown 大纲变成可展开、可缩放的思维导图，源码本身就是能读的提纲。
+icon: fa-solid fa-brain
 weight: 130
 search_keywords: [思维导图, Markmap, mind map, 大纲, outline, 脑图, 树状图]
 ---

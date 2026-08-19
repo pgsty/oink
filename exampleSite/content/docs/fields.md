@@ -2,6 +2,7 @@
 title: Fields
 linkTitle: Fields
 description: A plain table plus `{.fields}` documents configuration keys, command flags and API fields — name, type, default and description each in place, readable on a narrow screen, every entry individually linkable.
+icon: fa-solid fa-sliders
 weight: 60
 search_keywords: [Fields, field, configuration key, parameter, API field, meta, type, required, default, definition list, anchor]
 ---

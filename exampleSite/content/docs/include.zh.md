@@ -2,6 +2,7 @@
 title: 引用
 linkTitle: 引用
 description: 用 include 插入外部文件，用 param 插入站点参数，用 comment 写不会出现在任何输出里的注释。
+icon: fa-solid fa-file-import
 weight: 200
 search_keywords: [引用, include, 引入文件, 片段, snippet, 复用, readfile, param, 参数, 插值, comment, 注释]
 params:

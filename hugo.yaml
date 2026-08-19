@@ -63,6 +63,10 @@ params:
     breadcrumb: true
     section_index: list # list | cards
     section_index_columns: 2 # card columns when section_index is cards
+    # Form of the blog section list pages. Front matter `blog_index` (on the
+    # blog root, or through its cascade) overrides it per section.
+    blog_index: list # list | cards
+    blog_index_columns: 3 # card columns when blog_index is cards
     lastmod_commit: subject # subject | hash | none
     # Page provenance / revision block at the end of a page. Front matter
     # `annotation: false` turns it off for one page. Its upstream attribution

@@ -8,12 +8,25 @@
 {{ if (and .Parent .Parent.IsHome) -}}
   {{ $blogPages = where .Site.RegularPages "Section" .Section -}}
 {{ end -}}
+{{/* The form of the index is the site's decision, not the reader's: rows by
+     default, cards where the posts lead with an image. Both forms group by
+     year and paginate the same groups, so only the group body differs. */ -}}
+{{ $mode := (partial "ui-param.html" (dict "page" . "key" "blog_index")) | default "list" -}}
+{{ if not (in (slice "list" "cards") $mode) }}{{ errorf "invalid params.ui.blog_index %q at %s (allowed: list | cards)" $mode .Path }}{{ end -}}
+{{ $columns := (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) | default 3 -}}
 
 {{ if .Pages -}}
 <div class="td-blog-posts">
   {{ $pager := .Paginate ($blogPages.GroupByDate "2006") -}}
   {{ range $pager.PageGroups -}}
   <h2>{{ T "post_posts_in" }} {{ .Key }}</h2>
+  {{ if eq $mode "cards" -}}
+  <div class="td-content-cards td-blog-cards" style="--td-card-columns: {{ $columns }}">
+    {{ range .Pages -}}
+    {{ partial "shell/blog-card.html" . -}}
+    {{ end -}}
+  </div>
+  {{ else -}}
   <ul class="td-blog-posts-list">
     {{ range .Pages -}}
     <li class="td-blog-posts-list__item">
@@ -39,6 +52,7 @@
     </li>
     {{ end -}}
   </ul>
+  {{ end -}}
   {{ end -}}
 </div>
 <div class="td-blog-posts__pagination">

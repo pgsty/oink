@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 
@@ -34,6 +35,8 @@ def check_sources() -> list[str]:
     pager_styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
     content_styles = (ROOT / "assets/scss/td/_content.scss").read_text()
     comments_styles = (ROOT / "assets/scss/td/_giscus.scss").read_text()
+    blog_list = (ROOT / "layouts/blog/list.html").read_text()
+    blog_card = (ROOT / "layouts/_partials/shell/blog-card.html").read_text()
     blog_styles = (ROOT / "assets/scss/td/shell/_blog.scss").read_text()
     page_context_styles = (ROOT / "assets/scss/td/shell/_page-context.scss").read_text()
     breadcrumb_state = (ROOT / "layouts/_partials/shell/breadcrumb-enabled.html").read_text()
@@ -278,6 +281,32 @@ def check_sources() -> list[str]:
             "detailed feedback no longer has a stable Giscus target", errors)
     require("key === 'l' || key === 'y'" in keyboard,
             "y is no longer the l language alias", errors)
+    # The blog index has two forms and the site picks one. Both keys resolve
+    # through ui-param.html so front matter on the blog root can override them,
+    # and an unknown form fails the build rather than silently rendering rows.
+    require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_list
+            and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_list,
+            "blog index form or column count is not a ui-param with a front matter override", errors)
+    require('in (slice "list" "cards") $mode' in blog_list
+            and 'errorf "invalid params.ui.blog_index %q' in blog_list,
+            "blog index form is not validated against its enum", errors)
+    require('class="td-content-cards td-blog-cards"' in blog_list
+            and "--td-card-columns:" in blog_list,
+            "blog card index does not reuse the shared card grid", errors)
+    require('.Fill "640x360 Center"' in blog_card
+            and "reflect.IsImageResourceProcessable" in blog_card,
+            "blog card does not put a processable lead image through Hugo", errors)
+    require('target="_blank"' in blog_card and 'rel="noopener"' in blog_card
+            and "fa-arrow-up-right-from-square" in blog_card,
+            "blog card lost the external semantics of manual_link", errors)
+    require("figcaption" not in blog_card and 'alt=""' in blog_card,
+            "blog card carries a byline or names an image the title already names", errors)
+    require("td-blog-cards" in blog_styles
+            and "aspect-ratio: 16 / 9" in blog_styles
+            and "-webkit-line-clamp: 3" in blog_styles
+            and "overflow-wrap: anywhere" in blog_styles
+            and "forced-colors: active" in blog_styles,
+            "blog card styles lost the grid, the 16:9 frame, the clamp, or forced colours", errors)
     errors += check_featured_image_sources()
     return errors
 
@@ -621,6 +650,165 @@ params:
     return errors
 
 
+def build_blog_index_forms(hugo: str) -> list[str]:
+    """The cards form lists exactly what the row form lists.
+
+    The form is a site decision, so the two builds differ only in a config
+    overlay. Hugo maps `HUGO_PARAMS_UI_BLOG_INDEX` to `params.ui.blog.index`
+    -- the underscore is its path separator -- so a snake_case key cannot be
+    set from the environment the way `HUGO_PARAMS_UI_TYPOGRAPHY` is."""
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-blog-index-") as temporary:
+        root = Path(temporary)
+        overlay = root / "cards.yaml"
+        overlay.write_text(
+            "params:\n  ui:\n    blog_index: cards\n    blog_index_columns: 4\n",
+            encoding="utf-8",
+        )
+        rendered: dict[str, str] = {}
+        for name, extra in (("rows", ()), ("cards", (overlay,))):
+            public = root / name
+            result = subprocess.run(
+                [hugo, "--source", str(ROOT / "exampleSite"), "--themesDir", str(ROOT.parent),
+                 "--destination", str(public), *fixture_config_args(*extra), "--panicOnWarning"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if result.returncode:
+                return [f"blog index {name} form failed to build:\n" + result.stdout + result.stderr]
+            index = public / "blog/index.html"
+            if not index.is_file():
+                return [f"blog index {name} form did not render blog/index.html"]
+            rendered[name] = index.read_text(encoding="utf-8")
+
+        rows, cards = rendered["rows"], rendered["cards"]
+        row_links = re.findall(
+            r'<li class="td-blog-posts-list__item">.*?<a href="([^"]+)"', rows, re.S)
+        card_links = re.findall(
+            r'<article class="td-content-card td-blog-card">.*?'
+            r'<a class="td-content-card__title" href="([^"]+)"', cards, re.S)
+        require(len(row_links) > 1, "the blog fixture no longer has posts to compare", errors)
+        require(row_links == card_links,
+                f"the cards index does not list the posts the row index lists: {row_links} vs {card_links}",
+                errors)
+        require(re.findall(r"<h2>([^<]+)</h2>", rows) == re.findall(r"<h2>([^<]+)</h2>", cards),
+                "the cards index lost the year grouping", errors)
+        require('class="td-content-cards td-blog-cards"' in cards
+                and 'style="--td-card-columns: 4"' in cards,
+                "the cards index does not reuse the shared grid at the configured width", errors)
+        require("td-blog-posts-list__item" not in cards, "the cards index still renders rows", errors)
+        require("td-blog-card" not in rows, "the row index leaked the card form", errors)
+        require(('td-blog-posts__pagination' in rows) == ('td-blog-posts__pagination' in cards),
+                "the two index forms disagree about pagination", errors)
+        require('src=""' not in cards, "the cards index emitted an empty image source", errors)
+    return errors
+
+
+def build_blog_card_fixture(hugo: str) -> list[str]:
+    """A card processes a bundled image, links out, and survives having none."""
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-blog-card-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        public = root / "public"
+        (source / "content/blog/bundled").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"""baseURL: https://example.org/
+title: Blog card fixture
+theme: {ROOT.name}
+disableKinds: [RSS, sitemap, taxonomy, term]
+params:
+  offline_search: false
+  ui:
+    blog_index: cards
+""",
+            encoding="utf-8",
+        )
+        (source / "content/blog/_index.md").write_text(
+            "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n", encoding="utf-8")
+        (source / "content/blog/bundled/index.md").write_text(
+            "---\ntitle: Bundled\ndate: 2026-08-13\n---\n\nA post with its image beside it.\n",
+            encoding="utf-8")
+        shutil.copyfile(
+            ROOT / "tests/site/content/fixtures/lists/shot-a.png",
+            source / "content/blog/bundled/featured.png",
+        )
+        (source / "content/blog/external.md").write_text(
+            "---\ntitle: External\ndate: 2026-08-12\n"
+            "description: A post that lives somewhere else.\n"
+            "manual_link: https://example.net/post/\n---\n\nBody.\n",
+            encoding="utf-8")
+        (source / "content/blog/plain.md").write_text(
+            "---\ntitle: Plain\ndate: 2026-08-11\n---\n\nA post with no image at all.\n",
+            encoding="utf-8")
+        # The other way to have no image: a section cascades one and a page
+        # turns it off. `images` is Hugo's key at every level, so an empty
+        # list is the only opt-out a page has.
+        (source / "content/blog/cleared").mkdir()
+        (source / "content/blog/cleared/_index.md").write_text(
+            "---\ntitle: Cleared\ncascade:\n  images: [/images/cascaded.png]\n---\n",
+            encoding="utf-8")
+        (source / "content/blog/cleared/post.md").write_text(
+            "---\ntitle: Opted out\ndate: 2026-08-10\nimages: []\n---\n\nA post that turned its inherited image off.\n",
+            encoding="utf-8")
+
+        result = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(public), "--panicOnWarning"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if result.returncode:
+            return ["blog card fixture failed to build:\n" + result.stdout + result.stderr]
+        index = public / "blog/index.html"
+        if not index.is_file():
+            return ["blog card fixture did not render blog/index.html"]
+
+        cards = index.read_text(encoding="utf-8").split(
+            '<article class="td-content-card td-blog-card">')[1:]
+        require(len(cards) == 4, f"the card fixture rendered {len(cards)} cards, not 4", errors)
+        by_title = {
+            match.group(1): card
+            for card in cards
+            if (match := re.search(r'class="td-content-card__title"[^>]*>([^<]+)<', card))
+        }
+        require(set(by_title) == {"Bundled", "External", "Plain", "Opted out"},
+                f"the card fixture titles drifted: {sorted(by_title)}", errors)
+
+        bundled = by_title.get("Bundled", "")
+        # Hugo names a processed image differently across the supported
+        # versions; what has to hold is that the card points at one, not at
+        # the original the row form still emits.
+        processed = re.search(r'<img class="td-blog-card__image" src="([^"]+)"', bundled)
+        require(processed is not None
+                and "_hu" in processed.group(1)
+                and 'width="640" height="360"' in bundled,
+                f"a bundled lead image is not cropped to 16:9 by Hugo: {bundled[:200]}", errors)
+
+        external = by_title.get("External", "")
+        require('href="https://example.net/post/"' in external
+                and 'target="_blank"' in external
+                and 'rel="noopener"' in external
+                and "fa-arrow-up-right-from-square" in external,
+                "the external card lost its target, rel, or affordance", errors)
+        require("A post that lives somewhere else." in external,
+                "the external card summarises the local body instead of its description", errors)
+
+        plain = by_title.get("Plain", "")
+        require("<img" not in plain, "a post with no image still renders an image slot", errors)
+        require("A post with no image at all." in plain,
+                "a card without an image lost its summary too", errors)
+
+        cleared = by_title.get("Opted out", "")
+        require("<img" not in cleared and "cascaded.png" not in cleared,
+                "`images: []` no longer turns off an inherited lead image", errors)
+    return errors
+
+
 def main() -> int:
     import argparse
 
@@ -628,7 +816,8 @@ def main() -> int:
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
     errors = (check_sources() + build_example(args.hugo) + build_self_root_fixture(args.hugo)
-              + build_featured_image_rejection(args.hugo))
+              + build_featured_image_rejection(args.hugo)
+              + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo))
     if errors:
         print("shell and page-end checks failed:")
         for error in errors:

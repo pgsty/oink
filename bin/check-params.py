@@ -85,6 +85,8 @@ PAGE_OVERRIDES = {
     "comments": "comments",
     "page_width": "page_width",
     "reading_width": "reading_width",
+    "blog_index": "ui.blog_index",
+    "blog_index_columns": "ui.blog_index_columns",
 }
 
 # Old page keys that must never be read again.
@@ -191,6 +193,7 @@ ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
     "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
     "body_class: product-td-no-left-sidebar-preview",
+    "blog_index: cards\nblog_index_columns: 4",
 ]
 
 INVALID_SITE_CASES = [
@@ -489,6 +492,34 @@ def check_builds(hugo: str) -> list[str]:
     return errors
 
 
+def check_blog_index_enum(hugo: str) -> list[str]:
+    """A value outside `list | cards` fails the build and names the allowed set.
+
+    `blog/list.html` is the only reader of the key, and the shared one-page
+    fixture above has no blog section, so this case brings its own."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-params-blog-index-") as temp:
+        source = Path(temp)
+        (source / "content/blog").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(site_config("ui:\n  blog_index: grid"), encoding="utf-8")
+        (source / "content/blog/_index.md").write_text(
+            "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n", encoding="utf-8")
+        (source / "content/blog/post.md").write_text(
+            "---\ntitle: Post\ndate: 2026-08-19\n---\n\nBody.\n", encoding="utf-8")
+        result = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(source / "public"), "--logLevel", "warn"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode != 0, "params.ui.blog_index accepted a form outside its enum", errors)
+        require("invalid params.ui.blog_index" in output and "list | cards" in output,
+                f"the blog index enum error does not name the allowed forms: {output[-400:]}", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--hugo", default="hugo")
@@ -503,7 +534,7 @@ def main() -> int:
         + check_documented_defaults()
     )
     if not args.source_only:
-        errors += check_builds(args.hugo)
+        errors += check_builds(args.hugo) + check_blog_index_enum(args.hugo)
 
     if errors:
         print("Parameter contract check failed:")

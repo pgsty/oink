@@ -186,6 +186,17 @@ Pager order follows the sidebar preorder for Docs and Book. Blog keeps
 explicitly weighted pages first and then reverse date. `pager: false` opts a
 page out. Print, Markdown, and RSS omit pager UI.
 
+Blog section list pages take one of two forms, chosen by the site:
+`params.ui.blog_index: list` (default) keeps the row list, `cards` renders the
+same year groups as a grid of shared content cards, `params.ui.blog_index_columns`
+wide. Front matter on the blog root, or its cascade, overrides it per section.
+The two forms group, paginate, and link identically — a card carries the lead
+image, title, date, section, and summary, and nothing else. Term and taxonomy
+pages keep the row form: they are filtered views, where a row and a count are
+the right shape. There is no reader-side switch between the forms, for the same
+reason the Palette keeps no history: a remembered view preference is
+personalization, and the form is the site's decision.
+
 There is no archive shell, arbitrary-depth flyout, second navigation authority,
 default query upload, or browser-side compatibility shim for removed config.
 

@@ -423,15 +423,27 @@ def check_sources() -> list[str]:
         require(marker.lower() not in (share_items + share_bar).lower(),
                 f"share bar emits or fetches {marker}", errors)
     templates = re.findall(r'"template" "([^"]*)"', share_items)
-    require(len(templates) == 9 and all(
+    require(len(templates) == 16 and all(
                 target.startswith(("https://", "mailto:")) or target == ""
                 for target in templates),
             "a share target is not a plain https/mailto intent link", errors)
+    # Discord has no share-intent endpoint. Anything claiming to be one would be
+    # a guess at a private scheme, so the absence is part of the contract.
+    require('"discord"' not in share_items,
+            "the share catalog gained a Discord target, which has no intent URL", errors)
     require('target="_blank" rel="noopener noreferrer"' in share_bar,
             "share links lost their external-link attributes", errors)
     require(share_bar.count('aria-label="{{ .label }}"') == 2
             and 'aria-hidden="true"' in share_bar,
             "share controls no longer name themselves for assistive technology", errors)
+    # The row is glyphs alone: no visible heading, and the name it drops lives
+    # on the group instead, so the bar is still announced as Share.
+    require("td-share__label" not in share_bar and "<h2" not in share_bar
+            and 'role="group" aria-label="{{ T "ui_share" }}"' in share_bar,
+            "the share row grew a visible heading or lost its group name", errors)
+    require("justify-content: center" in share_styles
+            and "border-block-start" not in share_styles,
+            "the share row is no longer a centred row without a rule of its own", errors)
     require('class="td-share d-print-none"' in share_bar
             and 'eq $format "html"' in share_bar,
             "share bar is no longer confined to the interactive HTML output", errors)
@@ -1275,8 +1287,14 @@ params:
 def build_share_fixture(hugo: str) -> list[str]:
     """The share bar, end to end, on a site that opts every target in.
 
+    One assertion per URL shape, because the shapes are what a platform's own
+    documentation dictates and what a typo in the catalog would silently break:
+    `url`+`text`, `url` alone, a `mailto:` whose subject precedes its body, one
+    merged "Title URL" string, Pinterest's pin with its `media` image, and an
+    assistant prompt naming the permalink.
+
     The last assertion is the feature's premise rather than a detail of it:
-    a build carrying nine share targets on every page still passes the
+    a build carrying every share target on every page still passes the
     product-level trust check *without* --third-party, because everything the
     bar emits is a plain link the reader may choose to follow.
     """
@@ -1296,7 +1314,9 @@ params:
   offline_search: false
   ui:
     feedback: true
-    share: [x, facebook, linkedin, reddit, hackernews, telegram, weibo, email, copy]
+    share: [x, bluesky, mastodon, facebook, linkedin, reddit, hackernews,
+            telegram, whatsapp, line, pinterest, weibo, chatgpt, claude,
+            email, copy]
 """,
             encoding="utf-8",
         )
@@ -1310,6 +1330,11 @@ params:
         )
         (source / "content/blog/quiet.md").write_text(
             "---\ntitle: Quiet\ndate: 2026-08-18\nshare: false\n---\n\nBody.\n",
+            encoding="utf-8",
+        )
+        (source / "content/blog/pinned.md").write_text(
+            "---\ntitle: Pinned\ndate: 2026-08-17\n"
+            "images: [/images/pin.png]\nshare: [pinterest]\n---\n\nBody.\n",
             encoding="utf-8",
         )
         result = subprocess.run(
@@ -1329,11 +1354,37 @@ params:
             '&amp;text=Shared%20%26%20titled"',
             'href="mailto:?subject=Shared%20%26%20titled'
             '&amp;body=https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F"',
+            'href="https://www.facebook.com/sharer/sharer.php'
+            '?u=https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F"',
+            'href="https://bsky.app/intent/compose?text=Shared%20%26%20titled'
+            '%20https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F"',
+            'href="https://wa.me/?text=Shared%20%26%20titled'
+            '%20https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F"',
+            'href="https://share.joinmastodon.org/#text=Shared%20%26%20titled'
+            '%20https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F"',
+            'href="https://social-plugins.line.me/lineit/share'
+            '?url=https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F'
+            '&amp;text=Shared%20%26%20titled"',
+            'href="https://claude.ai/new?q=Read%20from'
+            '%20https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F'
+            '%20so%20I%20can%20ask%20questions%20about%20it."',
             'data-td-action="copy_link" data-td-url="https://example.org/blog/shared/"',
         ):
             require(marker in shared, f"share fixture page lacks {marker}", errors)
-        require(shared.count('class="td-share__item td-share__item--') == 9,
+        require(shared.count('class="td-share__item td-share__item--') == 16,
                 "share fixture page did not render one control per target", errors)
+        # A page with no representative image leaves `media` off rather than
+        # sending Pinterest an empty one.
+        require('?url=https%3A%2F%2Fexample.org%2Fblog%2Fshared%2F'
+                '&amp;description=Shared%20%26%20titled"' in shared,
+                "Pinterest gained an empty media parameter", errors)
+
+        pinned = (public / "blog/pinned/index.html").read_text(encoding="utf-8")
+        require('href="https://www.pinterest.com/pin/create/button/'
+                '?url=https%3A%2F%2Fexample.org%2Fblog%2Fpinned%2F'
+                '&amp;description=Pinned'
+                '&amp;media=https%3A%2F%2Fexample.org%2Fimages%2Fpin.png"' in pinned,
+                "a pin no longer carries the page's own representative image", errors)
         rendered_order = [
             shared.find("data-td-share"),
             shared.find("data-td-feedback"),

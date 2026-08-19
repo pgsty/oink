@@ -11,8 +11,10 @@ cascade:
   type: blog
   images: [/images/oink.webp]
   # Static intent links plus one local copy button. Nothing is requested until
-  # a reader activates one.
-  share: [x, linkedin, hackernews, email, copy]
+  # a reader activates one. Thirteen of the sixteen available targets; the other
+  # three (reddit, line, pinterest) are named in the theme's hugo.yaml.
+  share: [x, bluesky, mastodon, facebook, linkedin, hackernews, telegram,
+          whatsapp, weibo, chatgpt, claude, email, copy]
 ---
 
 Two sections below: the release notes are a numbered series, and the OINK posts

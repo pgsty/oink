@@ -52,13 +52,33 @@ All notable changes to OINK are documented here. The project follows
   came from, page to the next one, and comment, but the one thing a reader
   actually does with a good post -- send it to someone -- had no affordance at
   all, so every site grew its own. `params.ui.share` takes a list drawn from
-  `x`, `facebook`, `linkedin`, `reddit`, `hackernews`, `telegram`, `weibo`,
-  `email`, and `copy`; it is empty by default, a section cascade scopes the bar
-  to the tree that wants it, a page's own list replaces the inherited one, and
-  `share: false` opts one page out. An unknown target fails the build rather
-  than disappearing. Only a regular page renders the bar -- a list, a term, and
-  the home page have no single thing being shared -- and print, Markdown, and
-  RSS carry none of it.
+  sixteen targets -- `x`, `bluesky`, `mastodon`, `facebook`, `linkedin`,
+  `reddit`, `hackernews`, `telegram`, `whatsapp`, `line`, `pinterest`, `weibo`,
+  `chatgpt`, `claude`, `email`, and `copy` -- and is empty by default; a section
+  cascade scopes the bar to the tree that wants it, a page's own list replaces
+  the inherited one, and `share: false` opts one page out. An unknown target
+  warns and is dropped. Only a regular page renders the bar -- a list, a term,
+  and the home page have no single thing being shared -- and print, Markdown,
+  and RSS carry none of it.
+
+  Each entry is the endpoint that platform itself documents, and they disagree
+  about how a permalink and a title reach a compose box, so the catalog names
+  the shape rather than repeating the argument order: the URL alone, the URL
+  and the title as separate parameters, the title before the URL, one merged
+  `Title URL` string for a plain-text compose box, Pinterest's pin (whose
+  `media` image comes from `featured-image-resolve.html`, so a pin and the
+  page's own social card cannot disagree), and an assistant prompt naming the
+  permalink. `chatgpt` and `claude` are that build-time permalink and nothing
+  more -- not the `open_chatgpt` / `open_claude` actions the runtime rewrites
+  to the live browser URL, which is why those stay behind
+  `page_context_menu.assistant_links` and these two do not. Discord is absent
+  on purpose: it publishes no share-intent URL at all, so `copy` stands in for
+  it rather than the theme guessing at a private scheme.
+
+  The bar itself is one centred row of glyphs: no heading over it, and no rule
+  of its own, because whatever follows it at the page end already draws the
+  hairline that closes the article. The name it does not show lives on the
+  group's `aria-label`, so it is still announced as Share.
 
   What the bar does *not* do is the reason it can exist here at all. There is
   no share count, no platform SDK, no iframe, and no third-party script or

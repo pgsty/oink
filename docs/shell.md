@@ -108,12 +108,45 @@ rewriting the document Tab order.
 
 ## Share bar
 
-`params.ui.share` is a list drawn from `x`, `facebook`, `linkedin`, `reddit`,
-`hackernews`, `telegram`, `weibo`, `email`, and `copy`. It is empty by default,
-the page key is `share`, a page's own list replaces an inherited one, and
-`share: false` opts one page out. An unknown entry fails the build. Only a
-regular page renders the bar; lists, terms, and the home page never do, and it
-is absent from print, Markdown, and RSS.
+`params.ui.share` is a list drawn from the sixteen targets below. It is empty by
+default, the page key is `share`, a page's own list replaces an inherited one,
+and `share: false` opts one page out. An unknown entry warns and is dropped.
+Only a regular page renders the bar; lists, terms, and the home page never do,
+and it is absent from print, Markdown, and RSS.
+
+| Entry | Intent endpoint | Carries |
+| --- | --- | --- |
+| `x` | `x.com/intent/post` | `url`, `text` |
+| `bluesky` | `bsky.app/intent/compose` | `text` (title + URL) |
+| `mastodon` | `share.joinmastodon.org/#text=` | title + URL; the widget asks which server |
+| `facebook` | `facebook.com/sharer/sharer.php` | `u` |
+| `linkedin` | `linkedin.com/sharing/share-offsite/` | `url` |
+| `reddit` | `reddit.com/submit` | `url`, `title` |
+| `hackernews` | `news.ycombinator.com/submitlink` | `u`, `t` |
+| `telegram` | `t.me/share/url` | `url`, `text` |
+| `whatsapp` | `wa.me/?text=` | title + URL |
+| `line` | `social-plugins.line.me/lineit/share` | `url`, `text` |
+| `pinterest` | `pinterest.com/pin/create/button/` | `url`, `description`, `media` |
+| `weibo` | `service.weibo.com/share/share.php` | `url`, `title` |
+| `chatgpt` | `chatgpt.com/?hints=search` | `prompt` naming the permalink |
+| `claude` | `claude.ai/new` | `q` naming the permalink |
+| `email` | `mailto:` | `subject`, `body` |
+| `copy` | none — the local `copy_link` action | — |
+
+`media` is Pinterest's pin image, resolved through `featured-image-resolve.html`
+so a pin and the page's own social card cannot disagree; a page with no
+representative image simply omits it and Pinterest asks the reader to pick one.
+**Discord is absent on purpose**: it publishes no share-intent URL, and `copy`
+is the honest equivalent. `chatgpt` and `claude` are the build-time permalink
+inside an assistant prompt, not the `open_chatgpt` / `open_claude` actions the
+runtime rewrites to the live browser URL, so they are not gated by
+`page_context_menu.assistant_links` — naming them in the list is the opt-in.
+
+The bar is one centred row of glyphs and nothing else: no visible heading, since
+a row of platform marks needs no label to be read, and no rule of its own, since
+whatever follows it -- feedback, the annotation -- already draws the hairline
+that closes the article. The name it does not show lives on the group's
+`aria-label`, so assistive technology still announces it as Share.
 
 Everything the bar emits is a plain `<a href>` intent link carrying the page's
 own permalink and title, plus one local `copy_link` button: no share count, no
@@ -121,7 +154,9 @@ platform SDK, no iframe, no third-party script or stylesheet, and no campaign
 parameters. Nothing is requested when the site builds or when the page loads,
 so a build passes `bin/check-output-security.py` without `--third-party`.
 `share/items.html` resolves the targets and `share/bar.html` renders them, the
-same split the annotation uses.
+same split the annotation uses; the `form` field there names the URL shape
+(`u`, `ut`, `tu`, `m`, `pin`, `p`) so a site overriding the resolver adds a
+platform by adding one catalog row.
 
 ## Page annotation
 

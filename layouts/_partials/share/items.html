@@ -22,6 +22,23 @@
      name is said out loud so it is not mistaken for a platform the
      reader's device lacks, but a typo does not stop a dev server.
 
+     URL shapes ---------------------------------------------------------
+
+     Every platform below documents its own intent endpoint, and they disagree
+     about how the two facts a share carries -- the page's permalink and its
+     title -- reach the compose box. `form` names the shape rather than
+     repeating the argument order at each call site:
+
+       u    the URL alone (the platform reads the title from the page)
+       ut   the URL, then the title
+       tu   the title, then the URL (a `mailto:` subject precedes its body)
+       m    one merged "Title URL" string, for a compose box that takes plain
+            text and finds the link inside it
+       pin  Pinterest's URL + description, plus `media` when the page has a
+            representative image -- without one Pinterest asks the reader to
+            pick from the page, which needs the page to be publicly fetchable
+       p    an assistant prompt naming the permalink
+
      Trust boundary -----------------------------------------------------
 
      Everything this produces is a plain `<a href>` the reader may choose to
@@ -33,11 +50,26 @@
      else: no identifiers, no campaign parameters. That is the whole reason
      the bar can exist in a theme that refuses third-party embeds by default,
      and `bin/check-output-security.py` (without `--third-party`) is where it
-     is proven. */ -}}
+     is proven.
+
+     `chatgpt` and `claude` hand that same permalink to an assistant with a
+     prompt asking it to read the page. They are not the `open_chatgpt` /
+     `open_claude` actions, which the runtime rewrites at activation time to
+     the live browser URL -- query and hash included -- and which therefore
+     stay behind `page_context_menu.assistant_links`. These two are the
+     build-time permalink and nothing more, so naming them in
+     `params.ui.share` is itself the opt-in.
+
+     Discord has no share-intent URL. There is no documented endpoint that
+     opens a compose box with a link in it, so the bar offers no `discord`
+     entry and `copy` is the honest equivalent. */ -}}
 
 {{- $page := . -}}
 {{- $path := $page.Path -}}
-{{- $allowed := slice "x" "facebook" "linkedin" "reddit" "hackernews" "telegram" "weibo" "email" "copy" -}}
+{{- $allowed := slice
+  "x" "bluesky" "mastodon" "facebook" "linkedin" "reddit" "hackernews"
+  "telegram" "whatsapp" "line" "pinterest" "weibo"
+  "chatgpt" "claude" "email" "copy" -}}
 {{- $names := delimit $allowed " | " -}}
 {{- $items := slice -}}
 {{- $ids := slice -}}
@@ -59,14 +91,20 @@
 {{- /* Only a page of authored content is worth handing to someone: a list, a
        term, or the home page has no single thing being shared. */ -}}
 {{- if and $ids $page.IsPage -}}
-  {{- /* Percent-encode once, here, and hand the same two values to every
+  {{- /* Percent-encode once, here, and hand the same values to every
          template. Spaces become %20 rather than +, which a query string
          accepts everywhere and a mailto: needs. */ -}}
   {{- $url := replace (urlquery $page.Permalink) "+" "%20" -}}
   {{- $title := replace (urlquery $page.Title) "+" "%20" -}}
+  {{- $merged := replace (urlquery (printf "%s %s" $page.Title $page.Permalink)) "+" "%20" -}}
+  {{- $prompt := replace (urlquery (printf (T "ui_open_in_prompt") $page.Permalink)) "+" "%20" -}}
   {{- $catalog := dict
     "x" (dict "label" "X" "icon" "fa-brands fa-x-twitter"
       "form" "ut" "template" "https://x.com/intent/post?url=%s&text=%s")
+    "bluesky" (dict "label" "Bluesky" "icon" "fa-brands fa-bluesky"
+      "form" "m" "template" "https://bsky.app/intent/compose?text=%s")
+    "mastodon" (dict "label" "Mastodon" "icon" "fa-brands fa-mastodon"
+      "form" "m" "template" "https://share.joinmastodon.org/#text=%s")
     "facebook" (dict "label" "Facebook" "icon" "fa-brands fa-facebook"
       "form" "u" "template" "https://www.facebook.com/sharer/sharer.php?u=%s")
     "linkedin" (dict "label" "LinkedIn" "icon" "fa-brands fa-linkedin-in"
@@ -77,8 +115,18 @@
       "form" "ut" "template" "https://news.ycombinator.com/submitlink?u=%s&t=%s")
     "telegram" (dict "label" "Telegram" "icon" "fa-brands fa-telegram"
       "form" "ut" "template" "https://t.me/share/url?url=%s&text=%s")
+    "whatsapp" (dict "label" "WhatsApp" "icon" "fa-brands fa-whatsapp"
+      "form" "m" "template" "https://wa.me/?text=%s")
+    "line" (dict "label" "LINE" "icon" "fa-brands fa-line"
+      "form" "ut" "template" "https://social-plugins.line.me/lineit/share?url=%s&text=%s")
+    "pinterest" (dict "label" "Pinterest" "icon" "fa-brands fa-pinterest-p"
+      "form" "pin" "template" "https://www.pinterest.com/pin/create/button/?url=%s&description=%s")
     "weibo" (dict "label" "Weibo" "icon" "fa-brands fa-weibo"
       "form" "ut" "template" "https://service.weibo.com/share/share.php?url=%s&title=%s")
+    "chatgpt" (dict "label" "ChatGPT" "icon" "fa-brands fa-openai"
+      "form" "p" "template" "https://chatgpt.com/?hints=search&prompt=%s")
+    "claude" (dict "label" "Claude" "icon" "fa-brands fa-claude"
+      "form" "p" "template" "https://claude.ai/new?q=%s")
     "email" (dict "label" (T "ui_share_email") "icon" "fa-solid fa-envelope"
       "form" "tu" "template" "mailto:?subject=%s&body=%s")
     "copy" (dict "label" (T "ui_copy_link") "icon" "fa-solid fa-link"
@@ -92,7 +140,18 @@
     {{- $href := "" -}}
     {{- if eq $entry.form "ut" }}{{ $href = printf $entry.template $url $title -}}
     {{- else if eq $entry.form "u" }}{{ $href = printf $entry.template $url -}}
-    {{- else if eq $entry.form "tu" }}{{ $href = printf $entry.template $title $url }}{{ end -}}
+    {{- else if eq $entry.form "tu" }}{{ $href = printf $entry.template $title $url -}}
+    {{- else if eq $entry.form "m" }}{{ $href = printf $entry.template $merged -}}
+    {{- else if eq $entry.form "p" }}{{ $href = printf $entry.template $prompt -}}
+    {{- else if eq $entry.form "pin" -}}
+      {{- $href = printf $entry.template $url $title -}}
+      {{- /* The resolver is the one place that decides which image represents a
+             page, so a pin and the page's own social card cannot disagree. */ -}}
+      {{- $featured := partial "featured-image-resolve.html" $page -}}
+      {{- $media := "" -}}
+      {{- with $featured.resource }}{{ $media = .Permalink }}{{ else }}{{ $media = $featured.permalink }}{{ end -}}
+      {{- with $media }}{{ $href = printf "%s&media=%s" $href (replace (urlquery .) "+" "%20") }}{{ end -}}
+    {{- end -}}
     {{- $items = $items | append (dict
       "id" $id
       "label" $entry.label

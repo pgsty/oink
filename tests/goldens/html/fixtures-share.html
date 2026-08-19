@@ -40,7 +40,7 @@ document.documentElement.setAttribute('data-theme', theme);
 <link rel="prev" href="/fixtures/share/">
 <link rel="next" href="/fixtures/share/disabled/"><meta name="robots" content="index, follow">
 <title>Shared page | Oink Example</title>
-<meta name="description" content="Four inherited targets - one intent link per URL shape, plus the local copy control.">
+<meta name="description" content="Seven inherited targets - one intent link per URL shape, plus the local copy control.">
 <link rel="canonical" href="https://example.org/fixtures/share/enabled/">
 <link rel="alternate" hreflang="en-US" href="https://example.org/fixtures/share/enabled/">
 <link rel="alternate" hreflang="zh-CN" href="https://example.org/zh/fixtures/share/enabled/">
@@ -48,19 +48,19 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:url" content="https://example.org/fixtures/share/enabled/">
 <meta property="og:site_name" content="Oink Example">
 <meta property="og:title" content="Shared page">
-<meta property="og:description" content="Four inherited targets - one intent link per URL shape, plus the local copy control.">
+<meta property="og:description" content="Seven inherited targets - one intent link per URL shape, plus the local copy control.">
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
 <meta property="article:section" content="fixtures">
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Shared page">
-<meta itemprop="description" content="Four inherited targets - one intent link per URL shape, plus the local copy control.">
-<meta itemprop="wordCount" content="40">
+<meta itemprop="description" content="Seven inherited targets - one intent link per URL shape, plus the local copy control.">
+<meta itemprop="wordCount" content="130">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
 <meta name="twitter:title" content="Shared page">
-<meta name="twitter:description" content="Four inherited targets - one intent link per URL shape, plus the local copy control.">
+<meta name="twitter:description" content="Seven inherited targets - one intent link per URL shape, plus the local copy control.">
 <link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
 <link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
 <script>
@@ -629,24 +629,43 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Ffixt
 <div class="td-page-heading">
 <h1>Shared page</h1>
 </div>
-<div class="lead">Four inherited targets - one intent link per URL shape, plus the local copy control.</div>
+<div class="lead">Seven inherited targets - one intent link per URL shape, plus the local copy control.</div>
 <header class="td-article-meta">
 </header>
-<p>The bar above the feedback prompt is the section&rsquo;s inherited list: <code>x</code> and
-<code>hackernews</code> carry the URL and the title, <code>email</code> is a <code>mailto:</code> that carries
-the title first, and <code>copy</code> is the local <code>copy_link</code> action rather than a link.</p>
+<p>The bar above the feedback prompt is the section&rsquo;s inherited list, and each
+entry is a different shape of intent URL: <code>x</code> carries the URL and the title as
+separate parameters, <code>facebook</code> takes the URL alone and reads the title off the
+page, <code>whatsapp</code> gets one merged <code>Title URL</code> string, <code>pinterest</code> adds the pin&rsquo;s
+<code>media</code> image when the page has one, <code>claude</code> sends a prompt naming the
+permalink, <code>email</code> is a <code>mailto:</code> whose subject precedes its body, and <code>copy</code>
+is not a link at all but the local <code>copy_link</code> action.</p>
+<p><code>bluesky</code> and <code>mastodon</code> share WhatsApp&rsquo;s merged shape; <code>linkedin</code> shares
+Facebook&rsquo;s; <code>reddit</code>, <code>hackernews</code>, <code>telegram</code>, <code>line</code>, and <code>weibo</code> share X&rsquo;s;
+<code>chatgpt</code> shares Claude&rsquo;s. Discord has no share-intent URL of any shape, so the
+bar offers none and <code>copy</code> stands in for it.</p>
 <div class="td-page-end">
 <section class="td-share d-print-none" data-td-share data-td-page-context
 data-td-t-copied="Link copied" data-td-t-copy-error="Could not copy the link">
-<h2 class="td-share__label">Share</h2>
 <div class="td-share__items" role="group" aria-label="Share">
 <a class="td-share__item td-share__item--x" href="https://x.com/intent/post?url=https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F&amp;text=Shared%20page"
 target="_blank" rel="noopener noreferrer" title="X" aria-label="X">
 <span class="td-share__icon"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></span>
 </a>
-<a class="td-share__item td-share__item--hackernews" href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F&amp;t=Shared%20page"
-target="_blank" rel="noopener noreferrer" title="Hacker News" aria-label="Hacker News">
-<span class="td-share__icon"><i class="fa-brands fa-hacker-news" aria-hidden="true"></i></span>
+<a class="td-share__item td-share__item--facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F"
+target="_blank" rel="noopener noreferrer" title="Facebook" aria-label="Facebook">
+<span class="td-share__icon"><i class="fa-brands fa-facebook" aria-hidden="true"></i></span>
+</a>
+<a class="td-share__item td-share__item--whatsapp" href="https://wa.me/?text=Shared%20page%20https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F"
+target="_blank" rel="noopener noreferrer" title="WhatsApp" aria-label="WhatsApp">
+<span class="td-share__icon"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></span>
+</a>
+<a class="td-share__item td-share__item--pinterest" href="https://www.pinterest.com/pin/create/button/?url=https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F&amp;description=Shared%20page"
+target="_blank" rel="noopener noreferrer" title="Pinterest" aria-label="Pinterest">
+<span class="td-share__icon"><i class="fa-brands fa-pinterest-p" aria-hidden="true"></i></span>
+</a>
+<a class="td-share__item td-share__item--claude" href="https://claude.ai/new?q=Read%20from%20https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F%20so%20I%20can%20ask%20questions%20about%20it."
+target="_blank" rel="noopener noreferrer" title="Claude" aria-label="Claude">
+<span class="td-share__icon"><i class="fa-brands fa-claude" aria-hidden="true"></i></span>
 </a>
 <a class="td-share__item td-share__item--email" href="mailto:?subject=Shared%20page&amp;body=https%3A%2F%2Fexample.org%2Ffixtures%2Fshare%2Fenabled%2F"
 title="Email" aria-label="Email">

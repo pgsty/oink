@@ -1325,10 +1325,18 @@ children inherit the list above.</p>
 </div>
 <div class="td-content" style="">
 <h1 id="pg-79416dad4ff1c50f7dba4eec8de3fc99">16.1 - Shared page</h1>
-<div class="lead">Four inherited targets - one intent link per URL shape, plus the local copy control.</div>
-<p>The bar above the feedback prompt is the section&rsquo;s inherited list: <code>x</code> and
-<code>hackernews</code> carry the URL and the title, <code>email</code> is a <code>mailto:</code> that carries
-the title first, and <code>copy</code> is the local <code>copy_link</code> action rather than a link.</p>
+<div class="lead">Seven inherited targets - one intent link per URL shape, plus the local copy control.</div>
+<p>The bar above the feedback prompt is the section&rsquo;s inherited list, and each
+entry is a different shape of intent URL: <code>x</code> carries the URL and the title as
+separate parameters, <code>facebook</code> takes the URL alone and reads the title off the
+page, <code>whatsapp</code> gets one merged <code>Title URL</code> string, <code>pinterest</code> adds the pin&rsquo;s
+<code>media</code> image when the page has one, <code>claude</code> sends a prompt naming the
+permalink, <code>email</code> is a <code>mailto:</code> whose subject precedes its body, and <code>copy</code>
+is not a link at all but the local <code>copy_link</code> action.</p>
+<p><code>bluesky</code> and <code>mastodon</code> share WhatsApp&rsquo;s merged shape; <code>linkedin</code> shares
+Facebook&rsquo;s; <code>reddit</code>, <code>hackernews</code>, <code>telegram</code>, <code>line</code>, and <code>weibo</code> share X&rsquo;s;
+<code>chatgpt</code> shares Claude&rsquo;s. Discord has no share-intent URL of any shape, so the
+bar offers none and <code>copy</code> stands in for it.</p>
 </div>
 <div class="td-content" style="page-break-before: always">
 <h1 id="pg-e8ff0dd4a48692faa7af57866c8390d0">16.2 - Share opt-out</h1>

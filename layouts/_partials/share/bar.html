@@ -17,7 +17,9 @@
 {{- with partial "share/items.html" $page }}
 <section class="td-share d-print-none" data-td-share data-td-page-context
   data-td-t-copied="{{ T "ui_copy_link_success" }}" data-td-t-copy-error="{{ T "ui_copy_link_error" }}">
-  <h2 class="td-share__label">{{ T "ui_share" }}</h2>
+  {{- /* A row of platform glyphs says what it is without a heading over it, so
+       the name lives only on the group: assistive technology still announces
+       "Share", and no visible text competes with the icons. */}}
   <div class="td-share__items" role="group" aria-label="{{ T "ui_share" }}">
     {{- range . }}
     {{- if .url }}

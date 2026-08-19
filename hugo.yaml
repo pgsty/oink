@@ -123,9 +123,11 @@ params:
     # an explicit notice at the start of draft book pages.
     book_draft_banner: false
     # Page-end share bar: a list drawn from
-    # x | facebook | linkedin | reddit | hackernews | telegram | weibo |
+    # x | bluesky | mastodon | facebook | linkedin | reddit | hackernews |
+    # telegram | whatsapp | line | pinterest | weibo | chatgpt | claude |
     # email | copy. Empty means no bar. Every entry is a plain link (or the
-    # local copy button), never a platform script or a share count. Front
+    # local copy button), never a platform script or a share count. Discord
+    # publishes no share-intent URL, so `copy` stands in for it. Front
     # matter `share: [x, copy]` replaces the list for one page and
     # `share: false` turns its bar off; a section cascade scopes the bar to,
     # say, the blog.

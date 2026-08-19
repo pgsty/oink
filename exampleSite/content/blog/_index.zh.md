@@ -9,8 +9,10 @@ blog_index: cards
 cascade:
   type: blog
   images: [/images/oink.webp]
-  # 纯静态意图链接加一个本地复制按钮。读者不点，就没有任何请求。
-  share: [x, linkedin, hackernews, email, copy]
+  # 纯静态意图链接加一个本地复制按钮。读者不点，就没有任何请求。这里用了十六个可选
+  # 目标中的十三个，其余三个（reddit、line、pinterest）见主题 hugo.yaml。
+  share: [x, bluesky, mastodon, facebook, linkedin, hackernews, telegram,
+          whatsapp, weibo, chatgpt, claude, email, copy]
 ---
 
 下面两个栏目：发布说明是一条有编号的系列，OINK 随笔的署名来自 `authors` 分类法。

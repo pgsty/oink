@@ -117,7 +117,7 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
-    "ui:\n  share: [x, hackernews, email, copy]",
+    "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
@@ -132,7 +132,9 @@ ACCEPTED_PAGE_CASES = [
 
 INVALID_SITE_CASES = [
     ("comments: definitely", "params.comments must be a boolean or a map"),
-    ("ui:\n  share: [x, mastodon]", 'invalid params.ui.share entry "mastodon"'),
+    # Discord publishes no share-intent URL, so it stays outside the set no
+    # matter how often it is asked for; WeChat below is the same case.
+    ("ui:\n  share: [x, discord]", 'invalid params.ui.share entry "discord"'),
     ("ui:\n  share: true", "params.ui.share is the list of share targets, not a switch"),
     ("ui:\n  share: x", "params.ui.share must be a list of share targets"),
     ("comments:\n  enable: definitely", "params.comments.enable must be true or false"),

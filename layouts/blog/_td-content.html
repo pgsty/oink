@@ -11,8 +11,13 @@
 			{{ partial "reading-time.html" . -}}
 		{{ end -}}
 	</header>
+<<<<<<< HEAD
 	{{ if eq $featured "wash" }}</div>
 	{{ end }}{{ .Render "_td-content-after-header" -}}
+=======
+	{{ partial "series-strip.html" . -}}
+	{{ .Render "_td-content-after-header" -}}
+>>>>>>> feat/b4-series
 	{{ partial "content/render.html" . }}
 	{{ partial "page-end.html" . -}}
 </div>

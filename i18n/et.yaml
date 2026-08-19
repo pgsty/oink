@@ -307,3 +307,6 @@ post_translated_original: original
 # Replace these values with reviewed translations when available.
 ui_authors_title: Authors
 ui_author_title: Author
+ui_series_title: Series
+ui_series_part: Part {{ .Part }} of {{ .Total }}
+ui_series_next: "Next: {{ .Link }}"

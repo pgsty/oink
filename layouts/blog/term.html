@@ -7,11 +7,22 @@
   {{ with partial "content/render.html" . }}<div class="td-shell-term-summary">{{ . }}</div>{{ end }}
 </div>
 {{ end -}}
+{{/* A series is a reading path, so its term page lists its members in reading
+     order and keeps the ordinal that an <ol> already carries. Every other
+     taxonomy is an index, and stays newest first. */ -}}
 <div class="td-blog-posts">
+  {{- if eq .Data.Plural "series" }}
+  <ol class="td-blog-posts-list td-blog-posts-list--numbered">
+    {{- range partial "series-pages.html" . }}
+      {{- partial "shell/blog-row.html" . -}}
+    {{- end }}
+  </ol>
+  {{- else }}
   <ul class="td-blog-posts-list">
     {{- range .Pages.ByDate.Reverse }}
       {{- partial "shell/blog-row.html" . -}}
     {{- end }}
   </ul>
+  {{- end }}
 </div>
 {{ end -}}

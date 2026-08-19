@@ -258,3 +258,55 @@ plain/print surfaces. `tests/fixtures/navigation/current.json` is the normalized
 output snapshot. `bin/check-shell.py`, JS tests, and the consumer browser
 suite cover page-end order, keyboard behavior, accessibility, and responsive
 layout.
+
+## Series contract
+
+A site activates article series by declaring the taxonomy, and that is the
+whole switch:
+
+```yaml
+taxonomies:
+  series: series
+```
+
+There is no `params.ui.series`, no per-series metadata file, and no cover
+model: the term page `content/series/<name>/_index.md` already holds the
+display name, the one-line description, and the long introduction, and a
+`_index.zh.md` beside it makes the pair bilingual. A term with no `_index.md`
+still works; it just falls back to the humanized term name. Where the taxonomy
+is not declared, `series:` in front matter stays an ordinary page parameter
+that no template reads.
+
+An article names its series and, optionally, its position:
+
+```yaml
+series: [pg-internals]
+series_weight: 2
+```
+
+**Reading order is the theme's, not Hugo's.** `series-pages.html` is the single
+resolver, and both the strip and the term page read it: members that declare
+`series_weight` come first in ascending order, the rest follow by ascending
+date, and `Path` breaks a tie. Hugo's own term order cannot be used for this --
+an unweighted term arrives newest first, a mixed term puts unweighted members
+*before* weight 1, `Page.Weight` never carries the taxonomy weight, and
+`GroupByParam` cannot see `series_weight` at all. Declare a weight on every
+member of a series or on none of them; the mixed form is defined, not
+recommended.
+
+`series-strip.html` renders above the article body, between the metadata row
+and the first paragraph: the series name, `Part N of M`, the next part, and the
+whole list behind a `<details>`. It has no JavaScript, no page-store flag, and
+no bundle member. A member of several series gets one strip, for the first term
+it names. A series of one gets none. The `series` term is kept out of the
+default taxonomy chips row -- along with `authors` -- because the strip already
+carries it; a site that names `series` in `params.taxonomy.page_header` opts
+back in.
+
+Output matrix: HTML renders the strip; printing keeps it and the existing print
+rule opens the disclosure; the Markdown and RSS outputs never see it, because
+it is a template product and not part of the page content.
+
+A series is a reading path through articles that stand on their own. Numbering,
+cross-references, and aggregate output are Book's: when a work needs those, it
+is a Book, not a series.

@@ -278,6 +278,71 @@ def check_sources() -> list[str]:
             "detailed feedback no longer has a stable Giscus target", errors)
     require("key === 'l' || key === 'y'" in keyboard,
             "y is no longer the l language alias", errors)
+    errors += check_featured_image_sources()
+    return errors
+
+
+def check_featured_image_sources() -> list[str]:
+    """The article-level featured image: one caller, one resolver, no runtime."""
+    errors: list[str] = []
+    mode = (ROOT / "layouts/_partials/featured-image-mode.html").read_text()
+    article = (ROOT / "layouts/_partials/featured-image-article.html").read_text()
+    td_content = (ROOT / "layouts/blog/_td-content.html").read_text()
+    styles = (ROOT / "assets/scss/td/shell/_featured.scss").read_text()
+    config = (ROOT / "hugo.yaml").read_text()
+
+    require("featured_image: none" in config,
+            "hugo.yaml no longer declares the params.ui.featured_image default", errors)
+    require('partial "ui-param.html" (dict "page" . "key" "featured_image")' in mode,
+            "featured_image no longer resolves through ui-param.html, so front matter cannot override it", errors)
+    require('errorf "invalid params.ui.featured_image' in mode
+            and '(allowed: none | banner | wash)' in mode,
+            "an invalid featured_image mode no longer fails the build", errors)
+    require('.Store.Get "tdOutputFormat"' in mode and '"html"' in mode,
+            "the featured image is no longer guarded to HTML output", errors)
+    require('partialCached "featured-image-resolve.html"' in mode
+            and 'partialCached "featured-image-resolve.html"' in article,
+            "the article image no longer comes from the shared resolver", errors)
+
+    # One caller. The partials render blog articles and nothing else; a docs or
+    # Book page reaching them would make the parameter mean two things.
+    callers = {
+        path.relative_to(ROOT).as_posix()
+        for path in ROOT.glob("layouts/**/*.html")
+        for name in ("featured-image-mode.html", "featured-image-article.html")
+        if f'partial "{name}"' in path.read_text()
+    }
+    require(callers == {"layouts/blog/_td-content.html"},
+            f"the article featured image is called from {sorted(callers)}, not only blog/_td-content.html", errors)
+    require(0 <= td_content.find('partial "featured-image-mode.html"')
+            < td_content.find('partial "featured-image-article.html"')
+            < td_content.find('partial "page-title.html"'),
+            "the featured image no longer resolves and renders before the page title", errors)
+    require('<div class="td-article-header td-article-header--wash">' in td_content
+            and td_content.count('{{ if eq $featured "wash" }}') == 2,
+            "the wash header wrapper is no longer emitted only in wash mode", errors)
+
+    require('class="td-featured-banner"' in article and 'class="td-featured-wash"' in article,
+            "the article featured image lost one of its two modes", errors)
+    require('aria-hidden="true"' in article,
+            "the wash is no longer hidden from assistive technology", errors)
+    require(article.count('alt=""') == 2 and "loading=" not in article,
+            "the article featured image is no longer decorative, or defers its own LCP element", errors)
+    require('.Fill "1600x900 Center"' in article and '.Resize "1200x q60"' in article
+            and "reflect.IsImageResourceProcessable" in article,
+            "the article featured image no longer crops what Hugo can process", errors)
+    require("hasImageZoom" not in article and "Store.Set" not in article
+            and "Store.Set" not in mode,
+            "the article featured image writes a Page Store flag", errors)
+
+    require("--td-featured-wash-opacity" in styles and "aspect-ratio: 16 / 9" in styles,
+            "the featured image styles lost the wash opacity token or the fixed banner frame", errors)
+    require("@media (forced-colors: active)" in styles and "@media print" in styles
+            and styles.count("display: none") >= 2,
+            "the wash is not dropped in forced colors or in print", errors)
+    require("margin-inline" in styles and "padding-inline" in styles
+            and "margin-left" not in styles and "padding-left" not in styles,
+            "the featured image styles use physical instead of logical properties", errors)
     return errors
 
 
@@ -383,6 +448,56 @@ def build_example(hugo: str) -> list[str]:
                     and 'data-td-page-actions' in docs_source
                     and 'td-shell-topline--actions-only' in docs_source,
                     "docs root did not hide its breadcrumb while retaining actions", errors)
+
+        errors += check_featured_image_output(public)
+    return errors
+
+
+def check_featured_image_output(public: Path) -> list[str]:
+    """banner and wash render in HTML only, and only where they are asked for."""
+    errors: list[str] = []
+    surfaces = {
+        "banner": public / "blog/featured-banner/index.html",
+        "wash": public / "blog/featured-wash/index.html",
+    }
+    for mode, path in surfaces.items():
+        require(path.is_file(), f"the {mode} featured-image fixture is missing", errors)
+    if not all(path.is_file() for path in surfaces.values()):
+        return errors
+
+    banner = surfaces["banner"].read_text()
+    wash = surfaces["wash"].read_text()
+    require('<figure class="td-featured-banner">' in banner
+            and 'alt="" width="1600" height="900"' in banner
+            and "td-featured-banner__byline" in banner,
+            "the banner fixture lost its framed decorative figure or its resource byline", errors)
+    require("td-featured-wash" not in banner and "td-article-header--wash" not in banner,
+            "the banner fixture also rendered a wash", errors)
+    require(banner.find("td-featured-banner") < banner.find("td-page-heading"),
+            "the banner does not precede the article title", errors)
+    require('<div class="td-article-header td-article-header--wash">' in wash
+            and '<div class="td-featured-wash" aria-hidden="true">' in wash
+            and wash.find("td-featured-wash") < wash.find("td-page-heading"),
+            "the wash fixture lost its hidden header layer", errors)
+    require("td-featured-banner" not in wash,
+            "the wash fixture also rendered a banner", errors)
+
+    # An article that names no mode is exactly what it was before the feature.
+    plain = public / "blog/typography/index.html"
+    require(plain.is_file(), "the unset-parameter blog fixture is missing", errors)
+    if plain.is_file():
+        plain_source = plain.read_text()
+        require("td-featured-" not in plain_source and "td-article-header" not in plain_source,
+                "an article that sets no mode still renders a featured image", errors)
+
+    # Print reaches the article through its own template and carries neither.
+    for mode in surfaces:
+        printed = public / f"_print/blog/featured-{mode}/index.html"
+        require(printed.is_file(), f"the {mode} print surface is missing", errors)
+        if printed.is_file():
+            printed_source = printed.read_text()
+            require("td-featured-" not in printed_source and "td-article-header" not in printed_source,
+                    f"the {mode} print surface carries the article featured image", errors)
     return errors
 
 
@@ -463,13 +578,57 @@ params:
     return errors
 
 
+def build_featured_image_rejection(hugo: str) -> list[str]:
+    """An unknown mode fails the build rather than degrading to `none`."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-featured-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        (source / "content/blog").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"""baseURL: https://example.org/
+title: Featured image fixture
+theme: {ROOT.name}
+disableKinds: [RSS, sitemap, taxonomy, term]
+params:
+  images: [/card.png]
+  offline_search: false
+  ui:
+    featured_image: sideways
+""",
+            encoding="utf-8",
+        )
+        (source / "content/blog/_index.md").write_text(
+            "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n  images: [/card.png]\n---\n",
+            encoding="utf-8",
+        )
+        (source / "content/blog/post.md").write_text(
+            "---\ntitle: Post\ndate: 2026-01-01\n---\n\nPost.\n",
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public"), "--logLevel", "warn"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode != 0, "an invalid params.ui.featured_image built without an error", errors)
+        require("invalid params.ui.featured_image" in output
+                and "none | banner | wash" in output,
+                f"the invalid featured_image error does not name the allowed modes: {output[-400:]}", errors)
+    return errors
+
+
 def main() -> int:
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
-    errors = check_sources() + build_example(args.hugo) + build_self_root_fixture(args.hugo)
+    errors = (check_sources() + build_example(args.hugo) + build_self_root_fixture(args.hugo)
+              + build_featured_image_rejection(args.hugo))
     if errors:
         print("shell and page-end checks failed:")
         for error in errors:

@@ -7,6 +7,24 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- The featured image on the article itself. The theme resolved one image per
+  page and rendered it in list rows and social cards, but never on the post,
+  so authors wrote the hero by hand: across the eleven consuming sites, 559
+  articles open with a literal `[![featured](...)](...)` above their first
+  paragraph, duplicating the `images` value the front matter already carries.
+  `params.ui.featured_image` renders it instead -- `banner` frames it above the
+  title in a fixed 16:9 figure so a run of articles keeps one rhythm, `wash`
+  lays it behind the article header at a tenth of its opacity, masked to
+  nothing before the text starts, so a post takes a colour from its subject
+  without spending any contrast on it. It draws from
+  `featured-image-resolve.html` like every other consumer, so the image at the
+  top of an article and the image its card carries cannot disagree, and it adds
+  no runtime, no Page Store flag, and no bundle member. The default is `none`
+  and blog articles are the only pages that call it, so a site that renders
+  nothing today renders exactly the same bytes. Front matter `featured_image`
+  turns one page or, in a cascade, one section on or off; an article with no
+  image renders nothing in either mode, because a section can carry the switch
+  for posts that do not all carry art.
 - Upstream attribution in the page annotation. A site that vendors third-party
   documentation had to reimplement the notice itself: the two keys OINK
   shipped, `upstream_attribution` and `downstream_modified`, rendered a bare

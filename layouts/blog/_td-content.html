@@ -1,5 +1,8 @@
+{{- $featured := partial "featured-image-mode.html" . -}}
 <div class="td-content">
-		{{ partial "page-title.html" . }}
+		{{ if eq $featured "banner" }}{{ partial "featured-image-article.html" (dict "page" . "mode" $featured) }}
+		{{ end }}{{ if eq $featured "wash" }}<div class="td-article-header td-article-header--wash">{{ partial "featured-image-article.html" (dict "page" . "mode" $featured) }}
+		{{ end }}{{ partial "page-title.html" . }}
 	{{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
 	<div class="td-byline mb-4">
 		{{ with .Params.author }}{{ T "post_byline_by" }} <b>{{ . | markdownify }}</b> |{{ end}}
@@ -11,7 +14,8 @@
 			{{ partial "reading-time.html" . -}}
 		{{ end -}}
 	</header>
-	{{ .Render "_td-content-after-header" -}}
+	{{ if eq $featured "wash" }}</div>
+	{{ end }}{{ .Render "_td-content-after-header" -}}
 	{{ partial "content/render.html" . }}
 	{{ partial "page-end.html" . -}}
 </div>

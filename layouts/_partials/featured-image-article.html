@@ -1,0 +1,46 @@
+{{- /* Render a blog article's featured image, as a banner or as a wash.
+
+`featured-image-resolve.html` owns which image a page carries and the URL
+policy that goes with it, so what a reader sees at the top of an article and
+what its social card carries cannot drift apart. `featured-image-mode.html`
+owns whether this partial runs: by the time it does, the page has an image and
+the mode is one of the two rendered here.
+
+A banner is a figure above the title. A processable local raster is cropped to
+one fixed 16:9 frame so a run of articles keeps a single rhythm; SVG, a static
+path, and a remote URL are framed by CSS in that same box instead, because
+Hugo cannot process them. Its `alt` is empty on purpose: a banner restates the
+title it sits under, and the title is its accessible name. An image that
+carries information of its own belongs in the body, where it can be described.
+It is never lazy: a banner is the page's largest paintable element.
+
+A wash is decorative by construction. It sits behind the article header at a
+low opacity, is hidden from assistive technology, and is resized down first --
+nothing of the detail survives the opacity, so the bytes are waste.
+
+Input: dict "page" <page> "mode" "banner" | "wash". */ -}}
+{{- $page := .page -}}
+{{- $found := partialCached "featured-image-resolve.html" $page $page.RelPermalink -}}
+{{- $src := $found.href -}}
+{{- $byline := "" -}}
+{{- with $found.resource -}}
+  {{- $src = .RelPermalink -}}
+  {{- if reflect.IsImageResourceProcessable . -}}
+    {{- if eq $.mode "banner" -}}
+      {{- $src = (.Fill "1600x900 Center").RelPermalink -}}
+    {{- else -}}
+      {{- $src = (.Resize "1200x q60").RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $byline = .Params.byline | default "" -}}
+{{- end -}}
+{{- if eq .mode "banner" -}}
+<figure class="td-featured-banner">
+  <img src="{{ $src }}" alt="" width="1600" height="900" decoding="async">
+  {{- with $byline }}
+  <figcaption class="td-featured-banner__byline">{{ . }}</figcaption>
+  {{- end }}
+</figure>
+{{- else -}}
+<div class="td-featured-wash" aria-hidden="true"><img src="{{ $src }}" alt="" decoding="async"></div>
+{{- end -}}

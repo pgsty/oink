@@ -90,6 +90,12 @@ params:
     shell_types: [docs, book, blog, swagger]
     docs_section: docs
     blog_section: blog
+    # How a blog article presents the featured image `images` selects:
+    # none | banner (a framed figure above the title) | wash (the image
+    # behind the article header at a low opacity). Front matter
+    # `featured_image` overrides it for one page or, in a cascade, one
+    # section. An article that carries no image renders nothing either way.
+    featured_image: none
     # Root of the docs sidebar tree: section (the docs section itself) or
     # home (the whole site).
     docs_sidebar_root: section

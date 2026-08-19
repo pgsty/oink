@@ -1,0 +1,151 @@
+// ============================================================
+// Featured image on a blog article: banner and wash.
+//
+// `params.ui.featured_image` picks one; both draw the image
+// featured-image-resolve.html already chose for the list thumbnail and the
+// social card, so the three cannot disagree. Neither mode is interactive:
+// there is no zoom candidate here, no runtime, and nothing to strip for print.
+// ============================================================
+
+/* --------------------------------------------------------------- banner */
+
+// A figure above the title, cropped to one fixed 16:9 frame so a run of
+// articles keeps a single rhythm. The frame is CSS, not the crop, because a
+// non-processable source (SVG, a static path, a remote URL) reaches the same
+// box without a Hugo image operation.
+.td-featured-banner {
+  --td-featured-banner-radius: 10px;
+  --td-featured-banner-max-block-size: 26rem;
+
+  display: block;
+  inline-size: 100%;
+  margin-block: 0 1.5rem;
+  margin-inline: 0;
+
+  > img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    max-block-size: var(--td-featured-banner-max-block-size);
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    // The same 10px card language as the list thumbnail.
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--td-featured-banner-radius);
+  }
+
+  &__byline {
+    margin-block-start: 0.5rem;
+    color: var(--bs-secondary-color);
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+}
+
+/* ----------------------------------------------------------------- wash */
+
+// The header block that carries the wash. `isolation` keeps the negative
+// z-index below the header's own text without escaping behind the page.
+// The block padding is what the wash needs to breathe; the inline margin
+// spends the article gutter, which is never narrower than 1rem.
+.td-article-header--wash {
+  --td-featured-wash-opacity: 0.1;
+  --td-featured-wash-radius: 12px;
+  // The wash puts an unknown ground under the header, and the light palette's
+  // tertiary role clears AA against the page by only 0.5 (4.97:1). Under a
+  // solid black image at full mask it would read 3.98:1, so the two quiet
+  // roles step up one notch inside the wash: the same worst case then measures
+  // 6.20:1, and the loud roles were never at risk (body 11.7:1, h1 larger
+  // still). Dark is the mirror case and passes either way.
+  --bs-tertiary-color: var(--bs-secondary-color);
+  --td-shell-muted-fg: var(--bs-secondary-color);
+
+  position: relative;
+  isolation: isolate;
+  margin-block-end: 1rem;
+  margin-inline: -1rem;
+  padding-block: 1rem 0.5rem;
+  padding-inline: 1rem;
+}
+
+// Restated from shell/_page-context.scss and td/_content.scss: those rules
+// select the heading and the lead as direct children of .td-content, and the
+// wash wrapper is a level in between. The wrapper exists only in this mode, so
+// the selectors stay narrow there instead of loosening for every article.
+.td-content > .td-article-header > .td-page-heading {
+  @extend .td-max-width-on-larger-screens;
+  margin-bottom: 1rem;
+
+  > h1 {
+    min-width: 0;
+    margin: 0;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.td-content > .td-article-header > .lead {
+  @extend .td-max-width-on-larger-screens;
+}
+
+.td-shell-topline--actions-only
+  + .td-content
+  > .td-article-header
+  > .td-page-heading {
+  min-height: 29px;
+  padding-inline-end: 5rem;
+
+  @media print {
+    padding-inline-end: 0;
+  }
+}
+
+.td-featured-wash {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  border-radius: var(--td-featured-wash-radius);
+  pointer-events: none;
+
+  > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    opacity: var(--td-featured-wash-opacity);
+    // Fades downward in every writing mode, so the physical direction is the
+    // correct one: the text below the title must never sit on the image.
+    mask-image: linear-gradient(to bottom, #000, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+  }
+}
+
+// A dark page starts from a darker ground, so the same opacity reads louder.
+[data-bs-theme='dark'] .td-article-header--wash {
+  --td-featured-wash-opacity: 0.08;
+}
+
+// Contrast belongs to the system in forced colors, and a tint behind text is
+// exactly the thing that cannot be checked. Drop it.
+@media (forced-colors: active) {
+  .td-featured-wash {
+    display: none;
+  }
+}
+
+@media print {
+  .td-featured-banner {
+    --td-featured-banner-max-block-size: 12rem;
+
+    break-inside: avoid;
+  }
+
+  .td-featured-wash {
+    display: none;
+  }
+
+  .td-article-header--wash {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}

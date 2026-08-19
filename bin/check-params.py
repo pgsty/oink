@@ -78,6 +78,7 @@ PAGE_OVERRIDES = {
     "annotation": "ui.annotation",
     "feedback": "ui.feedback",
     "image_zoom": "ui.image_zoom",
+    "featured_image": "ui.featured_image",
     "reading_time": "ui.reading_time",
     "page_context_menu": "ui.page_context_menu",
     "translation_notice": "ui.translation_notice",

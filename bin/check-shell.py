@@ -587,6 +587,16 @@ params:
         (source / "content/blog/plain.md").write_text(
             "---\ntitle: Plain\ndate: 2026-08-11\n---\n\nA post with no image at all.\n",
             encoding="utf-8")
+        # The other way to have no image: a section cascades one and a page
+        # turns it off. `images` is Hugo's key at every level, so an empty
+        # list is the only opt-out a page has.
+        (source / "content/blog/cleared").mkdir()
+        (source / "content/blog/cleared/_index.md").write_text(
+            "---\ntitle: Cleared\ncascade:\n  images: [/images/cascaded.png]\n---\n",
+            encoding="utf-8")
+        (source / "content/blog/cleared/post.md").write_text(
+            "---\ntitle: Opted out\ndate: 2026-08-10\nimages: []\n---\n\nA post that turned its inherited image off.\n",
+            encoding="utf-8")
 
         result = subprocess.run(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
@@ -603,13 +613,13 @@ params:
 
         cards = index.read_text(encoding="utf-8").split(
             '<article class="td-content-card td-blog-card">')[1:]
-        require(len(cards) == 3, f"the card fixture rendered {len(cards)} cards, not 3", errors)
+        require(len(cards) == 4, f"the card fixture rendered {len(cards)} cards, not 4", errors)
         by_title = {
             match.group(1): card
             for card in cards
             if (match := re.search(r'class="td-content-card__title"[^>]*>([^<]+)<', card))
         }
-        require(set(by_title) == {"Bundled", "External", "Plain"},
+        require(set(by_title) == {"Bundled", "External", "Plain", "Opted out"},
                 f"the card fixture titles drifted: {sorted(by_title)}", errors)
 
         bundled = by_title.get("Bundled", "")
@@ -635,6 +645,10 @@ params:
         require("<img" not in plain, "a post with no image still renders an image slot", errors)
         require("A post with no image at all." in plain,
                 "a card without an image lost its summary too", errors)
+
+        cleared = by_title.get("Opted out", "")
+        require("<img" not in cleared and "cascaded.png" not in cleared,
+                "`images: []` no longer turns off an inherited lead image", errors)
     return errors
 
 

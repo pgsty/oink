@@ -1,5 +1,8 @@
 {{- $page := .page -}}
 {{- $meta := .meta | default (partial "release/meta.html" (dict "page" $page)) -}}
+{{- /* meta.html has already warned; rendering a card from empty facts
+       would emit links like https://github.com//releases/tag/. */ -}}
+{{- if $meta.valid -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $links := slice
   (dict "label" (T "ui_release_view") "url" $meta.releaseURL "icon" "fa-brands fa-github")
@@ -42,4 +45,5 @@
     {{- end }}
   </nav>
 </aside>
+{{- end -}}
 {{- end -}}

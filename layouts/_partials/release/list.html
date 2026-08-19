@@ -6,6 +6,10 @@
   {{- $records := slice -}}
   {{- range .RegularPages -}}
     {{- $meta := partial "release/meta.html" (dict "page" .) -}}
+    {{- /* meta.html has already warned; a page whose release facts do not
+           parse is left out of the index rather than listed with empty
+           links. */ -}}
+    {{- if not $meta.valid }}{{ continue }}{{ end -}}
     {{- $records = $records | append (dict
       "page" .
       "product" $meta.product

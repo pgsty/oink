@@ -1,64 +1,129 @@
-{{- /* Strict sha*sum asset lists with output-aware static fallbacks. */ -}}
+{{- /* sha*sum asset lists with output-aware static fallbacks.
+
+     A malformed call warns and renders nothing. The alternative -- guessing
+     at an algorithm or a base URL -- would publish checksum rows pointing at
+     the wrong files, which is worse than an absent table; and stopping the
+     build would take every page down over one shortcode. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "algo" "base" "src" "group")) -}}
+{{- $ok := true -}}
 
 {{- $algo := "" -}}
 {{- if and .IsNamedParams (isset .Params "algo") -}}
-  {{- if ne (printf "%T" (.Get "algo")) "string" }}{{ errorf "shortcode %q: algo must be a string at %s" .Name .Position }}{{ end -}}
-  {{- $algo = strings.TrimSpace (.Get "algo") -}}
-  {{- if not (in (slice "md5" "sha1" "sha256" "sha512") $algo) -}}
-    {{- errorf "shortcode %q: algo must be md5, sha1, sha256, or sha512 at %s" .Name .Position -}}
+  {{- if ne (printf "%T" (.Get "algo")) "string" -}}
+    {{- warnf "shortcode %q: algo must be a string at %s; skipping the block" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $algo = strings.TrimSpace (.Get "algo") -}}
+    {{- if not (in (slice "md5" "sha1" "sha256" "sha512") $algo) -}}
+      {{- warnf "shortcode %q: algo must be md5, sha1, sha256, or sha512 at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $grouped := false -}}
-{{- if and .IsNamedParams (isset .Params "group") -}}
-  {{- if ne (printf "%T" (.Get "group")) "string" }}{{ errorf "shortcode %q: group must be a string at %s" .Name .Position }}{{ end -}}
-  {{- if ne (.Get "group") "auto" }}{{ errorf "shortcode %q: group must be auto at %s" .Name .Position }}{{ end -}}
-  {{- $grouped = true -}}
+{{- if and $ok .IsNamedParams (isset .Params "group") -}}
+  {{- if ne (printf "%T" (.Get "group")) "string" -}}
+    {{- warnf "shortcode %q: group must be a string at %s; ignoring it" .Name .Position -}}
+  {{- else if ne (.Get "group") "auto" -}}
+    {{- warnf "shortcode %q: group must be auto at %s; ignoring it" .Name .Position -}}
+  {{- else -}}
+    {{- $grouped = true -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $inner := printf "%s" .InnerDeindent -}}
-{{- $src := "" -}}
-{{- if and .IsNamedParams (isset .Params "src") -}}
-  {{- if ne (printf "%T" (.Get "src")) "string" }}{{ errorf "shortcode %q: src must be a string at %s" .Name .Position }}{{ end -}}
-  {{- $src = strings.TrimSpace (.Get "src") -}}
-  {{- if not $src }}{{ errorf "shortcode %q: src must not be empty at %s" .Name .Position }}{{ end -}}
-  {{- if strings.ContainsNonSpace $inner }}{{ errorf "shortcode %q: src and inner checksum lines are mutually exclusive at %s" .Name .Position }}{{ end -}}
-  {{- $resource := or (.Page.Resources.Get $src) (resources.Get $src) -}}
-  {{- if not $resource }}{{ errorf "shortcode %q: src resource %q was not found at %s" .Name $src .Position }}{{ end -}}
-  {{- $inner = printf "%s" $resource.Content -}}
+{{- if and $ok .IsNamedParams (isset .Params "src") -}}
+  {{- if ne (printf "%T" (.Get "src")) "string" -}}
+    {{- warnf "shortcode %q: src must be a string at %s; skipping the block" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $src := strings.TrimSpace (.Get "src") -}}
+    {{- if not $src -}}
+      {{- warnf "shortcode %q: src must not be empty at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- else if strings.ContainsNonSpace $inner -}}
+      {{- warnf "shortcode %q: src and inner checksum lines are mutually exclusive at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- else -}}
+      {{- $resource := or (.Page.Resources.Get $src) (resources.Get $src) -}}
+      {{- if not $resource -}}
+        {{- warnf "shortcode %q: src resource %q was not found at %s; skipping the block" .Name $src .Position -}}
+        {{- $ok = false -}}
+      {{- else -}}
+        {{- $inner = printf "%s" $resource.Content -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
-{{- if not (strings.ContainsNonSpace $inner) }}{{ errorf "shortcode %q requires checksum lines or src at %s" .Name .Position }}{{ end -}}
+{{- if and $ok (not (strings.ContainsNonSpace $inner)) -}}
+  {{- warnf "shortcode %q requires checksum lines or src at %s; skipping the block" .Name .Position -}}
+  {{- $ok = false -}}
+{{- end -}}
 
 {{- $base := "" -}}
 {{- $hasRelease := isset .Page.Params "release" -}}
-{{- if and .IsNamedParams (isset .Params "base") -}}
-  {{- if ne (printf "%T" (.Get "base")) "string" }}{{ errorf "shortcode %q: base must be a string at %s" .Name .Position }}{{ end -}}
-  {{- if $hasRelease }}{{ errorf "shortcode %q: base is only valid without release front matter at %s" .Name .Position }}{{ end -}}
-  {{- $baseInput := strings.TrimSpace (.Get "base") -}}
-  {{- if not $baseInput }}{{ errorf "shortcode %q: base must not be empty at %s" .Name .Position }}{{ end -}}
-  {{- if findRE `[\x00-\x20\x7f]` $baseInput }}{{ errorf "shortcode %q: base must not contain whitespace or control characters at %s" .Name .Position }}{{ end -}}
-  {{- if hasPrefix $baseInput "//" }}{{ errorf "shortcode %q: base must not use a protocol-relative URL at %s" .Name .Position }}{{ end -}}
-  {{- $parsedResult := try (urls.Parse $baseInput) -}}
-  {{- with $parsedResult.Err }}{{ errorf "shortcode %q: invalid base URL at %s: %s" $.Name $.Position . }}{{ end -}}
-  {{- $parsed := $parsedResult.Value -}}
-  {{- if and $parsed.Scheme (not (in (slice "http" "https") (lower $parsed.Scheme))) }}{{ errorf "shortcode %q: base URL must use http or https at %s" .Name .Position }}{{ end -}}
-  {{- if and $parsed.Scheme (not $parsed.Host) }}{{ errorf "shortcode %q: base URL requires a host at %s" .Name .Position }}{{ end -}}
-  {{- if or $parsed.RawQuery $parsed.Fragment }}{{ errorf "shortcode %q: base URL must not contain a query or fragment at %s" .Name .Position }}{{ end -}}
-  {{- $base = $baseInput -}}
-  {{- if not $parsed.Scheme }}{{ $base = strings.TrimPrefix "/" $baseInput | relURL }}{{ end -}}
-{{- else if $hasRelease -}}
+{{- if and $ok .IsNamedParams (isset .Params "base") -}}
+  {{- if ne (printf "%T" (.Get "base")) "string" -}}
+    {{- warnf "shortcode %q: base must be a string at %s; skipping the block" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- else if $hasRelease -}}
+    {{- warnf "shortcode %q: base is only valid without release front matter at %s; skipping the block" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $baseInput := strings.TrimSpace (.Get "base") -}}
+    {{- if not $baseInput -}}
+      {{- warnf "shortcode %q: base must not be empty at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- else if findRE `[\x00-\x20\x7f]` $baseInput -}}
+      {{- warnf "shortcode %q: base must not contain whitespace or control characters at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- else if hasPrefix $baseInput "//" -}}
+      {{- warnf "shortcode %q: base must not use a protocol-relative URL at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
+    {{- else -}}
+      {{- $parsedResult := try (urls.Parse $baseInput) -}}
+      {{- if $parsedResult.Err -}}
+        {{- warnf "shortcode %q: invalid base URL at %s: %s; skipping the block" .Name .Position $parsedResult.Err -}}
+        {{- $ok = false -}}
+      {{- else -}}
+        {{- $parsed := $parsedResult.Value -}}
+        {{- if and $parsed.Scheme (not (in (slice "http" "https") (lower $parsed.Scheme))) -}}
+          {{- warnf "shortcode %q: base URL must use http or https at %s; skipping the block" .Name .Position -}}
+          {{- $ok = false -}}
+        {{- else if and $parsed.Scheme (not $parsed.Host) -}}
+          {{- warnf "shortcode %q: base URL requires a host at %s; skipping the block" .Name .Position -}}
+          {{- $ok = false -}}
+        {{- else if or $parsed.RawQuery $parsed.Fragment -}}
+          {{- warnf "shortcode %q: base URL must not contain a query or fragment at %s; skipping the block" .Name .Position -}}
+          {{- $ok = false -}}
+        {{- else -}}
+          {{- $base = $baseInput -}}
+          {{- if not $parsed.Scheme }}{{ $base = strings.TrimPrefix "/" $baseInput | relURL }}{{ end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if and $ok $hasRelease -}}
   {{- $meta := partial "release/meta.html" (dict "page" .Page "position" .Position) -}}
-  {{- $base = printf "%s/releases/download/%s" $meta.repoURL (urls.PathEscape $meta.tag) -}}
-{{- else -}}
-  {{- errorf "shortcode %q requires release front matter or base at %s" .Name .Position -}}
+  {{- if not $meta.valid -}}
+    {{- /* meta.html has already warned about the front matter itself. */ -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $base = printf "%s/releases/download/%s" $meta.repoURL (urls.PathEscape $meta.tag) -}}
+  {{- end -}}
+{{- else if $ok -}}
+  {{- warnf "shortcode %q requires release front matter or base at %s; skipping the block" .Name .Position -}}
+  {{- $ok = false -}}
 {{- end -}}
 
-{{- $entries := partial "release/assets-parse.html" (dict "content" $inner "position" .Position "base" $base "algo" $algo) -}}
-{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if in (slice "markdown" "rss") $format -}}
-  {{- partial "release/assets-markdown.html" (dict "entries" $entries "grouped" $grouped) | safeHTML -}}
-{{- else -}}
-  {{- $interactive := eq $format "html" -}}
-  {{- if $interactive }}{{ .Page.Store.Set "hasAssetList" true }}{{ end -}}
-  {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" $grouped "interactive" $interactive) -}}
+{{- if $ok -}}
+  {{- $entries := partial "release/assets-parse.html" (dict "content" $inner "position" .Position "base" $base "algo" $algo) -}}
+  {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+  {{- if in (slice "markdown" "rss") $format -}}
+    {{- partial "release/assets-markdown.html" (dict "entries" $entries "grouped" $grouped) | safeHTML -}}
+  {{- else -}}
+    {{- $interactive := eq $format "html" -}}
+    {{- if $interactive }}{{ .Page.Store.Set "hasAssetList" true }}{{ end -}}
+    {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" $grouped "interactive" $interactive) -}}
+  {{- end -}}
 {{- end -}}

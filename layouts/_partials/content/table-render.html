@@ -36,21 +36,42 @@
 {{- $idRaw := index $policy.consumed "id" | default "" -}}
 {{- $hasTab := isset $policy.consumed "tab" -}}
 {{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
-{{- if and $hasTab (not $tab) }}{{ errorf "table: tab label must not be empty at %s" .Position }}{{ end -}}
-{{- if and $isFields $isMatrix }}{{ errorf "table: .fields and .matrix are mutually exclusive at %s" .Position }}{{ end -}}
-{{- if and $isFields $isFull }}{{ errorf "table: .fields cannot be combined with .full-width at %s" .Position }}{{ end -}}
-{{- if and $numRaw $tab }}{{ errorf "table: num (Book target) and tab (tabs) are mutually exclusive at %s" .Position }}{{ end -}}
-{{- if and $isFields $numRaw }}{{ errorf "table: .fields cannot be a numbered Book table at %s" .Position }}{{ end -}}
-{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ errorf "table: group/value require tab at %s" .Position }}{{ end -}}
-{{- if and (isset $policy.consumed "meta") (not $isFields) }}{{ errorf "table: meta requires .fields at %s" .Position }}{{ end -}}
+{{- /* Conflicting attributes keep the primary one and drop the secondary,
+       so the table still renders. Each drop is named. */ -}}
+{{- if and $hasTab (not $tab) }}{{ warnf "table: tab label must not be empty at %s; ignoring tab" .Position }}{{ end -}}
+{{- if and $isFields $isMatrix -}}
+  {{- warnf "table: .fields and .matrix are mutually exclusive at %s; ignoring .matrix" .Position -}}
+  {{- $isMatrix = false -}}
+{{- end -}}
+{{- if and $isFields $isFull -}}
+  {{- warnf "table: .fields cannot be combined with .full-width at %s; ignoring .full-width" .Position -}}
+  {{- $isFull = false -}}
+{{- end -}}
+{{- if and $numRaw $tab -}}
+  {{- warnf "table: num (Book target) and tab (tabs) are mutually exclusive at %s; ignoring tab" .Position -}}
+  {{- $tab = "" -}}
+{{- end -}}
+{{- if and $isFields $numRaw -}}
+  {{- warnf "table: .fields cannot be a numbered Book table at %s; ignoring num" .Position -}}
+  {{- $numRaw = "" -}}
+{{- end -}}
+{{- $hasRoleAttrs := or (isset $policy.consumed "group") (isset $policy.consumed "value") -}}
+{{- if and $hasRoleAttrs (not $tab) }}{{ warnf "table: group/value require tab at %s; ignoring them" .Position }}{{ end -}}
+{{- $hasMeta := isset $policy.consumed "meta" -}}
+{{- if and $hasMeta (not $isFields) }}{{ warnf "table: meta requires .fields at %s; ignoring meta" .Position }}{{ end -}}
 {{- $siteClasses := slice -}}
 {{- range $classes }}{{ if not (in (slice "fields" "matrix" "full-width") .) }}{{ $siteClasses = $siteClasses | append . }}{{ end }}{{ end -}}
 {{- $header := index .THead 0 | default (slice) -}}
 {{- $columns := len $header -}}
+{{- /* Checked before the branch below, so the fallback can actually take the
+       plain-table path instead of continuing inside a fields render. */ -}}
+{{- if and $isFields (lt $columns 2) -}}
+  {{- warnf "table .fields: at least two columns are required (name … description) at %s; rendering a plain table" .Position -}}
+  {{- $isFields = false -}}
+{{- end -}}
 
 {{- /* ---------------------------------------------------------------- fields */ -}}
 {{- if $isFields -}}
-  {{- if lt $columns 2 }}{{ errorf "table .fields: at least two columns are required (name … description) at %s" .Position }}{{ end -}}
   {{- /* Optional semantic roles for the middle columns. Explicit, because the
          positional rule deliberately refuses to guess header vocabulary: a
          column named `type` is metadata like any other unless meta says
@@ -62,13 +83,20 @@
     {{- range $token := split (strings.TrimSpace (index $policy.consumed "meta")) " " -}}
       {{- $token = strings.TrimSpace $token -}}
       {{- if $token -}}
-        {{- if not (in $known $token) }}{{ errorf "table .fields: meta role %q is not one of type, required, default, - at %s" $token $.Position }}{{ end -}}
-        {{- if and (ne $token "-") (isset $usedRoles $token) }}{{ errorf "table .fields: meta role %q is listed twice at %s" $token $.Position }}{{ end -}}
-        {{- $usedRoles = merge $usedRoles (dict $token true) -}}
-        {{- $roles = $roles | append $token -}}
+        {{- if not (in $known $token) -}}
+          {{- warnf "table .fields: meta role %q is not one of type, required, default, - at %s; ignoring it" $token $.Position -}}
+        {{- else if and (ne $token "-") (isset $usedRoles $token) -}}
+          {{- warnf "table .fields: meta role %q is listed twice at %s; ignoring the repeat" $token $.Position -}}
+        {{- else -}}
+          {{- $usedRoles = merge $usedRoles (dict $token true) -}}
+          {{- $roles = $roles | append $token -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
-    {{- if ne (len $roles) (sub $columns 2) }}{{ errorf "table .fields: meta lists %d role(s) but the table has %d metadata column(s) at %s" (len $roles) (sub $columns 2) $.Position }}{{ end -}}
+    {{- if ne (len $roles) (sub $columns 2) -}}
+      {{- warnf "table .fields: meta lists %d role(s) but the table has %d metadata column(s) at %s; ignoring meta" (len $roles) (sub $columns 2) $.Position -}}
+      {{- $roles = slice -}}
+    {{- end -}}
   {{- end -}}
   {{- $entries := slice -}}
   {{- $seen := dict -}}
@@ -107,15 +135,15 @@
     {{- $meta := partial "content/field-meta.html" $semantic -}}
     {{- if $labelled }}{{ $meta = $meta | append $labelled }}{{ end -}}
     {{- $key := $nameHTML | plainify | strings.TrimSpace -}}
-    {{- if not $key }}{{ errorf "table .fields: the first column (field name) must not be empty at %s" $.Position }}{{ end -}}
-    {{- if isset $seen $key }}{{ errorf "table .fields: duplicate field name %q at %s" $key $.Position }}{{ end -}}
+    {{- if not $key }}{{ warnf "table .fields: the first column (field name) must not be empty at %s; skipping the row" $.Position }}{{ continue }}{{ end -}}
+    {{- if isset $seen $key }}{{ warnf "table .fields: duplicate field name %q at %s; skipping the row" $key $.Position }}{{ continue }}{{ end -}}
     {{- $seen = merge $seen (dict $key true) -}}
     {{- /* A field name written as `code` keeps only its text; the <dt> supplies the code styling. */ -}}
     {{- $nameInner := replaceRE `^<code>(.*)</code>$` "$1" $nameHTML -}}
     {{- $anchor := partial "content/field-anchor.html" (dict "page" $page "name" $key "identity" (printf "tb%d#%d" $.Ordinal $rowIndex)) -}}
     {{- $entries = $entries | append (dict "name" $nameInner "anchor" $anchor "meta" $meta "description" $description "descriptionMarkdown" false) -}}
   {{- end -}}
-  {{- if not $entries }}{{ errorf "table .fields: at least one row is required at %s" .Position }}{{ end -}}
+  {{- if not $entries }}{{ warnf "table .fields: at least one row is required at %s; rendering nothing" .Position }}{{ end -}}
   {{- $labelID := printf "td-fields-%s-t%d-label" (md5 $page.RelPermalink) .Ordinal -}}
   {{- $html := partial "content/fields-list.html" (dict "label" $caption "labelID" $labelID "entries" $entries "format" $format "id" $idRaw "class" (delimit $siteClasses " ") "generic" $policy.generic) -}}
   {{- if $tab -}}

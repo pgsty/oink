@@ -1,47 +1,88 @@
-{{- /* Normalize and validate one local GitHub contributor data set. */ -}}
+{{- /* Normalize and validate one local GitHub contributor data set.
+
+     A malformed data set resolves to no contributors and a malformed entry is
+     skipped, so one bad line costs that person's tile rather than every page
+     of the site. A bad optional field falls back to the handle-derived
+     default, because a contributor with a missing role is still worth
+     listing. */ -}}
 {{- $source := .data -}}
-{{- if not (reflect.IsMap $source) }}{{ errorf "contributors data %q must be a map" .key }}{{ end -}}
-{{- if not (isset $source "items") }}{{ errorf "contributors data %q requires items" .key }}{{ end -}}
-{{- $rawItems := index $source "items" -}}
-{{- if not (reflect.IsSlice $rawItems) }}{{ errorf "contributors data %q: items must be a list" .key }}{{ end -}}
+{{- $ok := true -}}
+{{- if not (reflect.IsMap $source) -}}
+  {{- warnf "contributors data %q must be a map; listing no contributors" .key -}}
+  {{- $ok = false -}}
+{{- else if not (isset $source "items") -}}
+  {{- warnf "contributors data %q requires items; listing no contributors" .key -}}
+  {{- $ok = false -}}
+{{- end -}}
+{{- $rawItems := slice -}}
+{{- if $ok -}}
+  {{- $found := index $source "items" -}}
+  {{- if not (reflect.IsSlice $found) -}}
+    {{- warnf "contributors data %q: items must be a list; listing no contributors" .key -}}
+    {{- $ok = false -}}
+  {{- else -}}
+    {{- $rawItems = $found -}}
+  {{- end -}}
+{{- end -}}
 {{- $seen := newScratch -}}
 {{- $items := slice -}}
 {{- range $index, $item := $rawItems -}}
-  {{- if not (reflect.IsMap $item) }}{{ errorf "contributors data %q: item %d must be a map" $.key $index }}{{ end -}}
-  {{- if not (isset $item "github") }}{{ errorf "contributors data %q: item %d requires github" $.key $index }}{{ end -}}
+  {{- if not (reflect.IsMap $item) }}{{ warnf "contributors data %q: item %d must be a map; skipping it" $.key $index }}{{ continue }}{{ end -}}
+  {{- if not (isset $item "github") }}{{ warnf "contributors data %q: item %d requires github; skipping it" $.key $index }}{{ continue }}{{ end -}}
   {{- $github := index $item "github" -}}
-  {{- if ne (printf "%T" $github) "string" }}{{ errorf "contributors data %q: item %d github must be a string" $.key $index }}{{ end -}}
+  {{- if ne (printf "%T" $github) "string" }}{{ warnf "contributors data %q: item %d github must be a string; skipping it" $.key $index }}{{ continue }}{{ end -}}
   {{- $github = strings.TrimSpace $github -}}
-  {{- if not (findRE `^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$` $github) }}{{ errorf "contributors data %q: invalid GitHub handle %q" $.key $github }}{{ end -}}
+  {{- if not (findRE `^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$` $github) }}{{ warnf "contributors data %q: invalid GitHub handle %q; skipping it" $.key $github }}{{ continue }}{{ end -}}
   {{- $identity := lower $github -}}
-  {{- if $seen.Get $identity }}{{ errorf "contributors data %q: duplicate GitHub handle %q" $.key $github }}{{ end -}}
+  {{- if $seen.Get $identity }}{{ warnf "contributors data %q: duplicate GitHub handle %q; skipping the repeat" $.key $github }}{{ continue }}{{ end -}}
   {{- $seen.Set $identity true -}}
   {{- $name := $github -}}
   {{- if isset $item "name" -}}
     {{- $value := index $item "name" -}}
-    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: name for %q must be a string" $.key $github }}{{ end -}}
-    {{- $name = strings.TrimSpace $value | default $github -}}
+    {{- if ne (printf "%T" $value) "string" -}}
+      {{- warnf "contributors data %q: name for %q must be a string; using the handle" $.key $github -}}
+    {{- else -}}
+      {{- $name = strings.TrimSpace $value | default $github -}}
+    {{- end -}}
   {{- end -}}
   {{- $role := "" -}}
   {{- if isset $item "role" -}}
     {{- $value := index $item "role" -}}
-    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: role for %q must be a string" $.key $github }}{{ end -}}
-    {{- $role = strings.TrimSpace $value -}}
+    {{- if ne (printf "%T" $value) "string" -}}
+      {{- warnf "contributors data %q: role for %q must be a string; dropping the role" $.key $github -}}
+    {{- else -}}
+      {{- $role = strings.TrimSpace $value -}}
+    {{- end -}}
   {{- end -}}
   {{- $url := printf "https://github.com/%s" $github -}}
   {{- if isset $item "url" -}}
     {{- $value := index $item "url" -}}
-    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: url for %q must be a string" $.key $github }}{{ end -}}
-    {{- $url = strings.TrimSpace $value -}}
+    {{- if ne (printf "%T" $value) "string" -}}
+      {{- warnf "contributors data %q: url for %q must be a string; using the GitHub profile" $.key $github -}}
+    {{- else -}}
+      {{- $candidate := strings.TrimSpace $value -}}
+      {{- if not (findRE `^(https?://|/)` $candidate) -}}
+        {{- warnf "contributors data %q: url for %q must be HTTP(S) or root-relative; using the GitHub profile" $.key $github -}}
+      {{- else -}}
+        {{- $url = $candidate -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
-  {{- if not (findRE `^(https?://|/)` $url) }}{{ errorf "contributors data %q: url for %q must be HTTP(S) or root-relative" $.key $github }}{{ end -}}
   {{- $avatar := "" -}}
   {{- if isset $item "avatar" -}}
     {{- $value := index $item "avatar" -}}
-    {{- if ne (printf "%T" $value) "string" }}{{ errorf "contributors data %q: avatar for %q must be a string" $.key $github }}{{ end -}}
-    {{- $avatar = strings.TrimSpace $value -}}
-    {{- if not $avatar }}{{ errorf "contributors data %q: avatar for %q must not be empty" $.key $github }}{{ end -}}
-    {{- if not (findRE `^(https?://|/)` $avatar) }}{{ errorf "contributors data %q: avatar for %q must be HTTP(S) or root-relative" $.key $github }}{{ end -}}
+    {{- if ne (printf "%T" $value) "string" -}}
+      {{- warnf "contributors data %q: avatar for %q must be a string; dropping the avatar" $.key $github -}}
+    {{- else -}}
+      {{- $candidate := strings.TrimSpace $value -}}
+      {{- if not $candidate -}}
+        {{- warnf "contributors data %q: avatar for %q must not be empty; dropping the avatar" $.key $github -}}
+      {{- else if not (findRE `^(https?://|/)` $candidate) -}}
+        {{- warnf "contributors data %q: avatar for %q must be HTTP(S) or root-relative; dropping the avatar" $.key $github -}}
+      {{- else -}}
+        {{- $avatar = $candidate -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
   {{- $items = $items | append (dict "github" $github "name" $name "role" $role "url" $url "avatar" $avatar) -}}
 {{- end -}}

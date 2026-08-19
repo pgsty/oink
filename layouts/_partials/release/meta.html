@@ -1,9 +1,20 @@
-{{- /* Parse a page's release front matter into one strict, reusable record. */ -}}
+{{- /* Parse a page's release front matter into one reusable record.
+
+     Nothing here stops the build. Malformed front matter warns and resolves
+     to a record whose `valid` is false, and every caller skips rendering
+     rather than emitting links built from empty facts -- a card pointing at
+     `https://github.com//releases/tag/` would be worse than no card.
+
+     Hugo allows a partial exactly one `return`, so failures set $ok and the
+     later stages are guarded by it rather than returning early. */ -}}
 {{- $page := .page -}}
 {{- $position := .position | default $page.Path | default $page.RelPermalink -}}
 {{- $raw := $page.Params.release -}}
+{{- $ok := true -}}
+
 {{- if eq $raw nil -}}
-  {{- errorf "%s: release front matter is required" $position -}}
+  {{- warnf "%s: release front matter is required; skipping the release block" $position -}}
+  {{- $ok = false -}}
 {{- end -}}
 
 {{- $product := "" -}}
@@ -14,127 +25,177 @@
 {{- $prev := "" -}}
 {{- $checksums := "" -}}
 
-{{- if eq (printf "%T" $raw) "string" -}}
-  {{- $shorthand := strings.TrimSpace $raw -}}
-  {{- $matches := findRESubmatch `^https://github[.]com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/releases/tag/([A-Za-z0-9._+~-]+)/?$` $shorthand -}}
-  {{- if ne (len $matches) 1 -}}
-    {{- errorf "%s: release shorthand must match https://github.com/<owner>/<repo>/releases/tag/<tag>; got %q" $position $raw -}}
-  {{- end -}}
-  {{- $match := index $matches 0 -}}
-  {{- $repo = printf "%s/%s" (index $match 1) (index $match 2) -}}
-  {{- $tag = index $match 3 -}}
-  {{- $version = strings.TrimPrefix "v" $tag -}}
-{{- else if reflect.IsMap $raw -}}
-  {{- $allowed := slice "product" "version" "repo" "tag" "date" "prev" "checksums" -}}
-  {{- range $name, $_ := $raw -}}
-    {{- if not (in $allowed $name) -}}
-      {{- errorf "%s: release front matter has unsupported field %q" $position $name -}}
+{{- if $ok -}}
+  {{- if eq (printf "%T" $raw) "string" -}}
+    {{- $shorthand := strings.TrimSpace $raw -}}
+    {{- $matches := findRESubmatch `^https://github[.]com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/releases/tag/([A-Za-z0-9._+~-]+)/?$` $shorthand -}}
+    {{- if ne (len $matches) 1 -}}
+      {{- warnf "%s: release shorthand must match https://github.com/<owner>/<repo>/releases/tag/<tag>; got %q; skipping the release block" $position $raw -}}
+      {{- $ok = false -}}
+    {{- else -}}
+      {{- $match := index $matches 0 -}}
+      {{- $repo = printf "%s/%s" (index $match 1) (index $match 2) -}}
+      {{- $tag = index $match 3 -}}
+      {{- $version = strings.TrimPrefix "v" $tag -}}
     {{- end -}}
-  {{- end -}}
-  {{- if not (isset $raw "version") -}}
-    {{- errorf "%s: release.version is required" $position -}}
-  {{- end -}}
-  {{- if not (isset $raw "repo") -}}
-    {{- errorf "%s: release.repo is required" $position -}}
-  {{- end -}}
-  {{- if ne (printf "%T" (index $raw "version")) "string" -}}
-    {{- errorf "%s: release.version must be a string" $position -}}
-  {{- end -}}
-  {{- if ne (printf "%T" (index $raw "repo")) "string" -}}
-    {{- errorf "%s: release.repo must be a string" $position -}}
-  {{- end -}}
-  {{- $version = strings.TrimSpace (index $raw "version") -}}
-  {{- $repo = strings.TrimSpace (index $raw "repo") -}}
-  {{- if not $version }}{{ errorf "%s: release.version must not be empty" $position }}{{ end -}}
-  {{- if not $repo }}{{ errorf "%s: release.repo must not be empty" $position }}{{ end -}}
+  {{- else if reflect.IsMap $raw -}}
+    {{- $allowed := slice "product" "version" "repo" "tag" "date" "prev" "checksums" -}}
+    {{- range $name, $_ := $raw -}}
+      {{- if not (in $allowed $name) -}}
+        {{- warnf "%s: release front matter has unsupported field %q; skipping the release block" $position $name -}}
+        {{- $ok = false -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $ok (not (isset $raw "version")) -}}
+      {{- warnf "%s: release.version is required; skipping the release block" $position -}}
+      {{- $ok = false -}}
+    {{- end -}}
+    {{- if and $ok (not (isset $raw "repo")) -}}
+      {{- warnf "%s: release.repo is required; skipping the release block" $position -}}
+      {{- $ok = false -}}
+    {{- end -}}
+    {{- if and $ok (ne (printf "%T" (index $raw "version")) "string") -}}
+      {{- warnf "%s: release.version must be a string; skipping the release block" $position -}}
+      {{- $ok = false -}}
+    {{- end -}}
+    {{- if and $ok (ne (printf "%T" (index $raw "repo")) "string") -}}
+      {{- warnf "%s: release.repo must be a string; skipping the release block" $position -}}
+      {{- $ok = false -}}
+    {{- end -}}
+    {{- if $ok -}}
+      {{- $version = strings.TrimSpace (index $raw "version") -}}
+      {{- $repo = strings.TrimSpace (index $raw "repo") -}}
+      {{- if not $version -}}
+        {{- warnf "%s: release.version must not be empty; skipping the release block" $position -}}
+        {{- $ok = false -}}
+      {{- end -}}
+      {{- if and $ok (not $repo) -}}
+        {{- warnf "%s: release.repo must not be empty; skipping the release block" $position -}}
+        {{- $ok = false -}}
+      {{- end -}}
+    {{- end -}}
 
-  {{- if isset $raw "product" -}}
-    {{- if ne (printf "%T" (index $raw "product")) "string" -}}
-      {{- errorf "%s: release.product must be a string" $position -}}
+    {{- if and $ok (isset $raw "product") -}}
+      {{- if ne (printf "%T" (index $raw "product")) "string" -}}
+        {{- warnf "%s: release.product must be a string; dropping the product" $position -}}
+      {{- else -}}
+        {{- $product = strings.TrimSpace (index $raw "product") -}}
+        {{- if not $product -}}
+          {{- warnf "%s: release.product must not be empty; dropping the product" $position -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
-    {{- $product = strings.TrimSpace (index $raw "product") -}}
-    {{- if not $product }}{{ errorf "%s: release.product must not be empty" $position }}{{ end -}}
+    {{- if $ok -}}
+      {{- $tag = printf "v%s" $version -}}
+      {{- if isset $raw "tag" -}}
+        {{- if ne (printf "%T" (index $raw "tag")) "string" -}}
+          {{- warnf "%s: release.tag must be a string; skipping the release block" $position -}}
+          {{- $ok = false -}}
+        {{- else -}}
+          {{- $tag = strings.TrimSpace (index $raw "tag") -}}
+          {{- if not $tag -}}
+            {{- warnf "%s: release.tag must not be empty; skipping the release block" $position -}}
+            {{- $ok = false -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $ok (isset $raw "date") }}{{ $dateValue = index $raw "date" }}{{ end -}}
+    {{- if and $ok (isset $raw "prev") -}}
+      {{- if ne (printf "%T" (index $raw "prev")) "string" -}}
+        {{- warnf "%s: release.prev must be a string; dropping the comparison" $position -}}
+      {{- else -}}
+        {{- $prev = strings.TrimSpace (index $raw "prev") -}}
+        {{- if not $prev -}}
+          {{- warnf "%s: release.prev must not be empty; dropping the comparison" $position -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $ok (isset $raw "checksums") -}}
+      {{- if ne (printf "%T" (index $raw "checksums")) "string" -}}
+        {{- warnf "%s: release.checksums must be a string; dropping the checksums" $position -}}
+      {{- else -}}
+        {{- $checksums = strings.TrimSpace (index $raw "checksums") -}}
+        {{- if not $checksums -}}
+          {{- warnf "%s: release.checksums must not be empty; dropping the checksums" $position -}}
+        {{- else if or (strings.Contains $checksums "/") (strings.Contains $checksums `\`) -}}
+          {{- warnf "%s: release.checksums must be one GitHub asset filename, not a path; dropping the checksums" $position -}}
+          {{- $checksums = "" -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnf "%s: release front matter must be a map or GitHub release URL string; skipping the release block" $position -}}
+    {{- $ok = false -}}
   {{- end -}}
-  {{- $tag = printf "v%s" $version -}}
-  {{- if isset $raw "tag" -}}
-    {{- if ne (printf "%T" (index $raw "tag")) "string" -}}
-      {{- errorf "%s: release.tag must be a string" $position -}}
-    {{- end -}}
-    {{- $tag = strings.TrimSpace (index $raw "tag") -}}
-    {{- if not $tag }}{{ errorf "%s: release.tag must not be empty" $position }}{{ end -}}
-  {{- end -}}
-  {{- if isset $raw "date" }}{{ $dateValue = index $raw "date" }}{{ end -}}
-  {{- if isset $raw "prev" -}}
-    {{- if ne (printf "%T" (index $raw "prev")) "string" -}}
-      {{- errorf "%s: release.prev must be a string" $position -}}
-    {{- end -}}
-    {{- $prev = strings.TrimSpace (index $raw "prev") -}}
-    {{- if not $prev }}{{ errorf "%s: release.prev must not be empty" $position }}{{ end -}}
-  {{- end -}}
-  {{- if isset $raw "checksums" -}}
-    {{- if ne (printf "%T" (index $raw "checksums")) "string" -}}
-      {{- errorf "%s: release.checksums must be a string" $position -}}
-    {{- end -}}
-    {{- $checksums = strings.TrimSpace (index $raw "checksums") -}}
-    {{- if not $checksums }}{{ errorf "%s: release.checksums must not be empty" $position }}{{ end -}}
-    {{- if or (strings.Contains $checksums "/") (strings.Contains $checksums `\`) -}}
-      {{- errorf "%s: release.checksums must be one GitHub asset filename, not a path" $position -}}
-    {{- end -}}
-  {{- end -}}
-{{- else -}}
-  {{- errorf "%s: release front matter must be a map or GitHub release URL string" $position -}}
 {{- end -}}
 
-{{- if not (findRE `^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$` $repo) -}}
-  {{- errorf "%s: release.repo must be an owner/repository pair; got %q" $position $repo -}}
+{{- if and $ok (not (findRE `^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$` $repo)) -}}
+  {{- warnf "%s: release.repo must be an owner/repository pair; got %q; skipping the release block" $position $repo -}}
+  {{- $ok = false -}}
 {{- end -}}
-{{- if not (findRE `^[A-Za-z0-9._+~-]+$` $tag) -}}
-  {{- errorf "%s: release.tag contains unsupported path characters; got %q" $position $tag -}}
+{{- if and $ok (not (findRE `^[A-Za-z0-9._+~-]+$` $tag)) -}}
+  {{- warnf "%s: release.tag contains unsupported path characters; got %q; skipping the release block" $position $tag -}}
+  {{- $ok = false -}}
 {{- end -}}
-{{- if $prev -}}
+{{- if and $ok $prev -}}
   {{- $prevTag := cond (hasPrefix $prev "v") $prev (printf "v%s" $prev) -}}
   {{- if not (findRE `^[A-Za-z0-9._+~-]+$` $prevTag) -}}
-    {{- errorf "%s: release.prev contains unsupported path characters; got %q" $position $prev -}}
+    {{- warnf "%s: release.prev contains unsupported path characters; got %q; dropping the comparison" $position $prev -}}
+    {{- $prev = "" -}}
   {{- end -}}
 {{- end -}}
 
-{{- $dateResult := try (time.AsTime $dateValue) -}}
-{{- with $dateResult.Err -}}
-  {{- errorf "%s: release.date must be a valid date: %s" $position . -}}
+{{- $date := $page.Date -}}
+{{- if $ok -}}
+  {{- $dateResult := try (time.AsTime $dateValue) -}}
+  {{- if $dateResult.Err -}}
+    {{- warnf "%s: release.date must be a valid date: %s; using the page date" $position $dateResult.Err -}}
+  {{- else -}}
+    {{- $date = $dateResult.Value -}}
+  {{- end -}}
 {{- end -}}
-{{- $date := $dateResult.Value -}}
-{{- $repoURL := printf "https://github.com/%s" $repo -}}
-{{- $tagSegment := urls.PathEscape $tag -}}
-{{- $releaseURL := printf "%s/releases/tag/%s" $repoURL $tagSegment -}}
-{{- $sourceTarURL := printf "%s/archive/refs/tags/%s.tar.gz" $repoURL $tagSegment -}}
-{{- $sourceZipURL := printf "%s/archive/refs/tags/%s.zip" $repoURL $tagSegment -}}
-{{- $checksumsURL := "" -}}
-{{- with $checksums -}}
-  {{- $checksumsURL = printf "%s/releases/download/%s/%s" $repoURL $tagSegment (urls.PathEscape .) -}}
+
+{{- $result := dict
+  "valid" false "product" "" "version" "" "repo" "" "tag" ""
+  "date" $date "dateDisplay" ($date.Format "2006-01-02")
+  "dateSort" "" "versionSort" "" "sortKey" ""
+  "prev" "" "checksums" "" "repoURL" "" "releaseURL" ""
+  "sourceTarURL" "" "sourceZipURL" "" "checksumsURL" "" "compareURL" ""
+-}}
+{{- if $ok -}}
+  {{- $repoURL := printf "https://github.com/%s" $repo -}}
+  {{- $tagSegment := urls.PathEscape $tag -}}
+  {{- $checksumsURL := "" -}}
+  {{- with $checksums -}}
+    {{- $checksumsURL = printf "%s/releases/download/%s/%s" $repoURL $tagSegment (urls.PathEscape .) -}}
+  {{- end -}}
+  {{- $compareURL := "" -}}
+  {{- with $prev -}}
+    {{- $prevTag := cond (hasPrefix . "v") . (printf "v%s" .) -}}
+    {{- $compareURL = printf "%s/compare/%s...%s" $repoURL (urls.PathEscape $prevTag) $tagSegment -}}
+  {{- end -}}
+  {{- $dateSort := $date.UTC.Format "20060102T150405Z" -}}
+  {{- $versionSort := partial "release/version-sort-key.html" $version -}}
+  {{- $result = dict
+    "valid" true
+    "product" $product
+    "version" $version
+    "repo" $repo
+    "tag" $tag
+    "date" $date
+    "dateDisplay" ($date.Format "2006-01-02")
+    "dateSort" $dateSort
+    "versionSort" $versionSort
+    "sortKey" (printf "%s|%s" $dateSort $versionSort)
+    "prev" $prev
+    "checksums" $checksums
+    "repoURL" $repoURL
+    "releaseURL" (printf "%s/releases/tag/%s" $repoURL $tagSegment)
+    "sourceTarURL" (printf "%s/archive/refs/tags/%s.tar.gz" $repoURL $tagSegment)
+    "sourceZipURL" (printf "%s/archive/refs/tags/%s.zip" $repoURL $tagSegment)
+    "checksumsURL" $checksumsURL
+    "compareURL" $compareURL
+  -}}
 {{- end -}}
-{{- $compareURL := "" -}}
-{{- with $prev -}}
-  {{- $prevTag := cond (hasPrefix . "v") . (printf "v%s" .) -}}
-  {{- $compareURL = printf "%s/compare/%s...%s" $repoURL (urls.PathEscape $prevTag) $tagSegment -}}
-{{- end -}}
-{{- $dateSort := $date.UTC.Format "20060102T150405Z" -}}
-{{- $versionSort := partial "release/version-sort-key.html" $version -}}
-{{- return (dict
-  "product" $product
-  "version" $version
-  "repo" $repo
-  "tag" $tag
-  "date" $date
-  "dateDisplay" ($date.Format "2006-01-02")
-  "dateSort" $dateSort
-  "versionSort" $versionSort
-  "sortKey" (printf "%s|%s" $dateSort $versionSort)
-  "prev" $prev
-  "checksums" $checksums
-  "repoURL" $repoURL
-  "releaseURL" $releaseURL
-  "sourceTarURL" $sourceTarURL
-  "sourceZipURL" $sourceZipURL
-  "checksumsURL" $checksumsURL
-  "compareURL" $compareURL
-) -}}
+{{- return $result -}}

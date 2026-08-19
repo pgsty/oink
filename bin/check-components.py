@@ -34,7 +34,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
         errors.append(message)
 
 
-def build_site(hugo: str, pages: dict[str, str], *, prefix: str, extra_files: dict[str, str] | None = None, config: str = "") -> tuple[subprocess.CompletedProcess[str], Path, tempfile.TemporaryDirectory]:
+def build_site(hugo: str, pages: dict[str, str], *, prefix: str, extra_files: dict[str, str] | None = None, config: str = "", panic_on_warning: bool = False) -> tuple[subprocess.CompletedProcess[str], Path, tempfile.TemporaryDirectory]:
     """Build a self-contained temp site against this theme; keep the temp handle alive."""
     temp = tempfile.TemporaryDirectory(prefix=prefix)
     site = Path(temp.name)
@@ -61,10 +61,10 @@ def build_site(hugo: str, pages: dict[str, str], *, prefix: str, extra_files: di
     # A scoped render (as content/rss-description.html does) re-runs the hooks with the RSS store flag.
     (layouts / "single.rss.xml").write_text('{{- .Store.Set "tdOutputFormat" "rss" -}}\n<fixture>{{ (.Markup "td-rss-check").Render.Content }}</fixture>\n', encoding="utf-8")
     destination = site / "public"
-    result = subprocess.run(
-        [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"],
-        cwd=ROOT, capture_output=True, text=True, check=False,
-    )
+    command = [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"]
+    if panic_on_warning:
+        command.append("--panicOnWarning")
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
     return result, destination, temp
 
 
@@ -251,8 +251,13 @@ def check_data_fences(hugo: str) -> list[str]:
         result, destination, temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-")
         with temp:
             output = result.stdout + result.stderr
-            require(result.returncode != 0, f"invalid data fence {name} unexpectedly built", errors)
+            # Converted fences warn and render nothing; unconverted ones still
+            # errorf. What holds for both: the problem is named, and the build
+            # fails under --panicOnWarning.
             require(expected in output, f"invalid data fence {name} did not report {expected!r}: {output.strip()[-400:]}", errors)
+            strict, _strict_destination, strict_temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-strict-", panic_on_warning=True)
+            with strict_temp:
+                require(strict.returncode != 0, f"invalid data fence {name} survived --panicOnWarning", errors)
     return errors
 
 

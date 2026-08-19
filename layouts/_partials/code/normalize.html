@@ -15,7 +15,7 @@
 {{- $hasFilename := isset $attrs "filename" -}}
 {{- $hasTitle := isset $attrs "title" -}}
 {{- if and $hasFilename $hasTitle -}}
-  {{- errorf "code block: filename and title are mutually exclusive at %s" $position -}}
+  {{- warnf "code block: filename and title are mutually exclusive at %s; using filename" $position -}}
 {{- end -}}
 {{- $filename := "" -}}
 {{- if $hasFilename -}}
@@ -24,31 +24,31 @@
   {{- $filename = strings.TrimSpace (printf "%v" (index $attrs "title")) -}}
 {{- end -}}
 {{- if and (or $hasFilename $hasTitle) (not $filename) -}}
-  {{- errorf "code block: filename/title must not be empty at %s" $position -}}
+  {{- warnf "code block: filename/title must not be empty at %s; dropping it" $position -}}
 {{- end -}}
 
 {{- $label := "" -}}
 {{- if isset $attrs "label" -}}
   {{- $label = strings.TrimSpace (printf "%v" (index $attrs "label")) -}}
   {{- if not $label -}}
-    {{- errorf "code block: label must not be empty at %s" $position -}}
+    {{- warnf "code block: label must not be empty at %s; dropping it" $position -}}
   {{- end -}}
 {{- end -}}
 {{- if and $label (isset $attrs "aria-label") -}}
-  {{- errorf "code block: label/filename and aria-label are mutually exclusive at %s" $position -}}
+  {{- warnf "code block: label/filename and aria-label are mutually exclusive at %s; dropping aria-label" $position -}}
 {{- end -}}
 
 {{- $rootID := .id | default "" -}}
 {{- if isset $attrs "id" -}}
   {{- if $rootID -}}
-    {{- errorf "code block: duplicate internal and author id at %s" $position -}}
+    {{- warnf "code block: duplicate internal and author id at %s; using the author id" $position -}}
   {{- end -}}
   {{- $rootID = strings.TrimSpace (printf "%v" (index $attrs "id")) -}}
   {{- if not $rootID -}}
-    {{- errorf "code block: id must not be empty at %s" $position -}}
-  {{- end -}}
-  {{- if findRE `[\x00-\x20\x7f]` $rootID -}}
-    {{- errorf "code block: id must not contain ASCII whitespace or control characters; got %q at %s" $rootID $position -}}
+    {{- warnf "code block: id must not be empty at %s; deriving one" $position -}}
+  {{- else if findRE `[\x00-\x20\x7f]` $rootID -}}
+    {{- warnf "code block: id must not contain ASCII whitespace or control characters; got %q at %s; deriving one" $rootID $position -}}
+    {{- $rootID = "" -}}
   {{- end -}}
 {{- end -}}
 {{- $autoID := not $rootID -}}
@@ -76,39 +76,43 @@
 {{- $reserved := slice "filename" "title" "copy" "wrap" "collapse" "label" "id" "class" "role" "tab" "group" "value" "num" "caption" -}}
 {{- range $name, $value := $attrs -}}
   {{- if not (findRE `^[A-Za-z_:][A-Za-z0-9:._-]*$` $name) -}}
-    {{- errorf "code block: invalid generic attribute name %q at %s" $name $position -}}
+    {{- warnf "code block: invalid generic attribute name %q at %s; ignoring it" $name $position -}}
+    {{- continue -}}
   {{- end -}}
   {{- $lowerName := lower $name -}}
   {{- if or (in $reserved $lowerName) (in (slice "aria-label" "aria-labelledby") $lowerName) -}}
     {{- if eq $lowerName "aria-label" -}}
       {{- if or $label $filename -}}
-        {{- errorf "code block: label/filename and aria-label are mutually exclusive at %s" $position -}}
+        {{- warnf "code block: label/filename and aria-label are mutually exclusive at %s; ignoring aria-label" $position -}}
+      {{- else -}}
+        {{- $genericScratch.SetInMap "attributes" $name $value -}}
       {{- end -}}
-      {{- $genericScratch.SetInMap "attributes" $name $value -}}
     {{- else if eq $lowerName "aria-labelledby" -}}
       {{- if or $label $filename -}}
-        {{- errorf "code block: aria-labelledby conflicts with the accessible name created by label/filename at %s" $position -}}
+        {{- warnf "code block: aria-labelledby conflicts with the accessible name created by label/filename at %s; ignoring aria-labelledby" $position -}}
+      {{- else -}}
+        {{- $genericScratch.SetInMap "attributes" $name $value -}}
       {{- end -}}
-      {{- $genericScratch.SetInMap "attributes" $name $value -}}
     {{- else if eq $lowerName "role" -}}
       {{- if or $label $filename -}}
-        {{- errorf "code block: role conflicts with the accessible group role created by label/filename at %s" $position -}}
+        {{- warnf "code block: role conflicts with the accessible group role created by label/filename at %s; ignoring role" $position -}}
+      {{- else -}}
+        {{- $genericScratch.SetInMap "attributes" $name $value -}}
       {{- end -}}
-      {{- $genericScratch.SetInMap "attributes" $name $value -}}
     {{- end -}}
 {{- else if or
       (strings.HasPrefix $lowerName "data-td-code")
       (in (slice "data-td-language" "data-td-line-count" "data-td-collapse-lines") $lowerName)
   -}}
-    {{- errorf "code block: attribute %q is reserved by OINK at %s" $name $position -}}
+    {{- warnf "code block: attribute %q is reserved by OINK at %s; ignoring it" $name $position -}}
   {{- else if or (strings.HasPrefix $lowerName "on") (in (slice "style" "srcdoc") $lowerName) -}}
-    {{- errorf "code block: unsafe generic attribute %q is not supported at %s" $name $position -}}
+    {{- warnf "code block: unsafe generic attribute %q is not supported at %s; ignoring it" $name $position -}}
   {{- else if or (strings.HasPrefix $lowerName "data-") (strings.HasPrefix $lowerName "aria-") -}}
     {{- $genericScratch.SetInMap "attributes" $name $value -}}
   {{- else -}}
     {{- /* Same policy as the other render hooks (content/attributes.html): only
            OINK names, Chroma options, class/id/role, data-* and aria-* are known. */ -}}
-    {{- errorf "code block: unknown attribute %q at %s (allowed: %s, class, id, role, data-*, aria-*)" $name $position (delimit $reserved ", ") -}}
+    {{- warnf "code block: unknown attribute %q at %s (allowed: %s, class, id, role, data-*, aria-*); ignoring it" $name $position (delimit $reserved ", ") -}}
   {{- end -}}
 {{- end -}}
 {{- $genericAttributes := $genericScratch.Get "attributes" -}}
@@ -134,11 +138,12 @@
   {{- else if eq $copyKey "false" -}}
     {{- $copyMode = "false" -}}
   {{- else -}}
-    {{- errorf "code block: copy must be all, command, true, or false; got %q at %s" $copyValue $position -}}
+    {{- warnf "code block: copy must be all, command, true, or false; got %q at %s; using the default for this language" $copyValue $position -}}
   {{- end -}}
 {{- end -}}
 {{- if and (eq $copyMode "command") (not (in $sessionLanguages $languageKey)) -}}
-  {{- errorf "code block: copy=command requires language console or shell-session; got %q at %s" $language $position -}}
+  {{- warnf "code block: copy=command requires language console or shell-session; got %q at %s; using copy=all" $language $position -}}
+  {{- $copyMode = "all" -}}
 {{- end -}}
 {{- /* Site-wide default only: a fence that names `copy` explicitly wins. */ -}}
 {{- if and (eq (partial "ui-param.html" (dict "page" $page "key" "code_copy")) false) (not (isset $attrs "copy")) -}}
@@ -161,7 +166,7 @@
   {{- if eq $wrapKey "true" -}}
     {{- $wrap = true -}}
   {{- else if ne $wrapKey "false" -}}
-    {{- errorf "code block: wrap must be true or false; got %q at %s" $wrapValue $position -}}
+    {{- warnf "code block: wrap must be true or false; got %q at %s; leaving wrapping off" $wrapValue $position -}}
   {{- end -}}
 {{- end -}}
 
@@ -179,9 +184,11 @@
 {{- if $hasCollapse -}}
   {{- $collapseKey := strings.TrimSpace $collapseValue -}}
   {{- if not (findRE `^[1-9][0-9]*$` $collapseKey) -}}
-    {{- errorf "code block: collapse must be a positive integer; got %q at %s" $collapseValue $position -}}
+    {{- /* `int` would error on a non-numeric value, so leave collapse off. */ -}}
+    {{- warnf "code block: collapse must be a positive integer; got %q at %s; leaving the block expanded" $collapseValue $position -}}
+  {{- else -}}
+    {{- $collapseLines = int $collapseKey -}}
   {{- end -}}
-  {{- $collapseLines = int $collapseKey -}}
 {{- end -}}
 
 {{- $lineNosValue := "" -}}
@@ -195,7 +202,8 @@
 {{- $lineNosKey := lower (strings.TrimSpace (printf "%v" $lineNosValue)) -}}
 {{- $tableLineNos := eq $lineNosKey "table" -}}
 {{- if and $wrap $tableLineNos -}}
-  {{- errorf "code block: wrap=true is incompatible with table line numbers; use lineNos=inline or disable wrapping at %s" $position -}}
+  {{- warnf "code block: wrap=true is incompatible with table line numbers at %s; disabling wrapping (use lineNos=inline to keep it)" $position -}}
+  {{- $wrap = false -}}
 {{- end -}}
 
 {{- $lineCount := 0 -}}

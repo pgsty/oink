@@ -1,7 +1,7 @@
 {{- $enabled := (partial "ui-param.html" (dict "page" . "key" "book_draft_banner")) -}}
 {{- $enabled = partial "validate.html" (dict
     "value" $enabled "kind" "bool" "fallback" false
-    "key" "params.ui.book_draft_banner" "where" .Path) -}}
+    "key" "params.ui.book_draft_banner" "where" (cond (isset .Params "book_draft_banner") .Path "")) -}}
 {{- if and (eq .Type "book") (eq .Params.book_status "draft") $enabled -}}
 <aside class="td-book-draft" role="status">
   <i class="fa-solid fa-pen-ruler" aria-hidden="true"></i>

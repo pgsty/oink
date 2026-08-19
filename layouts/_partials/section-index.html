@@ -35,7 +35,7 @@
 {{ $mode := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" $page "key" "section_index")) "kind" "enum"
     "allowed" (slice "list" "cards") "fallback" "list"
-    "key" "params.ui.section_index" "where" $page.Path) -}}
+    "key" "params.ui.section_index" "where" (cond (isset $page.Params "section_index") $page.Path "")) -}}
 <div class="td-section-index td-section-index--{{ $mode }}{{ if eq $mode "cards" }} td-content-cards{{ end }}"{{ if eq $mode "cards" }} style="--td-card-columns: {{ (partial "ui-param.html" (dict "page" $page "key" "section_index_columns")) | default 2 }}"{{ end }}>
     {{ if $page.Params.simple_list -}}
         {{/* If simple_list is true we show a bulleted list of subpages */}}

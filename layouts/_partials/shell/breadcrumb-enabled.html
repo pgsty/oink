@@ -5,7 +5,7 @@
 {{- $enabled := (partial "ui-param.html" (dict "page" . "key" "breadcrumb")) -}}
 {{- $enabled = partial "validate.html" (dict
     "value" $enabled "kind" "bool" "fallback" true
-    "key" "params.ui.breadcrumb" "where" .Path) -}}
+    "key" "params.ui.breadcrumb" "where" (cond (isset .Params "breadcrumb") .Path "")) -}}
 {{- with .Parent -}}
   {{- if and (not $.IsPage) .IsHome -}}
     {{- $enabled = false -}}

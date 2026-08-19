@@ -18,7 +18,7 @@
   {{ $readingWidth := partial "validate.html" (dict
       "value" (.Param "reading_width") "kind" "enum"
       "allowed" (slice "slim" "normal" "wide") "fallback" "normal"
-      "key" "params.reading_width" "where" .Path) -}}
+      "key" "params.reading_width" "where" (cond (isset .Params "reading_width") .Path "")) -}}
   <body class="td-{{ .Kind }} td-book td-book-content--{{ $readingWidth }} td-shell-chrome{{ if $navbar }} td-shell-chrome--navbar{{ end }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}
     {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}

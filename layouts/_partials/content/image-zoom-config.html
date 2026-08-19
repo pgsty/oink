@@ -6,5 +6,5 @@
     "fallback" false "key" "params.ui.image_zoom") -}}
 {{- $enabled = partial "validate.html" (dict
     "value" (index .Params "image_zoom") "kind" "bool"
-    "fallback" $enabled "key" "front matter image_zoom" "where" .Path) -}}
+    "fallback" $enabled "key" "front matter image_zoom" "where" (cond (isset .Params "image_zoom") .Path "")) -}}
 {{- return (dict "enable" $enabled) -}}

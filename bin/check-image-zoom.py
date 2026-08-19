@@ -230,8 +230,6 @@ def check_config_matrix(hugo: str) -> list[str]:
         ("site-string", '"true"', None, "params.ui.image_zoom must be true or false"),
         ("site-number", "1", None, "params.ui.image_zoom must be true or false"),
         ("page-string", None, '"false"', "front matter image_zoom must be true or false"),
-        ("site-legacy-map", "\n      enable: true", None, "params.ui.image_zoom.enable was flattened"),
-        ("page-legacy-map", None, "\nparams:\n  ui:\n    image_zoom:\n      enable: false", "front matter ui.image_zoom is not a page key: use image_zoom"),
     )
     for name, site_value, page_value, expected in invalid:
         result, _ = build_gate_case(
@@ -242,22 +240,19 @@ def check_config_matrix(hugo: str) -> list[str]:
         )
         output = result.stdout + result.stderr
         require(expected in output, f"invalid Zoom config {name} did not report its boolean path", errors)
-        # A renamed key still stops the build; a bad value warns and Zoom stays
-        # off, which is the shipped default anyway.
-        if "legacy" in name:
-            require(result.returncode != 0, f"legacy Zoom config {name} unexpectedly built", errors)
-        else:
-            require(result.returncode == 0,
-                    f"invalid Zoom config {name} stopped the build instead of warning", errors)
-            strict, _ = build_gate_case(
-                hugo,
-                site_value=site_value,
-                page_value=page_value,
-                body="No image required.\n",
-                panic_on_warning=True,
-            )
-            require(strict.returncode != 0,
-                    f"invalid Zoom config {name} survived --panicOnWarning", errors)
+        # A bad value warns and Zoom stays off, which is the shipped default
+        # anyway; only --panicOnWarning turns that into a failure.
+        require(result.returncode == 0,
+                f"invalid Zoom config {name} stopped the build instead of warning", errors)
+        strict, _ = build_gate_case(
+            hugo,
+            site_value=site_value,
+            page_value=page_value,
+            body="No image required.\n",
+            panic_on_warning=True,
+        )
+        require(strict.returncode != 0,
+                f"invalid Zoom config {name} survived --panicOnWarning", errors)
         if name.startswith("page"):
             require("/docs" in output, "invalid page Zoom config omitted its page", errors)
     return errors

@@ -5,6 +5,17 @@
      not just the page they were editing. Every publishing gate builds with
      --panicOnWarning, so a warning is still a hard failure where it counts.
 
+     Warnings go through warnidf keyed on kind+key+value, never on position.
+     A site-level parameter is resolved once per page, so plain warnf repeated
+     one site-wide typo on every page of the build -- a thousand identical
+     lines on a thousand-page site. Keying on the value collapses those to
+     one. The trade is that the same wrong value repeated across many pages
+     also reports once, naming the first page it was seen on; that is
+     acceptable because --panicOnWarning stops at the first warning anyway, so
+     they get fixed one at a time either way. Two different wrong values still
+     warn separately, and warnidf stays fatal under --panicOnWarning, so
+     deduplication costs no enforcement.
+
      Input (dict):
        value     the raw value to check (any type; nil means "not set")
        kind      "enum" | "bool" | "length" | "number"   (default "enum")
@@ -27,37 +38,40 @@
 {{- $result := $fallback -}}
 {{- if ne $value nil -}}
   {{- $raw := printf "%v" $value -}}
+  {{- $id := printf "validate:%s:%s:%s" $kind $key $raw -}}
   {{- if eq $raw "" -}}
     {{- /* Unset or blank: use the default without complaining. */ -}}
   {{- else if eq $kind "bool" -}}
     {{- if eq (printf "%T" $value) "bool" -}}
       {{- $result = $value -}}
     {{- else -}}
-      {{- warnf "%s must be true or false; got %q%s -- using %v" $key $raw $at $fallback -}}
+      {{- warnidf $id "%s must be true or false; got %q%s -- using %v" $key $raw $at $fallback -}}
     {{- end -}}
   {{- else if eq $kind "enum" -}}
     {{- $allowed := .allowed | default slice -}}
     {{- if in $allowed $raw -}}
       {{- $result = $raw -}}
     {{- else -}}
-      {{- warnf "invalid %s %q%s (allowed: %s) -- using %q"
+      {{- warnidf $id "invalid %s %q%s (allowed: %s) -- using %q"
           $key $raw $at (delimit $allowed " | ") $fallback -}}
     {{- end -}}
   {{- else if eq $kind "length" -}}
     {{- if findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $raw -}}
       {{- $result = $raw -}}
     {{- else -}}
-      {{- warnf "%s %q is not a safe CSS length%s -- using %q" $key $raw $at $fallback -}}
+      {{- warnidf $id "%s %q is not a safe CSS length%s -- using %q" $key $raw $at $fallback -}}
     {{- end -}}
   {{- else if eq $kind "number" -}}
-    {{- $n := $raw | float -}}
-    {{- if and (ne $n nil) (not (in (slice "+Inf" "Inf" "-Inf" "NaN") $raw)) -}}
-      {{- $result = $n -}}
+    {{- /* `float` errors the build on a non-numeric string, which is exactly
+           what this partial exists to prevent -- cast through `try`. */ -}}
+    {{- $cast := try (float $raw) -}}
+    {{- if or $cast.Err (in (slice "+Inf" "Inf" "-Inf" "NaN") $raw) -}}
+      {{- warnidf $id "%s %q is not a number%s -- using %v" $key $raw $at $fallback -}}
     {{- else -}}
-      {{- warnf "%s %q is not a number%s -- using %v" $key $raw $at $fallback -}}
+      {{- $result = $cast.Value -}}
     {{- end -}}
   {{- else -}}
-    {{- warnf "validate.html: unknown kind %q for %s -- using %v" $kind $key $fallback -}}
+    {{- warnidf $id "validate.html: unknown kind %q for %s -- using %v" $kind $key $fallback -}}
   {{- end -}}
 {{- end -}}
 {{- return $result -}}

@@ -16,4 +16,4 @@ Input: a page. Returns: "normal" | "wide" | "full". */ -}}
     "allowed" (slice "normal" "wide" "full")
     "fallback" "normal"
     "key" "params.page_width"
-    "where" .Path) -}}
+    "where" (cond (isset .Params "page_width") .Path "")) -}}

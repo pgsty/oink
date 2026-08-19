@@ -365,16 +365,22 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
         stderr=subprocess.STDOUT,
         check=False,
     )
-    # A malformed command warns and is dropped; only an unsafe URL still stops
-    # the build, because that is configuration trying to put an opaque scheme
-    # behind a Palette row rather than an author mistyping a label.
-    fatal = "unsafe URL" in expected
+    # Every invalid command warns and is dropped, unsafe URLs included: the
+    # protection is refusing to emit the row, not stopping the build. A build
+    # that dies takes every page of the site down with it over one bad config
+    # entry, and --panicOnWarning below still fails where publishing happens.
     require(expected in result.stdout, f"invalid {name} build missed {expected!r}:\n{result.stdout}")
-    if fatal:
-        require(result.returncode != 0, f"invalid {name} command unexpectedly built")
-        return
     require(result.returncode == 0,
             f"invalid {name} command stopped the build instead of warning:\n{result.stdout}")
+    if "unsafe URL" in expected:
+        # The dropped URL must not reach any rendered page -- that is the
+        # whole point of refusing it.
+        leaked = [
+            path
+            for path in output.rglob("*")
+            if path.is_file() and "javascript:alert" in path.read_text(errors="ignore")
+        ]
+        require(not leaked, f"invalid {name} command leaked its unsafe URL into {leaked[:3]}")
     strict = subprocess.run(
         [
             "hugo", "--source", str(site), "--themesDir", str(ROOT.parent),

@@ -2,4 +2,3 @@
      page may opt into RSS for output-matrix tests, but it contributes no
      interactive or presentation-only component markup. */ -}}
 {{- .Store.Set "tdOutputFormat" "rss" -}}
-{{- partial "front-matter-legacy.html" . -}}

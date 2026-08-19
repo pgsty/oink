@@ -2,5 +2,5 @@
 {{- $enabled := (partial "ui-param.html" (dict "page" . "key" "sidebar_enabled")) -}}
 {{- $enabled = partial "validate.html" (dict
     "value" $enabled "kind" "bool" "fallback" true
-    "key" "params.ui.sidebar_enabled" "where" .Path) -}}
+    "key" "params.ui.sidebar_enabled" "where" (cond (isset .Params "sidebar_enabled") .Path "")) -}}
 {{- return $enabled -}}

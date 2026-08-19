@@ -1,7 +1,6 @@
 {{- /* Resolve the typography preset: technical (OINK brand faces) or system
      (the platform stack). Both compile into the same stylesheet and load no
      runtime; an invalid value warns and falls back to technical. */ -}}
-{{- partialCached "config-legacy.html" . "config-legacy" -}}
 {{- return partial "validate.html" (dict
     "value" site.Params.ui.typography "kind" "enum"
     "allowed" (slice "technical" "system")

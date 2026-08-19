@@ -9,7 +9,6 @@ Template design:
 
 */ -}}
 {{- .Page.Store.Set "tdOutputFormat" "markdown" -}}
-{{- partial "front-matter-legacy.html" . -}}
 
 # {{ .Title | strings.TrimSpace -}}
 

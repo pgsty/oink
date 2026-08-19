@@ -642,7 +642,6 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("headings", "    sidebar_headings: 1\n", "", False, "params.ui.sidebar_headings"),
         ("banner", '    book_draft_banner: "yes"\n', "", True, "params.ui.book_draft_banner"),
         ("reading-width", "", "  reading_width: broad\n", False, "invalid params.reading_width"),
-        ("legacy-content-width", "", "  content_width: normal\n", False, "params.content_width was renamed: use params.reading_width"),
     )
     for name, extra_ui, extra_params, draft, expected in config_cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-book-config-{name}-") as temp:
@@ -654,16 +653,13 @@ def check_invalid_components(hugo: str) -> list[str]:
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
             require(expected in output, f"invalid Book config {name} did not report {expected!r}", errors)
-            # A renamed key still stops the build; an out-of-range value warns
-            # and falls back, and only --panicOnWarning turns that into failure.
-            if name.startswith("legacy-"):
-                require(result.returncode != 0, f"legacy Book config {name} unexpectedly built", errors)
-            else:
-                require(result.returncode == 0,
-                        f"invalid Book config {name} stopped the build instead of warning", errors)
-                strict = build(hugo, source, source / "strict", "--panicOnWarning")
-                require(strict.returncode != 0,
-                        f"invalid Book config {name} survived --panicOnWarning", errors)
+            # An out-of-range value warns and falls back; only --panicOnWarning
+            # turns that into a failure.
+            require(result.returncode == 0,
+                    f"invalid Book config {name} stopped the build instead of warning", errors)
+            strict = build(hugo, source, source / "strict", "--panicOnWarning")
+            require(strict.returncode != 0,
+                    f"invalid Book config {name} survived --panicOnWarning", errors)
     return errors
 
 

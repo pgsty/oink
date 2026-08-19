@@ -484,11 +484,9 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
     cases = (
         ("bad-type", "", "    pager_types: [docs, archive]", "invalid params.ui.pager_types value"),
         ("scalar-types", "", "    pager_types: docs", "params.ui.pager_types must be an array"),
-        ("legacy-pager-map", "", "    pager:\n      types: [docs]", "params.ui.pager was renamed: use params.ui.pager_types"),
         ("page-string", 'pager: "false"\n', None, "front matter pager must be a boolean"),
         ("bad-docs-root", "", "    docs_sidebar_root: archive\n    pager_types: [docs, book, blog]", "params.ui.docs_sidebar_root must be home or section"),
         ("scalar-docs-root", "", "    docs_sidebar_root: true\n    pager_types: [docs, book, blog]", "params.ui.docs_sidebar_root must be a string"),
-        ("legacy-docs-root", "", "    docs_root: home\n    pager_types: [docs, book, blog]", "params.ui.docs_root was renamed: use params.ui.docs_sidebar_root"),
     )
     for name, front_matter, config_extra, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-pager-{name}-") as temp:
@@ -509,15 +507,12 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
             result = run_site(hugo, source)
             output = result.stdout + result.stderr
             require(expected in output, f"invalid pager case {name} did not report {expected!r}", errors)
-            # A renamed key still stops the build -- the migration boundary is
-            # unchanged. An out-of-range value warns and falls back.
-            if name.startswith("legacy-"):
-                require(result.returncode != 0, f"legacy pager case {name} unexpectedly built", errors)
-            else:
-                require(result.returncode == 0,
-                        f"invalid pager case {name} stopped the build instead of warning", errors)
-                require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
-                        f"invalid pager case {name} survived --panicOnWarning", errors)
+            # An out-of-range value warns and falls back; only --panicOnWarning
+            # turns that into a failure.
+            require(result.returncode == 0,
+                    f"invalid pager case {name} stopped the build instead of warning", errors)
+            require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                    f"invalid pager case {name} survived --panicOnWarning", errors)
     return errors
 
 

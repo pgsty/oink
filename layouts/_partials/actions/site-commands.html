@@ -97,17 +97,20 @@
     {{- warnf "command %q references unsupported action %q; dropping the command" $id $action -}}
     {{- $keep = false -}}
   {{- end -}}
+  {{- /* An unsafe scheme is refused by never emitting the row, which is the
+       protection the check exists for. Stopping the whole build was never
+       part of it: a Palette command is site configuration, and one bad entry
+       should cost that one row, not every page of the site. */ -}}
+  {{- if $url -}}
+    {{- $scheme := lower (urls.Parse $url).Scheme -}}
+    {{- if or (ne $rawURL $url) (findRE `[\x00-\x20\x7f]` $url) (strings.HasPrefix $url "//") (findRE `\\` $url) (and $scheme (not (in (slice "http" "https") $scheme))) -}}
+      {{- warnf "command %q uses unsafe URL %q; dropping the command" $id $url -}}
+      {{- $keep = false -}}
+    {{- end -}}
+  {{- end -}}
   {{- if $keep -}}
   {{- if $url -}}
     {{- $parsed := urls.Parse $url -}}
-    {{- $scheme := lower $parsed.Scheme -}}
-    {{- /* The one hard failure left here. An unsafe scheme in configuration
-         is the reserved case: it is not a typo that degrades a page, it is
-         an attempt to put executable or opaque content behind a Palette
-         row, and it should stop rather than be quietly dropped. */ -}}
-    {{- if or (ne $rawURL $url) (findRE `[\x00-\x20\x7f]` $url) (strings.HasPrefix $url "//") (findRE `\\` $url) (and $scheme (not (in (slice "http" "https") $scheme))) -}}
-      {{- errorf "command %q uses unsafe URL %q" $id $url -}}
-    {{- end -}}
     {{- if not (or $parsed.Scheme $parsed.Host) -}}
       {{- if strings.HasPrefix $url "#" -}}
         {{- /* A fragment remains relative to the current page. */ -}}

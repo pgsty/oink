@@ -5,4 +5,4 @@
     "fallback" false "key" "params.ui.reading_time") -}}
 {{- return partial "validate.html" (dict
     "value" (index .Params "reading_time") "kind" "bool"
-    "fallback" $enabled "key" "front matter reading_time" "where" .Path) -}}
+    "fallback" $enabled "key" "front matter reading_time" "where" (cond (isset .Params "reading_time") .Path "")) -}}

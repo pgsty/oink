@@ -10,7 +10,6 @@
        print output for single Book pages renders those once more under the
        plain key). */ -}}
 {{- $page := .page -}}
-{{- partial "front-matter-legacy.html" $page -}}
 {{- $page.Store.Set "tdOutputFormat" "print" -}}
 {{- if .book }}{{ $page.Store.Set "tdBookAggregate" true }}{{ end -}}
 {{- $content := $page.RenderString (dict "display" "block") $page.RawContent -}}

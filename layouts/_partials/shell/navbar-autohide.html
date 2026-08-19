@@ -10,5 +10,5 @@
 {{- if isset .Params "navbar_autohide" }}{{ $autohide = .Params.navbar_autohide }}{{ end -}}
 {{- $autohide = partial "validate.html" (dict
     "value" $autohide "kind" "bool" "fallback" false
-    "key" "params.ui.navbar_autohide" "where" .Path) -}}
+    "key" "params.ui.navbar_autohide" "where" (cond (isset .Params "navbar_autohide") .Path "")) -}}
 {{- return $autohide -}}

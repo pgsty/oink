@@ -8,4 +8,4 @@
     "value" $style "kind" "enum"
     "allowed" (slice "fat" "slim" "none")
     "fallback" "fat"
-    "key" "params.ui.footer_style" "where" .Path) -}}
+    "key" "params.ui.footer_style" "where" (cond (isset .Params "footer_style") .Path "")) -}}

@@ -22,7 +22,7 @@ Input: a page. Returns: "" | "banner" | "wash". */ -}}
 {{- $mode := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" . "key" "featured_image")) "kind" "enum"
     "allowed" (slice "none" "banner" "wash") "fallback" "none"
-    "key" "params.ui.featured_image" "where" .Path) -}}
+    "key" "params.ui.featured_image" "where" (cond (isset .Params "featured_image") .Path "")) -}}
 {{- $active := "" -}}
 {{- if and (ne $mode "none") (eq (.Store.Get "tdOutputFormat") "html") -}}
   {{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}

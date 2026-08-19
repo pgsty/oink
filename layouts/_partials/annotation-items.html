@@ -44,7 +44,7 @@
 {{- $commitMode := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" $page "key" "lastmod_commit")) "kind" "enum"
     "allowed" (slice "subject" "hash" "none") "fallback" "subject"
-    "key" "params.ui.lastmod_commit" "where" $page.Path) -}}
+    "key" "params.ui.lastmod_commit" "where" (cond (isset $page.Params "lastmod_commit") $page.Path "")) -}}
 {{- if not $page.Lastmod.IsZero -}}
   {{- $text := printf "%s %s" (T "post_last_mod") ($page.Lastmod.Format $page.Site.Params.time_format_default) -}}
   {{- if ne $commitMode "none" -}}

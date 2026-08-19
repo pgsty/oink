@@ -7,7 +7,7 @@
     "fallback" true "key" "params.ui.annotation") -}}
 {{- $enabled = partial "validate.html" (dict
     "value" (index .Params "annotation") "kind" "bool"
-    "fallback" $enabled "key" "front matter annotation" "where" .Path) -}}
+    "fallback" $enabled "key" "front matter annotation" "where" (cond (isset .Params "annotation") .Path "")) -}}
 {{- if and $enabled (partial "annotation-items.html" .) -}}
 <section class="td-page-annotation" data-td-page-annotation aria-label="{{ T "ui_page_annotation" }}">
   {{ partial "page-meta-lastmod.html" . }}

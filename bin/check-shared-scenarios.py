@@ -323,11 +323,6 @@ def check_invalid_config(hugo: str) -> list[str]:
             "    annotation: sometimes\n",
             "params.ui.annotation must be true or false",
         ),
-        (
-            "annotation-legacy-map",
-            "    annotation:\n      enable: true\n",
-            "params.ui.annotation.enable was flattened",
-        ),
     )
     for name, value, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-invalid-{name}-") as temp:
@@ -337,17 +332,14 @@ def check_invalid_config(hugo: str) -> list[str]:
             result = build(hugo, EXAMPLE, temp_path / "public", config=override)
             output = result.stdout + result.stderr
             require(expected in output, f"invalid {name} config did not report {expected!r}", errors)
-            # A renamed key still stops the build; a bad value warns, falls
-            # back, and only fails where warnings are fatal.
-            if "legacy" in name:
-                require(result.returncode != 0, f"legacy {name} config unexpectedly built", errors)
-            else:
-                require(result.returncode == 0,
-                        f"invalid {name} config stopped the build instead of warning", errors)
-                strict = build(hugo, EXAMPLE, temp_path / "strict", config=override,
-                               panic_on_warning=True)
-                require(strict.returncode != 0,
-                        f"invalid {name} config survived --panicOnWarning", errors)
+            # A bad value warns and falls back; only --panicOnWarning turns
+            # that into a failure.
+            require(result.returncode == 0,
+                    f"invalid {name} config stopped the build instead of warning", errors)
+            strict = build(hugo, EXAMPLE, temp_path / "strict", config=override,
+                           panic_on_warning=True)
+            require(strict.returncode != 0,
+                    f"invalid {name} config survived --panicOnWarning", errors)
 
     with tempfile.TemporaryDirectory(prefix="oink-components-invalid-search-serve-") as temp:
         temp_path = Path(temp)

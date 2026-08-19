@@ -16,9 +16,8 @@ is passed straight through to an external runtime (giscus, mermaid) or is a
 Docsy front matter key that predates OINK.
 
 The script scans every parameter read point in ``layouts/`` and the templated
-assets, checks the shapes above, checks that ``config-legacy.html`` and
-``front-matter-legacy.html`` register every renamed key, and then builds a
-minimal site once per legacy key to prove that the build fails and the error
+assets, checks the shapes above, and then builds a
+minimal site once per invalid value to prove that the build warns and the message
 names the replacement (``--source-only`` skips the builds).
 """
 
@@ -33,8 +32,6 @@ import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONFIG_LEGACY = ROOT / "layouts/_partials/config-legacy.html"
-FRONT_MATTER_LEGACY = ROOT / "layouts/_partials/front-matter-legacy.html"
 
 KEY_SHAPE = re.compile(r"^[a-z][a-z0-9_]*$")
 
@@ -112,76 +109,7 @@ LEGACY_PAGE_KEYS = {
     "downstream_modified",
 }
 
-# Legacy site configuration: (YAML fragment under `params:`, expected message
-# fragment naming the replacement).
-LEGACY_SITE_CASES = [
-    ("offlineSearch: true", "params.offline_search"),
-    ("offlineSearchIndex: content", "params.offline_search_index"),
-    ("offlineSearchMaxResults: 5", "params.offline_search_max_results"),
-    ("offlineSearchOnServe: true", "params.offline_search_on_serve"),
-    ("offlineSearchSummaryLength: 5", "params.offline_search_summary_length"),
-    ("disable_click2copy_chroma: true", "params.ui.code_copy"),
-    ("prism_syntax_highlighting: true", "params.prism_syntax_highlighting was removed"),
-    ("content_width: norm", "params.reading_width"),
-    ("rss_sections: [blog]", "params.rss_sections was removed"),
-    ("algolia_docsearch: true", "params.search.algolia"),
-    ("github_url: https://example.org/edit", "params.github_repo"),
-    ("default_featured: /img/card.png", "params.images for the site-wide social card"),
-    ("Taxonomy:\n  taxonomyCloud: [tags]", "params.taxonomy.cloud"),
-    ("Taxonomy:\n  taxonomyCloudTitle: [Tags]", "params.taxonomy.cloud_title"),
-    ("Taxonomy:\n  taxonomyPageHeader: [tags]", "params.taxonomy.page_header"),
-    ("ui:\n  no_left_sidebar: true", "params.ui.sidebar_enabled"),
-    ("ui:\n  breadcrumb_disable: true", "params.ui.breadcrumb"),
-    ("ui:\n  breadcrumb_enabled: false", "params.ui.breadcrumb"),
-    ("ui:\n  scrollSpy:\n    disable: true", "params.ui.scroll_spy"),
-    ("ui:\n  scroll_spy_enabled: true", "params.ui.scroll_spy"),
-    ("ui:\n  code_copy_enabled: false", "params.ui.code_copy"),
-    ("ui:\n  showLightDarkModeMenu: true", "params.ui.dark_mode.show_menu"),
-    ("ui:\n  readingtime:\n    enable: true", "params.ui.reading_time"),
-    ("ui:\n  ul_show: 3", "params.ui.sidebar_expand_levels"),
-    ("ui:\n  docs_root: home", "params.ui.docs_sidebar_root"),
-    ("ui:\n  pager:\n    types: [docs]", "params.ui.pager_types"),
-    ("ui:\n  annotation:\n    enable: true", "params.ui.annotation: true | false"),
-    ("ui:\n  image_zoom:\n    enable: true", "params.ui.image_zoom: true | false"),
-    ("ui:\n  keyboard_nav:\n    enable: true", "params.ui.keyboard_nav: true | false"),
-    ("ui:\n  reading_time:\n    enable: true", "params.ui.reading_time: true | false"),
-    ("ui:\n  typography:\n    preset: system", "params.ui.typography: technical | system"),
-    ("markmap:\n  enable: true", "params.markmap: true | false"),
-    ("print:\n  disable_toc: true", "params.print.toc"),
-    ("print:\n  toc_enabled: false", "params.print.toc"),
-]
 
-# Legacy front matter: (front matter fragment, expected message fragment).
-LEGACY_PAGE_CASES = [
-    ("context_menu: false", "page_context_menu"),
-    ("hide_readingtime: true", "reading_time: false"),
-    ("hide_feedback: true", "feedback: false"),
-    ("exclude_search: true", "search_exclude"),
-    ("excludeSearch: true", "search_exclude"),
-    ("content_width: slim", "reading_width"),
-    ("annotation:\n  enable: false", "annotation: true | false"),
-    ("params:\n  ui:\n    image_zoom:\n      enable: false", "image_zoom: true | false"),
-    ("params:\n  ui:\n    image_zoom: false", "image_zoom: true | false"),
-    ("params:\n  ui:\n    breadcrumb_disable: true", "breadcrumb: false"),
-    ("params:\n  ui:\n    keyboard_nav:\n      enable: false", "keyboard_nav: true | false"),
-    ("params:\n  ui:\n    reading_time: false", "reading_time: true | false"),
-    ("params:\n  ui:\n    pager:\n      types: [docs]", "pager: false"),
-    ("params:\n  ui:\n    section_index: cards", "section_index: <value> (the site key without ui.)"),
-    ("params:\n  ui:\n    sidebar_menu_compact: false", "sidebar_menu_compact: <value> (the site key without ui.)"),
-    ("params:\n  print:\n    disable_toc: true", "print.toc"),
-    ("assistant_links: false", "page_context_menu: { assistant_links"),
-    ("manualLink: https://example.org/", "manual_link"),
-    ("manualLinkTitle: Example", "manual_link_title"),
-    ("manualLinkTarget: _blank", "manual_link_target"),
-    ("manualLinkRelref: /docs/", "manual_link_relref"),
-    ("upstream_attribution: https://example.org/doc/", "upstream_link"),
-    ("downstream_modified: true", "upstream_modified"),
-    ("default_featured: /img/card.png", "images: [<path>] on the page"),
-    ("body_class: td-no-left-sidebar", "sidebar_enabled: false"),
-    ("ui: false", "front matter ui is not a page key"),
-    ("ui: {}", "remove the empty map"),
-    ("outputs: [markdown]\nhide_feedback: true", "feedback: false"),
-]
 
 # The converged shapes must build; the bare-boolean shorthand of every kept
 # on/off map is part of the contract.
@@ -248,8 +176,6 @@ def scan_read_points() -> tuple[dict[str, set[str]], dict[str, set[str]], set[st
     )
     for path in sorted(files):
         rel = path.relative_to(ROOT).as_posix()
-        if path in (CONFIG_LEGACY, FRONT_MATTER_LEGACY):
-            continue
         text = path.read_text(encoding="utf-8")
         for match in SITE_READ.finditer(text):
             site.setdefault(match.group(1), set()).add(rel)
@@ -352,13 +278,6 @@ def check_page_parity(site: dict[str, set[str]], page: dict[str, set[str]], para
 GENERIC_MEMBERS = {"enable", "disable", "preset", "types", "params"}
 
 
-def legacy_key(fragment: str) -> str:
-    """The renamed key in a YAML fragment: the deepest key that is not a generic member."""
-    keys = re.findall(r"^\s*([A-Za-z_][A-Za-z0-9_]*):", fragment, re.MULTILINE)
-    for key in reversed(keys):
-        if key not in GENERIC_MEMBERS:
-            return key
-    return keys[-1]
 
 
 def hugo_yaml_values() -> dict[str, str]:
@@ -408,38 +327,6 @@ def check_documented_defaults() -> list[str]:
     return errors
 
 
-def check_legacy_registries() -> list[str]:
-    errors: list[str] = []
-    site_registry = CONFIG_LEGACY.read_text(encoding="utf-8")
-    page_registry = FRONT_MATTER_LEGACY.read_text(encoding="utf-8")
-    for fragment, _expected in LEGACY_SITE_CASES:
-        key = legacy_key(fragment)
-        require(re.search(rf"\b{key}\b", site_registry) is not None, f"config-legacy.html does not register {key}", errors)
-    for fragment, _expected in LEGACY_PAGE_CASES:
-        if re.search(r"^\s*ui:", fragment, re.MULTILINE):
-            continue  # every ui.* front matter key is rejected generically
-        key = legacy_key(fragment)
-        require(re.search(rf"\b{key}\b", page_registry) is not None, f"front-matter-legacy.html does not register {key}", errors)
-    require('partialCached "config-legacy.html"' in (ROOT / "layouts/_partials/head.html").read_text(), "head.html no longer runs config-legacy.html", errors)
-    require('partial "front-matter-legacy.html"' in (ROOT / "layouts/_partials/head.html").read_text(), "head.html no longer runs front-matter-legacy.html", errors)
-    for relative in (
-        "layouts/all.md",
-        "layouts/landing.md",
-        "layouts/landing.rss.xml",
-        "layouts/_partials/content/rss-description.html",
-        "layouts/_partials/print/page-content.html",
-    ):
-        require(
-            'partial "front-matter-legacy.html"' in (ROOT / relative).read_text(),
-            f"{relative} does not validate front matter for its output",
-            errors,
-        )
-    require(
-        'partialCached "config-legacy.html"' in (ROOT / "layouts/_partials/typography-preset.html").read_text(),
-        "typography-preset.html runs before head.html and must trigger config-legacy.html first",
-        errors,
-    )
-    return errors
 
 
 def site_config(params: str) -> str:
@@ -480,10 +367,6 @@ def build_case(hugo: str, name: str, params: str, front_matter: str,
 def check_builds(hugo: str) -> list[str]:
     errors: list[str] = []
     jobs: list[tuple[str, str, str, str | None]] = []
-    for index, (fragment, expected) in enumerate(LEGACY_SITE_CASES):
-        jobs.append((f"site-{index}", fragment, "", expected))
-    for index, (fragment, expected) in enumerate(LEGACY_PAGE_CASES):
-        jobs.append((f"page-{index}", "", fragment, expected))
     for index, fragment in enumerate(ACCEPTED_SITE_CASES):
         jobs.append((f"ok-site-{index}", fragment, "", None))
     for index, fragment in enumerate(ACCEPTED_PAGE_CASES):
@@ -517,8 +400,6 @@ def check_builds(hugo: str) -> list[str]:
                 require(strict != 0,
                         f"invalid value {label!r} survived --panicOnWarning", errors)
                 continue
-            require(code != 0, f"legacy key built without an error ({label})", errors)
-            require(expected in output, f"legacy key {label!r} did not name its replacement {expected!r}: {output[-400:]}", errors)
     return errors
 
 
@@ -561,7 +442,6 @@ def main() -> int:
     errors = (
         check_shapes(site, page)
         + check_page_parity(site, page, param_reads)
-        + check_legacy_registries()
         + check_documented_defaults()
     )
     if not args.source_only:

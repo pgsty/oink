@@ -136,7 +136,12 @@ def check_outputs(public: Path) -> list[str]:
     require('data-td-image-zoom' not in media.split("legacy-empty")[1][:200] if "legacy-empty" in media else True,
             "a decorative image was marked for Zoom", errors)
     require("data-td-image-zoom-dialog" in blog, "blog content candidate did not request Zoom", errors)
-    require("td-blog-posts-list__thumbnail" in blog, "blog scope fixture lacks a featured thumbnail", errors)
+    # The fixture shows both list forms on purpose -- the blog root is a card
+    # grid and its child sections keep the row form -- and they mark the
+    # featured image differently: a row labels it, a card renders it decorative
+    # because the title beside it is the link. Either satisfies the fixture.
+    require("td-blog-posts-list__thumbnail" in blog or "td-blog-card__image" in blog,
+            "blog scope fixture lacks a featured thumbnail", errors)
     require(blog_path is not None and blog_path.exists(), "blog scope fixture lacks a feature bundle", errors)
     return errors
 

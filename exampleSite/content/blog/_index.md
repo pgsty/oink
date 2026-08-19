@@ -19,3 +19,5 @@ cascade:
 
 Two sections below: the release notes are a numbered series, and the OINK posts
 carry bylines resolved from the `authors` taxonomy.
+
+![The OINK mark, shown here so the blog index carries a zoomable content image](/images/oink.webp)

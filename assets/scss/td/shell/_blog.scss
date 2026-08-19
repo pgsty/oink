@@ -142,6 +142,98 @@
   }
 }
 
+/* ------------------------------------------------- list page, card form */
+
+// `params.ui.blog_index: cards` swaps the row list for a grid of the shared
+// content cards. The grid, the card surface, the whole-face link, and its
+// focus ring all come from `.td-content-cards` / `.td-content-card`; only the
+// blog-specific parts live here.
+.td-blog-cards {
+  // The year heading already carries the separation the card grid would
+  // otherwise add above itself.
+  margin-block: 0.5rem 0;
+}
+
+.td-blog-card {
+  &__image {
+    display: block;
+    width: 100%;
+    // Processed images arrive cropped to 16:9; SVG, static, and remote ones
+    // cannot be cropped, so the same frame is imposed here.
+    aspect-ratio: 16 / 9;
+    border-block-end: 1px solid var(--bs-border-color);
+    background: var(--bs-secondary-bg);
+    object-fit: cover;
+  }
+
+  // The heading exists for the document outline; `.td-content-card__title`
+  // on the link owns the type, so `.h5` must not size the row.
+  &__heading {
+    margin: 0;
+    font-size: 1rem;
+
+    i {
+      font-size: 11px;
+      color: var(--td-shell-muted-fg);
+    }
+  }
+
+  &__meta {
+    margin: 0.35rem 0 0;
+
+    small {
+      font-size: 12.5px;
+      letter-spacing: 0.01em;
+    }
+  }
+
+  // The card face is the title link's ::after overlay; the section link has to
+  // lift itself back above it to stay clickable.
+  &__section-link {
+    position: relative;
+    z-index: 2;
+    color: inherit;
+    transition: color var(--td-motion-duration-fast) ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--td-shell-primary);
+    }
+  }
+
+  &__summary {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    // A summary is machine-extracted prose: a URL or a long identifier in it
+    // has no break opportunity and would push the card past its column.
+    overflow-wrap: anywhere;
+  }
+}
+
+// Below md the shared grid already collapses to one column; between md and xl
+// the reading column is too narrow for a configured three or four.
+@include media-breakpoint-between(md, xl) {
+  .td-blog-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (forced-colors: active) {
+  // Border colour and shadow are both dropped in forced colours, so the
+  // hovered and focused card needs a shape of its own.
+  .td-blog-card:hover,
+  .td-blog-card:focus-within {
+    outline: 2px solid Highlight;
+  }
+
+  .td-blog-card__image {
+    border-block-end-color: CanvasText;
+  }
+}
+
 /* -------------------------------------------- inline taxonomy terms */
 
 // The article/list "Tags:" row rendered by taxonomy_terms_article.

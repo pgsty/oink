@@ -40,6 +40,20 @@ All notable changes to OINK are documented here. The project follows
   child list -- has nothing to be a translation of and never shows it. The theme names no language in the
   string, and the switch cascades, so a partly translated site scopes the
   claim to the trees where it holds instead of asserting it site-wide.
+- A card form for the blog index. `params.ui.blog_index: cards` renders a blog
+  section's list page as a grid of the shared content cards --
+  `params.ui.blog_index_columns` wide, two between the md and xl breakpoints,
+  one below md -- instead of the row list, which stays the default. A site
+  whose posts lead with an image had no way to show it at more than
+  250x125 px; a card gives it a 16:9 crop above the title, the date and
+  section line, and a three-line summary, and nothing else. Year grouping,
+  pagination, and `manual_link` external semantics are the same in both forms,
+  so the choice is presentational: the row output is unchanged to the byte.
+  Front matter `blog_index` on the blog root, or its cascade, overrides the
+  site value per section. The card's lead image goes through Hugo's `.Fill`
+  whenever the resource can be processed, so a grid of posts does not download
+  a full-size original per card. There is no reader-side switch between the
+  forms, and term and taxonomy pages keep the row list.
 
 ### Changed
 

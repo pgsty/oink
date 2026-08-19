@@ -1,0 +1,22 @@
+{{- /* Describe one author term page for the byline renderers.
+
+Hugo owns the data model: an author is a term of the `authors` taxonomy, and
+the term page is the profile. There is no `data/authors` second authority to
+disagree with it.
+
+  * `name` is the term page's link title -- the `title` of its `_index.md`
+    when the site wrote one, Hugo's humanized term name when it did not.
+  * `url` is the archive page, which exists either way.
+  * `avatar` is whatever `featured-image-resolve.html` selects for the term
+    page, so an author portrait follows exactly the rules an article's
+    featured image follows (`images`, then a bundled `**featured*` /
+    `*feature*` / `{*cover*,*thumbnail*}` resource).
+  * `page` is the term page itself, for a caller that needs its content.
+
+Input: an author term page. Returns: a dict. */ -}}
+{{- return (dict
+  "name" .LinkTitle
+  "url" .RelPermalink
+  "avatar" (partialCached "featured-image-resolve.html" . .RelPermalink)
+  "page" .
+) -}}

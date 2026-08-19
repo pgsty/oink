@@ -1,4 +1,10 @@
 {{ $context := . -}}
+{{/* Two plural names are reserved: their terms already have a dedicated
+     surface on the article, so a generic chip row would print them twice.
+     `authors` is the byline; `series` is the series banner. A site that
+     names either one in `params.taxonomy.page_header` still gets the chips
+     -- explicit configuration outranks a default exclusion. */ -}}
+{{ $reserved := slice "authors" "series" -}}
 {{ if .Site.Params.taxonomy -}}
   {{ if .Site.Params.taxonomy.page_header -}}
     {{ range $index, $taxo := .Site.Params.taxonomy.page_header -}}
@@ -6,11 +12,11 @@
     {{ end }}
   {{ else -}}
     {{ range $taxo, $taxo_map := .Site.Taxonomies -}}
-      {{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) -}}
+      {{ if not (in $reserved $taxo) }}{{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) }}{{ end -}}
     {{ end }}
   {{ end -}}
 {{ else -}}
   {{ range $taxo, $taxo_map := .Site.Taxonomies -}}
-    {{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) -}}
+    {{ if not (in $reserved $taxo) }}{{ partial "taxonomy-terms-article.html" (dict "context" $context "taxo" $taxo) }}{{ end -}}
   {{ end }}
 {{ end -}}

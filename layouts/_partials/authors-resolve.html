@@ -1,0 +1,29 @@
+{{- /* Resolve a page's authors, in the order the page listed them.
+
+This is the one place that answers "who wrote this". Every byline surface --
+the article head, the blog row, the RSS item -- reads it, so they cannot
+disagree about the set or the order.
+
+The single activation switch is the site's own taxonomy declaration:
+
+    taxonomies:
+      author: authors
+
+Nothing else turns the feature on; the theme adds no parameter. A site that
+never declares the taxonomy gets an empty list here and keeps the 0.4
+`author:` string path untouched, so `authors:` in its front matter stays what
+it already was -- an ordinary page parameter the theme does not read.
+
+Order comes from `GetTerms`, which preserves the front matter sequence rather
+than sorting: `authors: [vonng, andy]` bylines Vonng first even though Andy
+sorts ahead alphabetically. That is why the byline needs no ordering key.
+
+Input: a page. Returns: a slice of `authors-descriptor.html` dicts, empty when
+the taxonomy is undeclared or the page names no author. */ -}}
+{{- $authors := slice -}}
+{{- if isset .Site.Taxonomies "authors" -}}
+  {{- range .GetTerms "authors" -}}
+    {{- $authors = $authors | append (partial "authors-descriptor.html" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $authors -}}

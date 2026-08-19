@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
 <channel>
 <title>Blog on Oink Example</title>
 <link>https://example.org/blog/</link>
@@ -33,6 +33,7 @@
 <title>A typography regression article</title>
 <link>https://example.org/blog/typography/</link>
 <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+<dc:creator>Ruohang Feng</dc:creator><dc:creator>Andy Pavlo</dc:creator>
 <guid>https://example.org/blog/typography/</guid>
 <description>&lt;p&gt;Good documentation typography separates reading comfort from interface density.&#xA;The theme can evolve article prose without forcing the sidebar, search dialog,&#xA;or terminal components to use the same font.&lt;/p&gt;&#xA;&lt;h2 id=&#34;a-stable-foundation&#34;&gt;A stable foundation&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;Semantic roles reduce selector-level overrides and keep future editorial work&#xA;bounded. Code such as &lt;code&gt;hugo --minify&lt;/code&gt; remains visually distinct from prose.&lt;/p&gt;</description>
 </item>
@@ -40,8 +41,16 @@
 <title>An older regression article</title>
 <link>https://example.org/blog/older/</link>
 <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+<dc:creator>Nolan Vega</dc:creator><dc:creator>Ghost</dc:creator>
 <guid>https://example.org/blog/older/</guid>
 <description>&lt;p&gt;Blog navigation keeps Hugo&amp;rsquo;s existing time order instead of using the docs tree.&lt;/p&gt;</description>
+</item>
+<item>
+<title>A legacy byline article</title>
+<link>https://example.org/blog/legacy-byline/</link>
+<pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+<guid>https://example.org/blog/legacy-byline/</guid>
+<description>&lt;p&gt;Sites that never declare the &lt;code&gt;authors&lt;/code&gt; taxonomy keep the string byline they&#xA;wrote in 0.4. This page pins that path byte for byte: it must render the same&#xA;markdownified &lt;code&gt;&amp;lt;b&amp;gt;&lt;/code&gt; and pipe separator after the taxonomy byline lands.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Expanded release metadata</title>

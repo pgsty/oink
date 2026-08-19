@@ -164,6 +164,56 @@ theme does not model those per-licence differences because they do not belong
 in a footer line. Whether that notice page exists is the site's to check; the
 theme validates the values, not the destination.
 
+## Author bylines
+
+A site activates authors by declaring the taxonomy and nothing else:
+
+```yaml
+taxonomies:
+  author: authors
+```
+
+The theme adds no parameter for this. A site that never declares it keeps the
+0.4 behaviour exactly, including any `authors:` it already wrote in front
+matter, which stays an ordinary unread page parameter.
+
+`authors` is a reserved plural, in the same way `tags` and `categories` are
+names `taxonomy-label.html` already knows. A site is free to call its author
+taxonomy something else -- `author: writers` -- and it then behaves as an
+ordinary taxonomy: chips, generic term heading, no profile, no byline.
+
+The author profile is the term page, not a data file. `title` is the display
+name, `description` is the one-line introduction, the body is the long one, and
+the avatar is whatever `featured-image-resolve.html` selects for that page, so
+`images:` and a bundled `**featured*` / `*feature*` / `{*cover*,*thumbnail*}`
+resource work exactly as they do for an article. A bilingual profile is an
+`_index.zh.md` beside it. A term used by a post but never given a profile page
+still works: the name falls back to Hugo's link title, the avatar to an
+initial, and the link to the archive page that exists either way.
+
+`authors-resolve.html` is the one place that answers who wrote a page;
+`byline.html` renders it on the article head (portraits, names, date) and in a
+list row (names only -- the row has no space for portraits). Order comes from
+`GetTerms`, which preserves the front matter sequence, so `authors:` is both
+the set and the order and no weight key is involved. Names are separated by
+CSS gap, never by rendered punctuation, because a comma-and-`and` list needs a
+connector word in each of 32 locales.
+
+Where both are present, `authors` wins and `author` is ignored. Neither warns.
+853 pages across the family sites carry the 0.4 `author:` string and 180 put
+Markdown in it; that branch renders byte for byte as it did, and
+`tests/site/content/blog/legacy-byline.md` is the pin that proves it.
+
+The article byline is the author surface, so the generic taxonomy chip row
+skips the reserved plurals `authors` and `series` by default. A site that
+names either one in `params.taxonomy.page_header` gets the chips anyway --
+explicit configuration outranks a default exclusion.
+
+Output states: HTML renders the byline, the row names, and the profile head;
+the blog feed declares `xmlns:dc` and emits one `<dc:creator>` per author per
+item, beside the untouched site-level `managingEditor`; print and Markdown
+carry no byline, as they did not before.
+
 ## Brand lockup
 
 `params.logo` is the mark and `params.wordmark` is the optional text half.

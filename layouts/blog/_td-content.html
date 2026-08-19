@@ -1,10 +1,7 @@
 <div class="td-content">
 		{{ partial "page-title.html" . }}
 	{{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
-	<div class="td-byline mb-4">
-		{{ with .Params.author }}{{ T "post_byline_by" }} <b>{{ . | markdownify }}</b> |{{ end}}
-		<time datetime="{{  $.Date.Format "2006-01-02" }}" class="text-body-secondary">{{ $.Date.Format $.Site.Params.time_format_blog  }}</time>
-	</div>
+	{{- partial "byline.html" (dict "page" .) }}
 	<header class="td-article-meta">
 		{{ partial "taxonomy-terms-article-wrapper.html" . -}}
 		{{ if partial "reading-time-enabled.html" . -}}

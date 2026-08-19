@@ -51,6 +51,8 @@ ui_categories_title: 分类
 ui_category_title: 分类
 ui_modules_title: 模块
 ui_module_title: 模块
+ui_authors_title: 作者
+ui_author_title: 作者
 ui_theme_toggle: 切换配色
 ui_language: 语言切换
 ui_theme: 主题颜色

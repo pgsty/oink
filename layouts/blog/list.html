@@ -16,11 +16,13 @@
   <h2>{{ T "post_posts_in" }} {{ .Key }}</h2>
   <ul class="td-blog-posts-list">
     {{ range .Pages -}}
+    {{ $post := . -}}
     <li class="td-blog-posts-list__item">
       <div class="td-blog-posts-list__body">
         <h3 class="h5 mt-0 mb-1"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
         <p class="mb-2 mb-md-3"><small class="text-body-secondary">
           {{- .Date.Format ($.Param "time_format_blog") }} {{ T "ui_in"}} <a class="td-blog-posts-list__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>
+          {{- with partial "authors-resolve.html" $post }} {{ partial "byline.html" (dict "page" $post "variant" "row" "authors" .) }}{{ end }}
         </small></p>
         <header class="td-article-meta">
           {{- partial "taxonomy-terms-article-wrapper.html" . -}}

@@ -50,6 +50,8 @@ ui_categories_title: 分類
 ui_category_title: 分類
 ui_modules_title: 模組
 ui_module_title: 模組
+ui_authors_title: 作者
+ui_author_title: 作者
 ui_theme_toggle: 切換配色
 ui_language: 語言切換
 ui_theme: 主題顏色

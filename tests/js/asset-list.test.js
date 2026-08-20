@@ -2,6 +2,7 @@
 
 const assert = require('node:assert/strict');
 const path = require('node:path');
+require(path.join(__dirname, '..', '..', 'assets/js/clipboard.js'));
 const assets = require(path.join(__dirname, '..', '..', 'assets/js/asset-list.js'));
 
 function element(attributes = {}) {

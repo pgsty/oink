@@ -20,38 +20,8 @@
     return lines.length ? lines.join('\n') + '\n' : '';
   }
 
-  function fallbackCopy(text, doc) {
-    var textarea = doc.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.inset = '-9999px auto auto -9999px';
-    doc.body.appendChild(textarea);
-    textarea.select();
-    textarea.setSelectionRange(0, textarea.value.length);
-    var copied = false;
-    try {
-      copied = doc.execCommand('copy');
-    } finally {
-      textarea.remove();
-    }
-    if (!copied) throw new Error('clipboard fallback was rejected');
-  }
-
   function writeClipboard(text, doc) {
-    var clipboard = global.navigator && global.navigator.clipboard;
-    if (clipboard && typeof clipboard.writeText === 'function') {
-      try {
-        return Promise.resolve(clipboard.writeText(text)).catch(function () {
-          fallbackCopy(text, doc);
-        });
-      } catch (_) {
-        fallbackCopy(text, doc);
-        return Promise.resolve();
-      }
-    }
-    fallbackCopy(text, doc);
-    return Promise.resolve();
+    return global.OinkClipboard.writeText(text, doc, global.navigator);
   }
 
   function setControl(button, state, label) {

@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const path = require('node:path');
 
+require(path.join(__dirname, '..', '..', 'assets/js/clipboard.js'));
 const registryModule = require(
   path.join(__dirname, '..', '..', 'assets/js/action-registry.js'),
 );
@@ -44,7 +45,7 @@ function descriptor(id, values = {}) {
   };
 }
 
-function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
+function harness({ actions, commands = [], fetchImpl, clipboard = true, fallbackCopy = true } = {}) {
   const events = {
     assigned: [], opened: [], printed: 0, copied: [], fetched: [],
     execCommands: [], fallbackText: [],
@@ -91,7 +92,7 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     },
     execCommand(command) {
       events.execCommands.push(command);
-      return command === 'copy';
+      return command === 'copy' && fallbackCopy;
     },
   };
   const fetchApi =
@@ -327,6 +328,20 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
   await fallbackHarness.registry.run('copy_markdown');
   assert.deepEqual(fallbackHarness.events.execCommands, ['copy']);
   assert.deepEqual(fallbackHarness.events.fallbackText, ['# Page']);
+
+  const rejectedFallback = harness({
+    actions: [descriptor('copy_link', {
+      kind: 'copy',
+      url: 'https://example.org/page/',
+    })],
+    clipboard: false,
+    fallbackCopy: false,
+  });
+  let rejectedCopy;
+  assert.doesNotThrow(() => {
+    rejectedCopy = rejectedFallback.registry.run('copy_link');
+  });
+  await assert.rejects(rejectedCopy, /clipboard fallback was rejected/);
 
   const malformedAssistant = harness({
     actions: [descriptor('open_chatgpt', {

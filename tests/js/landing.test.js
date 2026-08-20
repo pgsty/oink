@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const path = require('node:path');
 
+require(path.join(__dirname, '..', '..', 'assets/js/clipboard.js'));
 const landing = require(path.join(__dirname, '..', '..', 'assets/js/landing.js'));
 
 function classes() {

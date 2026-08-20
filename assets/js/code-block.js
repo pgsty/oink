@@ -62,35 +62,7 @@
     return normalizeCopiedText(commands.join('\n'));
   };
 
-  const fallbackCopy = (text) => {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.inset = '-9999px auto auto -9999px';
-    document.body.append(textarea);
-    textarea.select();
-    textarea.setSelectionRange(0, textarea.value.length);
-    let copied = false;
-    try {
-      copied = document.execCommand('copy');
-    } finally {
-      textarea.remove();
-    }
-    if (!copied) throw new Error('clipboard fallback was rejected');
-  };
-
-  const writeClipboard = async (text) => {
-    if (navigator.clipboard?.writeText) {
-      try {
-        await navigator.clipboard.writeText(text);
-        return;
-      } catch (_) {
-        // Permission or secure-context failures may still allow the fallback.
-      }
-    }
-    fallbackCopy(text);
-  };
+  const writeClipboard = (text) => window.OinkClipboard.writeText(text);
 
   const updateCopyControl = (button, state, label) => {
     button.dataset.tdState = state;

@@ -95,33 +95,9 @@
     return elements.length;
   }
 
-  function fallbackCopy(text, doc) {
-    var textarea = doc.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    doc.body.appendChild(textarea);
-    textarea.select();
-    if (textarea.setSelectionRange) textarea.setSelectionRange(0, text.length);
-    var copied = doc.execCommand('copy');
-    textarea.remove();
-    if (!copied) throw new Error('clipboard fallback was rejected');
-  }
-
   function writeClipboard(text, doc, nav) {
-    if (nav && nav.clipboard && typeof nav.clipboard.writeText === 'function') {
-      try {
-        return Promise.resolve(nav.clipboard.writeText(text)).catch(function () {
-          fallbackCopy(text, doc);
-        });
-      } catch (_) {
-        fallbackCopy(text, doc);
-        return Promise.resolve();
-      }
-    }
-    fallbackCopy(text, doc);
-    return Promise.resolve();
+    var clipboard = typeof window === 'object' ? window.OinkClipboard : globalThis.OinkClipboard;
+    return clipboard.writeText(text, doc, nav);
   }
 
   function flashCopied(button, win) {

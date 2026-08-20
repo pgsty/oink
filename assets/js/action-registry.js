@@ -58,6 +58,7 @@
     var windowObject = options.window || global;
     var documentObject = options.document || windowObject.document;
     var manifest = options.manifest || readManifest(documentObject);
+    var clipboard = options.clipboard || windowObject.OinkClipboard || global.OinkClipboard;
     var fetchApi =
       options.fetch ||
       (windowObject.fetch
@@ -136,30 +137,8 @@
       return pending;
     }
 
-    function fallbackCopy(text) {
-      return new Promise(function (resolve, reject) {
-        var textarea = documentObject.createElement('textarea');
-        textarea.value = text;
-        textarea.setAttribute('readonly', '');
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        documentObject.body.appendChild(textarea);
-        textarea.select();
-        try {
-          if (documentObject.execCommand('copy')) resolve();
-          else reject(failure('clipboard_failed', null));
-        } catch (error) {
-          reject(error);
-        }
-        textarea.remove();
-      });
-    }
-
     function writeClipboard(text) {
-      var clipboard = windowObject.navigator && windowObject.navigator.clipboard;
-      return clipboard && clipboard.writeText
-        ? clipboard.writeText(text)
-        : fallbackCopy(text);
+      return clipboard.writeText(text, documentObject, windowObject.navigator);
     }
 
     function resolveUrl(actionOrId, value) {

@@ -33,6 +33,16 @@ def main() -> int:
         palette = read("assets/js/command-palette.js")
         coordinator = read("assets/js/surface-coordinator.js")
         base = read("assets/js/base.js")
+        clipboard = read("assets/js/clipboard.js")
+        clipboard_consumers = "".join(
+            read(path)
+            for path in (
+                "assets/js/action-registry.js",
+                "assets/js/asset-list.js",
+                "assets/js/code-block.js",
+                "assets/js/landing.js",
+            )
+        )
 
         # The predicate must combine the site opt-in, the shell surface, and a
         # print exclusion, reading the active format from the tdOutputFormat
@@ -59,6 +69,14 @@ def main() -> int:
                 for name in ("search-engine", "palette-model", "command-palette")
             ),
             "Palette controller is not gated by the canonical capability",
+        )
+        require(
+            scripts.index('resources.Get "js/clipboard.js"')
+            < scripts.index('resources.Get "js/action-registry.js"')
+            and "global.OinkClipboard = api" in clipboard
+            and "OinkClipboard" in clipboard_consumers
+            and "execCommand" not in clipboard_consumers,
+            "clipboard implementation is duplicated or loaded after its consumers",
         )
         require(
             'resources.Get "js/offline-search.js"' not in scripts,

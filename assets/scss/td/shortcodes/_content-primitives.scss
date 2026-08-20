@@ -285,9 +285,11 @@ a.td-badge--solid {
   vertical-align: middle;
   cursor: zoom-in;
 
+  // The image keeps its own attribute-driven size so a lazy image reserves
+  // its box before loading; inline-size: 100% here would chase the
+  // fit-content trigger in a circle and collapse both to zero.
   > img {
     display: block;
-    inline-size: 100%;
     max-inline-size: 100%;
     block-size: auto;
   }

@@ -225,6 +225,11 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- A lazy image inside the zoom trigger reserves its box before it loads.
+  The trigger's `fit-content` width and its image's `inline-size: 100%`
+  chased each other in a circle that resolved to zero, so below-the-fold
+  figures collapsed and then jumped as their images arrived; the image now
+  keeps its own attribute-driven size under a `max-inline-size` clamp.
 - The auto-hidden navbar keeps its slot. With `navbar_autohide` the bar no
   longer collapses into a floating overlay that reclaims its height: the
   sticky band stays in the layout in both states, so the article title and

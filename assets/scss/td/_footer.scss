@@ -168,14 +168,14 @@
   > .td-shell-iconbtn,
   .td-shell-keyboard > .td-shell-iconbtn,
   .td-shell-footline__theme > .td-shell-iconbtn {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     padding: 4px;
     border-radius: 6px;
   }
 
   .td-shell-icon {
-    --td-shell-icon-size: 16px;
+    --td-shell-icon-size: 14px;
     color: currentColor;
   }
 
@@ -210,8 +210,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
   border-radius: 6px;
@@ -219,7 +219,7 @@
   color: var(--td-shell-muted-fg);
 
   .td-shell-icon {
-    --td-shell-icon-size: 16px;
+    --td-shell-icon-size: 14px;
     transition: transform var(--td-motion-duration) ease;
   }
 

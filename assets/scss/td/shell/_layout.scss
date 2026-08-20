@@ -115,7 +115,10 @@
     }
   }
 
-  @media (max-width: 575.98px) {
+  // Below lg the three-column grid runs out of room and the copyright wraps
+  // mid-sentence. Stack the groups as three full-width centered rows instead,
+  // with the utility dock as the bottom row.
+  @include media-breakpoint-down(lg) {
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
     text-align: center;
@@ -127,7 +130,7 @@
     }
 
     &__right {
-      justify-content: flex-end;
+      justify-content: center;
     }
   }
 }

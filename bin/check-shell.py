@@ -195,12 +195,13 @@ def check_sources() -> list[str]:
             and ".td-shell-footline__right" in footer_styles
             and "bottom: calc(100% + 8px)" in footer_styles,
             "bottom-bar theme trigger no longer exposes its upward three-mode menu", errors)
-    phone_footline = layout_styles.split("@media (max-width: 575.98px)", 1)[1].split(
+    stacked_footline = layout_styles.split(".td-shell-footline", 1)[1].split(
         "/* --------------------------------------------------------- mobile subnav */", 1
-    )[0]
-    require("&__right" in phone_footline
-            and "justify-content: flex-end" in phone_footline,
-            "phone bottom-bar utilities are no longer right-aligned", errors)
+    )[0].split("@include media-breakpoint-down(lg)", 1)
+    require(len(stacked_footline) == 2
+            and "&__right" in stacked_footline[1]
+            and "justify-content: center" in stacked_footline[1],
+            "stacked bottom bar no longer centers its rows below lg", errors)
     require('data-td-nav-hover-open' in keyboard_help
             and 'class="td-kbd-sequence"' in keyboard_help
             and all(key in keyboard_help for key in ('<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>'))

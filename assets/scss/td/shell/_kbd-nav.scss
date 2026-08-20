@@ -136,7 +136,7 @@ html[data-td-kbd-zen] .td-shell-subnav {
   }
 }
 
-@include media-breakpoint-down(md) {
+@include media-breakpoint-down(lg) {
   // Anchor the help card to the full bottom line rather than to its small
   // trigger, which sits near the center once the footer stacks.
   .td-shell-footline .td-shell-keyboard {

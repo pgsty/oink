@@ -86,7 +86,7 @@
     transition: color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover {
-      color: var(--td-shell-primary);
+      color: var(--td-shell-primary-hover);
       text-decoration: none;
     }
   }

@@ -191,7 +191,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
       text-decoration: none;
     }
 
@@ -207,7 +207,7 @@
 
   .td-nav-menu.td-is-open .td-nav-menu__parent-link {
     background: var(--td-brand-elev);
-    color: var(--bs-link-color);
+    color: var(--bs-link-hover-color);
   }
 
   .td-nav-menu__panel {
@@ -266,15 +266,15 @@
     font-size: 0.8125rem;
     line-height: 1.2;
     transition:
-      background-color 100ms ease,
-      border-color 100ms ease,
-      color 100ms ease;
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      border-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       border-color: var(--bs-secondary-color);
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
       text-decoration: none;
     }
   }
@@ -318,7 +318,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
       text-decoration: none;
 
       > i {
@@ -387,7 +387,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
       text-decoration: none;
     }
   }
@@ -423,7 +423,7 @@
     &:focus-visible {
       border-color: var(--bs-secondary-color);
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
     }
 
     .td-shell-icon {
@@ -472,7 +472,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
       text-decoration: none;
     }
   }
@@ -621,7 +621,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
     }
   }
 
@@ -693,7 +693,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-color);
+      color: var(--bs-link-hover-color);
       text-decoration: none;
     }
 

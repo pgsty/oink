@@ -125,6 +125,7 @@
 
     a {
       color: var(--bs-secondary-color);
+      transition: color var(--td-motion-duration) var(--td-shell-ease-color);
 
       &:hover {
         color: var(--bs-link-hover-color);

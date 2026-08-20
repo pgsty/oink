@@ -83,9 +83,10 @@
 
   a {
     color: inherit;
+    transition: color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover {
-      color: var(--bs-body-color);
+      color: var(--td-shell-primary);
       text-decoration: none;
     }
   }

@@ -225,6 +225,13 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Chrome links glide into the link color. Navbar entries, dropdown rows,
+  utility and dock triggers, and the footer's text links now share one hover
+  vocabulary: text and glyph fade to the link color while the soft ground
+  fades in beneath them, on the 150ms Tailwind colors curve
+  (`--td-shell-ease-color`) instead of a hard background swap. Reduced
+  motion zeroes the shared duration tokens, so the fades collapse to
+  instant changes there.
 - A lazy image inside the zoom trigger reserves its box before it loads.
   The trigger's `fit-content` width and its image's `inline-size: 100%`
   chased each other in a circle that resolved to zero, so below-the-fold

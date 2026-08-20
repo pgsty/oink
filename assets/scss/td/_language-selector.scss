@@ -20,6 +20,9 @@
     min-height: 34px;
     padding: 0.35rem 0.5rem;
     border-radius: 0.5rem;
+    transition:
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
@@ -160,7 +163,7 @@ a.td-language-selector__item:focus-visible {
 
     &:hover {
       background: var(--td-shell-accent);
-      color: var(--bs-body-color);
+      color: var(--td-shell-primary);
     }
   }
 

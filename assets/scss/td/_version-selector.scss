@@ -15,16 +15,16 @@
     font-weight: 500;
     text-align: start;
     transition:
-      background-color var(--td-motion-duration-fast) ease,
-      border-color var(--td-motion-duration-fast) ease,
-      color var(--td-motion-duration-fast) ease;
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      border-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible,
     &[aria-expanded='true'] {
       border-color: var(--bs-border-color);
       background: var(--bs-tertiary-bg);
-      color: var(--bs-body-color);
+      color: var(--td-shell-primary);
     }
 
     > .td-shell-icon--chevron-down {

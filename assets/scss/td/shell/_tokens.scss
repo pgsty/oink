@@ -32,6 +32,9 @@
   --td-motion-duration: 150ms;
   --td-motion-duration-slow: 250ms;
 
+  // Hover color fades share Tailwind's colors curve: quick to start, soft to
+  // land, so a link reads as gliding into the accent rather than snapping.
+  --td-shell-ease-color: cubic-bezier(0.4, 0, 0.2, 1);
   --td-shell-ease-collapsible: cubic-bezier(0.45, 0, 0.55, 1); // base collapse
   --td-shell-ease-dialog: cubic-bezier(0.16, 1, 0.3, 1); // slow dialog
   --td-shell-mark-gradient: var(

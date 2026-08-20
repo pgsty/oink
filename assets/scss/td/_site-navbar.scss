@@ -178,18 +178,20 @@
     gap: 7px;
     padding: 6px 10px;
     border-radius: 8px;
-    // One tone for every navbar control; hover and the active item darken.
+    // One tone for every navbar control; hovering glides text and glyph to
+    // the link color while the soft ground fades in, and the active item
+    // darkens.
     color: var(--bs-tertiary-color);
     font-size: 14px;
     font-weight: 500;
     transition:
-      background-color 100ms ease,
-      color 100ms ease;
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-body-color);
+      color: var(--bs-link-color);
       text-decoration: none;
     }
 
@@ -205,7 +207,7 @@
 
   .td-nav-menu.td-is-open .td-nav-menu__parent-link {
     background: var(--td-brand-elev);
-    color: var(--bs-body-color);
+    color: var(--bs-link-color);
   }
 
   .td-nav-menu__panel {
@@ -309,12 +311,19 @@
     color: var(--bs-body-color);
     font-size: 0.875rem;
     font-weight: 500;
+    transition:
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
       color: var(--bs-link-color);
       text-decoration: none;
+
+      > i {
+        color: inherit;
+      }
     }
 
     &.active {
@@ -326,6 +335,7 @@
       width: 20px;
       color: var(--bs-tertiary-color);
       text-align: center;
+      transition: color var(--td-motion-duration) var(--td-shell-ease-color);
     }
 
     > .td-navbar-entry__label {
@@ -371,13 +381,13 @@
     font-size: 1rem;
     cursor: pointer;
     transition:
-      background-color 100ms ease,
-      color 100ms ease;
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-body-color);
+      color: var(--bs-link-color);
       text-decoration: none;
     }
   }
@@ -405,15 +415,15 @@
     font-size: 13px;
     cursor: pointer;
     transition:
-      background-color 100ms ease,
-      border-color 100ms ease,
-      color 100ms ease;
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      border-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       border-color: var(--bs-secondary-color);
       background: var(--td-brand-elev);
-      color: var(--bs-body-color);
+      color: var(--bs-link-color);
     }
 
     .td-shell-icon {
@@ -456,13 +466,13 @@
     color: var(--bs-tertiary-color);
     font-size: 1rem;
     transition:
-      background-color 100ms ease,
-      color 100ms ease;
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-body-color);
+      color: var(--bs-link-color);
       text-decoration: none;
     }
   }
@@ -604,11 +614,14 @@
 .td-site-header .td-site-nav__language {
   .td-language-selector__trigger {
     color: var(--bs-tertiary-color);
+    transition:
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-body-color);
+      color: var(--bs-link-color);
     }
   }
 
@@ -673,11 +686,14 @@
     text-align: start;
     text-decoration: none;
     cursor: pointer;
+    transition:
+      background-color var(--td-motion-duration) var(--td-shell-ease-color),
+      color var(--td-motion-duration) var(--td-shell-ease-color);
 
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-body-color);
+      color: var(--bs-link-color);
       text-decoration: none;
     }
 

@@ -1,0 +1,11 @@
+{{- $configured := and .Site.Params.search (isset .Site.Params.search "algolia") -}}
+{{- $config := dict -}}
+{{- if $configured -}}
+  {{- $candidate := index .Site.Params.search "algolia" -}}
+  {{- if reflect.IsMap $candidate }}{{ $config = $candidate }}{{ end -}}
+{{- end -}}
+{{- $enabled := and $config.appId $config.apiKey $config.indexName -}}
+{{- if and $configured (not $enabled) -}}
+  {{- warnidf "algolia-config" "params.search.algolia requires explicit appId, apiKey, and indexName values; DocSearch stays off" -}}
+{{- end -}}
+{{- return $enabled -}}

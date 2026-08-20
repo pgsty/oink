@@ -1,15 +1,3 @@
-{{- /* Resolve the shell's outer width for one page.
-
-`params.page_width` is `normal`, `wide`, or `full`, and front matter overrides
-it per page or, in a cascade, per section. Every reading shell asks here rather
-than repeating the enum, so the four `baseof` templates cannot drift apart on
-what the allowed values are.
-
-An invalid value warns and falls back to `normal`, the declared default: a
-mistyped width is a degraded page, not a wrong one, and `hugo server` has to
-survive it. CI builds with `--panicOnWarning`, so the typo still fails there.
-
-Input: a page. Returns: "normal" | "wide" | "full". */ -}}
 {{- return partial "validate.html" (dict
     "value" (.Param "page_width")
     "kind" "enum"

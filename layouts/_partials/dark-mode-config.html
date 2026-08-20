@@ -1,25 +1,12 @@
-{{/* Resolve the site's dark-mode policy.
-
-     `params.ui.dark_mode` is a map with two booleans:
-
-       enable     the theme emits the dark palette and honours a stored choice
-       show_menu  the navbar and sidebar expose a System / Light / Dark control
-
-     `show_menu` implies `enable` unless `enable` is explicitly false, so the
-     common case is one line:
-
-       ui:
-         dark_mode:
-           show_menu: true
-
-     Returns a dict with both booleans resolved. */ -}}
+{{/* Resolve enable and show_menu; the menu implies the palette unless enable
+     is explicitly false. */ -}}
 
 {{- $config := dict "enable" false "showMenu" false -}}
 {{- $raw := site.Params.ui.dark_mode -}}
 
 {{- if ne $raw nil -}}
   {{- if eq (printf "%T" $raw) "bool" -}}
-    {{/* Shorthand: `dark_mode: true` turns on the palette and the menu. */ -}}
+    {{/* Boolean shorthand controls both. */ -}}
     {{- $config = dict "enable" $raw "showMenu" $raw -}}
   {{- else if reflect.IsMap $raw -}}
     {{- $enable := index $raw "enable" -}}

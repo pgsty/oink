@@ -31,7 +31,7 @@
   <div class="td-shell-footline__right">
     <div class="td-shell-footline__lang">
       {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
-      {{- if le (len (partial "language-targets.html" .)) 1 }}
+      {{- if le (len (partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang)) 1 }}
         {{- with (partial "landing/alt-site.html" .) }}<a class="td-shell-alt-site" href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .label }}</a>{{ end -}}
       {{- end }}
     </div>

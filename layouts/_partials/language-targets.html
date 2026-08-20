@@ -1,21 +1,33 @@
+{{- /* Use relative switch links on a shared host and absolute canonical URLs
+       for hreflang. Missing translations target the language home page. */ -}}
 {{- $pages := dict -}}
 {{- range .AllTranslations -}}
   {{- $pages = merge $pages (dict .Language.Lang .) -}}
 {{- end -}}
-{{- $targets := slice -}}
+{{- $entries := slice -}}
+{{- $roots := slice -}}
 {{- range hugo.Sites -}}
   {{- $page := .Home -}}
   {{- with index $pages .Language.Lang -}}
     {{- $page = . -}}
   {{- end -}}
-  {{- $tag := .Language.Locale | default .Language.Lang | replaceRE "_" "-" -}}
+  {{- $entries = $entries | append (dict "site" . "page" $page) -}}
+  {{- $roots = $roots | append (strings.TrimSuffix $page.RelPermalink $page.Permalink) -}}
+{{- end -}}
+{{- $shared := eq (len (uniq $roots)) 1 -}}
+{{- $targets := slice -}}
+{{- range $entries -}}
+  {{- $site := .site -}}
+  {{- $page := .page -}}
+  {{- $tag := $site.Language.Locale | default $site.Language.Lang | replaceRE "_" "-" -}}
   {{- $targets = $targets | append (dict
-    "active" (eq .Language.Lang $.Language.Lang)
+    "active" (eq $site.Language.Lang $.Language.Lang)
     "code" $tag
-    "direction" (.Language.Direction | default "ltr")
-    "label" (.Language.Label | default .Language.Lang)
+    "direction" ($site.Language.Direction | default "ltr")
+    "label" ($site.Language.Label | default $site.Language.Lang)
     "locale" (replace $tag "-" "_")
-    "url" $page.Permalink
+    "permalink" $page.Permalink
+    "url" (cond $shared $page.RelPermalink $page.Permalink)
   ) -}}
 {{- end -}}
 {{- return $targets -}}

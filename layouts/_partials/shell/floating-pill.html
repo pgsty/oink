@@ -5,7 +5,9 @@
     title="{{ T "ui_sidebar_expand" }}" aria-label="{{ T "ui_sidebar_expand" }}">
     {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
   </button>
-  {{- /* With the navbar on, its search field is always visible, so the pill
+  {{- /* Only the standard docs/blog/book shells call this partial, so their
+       ordinary site -> page navbar resolution is the intended bare-page form.
+       With the navbar on, its search field is always visible, so the pill
        needs no second opener. */ -}}
   {{- if and (not (partial "shell/navbar-enabled.html" .)) (partial "shell/search-enabled.html" .) }}
   <button type="button" class="td-shell-iconbtn" data-td-shell-search-open

@@ -16,7 +16,7 @@ from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 
 def require(condition: bool, message: str) -> None:
@@ -35,7 +35,7 @@ def build(base_url: str, public: Path) -> None:
         [
             "hugo",
             "--source",
-            str(EXAMPLE),
+            str(FIXTURE),
             "--destination",
             str(public),
             "--baseURL",
@@ -71,7 +71,7 @@ def build(base_url: str, public: Path) -> None:
     require("td-download" in download and "data-td-download-kind" in download, "starter download is missing")
     require('aria-disabled="true"' in pending, "starter pending download state is missing")
     require("td-release-card" in release and "td-asset-list" in release, "starter release primitives are missing")
-    require("td-release-index" in release_index, "starter release index is missing")
+    require("td-blog-table" in release_index, "starter release table is missing")
     require("data-td-landing" in landing and "Static pricing cards" in landing, "starter Landing is incomplete")
     require("td-landing-marquee--static" in landing_print and "data-td-landing" not in landing_print,
             "starter Landing print output is interactive")

@@ -1,0 +1,8 @@
+{{- /* Resolve the fixed or in-flow right rail. */ -}}
+{{- return partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "toc_style"))
+    "kind" "enum"
+    "allowed" (slice "fixed" "flow")
+    "fallback" "fixed"
+    "key" "params.ui.toc_style"
+    "where" (cond (isset .Params "toc_style") .Path "")) -}}

@@ -1,14 +1,4 @@
 {{/* cSpell:ignore querify subdir */ -}}
-{{/* Page actions: a split button in the breadcrumb row. This is the only
-     surface that renders data-td-action controls; the Command Palette reads
-     the JSON manifest instead. Action icons come from the registry
-     (actions/context.html) so this menu and the palette show the same glyph
-     for the same action. The left half is an icon-only copy control
-     (clipboard, flipping to a green check on success); the caret disclosure
-     lists every page action — reading items above the separator, acting items
-     below — so `copy_markdown` renders twice on purpose (primary + first row).
-     Without a Markdown output the primary half is dropped and the caret
-     becomes a labeled "Actions" button. */ -}}
 
 {{ $p := . -}}
 {{ $feedURL := "" -}}
@@ -20,7 +10,8 @@
 {{ end -}}
 {{ if $p.File -}}
 {{ if not (in (slice "term" "taxonomy") $p.Kind) -}}
-{{ $actionContext := partial "actions/context.html" $p -}}
+{{ $outputFormat := lower ($p.Store.Get "tdOutputFormat" | default "html") -}}
+{{ $actionContext := partialCached "actions/context.html" $p $p.Site.BaseURL $p.Site.Language.Lang $p.RelPermalink $outputFormat -}}
 {{ if $actionContext.pagePlacement -}}
 {{ $assistantLinks := $actionContext.assistantLinks -}}
 {{ $actionURLs := $actionContext.urls -}}
@@ -34,16 +25,14 @@
   data-td-t-copied="{{ T "ui_copy_success" }}" data-td-t-copy-error="{{ T "ui_copy_error" }}">
   {{- $hasPrimary := or $feedURL $markdownURL }}
   <div class="td-page-actions__group">
-    {{- /* The index form is the reader's here, so the control sits with the
-         other thing that is about the index rather than the article: the feed.
-         Hidden until the runtime claims it, because without JavaScript there
-         is nothing behind it. */ -}}
+    {{- /* Hidden until the runtime can honor the index switch. */ -}}
     {{- if $indexToggle }}
     <button type="button" class="td-page-actions__primary td-page-actions__form" hidden
-      data-td-blog-index-toggle aria-pressed="false"
+      data-td-blog-index-toggle
       title="{{ T "ui_blog_index_toggle" }}" aria-label="{{ T "ui_blog_index_toggle" }}">
-      <span class="td-page-actions__icon"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
       <span class="td-page-actions__icon td-page-actions__icon--form-list"><i class="fa-solid fa-list" aria-hidden="true"></i></span>
+      <span class="td-page-actions__icon td-page-actions__icon--form-cards"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
+      <span class="td-page-actions__icon td-page-actions__icon--form-table"><i class="fa-solid fa-table-list" aria-hidden="true"></i></span>
     </button>
     {{- end }}
     {{- if $feedURL }}

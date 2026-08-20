@@ -55,7 +55,8 @@
 {{ range .AlternativeOutputFormats -}}
 <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
 {{ end -}}
-{{- $pager := partial "pager-state.html" . -}}
+{{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $pager := partialCached "pager-state.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink $outputFormat -}}
 {{- with $pager.prev }}
 <link rel="prev" href="{{ .RelPermalink }}">
 {{- end -}}
@@ -65,7 +66,6 @@
 
 {{/* Every baseof template records the format in the page store before head is
 rendered, so read that instead of re-deriving it from the output-format lists. */ -}}
-{{ $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
 {{ if and hugo.IsProduction (ne $outputFormat "print") (ne .Site.Language.Name "xx") -}}
 <meta name="robots" content="index, follow">
 {{ else -}}
@@ -106,7 +106,7 @@ rendered, so read that instead of re-deriving it from the output-format lists. *
 
 {{ define "algolia/head" -}}
 
-{{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}
+{{ if partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}
 {{ $docsearchCSS := resources.Get "third_party/docsearch/docsearch.css" -}}
 {{ if hugo.IsProduction }}{{ $docsearchCSS = $docsearchCSS | fingerprint }}{{ end -}}
 <link rel="stylesheet" href="{{ $docsearchCSS.RelPermalink }}"

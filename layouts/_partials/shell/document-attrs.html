@@ -1,0 +1,10 @@
+{{- /* Shared root attributes. theme_init controls the pre-paint marker. */ -}}
+{{- $page := .page -}}
+{{- $themeInit := ne .theme_init false -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+{{- $attrs := printf ` itemscope itemtype="http://schema.org/WebPage" dir="%s" lang="%s" data-td-typography="%s"`
+    ($page.Site.Language.Direction | default "ltr")
+    (partial "language-tag.html" $page)
+    (partial "typography-preset.html" $page.Site) -}}
+{{- if and $themeInit $darkMode.enable }}{{ $attrs = printf "%s data-td-theme-init" $attrs }}{{ end -}}
+{{- return ($attrs | safeHTMLAttr) -}}

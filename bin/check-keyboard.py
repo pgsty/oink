@@ -66,7 +66,7 @@ def check_sources() -> None:
     )
     require(
         "params.ui.keyboard_nav must be a boolean" in scripts,
-        "scripts.html lost the keyboard_nav errorf validation",
+        "scripts.html lost the keyboard_nav warning/fallback validation",
     )
     require(
         "$hasKeyboardNav := and $interactiveOutput" in scripts,

@@ -2,9 +2,11 @@
      page heading. Hide that redundant one-item trail while leaving leaf pages
      and nested sections unchanged. The caller still owns the surrounding
      topline, so page actions keep the same position. */ -}}
+{{- /* Blog defaults off; a page or cascade can opt back in. */ -}}
+{{- $fallback := ne .Type "blog" -}}
 {{- $enabled := (partial "ui-param.html" (dict "page" . "key" "breadcrumb")) -}}
 {{- $enabled = partial "validate.html" (dict
-    "value" $enabled "kind" "bool" "fallback" true
+    "value" $enabled "kind" "bool" "fallback" $fallback
     "key" "params.ui.breadcrumb" "where" (cond (isset .Params "breadcrumb") .Path "")) -}}
 {{- with .Parent -}}
   {{- if and (not $.IsPage) .IsHome -}}

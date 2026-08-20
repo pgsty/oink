@@ -198,6 +198,33 @@ def main() -> int:
                     f"{deployment} search ranking behavior test failed:\n"
                     + (behavior.stdout + behavior.stderr).strip(),
                 )
+
+            invalid_site = workspace / "site-algolia-invalid"
+            invalid_output = workspace / "public-algolia-invalid"
+            helper.copy_fixture_site(invalid_site, "flat", False, subpath=False)
+            config = (invalid_site / "hugo.yaml").read_text(encoding="utf-8")
+            config = config.replace(
+                "params:\n",
+                "params:\n  search:\n    algolia:\n      appId: incomplete\n",
+                1,
+            )
+            (invalid_site / "hugo.yaml").write_text(config, encoding="utf-8")
+            log = helper.run_hugo(
+                invalid_site, invalid_output, workspace / "cache-algolia-invalid"
+            )
+            require(
+                "params.search.algolia requires explicit appId, apiKey, and indexName" in log,
+                "incomplete Algolia configuration did not warn",
+            )
+            rendered = "\n".join(
+                path.read_text(encoding="utf-8")
+                for path in invalid_output.rglob("*.html")
+            )
+            require(
+                "td-docsearch" not in rendered
+                and not (invalid_output / "third_party/docsearch").exists(),
+                "incomplete Algolia configuration still emitted DocSearch markup or assets",
+            )
         palette = (ROOT / "assets" / "js" / "command-palette.js").read_text(encoding="utf-8")
         require(
             "searchApi.group(results)" in palette

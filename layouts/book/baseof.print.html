@@ -1,9 +1,6 @@
 {{- .Page.Store.Set "tdOutputFormat" "print" -}}
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-    dir="{{ .Site.Language.Direction | default "ltr" }}"
-    lang="{{ partial "language-tag.html" . }}"
-    data-td-typography="{{ partial "typography-preset.html" .Site }}">
+<html{{ partial "shell/document-attrs.html" (dict "page" . "theme_init" false) }}>
   <head>{{ partial "head.html" . }}</head>
   <body class="td-{{ .Kind }} td-book td-print-view{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
     {{ partial "skip-link.html" . }}

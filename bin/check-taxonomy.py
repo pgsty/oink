@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate opt-in taxonomy localization without changing theme policy."""
+"""Validate opt-in taxonomy localization and root-scoped shell clouds."""
 
 from __future__ import annotations
 
@@ -62,7 +62,7 @@ languages:
 
 params:
   ui:
-    shell_types: [docs]
+    shell_types: [docs, blog]
 """,
         encoding="utf-8",
     )
@@ -89,7 +89,22 @@ params:
             encoding="utf-8",
         )
         (docs / "guide.md").write_text(
-            f"---\ntitle: {title}\n{field}: [CORE]\n---\n\nFixture.\n",
+            f"---\ntitle: {title}\n{field}: [CORE, SHARED]\n---\n\nFixture.\n",
+            encoding="utf-8",
+        )
+        (docs / "no-cloud.md").write_text(
+            f"---\ntitle: No taxonomy cloud\ntoc_taxonomies: false\n{field}: [HIDDEN]\n"
+            "---\n\n## Retained heading\n\nThe TOC remains available.\n",
+            encoding="utf-8",
+        )
+        blog = content / "blog"
+        blog.mkdir()
+        (blog / "_index.md").write_text(
+            "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n",
+            encoding="utf-8",
+        )
+        (blog / "post.md").write_text(
+            f"---\ntitle: Blog post\n{field}: [BLOG, SHARED]\n---\n\nFixture.\n",
             encoding="utf-8",
         )
 
@@ -114,6 +129,102 @@ def build(hugo: str, source: Path, destination: Path) -> subprocess.CompletedPro
         text=True,
         check=False,
     )
+
+
+def shell_cloud(html: str, plural: str) -> str:
+    marker = (
+        '<div class="td-shell-aside-group td-shell-tags-cloud" '
+        f'data-td-taxonomy="{plural}"'
+    )
+    start = html.find(marker)
+    if start < 0:
+        return ""
+    end = html.find("</aside>", start)
+    return html[start:end] if end >= 0 else html[start:]
+
+
+def shell_cloud_counts(cloud: str) -> dict[str, int]:
+    return {
+        href: int(count)
+        for href, count in re.findall(
+            r'<a class="td-shell-tag" href="([^"]+)">.*?'
+            r'<span class="td-shell-tag__count">(\d+)</span>',
+            cloud,
+            re.S,
+        )
+    }
+
+
+def check_shell_cloud_scope(public: Path, plural: str) -> list[str]:
+    errors: list[str] = []
+    aside = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text(encoding="utf-8")
+    require(
+        re.search(
+            r'partialCached\s+"shell/taxonomy-terms-clouds\.html"\s+'
+            r'\(dict\s+"site"\s+\$p\.Site\s+"root"\s+\$root\)\s+\$rootKey',
+            aside,
+        ) is not None,
+        "shell taxonomy clouds are not cached solely by their effective root",
+        errors,
+    )
+    for language in ("", "zh-cn"):
+        file_prefix = f"{language}/" if language else ""
+        url_prefix = f"/{file_prefix}"
+        term_base = f"{url_prefix}{plural}/"
+        docs_counts = {
+            f"{term_base}core/": 1,
+            f"{term_base}hidden/": 1,
+            f"{term_base}shared/": 1,
+        }
+        blog_counts = {
+            f"{term_base}blog/": 1,
+            f"{term_base}shared/": 1,
+        }
+        global_counts = {**docs_counts, f"{term_base}blog/": 1}
+        global_counts[f"{term_base}shared/"] = 2
+        scenarios = (
+            ("docs/guide/index.html", f"{url_prefix}docs/", docs_counts),
+            ("blog/post/index.html", f"{url_prefix}blog/", blog_counts),
+            (f"{plural}/core/index.html", f"{url_prefix}docs/", docs_counts),
+            (f"{plural}/blog/index.html", f"{url_prefix}blog/", blog_counts),
+            (f"{plural}/shared/index.html", "/", global_counts),
+        )
+        for relative, root, expected in scenarios:
+            path = public / f"{file_prefix}{relative}"
+            require(path.is_file(), f"missing taxonomy cloud scope page {path}", errors)
+            if not path.is_file():
+                continue
+            cloud = shell_cloud(path.read_text(encoding="utf-8"), plural)
+            require(bool(cloud), f"{path} rendered no shell taxonomy cloud", errors)
+            if not cloud:
+                continue
+            require(
+                f'data-td-taxonomy-root="{root}"' in cloud,
+                f"{path} did not use taxonomy root {root}",
+                errors,
+            )
+            counts = shell_cloud_counts(cloud)
+            require(
+                counts == expected,
+                f"{path} taxonomy cloud counts are {counts}, expected {expected}",
+                errors,
+            )
+
+        disabled = public / f"{file_prefix}docs/no-cloud/index.html"
+        require(disabled.is_file(), f"missing toc_taxonomies:false page {disabled}", errors)
+        if disabled.is_file():
+            html = disabled.read_text(encoding="utf-8")
+            require(
+                not shell_cloud(html, plural),
+                f"{disabled} rendered a taxonomy cloud despite toc_taxonomies:false",
+                errors,
+            )
+            require(
+                "td-shell-aside-group--toc" in html,
+                f"{disabled} lost its TOC while disabling only taxonomy clouds",
+                errors,
+            )
+    return errors
 
 
 def check_disabled(hugo: str, root: Path) -> list[str]:
@@ -192,19 +303,24 @@ def check_enabled(hugo: str, root: Path, plural: str) -> list[str]:
             errors,
         )
 
+    # The article term row is a bare badge run: the taxonomy's localized name
+    # lives on the group label rather than as a visible prefix.
     article_pages = {
-        public / "docs/guide/index.html": f"{english_plural}:",
-        public / "zh-cn/docs/guide/index.html": "模块:",
+        public / "docs/guide/index.html": english_plural,
+        public / "zh-cn/docs/guide/index.html": "模块",
     }
     for path, label in article_pages.items():
         require(path.exists(), f"missing rendered article page {path}", errors)
         if path.exists():
             html = path.read_text(encoding="utf-8")
             require(
-                f'<span class="td-taxonomy-title">{label}</span>' in html,
-                f"{path} did not contain localized article taxonomy label {label}",
+                f'role="group" aria-label="{label}"' in html
+                and '<span class="td-taxonomy-title">' not in html,
+                f"{path} lost its localized article taxonomy group label {label}, "
+                "or regrew the visible prefix (the cloud's <h5> title is its own)",
                 errors,
             )
+    errors.extend(check_shell_cloud_scope(public, plural))
     return errors
 
 
@@ -326,9 +442,9 @@ def check_authors(hugo: str, root: Path) -> list[str]:
         html = legacy.read_text(encoding="utf-8")
         require(
             '<div class="td-byline mb-4">' in html
-            and 'By <b><a href="https://example.org/someone">Someone</a> | '
-                '<a href="https://example.org/elsewhere">Elsewhere</a></b> |' in html,
-            "the 0.4 `author` string path changed shape on a site that declares the taxonomy",
+            and '<b><a href="https://example.org/someone">Someone</a> | '
+                '<a href="https://example.org/elsewhere">Elsewhere</a></b>' in html,
+            "the legacy `author` string did not render through the current article byline",
             errors,
         )
         require(
@@ -523,8 +639,24 @@ def check_series_declared(hugo: str, root: Path) -> list[str]:
         require("Part 2 of 4" in strip, f"strip did not place the second part: {strip[:200]}", errors)
         require('href="/series/pg-internals/"' in strip,
                 "strip did not link its series term page", errors)
-        require('class="td-series-strip__next-link" href="/blog/vacuum/"' in strip,
-                "strip did not point at the next part in reading order", errors)
+        summary = re.search(
+            r'<summary class="td-series-strip__summary">(.*?)</summary>',
+            strip,
+            re.S,
+        )
+        require(summary is not None, "series disclosure rendered no summary", errors)
+        if summary:
+            require("<a " not in summary.group(1),
+                    "series disclosure nests a link inside its interactive summary", errors)
+        require(
+            strip.find('class="td-series-strip__name"') < strip.find("<details"),
+            "series term link is no longer a sibling before the disclosure",
+            errors,
+        )
+        # The closed line is the whole resting surface: name, part, no next
+        # link -- the expanded list is where the reader goes onward.
+        require("td-series-strip__next" not in strip,
+                "the collapsed strip regrew an inline next link", errors)
         found = re.findall(r'<li class="td-series-strip__item"><a[^>]*href="([^"]+)"', strip)
         require(found == SERIES_READING_ORDER,
                 f"strip listed {found}, expected reading order {SERIES_READING_ORDER}", errors)
@@ -606,8 +738,8 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    print("taxonomy checks OK: module is opt-in and bilingual; "
-          "author bylines and the series reading order hold")
+    print("taxonomy checks OK: module is opt-in and bilingual; shell clouds, "
+          "author bylines, and the series reading order hold")
     return 0
 
 

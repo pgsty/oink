@@ -1,7 +1,7 @@
-{{- $targets := partial "language-targets.html" . -}}
+{{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
 <link rel="canonical" href="{{ .Permalink }}">
 {{- range $targets }}
-<link rel="alternate" hreflang="{{ .code }}" href="{{ .url }}">
+<link rel="alternate" hreflang="{{ .code }}" href="{{ .permalink }}">
 {{- end }}
 {{- range where $targets "active" false }}
 <meta property="og:locale:alternate" content="{{ .locale }}">

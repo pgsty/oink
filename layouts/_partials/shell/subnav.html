@@ -1,6 +1,12 @@
-{{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
+{{- $page := . -}}
+{{- $drawer := true -}}
+{{- if reflect.IsMap . -}}
+  {{- $page = .page -}}
+  {{- if isset . "drawer" }}{{ $drawer = .drawer }}{{ end -}}
+{{- end -}}
+{{- $config := partialCached "shell/config.html" $page $page.Site.Language.Lang -}}
 <header class="td-shell-subnav d-md-none d-print-none">
-  <a class="td-shell-subnav__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
+  <a class="td-shell-subnav__brand" href="{{ $page.Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
     <img src="{{ $config.logoURL }}" alt="" width="20" height="20">
     {{- if $config.wordmarkURL }}
     <img class="td-shell-brand-logo--wordmark" src="{{ $config.wordmarkURL }}" alt="" width="100" height="40">
@@ -9,19 +15,19 @@
     {{- end }}
   </a>
   <nav class="td-shell-subnav__menu" aria-label="{{ T "ui_main_nav" }}">
-    {{- range .Site.Menus.main }}
+    {{- range $page.Site.Menus.main }}
       {{- if ne .Identifier "github" }}
-        {{- partial "navbar-entry-link.html" (dict "page" $ "entry" . "class" "td-shell-subnav__menu-link") -}}
+        {{- partial "navbar-entry-link.html" (dict "page" $page "entry" . "class" "td-shell-subnav__menu-link") -}}
       {{- end }}
     {{- end }}
   </nav>
   <div class="td-shell-subnav__actions">
-    {{- if partial "shell/search-enabled.html" . }}
+    {{- if partial "shell/search-enabled.html" $page }}
     <button type="button" class="td-shell-iconbtn td-shell-subnav__btn" data-td-shell-search-open
       title="{{ T "ui_search" }}" aria-label="{{ T "ui_search" }}"
       aria-controls="td-shell-search" aria-expanded="false">{{ partialCached "shell/icon.html" "search" "subnav-search" }}</button>
     {{- end }}
-    {{- if partial "shell/sidebar-enabled.html" . }}
+    {{- if and $drawer (partial "shell/sidebar-enabled.html" $page) }}
     <button type="button" class="td-shell-iconbtn td-shell-subnav__btn" data-td-shell-drawer-open
       title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
       aria-controls="td-shell-sidebar" aria-expanded="false">

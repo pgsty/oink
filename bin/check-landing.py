@@ -13,7 +13,7 @@ from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
 
 
@@ -36,7 +36,7 @@ def run(
     panic_on_warning: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [hugo, "--source", str(source), "--logLevel", "warn"]
-    if source == EXAMPLE:
+    if source == FIXTURE:
         command.extend(fixture_config_args())
     if destination is not None:
         command.extend(["--destination", str(destination)])
@@ -279,7 +279,7 @@ def check_sources() -> list[str]:
     require('aria-hidden="true" inert' in marquee, "marquee duplicate is not inert", errors)
 
     for name in ("cover", "feature", "lead", "link-down", "section"):
-        require(not (ROOT / f"layouts/_shortcodes/blocks/{name}.html").exists(), f"blocks/{name} must stay deleted (v5 §1.1: layout: landing replaces the Docsy blocks)", errors)
+        require(not (ROOT / f"layouts/_shortcodes/blocks/{name}.html").exists(), f"blocks/{name} must stay deleted; layout: landing owns this surface", errors)
     # 1.0 removed the 0.x `home/**` adapter partials; the landing partials are
     # the only implementation.
     require(not (ROOT / "layouts/_partials/home").exists(), "layouts/_partials/home/ adapters must stay deleted", errors)
@@ -338,6 +338,7 @@ params:
 
 INVALID_CASES = (
     ("missing-data", "", "was not found"),
+    ("unknown-section", "sections: [not-a-section]\n", "unknown section type"),
     ("bad-visual", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual: {type: video}\n", "unsupported visual.type"),
     ("missing-alt", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual: {type: image, src: /bad.png}\n", "requires alt"),
     ("bad-faq", "sections:\n  - type: faq\n    data:\n      style: tabs\n      items: [{question: Q, answer: A}]\n", "faq.style must be accordion or flat"),
@@ -515,7 +516,7 @@ def main() -> int:
     if args.public is None:
         with tempfile.TemporaryDirectory(prefix="td-landing-components-landing-example-") as temp:
             public = Path(temp) / "public"
-            result = run(args.hugo, EXAMPLE, public)
+            result = run(args.hugo, FIXTURE, public)
             if result.returncode != 0:
                 print("landing fixture failed to build:")
                 print(result.stdout + result.stderr)

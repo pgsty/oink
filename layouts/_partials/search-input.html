@@ -15,7 +15,7 @@
 </div>
 {{- end -}}
 
-{{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}
+{{ if partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}
 {{- $backends = $backends | append "params.search.algolia" -}}
 {{- /* One container per page; scripts.html mounts DocSearch on this id. */ -}}
 <div class="td-search">

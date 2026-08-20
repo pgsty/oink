@@ -1,11 +1,4 @@
-{{/* Content-tree walker: one node, plus its visible descendants.
-
-     This partial owns only what is specific to walking Hugo's page tree —
-     child ordering (weight, or the blog date order), `toc_hide`, the truncate
-     warning, and the compact-menu visibility rules. Everything a reader can
-     see is emitted by shell/sidebar-node.html, which the data/docs_nav.json
-     walker shares.
-
+{{/* Walk one content-tree node; sidebar-node.html owns shared row markup.
      cSpell:ignore relref */ -}}
 {{- $s := .section -}}
 {{- $p := .page -}}

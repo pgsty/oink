@@ -1,0 +1,11 @@
+{{- $root := .FirstSection -}}
+{{- with .Site.GetPage (printf "/%s" .Type) -}}
+  {{- if .IsSection }}{{ $root = . }}{{ end -}}
+{{- end -}}
+{{- if eq .Kind "term" -}}
+  {{- $tops := slice -}}
+  {{- range .Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
+  {{- $tops = $tops | uniq -}}
+  {{- if eq (len $tops) 1 }}{{ $root = index $tops 0 }}{{ else }}{{ $root = false }}{{ end -}}
+{{- end -}}
+{{- return $root -}}

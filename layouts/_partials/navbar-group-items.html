@@ -1,9 +1,9 @@
-{{- /* Flatten unsupported deeper menu levels into linked group headings and
-     ordinary descendants. No disclosure is emitted below the top level. */ -}}
+{{- /* Deeper levels flatten into linked group headings. */ -}}
 {{- $page := .page -}}
 {{- $mode := .mode -}}
 {{- $top := .top -}}
 {{- $depth := .depth -}}
+{{- $showDescription := isset $top.Params "columns" -}}
 {{- range .items -}}
   {{- $entry := . -}}
   {{- $hasChildren := $entry.HasChildren -}}
@@ -11,19 +11,19 @@
     {{- warnf "navbar menu %q: only one interactive child level is supported; nested entry %q is rendered as a flat group heading" $top.Name $entry.Name -}}
     <div class="td-navbar-group" data-td-navbar-group data-td-navbar-depth="{{ $depth }}">
       {{- if eq $mode "desktop" -}}
-        {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-nav-menu__group-title" "level" $depth "kind" "group" "showDescription" true) }}
+        {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-nav-menu__group-title" "level" $depth "kind" "group" "showDescription" $showDescription) }}
       {{- else -}}
-        {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-group-title" "level" $depth "kind" "group" "showDescription" true) }}
+        {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-group-title" "level" $depth "kind" "group" "showDescription" $showDescription) }}
       {{- end -}}
       <div class="td-navbar-group__items">
-        {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" $mode "top" $top "depth" (add $depth 1)) }}
+      {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" $mode "top" $top "depth" (add $depth 1)) }}
       </div>
     </div>
   {{- else -}}
     {{- if eq $mode "desktop" -}}
-      {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-nav-menu__item-link" "level" $depth "showDescription" true) }}
+      {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-nav-menu__item-link" "level" $depth "showDescription" $showDescription) }}
     {{- else -}}
-      {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-child" "level" $depth "showDescription" true) }}
+      {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-child" "level" $depth "showDescription" $showDescription) }}
     {{- end -}}
   {{- end -}}
 {{- end -}}

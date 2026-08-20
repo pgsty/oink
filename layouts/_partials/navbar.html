@@ -1,6 +1,6 @@
 {{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-{{- $targets := partial "language-targets.html" . -}}
+{{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- /* On shell pages with a sidebar, the compact navbar gains one extra
        icon below md that opens the shell drawer (docs tree + relocated
@@ -64,7 +64,7 @@
           <div class="td-nav-hover-menu__pop" role="group" aria-label="{{ $menuName | plainify }}">
             {{- range . }}
             {{- if eq .name "---" }}
-            <hr class="nav-hover-menu__divider">
+            <hr class="td-nav-hover-menu__divider">
             {{- else }}
             {{- $url := strings.TrimSuffix "/" (.url | default "") }}
             {{- $isActive := or (eq .version $.Site.Params.version) (eq (strings.TrimSuffix "/" $.Site.BaseURL) $url) }}

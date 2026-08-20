@@ -1,15 +1,14 @@
-{{- /* Right rail: TOC and taxonomy terms. Page actions live
-       in the split button beside the title (actions/title-menu.html). The
-       layout column reserves its width; the fixed panel does not move with
-       the article. html[data-td-shell-toc=collapsed] hides the whole rail and a
-       floating action restores it. Input: dict "page" . "hasToc" bool. */ -}}
+{{- /* Right rail for the TOC and root-scoped taxonomy clouds.
+       Input: dict "page" . "hasToc" bool. */ -}}
 {{- $p := .page -}}
 {{- $hasToc := .hasToc -}}
+{{- $clouds := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $p "key" "toc_taxonomies")) "kind" "bool"
+    "fallback" true
+    "key" "params.ui.toc_taxonomies" "where" (cond (isset $p.Params "toc_taxonomies") $p.Path "")) -}}
+{{- if or $hasToc $clouds -}}
 <aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
   <div class="td-shell-toc__panel">
-    {{- /* Pages with a TOC keep the collapse toggle inline with its title.
-         A no-TOC fallback still needs one way to collapse the rail. Global
-         utilities stay in the sidebar footer and are not duplicated here. */ -}}
     {{- if not $hasToc }}
     <div class="td-shell-toc__actions">
       <button type="button" class="td-shell-toc__title-btn" data-td-shell-right-toggle
@@ -18,20 +17,11 @@
       </button>
     </div>
     {{- end }}
-    {{/* Everything below the controls row is relocatable: below xl this rail is
-         hidden, and docs-shell.js moves this block into the sidebar drawer so
-         the contents-plus-actions stay reachable. Keep it one element. */ -}}
+    {{/* docs-shell.js moves this block into the sidebar drawer below xl. */}}
     <div class="td-shell-aside" data-td-shell-aside>
       {{ if $hasToc -}}
-      {{/* Collapsible like the groups below it, but open by default and left
-           open when the block moves into the drawer — it is the reason the
-           block exists. */ -}}
       <div class="td-shell-aside-group td-shell-aside-group--toc">
-        <div class="td-shell-aside-group__row">
-          {{- /* Rail collapse toggle, flush against the group title. Hidden by
-               CSS once the block relocates into the drawer, where the rail it
-               collapses does not exist. */ -}}
-          <button type="button" class="td-shell-aside-group__rail-toggle" data-td-shell-right-toggle
+        <div class="td-shell-aside-group__row"><button type="button" class="td-shell-aside-group__rail-toggle" data-td-shell-right-toggle
             title="{{ T "ui_toc_hide" }}" aria-label="{{ T "ui_toc_hide" }}">
             {{- partialCached "shell/icon.html" "menu" "menu" -}}
           </button>
@@ -41,9 +31,7 @@
             aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}"
             data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ T "toc_on_this_page" }}"
             data-td-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}">
-            {{- /* Static stand-in for the rail toggle once the block moves
-                 into the drawer, so the group reads like the taxonomy heads:
-                 icon, then title. Hidden in the rail. */ -}}
+            {{- /* Static drawer icon; hidden while the block is in the rail. */ -}}
             <span class="td-shell-aside-group__icon td-shell-aside-group__icon--toc" aria-hidden="true">
               {{- partialCached "shell/icon.html" "menu" "menu" -}}
             </span>
@@ -60,14 +48,21 @@
         </div>
       </div>
       {{- end }}
-      {{ partial "shell/taxonomy-terms-clouds.html" $p }}
+      {{ if $clouds -}}
+        {{- $root := partial "shell/taxonomy-root.html" $p -}}
+        {{- $rootKey := "all" -}}
+        {{- with $root }}{{ $rootKey = .RelPermalink | default "all" }}{{ end -}}
+        {{- partialCached "shell/taxonomy-terms-clouds.html"
+              (dict "site" $p.Site "root" $root)
+              $rootKey -}}
+      {{- end }}
     </div>
   </div>
 </aside>
-{{/* Fixed restore action shown only when the rail is collapsed at xl+. */}}
 <div class="td-shell-toc-float d-print-none">
   <button type="button" class="td-shell-iconbtn" data-td-shell-right-toggle
     title="{{ T "ui_toc_show" }}" aria-label="{{ T "ui_toc_show" }}">
     {{- partialCached "shell/icon.html" "menu" "menu" -}}
   </button>
 </div>
+{{- end -}}

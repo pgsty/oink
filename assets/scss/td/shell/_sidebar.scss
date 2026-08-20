@@ -39,27 +39,6 @@
   }
 }
 
-// Navbar mode: the root switcher (or the static current-root link) heads the
-// sidebar with the collapse action beside it.
-.td-shell-sidebar__root-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  > .td-shell-root {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  > .td-shell-sidebar__collapse {
-    flex: 0 0 auto;
-
-    @include media-breakpoint-down(md) {
-      display: none; // The drawer has its own close button.
-    }
-  }
-}
-
 .td-shell-sidebar__brand {
   display: inline-flex;
   align-items: center;

@@ -1,11 +1,4 @@
-{{/* data/docs_nav.json walker: one node, plus its declared children.
-
-     This partial owns only what is specific to the explicit tree — resolving
-     a node's `page` reference, and reading active state from the precomputed
-     `active_path_by_url` map instead of Hugo's page relationships. The row
-     itself is emitted by shell/sidebar-node.html, shared with the content-tree
-     walker.
-
+{{/* Walk one docs_nav node; sidebar-node.html owns shared row markup.
      cSpell:ignore relref */ -}}
 {{- $p := .page -}}
 {{- $node := .node -}}

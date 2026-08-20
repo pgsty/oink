@@ -1,16 +1,3 @@
-{{- /* Resolve the icon class for a main-menu entry.
-
-Order: the target page's `icon` front matter, then the menu entry's own `icon`
-param, then a default keyed on the entry. Shared by the mobile menu and the TOC
-rail's quick links so a section carries one icon everywhere.
-
-The key is resolved from the identifier, the target page's section, and finally
-the first segment of the link — a leaf bundle such as `content/examples/index.md`
-has no section of its own, and front-matter menus do not always carry an
-identifier.
-
-Input: a menu entry (as ranged from .Site.Menus.main).
-Returns: a Font Awesome class string. */ -}}
 {{- $defaults := dict
   "docs" "fa-solid fa-book"
   "doc" "fa-solid fa-book"

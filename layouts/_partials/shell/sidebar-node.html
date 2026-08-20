@@ -1,30 +1,5 @@
-{{/* One sidebar row, shared by both tree sources.
-
-     The content tree (shell/sidebar-tree.html) and an explicit
-     data/docs_nav.json tree (shell/docs-sidebar-tree.html) walk different
-     structures and compute visibility differently, but a reader must not be
-     able to tell which one produced the sidebar. This partial owns everything
-     the two have to agree on: item classes, the link and its accessible name,
-     the icon policy, the fold control and its localized labels, Book heading
-     projection, and the children container.
-
-     The caller renders its own children (recursion differs per source) and
-     passes the finished <ul> markup as `children`.
-
-     Parameters:
-       page          current page, for .Param lookups
-       section       the Page this row links to
-       active        this row is the current page
-       activePath    the current page is at or below this row
-       treeRoot      this row is the single visible root of the tree
-       iconRoot      this row counts as top level for the icon policy
-       withChild     the row has children
-       foldable      the row gets a fold control
-       shouldExpand  the fold control starts open
-       hidden        the row is collapsed away by the compact-menu rules
-       iconPolicy    resolved shell/sidebar-icon-policy value
-       children      pre-rendered children markup (may be empty)
-*/ -}}
+{{/* Render a sidebar row shared by both tree walkers. Callers compute tree
+     state and pass pre-rendered children. */ -}}
 {{- $p := .page -}}
 {{- $s := .section -}}
 {{- $active := .active -}}

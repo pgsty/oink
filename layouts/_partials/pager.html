@@ -1,4 +1,5 @@
-{{- $state := partial "pager-state.html" . -}}
+{{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $state := partialCached "pager-state.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink $outputFormat -}}
 {{- if and $state.enabled (or $state.prev $state.next) -}}
 <nav class="td-pager d-print-none" data-td-pager
   aria-label="{{ T "ui_pager_prev" }} / {{ T "ui_pager_next" }}">

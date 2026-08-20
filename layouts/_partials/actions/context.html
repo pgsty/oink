@@ -57,7 +57,7 @@
 
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{- $languageOptions := slice -}}
-{{- range partial "language-targets.html" $p -}}
+{{- range partialCached "language-targets.html" $p $p.Site.BaseURL $p.RelPermalink $p.Site.Language.Lang -}}
   {{- $languageOptions = $languageOptions | append (dict
     "id" .code "title" .label "url" .url "active" .active
     "available" true "disabledReason" ""
@@ -91,8 +91,7 @@
   "palette" $assistantLinks
 -}}
 {{- $paletteOnly := dict "page" false "palette" true -}}
-{{- /* `print` keeps its registry executor for the print output's button, but
-       readers reach printing via Cmd/Ctrl+P — no page or palette row. */ -}}
+{{- /* The print output invokes this executor directly; it needs no registry row. */ -}}
 {{- $noPlacement := dict "page" false "palette" false -}}
 {{- $copyTitle := T "ui_copy_markdown" -}}
 {{- $copyLinkTitle := T "ui_copy_link" -}}

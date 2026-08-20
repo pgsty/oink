@@ -1,16 +1,12 @@
 {{- .Page.Store.Set "tdOutputFormat" "html" -}}
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-    dir="{{ .Site.Language.Direction | default "ltr" }}"
-    lang="{{ partial "language-tag.html" . }}"
-    data-td-typography="{{ partial "typography-preset.html" .Site }}"
-    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
+<html{{ partial "shell/document-attrs.html" (dict "page" .) }}>
   <head>
     {{ partial "head.html" . }}
   </head>
-  {{ $toc := .TableOfContents -}}
-  {{ $hasToc := and (not .Params.notoc) $toc (ne $toc `<nav id="TableOfContents"></nav>`) -}}
+  {{ $toc := "" -}}
+  {{ if not .Params.notoc }}{{ $toc = .TableOfContents }}{{ end -}}
+  {{ $hasToc := and $toc (ne $toc `<nav id="TableOfContents"></nav>`) -}}
   {{ $sidebarMin := (partial "ui-param.html" (dict "page" . "key" "sidebar_width_min")) | default 220 -}}
   {{ $sidebarMax := (partial "ui-param.html" (dict "page" . "key" "sidebar_width_max")) | default 480 -}}
   {{ $navWrap := eq (partial "ui-param.html" (dict "page" . "key" "sidebar_item_overflow")) "wrap" -}}
@@ -21,7 +17,7 @@
     {{ partial "skip-link.html" . }}
     {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
     <div class="container-fluid td-outer">
-      <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if not $hasToc }} td-shell-layout--no-toc{{ end }}{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
+      <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if eq (partial "shell/toc-style.html" .) "flow" }} td-shell-layout--toc-flow{{ end }}{{ if not $hasToc }} td-shell-layout--no-toc{{ end }}{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
            style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
         {{ if $hasSidebar -}}
         <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none">

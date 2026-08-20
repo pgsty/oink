@@ -53,6 +53,7 @@ def check_sources() -> list[str]:
     navbar_styles = (ROOT / "assets/scss/td/_site-navbar.scss").read_text()
     footer_styles = (ROOT / "assets/scss/td/_footer.scss").read_text()
     navbar_item = (ROOT / "layouts/_partials/navbar-item.html").read_text()
+    navbar_groups = (ROOT / "layouts/_partials/navbar-group-items.html").read_text()
     taxonomy = (ROOT / "layouts/_partials/navbar-taxonomy-tags.html").read_text()
     feedback = (ROOT / "layouts/_partials/feedback.html").read_text()
     feedback_js = (ROOT / "assets/js/feedback.js").read_text()
@@ -254,6 +255,18 @@ def check_sources() -> list[str]:
             and 'partialCached "navbar-taxonomy-tags.html"' in navbar_item
             and ".Site.LanguagePrefix" in navbar_item,
             "taxonomy entries are not promoted to navbar panels", errors)
+    entry_link = (ROOT / "layouts/_partials/navbar-entry-link.html").read_text()
+    require("columns must be an integer from 1 to 4" in navbar_item
+            and "td-nav-menu__panel--mega" in navbar_item
+            and "data-td-navbar-columns" in navbar_item,
+            "configured navbar columns no longer render a validated mega panel", errors)
+    require("showDescription" in entry_link
+            and "td-navbar-entry__description" in entry_link
+            and "showDescription" in navbar_groups,
+            "configured navbar columns no longer project child descriptions", errors)
+    require(".td-nav-menu__panel--mega" in navbar_styles
+            and ".td-navbar-entry__description" in navbar_styles,
+            "navbar mega-panel styles are missing", errors)
     require(".ByCount" in taxonomy and "td-navbar-taxonomy-tag__count" in taxonomy,
             "taxonomy panel lost count-descending tag chips", errors)
     require("flex-wrap: wrap" in navbar_styles and "flex-wrap: wrap" in blog_styles,
@@ -282,21 +295,16 @@ def check_sources() -> list[str]:
             "detailed feedback no longer has a stable Giscus target", errors)
     require("key === 'l' || key === 'y'" in keyboard,
             "y is no longer the l language alias", errors)
-    # The blog index has two forms and the site picks one. Both keys resolve
-    # through ui-param.html so front matter on the blog root can override them,
-    # and an unknown form fails the build rather than silently rendering rows.
+    # Blog form and width remain page-overridable parameters.
     require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_list
             and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_list,
             "blog index form or column count is not a ui-param with a front matter override", errors)
-    require('"allowed" (slice "list" "cards")' in blog_list
+    require('"allowed" (slice "list" "cards" "table")' in blog_list
             and '"key" "params.ui.blog_index"' in blog_list
             and '"fallback" "list"' in blog_list,
             "blog index form is not validated against its enum with a documented fallback", errors)
 
-    # The reader's switch. Both forms have to be in the document for it, the
-    # published one has to be recorded so the first paint matches the site, and
-    # the control has to ship hidden so a page without JavaScript shows nothing
-    # it cannot honour.
+    # The switch renders every form and records the published default.
     gate = (ROOT / "layouts/_partials/shell/blog-index-toggle.html").read_text()
     title_menu_source = (ROOT / "layouts/_partials/actions/title-menu.html").read_text()
     prepaint = (ROOT / "layouts/_partials/shell/prepaint.html").read_text()
@@ -306,10 +314,17 @@ def check_sources() -> list[str]:
     require('eq $page.Kind "section"' in gate and "not $page.Layout" in gate,
             "the index switch is offered where blog/list.html does not render", errors)
     require('data-td-blog-form="cards"' in blog_list and 'data-td-blog-form="list"' in blog_list
+            and 'data-td-blog-form="table"' in blog_list
             and 'data-td-blog-default="{{ $mode }}"' in blog_list
             and 'or (eq $mode "cards") $toggle' in blog_list
-            and 'or (ne $mode "cards") $toggle' in blog_list,
-            "the index does not render both forms for the switch, or lost its published default", errors)
+            and 'or (eq $mode "list") $toggle' in blog_list
+            and 'or (eq $mode "table") $toggle' in blog_list
+            and 'or (ne $mode "table") $toggle' in blog_list,
+            "the index does not render every form for the switch, or lost its published default", errors)
+    require("$tablePages = $pager.Pages" in blog_list
+            and "PageGroups" not in blog_list,
+            "toggle mode no longer limits the table to the current pager slice, "
+            "or the flat list regrew year groups", errors)
     require(title_menu_source.index("data-td-blog-index-toggle")
             < title_menu_source.index('title="RSS"'),
             "the index switch is no longer left of the feed button", errors)
@@ -317,8 +332,9 @@ def check_sources() -> list[str]:
             "the index switch is not hidden until the runtime reveals it", errors)
     require("td-blog-index" in prepaint,
             "the reader's index form is not restored before the first paint", errors)
-    require("data-td-blog-index-toggle" in shell_js and "toggle.hidden = false" in shell_js,
-            "the shell runtime does not claim the index switch", errors)
+    require("data-td-blog-index-toggle" in shell_js and "toggle.hidden = false" in shell_js
+            and "['list', 'cards', 'table']" in shell_js,
+            "the shell runtime does not claim the index switch or lost its cycle order", errors)
     require('class="td-content-cards td-blog-cards"' in blog_list
             and "--td-card-columns:" in blog_list,
             "blog card index does not reuse the shared card grid", errors)
@@ -330,10 +346,10 @@ def check_sources() -> list[str]:
             "blog card lost the external semantics of manual_link", errors)
     require("figcaption" not in blog_card and 'alt=""' in blog_card,
             "blog card carries a byline or names an image the title already names", errors)
-    # A card reads date, section, tags, description -- in that order, and with
-    # no author. The byline is what the space went to.
-    require('"authors" false' in blog_card,
-            "the card meta line grew a byline it has no room for", errors)
+    # A card reads the meta sentence -- date, author, section -- then tags,
+    # then the description, in that order.
+    require('"authors" false' not in blog_card,
+            "the card meta line no longer names the author", errors)
     require('isset .Site.Taxonomies "tags"' in blog_card
             and '.GetTerms "tags"' in blog_card
             and "td-blog-card__tags" in blog_card,
@@ -348,7 +364,7 @@ def check_sources() -> list[str]:
             and "-webkit-line-clamp: 3" in blog_styles,
             "the card description no longer reserves its three lines", errors)
     require('"key" "blog_index_size"' in blog_list
-            and "$blogPages.GroupByDate \"2006\") $size" in blog_list,
+            and "$blogPages.ByDate.Reverse) $size" in blog_list,
             "the blog index no longer passes its own pager size, which Hugo ignores from a theme", errors)
     require("td-blog-cards" in blog_styles
             and "aspect-ratio: 16 / 9" in blog_styles
@@ -357,9 +373,7 @@ def check_sources() -> list[str]:
             and "forced-colors: active" in blog_styles,
             "blog card styles lost the grid, the 16:9 frame, the clamp, or forced colours", errors)
 
-    # Bylines. The 0.4 `author:` string is a fixed point: 853 pages across the
-    # family sites carry it and 180 of them put Markdown in it, so the legacy
-    # branch is compared as a literal, not paraphrased.
+    # The legacy author string remains Markdown-capable.
     byline = (ROOT / "layouts/_partials/byline.html").read_text()
     article = (ROOT / "layouts/blog/_td-content.html").read_text()
     resolve = (ROOT / "layouts/_partials/authors-resolve.html").read_text()
@@ -369,10 +383,29 @@ def check_sources() -> list[str]:
     require('{{- partial "byline.html" (dict "page" .) }}' in article
             and "td-byline" not in article,
             "the blog article head no longer routes its byline through one renderer", errors)
-    require('{{ with $page.Params.author }}{{ T "post_byline_by" }} '
-            '<b>{{ . | markdownify }}</b> |{{ end}}' in byline
+    require('{{- with $page.Params.author }}' in byline
+            and '<b>{{ . | markdownify }}</b>' in byline
             and '<div class="td-byline mb-4">' in byline,
             "the 0.4 author string branch is no longer reproduced verbatim", errors)
+    # The article head is title, description, one line of facts, then the
+    # people: the date lives in the info line, so the byline carries none.
+    info = (ROOT / "layouts/_partials/article-info.html").read_text()
+    require('{{- partial "article-info.html" (dict "page" .) }}' in article
+            and article.index('partial "article-info.html"')
+            < article.index("</header>")
+            < article.index('partial "byline.html"')
+            < article.index('partial "series-strip.html"')
+            < article.index('"lead"'),
+            "the article head lost its info line, chips, byline, series, lead order", errors)
+    require("<time" not in byline,
+            "the byline repeats the date the info line already carries", errors)
+    require('partial "reading-time-enabled.html"' in info
+            and "post_word_count" in info and "post_read_original" in info,
+            "the info line's length segments are not behind the reading_time switch", errors)
+    require('partial "content/url.html"' in info
+            and 'target="_blank" rel="noopener noreferrer"' in info,
+            "the info line's original link bypasses the shared URL policy "
+            "or its external-link attributes", errors)
     require('isset .Site.Taxonomies "authors"' in resolve
             and '.GetTerms "authors"' in resolve,
             "author resolution is not gated on the site's own taxonomy declaration", errors)
@@ -501,206 +534,16 @@ def check_sources() -> list[str]:
     require("min-height: 44px" in share_styles and "forced-colors" in share_styles
             and "margin-inline" not in share_styles and "padding-left" not in share_styles,
             "share controls lost their touch target, forced-colors, or logical properties", errors)
-    require('partial "page-meta-lastmod.html"' in annotation,
-            "annotation lost the legacy consumer override", errors)
-    for template in (
-        "layouts/_td-content.html",
-        "layouts/docs/list.html",
-        "layouts/book/list.html",
-        "layouts/swagger/list.html",
-        "layouts/blog/_td-content.html",
-        "layouts/blog/list.html",
-    ):
-        require('partial "page-end.html"' in (ROOT / template).read_text(),
-                f"{template} bypasses page-end", errors)
-
-    # Two text links, title only: "← previous" at the start, "next →" at the
-    # end, each capped at half the row and truncated with an ellipsis.
-    require("td-pager__summary" not in pager and "td-pager__card" not in pager,
-            "pager regressed to description cards", errors)
-    require('class="td-pager__link td-pager__link--prev"' in pager
-            and 'class="td-pager__link td-pager__link--next"' in pager
-            and 'title="{{ .LinkTitle }}"' in pager
-            and pager.count("td-pager__arrow") == 2,
-            "pager links lost their arrow/title/full-title structure", errors)
-    require("max-width: calc(50% - 0.5rem)" in pager_styles
-            and "text-overflow: ellipsis" in pager_styles
-            and "white-space: nowrap" in pager_styles
-            and "&__link--prev {\n    margin-inline-end: auto;" in pager_styles
-            and "&__link--next {\n    margin-inline-start: auto;" in pager_styles
-            and "font-family: var(--td-body-font-family)" in pager_styles,
-            "pager links no longer cap at half width, truncate, or keep their own edge", errors)
-    require(".td-page-end > .td-pager:first-child" in pager_styles,
-            "a pager that opens the page end lost its separating rule", errors)
-    annotation_styles = content_styles.split(".td-page-annotation", 1)[1].split("}", 1)[0]
-    require("font-family: var(--td-body-font-family)" in annotation_styles,
-            "page annotation reverted to a code-like font", errors)
-    feedback_styles = content_styles.split(".td-feedback", 1)[1].split(".td-page-annotation", 1)[0]
-    require("border-block-start" in feedback_styles
-            and "border-block:" not in feedback_styles
-            and "flex-wrap: nowrap" in feedback_styles,
-            "feedback prompt lost its compact single-divider row", errors)
-    require(".td-pager + &" in comments_styles,
-            "pager-to-discussion spacing is no longer compact", errors)
-    require("display: table" in content_styles and "margin-block-end: $spacer" in content_styles,
-            "Markdown tables no longer fill their viewport or separate following prose", errors)
-    require("not $.IsPage" in breadcrumb_state and ".IsHome" in breadcrumb_state,
-            "top-level nodes no longer suppress their redundant breadcrumb", errors)
-    require("min-height: 29px" in page_context_styles,
-            "page actions no longer keep a stable topline height", errors)
-    require("td-shell-topline--actions-only" in page_context_styles
-            and "height: 0" in page_context_styles
-            and "td-shell-topline--actions-only" in docs_layout
-            and "td-shell-topline--actions-only" in blog_layout,
-            "breadcrumb-free roots no longer lift their title while pinning actions", errors)
-    search_index = sidebar_panel.index('class="td-shell-iconbtn td-shell-sidebar__search"')
-    collapse_index = sidebar_panel.index('class="td-shell-iconbtn td-shell-sidebar__collapse"')
-    require(search_index < collapse_index,
-            "desktop sidebar search no longer precedes the collapse action", errors)
-    require("if and $navbar $localSearch" not in sidebar_panel,
-            "desktop sidebar search is still coupled to navbar rendering", errors)
-    require("td-shell-search-btn--drawer" in sidebar_panel
-            and '<kbd>/</kbd>' in sidebar_panel,
-            "mobile drawer no longer renders the full slash-hint search field", errors)
-    require('"search" "subnav-search"' in subnav
-            and '"menu" "subnav-menu"' in subnav
-            and subnav.index('data-td-shell-search-open')
-            < subnav.index('data-td-shell-drawer-open'),
-            "navbar-off mobile bar lost its search-before-menu contract", errors)
-    require('class="td-shell-subnav__menu"' in subnav
-            and 'partial "navbar-entry-link.html"' in subnav,
-            "navbar-off mobile bar lost its content-generated center menu", errors)
-    footer = sidebar_panel.split('class="td-shell-sidebar__footer"', 1)[1].split(
-        'class="td-shell-sidebar__resizer"', 1)[0]
-    footer_order = [
-        footer.index('partial "language-selector.html"'),
-        footer.index('partial "navbar-version-selector.html"'),
-        footer.index('partial "shell/keyboard-help.html"'),
-        footer.index("td-shell-quick-theme"),
-        footer.index('aria-label="GitHub"'),
-    ]
-    require(footer_order == sorted(footer_order),
-            "sidebar footer order is not language/version/help/theme/GitHub", errors)
-    require("td-shell-sidebar__footer-start" in footer
-            and "td-shell-sidebar__footer-end" in footer
-            and "justify-content: space-between" in sidebar_styles,
-            "sidebar footer no longer splits language/version from theme/GitHub", errors)
-    require("if not $navbar" not in footer
-            and ".td-shell-sidebar__footer .td-language-selector--menu" in language_styles
-            and "inset-inline-start: 0" in language_styles,
-            "sidebar footer is no longer unconditional or its language menu lost dropup styling", errors)
-    require("dropdown.show()" in base_js and "menu.addEventListener('pointerenter'" in base_js,
-            "sidebar version menu no longer opens on pointer hover", errors)
-    require(all(f'data-bs-theme-value="{value}"' in footer
-                for value in ("light", "dark", "auto"))
-            and "data-td-nav-hover" in footer
-            and base_js.count("menu.closest('#td-shell-sidebar') ? ['drawer'] : []") >= 2,
-            "sidebar theme trigger no longer exposes the three-mode hover menu", errors)
-    require('data-td-nav-hover-open' in keyboard_help
-            and 'class="td-kbd-sequence"' in keyboard_help
-            and all(key in keyboard_help for key in ('<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>'))
-            and ".td-shell-keyboard-help__row" in keyboard_styles
-            and ".td-shell-sidebar__footer .td-shell-keyboard" in keyboard_styles
-            and "position: static" in keyboard_styles
-            and "inset-inline: 8px" in keyboard_styles,
-            "sidebar shortcut help lost its hover trigger or KBD cheat sheet", errors)
-    # One icon system in the shell chrome: shell/icon.html dispenses Font Awesome
-    # glyphs under role-named classes, version controls take theirs from it, and
-    # the page action menu takes action icons from the registry rather than a
-    # second hand-written mapping. Glyph choices themselves are not contract.
-    require('<i class="td-shell-icon td-shell-icon--{{ $name }}' in icons and "<svg" not in icons
-            and "--td-shell-icon-size" in shell_tokens,
-            "shell/icon.html no longer dispenses a single Font Awesome icon system", errors)
-    require('shell/icon.html' in version and 'shell/icon.html' in navbar
-            and 'class="fa-' not in version and '<i class="fa-solid fa-code' not in navbar,
-            "version controls no longer take their icon from the shell dispenser", errors)
-    require(all(f"$byID.{action}.icon" in title_menu for action in (
-                "copy_markdown", "view_markdown", "view_history", "edit_page",
-                "create_child_page", "create_issue", "create_project_issue", "print_section"))
-            and 'shell/icon.html" "copy"' not in title_menu,
-            "page action menu no longer takes action icons from the registry", errors)
-    require("if not $hasToc" in toc_aside
-            and "quickLinks" not in toc_aside
-            and "td-shell-quick-theme" not in toc_aside
-            and 'aria-label="GitHub"' not in toc_aside,
-            "right TOC rail duplicated the sidebar utility controls", errors)
-    alignment = "var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem)"
-    require(alignment in layout_styles and alignment in toc_styles,
-            "collapsed rail controls no longer align with the article topline", errors)
-    require("@media (min-width: 768px) and (hover: hover) and (pointer: fine)" in navbar_styles,
-            "drawer-width viewports no longer disable auto-hide", errors)
-    require("@media (max-width: 767.98px)" in navbar_styles
-            and "html[data-td-kbd-zen] .td-navbar-autohide" in navbar_styles
-            and "--td-shell-nav-h: #{$td-navbar-min-height}" in navbar_styles,
-            "the phone tier no longer overrides every navbar hiding state", errors)
-    require("html[data-td-kbd-zen] .td-shell-subnav" in keyboard_styles
-            and "display: grid" in keyboard_styles,
-            "navbar-off phone chrome can still disappear in reading mode", errors)
-    require("grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr)" in navbar_styles
-            and ".td-site-header .td-nav-menu-zone" in navbar_styles
-            and "margin-inline-start: 0" in navbar_styles,
-            "phone navbar no longer true-centers its generated menu", errors)
-    require("> .td-nav-version-menu" in navbar_styles
-            and "> .td-nav-theme-menu" in navbar_styles
-            and "> .td-nav-github" in navbar_styles
-            and "> :not(.td-nav-search-box):not(.td-site-drawer-toggle)" in navbar_styles,
-            "phone navbar no longer reduces its utility edge to search and menu", errors)
-    require(".td-nav-alt-site > span" in navbar_styles
-            and ".td-nav-github .td-nav-count" in navbar_styles
-            and "white-space: nowrap" in navbar_styles,
-            "compact navbar labels can wrap or crowd the icon tier", errors)
-    require("html:not([data-td-shell-sidebar='collapsed'])" in navbar_styles
-            and "body.td-shell-chrome--navbar:has(#td-shell-sidebar)" in navbar_styles
-            and "visibility: hidden" in navbar_styles,
-            "the sidebar-covered navbar Home link can remain in the desktop focus order", errors)
-    require(".td-navbar-autohide::before" in navbar_styles
-            and "--td-navbar-reveal-inset: 64px" in navbar_styles
-            and "--td-navbar-reveal-height: 60%" in navbar_styles
-            and "pointer-events: none" in navbar_styles,
-            "navbar reveal strip no longer reserves its corner exclusion zones", errors)
-    require('$taxonomyPage' in navbar_item and 'Kind "taxonomy"' in navbar_item
-            and 'partialCached "navbar-taxonomy-tags.html"' in navbar_item
-            and ".Site.LanguagePrefix" in navbar_item,
-            "taxonomy entries are not promoted to navbar panels", errors)
-    require(".ByCount" in taxonomy and "td-navbar-taxonomy-tag__count" in taxonomy,
-            "taxonomy panel lost count-descending tag chips", errors)
-    require("flex-wrap: wrap" in navbar_styles and "flex-wrap: wrap" in blog_styles,
-            "navbar or right-rail taxonomy terms are no longer tag clouds", errors)
-    require(".td-nav-menu__panel--taxonomy" in navbar_styles
-            and "inset-inline: 16px" in navbar_styles,
-            "compact taxonomy cloud is no longer constrained to the viewport", errors)
-    require("&__column" in footer_styles and "padding-inline-start: 10px" in footer_styles,
-            "fat-footer navigation columns lost their start padding", errors)
-    require(all(marker in feedback for marker in (
-                'data-td-feedback-choice="solved"',
-                'data-td-feedback-choice="not_solved"',
-                "data-td-feedback-reason",
-                "data-td-feedback-change",
-                'href="#td-comments"',
-            )) and "textarea" not in feedback and "data-endpoint" not in feedback,
-            "feedback is no longer the one-click structured contract", errors)
-    require(all(marker in feedback_js for marker in (
-                "docs_feedback",
-                "page_path",
-                "language",
-                "refinement: true",
-            )) and "fetch(" not in feedback_js and "message" not in feedback_js,
-            "feedback runtime collects more than structured analytics", errors)
-    require('id="td-comments"' in giscus,
-            "detailed feedback no longer has a stable Giscus target", errors)
-    require("key === 'l' || key === 'y'" in keyboard,
-            "y is no longer the l language alias", errors)
     errors += check_featured_image_sources()
     errors.extend(check_series_sources())
     return errors
 
 
 def check_featured_image_sources() -> list[str]:
-    """The article-level featured image: one caller, one resolver, no runtime."""
+    """The article-level featured image: one caller set, one resolver, no runtime."""
     errors: list[str] = []
     mode = (ROOT / "layouts/_partials/featured-image-mode.html").read_text()
     article = (ROOT / "layouts/_partials/featured-image-article.html").read_text()
-    td_content = (ROOT / "layouts/blog/_td-content.html").read_text()
     styles = (ROOT / "assets/scss/td/shell/_featured.scss").read_text()
     config = (ROOT / "hugo.yaml").read_text()
 
@@ -708,7 +551,7 @@ def check_featured_image_sources() -> list[str]:
             "hugo.yaml no longer declares the params.ui.featured_image default", errors)
     require('partial "ui-param.html" (dict "page" . "key" "featured_image")' in mode,
             "featured_image no longer resolves through ui-param.html, so front matter cannot override it", errors)
-    require('"allowed" (slice "none" "banner" "wash")' in mode
+    require('"allowed" (slice "none" "banner" "wash" "hero")' in mode
             and '"key" "params.ui.featured_image"' in mode
             and '"fallback" "none"' in mode,
             "an invalid featured_image mode no longer warns and falls back to none", errors)
@@ -718,16 +561,22 @@ def check_featured_image_sources() -> list[str]:
             and 'partialCached "featured-image-resolve.html"' in article,
             "the article image no longer comes from the shared resolver", errors)
 
-    # One caller. The partials render blog articles and nothing else; a docs or
-    # Book page reaching them would make the parameter mean two things.
+    # One caller set. The partials render blog-family pages and nothing else;
+    # a docs or Book page reaching them would make the parameter mean two
+    # things. The blog baseof is in the set because the hero is the shell's
+    # backdrop -- painted for single pages and section indexes alike --
+    # rather than part of the content column.
     callers = {
         path.relative_to(ROOT).as_posix()
         for path in ROOT.glob("layouts/**/*.html")
         for name in ("featured-image-mode.html", "featured-image-article.html")
         if f'partial "{name}"' in path.read_text()
     }
-    require(callers == {"layouts/blog/_td-content.html"},
-            f"the article featured image is called from {sorted(callers)}, not only blog/_td-content.html", errors)
+    require(callers == {"layouts/blog/_td-content.html",
+                        "layouts/blog/baseof.html"},
+            f"the featured image is called from {sorted(callers)}, "
+            "not the blog content template and the blog baseof", errors)
+    td_content = (ROOT / "layouts/blog/_td-content.html").read_text()
     require(0 <= td_content.find('partial "featured-image-mode.html"')
             < td_content.find('partial "featured-image-article.html"')
             < td_content.find('partial "page-title.html"'),
@@ -735,25 +584,54 @@ def check_featured_image_sources() -> list[str]:
     require('<div class="td-article-header td-article-header--wash">' in td_content
             and td_content.count('{{ if eq $featured "wash" }}') == 2,
             "the wash header wrapper is no longer emitted only in wash mode", errors)
+    baseof = (ROOT / "layouts/blog/baseof.html").read_text()
+    require('"mode" "hero"' in baseof
+            and '{{ $hero := eq $featured "hero" -}}' in baseof
+            and "td-shell-chrome--hero" in baseof
+            and "and $navbar (not $hero)" in baseof,
+            "the blog baseof no longer paints the hero as the height-free immersive backdrop", errors)
+    require("td-shell-layout--hero" in baseof
+            and "td-shell-layout--toc-flow" in baseof,
+            "the blog baseof no longer emits the immersive layout modifiers", errors)
+    # The immersive rail is parameters, not a shell: the clouds opt-out can
+    # empty the rail entirely, and the flow style is a validated enum that is
+    # deliberately independent of whether a page carries an image.
+    rail = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text()
+    require('"key" "params.ui.toc_taxonomies"' in rail
+            and "if or $hasToc $clouds" in rail,
+            "the taxonomy clouds are no longer an opt-out that can empty the rail", errors)
+    toc_style = (ROOT / "layouts/_partials/shell/toc-style.html").read_text()
+    require('"allowed" (slice "fixed" "flow")' in toc_style
+            and '"fallback" "fixed"' in toc_style
+            and '"key" "params.ui.toc_style"' in toc_style,
+            "toc_style is not a validated fixed|flow enum", errors)
 
-    require('class="td-featured-banner"' in article and 'class="td-featured-wash"' in article,
-            "the article featured image lost one of its two modes", errors)
-    require('aria-hidden="true"' in article,
-            "the wash is no longer hidden from assistive technology", errors)
-    require(article.count('alt=""') == 2 and "loading=" not in article,
+    require('class="td-featured-banner"' in article and 'class="td-featured-wash"' in article
+            and 'class="td-featured-hero"' in article,
+            "the article featured image lost one of its three modes", errors)
+    require(article.count('aria-hidden="true"') == 2,
+            "the wash or the hero is no longer hidden from assistive technology", errors)
+    require(article.count('alt=""') == 3 and "loading=" not in article,
             "the article featured image is no longer decorative, or defers its own LCP element", errors)
     require('.Fill "1600x900 Center"' in article and '.Resize "1200x q60"' in article
+            and '.Resize "1800x q70"' in article
             and "reflect.IsImageResourceProcessable" in article,
             "the article featured image no longer crops what Hugo can process", errors)
     require("hasImageZoom" not in article and "Store.Set" not in article
             and "Store.Set" not in mode,
             "the article featured image writes a Page Store flag", errors)
 
-    require("--td-featured-wash-opacity" in styles and "aspect-ratio: 16 / 9" in styles,
-            "the featured image styles lost the wash opacity token or the fixed banner frame", errors)
+    require("--td-featured-wash-opacity" in styles and "aspect-ratio: 16 / 9" in styles
+            and "--td-featured-hero-opacity" in styles,
+            "the featured image styles lost an opacity token or the fixed banner frame", errors)
     require("@media (forced-colors: active)" in styles and "@media print" in styles
-            and styles.count("display: none") >= 2,
-            "the wash is not dropped in forced colors or in print", errors)
+            and styles.count("display: none") >= 4,
+            "the wash and the hero are not dropped in forced colors and in print", errors)
+    # The overlay navbar cannot ask arbitrary artwork for text contrast: it
+    # sits on a header-coloured scrim that fades out before the opening.
+    require("var(--td-brand-header-bg) 58%" in styles
+            and "transparent 100%" in styles,
+            "the hero navbar overlay lost its readability scrim", errors)
     require("margin-inline" in styles and "padding-inline" in styles
             and "margin-left" not in styles and "padding-left" not in styles,
             "the featured image styles use physical instead of logical properties", errors)
@@ -799,6 +677,10 @@ def check_series_sources() -> list[str]:
     # bundle member, no behaviour attribute for a runtime to bind to.
     require("<details" in strip and "<summary" in strip,
             "the series list is no longer a plain disclosure", errors)
+    require('<div class="td-series-strip__line">' in strip
+            and strip.index('class="td-series-strip__name"') < strip.index("<details")
+            and "<a " not in strip.split("<summary", 1)[1].split("</summary>", 1)[0],
+            "the series term link is no longer a sibling of the disclosure", errors)
     require("data-td-" not in strip and "<script" not in strip and "Store.Set" not in strip,
             "the series strip grew a runtime hook", errors)
     require('aria-current="page"' in strip,
@@ -810,8 +692,9 @@ def check_series_sources() -> list[str]:
             "the series strip hides itself from print", errors)
     require(".td-series-strip {" in blog_styles
             and "margin-block" in blog_styles
-            and "padding-inline" in blog_styles,
-            "the series strip lost its own styles or its logical properties", errors)
+            and "padding-inline" in blog_styles
+            and blog_styles.count("min-block-size: 24px") >= 2,
+            "the series strip lost its own styles, logical properties, or minimum target sizes", errors)
 
     # Both taxonomies that carry a surface of their own stay out of the default
     # chips row; naming one in params.taxonomy.page_header still opts back in.
@@ -829,12 +712,12 @@ def build_example(hugo: str) -> list[str]:
         env = os.environ.copy()
         env.update({
             "HUGO_ENABLEGITINFO": "true",
-            # exampleSite sets the boolean shorthand `ui.feedback: false`;
+            # The regression fixture sets the boolean shorthand `ui.feedback: false`;
             # the override flips that scalar.
             "HUGO_PARAMS_UI_FEEDBACK": "true",
         })
         result = subprocess.run(
-            [hugo, "--source", str(ROOT / "exampleSite"), "--themesDir", str(ROOT.parent),
+            [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
              "--destination", str(public), *fixture_config_args(), "--panicOnWarning"],
             cwd=ROOT,
             env=env,
@@ -928,58 +811,70 @@ def build_example(hugo: str) -> list[str]:
             legacy_source = legacy.read_text()
             require(
                 '\t<div class="td-byline mb-4">\n'
-                '\t\tBy <b><a href="https://vonng.com">Ruohang Feng</a> '
+                '\t\t<b><a href="https://vonng.com">Ruohang Feng</a> '
                 '(<a href="https://github.com/Vonng">@Vonng</a>) | '
-                '<a href="https://vonng.com/wechat">WeChat</a></b> |\n'
-                '\t\t<time datetime="2026-08-09" class="text-body-secondary">'
-                '2026-08-09</time>\n'
+                '<a href="https://vonng.com/wechat">WeChat</a></b>\n'
                 '\t</div>' in legacy_source,
                 "the 0.4 `author` string byline changed shape", errors)
             require("td-byline--authors" not in legacy_source,
                     "a page with no `authors` fell into the taxonomy byline", errors)
 
+        # The info line's link to the original, from the same upstream_link the
+        # annotation attributes; a page that names no upstream renders none.
+        syndicated = public / "blog/upstream-info/index.html"
+        require(syndicated.is_file(), "the syndicated info-line fixture is missing", errors)
+        if syndicated.is_file():
+            syndicated_source = syndicated.read_text()
+            require('<a class="td-article-info__original" '
+                    'href="https://example.org/original/" '
+                    'target="_blank" rel="noopener noreferrer">' in syndicated_source
+                    and "An upstream essay" in syndicated_source,
+                    "upstream_link no longer renders both the info-line link "
+                    "and the annotation attribution", errors)
+
         article = public / "blog/typography/index.html"
         require(article.is_file(), "authors byline fixture page is missing", errors)
         if article.is_file():
             article_source = article.read_text()
-            # `authors: [oink-maintainers, vonng]` -- GetTerms keeps the front
-            # matter sequence, so the collective author bylines first even
-            # though it sorts second.
-            order = [article_source.find('href="/authors/oink-maintainers/"'),
+            # `authors: [oink, vonng]` -- GetTerms keeps the front matter
+            # sequence, so the project author bylines first because the page
+            # says so, not because of any sort.
+            order = [article_source.find('href="/authors/oink/"'),
                      article_source.find('href="/authors/vonng/"')]
             require(all(index >= 0 for index in order) and order == sorted(order),
                     "the article byline does not follow the front matter author order", errors)
             require("taxo-authors" not in article_source,
                     "the reserved `authors` plural still renders a generic chip row", errors)
 
-        # Two profiles, one per branch of the avatar contract: the collective
-        # author carries `images`, the individual carries none and falls back to
-        # an initial. Both are real pages in the example, not fixtures.
-        profile = public / "authors/vonng/index.html"
-        require(profile.is_file(), "author profile page is missing", errors)
-        if profile.is_file():
-            profile_source = profile.read_text()
-            require('<h1 class="td-author-profile__name">Feng Ruohang</h1>' in profile_source
-                    and 'td-author-profile__avatar--placeholder' in profile_source
-                    and 'class="td-blog-posts-list' in profile_source,
-                    "the author term page is not a profile above its archive, "
-                    "or lost the portrait-less fallback", errors)
+        # The avatar contract has two branches. Both public authors carry a
+        # bundled portrait -- the person a processable JPEG, the project the
+        # theme's own SVG mark -- and the initial fallback is pinned by the
+        # fixture-only no-portrait author below.
+        for slug, label in (("vonng", "Ruohang Feng"), ("oink", "Oink")):
+            portrait = public / f"authors/{slug}/index.html"
+            require(portrait.is_file(), f"author profile page is missing: {slug}", errors)
+            if portrait.is_file():
+                portrait_source = portrait.read_text()
+                require(f'<h1 class="td-author-profile__name">{label}</h1>' in portrait_source
+                        and 'class="td-author-profile__avatar"' in portrait_source
+                        and "td-author-profile__avatar--placeholder" not in portrait_source
+                        and 'class="td-blog-posts-list' in portrait_source,
+                        f"the {slug} term page is not a portrait profile above its archive", errors)
 
-        portrait = public / "authors/oink-maintainers/index.html"
-        require(portrait.is_file(), "collective author profile page is missing", errors)
-        if portrait.is_file():
-            portrait_source = portrait.read_text()
-            require('class="td-author-profile__avatar"' in portrait_source
-                    and "td-author-profile__avatar--placeholder" not in portrait_source,
-                    "a profile with images no longer renders its portrait", errors)
+        fallback = public / "authors/no-portrait/index.html"
+        require(fallback.is_file(), "the no-portrait fixture profile is missing", errors)
+        if fallback.is_file():
+            fallback_source = fallback.read_text()
+            require('td-author-profile__avatar--placeholder' in fallback_source,
+                    "a profile without images lost the initial fallback", errors)
 
         feed = public / "blog/index.xml"
         require(feed.is_file(), "blog feed fixture is missing", errors)
         if feed.is_file():
             feed_source = feed.read_text()
             require('xmlns:dc="http://purl.org/dc/elements/1.1/"' in feed_source
-                    and "<dc:creator>Feng Ruohang</dc:creator>" in feed_source
-                    and "<dc:creator>OINK maintainers</dc:creator>" in feed_source,
+                    and "<dc:creator>Ruohang Feng</dc:creator>" in feed_source
+                    and "<dc:creator>Oink</dc:creator>" in feed_source,
                     "the blog feed lost its per-item dc:creator", errors)
 
         docs = public / "docs/index.html"
@@ -992,6 +887,7 @@ def build_example(hugo: str) -> list[str]:
                     "docs root did not hide its breadcrumb while retaining actions", errors)
 
         errors += check_featured_image_output(public)
+        errors += check_immersive_output(public)
     return errors
 
 
@@ -1040,6 +936,86 @@ def check_featured_image_output(public: Path) -> list[str]:
             printed_source = printed.read_text()
             require("td-featured-" not in printed_source and "td-article-header" not in printed_source,
                     f"the {mode} print surface carries the article featured image", errors)
+    return errors
+
+
+def check_immersive_output(public: Path) -> list[str]:
+    """The immersive blog recipe: hero opening, overlay navbar, bare rail."""
+    errors: list[str] = []
+    surfaces = {
+        "hero": public / "blog/immersive-hero/index.html",
+        "plain": public / "blog/immersive-plain/index.html",
+    }
+    for name, path in surfaces.items():
+        require(path.is_file(), f"the immersive {name} fixture is missing", errors)
+    if not all(path.is_file() for path in surfaces.values()):
+        return errors
+
+    hero = surfaces["hero"].read_text()
+    plain = surfaces["plain"].read_text()
+
+    # `featured_image: hero` paints the shell's own backdrop, before the main
+    # column and processed by Hugo where it can be.
+    require("td-shell-chrome--hero" in hero
+            and '<div class="td-featured-hero" aria-hidden="true">' in hero
+            and re.search(r'class="td-featured-hero"[^>]*><img src="[^"]*_hu[^"]*"', hero),
+            "the immersive hero fixture lost its processed full-bleed backdrop", errors)
+    require(hero.find("td-featured-hero") < hero.find("td-shell-main"),
+            "the hero is no longer the shell's backdrop before the main column", errors)
+    require("td-featured-banner" not in hero and "td-featured-wash" not in hero,
+            "the immersive hero fixture also rendered a banner or a wash", errors)
+    require("td-shell-layout--hero" in hero,
+            "a hero page no longer reserves the breathing space above the opening", errors)
+    # Over a hero the navbar is the transparent overlay: it renders, but the
+    # body must not reserve height for a bar that scrolls away.
+    require('class="td-site-header' in hero and "td-shell-chrome--navbar" not in hero,
+            "the navbar over a hero is no longer the height-free overlay", errors)
+
+    # No image, same recipe: the ordinary opening returns, the navbar goes
+    # back to its sticky self, and the other keys hold on their own.
+    require("td-shell-chrome--hero" not in plain and "td-featured-" not in plain
+            and "td-shell-layout--hero" not in plain
+            and "td-article-header" not in plain,
+            "a recipe page with no image still renders a hero", errors)
+    require('class="td-site-header' in plain and "td-shell-chrome--navbar" in plain,
+            "a recipe page with no hero lost its ordinary sticky navbar", errors)
+    for source_name, source in (("hero", hero), ("plain", plain)):
+        require('id="td-shell-sidebar"' not in source
+                and "td-shell-drawer-backdrop" not in source,
+                f"the immersive {source_name} fixture grew a sidebar", errors)
+        require("td-shell-tags-cloud" not in source,
+                f"the immersive {source_name} fixture's rail carries taxonomy clouds", errors)
+        require('aria-label="breadcrumb"' not in source
+                and "td-shell-topline--actions-only" in source,
+                f"the immersive {source_name} fixture regrew a breadcrumb "
+                "over the blog shell's breadcrumb-free default", errors)
+        require("td-shell-layout--toc-flow" in source
+                and 'id="td-shell-aside-toc"' in source,
+                f"the immersive {source_name} fixture lost its flow outline rail", errors)
+        require("data-td-page-annotation" in source and "td-share" in source,
+                f"the immersive {source_name} fixture bypasses the page end", errors)
+
+    # The same recipe on a section index: the releases list opens under its
+    # own hero, with neither sidebar nor clouds beside it.
+    index = public / "blog/release/index.html"
+    require(index.is_file(), "the immersive release index is missing", errors)
+    if index.is_file():
+        index_source = index.read_text()
+        require("td-shell-chrome--hero" in index_source
+                and "td-featured-hero" in index_source
+                and 'id="td-shell-sidebar"' not in index_source
+                and "td-shell-tags-cloud" not in index_source,
+                "the release index no longer opens its list under the immersive hero", errors)
+
+    # Print reaches these pages through their own template: no hero markers.
+    for name in surfaces:
+        printed = public / f"_print/blog/immersive-{name}/index.html"
+        require(printed.is_file(), f"the immersive {name} print surface is missing", errors)
+        if printed.is_file():
+            printed_source = printed.read_text()
+            require("td-featured-" not in printed_source
+                    and "td-shell-chrome--hero" not in printed_source,
+                    f"the immersive {name} print surface carries the hero", errors)
     return errors
 
 
@@ -1121,7 +1097,7 @@ params:
 
 
 def build_featured_image_rejection(hugo: str) -> list[str]:
-    """An unknown mode fails the build rather than degrading to `none`."""
+    """An unknown mode warns, uses `none`, and fails strict publication."""
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-shell-featured-") as temporary:
         root = Path(temporary)
@@ -1164,7 +1140,7 @@ params:
         require(result.returncode == 0,
                 f"an invalid params.ui.featured_image stopped the build instead of warning: {output[-400:]}", errors)
         require("invalid params.ui.featured_image" in output
-                and "none | banner | wash" in output
+                and "none | banner | wash | hero" in output
                 and "none" in output,
                 f"the featured_image warning does not name the allowed modes and the fallback: {output[-400:]}", errors)
         require(strict.returncode != 0,
@@ -1172,20 +1148,68 @@ params:
     return errors
 
 
-def build_blog_index_forms(hugo: str) -> list[str]:
-    """The cards form lists exactly what the row form lists.
+def build_navbar_menu_columns(hugo: str) -> list[str]:
+    """Explicit columns retain the multi-column panel and descriptions."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-navbar-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        (source / "content/docs").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"""baseURL: https://example.org/
+title: Navbar menu fixture
+theme: {ROOT.name}
+disableKinds: [RSS, sitemap, taxonomy, term]
+params:
+  offline_search: false
+menus:
+  main:
+    - identifier: docs
+      name: Docs
+      pageRef: /docs
+      weight: 10
+      params:
+        columns: 2
+    - identifier: docs-child
+      parent: docs
+      name: Child
+      pageRef: /docs/child
+      weight: 10
+      params:
+        icon: fa-solid fa-book
+        description: A retained mega-menu description
+""",
+            encoding="utf-8",
+        )
+        (source / "content/docs/_index.md").write_text(
+            "---\ntitle: Docs\n---\n", encoding="utf-8")
+        (source / "content/docs/child.md").write_text(
+            "---\ntitle: Child\ndate: 2026-01-01\n---\n\nChild.\n", encoding="utf-8")
+        result = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public"), "--panicOnWarning"],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode == 0,
+                f"a valid menu columns value failed strict build: {output[-400:]}", errors)
+        home = root / "public/index.html"
+        if home.is_file():
+            html = home.read_text(encoding="utf-8")
+            require('class="td-nav-menu__panel td-nav-menu__panel--mega"' in html
+                    and 'data-td-navbar-columns="2"' in html
+                    and 'class="td-navbar-entry__description"' in html
+                    and "A retained mega-menu description" in html,
+                    "configured columns lost the mega panel or child description", errors)
+    return errors
 
-    The form is a site decision, so the two builds differ only in a config
-    overlay. Hugo maps `HUGO_PARAMS_UI_BLOG_INDEX` to `params.ui.blog.index`
-    -- the underscore is its path separator -- so a snake_case key cannot be
-    set from the environment the way `HUGO_PARAMS_UI_TYPOGRAPHY` is."""
+
+def build_blog_index_forms(hugo: str) -> list[str]:
+    """Compare the three published forms and the paged reader toggle."""
 
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-blog-index-") as temporary:
         root = Path(temporary)
-        # Both arms pin the switch off. This compares the two published forms
-        # against each other; with the reader's switch on, every index carries
-        # both at once and there is nothing to compare.
         rows_overlay = root / "rows.yaml"
         rows_overlay.write_text(
             "params:\n  ui:\n    blog_index: list\n    blog_index_toggle: false\n",
@@ -1197,11 +1221,23 @@ def build_blog_index_forms(hugo: str) -> list[str]:
             "    blog_index_toggle: false\n",
             encoding="utf-8",
         )
+        table_overlay = root / "table.yaml"
+        table_overlay.write_text(
+            "params:\n  ui:\n    blog_index: table\n    blog_index_toggle: false\n",
+            encoding="utf-8",
+        )
+        toggle_overlay = root / "toggle.yaml"
+        toggle_overlay.write_text(
+            "params:\n  ui:\n    blog_index: list\n    blog_index_size: 2\n"
+            "    blog_index_toggle: true\n",
+            encoding="utf-8",
+        )
         rendered: dict[str, str] = {}
-        for name, extra in (("rows", (rows_overlay,)), ("cards", (overlay,))):
+        for name, extra in (("rows", (rows_overlay,)), ("cards", (overlay,)),
+                            ("table", (table_overlay,)), ("toggle", (toggle_overlay,))):
             public = root / name
             result = subprocess.run(
-                [hugo, "--source", str(ROOT / "exampleSite"), "--themesDir", str(ROOT.parent),
+                [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
                  "--destination", str(public), *fixture_config_args(*extra), "--panicOnWarning"],
                 cwd=ROOT,
                 text=True,
@@ -1224,8 +1260,12 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         require(row_links == card_links,
                 f"the cards index does not list the posts the row index lists: {row_links} vs {card_links}",
                 errors)
-        require(re.findall(r"<h2>([^<]+)</h2>", rows) == re.findall(r"<h2>([^<]+)</h2>", cards),
-                "the cards index lost the year grouping", errors)
+        # The list is one flat run: no year headings in either form, in the
+        # order the metadata line's own dates already tell. (The footer's own
+        # bare <h2> column titles are not the posts region's.)
+        year_heading = re.compile(r"<h2>[^<]*20\d\d</h2>")
+        require(not year_heading.search(rows) and not year_heading.search(cards),
+                "an index form regrew year headings", errors)
         require('class="td-content-cards td-blog-cards"' in cards
                 and 'style="--td-card-columns: 4"' in cards,
                 "the cards index does not reuse the shared grid at the configured width", errors)
@@ -1234,6 +1274,46 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         require(('td-blog-posts__pagination' in rows) == ('td-blog-posts__pagination' in cards),
                 "the two index forms disagree about pagination", errors)
         require('src=""' not in cards, "the cards index emitted an empty image source", errors)
+
+        # A standalone table remains an unpaginated archive.
+        table = rendered["table"]
+        table_links = re.findall(
+            r'<td class="td-blog-table__title"><a href="([^"]+)"', table)
+        require(table_links == row_links,
+                f"the table index does not list the posts the row index lists: {table_links}",
+                errors)
+        require("td-blog-posts__paged" not in table
+                and "td-blog-posts__pagination" not in table
+                and not year_heading.search(table),
+                "the table form still carries year groups or pagination", errors)
+        require('class="td-blog-table"' in table and "td-badge" in table,
+                "the table form lost its structure or its tag badges", errors)
+        require(not (root / "table/blog/oink/page").exists(),
+                "a table-only index still generated pager pages", errors)
+
+        # Toggle mode must not repeat the complete table on every pager page.
+        toggle = rendered["toggle"]
+        toggle_rows = re.findall(
+            r'<li class="td-blog-posts-list__item">.*?<a href="([^"]+)"', toggle, re.S)
+        toggle_cards = re.findall(
+            r'<article class="td-content-card td-blog-card">.*?'
+            r'<a class="td-content-card__title" href="([^"]+)"', toggle, re.S)
+        toggle_table = re.findall(
+            r'<td class="td-blog-table__title"><a href="([^"]+)"', toggle)
+        require(toggle_rows == toggle_cards == toggle_table,
+                "toggle forms do not share the first pager slice", errors)
+        second_path = root / "toggle/blog/oink/page/2/index.html"
+        require(second_path.is_file(), "toggle fixture did not generate a second page", errors)
+        if second_path.is_file():
+            second = second_path.read_text(encoding="utf-8")
+            second_rows = re.findall(
+                r'<li class="td-blog-posts-list__item">.*?<a href="([^"]+)"', second, re.S)
+            second_table = re.findall(
+                r'<td class="td-blog-table__title"><a href="([^"]+)"', second)
+            require(second_rows == second_table,
+                    "toggle forms do not share the second pager slice", errors)
+            require(set(toggle_table).isdisjoint(second_table),
+                    "toggle table repeats first-page posts on page two", errors)
     return errors
 
 
@@ -1255,6 +1335,7 @@ params:
   offline_search: false
   ui:
     blog_index: cards
+    blog_index_toggle: true
 """,
             encoding="utf-8",
         )
@@ -1299,8 +1380,11 @@ params:
         if not index.is_file():
             return ["blog card fixture did not render blog/index.html"]
 
-        cards = index.read_text(encoding="utf-8").split(
-            '<article class="td-content-card td-blog-card">')[1:]
+        cards = [
+            item.split("</article>", 1)[0]
+            for item in index.read_text(encoding="utf-8").split(
+                '<article class="td-content-card td-blog-card">')[1:]
+        ]
         require(len(cards) == 4, f"the card fixture rendered {len(cards)} cards, not 4", errors)
         by_title = {
             match.group(1): card
@@ -1328,6 +1412,18 @@ params:
                 "the external card lost its target, rel, or affordance", errors)
         require("A post that lives somewhere else." in external,
                 "the external card summarises the local body instead of its description", errors)
+
+        rows = [
+            item.split("</li>", 1)[0]
+            for item in index.read_text(encoding="utf-8").split(
+                '<li class="td-blog-posts-list__item">')[1:]
+        ]
+        external_row = next((row for row in rows if ">External<" in row), "")
+        require('href="https://example.net/post/"' in external_row
+                and 'target="_blank"' in external_row
+                and 'rel="noopener"' in external_row
+                and "A post that lives somewhere else." in external_row,
+                "the external list row drifted from the card link or summary contract", errors)
 
         plain = by_title.get("Plain", "")
         require("<img" not in plain, "a post with no image still renders an image slot", errors)
@@ -1480,6 +1576,7 @@ def main() -> int:
     args = parser.parse_args()
     errors = (check_sources() + build_example(args.hugo) + build_self_root_fixture(args.hugo)
               + build_featured_image_rejection(args.hugo)
+              + build_navbar_menu_columns(args.hugo)
               + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo)
               + build_share_fixture(args.hugo))
     if errors:

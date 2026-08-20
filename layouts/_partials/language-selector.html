@@ -2,7 +2,7 @@
 {{- $class := .class | default "" -}}
 {{- $mode := .mode | default "menu" -}}
 {{- $shellIcon := eq (.icon | default "") "shell" -}}
-{{- $targets := partial "language-targets.html" $page -}}
+{{- $targets := partialCached "language-targets.html" $page $page.Site.BaseURL $page.RelPermalink $page.Site.Language.Lang -}}
 {{- $count := len $targets -}}
 {{- if gt $count 1 -}}
   {{- $currentIndex := 0 -}}

@@ -3,6 +3,9 @@
        cascaded front matter, which Hugo merges into .Params with the page's
        own keys winning) beats params.ui.navbar_enabled, which beats true. */ -}}
 {{- $enabled := true -}}
-{{- if isset .Site.Params.ui "navbar_enabled" }}{{ $enabled = .Site.Params.ui.navbar_enabled }}{{ end -}}
+{{- if isset .Site.Params.ui "navbar_enabled" }}{{ $enabled = index .Site.Params.ui "navbar_enabled" }}{{ end -}}
 {{- if isset .Params "navbar_enabled" }}{{ $enabled = .Params.navbar_enabled }}{{ end -}}
+{{- $enabled = partial "validate.html" (dict
+    "value" $enabled "kind" "bool" "fallback" true
+    "key" "params.ui.navbar_enabled" "where" (cond (isset .Params "navbar_enabled") .Path "")) -}}
 {{- return $enabled -}}

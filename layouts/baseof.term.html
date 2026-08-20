@@ -1,11 +1,6 @@
 {{- .Page.Store.Set "tdOutputFormat" "html" -}}
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-    dir="{{ .Site.Language.Direction | default "ltr" }}"
-    lang="{{ partial "language-tag.html" . }}"
-    data-td-typography="{{ partial "typography-preset.html" .Site }}"
-    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
+<html{{ partial "shell/document-attrs.html" (dict "page" .) }}>
   <head>
     {{ partial "head.html" . }}
   </head>
@@ -19,7 +14,7 @@
     {{ partial "skip-link.html" . }}
     {{ if $navbar }}{{ partial "navbar.html" . }}{{ else }}{{ partial "shell/subnav.html" . }}{{ end }}
     <div class="container-fluid td-outer">
-      <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }} td-shell-layout--no-toc{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
+      <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }}{{ if eq (partial "shell/toc-style.html" .) "flow" }} td-shell-layout--toc-flow{{ end }} td-shell-layout--no-toc{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
            style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
         {{ if $hasSidebar -}}
         <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none">
@@ -30,6 +25,7 @@
         {{- end }}
         <main id="td-main-content" class="td-shell-main" tabindex="-1">
           <article class="td-shell-article">
+            {{ partial "version-banner.html" . }}
             {{ if partial "shell/breadcrumb-enabled.html" . }}{{ partial "breadcrumb.html" . }}{{ end }}
             {{ block "main" . }}{{ end }}
           </article>

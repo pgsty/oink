@@ -82,6 +82,32 @@
   }
 }
 
+/* ------------------------------------------------ flow rail (toc_style) */
+
+@include media-breakpoint-up(xl) {
+  .td-shell-layout--toc-flow .td-shell-toc {
+    flex-basis: var(--td-shell-toc-flow-w, 340px);
+    width: var(--td-shell-toc-flow-w, 340px);
+  }
+
+  // Preserve the collapsed override against the later flow rule.
+  [data-td-shell-toc='collapsed'] .td-shell-layout--toc-flow .td-shell-toc {
+    width: 0;
+    flex-basis: 0;
+  }
+
+  .td-shell-layout--toc-flow .td-shell-toc__panel {
+    position: sticky;
+    inset-block-start: calc(var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem));
+    inset-block-end: auto;
+    inset-inline-end: auto;
+    width: 100%;
+    max-block-size: calc(100dvh - var(--td-shell-nav-h) - var(--td-shell-content-top, 2.5rem) - 1rem);
+    padding-block-start: 0;
+    margin-block-start: var(--td-shell-toc-flow-offset, 0px);
+  }
+}
+
 /* No-TOC fallback control; regular TOC pages use the inline group toggle. */
 
 .td-shell-toc__actions {
@@ -132,25 +158,6 @@
   .td-shell-icon {
     flex: 0 0 auto;
     --td-shell-icon-size: 16px;
-  }
-}
-
-// Compact ghost button used in the rail action row.
-.td-shell-iconbtn.td-shell-iconbtn--sm {
-  padding: 4px;
-  border-radius: 6px;
-
-  .td-shell-icon {
-    --td-shell-icon-size: 16px;
-  }
-
-  // Size content shortcut glyphs (plain <i>) to the shell icon box.
-  i {
-    display: inline-block;
-    width: 16px;
-    font-size: 14px;
-    line-height: 16px;
-    text-align: center;
   }
 }
 

@@ -1,21 +1,12 @@
-{{- /* Scope every taxonomy cloud to the current top-level content root. A docs
-       page therefore counts only docs descendants; blog pages count only blog
-       descendants. Taxonomy term pages inherit their configured type. */ -}}
-{{- $root := .FirstSection -}}
-{{- with .Site.GetPage (printf "/%s" .Type) -}}
-  {{- if .IsSection }}{{ $root = . }}{{ end -}}
-{{- end -}}
-{{- /* Term pages have no content ancestry; adopt their members' shared top
-     section (mirroring the sidebar tree) so a docs term shows docs-scoped
-     clouds, not the site-wide mix. */ -}}
-{{- if eq .Kind "term" -}}
-  {{- $tops := slice -}}
-  {{- range .Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
-  {{- $tops = $tops | uniq -}}
-  {{- if eq (len $tops) 1 }}{{ $root = index $tops 0 }}{{ end -}}
-{{- end -}}
-{{- $global := or (not $root) (eq $root .Site.Home) -}}
-{{- range $plural, $taxonomy := .Site.Taxonomies -}}
+{{- $site := .site -}}
+{{- $root := .root -}}
+{{- $rootURL := "/" -}}
+{{- with $root }}{{ $rootURL = .RelPermalink | default "/" }}{{ end -}}
+{{- $global := or (not $root) (eq $root $site.Home) -}}
+{{- $settingsPage := $site.Home -}}
+{{- with $root }}{{ $settingsPage = . }}{{ end -}}
+{{- $taxonomyIcons := partial "ui-param.html" (dict "page" $settingsPage "key" "taxonomy_icons") -}}
+{{- range $plural, $taxonomy := $site.Taxonomies -}}
   {{- $items := slice -}}
   {{- range $taxonomy.ByCount -}}
     {{- $count := 0 -}}
@@ -29,17 +20,14 @@
     {{- end -}}
   {{- end -}}
   {{- if gt (len $items) 0 -}}
-    {{- $title := partial "taxonomy-label.html" (dict "page" $ "key" $plural) -}}
-    {{- $id := printf "td-shell-taxonomy-%s-%s" $plural ($root.RelPermalink | default "all" | anchorize) -}}
-    {{- /* Every aside group carries an icon. Sites may override per taxonomy
-         via params.ui.taxonomy_icons.<plural>; unknown taxonomies get a
-         generic glyph. */ -}}
+    {{- $title := partial "taxonomy-label.html" (dict "page" $site.Home "key" $plural) -}}
+    {{- $id := printf "td-shell-taxonomy-%s-%s" $plural ($rootURL | anchorize) -}}
     {{- $icon := "" -}}
-    {{- with $.Site.Params.ui.taxonomy_icons }}{{ with index . $plural }}{{ $icon = . }}{{ end }}{{ end -}}
+    {{- with $taxonomyIcons }}{{ with index . $plural }}{{ $icon = . }}{{ end }}{{ end -}}
     {{- if not $icon -}}
       {{- $icon = index (dict "categories" "fa-solid fa-folder" "tags" "fa-solid fa-tags") $plural | default "fa-solid fa-shapes" -}}
     {{- end -}}
-<div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="{{ $plural }}" data-td-taxonomy-root="{{ $root.RelPermalink | default "/" }}">
+<div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="{{ $plural }}" data-td-taxonomy-root="{{ $rootURL }}">
   <button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
     aria-expanded="true" aria-controls="{{ $id }}-children"
     aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}"

@@ -1,5 +1,5 @@
 {{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
-{{- $hasAlgolia := and .Site.Params.search (isset .Site.Params.search "algolia") -}}
+{{- $hasAlgolia := partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}
 {{- $hasOnlineSearch := or .Site.Params.gcs_engine_id $hasAlgolia -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- /* The sidebar owns its identity row even when the global navbar exists:

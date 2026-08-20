@@ -16,6 +16,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
+from test_site import TEST_SITE, fixture_config
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_SCRIPT = ROOT / "bin" / "check-navigation-contract.py"
@@ -192,6 +194,54 @@ def validate_assistant_off(output: Path, label: str) -> None:
         'data-td-action="copy_markdown"' in html,
         f"{label} removed unrelated page actions",
     )
+
+
+def validate_external_mount_actions() -> None:
+    """A mounted source outside WorkingDir must not leak its absolute path."""
+
+    with tempfile.TemporaryDirectory(prefix="oink-external-actions-") as temp:
+        public = Path(temp) / "public"
+        result = subprocess.run(
+            [
+                "hugo",
+                "--source",
+                str(TEST_SITE),
+                "--themesDir",
+                str(ROOT.parent),
+                "--destination",
+                str(public),
+                "--config",
+                fixture_config(ROOT / "tests/fixtures/external-actions.yml"),
+                "--printPathWarnings",
+                "--panicOnWarning",
+                "--quiet",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        require(
+            result.returncode == 0,
+            "external-mount action fixture failed:\n" + result.stdout + result.stderr,
+        )
+        html = (public / "blog/external-mount/index.html").read_text(encoding="utf-8")
+    actions = map_by_id(manifest_from(html)["actions"])
+    for action_id in ("view_history", "edit_page", "create_child_page"):
+        require(
+            actions[action_id]["available"] is False
+            and actions[action_id]["url"] == "",
+            f"external mount still exposes {action_id}: {actions[action_id]['url']}",
+        )
+    require(
+        actions["create_issue"]["available"] is True
+        and actions["create_issue"]["url"].startswith(
+            "https://github.com/pgsty/oink/issues/new?"
+        ),
+        "external mount lost its repository issue action",
+    )
+    for marker in ("/Users/", "/home/runner/", "/private/tmp/", "/var/folders/"):
+        require(marker not in html, f"external mount leaked machine path {marker}")
 
 
 def manifest_from(html: str) -> dict[str, Any]:
@@ -398,6 +448,7 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
 def main() -> int:
     try:
         helper = load_contract_module()
+        validate_external_mount_actions()
         with tempfile.TemporaryDirectory(prefix="oink-actions-") as temp:
             workspace = Path(temp)
             for deployment, subpath, prefix in (

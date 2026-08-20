@@ -122,7 +122,8 @@ window.markmap = {
 {{ if and $drawioEnabled (not $drawioServer) -}}
   {{ warnf "params.drawio.enable requires an explicit params.drawio.drawio_server; the theme does not default to the public Draw.io service, so Diagrams.net stays off" -}}{{ $drawioEnabled = false -}}
 {{ end -}}
-{{ if $drawioEnabled -}}
+{{ $drawioActive := and $drawioEnabled (.Store.Get "hasDrawio") -}}
+{{ if $drawioActive -}}
 <script type="application/json" id="td-drawio-config">{{ dict "server" $drawioServer | jsonify | safeJS }}</script>
 {{ end -}}
 
@@ -131,17 +132,9 @@ window.markmap = {
      executes. Keep the two halves adjacent and in this order. */ -}}
 <script type="application/json" id="td-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
 
-{{/* Three bundles, not one. Two of them are byte-identical on every page, so a
-     reader crossing pages with different feature sets keeps one cached copy of
-     Bootstrap and the shell runtime; only the small feature bundle at the end
-     varies with the page's Page Store flags.
-
-     `js/actions.js` is the action registry and its two dependencies. Print
-     output needs exactly this much: its "click to print" control is a
-     data-td-action button, and none of these three touch Bootstrap.
-     `js/core.js` is the interactive shell and is HTML-only — a print view has
-     no navbar, sidebar, palette, or scroll spy to drive. */ -}}
+{{/* Actions and the interactive core precede the optional feature bundle. */ -}}
 {{ $actions := slice
+  (resources.Get "js/clipboard.js")
   (resources.Get "js/surface-coordinator.js")
   (resources.Get "js/action-registry.js")
   (resources.Get "js/page-actions.js")
@@ -180,7 +173,7 @@ window.markmap = {
   {{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" .Site.Home -}}
   {{ $jsArray = $jsArray | append $jsMarkmap -}}
 {{ end -}}
-{{ if $drawioEnabled -}}
+{{ if $drawioActive -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/drawio.js") -}}
 {{ end -}}
 {{ $hasAsciinema := .Page.Store.Get "hasAsciinema" -}}
@@ -311,12 +304,12 @@ window.markmap = {
 {{ end -}}
 
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
-{{/* The bundle name is derived from the members themselves, so adding a
-     runtime cannot silently collide two different feature sets on one file
-     name. The language is part of the key because the templated members
-     (search, markmap, plantuml) read per-language site parameters. */ -}}
+{{/* Only templated members make otherwise identical bundles language-specific. */ -}}
 {{ with $jsArray -}}
-  {{ $bundleKey := $.Site.Language.Lang -}}
+  {{ $bundleKey := "" -}}
+  {{ if or $hasPlantuml $hasMarkmap (and $interactiveOutput $hasGoogleSearch) -}}
+    {{ $bundleKey = $.Site.Language.Lang -}}
+  {{ end -}}
   {{ range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}{{ end -}}
   {{ $js := . | resources.Concat (printf "js/page-%s.js" (md5 $bundleKey)) -}}
   {{ if hugo.IsProduction -}}
@@ -327,15 +320,12 @@ window.markmap = {
   {{ end -}}
 {{ end -}}
 
-{{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}
+{{ if partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}
   {{ template "algolia/scripts" .Site.Params.search.algolia -}}
 {{ end -}}
 {{ partial "hooks/body-end.html" . -}}
 
 {{ define "algolia/scripts" -}}
-{{ if not (and .appId .apiKey .indexName) -}}
-  {{ warnf "params.search.algolia requires explicit appId, apiKey, and indexName values; OINK does not use another project's DocSearch credentials, so DocSearch stays off" -}}
-{{ end -}}
 {{ $docsearchJS := resources.Get "third_party/docsearch/docsearch.js" -}}
 {{ if hugo.IsProduction }}{{ $docsearchJS = $docsearchJS | fingerprint }}{{ end -}}
 <script src="{{ $docsearchJS.RelPermalink }}"

@@ -4,7 +4,7 @@
 {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) false -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- if or $keyboardNav $localSearch -}}
-{{- $targets := partial "language-targets.html" . -}}
+{{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"

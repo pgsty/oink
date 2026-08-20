@@ -114,6 +114,14 @@
 
 a {
   text-decoration: none;
+  // Every link glides between its color states on the shared colors curve —
+  // the sitewide default behind the chrome's hover vocabulary. Controls that
+  // declare a richer transition override this wholesale, and reduced motion
+  // zeroes the duration tokens.
+  transition:
+    color var(--td-motion-duration) var(--td-shell-ease-color),
+    background-color var(--td-motion-duration) var(--td-shell-ease-color),
+    border-color var(--td-motion-duration) var(--td-shell-ease-color);
 }
 
 .td-max-width-on-larger-screens {

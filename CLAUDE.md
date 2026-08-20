@@ -11,9 +11,10 @@ Hugo Extended is the build tool.
 
 The sibling `../oink.pgsty.com` repository owns the public bilingual product
 documentation, tutorials, examples, case studies, Node/Playwright regression
-tests, visual review, and deployment. Active theme-maintainer contracts stay
-compact under this repository's `docs/` directory. Do not recreate
-`exampleSite/` or parallel proposal/design trees.
+tests, visual review, and deployment. Its `content/docs/design/` directory is
+the only canonical source for bilingual maintainer contracts, decisions,
+research, and proposals. Do not recreate `exampleSite/`, `docs/`, `plan/`,
+`plans/`, `proposal/`, or another repository-local design tree.
 
 This repository keeps a self-contained synthetic fixture under `tests/site/`
 for focused checkers, invalid-input cases, and output goldens. It is not a
@@ -23,6 +24,19 @@ public site pins a released OINK tag; local cross-repo validation uses an inline
 
 `main` is the next-release branch; `release` is current stable. Immutable
 `vX.Y.Z` tags count as published only after push and Go-proxy verification.
+
+## PRDs and design changes
+
+Create every PRD, RFC, or design proposal in the sibling documentation site as
+`content/docs/design/proposals/<slug>.md` plus `<slug>.zh.md`, following the
+published lifecycle and template at `/docs/design/proposals/`. A published
+proposal remains non-normative until it is implemented and accepted.
+
+When public behavior changes, update the implementation here, its owning
+checker, and both language versions of the affected Design contract in the same
+delivery. Put stable accepted rationale under the site's `decisions/`, dated
+evidence under `research/`, and retired drafts in Git history and
+`CHANGELOG.md`—never in a local planning directory.
 
 ## Shortest commands
 
@@ -68,8 +82,9 @@ Use Hugo Extended 0.160.1 for the compatibility floor. Output checkers accept
 
 ## Non-negotiable contracts
 
-- The current 0.6.0 draft contracts are indexed by `docs/README.md`. History
-  belongs in Git and `CHANGELOG.md`, not parallel proposal documents.
+- The current 0.6.0 draft contracts are published from the sibling site's
+  `content/docs/design/` tree. History belongs in Git and `CHANGELOG.md`, not
+  parallel proposal documents.
 - Reading shells are `docs`, `book`, `blog`, and `swagger`, plus explicit
   `params.ui.shell_types`. Landing is a layout. Immersive reading is the
   ordinary blog shell with hero/TOC-flow/clouds/sidebar keys, never an
@@ -108,7 +123,8 @@ Use Hugo Extended 0.160.1 for the compatibility floor. Output checkers accept
 
 The public surface is 29 shortcodes, 22 Landing sections, shared output and
 security rules, and the blog hero/index/authors/series/share contracts. Their
-single maintainer references are indexed by `docs/README.md`.
+single bilingual maintainer references are published under
+`../oink.pgsty.com/content/docs/design/`.
 
 ## Release status
 

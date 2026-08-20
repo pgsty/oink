@@ -1,8 +1,8 @@
 # OINK theme guide
 
-Start with the local maintainer contracts indexed by `docs/README.md`. They are
-the active prose source for architecture, component, shell, Landing, and
-migration design.
+Start with the canonical bilingual Design section in the sibling documentation
+site at `../oink.pgsty.com/content/docs/design/`. It owns maintainer contracts,
+accepted decisions, dated research, and active proposals.
 
 ## Repository boundary
 
@@ -11,8 +11,8 @@ migration design.
 - Public bilingual documentation, tutorials, examples, case studies,
   integration/browser regression tests, visual review, and deployment belong
   to `../oink.pgsty.com`.
-- Do not recreate `exampleSite/` or parallel proposal/design trees. Keep active
-  theme contracts compact under `docs/`.
+- Do not recreate `exampleSite/`, `docs/`, `plan/`, `plans/`, `proposal/`, or
+  another repository-local design tree.
 - `tests/site/` is narrow internal input for deterministic theme checkers,
   invalid-input cases, and output goldens. It is not a public example, the
   integration test authority, or the surface used for visual approval.
@@ -20,8 +20,15 @@ migration design.
 ## Cross-repository workflow
 
 - When public behavior changes, update the implementation, its owning checker,
-  and its owning local contract. Update user-facing documentation in
-  `../oink.pgsty.com` when the change affects that site.
+  and both language versions of the affected contract under
+  `../oink.pgsty.com/content/docs/design/`.
+- Put every new PRD, RFC, or design proposal in
+  `../oink.pgsty.com/content/docs/design/proposals/<slug>.md` with a matching
+  `<slug>.zh.md`. Follow that section's published lifecycle and template;
+  publication is not proof of implementation.
+- Put accepted rationale under `content/docs/design/decisions/` in the site
+  repository and dated, non-normative evidence under `research/`. Preserve
+  retired drafts in Git history and `CHANGELOG.md`, not a local planning tree.
 - Run the smallest owning checker here first. Then validate the real site from
   `../oink.pgsty.com` with the sibling theme replacement:
 

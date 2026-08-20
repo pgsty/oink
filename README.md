@@ -188,7 +188,7 @@ Both presets are compiled by Hugo into the same static stylesheet. They add no
 JavaScript, package-manager step, remote font service, or runtime stylesheet.
 Sites can locally host their own faces and override the documented
 `--td-*-font-family` roles in `assets/scss/_styles_project.scss`; see the
-[architecture contract](docs/architecture.md#trust-css-and-accessibility).
+[architecture contract](https://oink.pgsty.com/docs/design/architecture/#trust-css-and-accessibility).
 
 ## Documentation and fixtures
 
@@ -206,13 +206,14 @@ Sites can locally host their own faces and override the documented
 [Book](https://oink.pgsty.com/book/) ·
 [Administration](https://oink.pgsty.com/docs/admin/)
 
-Theme maintainer contracts:
-[index](docs/README.md) ·
-[architecture](docs/architecture.md) ·
-[components](docs/components.md) ·
-[shell, navigation, and actions](docs/shell.md) ·
-[Landing](docs/landing-contract.md) ·
-[Migration boundaries](docs/migration.md).
+Theme maintainer Design:
+[index](https://oink.pgsty.com/docs/design/) ·
+[architecture](https://oink.pgsty.com/docs/design/architecture/) ·
+[components](https://oink.pgsty.com/docs/design/components/) ·
+[shell, navigation, and actions](https://oink.pgsty.com/docs/design/shell/) ·
+[Landing](https://oink.pgsty.com/docs/design/landing/) ·
+[Migration boundaries](https://oink.pgsty.com/docs/design/migration/) ·
+[proposals](https://oink.pgsty.com/docs/design/proposals/).
 
 ## Localization status
 

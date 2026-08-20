@@ -539,7 +539,7 @@ fail the build with the new name rather than being silently ignored.
   `readfile`, `example`, `alert`, `pageinfo`, and `details`. (`card` survives
   as the child of `cards`, with a different contract.) Every replacement is
   listed in the public
-  [component contract](docs/components.md).
+  [component contract](https://oink.pgsty.com/docs/design/components/).
 - **Breaking.** `{{< badge outline= >}}`. There is one badge appearance.
 - **Breaking.** `{{< book-figures kind= >}}` in favour of `book-tables`,
   `book-equations`, and `book-examples`.
@@ -586,7 +586,7 @@ fail the build with the new name rather than being silently ignored.
   the numbered Book forms for figures, tables, equations, and examples. The
   29 remaining shortcodes are the full forms for the cases a Markdown block
   cannot express. The public
-  [component contract](docs/components.md) is the
+  [component contract](https://oink.pgsty.com/docs/design/components/) is the
   authoring guide.
 - One block-attribute policy shared by every render hook
   (`content/attributes.html`): allowlisted keys are consumed, `class` is token

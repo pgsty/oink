@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OINK 0.5 component API migration toolkit.
+"""OINK 0.6 migration toolkit.
 
     bin/migrations/oink06.py report  --sites ~/pgsty/site-a ~/www/ddia [--json r.json] [--md r.md]
     bin/migrations/oink06.py migrate --site ~/pgsty/site-a [--only callout,tabs] [--write] [--json out.json]

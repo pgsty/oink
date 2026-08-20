@@ -1038,7 +1038,7 @@ class CliCase(unittest.TestCase):
     def test_dry_run_does_not_write_and_write_is_idempotent(self):
         with tempfile.TemporaryDirectory() as tmp:
             site = Path(tmp) / "site"
-            shutil.copytree(ROOT / "exampleSite" / "content", site / "content")
+            shutil.copytree(ROOT / "tests/site" / "content", site / "content")
             (site / "content" / "migrate-me.md").write_text(
                 textwrap.dedent(
                     """\
@@ -1072,11 +1072,11 @@ class CliCase(unittest.TestCase):
             check = subprocess.run([sys.executable, str(CLI), "check", "--site", str(site), "--paths", "content/migrate-me.md"], capture_output=True, text=True)
             self.assertEqual(check.returncode, 0, check.stdout)
 
-    def test_report_runs_on_examplesite(self):
+    def test_report_runs_on_fixture_site(self):
         with tempfile.TemporaryDirectory() as tmp:
             out_json = Path(tmp) / "r.json"
             out_md = Path(tmp) / "r.md"
-            result = subprocess.run([sys.executable, str(CLI), "report", "--sites", str(ROOT / "exampleSite"), "--json", str(out_json), "--md", str(out_md)], capture_output=True, text=True)
+            result = subprocess.run([sys.executable, str(CLI), "report", "--sites", str(ROOT / "tests/site"), "--json", str(out_json), "--md", str(out_md)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertTrue(out_json.exists() and out_md.exists())
             self.assertIn("## 1. Conversions per site", out_md.read_text(encoding="utf-8"))

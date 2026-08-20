@@ -7,6 +7,56 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- The immersive blog presentation. A Blowfish-style reading page -- a
+  full-bleed hero opening, no chrome but the outline, every blog component in
+  its usual place below the fold -- is not a new shell or type but four
+  orthogonal front-matter keys on the ordinary blog shell, written per page
+  or once per section in a cascade. `featured_image` gains the `hero` mode:
+  the blog baseof paints the page's resolved image as the shell's own
+  decorative backdrop, masked out before the text starts, with the opening
+  moved down to give it the top of the viewport -- and because the shell
+  paints it, a section index opens its list under the same hero as its pages,
+  which is what turns the release section into a hero-headed archive. A
+  navbar over a hero renders as an overlay in normal flow, on a fading
+  contrast scrim, that scrolls away with the image and reserves no height.
+  Two new parameters carry the rail: `ui.toc_style: flow` swaps the
+  viewport-pinned outline for a wider in-flow one that starts with the
+  article and pins only on scroll -- deliberately independent of the
+  hero, so a section keeps one rail whether or not each page carries an
+  image -- and `ui.toc_taxonomies: false` removes the right-rail term clouds,
+  with a rail left holding nothing rendering nothing at all. The flow rail's
+  resting place aligns with the article's info line, or its description where
+  a page has no info line, measured by docs-shell.js because a title wraps to
+  an unknown number of lines; without JavaScript it starts where the article
+  starts. The remaining key already existed (`sidebar_enabled`), and the blog
+  shell renders no breadcrumb of its own -- see below -- so the recipe needs
+  no key for it. Every switch degrades rather than errors, and nothing about
+  the page's type, pager sequence, feeds, or lists changes.
+
+- The blog article head, recomposed. Under the title: one info line -- the
+  date, the localized author-and-section phrase, the word count and the
+  minutes when `reading_time` is on, and, when front matter `upstream_link`
+  names the material the page is derived from (the same per-page fact the
+  annotation attributes), a localized *Read More* link to the original, gated
+  by the shared URL policy. Then the page's
+  terms as a bare badge row -- the taxonomy's name moves to the group's
+  `aria-label` instead of a visible `Tags:` prefix -- then the byline: no
+  label, just each author's portrait beside their name and the profile's
+  one-line bio, the whole pair linking to the profile. Then the series strip,
+  and the description leads the body below them. Three strings join the 32
+  locales for the line (`post_word_count`, `post_reading_minutes`,
+  `post_read_original`) and three leave it unused (`post_byline_by`,
+  `post_posts_in`, `ui_series_next`); the reading-time chip's class gains its
+  missing `td-` prefix (`td-reading-time`). List rows, cards, and term
+  archives share one metadata line -- date, one localized author-and-section
+  phrase, word count and minutes, and, on rows, the post's tags as trailing
+  badges on the same line -- so `post_meta_by_in` and `post_meta_in` drop
+  their embedded date; a card reduces the line to the date and the author,
+  its own tags row carrying the rest. And because an article reads
+  as a standalone piece rather than a place in a tree, the blog shell now
+  renders no breadcrumb by default; `breadcrumb: true` on a page or cascade
+  turns it back on.
+
 - The featured image on the article itself. The theme resolved one image per
   page and rendered it in list rows and social cards, but never on the post,
   so authors wrote the hero by hand: across the eleven consuming sites, 559
@@ -41,9 +91,8 @@ All notable changes to OINK are documented here. The project follows
   separated by CSS gap rather than punctuation, because a connector word is a
   per-locale decision and there are 32 of them. A term a post names but no one
   gave a profile page still bylines: link title, initial, archive link. The
-  0.4 `author:` string is untouched where `authors` is absent -- 853 pages
-  across the family sites carry it and 180 put Markdown in it, so that branch
-  renders byte for byte as it did and neither form warns about the other.
+  0.4 `author:` string remains Markdown-capable where `authors` is absent;
+  neither form warns about the other, and both share the article-info date.
   Because the byline is now the author surface, the generic taxonomy chip row
   skips the reserved plurals `authors` and `series` unless a site names them
   in `params.taxonomy.page_header`.
@@ -75,9 +124,10 @@ All notable changes to OINK are documented here. The project follows
   on purpose: it publishes no share-intent URL at all, so `copy` stands in for
   it rather than the theme guessing at a private scheme.
 
-  The bar itself is one centred row of glyphs: no heading over it, and no rule
-  of its own, because whatever follows it at the page end already draws the
-  hairline that closes the article. The name it does not show lives on the
+  The bar itself is one centred row of rounded-square tiles, each on a quiet
+  tint of its own that floods with the theme colour under the pointer: no
+  heading over it, and no rule of its own, because whatever follows it at the
+  page end already draws the hairline that closes the article. The name it does not show lives on the
   group's `aria-label`, so it is still announced as Share.
 
   What the bar does *not* do is the reason it can exist here at all. There is
@@ -114,11 +164,11 @@ All notable changes to OINK are documented here. The project follows
   named by `upstream_source`, or the page, most specific last -- so a vendored
   tree declares its constants once in a cascade and each page adds a line.
   Because the constants normally cascade, a page inside such a tree that
-  carries no `upstream_link` fails the build instead of publishing an
-  unattributed copy; `upstream_link: ""` is the deliberate opt-out. An
-  incomplete attribution, an unknown SPDX identifier, and a non-boolean
-  `upstream_modified` all fail the build for the same reason: a partial notice
-  reads exactly like a complete one.
+  carries no `upstream_link` warns and emits no attribution;
+  `upstream_link: ""` is the deliberate opt-out. An incomplete attribution or
+  unknown SPDX identifier likewise warns and emits no legal notice, while a
+  non-boolean `upstream_modified` warns and falls back to unmodified. Strict
+  builds reject each warning with `--panicOnWarning`.
 - A translation notice. `params.ui.translation_notice` takes the language code
   of the authoritative version; a page in another language that has a
   translation there says so and links to it, and `translation_notice: false`
@@ -129,27 +179,35 @@ All notable changes to OINK are documented here. The project follows
   child list -- has nothing to be a translation of and never shows it. The theme names no language in the
   string, and the switch cascades, so a partly translated site scopes the
   claim to the trees where it holds instead of asserting it site-wide.
-- A card form for the blog index. `params.ui.blog_index: cards` renders a blog
-  section's list page as a grid of the shared content cards --
-  `params.ui.blog_index_columns` wide, two between the md and xl breakpoints,
-  one below md -- instead of the row list, which stays the default. A site
-  whose posts lead with an image had no way to show it at more than
-  250x125 px; a card gives it a 16:9 crop above the title, the date and
-  section line, and a three-line summary, and nothing else. Year grouping,
-  pagination, and `manual_link` external semantics are the same in both forms,
-  so the choice is presentational: the row output is unchanged to the byte.
-  Front matter `blog_index` on the blog root, or its cascade, overrides the
-  site value per section. The card's lead image goes through Hugo's `.Fill`
-  whenever the resource can be processed, so a grid of posts does not download
-  a full-size original per card. There is no reader-side switch between the
-  forms, and term and taxonomy pages keep the row list.
+- Three forms for the blog index, and a reader-side cycle between them.
+  `params.ui.blog_index: cards` renders a blog section's list page as a grid
+  of the shared content cards -- `params.ui.blog_index_columns` wide, two
+  between the md and xxl breakpoints, one below md -- instead of the row
+  list, which stays the default; `blog_index: table` renders the whole
+  section as one compact table, a row per post with the date, the linked
+  title, and the post's tags right-aligned as term-page badges, horizontal
+  rules only, no pagination -- the form for a section whose point is scanning
+  many entries at once. A card opens with a 16:9 crop of the lead image
+  through Hugo's `.Fill`, then the date and author -- then the post's tags as badges,
+  each linking to its term page, then a three-line summary. The list and
+  cards forms are one flat run, newest first, sharing pagination
+  (`blog_index_size`) and `manual_link` external semantics; the metadata
+  line's dates make year headings redundant, so there are none. Front matter
+  `blog_index` on the blog root, or its cascade, overrides the site value per
+  section, and `params.ui.blog_index_toggle` puts every form in the document
+  with one toolbar control, left of the feed button, that cycles list, cards,
+  table: all three share the current paginator slice, the published form still
+  decides the first paint, a stored choice wins after it, and hidden forms load
+  no images. A table published without the toggle remains a complete archive.
+  Term and taxonomy pages keep the row list.
 - Article series. Declaring the taxonomy -- `taxonomies: {series: series}` --
   is the whole switch: no theme parameter, no metadata file, no cover model.
   The term page `content/series/<name>/_index.md` is the introduction, and a
   `_index.zh.md` beside it makes the pair bilingual. An article names
   `series: [<name>]` and may add `series_weight` to place itself, and gets a
-  strip above its body naming the series, its position, the next part, and the
-  whole list behind a `<details>` -- no JavaScript, no bundle member. Reading
+  strip above its body: one closed `<details>` line naming the series and its
+  position -- part M of N -- that expands to the whole reading order, one
+  member per line, and prints expanded. No JavaScript, no bundle member. Reading
   order is the theme's own, because a term page cannot supply it: an unweighted
   term arrives newest first, a mixed one puts unweighted members before weight
   1, and the taxonomy weight reaches neither `Page.Weight` nor `GroupByParam`.
@@ -158,20 +216,39 @@ All notable changes to OINK are documented here. The project follows
   both read it, so they can never disagree about which article is part 2. A
   series term page therefore changes from reverse-date to reading order, which
   is the feature. A member of several series shows one strip, for the first
-  term it names; a series of one shows none. `series` and `authors` both stay
+  term it names, and its scalar
+  `series_weight` applies to every membership; a series of one shows none.
+  `series` and `authors` both stay
   out of the default taxonomy chips row, since each has a surface of its own.
   A series is a reading path through articles that stand alone: numbering,
   cross-references, and aggregate output remain Book's.
 
 ### Changed
 
+- Release facts are one URL. The 0.5 `release` map -- product, version, repo,
+  tag, date, prev, checksums -- declared seven things a GitHub release URL
+  already carries or the page already knows, so front matter is now
+  `release_url: https://github.com/<owner>/<repo>/releases/tag/<tag>` and
+  nothing else: owner, project, and tag come out of the URL, the date is the
+  page's own. The card keeps the four links the URL alone can name -- the
+  release, both source archives, and the repository -- and drops the declared
+  checksum and comparison links; checksum tables under a note are unchanged.
+  The releases index sheds its product filter and grouping
+  (`release_products`, `release_group_by_product`) and simply lists every
+  page of the section, two lines per entry: the parsed `project tag` -- or
+  the page's own title when there is nothing to parse -- with the date
+  beside it, and the description under it. The removed map and both removed
+  index keys warn naming their replacement.
 - Page-end order is now Share, Feedback, Annotation, Pager, Comments. Share
   leads because it is the only block that points outward, and because a reader
   who has decided to pass a page on has decided it before being asked how the
   page went. Sites that enable neither share nor feedback see no change.
 - `upstream_attribution` is now `upstream_link` and needs the companion keys
-  above; `downstream_modified` is now `upstream_modified`. Both old names fail
-  the build and name their replacement.
+  above; `downstream_modified` is now `upstream_modified`. Both old names warn
+  and name their replacement, so strict builds fail without taking down an
+  ordinary preview.
+- `time_format_blog` and `time_format_default` now default to ISO `2006-01-02`.
+  Sites that prefer localized prose dates can retain explicit format strings.
 - The theme mounts `data/`, which it did not before, so the licence table
   reaches consuming sites. A site's own `data/licenses.yaml` merges over it.
 - The outline's cursor pill is fainter. It shared `--td-shell-primary-dim`
@@ -182,6 +259,31 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- The language switch no longer leaves the site. Its links were absolute
+  `baseURL` permalinks, so a build viewed anywhere other than its configured
+  host -- `public/` behind a local static server, a deploy preview, a LAN
+  address -- sent the reader to the configured domain instead of the
+  translation, while every other internal link stayed put. Language targets
+  are now relative whenever all languages share one scheme, host, and base
+  path, and absolute only for a site that gives a language its own `baseURL`.
+  `hreflang` alternates keep the absolute form they require.
+- Mounted content outside Hugo's working directory no longer leaks an absolute
+  build-machine path into GitHub Edit, History, or Create Child links. A site
+  may map such a source explicitly with `path_base_for_github_subdir`; without
+  that mapping the three source-derived actions stay unavailable while issue
+  actions continue to work.
+- Invalid or incomplete upstream attribution now warns and emits no legal
+  notice at all. Its source, notice, and licence URLs share the theme URL
+  policy; unsupported schemes are refused, and a non-boolean
+  `upstream_modified` really falls back to unmodified.
+- Blog index toggles now render the table from the current paginator slice
+  instead of repeating the complete archive on every generated page.
+- Incomplete Algolia configuration emits no container, stylesheet, or script.
+  Draw.io loads only on pages with PNG/SVG candidates, and language-neutral
+  feature bundles are shared across translations.
+- Page actions, pager state, language targets, and section-index children no
+  longer repeat site-wide work for each consumer or scan the whole site when a
+  page-local collection is authoritative.
 - The outline dot no longer detaches from the accent line under fast
   scrolling. The dot was tuned to arrive before the range on purpose -- 150ms
   with a hard ease-out against the clip's 250ms ease-in-out -- so the accent
@@ -253,8 +355,9 @@ All notable changes to OINK are documented here. The project follows
   Goldmark document, so `[^25]` in a `tbl`, `eg`, `card`, `tab`, `field`, or
   `include` body printed literally when the definition sat on the page, and
   built a second footnote list with colliding `fn:N` ids when it sat in the
-  body. Both now fail the build and name the native form -- a table, image, or
-  fence carrying `{num=… caption=…}` keeps its content in the page document,
+  body. Both now warn and remain literal, naming the native form; strict builds
+  reject the warning. A table, image, or fence carrying `{num=… caption=…}`
+  keeps its content in the page document,
   where footnotes number and link like any other page footnote. Footnote-shaped
   text inside code is untouched.
 - List numbered Book objects in document order. The order key was derived from
@@ -364,11 +467,10 @@ fail the build with the new name rather than being silently ignored.
 - Make corpus/site build tools ignore only a vendored OINK copy while retaining
   other vendored dependencies, and tolerate Git fsmonitor sockets in worktree
   snapshots.
-- Keep the published `exampleSite` focused on Docs, Blog, and a three-chapter
-  bilingual Book example. Regression-only pages, media, and layout overrides
-  now live under `tests/site/` and are mounted only by the check suite; shared
-  public demonstrations use `static/images/oink.webp` and
-  `static/images/releasenote.webp`.
+- Move public documentation, examples, tutorials, and case studies to
+  `oink.pgsty.com`. Keep the checker suite's self-contained `tests/site/` as the
+  only in-repository fixture, with its content, media, layout overrides, and
+  output goldens isolated from the public documentation site.
 
 ### Removed
 
@@ -409,7 +511,8 @@ fail the build with the new name rather than being silently ignored.
   `nav-cards`, Docsy's `card`/`cardpane`, `doc-carousel`, `imgproc`,
   `readfile`, `example`, `alert`, `pageinfo`, and `details`. (`card` survives
   as the child of `cards`, with a different contract.) Every replacement is
-  listed in the migration table in `docs/components.md`.
+  listed in the public
+  [component contract](docs/components.md).
 - **Breaking.** `{{< badge outline= >}}`. There is one badge appearance.
 - **Breaking.** `{{< book-figures kind= >}}` in favour of `book-tables`,
   `book-equations`, and `book-examples`.
@@ -455,7 +558,9 @@ fail the build with the new name rather than being silently ignored.
   data fences; adjacent fences with `{tab= group= value=}` for code tabs; and
   the numbered Book forms for figures, tables, equations, and examples. The
   29 remaining shortcodes are the full forms for the cases a Markdown block
-  cannot express. `docs/components.md` is the authoring guide.
+  cannot express. The public
+  [component contract](docs/components.md) is the
+  authoring guide.
 - One block-attribute policy shared by every render hook
   (`content/attributes.html`): allowlisted keys are consumed, `class` is token
   validated, `data-*` and `aria-*` pass through, and `style`, `on*`, and
@@ -676,14 +781,11 @@ fail the build with the new name rather than being silently ignored.
   attributes, chart `full` values are strict booleans, Swagger/ReDoc instances
   have unique IDs without replacing `window.onload`, and configured shell or
   featured images pass through the shared URL policy.
-- Print aggregates rendered a page's content once per enclosing section — a
-  chapter that is itself a section was rendered by its own print output and
-  by its parent's, concurrently, and the two renders raced on the page store
-  (render scope, code-block id registry), which produced intermittent
-  duplicate `td-code-…` ids in `_print/` output. `print/page-content.html`
-  now renders each page's print content exactly once per build through
-  `partialCached`, and every print template (section, page, Book, single
-  page) reads that.
+- Print aggregates render each page once through `partialCached`. Nested
+  `RenderString` calls no longer put a temporary ID scope in the shared Page
+  Store: automatic code IDs are namespaced after rendering, explicit IDs stay
+  unchanged, and final documents still reject duplicates. Concurrent Book and
+  section print outputs therefore cannot leak scopes into one another.
 - Landmarks: `<main>` no longer carries the redundant `role="main"`, and the
   sidebar `<aside>` no longer repeats the inner `<nav>`'s "Section navigation"
   label, so assistive technology lists one navigation landmark instead of two

@@ -125,14 +125,14 @@ When upgrading an older feedback configuration, remove `yes`, `no`,
 `max_value`, `endpoint`, and `max_length`; the one-click model does not use a
 Worker or a submission endpoint.
 
-Then preview the site. Local search is omitted from `hugo server` so large-site
-content edits stay fast; set the Hugo parameter environment override when the
-preview specifically needs to exercise search (the `x` is Hugo's alternate
-key delimiter, needed because the key itself contains underscores):
+Then preview the site. When `offline_search` is enabled, `hugo server` builds
+the local index by default so preview matches production. Large sites can skip
+that work for an edit loop with the parameter override below (the `x` is Hugo's
+alternate key delimiter because the key contains underscores):
 
 ```sh
 hugo server
-HUGOxPARAMSxOFFLINE_SEARCH_ON_SERVE=true hugo server
+HUGOxPARAMSxOFFLINE_SEARCH_ON_SERVE=false hugo server
 ```
 
 ### Delimiter-style mathematics
@@ -188,32 +188,31 @@ Both presets are compiled by Hugo into the same static stylesheet. They add no
 JavaScript, package-manager step, remote font service, or runtime stylesheet.
 Sites can locally host their own faces and override the documented
 `--td-*-font-family` roles in `assets/scss/_styles_project.scss`; see the
-[architecture contract](docs/architecture.md#css-accessibility-and-typography).
+[architecture contract](docs/architecture.md#trust-css-and-accessibility).
 
-## Example sites
+## Documentation and fixtures
 
 - [oink.pgsty.com](https://oink.pgsty.com/) —
   [source](https://github.com/pgsty/oink.pgsty.com) — the bilingual
-  documentation, feature showcase, and regression site.
-- [`exampleSite/`](exampleSite/) — a bilingual example site: a composable
-  landing page plus a flat component reference under `/docs/`, running directly
-  from this checkout with `cd exampleSite && hugo server`.
+  documentation, tutorial, case-study, feature-showcase, and regression site.
+- [`tests/site/`](tests/site/) — the self-contained internal fixture used by
+  theme checkers and output goldens. It is test input, not public documentation.
 
 ## Documentation
 
-[Configuration](https://oink.pgsty.com/docs/content/configuration/) ·
-[Components](https://oink.pgsty.com/docs/content/components/) ·
-[Examples](https://oink.pgsty.com/docs/about/examples/) ·
-[Deployment](https://oink.pgsty.com/docs/deploy/) ·
-[Contributing](https://oink.pgsty.com/docs/about/contributing/)
+[Get started](https://oink.pgsty.com/docs/start/) ·
+[Components](https://oink.pgsty.com/docs/components/) ·
+[Cases](https://oink.pgsty.com/case/) ·
+[Book](https://oink.pgsty.com/book/) ·
+[Administration](https://oink.pgsty.com/docs/admin/)
 
-Theme maintainer notes:
+Theme maintainer contracts:
 [index](docs/README.md) ·
 [architecture](docs/architecture.md) ·
 [components](docs/components.md) ·
 [shell, navigation, and actions](docs/shell.md) ·
 [Landing](docs/landing-contract.md) ·
-[0.4 to 0.5 migration](docs/migration.md).
+[Migration boundaries](docs/migration.md).
 
 ## Localization status
 

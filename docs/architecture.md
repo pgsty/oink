@@ -1,209 +1,138 @@
 # Architecture contract
 
-Status: current for OINK 0.5.0
-Compatibility floor: Hugo Extended 0.160.1
+## Repository and assembly
 
-## Repository and build
+The repository root is a Hugo Module and complete theme, not a site or npm
+workspace. Hugo Extended compiles SCSS and templates. Browser runtimes and
+third-party assets are committed, so a normal build performs no network fetch.
+`tests/site/` is the self-contained internal fixture for theme checks and
+goldens. Public documentation, examples, and browser tests live in the sibling
+`oink.pgsty.com` repository.
 
-The repository root is a Hugo Module and a complete theme, not a site or an npm
-workspace. Hugo Extended compiles SCSS and templates. All browser runtimes and
-third-party assets are committed; a normal build performs no network fetch.
-`exampleSite/` is bilingual: `content/docs/` is a flat component reference in
-English and Chinese, and `content/fixtures/` carries the narrow pages that pin
-behaviour. The full product documentation and the browser suite live in the
-sibling `oink.pgsty.com` repository.
+Generated `public/` and `resources/` trees are never source. Vendored runtimes,
+font families, and Font Awesome glyph definitions are supported distributions,
+not dead-code candidates; `VENDOR.json` and `bin/check-vendor.py` pin their
+integrity. OINK ships the complete supported Font Awesome distribution because
+consumer-authored content may use icons that theme templates do not.
 
-Generated `public/` and `resources/` trees are never source. Vendored files in
-`assets/third_party/`, Font Awesome glyph definitions, and font families are
-distributions rather than dead-code candidates; their integrity is checked by
-`bin/check-vendor.py`.
+Hugo types `docs`, `book`, `blog`, and `swagger` select the reading shells;
+`params.ui.shell_types` may add types. Landing is `layout: landing`. There is no
+`article` type or second blog shell: immersive pages are a blog presentation
+described in [shell.md](shell.md).
 
-## Template assembly
+`layouts/_partials/shell/config.html` resolves shared shell facts. Layouts must
+render through `content/render.html` before `scripts.html`, because render hooks
+and shortcodes register capability flags in the Page Store. Override the
+narrowest partial; superficially similar base templates remain separate where
+merging would change Hugo lookup precedence.
 
-Hugo type selects the reading shell. `docs`, `book`, `blog`, and `swagger` are
-the defaults; `params.ui.shell_types` may add types. Paths only identify the
-configured navigation roots.
+## Configuration and diagnostics
 
-`layouts/_partials/shell/config.html` resolves shared shell facts. Page layouts
-render content before `layouts/_partials/scripts.html`, because render hooks and
-shortcodes register feature flags in the Page Store. A new layout must use
-`content/render.html` rather than render `.Content` independently.
+Theme policy lives under `params.ui.*`; multi-setting integrations such as
+`comments.giscus`, `plantuml`, and `drawio` stay top-level. Boolean features use
+bare booleans unless they also have several settings. A page override drops the
+`ui.` prefix: `params.ui.image_zoom` becomes `image_zoom`, never a front-matter
+`ui` map. `hugo.yaml` declares published defaults; an owning resolver and its
+checker define any optional configuration shape or range.
 
-Override the narrowest partial. Consumer overrides are part of the Hugo Module
-contract, so identical-looking base templates are not merged when doing so
-would change Hugo lookup precedence.
+Invalid input follows one rule: warn with the value, allowed shape, and safe
+fallback; then use that fallback or omit the unsafe feature. Ordinary
+`hugo server` therefore remains usable, while every publishing gate uses
+`--panicOnWarning`. The theme never calls `errorf`, and `check-params.py`
+enforces that boundary. Do not add speculative validation for unreachable
+states.
 
-## Configuration
-
-Theme policy lives under `params.ui.*`; feature-specific maps such as
-`comments.giscus`, `plantuml`, and `drawio` remain top-level. A boolean feature
-uses a bare boolean unless it has several settings. Page overrides use the site
-key without `ui.`: `params.ui.image_zoom` becomes front matter `image_zoom`.
-Front matter never contains a `ui` map.
-
-`hugo.yaml` declares every default, and `validate.html` is the one place a
-value is checked: it warns with the offending value, the allowed range, and
-the fallback it used, then returns that fallback. **The theme does not call
-`errorf` anywhere** — a single one aborts the whole build, so one author's typo
-would serve HTTP 500 on every URL of the site rather than degrading the page
-they were editing. Every publishing gate builds with `--panicOnWarning`, which
-is what keeps a warning fatal where it counts, and `check-params.py` fails if
-an `errorf` reappears. See `plan/adr/0002`.
-
-The renamed-key registries that used to stop the build are gone: all consumer
-sites are migrated, so they were pure carrying cost. A renamed key is now
-simply an unknown key, and `check-params.py` still refuses to let the theme
-read a removed one.
+There is no generic renamed-key registry. A transition that still needs a
+migration diagnostic uses a targeted warning in its owning resolver plus a
+strict negative test; removed keys are never read as a compatibility path.
 
 Network-capable features are explicit and degrade closed. PlantUML requires
 `plantuml.svg_image_url`, Draw.io requires `drawio.drawio_server`, and Algolia
-requires `appId`, `apiKey`, and `indexName`; without them each warns and stays
-off, so nothing is requested.
-
-When Draw.io is enabled, `scripts.html` emits `#td-drawio-config` before the
-feature bundle. The runtime reads the configured server from that JSON element
-at DOM ready and remains inactive if a consumer override omits the element.
+requires `appId`, `apiKey`, and `indexName`; incomplete configuration warns and
+emits no request. Draw.io loads only when rendered content contains PNG or SVG
+candidates, then inspects each distinct image URL once.
 
 ## Featured images
 
-The theme invents no key here. Hugo's `images` carries a featured image at
-every level, and `params.images` is the site-wide social card.
+Hugo's `images` is the single authored API; `params.images` is only the
+site-wide social fallback.
 
-| Level | Written as | Renders as a thumbnail | Shared as a card |
-| --- | --- | --- | --- |
-| Page | `images: [<path>]`, or a bundled `**featured*` / `*feature*` / `{*cover*,*thumbnail*}` resource | yes | yes |
-| Directory | `cascade: { images: [<path>] }` on the section `_index.md` | yes | yes |
-| Site | `params.images` | no | yes |
+| Source | Reader thumbnail | Social card |
+| --- | --- | --- |
+| Page `images`, or bundled `**featured*`, `*feature*`, `{*cover*,*thumbnail*}` | yes | yes |
+| Section `cascade.images` | yes | yes |
+| Site `params.images` | no | yes |
 
-`images: []` clears the explicit value a page or a `cascade` would otherwise
-contribute; it does not suppress bundled-image discovery. A matching
-`**featured*`, `*feature*`, `{*cover*,*thumbnail*}` resource still applies. A
-page with neither an explicit nor a bundled image renders no thumbnail, while
-its metadata may still fall back to the site card in `params.images`.
+`images: []` clears an explicit or cascaded value but does not disable bundled
+resource discovery. Only the first resolved image is representative. Local
+processable rasters may be cropped; SVG, static, and remote resources remain
+valid without Hugo image operations.
 
-OINK shares one representative image. If `images` contains several entries,
-only the first selected entry is used. Processable local raster resources are
-cropped for the thumbnail; accepted non-processable resources such as SVG are
-rendered in the same fixed frame without a Hugo image operation.
+`featured-image-resolve.html` owns source ranking and relative/absolute URLs.
+A page's bundled resource outranks an inherited cascade image. List thumbnails,
+Open Graph/Twitter/schema helpers, author avatars, Pinterest media, and blog
+presentation all consume that decision.
 
-`featured-image-resolve.html` is the only place that decides, and it ranks a
-bundled resource above `images` inherited from a cascade: Hugo merges a cascade
-into `.Params`, so the two are told apart by comparing with the nearest ancestor
-carrying the key. Without that, a directory default would outrank a post's own
-bundled image.
+`params.ui.featured_image` is blog-only and defaults to `none`; front matter
+overrides it per page or cascade. `banner` renders a figure above a single-page
+title, `wash` colors its header, and `hero` paints the shell backdrop on single
+pages and section indexes. Missing images and non-HTML output render no image.
 
-Three consumers share the decision, so what a reader sees and what a social card
-carries cannot drift apart: `featured-image.html` and `shell/blog-row.html`
-render it, and `_funcs/get-page-images.html` -- the theme's override of the
-helper behind Hugo's `opengraph.html`, `twitter_cards.html`, and `schema.html`
--- hands it to the metadata templates. Those templates themselves stay Hugo's.
+## Outputs and runtime
 
-The resolver also owns the URL work, because Hugo and the theme disagree about a
-leading slash: Hugo resolves it against the host, the theme against the site. A
-configured value reaches the shared image URL policy, resolves against page and
-global resources, and comes back in both relative and absolute form.
-`images-param.html` reads the parameter as a list whether a site wrote one.
-
-A blog article can present that same image above its own title.
-`params.ui.featured_image` is `none` by default, so a site that renders nothing
-today keeps rendering nothing; `banner` puts a figure above the title, and
-`wash` lays the image behind the article header at a low opacity so the page
-takes a colour from its subject without paying for it in contrast. Front matter
-`featured_image` overrides the mode for one page or, through a cascade, one
-section. `featured-image-mode.html` decides -- returning nothing for `none`,
-for a non-HTML output, and for an article that carries no image, because an
-absent image is a legal state -- and `featured-image-article.html` renders. The
-mode is a fourth consumer of the resolver, not a second decision: what a reader
-sees at the top of an article is what the list thumbnail and the social card
-carry. It is blog-only. The article partials are called from
-`blog/_td-content.html` and nowhere else, so docs, Book, landing, and Swagger
-pages are untouched; extending them later means adding the call, not changing
-the parameter.
-
-## Output formats
-
-Every base template sets `Page.Store.tdOutputFormat` to `html`, `print`,
-`markdown`, or `rss`. Components branch on this value:
+Every base template sets `Page.Store.tdOutputFormat`:
 
 | Output | Contract |
 | --- | --- |
-| HTML | Semantic static content first; local runtime only for used capabilities |
-| Print | Expanded static content; no drawers, copy buttons, zoom, or search runtime |
-| Markdown / LLMS | Source-shaped Markdown without theme classes |
-| RSS | Safe static summary or explicit omission where a component has no useful feed form |
+| HTML | Complete semantic content; local runtime only for used capabilities |
+| Print | Expanded content; no shell navigation, search, or zoom runtime; the shared action layer supports explicit print controls |
+| Markdown / LLMS | Source-shaped Markdown without `td-` component markup |
+| RSS | Safe static summary or explicit omission |
 
-Consuming sites opt into custom outputs. The theme does not force `print`,
-`markdown`, or `LLMS` because aggregate Book output can be expensive.
-
-## Runtime loading and performance
-
-`scripts.html` emits three layers:
-
-1. a small action bundle used by HTML and print controls;
-2. one cache-stable interactive core bundle;
-3. a page feature bundle derived from its actual resource members and language.
-
-Large third-party UMD files remain separate so feature combinations do not
-duplicate them. Page Store flags are write-only during content rendering and
-read only after content is complete. A page that does not use a feature must
-not receive its runtime.
+Consumers opt into custom outputs; OINK does not force expensive Book
+aggregates. HTML gets the shared action and core layers plus a feature bundle
+keyed by actual page capabilities and language. Print keeps the action layer and
+only runtimes required by rendered print features. Large third-party UMD files
+stay separate; unused feature runtimes stay absent.
 
 Performance rules:
 
-- do not walk `.Site.Pages` from a per-page partial when a site-level resource
-  or `partialCached` result can own the work;
-- do not render `.Content` twice;
-- do not scan the whole DOM to repair markup the theme can emit correctly;
-- group browser work by resource URL instead of repeating it per DOM instance;
-- keep feature validation at build time, but do not add speculative checks on
-  unreachable states;
-- measure large aggregate outputs explicitly rather than enabling them by
-  default.
+- do not walk `.Site.Pages` per page when a site-level resource or
+  `partialCached` result can own the work;
+- render `.Content` once and read Page Store flags only after it;
+- emit correct markup instead of scanning the DOM to repair it;
+- group browser work by resource URL, not DOM instance;
+- keep ordinary outputs opt-in when their aggregate cost is material;
+- validate reachable author input, not hypothetical internal states.
 
-`bin/measure-baseline.py` measures build time, output weight, bundle count,
-and shortcode density. `bin/sites/build-all.py` builds the maintained site
-corpus in isolated snapshots.
+`bin/measure-baseline.py` measures build time, output weight, bundle count, and
+shortcode density. `bin/sites/build-all.py` builds maintained consumers in
+isolated snapshots.
 
-## Content trust boundary
+## Trust, CSS, and accessibility
 
-Authors are trusted to enable Goldmark `unsafe`; configuration and reusable
-component parameters are not trusted as raw HTML. The shared attribute policy:
-
-- consumes a component-specific allowlist;
-- validates `class` as tokens;
-- passes `data-*` and `aria-*`;
-- warns on and drops `style`, `srcdoc`, `on*`, and unknown keys — the
-  protection is refusing to emit the attribute, not stopping the build, and
-  Goldmark has already removed an event handler from a block attribute before
-  the policy runs.
-
-The URL resolver rejects dangerous schemes and protocol-relative URLs where a
-local or explicit absolute URL is required. Remote URLs remain supported where
-the public API promises them; the theme does not fetch them during builds.
-
-## CSS, accessibility, and typography
+Authors may enable Goldmark `unsafe`; configuration and component parameters
+are not raw HTML. The shared attribute policy consumes an allowlist, validates
+class tokens, passes `data-*` and `aria-*`, and warns while dropping `style`,
+`srcdoc`, `on*`, reserved, and unknown attributes. URL helpers reject dangerous
+schemes and protocol-relative URLs where local or explicit absolute URLs are
+required. Promised remote URLs remain supported but are never fetched at build
+time.
 
 Theme output uses `td-` classes, `data-td-*` attributes, and `--td-*` custom
-properties. Author markers such as `.steps`, `.cards`, and `.full-width` are
-deliberately unprefixed. CSS must handle RTL, print, forced colors, reduced
-motion, long unbroken content, and narrow viewports.
+properties; author markers such as `.steps`, `.cards`, and `.full-width` stay
+unprefixed. CSS supports RTL, print, forced colors, reduced motion, long tokens,
+and narrow viewports. Theme-owned decorative icons carry `aria-hidden`; pages
+with task lists or raw authored Font Awesome elements alone load the authored
+accessibility repair.
 
-Theme-generated Font Awesome elements are decorative unless they are the only
-content of a named control; decorative icons carry `aria-hidden="true"` in the
-template. The theme ships the complete supported icon distribution rather than
-pruning glyphs based on its own templates.
-
-Pages containing Goldmark task lists or raw authored Font Awesome elements
-load `authored-a11y.js`; other pages omit that repair runtime.
-
-Semantic font roles are `ui`, `body`, `heading`, `code`, `display`, `metadata`,
-and `print`, exposed as `--td-*-font-family`. `params.ui.typography` is
-`technical` (default) or `system`. Both compile into the same stylesheet and
-load no runtime. Legacy Bootstrap/Docsy Sass font variables seed the roles so
-consumer overrides continue to work.
+Font roles are `ui`, `body`, `heading`, `code`, `display`, `metadata`, and
+`print`, exposed as `--td-*-font-family`. `params.ui.typography` is `technical`
+or `system`; both compile into one stylesheet with no runtime. Legacy
+Bootstrap/Docsy Sass variables continue to seed these roles.
 
 ## Release states
 
 Source complete, locally validated, committed, tagged, pushed, pinned by a
-consumer, deployed, and production-identical are separate states. A local Hugo
-build establishes only local validation.
+consumer, deployed, and production-identical are distinct states. A local Hugo
+build proves only local validation.

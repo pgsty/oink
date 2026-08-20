@@ -37,21 +37,16 @@
     {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link" "region" "mobile") }}
   {{- end -}}
 {{- else if eq $mode "desktop" -}}
-{{- $hasColumns := isset $entry.Params "columns" -}}
-{{- $columns := 1 -}}
-{{- if $hasColumns -}}
-  {{- $rawColumns := index $entry.Params "columns" -}}
-  {{- if not (findRE `^[1-4]$` (printf "%v" $rawColumns)) -}}
-    {{- warnf "navbar menu %q: columns must be an integer from 1 to 4; using 1" $entry.Name -}}
-  {{- else -}}
-    {{- $columns = int $rawColumns -}}
-  {{- end -}}
+{{- /* One panel shape: a single column of icon-and-title rows. The mega
+     panel's columns parameter is retired; menus that still set it keep the
+     single column and get this targeted migration warning. */ -}}
+{{- if isset $entry.Params "columns" -}}
+  {{- warnf "navbar menu %q: the columns parameter is retired; dropdown panels render one column of icon-and-title rows" $entry.Name -}}
 {{- end -}}
 {{- /* Desktop parent links navigate; hover or focus exposes the panel. */ -}}
 <div class="td-nav-menu" data-td-navbar-menu>
   {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link td-nav-menu__parent-link" "controls" $panelID) }}
-  <div class="td-nav-menu__panel{{ if $taxonomyPage }} td-nav-menu__panel--taxonomy{{ else if and $hasColumns (gt $columns 1) }} td-nav-menu__panel--mega{{ end }}" id="{{ $panelID }}" data-td-navbar-panel{{ if $hasColumns }}
-       style="--td-navbar-columns: {{ $columns }}" data-td-navbar-columns="{{ $columns }}"{{ end }} hidden>
+  <div class="td-nav-menu__panel{{ if $taxonomyPage }} td-nav-menu__panel--taxonomy{{ end }}" id="{{ $panelID }}" data-td-navbar-panel hidden>
     {{- if $taxonomyPage -}}
       {{ partialCached "navbar-taxonomy-tags.html"
           (dict "page" $page "taxonomyPage" $taxonomyPage)

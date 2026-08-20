@@ -3,7 +3,6 @@
 {{- $class := .class -}}
 {{- $level := .level | default 0 -}}
 {{- $kind := .kind | default "link" -}}
-{{- $showDescription := .showDescription | default false -}}
 {{- $region := .region | default (cond (strings.Contains $class "mobile-menu") "mobile" "desktop") -}}
 {{- $baseURL := urls.Parse $page.Site.BaseURL -}}
 {{- $target := urls.Parse $entry.URL -}}
@@ -30,6 +29,5 @@
   data-td-navbar-external="{{ if $external }}true{{ else }}false{{ end }}"{{ if $current }} aria-current="page"{{ end }}{{ with .controls }} aria-controls="{{ . }}" aria-expanded="false"{{ end }}{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
   <i class="{{ partial "menu-icon.html" $entry }}" aria-hidden="true"></i>
   <span class="td-navbar-entry__label">{{ $entry.Name }}</span>
-  {{- if $showDescription }}{{ with $entry.Params.description }}<small class="td-navbar-entry__description">{{ . }}</small>{{ end }}{{ end -}}
   {{- if $external }}<span class="td-navbar-entry__external">{{ partialCached "shell/icon.html" "external-link" "navbar-external-link" }}</span>{{ end -}}
 </a>

@@ -272,17 +272,18 @@ def check_sources() -> list[str]:
             and ".Site.LanguagePrefix" in navbar_item,
             "taxonomy entries are not promoted to navbar panels", errors)
     entry_link = (ROOT / "layouts/_partials/navbar-entry-link.html").read_text()
-    require("columns must be an integer from 1 to 4" in navbar_item
-            and "td-nav-menu__panel--mega" in navbar_item
-            and "data-td-navbar-columns" in navbar_item,
-            "configured navbar columns no longer render a validated mega panel", errors)
-    require("showDescription" in entry_link
-            and "td-navbar-entry__description" in entry_link
-            and "showDescription" in navbar_groups,
-            "configured navbar columns no longer project child descriptions", errors)
-    require(".td-nav-menu__panel--mega" in navbar_styles
-            and ".td-navbar-entry__description" in navbar_styles,
-            "navbar mega-panel styles are missing", errors)
+    require("the columns parameter is retired" in navbar_item
+            and "td-nav-menu__panel--mega" not in navbar_item
+            and "data-td-navbar-columns" not in navbar_item,
+            "retired navbar columns must warn and keep the single column", errors)
+    require("showDescription" not in entry_link
+            and "td-navbar-entry__description" not in entry_link
+            and "showDescription" not in navbar_groups,
+            "navbar rows must stay one icon and one title, never a description", errors)
+    require(".td-nav-menu__panel--mega" not in navbar_styles
+            and ".td-navbar-entry__description" not in navbar_styles
+            and "min-width: 230px" in navbar_styles,
+            "single-column panel styles regressed toward the mega panel", errors)
     require(".ByCount" in taxonomy and "td-navbar-taxonomy-tag__count" in taxonomy,
             "taxonomy panel lost count-descending tag chips", errors)
     require("flex-wrap: wrap" in navbar_styles and "flex-wrap: wrap" in blog_styles,
@@ -1258,7 +1259,7 @@ params:
 
 
 def build_navbar_menu_columns(hugo: str) -> list[str]:
-    """Explicit columns retain the multi-column panel and descriptions."""
+    """The retired columns parameter warns and keeps the single column."""
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-shell-navbar-") as temporary:
         root = Path(temporary)
@@ -1294,22 +1295,33 @@ menus:
             "---\ntitle: Docs\n---\n", encoding="utf-8")
         (source / "content/docs/child.md").write_text(
             "---\ntitle: Child\ndate: 2026-01-01\n---\n\nChild.\n", encoding="utf-8")
-        result = subprocess.run(
+        strict = subprocess.run(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public"), "--panicOnWarning"],
             cwd=ROOT, text=True, capture_output=True,
         )
-        output = result.stdout + result.stderr
-        require(result.returncode == 0,
-                f"a valid menu columns value failed strict build: {output[-400:]}", errors)
+        output = strict.stdout + strict.stderr
+        require(strict.returncode != 0
+                and "the columns parameter is retired" in output,
+                f"retired menu columns survived --panicOnWarning: {output[-400:]}", errors)
+        loose = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public")],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        output = loose.stdout + loose.stderr
+        require(loose.returncode == 0
+                and "the columns parameter is retired" in output,
+                f"retired menu columns must warn and keep building: {output[-400:]}", errors)
         home = root / "public/index.html"
         if home.is_file():
             html = home.read_text(encoding="utf-8")
-            require('class="td-nav-menu__panel td-nav-menu__panel--mega"' in html
-                    and 'data-td-navbar-columns="2"' in html
-                    and 'class="td-navbar-entry__description"' in html
-                    and "A retained mega-menu description" in html,
-                    "configured columns lost the mega panel or child description", errors)
+            require("td-nav-menu__panel--mega" not in html
+                    and "data-td-navbar-columns" not in html
+                    and "td-navbar-entry__description" not in html
+                    and "A retained mega-menu description" not in html
+                    and 'class="td-nav-menu__panel"' in html,
+                    "retired columns changed the single-column panel rendering", errors)
     return errors
 
 

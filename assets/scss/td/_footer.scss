@@ -179,6 +179,13 @@
     color: currentColor;
   }
 
+  // The moon and help glyphs fill their viewbox more than the branch and
+  // language marks; one step down keeps the four triggers optically even.
+  .td-shell-footline__theme > .td-shell-iconbtn .td-shell-icon,
+  .td-shell-keyboard > .td-shell-iconbtn .td-shell-icon {
+    --td-shell-icon-size: 12.5px;
+  }
+
   .td-nav-hover-menu__pop {
     top: auto;
     bottom: calc(100% + 8px);

@@ -225,6 +225,15 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- **Breaking.** Dropdown panels are one column of icon-and-title rows. The
+  0.5 mega panel is retired together with its `columns` menu parameter --
+  setting `columns` now emits a targeted warning and the panel keeps its
+  single moderate-width column -- and menu `description` values are
+  configuration data that no dropdown or drawer renders. The Home/Landing
+  drawer rows adopt the docs drawer's quiet vocabulary (14px rows, soft
+  hover pill, primary-dim active state), and the footline's theme and
+  keyboard-help glyphs drop one step so the four dock triggers read as one
+  size.
 - The compact navbar keeps its tree centered and gains a phone drawer entry.
   Between lg and md the icon links sit true-centered between the brand and
   the full utility cluster -- search, version, language, theme, GitHub --

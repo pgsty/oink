@@ -117,8 +117,6 @@ languages:
           name: Blog
           pageRef: /blog
           weight: 20
-          params:
-            columns: 2
         - identifier: blog-oink
           parent: blog
           name: Oink
@@ -187,8 +185,6 @@ languages:
           name: 博客
           pageRef: /blog
           weight: 20
-          params:
-            columns: 2
         - identifier: blog-oink
           parent: blog
           name: Oink 博客

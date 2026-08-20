@@ -74,7 +74,6 @@ def check_example(public: Path) -> list[str]:
         'class="td-site-header',
         'data-td-landing',
         'class="td-site-footer',
-        'data-td-navbar-columns="2"',
         'data-td-github-stars>2.2k',
         'td-language-selector--menu td-nav-util td-site-nav__language"',
         'class="td-footer__copyright"',
@@ -84,7 +83,13 @@ def check_example(public: Path) -> list[str]:
         'data-td-landing-menu-toggle',
     ):
         require(marker in html, f"landing shell lost {marker}", errors)
-    for marker in ('id="td-section-nav"', 'class="td-shell-sidebar', 'class="td-toc'):
+    for marker in (
+        'id="td-section-nav"',
+        'class="td-shell-sidebar',
+        'class="td-toc',
+        'data-td-navbar-columns',
+        'td-navbar-entry__description',
+    ):
         require(marker not in html, f"landing shell unexpectedly contains {marker}", errors)
 
     section_markers = (

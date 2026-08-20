@@ -354,6 +354,10 @@ def config_text(
     else:
         lines.extend(
             [
+                # The retired columns parameter stays configured here as the
+                # strict negative case: it must warn and keep one column.
+                "      params:",
+                "        columns: 2",
                 "    - identifier: guides",
                 "      parent: docs",
                 "      name: Guides",
@@ -689,6 +693,10 @@ def build_observation() -> dict[str, Any]:
                     if variant == "deep":
                         expected_warning_fragments.append(
                             "only one interactive child level is supported"
+                        )
+                    if variant in ("nested", "deep"):
+                        expected_warning_fragments.append(
+                            "the columns parameter is retired"
                         )
                     if expected_warning_fragments:
                         require(

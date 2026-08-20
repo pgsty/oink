@@ -205,8 +205,9 @@
     top: calc(100% + 8px);
     inset-inline-start: 0;
     z-index: 110;
-    min-width: 300px;
-    max-width: unquote('min(360px, calc(100vw - 32px))');
+    // One moderate single column: every row is an icon and a title.
+    min-width: 230px;
+    max-width: unquote('min(300px, calc(100vw - 32px))');
     padding: 7px;
     border: 1px solid var(--bs-border-color);
     border-radius: 10px;
@@ -225,17 +226,6 @@
 
     &[hidden] {
       display: none;
-    }
-  }
-
-  .td-nav-menu__panel--mega {
-    width: unquote('min(760px, calc(100vw - 32px))');
-    max-width: none;
-    grid-template-columns: repeat(var(--td-navbar-columns, 2), minmax(0, 1fr));
-    gap: 4px 10px;
-
-    &:not([hidden]) {
-      display: grid;
     }
   }
 
@@ -303,10 +293,9 @@
 
   .td-nav-menu__item-link,
   .td-nav-menu__group-title {
-    display: grid;
-    grid-template-columns: 20px minmax(0, 1fr) auto;
-    gap: 1px 9px;
+    display: flex;
     align-items: center;
+    gap: 9px;
     padding: 8px 9px;
     border-radius: 7px;
     color: var(--bs-body-color);
@@ -325,24 +314,23 @@
     }
 
     > i {
-      grid-row: 1 / span 2;
+      flex: 0 0 auto;
       width: 20px;
       color: var(--bs-tertiary-color);
       text-align: center;
+    }
+
+    > .td-navbar-entry__label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
   .td-nav-menu__group-title {
     margin-block-start: 3px;
     font-weight: 650;
-  }
-
-  .td-navbar-entry__description {
-    grid-column: 2 / -1;
-    color: var(--bs-secondary-color);
-    font-size: 0.75rem;
-    font-weight: 400;
-    line-height: 1.35;
   }
 
   .td-navbar-entry__external {
@@ -546,22 +534,34 @@
     margin: 0 auto;
   }
 
+  // One row vocabulary with the docs drawer tree: quiet 14px rows, a soft
+  // hover pill, and the primary-dim treatment for the active entry.
   .td-site-nav__menu-link {
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 9px 12px;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 10px;
     border: 0;
-    border-radius: 8px;
+    border-radius: 10px;
     background: transparent;
-    color: var(--bs-body-color);
+    color: var(--td-shell-muted-fg);
+    font-size: 14px;
+    font-weight: 400;
     text-align: start;
     text-decoration: none;
+    transition: background-color var(--td-motion-duration) ease;
 
     &:hover,
     &:focus-visible {
-      background: var(--td-brand-elev);
+      background: var(--td-shell-accent);
+      color: var(--bs-body-color);
+      transition: none;
+    }
+
+    &.active {
+      background: var(--td-shell-primary-dim);
+      color: var(--td-shell-primary);
     }
 
     // Row glyphs sit one step below the label size on one shared column,
@@ -569,13 +569,15 @@
     > i {
       flex: 0 0 auto;
       width: 18px;
+      color: var(--bs-tertiary-color);
       font-size: 14px;
       text-align: center;
     }
 
     .td-shell-icon {
       flex: 0 0 auto;
-      --td-shell-icon-size: 16px;
+      --td-shell-icon-size: 15px;
+      color: var(--bs-tertiary-color);
     }
   }
 

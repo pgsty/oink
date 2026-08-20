@@ -3,7 +3,9 @@
 {{- $mode := .mode -}}
 {{- $top := .top -}}
 {{- $depth := .depth -}}
-{{- $showDescription := isset $top.Params "columns" -}}
+{{- /* Descriptions belong to the roomy desktop mega panel that `columns`
+     configures; the drawer's single-line rows never render them. */ -}}
+{{- $showDescription := and (eq $mode "desktop") (isset $top.Params "columns") -}}
 {{- range .items -}}
   {{- $entry := . -}}
   {{- $hasChildren := $entry.HasChildren -}}
@@ -13,7 +15,7 @@
       {{- if eq $mode "desktop" -}}
         {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-nav-menu__group-title" "level" $depth "kind" "group" "showDescription" $showDescription) }}
       {{- else -}}
-        {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-group-title" "level" $depth "kind" "group" "showDescription" $showDescription) }}
+        {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-group-title" "level" $depth "kind" "group" "showDescription" $showDescription "region" "mobile") }}
       {{- end -}}
       <div class="td-navbar-group__items">
       {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" $mode "top" $top "depth" (add $depth 1)) }}
@@ -23,7 +25,7 @@
     {{- if eq $mode "desktop" -}}
       {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-nav-menu__item-link" "level" $depth "showDescription" $showDescription) }}
     {{- else -}}
-      {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-child" "level" $depth "showDescription" $showDescription) }}
+      {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link td-site-nav__menu-child" "level" $depth "showDescription" $showDescription "region" "mobile") }}
     {{- end -}}
   {{- end -}}
 {{- end -}}

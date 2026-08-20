@@ -94,9 +94,9 @@ def validate_contract(contract: dict[str, Any]) -> None:
     )
     require(
         navigation.get("desktop_control") == "link_with_hover_panel"
-        and "mobile_control" not in navigation,
+        and navigation.get("home_landing_drawer") == "below_md_drawer_entry",
         "parents open on hover/focus with a navigating link at every width; "
-        "there is no separate mobile menu",
+        "Home and Landing add the below-md drawer entry beside search",
     )
     require(
         navigation.get("hover_required") is False,
@@ -797,8 +797,8 @@ def validate_observation(
                     require(
                         navigation["mobile"] == []
                         and navigation["docs_active"]["mobile"] == [],
-                        f"{deployment}/{variant}/{state}/{lang} the retired "
-                        "mobile menu reappeared",
+                        f"{deployment}/{variant}/{state}/{lang} the Home/"
+                        "Landing drawer escaped onto a plain or docs surface",
                     )
                     for region in ("desktop",):
                         links = navigation[region]

@@ -245,13 +245,14 @@ def check_sources() -> list[str]:
             "navbar-off phone chrome can still disappear in reading mode", errors)
     require("grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr)" in navbar_styles
             and ".td-site-header .td-nav-menu-zone" in navbar_styles
-            and "margin-inline-start: 0" in navbar_styles,
-            "phone navbar no longer true-centers its generated menu", errors)
+            and "margin-inline-start: auto" not in navbar_styles,
+            "compact navbar no longer true-centers its generated menu", errors)
     require("> .td-nav-version-menu" in navbar_styles
             and "> .td-nav-theme-menu" in navbar_styles
             and "> .td-nav-github" in navbar_styles
-            and "> :not(.td-nav-search-box):not(.td-site-drawer-toggle)" in navbar_styles,
-            "phone navbar no longer reduces its utility edge to search and menu", errors)
+            and ".td-site-header .td-site-drawer-toggle {\n    display: inline-flex;\n  }"
+            in navbar_styles,
+            "phone navbar no longer reduces its utility edge to search and a drawer entry", errors)
     require(".td-nav-alt-site > span" in navbar_styles
             and ".td-nav-github .td-nav-count" in navbar_styles
             and "white-space: nowrap" in navbar_styles,

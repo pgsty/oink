@@ -244,19 +244,26 @@ def check_sources() -> list[str]:
     require('printf "%s_%s" $key $primary' in field, "field helper lacks primary language fallback", errors)
     require("$hasLanding" in scripts and "js/landing.js" in scripts, "hasLanding assembly is incomplete", errors)
     require(
-        '$landingSurface := eq .Layout "landing"' in navbar
-        and '$landingSurface := or .IsHome' not in navbar,
-        "Landing mobile menu escaped onto the homepage",
+        '$landingSurface := or .IsHome (eq .Layout "landing")' in navbar,
+        "the drawer entry must render on both navbar-only surfaces (Home and "
+        "explicit Landing layouts)",
         errors,
     )
+    navbar_styles = (ROOT / "assets/scss/td/_site-navbar.scss").read_text()
+    mid_tier = navbar_styles.split("@media (max-width: 991.98px)", 1)
+    below_md = navbar_styles.split(
+        "// Below md the shell sidebar becomes a drawer", 1
+    )
     require(
-        "body:has([data-td-landing-menu-toggle])" in (
-            ROOT / "assets/scss/td/_site-navbar.scss"
-        ).read_text()
-        and "body:has([data-td-landing])" not in (
-            ROOT / "assets/scss/td/_site-navbar.scss"
-        ).read_text(),
-        "Landing compact navbar CSS is not keyed to its rendered menu toggle",
+        len(mid_tier) == 2
+        and len(below_md) == 2
+        and ".td-site-drawer-toggle {\n  display: none;\n}" in mid_tier[0]
+        and "td-site-drawer-toggle" not in mid_tier[1].split("@media", 1)[0]
+        and ".td-site-drawer-toggle {\n    display: inline-flex;\n  }"
+        in below_md[1]
+        and "body:has([data-td-landing" not in navbar_styles,
+        "the drawer entry belongs to the below-md tier only, beside search, "
+        "leaving the centered link tree and the mid-tier utilities alone",
         errors,
     )
     for marker in (

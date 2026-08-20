@@ -498,7 +498,10 @@
 
 }
 
-.td-site-drawer-toggle {
+// Matches the .td-site-header .td-nav-util specificity from later in the
+// cascade, so the shared utility display cannot resurface this entry outside
+// its below-md tier.
+.td-site-header .td-site-drawer-toggle {
   display: none;
 }
 
@@ -560,6 +563,20 @@
     &:focus-visible {
       background: var(--td-brand-elev);
     }
+
+    // Row glyphs sit one step below the label size on one shared column,
+    // for both Font Awesome markers and the shell's SVG icons.
+    > i {
+      flex: 0 0 auto;
+      width: 18px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .td-shell-icon {
+      flex: 0 0 auto;
+      --td-shell-icon-size: 16px;
+    }
   }
 
   .td-site-nav__menu-link--button {
@@ -568,20 +585,6 @@
 
   &__children {
     padding-inline-start: 18px;
-  }
-}
-
-@media (max-width: 767.98px) {
-  // The rendered menu toggle is the authority for the alternate Home/Landing
-  // navbar. Its drawer keeps every named root reachable without crowding the
-  // persistent search and menu actions at the end edge.
-  body:has([data-td-landing-menu-toggle]) {
-    .td-site-header .td-nav-menu-zone,
-    .td-site-header
-      .td-nav-util-zone
-      > :not(.td-nav-search-box):not(.td-site-drawer-toggle) {
-      display: none;
-    }
   }
 }
 
@@ -708,14 +711,10 @@
 // other navbar state; phones use it too.
 @media (max-width: 991.98px) {
   .td-site-header {
-    // The grid's centered zone folds back into one right-aligned icon row.
+    // The three-zone grid stays: the menu keeps its icons true-centered
+    // between the brand and the utility cluster at every compact width.
     .td-site-nav {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .td-nav-menu-zone {
-      margin-inline-start: auto;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     }
 
     // The search box collapses to the plain icon trigger it replaced.
@@ -839,7 +838,6 @@
 
   .td-site-header .td-nav-menu-zone {
     justify-self: center;
-    margin-inline-start: 0;
   }
 
   .td-site-header .td-nav-util-zone {
@@ -860,6 +858,12 @@
   }
 
   .td-site-header .td-site-nav__menu-toggle.td-nav-util {
+    display: inline-flex;
+  }
+
+  // Home and Landing have no sidebar drawer; in the same slot and tier their
+  // opener reveals the site drawer with the full labelled tree instead.
+  .td-site-header .td-site-drawer-toggle {
     display: inline-flex;
   }
 

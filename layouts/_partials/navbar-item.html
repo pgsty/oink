@@ -34,7 +34,7 @@
   {{- if eq $mode "desktop" -}}
     {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link") }}
   {{- else -}}
-    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link") }}
+    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link" "region" "mobile") }}
   {{- end -}}
 {{- else if eq $mode "desktop" -}}
 {{- $hasColumns := isset $entry.Params "columns" -}}
@@ -65,5 +65,5 @@
   {{- /* Compact menus navigate to the parent landing; that page exposes the
        hierarchy in its own shell. Without this branch taxonomy parents would
        disappear whenever this partial is reused in mobile mode. */ -}}
-  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link") }}
+  {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "td-site-nav__menu-link" "region" "mobile") }}
 {{- end -}}

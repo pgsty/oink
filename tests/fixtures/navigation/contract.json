@@ -9,6 +9,7 @@
   "navigation": {
     "interactive_child_levels": 1,
     "desktop_control": "link_with_hover_panel",
+    "home_landing_drawer": "below_md_drawer_entry",
     "hover_required": false,
     "deep_menu": {
       "warning": true,

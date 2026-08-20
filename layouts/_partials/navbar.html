@@ -6,9 +6,12 @@
        icon below md that opens the shell drawer (docs tree + relocated
        aside). */ -}}
 {{- $drawerMode := and (partial "shell/chrome-enabled.html" .) (partial "shell/sidebar-enabled.html" .) -}}
-{{- /* The homepage already uses one compact semantic link tree below lg.
-       Only an explicit non-home Landing layout needs a separate full menu. */ -}}
-{{- $landingSurface := eq .Layout "landing" -}}
+{{- /* Home and explicit Landing layouts render the drawer entry: these are
+       the navbar-only surfaces with no sidebar drawer to fall back on. CSS
+       gates the button to the below-md tier, where it joins search as the
+       whole right-hand contract; the centered link tree stays at every
+       width, so the drawer only restores the full labelled hierarchy. */ -}}
+{{- $landingSurface := or .IsHome (eq .Layout "landing") -}}
 {{- $githubStars := partial "landing/github-stars.html" . -}}
 {{- $altSite := false -}}
 {{- if le (len $targets) 1 }}{{ $altSite = partial "landing/alt-site.html" . }}{{ end -}}
@@ -141,7 +144,7 @@
   <nav aria-label="{{ T "ui_main_nav" }}">
     {{- range .Site.Menus.main }}
       {{- if ne .Identifier "github" }}
-        {{- partial "navbar-entry-link.html" (dict "page" $ "entry" . "class" "td-site-nav__menu-link") -}}
+        {{- partial "navbar-entry-link.html" (dict "page" $ "entry" . "class" "td-site-nav__menu-link" "region" "mobile") -}}
         {{- if .HasChildren }}
         <div class="td-site-drawer__children">
           {{- partial "navbar-group-items.html" (dict "page" $ "items" .Children "mode" "mobile" "top" . "depth" 1) -}}

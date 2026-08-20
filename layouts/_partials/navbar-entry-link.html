@@ -4,7 +4,7 @@
 {{- $level := .level | default 0 -}}
 {{- $kind := .kind | default "link" -}}
 {{- $showDescription := .showDescription | default false -}}
-{{- $region := cond (strings.Contains $class "mobile-menu") "mobile" "desktop" -}}
+{{- $region := .region | default (cond (strings.Contains $class "mobile-menu") "mobile" "desktop") -}}
 {{- $baseURL := urls.Parse $page.Site.BaseURL -}}
 {{- $target := urls.Parse $entry.URL -}}
 {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}

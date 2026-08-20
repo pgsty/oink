@@ -225,6 +225,13 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- The compact navbar keeps its tree centered and gains a phone drawer entry.
+  Between lg and md the icon links sit true-centered between the brand and
+  the full utility cluster -- search, version, language, theme, GitHub --
+  with no menu button. Below md those utilities leave for the footline dock
+  as before, and Home and explicit Landing pages -- the navbar-only
+  surfaces -- add one drawer entry beside search that opens the full
+  labelled menu tree. Other widths and surfaces render no drawer entry.
 - Taxonomy chips wear their taxonomy. A term badge -- the article's page-end
   row, the blog meta line, cards, the table's tag column -- is now a solid
   brand chip with the label knocked out of the fill, led by a glyph that says

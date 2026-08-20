@@ -107,10 +107,12 @@
   }
 
   blockquote {
-    padding: 0 0 0 1rem;
+    // Logical, so the quote bar stays on the side the text starts from: the
+    // theme's own stylesheet is compiled once and never run through rtlcss.
+    padding-inline-start: 1rem;
     margin-bottom: $spacer;
     color: var(--bs-secondary-color);
-    border-left: 6px solid var(--bs-primary);
+    border-inline-start: 6px solid var(--bs-primary);
   }
 
   ul li,
@@ -171,6 +173,11 @@
     overflow-x: auto;
     overflow-y: hidden;
     padding-block: 0.25rem;
+
+    &:focus-visible {
+      outline: 2px solid var(--bs-link-color);
+      outline-offset: 3px;
+    }
   }
 
   // Hugo's table render hook owns the scroll viewport so a wide table cannot
@@ -223,17 +230,9 @@
 }
 
 @media (forced-colors: active) {
+  .td-content .katex-display:focus-visible,
   .td-content .td-table-scroll:focus-visible {
     outline-color: Highlight;
-  }
-}
-
-.td-title {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-
-  @include media-breakpoint-up(sm) {
-    font-size: 3rem;
   }
 }
 
@@ -243,7 +242,7 @@
   }
 
   font-size: 90%;
-  padding-left: 0.25em;
+  padding-inline-start: 0.25em;
   text-decoration: none;
   visibility: hidden;
 

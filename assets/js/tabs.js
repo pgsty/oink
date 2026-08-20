@@ -1,19 +1,4 @@
-// OINK tabs runtime (plan/design/components.md v5 §3.2).
-//
-// Two server-rendered inputs, one behaviour:
-//   1. `.td-tabs[data-td-tabs]`      — the `{{< tabs >}}` shortcode: complete
-//      tablist + panels; nothing is hidden before enhancement.
-//   2. `.td-tab-block[data-td-tab]`  — adjacent blocks (fences, tables) that
-//      carry a `tab` attribute; runs of two or more adjacent siblings of the
-//      same kind are regrouped into the same `.td-tabs` DOM at load.
-//
-// Only tab sets with a `group` get hash (#group-value), synchronisation with
-// other sets of the same group, and localStorage persistence
-// (`td-tabs:v1:<group>`). Ungrouped sets switch locally.
-//
-// a11y: role=tablist/tab/tabpanel, aria-controls/labelledby, roving tabindex,
-// Left/Right (RTL aware) + Home/End with automatic activation, focus stays on
-// the tab when the panel changes.
+// Only named groups synchronize, update the hash, and persist selection.
 (function (global) {
   'use strict';
 

@@ -11,7 +11,7 @@
     {{- if gt .Level 0 }}
       {{- $headingAnchor := .ID -}}
       {{- if $aggregate }}{{ $headingAnchor = partial "book/aggregate-heading-anchor.html" (dict "page" $page "anchor" .ID) }}{{ end -}}
-  <li><a href="{{ if $aggregate }}#{{ $headingAnchor }}{{ else }}{{ $page.RelPermalink }}#{{ $headingAnchor }}{{ end }}">{{ .Title }}</a>
+  <li><a href="{{ if $aggregate }}#{{ $headingAnchor }}{{ else }}{{ $page.RelPermalink }}#{{ $headingAnchor }}{{ end }}">{{ .Title | htmlUnescape }}</a>
       {{- if lt $level $depth }}{{ partial "book/toc-headings.html" (dict "page" $page "headings" .Headings "depth" $depth "level" (add $level 1) "aggregate" $aggregate) }}{{ end -}}
   </li>
     {{- else }}

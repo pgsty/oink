@@ -1,21 +1,3 @@
-{{- /*
-  Turn one entry's semantic Fields metadata into the shared chip list, so the
-  `fields`/`field` shortcode and a `{.fields meta="…"}` table render byte-identical
-  headers.
-
-  Input dict:
-    type        type value; empty omits the chip
-    required    truthy emits the untranslated `required` chip
-    hasDefault  whether a default exists (an empty default is still a default)
-    default     default value
-    html        when true, type/default are already-rendered inline HTML (table
-                cells); a value that carries no markup is wrapped in <code> so it
-                matches the shortcode form. When false they are plain text.
-
-  `required` and `default` are untranslated API vocabulary in every locale.
-
-  Returns the meta slice consumed by content/fields-list.html.
-*/ -}}
 {{- $isHTML := .html | default false -}}
 {{- $meta := slice -}}
 {{- $code := "" -}}

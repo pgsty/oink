@@ -1,14 +1,3 @@
-{{- /*
-  Passthrough (delimiter math) render hook. Block math followed by an
-  attribute line becomes a numbered Book equation (v5 §3.12):
-
-    $$
-    X \approx \frac{C}{R+Z}
-    $$
-    {#eq_x num="5.3" caption="…"}
-
-  Inline math never carries attributes.
-*/ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $isBlock := ne .Type "inline" -}}
 {{- $attrs := .Attributes | default dict -}}
@@ -29,7 +18,7 @@
     {{- partial "scripts/math.html" . -}}
   {{- else -}}
 <figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $policy.class }} {{ . }}{{ end }}" data-td-book-kind="eq" data-td-book-num="{{ $num }}"
-  {{- range $key, $value := $policy.generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" $policy.generic }}>
   <div class="td-book-equation__body">{{ partial "scripts/math.html" . }}</div>
   <figcaption><span class="td-eq-label">{{ $label }}</span>{{ with $caption }} <span class="td-eq-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>

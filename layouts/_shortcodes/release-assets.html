@@ -61,13 +61,13 @@
 {{- end -}}
 
 {{- $base := "" -}}
-{{- $hasRelease := isset .Page.Params "release" -}}
+{{- $hasRelease := or (isset .Page.Params "release_url") (isset .Page.Params "release") -}}
 {{- if and $ok .IsNamedParams (isset .Params "base") -}}
   {{- if ne (printf "%T" (.Get "base")) "string" -}}
     {{- warnf "shortcode %q: base must be a string at %s; skipping the block" .Name .Position -}}
     {{- $ok = false -}}
   {{- else if $hasRelease -}}
-    {{- warnf "shortcode %q: base is only valid without release front matter at %s; skipping the block" .Name .Position -}}
+    {{- warnf "shortcode %q: base is only valid without release_url front matter at %s; skipping the block" .Name .Position -}}
     {{- $ok = false -}}
   {{- else -}}
     {{- $baseInput := strings.TrimSpace (.Get "base") -}}
@@ -112,7 +112,7 @@
     {{- $base = printf "%s/releases/download/%s" $meta.repoURL (urls.PathEscape $meta.tag) -}}
   {{- end -}}
 {{- else if $ok -}}
-  {{- warnf "shortcode %q requires release front matter or base at %s; skipping the block" .Name .Position -}}
+  {{- warnf "shortcode %q requires release_url front matter or base at %s; skipping the block" .Name .Position -}}
   {{- $ok = false -}}
 {{- end -}}
 

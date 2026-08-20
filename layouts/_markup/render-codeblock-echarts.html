@@ -1,15 +1,13 @@
 {{- /* ```echarts {height="360px" theme="…" full=true} — declarative ECharts
-       options (YAML or JSON) as a data fence (v5 §3.10). Callbacks stay the
+       options (YAML or JSON) as a data fence. Callbacks stay the
        `"$fn:<name>"` bridge resolved from `window.OinkEchartsFunctions`; a fence
        cannot carry JavaScript. Replaces the echarts shortcode. */ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "height" "theme" "full") "position" .Position "kind" "echarts") -}}
-{{- $height := index $policy.consumed "height" | default "400px" -}}
-{{- if not (findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $height) -}}
-  {{- warnf "echarts: height %q is not a safe CSS length at %s; using 400px" $height .Position -}}
-  {{- $height = "400px" -}}
-{{- end -}}
+{{- $height := partial "validate.html" (dict
+    "value" (index $policy.consumed "height") "kind" "length"
+    "fallback" "400px" "key" "echarts height" "where" .Position) -}}
 {{- $theme := index $policy.consumed "theme" | default "" -}}
 {{- $fullValue := lower (index $policy.consumed "full" | default "false") -}}
 {{- if not (in (slice "true" "false") $fullValue) -}}
@@ -45,7 +43,7 @@
 {{- $page.Store.Set "hasEcharts" true -}}
 <div id="{{ $id }}" class="td-echarts{{ if not $full }} td-max-width-on-larger-screens{{ end }}{{ with $policy.class }} {{ . }}{{ end }}"
   data-td-echarts{{ with $theme }} data-theme="{{ . }}"{{ end }}
-  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" $policy.generic }}>
   <div data-td-echarts-canvas style="height: {{ $height }}"></div>
   <script type="application/json" data-td-echarts-options>{{ $options | jsonify | safeJS }}</script>
 </div>

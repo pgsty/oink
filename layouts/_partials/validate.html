@@ -1,32 +1,5 @@
-{{/* Validate one input value, warn on anything invalid, return a usable value.
-
-     OINK never calls errorf: a single errorf aborts the whole build, so in
-     `hugo server` one author's typo serves HTTP 500 on every URL of the site,
-     not just the page they were editing. Every publishing gate builds with
-     --panicOnWarning, so a warning is still a hard failure where it counts.
-
-     Warnings go through warnidf keyed on kind+key+value, never on position.
-     A site-level parameter is resolved once per page, so plain warnf repeated
-     one site-wide typo on every page of the build -- a thousand identical
-     lines on a thousand-page site. Keying on the value collapses those to
-     one. The trade is that the same wrong value repeated across many pages
-     also reports once, naming the first page it was seen on; that is
-     acceptable because --panicOnWarning stops at the first warning anyway, so
-     they get fixed one at a time either way. Two different wrong values still
-     warn separately, and warnidf stays fatal under --panicOnWarning, so
-     deduplication costs no enforcement.
-
-     Input (dict):
-       value     the raw value to check (any type; nil means "not set")
-       kind      "enum" | "bool" | "length" | "number"   (default "enum")
-       allowed   slice of permitted values           (kind=enum)
-       fallback  value returned when validation fails (required)
-       key       name reported to the author, e.g. "params.ui.page_width"
-       where     optional position, e.g. .Path or .Position
-
-     Returns the validated value, or `fallback` after warning. A nil/empty
-     value is not an error -- it returns `fallback` silently, so callers can
-     pass an unset parameter straight through. */ -}}
+{{/* Validate enum, bool, CSS length, or number values. Blank values use the
+     fallback; invalid values warn once per key and value, then use it. */ -}}
 
 {{- $value := .value -}}
 {{- $kind := .kind | default "enum" -}}
@@ -40,7 +13,7 @@
   {{- $raw := printf "%v" $value -}}
   {{- $id := printf "validate:%s:%s:%s" $kind $key $raw -}}
   {{- if eq $raw "" -}}
-    {{- /* Unset or blank: use the default without complaining. */ -}}
+    {{- /* Blank uses the default. */ -}}
   {{- else if eq $kind "bool" -}}
     {{- if eq (printf "%T" $value) "bool" -}}
       {{- $result = $value -}}
@@ -62,8 +35,7 @@
       {{- warnidf $id "%s %q is not a safe CSS length%s -- using %q" $key $raw $at $fallback -}}
     {{- end -}}
   {{- else if eq $kind "number" -}}
-    {{- /* `float` errors the build on a non-numeric string, which is exactly
-           what this partial exists to prevent -- cast through `try`. */ -}}
+    {{- /* float errors on bad strings, so cast through try. */ -}}
     {{- $cast := try (float $raw) -}}
     {{- if or $cast.Err (in (slice "+Inf" "Inf" "-Inf" "NaN") $raw) -}}
       {{- warnidf $id "%s %q is not a number%s -- using %v" $key $raw $at $fallback -}}

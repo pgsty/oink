@@ -1,16 +1,3 @@
-{{- /*
-  Callout v2 (plan/design/components.md v5 §3.1).
-
-    > [!TYPE]± Title
-    > body
-    {icon="fa-solid fa-rocket"}
-
-  Canonical types: note tip important warning caution success danger question
-  example quote + details. Unknown types render as a plain blockquote with the
-  visible marker preserved. `-` collapses (default closed), `+` collapses
-  (default open); `details` collapses by default. Print / RSS render static,
-  expanded blocks. Attributes: icon (one Font Awesome class pair) + class.
-*/ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $type := lower (.AlertType | default "") -}}
@@ -43,7 +30,7 @@
   {{- /* Unknown type: plain blockquote, marker kept visible so nothing is lost. */ -}}
   {{- $marker := printf "[!%s]%s" (upper $type) $sign -}}
 <blockquote{{ with $policy.class }} class="{{ . }}"{{ end }}
-  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" $policy.generic }}>
 <p>{{ $marker }}{{ with .AlertTitle }} {{ . }}{{ end }}</p>
 {{ .Text }}
 </blockquote>
@@ -60,7 +47,7 @@
   {{- if $icon }}{{ $iconHTML = printf `<i class="td-callout__icon %s" aria-hidden="true"></i>` $icon | safeHTML }}{{ end -}}
   {{- if $static -}}
 <div class="{{ delimit $classes " " }}" role="note"{{ if and $collapsible (ne $format "html") }} data-td-callout-collapsible{{ end }}
-  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" $policy.generic }}>
   <div class="td-callout__title">{{ $iconHTML }}<span class="td-callout__label">{{ $title }}</span></div>
   <div class="td-callout__body">
 {{ .Text }}
@@ -68,7 +55,7 @@
 </div>
   {{- else -}}
 <details class="{{ delimit $classes " " }}"{{ if $open }} open{{ end }}
-  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" $policy.generic }}>
   <summary class="td-callout__title">{{ $iconHTML }}<span class="td-callout__label">{{ $title }}</span><i class="td-callout__marker fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
   <div class="td-callout__body">
 {{ .Text }}

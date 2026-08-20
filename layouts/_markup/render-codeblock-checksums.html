@@ -1,7 +1,6 @@
 {{- /* ```checksums {base="https://…/download/v1.7.0/" algo="sha256" group="auto"}
-       — sha*sum lines as a data fence: the native form of release-assets
-       (Release pack, v5 §3.10). Same parser and renderers as the shortcode;
-       `base` is required unless the page has release front matter.
+       — sha*sum lines as the native release-assets form. Same parser and renderers as the shortcode;
+       `base` is required unless the page has release_url front matter.
 
        A malformed fence warns and renders nothing. Guessing at an algorithm
        or a base would publish rows pointing at the wrong files, and stopping
@@ -29,12 +28,12 @@
   {{- $ok = false -}}
 {{- end -}}
 {{- $base := "" -}}
-{{- $hasRelease := isset $page.Params "release" -}}
+{{- $hasRelease := or (isset $page.Params "release_url") (isset $page.Params "release") -}}
 {{- if $ok -}}
   {{- with index $policy.consumed "base" -}}
     {{- $baseInput := strings.TrimSpace . -}}
     {{- if $hasRelease -}}
-      {{- warnf "checksums: base is only valid without release front matter at %s; skipping the block" $.Position -}}
+      {{- warnf "checksums: base is only valid without release_url front matter at %s; skipping the block" $.Position -}}
       {{- $ok = false -}}
     {{- else if not $baseInput -}}
       {{- warnf "checksums: base must not be empty at %s; skipping the block" $.Position -}}
@@ -79,7 +78,7 @@
       {{- $base = printf "%s/releases/download/%s" $meta.repoURL (urls.PathEscape $meta.tag) -}}
     {{- end -}}
   {{- else -}}
-    {{- warnf "checksums: base is required unless the page has release front matter at %s; skipping the block" .Position -}}
+    {{- warnf "checksums: base is required unless the page has release_url front matter at %s; skipping the block" .Position -}}
     {{- $ok = false -}}
   {{- end -}}
 {{- end -}}

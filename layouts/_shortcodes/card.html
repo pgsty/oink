@@ -1,6 +1,6 @@
 {{- /* One card inside `{{< cards >}}`: title (required), link, icon (one Font
        Awesome class pair), badge, image + image_alt | decorative; the body is
-       the Markdown description, rendered here with RenderString (v5 §3.4). */ -}}
+       the Markdown description, rendered here with RenderString. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "title" "link" "icon" "badge" "image" "image_alt" "decorative")) -}}
 {{- /* A card that cannot be rendered warns and is skipped; the sibling cards
        in the grid still render. */ -}}

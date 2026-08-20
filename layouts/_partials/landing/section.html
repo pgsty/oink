@@ -50,6 +50,6 @@
       "id" $id
       "index" $.index
     ) -}}
-{{- else if and $enabled $data -}}
+{{- else if and $enabled (not $template) -}}
   {{- warnf "OINK landing page: unknown section type %q" $rawType -}}
 {{- end -}}

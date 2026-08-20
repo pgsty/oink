@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter, defaultdict
+from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 import re
@@ -14,7 +15,7 @@ from urllib.parse import urljoin, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -570,6 +571,71 @@ def create_site(root: Path, body: str, *, extra_ui: str = "", draft: bool = Fals
     write(root / "content/book/page.md", f"---\ntitle: Page\n{status}---\n\n{body}\n")
 
 
+def check_toc_heading_entities(hugo: str) -> list[str]:
+    """Fragment titles are already entity-encoded; Book HTML must decode them
+    once before the template context performs its final escaping."""
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-toc-entities-") as temp:
+        source = Path(temp)
+        write(source / "hugo.yaml", base_config())
+        write(
+            source / "content/book/_index.md",
+            """---
+title: Book
+type: book
+outputs: [HTML, print]
+cascade:
+  type: book
+---
+
+{{< book-toc depth=3 >}}
+""",
+        )
+        write(
+            source / "content/book/page.md",
+            """---
+title: Page
+book_kind: chapter
+book_number: 1
+---
+
+## Reader's question {#reader-question}
+""",
+        )
+        result = build(hugo, source, source / "public")
+        if result.returncode != 0:
+            return [f"Book heading-entity fixture failed: {result.stdout}{result.stderr}"]
+
+        paths = {
+            "Book ToC": source / "public/book/index.html",
+            "whole-Book print ToC": source / "public/_print/book/index.html",
+        }
+        for label, path in paths.items():
+            require(path.exists(), f"{label} output is missing", errors)
+            if not path.exists():
+                continue
+            toc = re.search(
+                r'<nav class="td-book-toc[\s\S]*?</nav>',
+                path.read_text(encoding="utf-8"),
+            )
+            require(toc is not None, f"{label} is missing", errors)
+            if toc is None:
+                continue
+            rendered = unescape(toc.group(0))
+            require(
+                "Reader’s question" in rendered,
+                f"{label} double-escaped the heading apostrophe",
+                errors,
+            )
+            require(
+                "Reader&rsquo;s question" not in rendered,
+                f"{label} exposed an HTML entity as text",
+                errors,
+            )
+    return errors
+
+
 def check_reading_time(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-components-book-reading-time-") as temp:
@@ -582,8 +648,8 @@ def check_reading_time(hugo: str) -> list[str]:
             return [f"Book reading-time fixture failed: {result.stdout}{result.stderr}"]
         book = (source / "public/book/page/index.html").read_text(encoding="utf-8")
         docs = (source / "public/docs/page/index.html").read_text(encoding="utf-8")
-        require('class="reading-time"' not in book, "Book chapter retained reading-time metadata", errors)
-        require('class="reading-time"' in docs, "Book reading-time guard suppressed regular docs metadata", errors)
+        require('class="td-reading-time"' not in book, "Book chapter retained reading-time metadata", errors)
+        require('class="td-reading-time"' in docs, "Book reading-time guard suppressed regular docs metadata", errors)
     return errors
 
 
@@ -635,9 +701,6 @@ def check_invalid_components(hugo: str) -> list[str]:
             create_site(source, body)
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
-            # Converted call sites warn and degrade; unconverted ones still
-            # errorf. The contract that holds for both: the problem is named,
-            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
             require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
                     f"invalid Book case {name} survived --panicOnWarning", errors)
@@ -716,9 +779,6 @@ def check_invalid_contributors(hugo: str) -> list[str]:
             write(source / "data/contributors.yaml", data)
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
-            # Converted call sites warn and degrade; unconverted ones still
-            # errorf. The contract that holds for both: the problem is named,
-            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid contributors case {name} did not report {expected!r}", errors)
             require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
                     f"invalid contributors case {name} survived --panicOnWarning", errors)
@@ -844,13 +904,14 @@ def check_sources() -> list[str]:
         "layouts/_shortcodes/book-equations.html": ('"kind" "eq"',),
         "layouts/_shortcodes/book-examples.html": ('"kind" "eg"',),
         "layouts/_partials/content/table-render.html": ("register-target.html", '"kind" "tbl"', "data-td-book-kind"),
-        "layouts/_markup/render-image.html": ("register-target.html", '"kind" "fig"', "data-td-book-kind", "wrapStandAloneImageWithinParagraph"),
+        "layouts/_markup/render-image.html": ("register-target.html", '"kind" "fig"', "data-td-book-kind"),
         "layouts/_markup/render-passthrough.html": ("register-target.html", '"kind" "eq"', "data-td-book-kind"),
         "layouts/_markup/render-codeblock.html": ("register-target.html", '"kind" "eg"', "data-td-book-kind"),
         "layouts/_shortcodes/contributors.html": ("contributors/items.html", "contributors/wall.html", "markdown"),
         "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
         "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-td-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
         "layouts/_partials/book/print.html": ("nav-flatten.html", 'partialCached "print/page-content.html"', '"book" true', "data-td-book-page"),
+        "layouts/_partials/book/toc-headings.html": ("htmlUnescape",),
         "layouts/_partials/print/page-content.html": ("tdBookAggregate", "namespace-print-headings.html", "static-image-output.html"),
         "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink", "fnref[0-9]*|fn"),
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
@@ -868,7 +929,7 @@ def check_sources() -> list[str]:
         for marker in markers:
             require(marker in source, f"{relative} lacks {marker}", errors)
     i18n = (ROOT / "i18n/en.yaml").read_text(encoding="utf-8")
-    for key in ("book_figure", "book_table", "book_equation", "book_example", "book_lof", "book_lot", "book_toc", "book_draft", "book_draft_notice", "contributors_count"):
+    for key in ("book_figure", "book_table", "book_equation", "book_example", "book_toc", "book_draft", "book_draft_notice", "contributors_count"):
         require(re.search(rf"^{key}:", i18n, re.M) is not None, f"English i18n lacks {key}", errors)
     return errors
 
@@ -896,7 +957,7 @@ def main() -> int:
     if args.public is None:
         with tempfile.TemporaryDirectory(prefix="oink-components-book-") as temp:
             public = Path(temp) / "public"
-            result = build(args.hugo, EXAMPLE, public)
+            result = build(args.hugo, FIXTURE, public)
             if result.returncode != 0:
                 print("Book fixture failed to build:")
                 print(result.stdout + result.stderr)
@@ -906,7 +967,8 @@ def main() -> int:
         errors = check_example(args.public)
 
     errors += (
-        check_reading_time(args.hugo)
+        check_toc_heading_entities(args.hugo)
+        + check_reading_time(args.hugo)
         + check_invalid_components(args.hugo)
         + check_footnotes(args.hugo)
         + check_invalid_contributors(args.hugo)

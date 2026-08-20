@@ -1,7 +1,5 @@
-{{- /* Render a Markdown body (RenderString, block display) inside a named
-       scope so that generated IDs (e.g. code block td-code-…-fence-N) of
-       hooks that run during this nested render cannot collide with the
-       page's own blocks or with sibling shortcodes. Scopes nest.
+{{- /* Render a Markdown body (RenderString, block display), then namespace
+       its generated code IDs without sharing mutable state with sibling hooks.
        Input: page, scope (short token), content (Markdown), origin (optional
        "shortcode … at file:line" for diagnostics). Returns HTML. */ -}}
 {{- $page := .page -}}
@@ -25,9 +23,24 @@
     {{- warnf "%s: footnote reference [^%s] cannot be used inside a shortcode body — Hugo renders the body as its own document, so the reference prints literally when the definition sits on the page, and builds a second, colliding footnote list when it sits in the body. Author the block in its native form (a Markdown table, image, or fence followed by {num=\"…\" caption=\"…\"}) and keep footnotes in page Markdown." $origin $label -}}
   {{- end -}}
 {{- end -}}
-{{- $previous := $page.Store.Get "tdRenderScope" | default "" -}}
-{{- $next := cond (ne $previous "") (printf "%s-%s" $previous $scope) $scope -}}
-{{- $page.Store.Set "tdRenderScope" $next -}}
 {{- $html := $page.RenderString (dict "display" "block") $content -}}
-{{- $page.Store.Set "tdRenderScope" $previous -}}
+{{- if $scope -}}
+  {{- $prefix := printf "td-code-%.8s-" (md5 $page.RelPermalink) -}}
+  {{- range findRESubmatch `id="(td-code-[^"]+)" data-td-code\s+data-td-code-auto-id(?:\s|>)` $html -}}
+    {{- $old := index . 1 -}}
+    {{- if strings.HasPrefix $old $prefix -}}
+      {{- $new := printf "%s%s-%s" $prefix ($scope | anchorize) (strings.TrimPrefix $prefix $old) -}}
+      {{- range (slice "" "-viewport" "-title") -}}
+        {{- $html = replace $html (printf `="%s%s"` $old .) (printf `="%s%s"` $new .) -}}
+      {{- end -}}
+      {{- range findRESubmatch (printf `id="%s-([0-9]+)"` $old) $html -}}
+        {{- $line := index . 1 -}}
+        {{- range $attribute := slice `id="` `href="#` -}}
+          {{- $html = replace $html (printf `%s%s-%s"` $attribute $old $line) (printf `%s%s-%s"` $attribute $new $line) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $html = $html | safeHTML -}}
+{{- end -}}
 {{- return $html -}}

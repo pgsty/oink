@@ -1,0 +1,7 @@
+{{- /* Render a generic attribute map with HTML escaping. Go's %q is not an
+       HTML escaping mechanism. */ -}}
+{{- $out := "" -}}
+{{- range $name, $value := (. | default dict) -}}
+  {{- $out = printf `%s %s="%s"` $out $name (printf "%v" $value | htmlEscape) -}}
+{{- end -}}
+{{- return ($out | safeHTMLAttr) -}}

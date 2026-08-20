@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 from pathlib import Path
 import re
 import subprocess
@@ -13,7 +14,7 @@ from test_site import build_fixture_public
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -74,7 +75,7 @@ def temp_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_config: s
     command = [
         hugo,
         "--source",
-        str(EXAMPLE),
+        str(FIXTURE),
         "--contentDir",
         str(content),
         "--destination",
@@ -85,7 +86,7 @@ def temp_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_config: s
     if extra_config:
         override = temp_path / "override.yaml"
         override.write_text(extra_config, encoding="utf-8")
-        command.extend(["--config", f"{EXAMPLE / 'hugo.yaml'},{override}"])
+        command.extend(["--config", f"{FIXTURE / 'hugo.yaml'},{override}"])
     result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
     return result, destination, temp
 
@@ -249,7 +250,15 @@ def check_template_contracts() -> list[str]:
     runtime = (ROOT / "assets/js/tabs.js").read_text()
 
     require("data-td-code-auto-id" in render, "automatic code-ID marker is missing", errors)
-    require("tdRenderScope" in normalize and "tdRenderScope" in render_block, "nested-render code ID scoping is missing", errors)
+    require("tdRenderScope" not in normalize and "tdRenderScope" not in render_block, "nested-render code IDs still depend on Page Store state", errors)
+    for marker in ("data-td-code", "findRESubmatch", 'slice "" "-viewport" "-title"', '`href="#`', "safeHTML"):
+        require(marker in render_block, f"nested-render code ID rewriting lacks {marker}", errors)
+    rendered_ids = (ROOT / "layouts/_partials/code/register-rendered-ids.html").read_text()
+    require('"hasAuthoredCodeID"' in normalize, "explicit code IDs do not enable final duplicate checks", errors)
+    for marker in ('"hasAuthoredCodeID"', "if gt $occurrence 0", "duplicate id"):
+        require(marker in rendered_ids, f"rendered code ID registration lacks {marker}", errors)
+    require('partial "code/register-id.html"' not in rendered_ids and "tdCodeRenderedIDOwners" not in rendered_ids,
+            "rendered code ID checks still use a cross-output registry", errors)
     for marker in ('"tab" "group" "value" "num" "caption"',):
         require(marker in normalize, f"normalize.html does not reserve {marker}", errors)
     for marker in ('partial "content/tab-block.html"', "group/value require tab", "num (Book example) and tab (tabs) are mutually exclusive", "caption requires num", "requires caption", 'partial "book/register-target.html"'):
@@ -338,49 +347,80 @@ def check_generic_rss_output(hugo: str) -> list[str]:
 
 
 def check_nested_render_ids(hugo: str) -> list[str]:
-    """Fences rendered inside shortcode bodies (RenderString) must keep unique DOM IDs."""
+    """Nested fences keep stable IDs across concurrent HTML and print renders."""
     errors: list[str] = []
+    pages = {
+        "docs/_index.md": "---\ntitle: Docs\n---\n",
+        "docs/nested.md": (
+            "---\ntitle: Nested code IDs\n---\n\n"
+            '{{< tabs group="nested" >}}\n'
+            '{{< tab label="First" value="first" >}}\n'
+            "> [!NOTE]\n> ```shell {#td-code-8f44e545-authored title=\"nested.sh\"}\n> echo repeated\n> ```\n"
+            "{{< /tab >}}\n"
+            '{{< tab label="Second" value="second" >}}\n'
+            '```shell {lineNos="inline" anchorLineNos=true}\n'
+            "echo repeated\necho linked\n```\n\n"
+            "```text {#td-code-8f44e545-fence-0-authored}\n"
+            "literal explicit ID\n```\n"
+            "{{< /tab >}}\n"
+            "{{< /tabs >}}\n\n"
+            '{{< eg num="1" caption="Nested example" >}}\n'
+            "```shell\necho repeated\n```\n"
+            "{{< /eg >}}\n\n"
+            "{{< cards >}}\n"
+            '{{< card title="Card" >}}\n'
+            "```shell\necho repeated\n```\n"
+            "{{< /card >}}\n"
+            "{{< /cards >}}\n\n"
+            "```shell {#outer-authored}\necho repeated\n```\n\n"
+            "```shell\necho repeated again\n```\n"
+        ),
+    }
+    config = "outputs:\n  section: [HTML, print]\n  page: [HTML, print]\n"
     result, destination, temp = temp_build(
-        hugo,
-        {
-            "docs/_index.md": "---\ntitle: Docs\n---\n",
-            "docs/nested.md": (
-                "---\ntitle: Nested code IDs\n---\n\n"
-                '{{< tabs group="nested" >}}\n'
-                '{{< tab label="First" value="first" >}}\n'
-                "> [!NOTE]\n> ```shell\n> echo repeated\n> ```\n"
-                "{{< /tab >}}\n"
-                '{{< tab label="Second" value="second" >}}\n'
-                "```shell\necho repeated\n```\n"
-                "{{< /tab >}}\n"
-                "{{< /tabs >}}\n\n"
-                '{{< eg num="1" caption="Nested example" >}}\n'
-                "```shell\necho repeated\n```\n"
-                "{{< /eg >}}\n\n"
-                "{{< cards >}}\n"
-                '{{< card title="Card" >}}\n'
-                "```shell\necho repeated\n```\n"
-                "{{< /card >}}\n"
-                "{{< /cards >}}\n\n"
-                "```shell\necho repeated\n```\n\n"
-                "```shell\necho repeated again\n```\n"
-            ),
-        },
-        prefix="oink-code-nested-ids-",
+        hugo, pages, prefix="oink-code-nested-ids-", extra_config=config
     )
     with temp:
         if result.returncode != 0:
             errors.append(f"nested code-ID fixture failed to build: {result.stdout}{result.stderr}")
             return errors
-        source = (destination / "docs/nested/index.html").read_text(encoding="utf-8")
-        roots = re.findall(r'id="(td-code-[^"]+)" data-td-code(?:\s|>)', source)
-        require(len(roots) == 6, f"nested fixture rendered {len(roots)} code roots: {roots}", errors)
-        require(len(roots) == len(set(roots)), f"nested RenderString code roots are not unique: {roots}", errors)
-        for root in roots:
-            require(source.count(f'id="{root}-viewport"') == 1, f"nested code root {root} lost its unique viewport target", errors)
-        all_ids = re.findall(r'\sid="([^"]+)"', source)
-        duplicates = sorted({value for value in all_ids if all_ids.count(value) > 1})
-        require(not duplicates, f"nested fixture page contains duplicate ids: {duplicates}", errors)
+        paths = {
+            "HTML": destination / "docs/nested/index.html",
+            "page PRINT": destination / "_print/docs/nested/index.html",
+            "section PRINT": destination / "_print/docs/index.html",
+        }
+        roots_by_output: dict[str, list[str]] = {}
+        for output, path in paths.items():
+            require(path.exists(), f"nested fixture lacks {output} output", errors)
+            if not path.exists():
+                continue
+            source = path.read_text(encoding="utf-8")
+            roots = re.findall(r'id="([^"]+)" data-td-code(?:\s|>)', source)
+            roots_by_output[output] = roots
+            require(len(roots) == 7, f"nested fixture {output} rendered {len(roots)} code roots: {roots}", errors)
+            require(len(roots) == len(set(roots)), f"nested fixture {output} code roots are not unique: {roots}", errors)
+            require("td-code-8f44e545-authored" in roots
+                    and "td-code-8f44e545-fence-0-authored" in roots
+                    and "outer-authored" in roots,
+                    f"nested fixture {output} rewrote authored code IDs: {roots}", errors)
+            require(sum(root.startswith("td-code-8f44e545-") for root in roots) > 1,
+                    f"nested fixture {output} did not exercise an authored ID in the automatic namespace", errors)
+            ids = re.findall(r'\sid="([^"]+)"', source)
+            duplicates = sorted(value for value, count in Counter(ids).items() if count > 1)
+            require(not duplicates, f"nested fixture {output} contains duplicate IDs: {duplicates}", errors)
+            for root in roots:
+                require(source.count(f'id="{root}-viewport"') == 1,
+                        f"nested fixture {output} root {root} lost its viewport", errors)
+            for reference in re.findall(r'(?:aria-controls|aria-labelledby|data-td-code-target)="([^"]+)"', source):
+                require(reference in ids, f"nested fixture {output} points to missing ID {reference!r}", errors)
+            line_references = re.findall(r'href="#(td-code-[^"]+-[0-9]+)"', source)
+            require(line_references, f"nested fixture {output} rendered no linked line numbers", errors)
+            for reference in line_references:
+                require(reference in ids, f"nested fixture {output} points to missing line ID {reference!r}", errors)
+        if len(roots_by_output) == 3:
+            roots = roots_by_output["HTML"]
+            require(all(values == roots for values in roots_by_output.values()),
+                    f"nested fixture code IDs differ by output: {roots_by_output}", errors)
     return errors
 
 
@@ -452,6 +492,8 @@ INVALID_CASES = (
     ("wrap-table", '```text {wrap=true lineNos="table"}\none\ntwo\n```\n', "wrap=true is incompatible"),
     ("collapse-zero", '```text {collapse=0}\none\n```\n', "collapse must be a positive integer"),
     ("duplicate-code-ids", '```text {id="same-code"}\none\n```\n\n```text {id="same-code"}\ntwo\n```\n', "duplicate id"),
+    ("nested-duplicate-code-ids", '{{< eg num="1" caption="One" >}}\n```text {#same-code}\none\n```\n{{< /eg >}}\n\n{{< eg num="2" caption="Two" >}}\n```text {#same-code}\ntwo\n```\n{{< /eg >}}\n', "duplicate id"),
+    ("outer-nested-duplicate-code-ids", '{{< eg num="1" caption="Nested" >}}\n```text {#same-code}\none\n```\n{{< /eg >}}\n\n```text {#same-code}\ntwo\n```\n', "duplicate id"),
     ("invalid-code-id", '```text {id="bad id"}\none\n```\n', "id must not contain ASCII whitespace or control characters"),
     ("generated-line-anchor-collision", '```text {id="anchored" lineNos="inline" anchorLineNos=true}\none\n```\n\n```text {id="anchored-1"}\ntwo\n```\n', "duplicate id"),
     ("filename-aria-label", '```text {filename="a.txt" aria-label="conflict"}\none\n```\n', "label/filename and aria-label are mutually exclusive"),
@@ -495,12 +537,9 @@ def check_invalid_cases(hugo: str) -> list[str]:
             content.mkdir(parents=True)
             (content / "invalid.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
             destination = temp_path / "public"
-            command = [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn"]
+            command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn"]
             result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
             output = result.stdout + result.stderr
-            # Converted call sites warn and degrade; unconverted ones still
-            # errorf. The contract that holds for both: the problem is named,
-            # and the build fails under --panicOnWarning.
             if expected not in output:
                 errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
             strict = subprocess.run(command + ["--panicOnWarning"], cwd=ROOT, capture_output=True, text=True, check=False)

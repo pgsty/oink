@@ -58,11 +58,6 @@ a:active {
   color: #75c5d4 !important;
 }
 
-// Cover blocks use white body copy over a darkened image or brand color.
-.td-cover-block .lead a:not(.btn) {
-  color: #fff;
-}
-
 // Bootstrap's disabled opacity blends both text and background below 4.5:1.
 .btn-primary.disabled,
 .btn-primary:disabled {

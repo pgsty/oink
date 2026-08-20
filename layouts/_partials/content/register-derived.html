@@ -14,4 +14,10 @@
       {{- $page.Store.Set "hasImageZoom" true -}}
     {{- end -}}
   {{- end -}}
+  {{- if and
+    (partial "config-enabled.html" (dict "value" $page.Site.Params.drawio "key" "params.drawio"))
+    (findRE `(?i)<img\b[^>]*\bsrc=["'][^"']+[.](?:png|svg)(?:[?#][^"']*)?["']` $html 1)
+  -}}
+    {{- $page.Store.Set "hasDrawio" true -}}
+  {{- end -}}
 {{- end -}}

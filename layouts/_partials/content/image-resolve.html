@@ -1,46 +1,22 @@
 {{- /* Resolve image metadata without fetching remote sources. */ -}}
 {{- $name := .name | default "image" -}}
-{{- /* Error label: the Markdown image hook and the gallery fence are not
-       shortcodes, so their messages must not send authors looking for one. */ -}}
 {{- $label := printf "shortcode %q" $name -}}
 {{- if eq $name "image" }}{{ $label = "image" }}{{ else if eq $name "gallery" }}{{ $label = "gallery fence" }}{{ end -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $page := .page -}}
-{{- /* Nothing here stops the build. An unusable src resolves to an empty one
-       and the caller renders no image; a bad optional field falls back. */ -}}
 {{- $sourceValue := .src -}}
-{{- $source := "" -}}
-{{- if ne (printf "%T" $sourceValue) "string" -}}
-  {{- warnf "%s: src must be a string at %s; dropping the image" $label $position -}}
-{{- else -}}
-  {{- $source = strings.TrimSpace $sourceValue -}}
-  {{- if not $source -}}
-    {{- warnf "%s: src must not be empty at %s; dropping the image" $label $position -}}
-  {{- end -}}
-{{- end -}}
+{{- if eq (printf "%T" $sourceValue) "string" }}{{ $sourceValue = strings.TrimSpace $sourceValue }}{{ end -}}
 {{- $validated := partial "content/url.html" (dict
-  "name" $name "parameter" "src" "position" $position "value" $source "kind" "image"
+  "name" $name "label" $label "parameter" "src" "position" $position "value" $sourceValue "kind" "image"
 ) -}}
-{{- $parsedResult := try (urls.Parse $source) -}}
-{{- $scheme := "" -}}
-{{- $parsed := urls.Parse "" -}}
-{{- if $parsedResult.Err -}}
-  {{- warnf "%s: invalid src %q at %s: %s; dropping the image" $label $source $position $parsedResult.Err -}}
-  {{- $source = "" -}}
-{{- else -}}
-  {{- $parsed = $parsedResult.Value -}}
-  {{- $scheme = lower $parsed.Scheme -}}
-{{- end -}}
+{{- $source := $validated.raw -}}
+{{- $scheme := $validated.scheme -}}
 
 {{- $kind := "static" -}}
 {{- $resource := false -}}
 {{- $lookup := strings.TrimPrefix "/" $source -}}
 {{- if not $scheme -}}
-  {{- if eq (.matchMode | default "exact") "legacy" -}}
-    {{- $resource = $page.Resources.GetMatch (printf "**%s*" $lookup) -}}
-  {{- else -}}
-    {{- $resource = $page.Resources.Get $lookup -}}
-  {{- end -}}
+  {{- $resource = $page.Resources.Get $lookup -}}
   {{- if $resource -}}
     {{- $kind = "page" -}}
   {{- else -}}
@@ -94,7 +70,7 @@
     {{- with index . "byline" }}{{ $byline = strings.TrimSpace (printf "%v" .) }}{{ end -}}
   {{- end -}}
 {{- else -}}
-  {{- $extension := lower (strings.TrimPrefix "." (path.Ext $parsed.Path)) -}}
+  {{- $extension := lower (strings.TrimPrefix "." (path.Ext $validated.path)) -}}
   {{- $mediaTypes := dict
     "avif" "image/avif" "bmp" "image/bmp" "gif" "image/gif"
     "heic" "image/heic" "heif" "image/heif" "ico" "image/x-icon"

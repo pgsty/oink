@@ -360,13 +360,6 @@
   }
 }
 
-.td-content-card--copper {
-  --td-card-accent: var(--td-brand-copper, #b87333);
-}
-.td-content-card--gray {
-  --td-card-accent: var(--bs-secondary-color);
-}
-
 .td-content-card__image {
   display: block;
   width: 100%;
@@ -432,22 +425,6 @@
 
   > p {
     margin-block: 0 0.4rem;
-  }
-}
-
-.td-content-card__links {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-block-start: 0.6rem;
-
-  a {
-    padding: 0.1rem 0.55rem;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0.3rem;
-    font-size: 0.8rem;
   }
 }
 

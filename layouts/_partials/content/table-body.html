@@ -4,7 +4,7 @@
 {{- $matrix := .matrix | default false -}}
 <div class="{{ delimit .wrapperClasses " " }}"{{ if eq $format "html" }} tabindex="0" role="region" aria-label="{{ T "ui_table_scroll" }}"{{ end }}>
 <table{{ with .id }} id="{{ . }}"{{ end }}{{ with .tableClasses }} class="{{ delimit . " " }}"{{ end }}
-  {{- range $key, $value := .generic }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" .generic }}>
   {{- with .caption }}
   <caption class="td-table__caption">{{ . }}</caption>
   {{- end }}

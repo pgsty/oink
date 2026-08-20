@@ -13,7 +13,7 @@ from test_site import build_fixture_public, fixture_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/page-[^"]+\.js)"[^>]*>')
 VALID_IMAGE = "/media/content-primitives-static.svg"
 TALL_IMAGE = "/media/content-primitives-tall.svg"
@@ -147,7 +147,7 @@ def temp_page_build(hugo: str, body: str, *, front: str = "", panic_on_warning: 
         (content / "index.md").write_text("---\ntitle: Gallery test\noutputs: [HTML, markdown]\n" + front + "---\n\n" + body)
         destination = temp_path / "public"
         extra = ["--panicOnWarning"] if panic_on_warning else []
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn", *extra)
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn", *extra)
         html = ""
         markdown = ""
         if result.returncode == 0:
@@ -187,7 +187,7 @@ def check_escaping_and_forms(hugo: str) -> list[str]:
 
 
 def check_invalid_cases(hugo: str) -> list[str]:
-    """Invalid fences fail the build with the offending line, not silently."""
+    """Invalid fences warn with the offending line and fail strict builds."""
     errors: list[str] = []
     cases = (
         ("no-image", fence("just some text"), "must start with a Markdown image"),
@@ -201,9 +201,6 @@ def check_invalid_cases(hugo: str) -> list[str]:
     for name, body, expected in cases:
         result, _, _ = temp_page_build(hugo, body)
         output = f"{result.stdout}{result.stderr}"
-        # Converted fences warn and degrade; unconverted ones still errorf.
-        # The contract that holds for both: the problem is named, and the
-        # build fails under --panicOnWarning.
         require(expected in output, f"Gallery invalid case {name} lacks {expected!r}: {output[:400]}", errors)
         strict, _, _ = temp_page_build(hugo, body, panic_on_warning=True)
         require(strict.returncode != 0, f"Gallery invalid case {name} survived --panicOnWarning", errors)
@@ -214,7 +211,7 @@ def check_subpath(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-gallery-subpath-") as temp:
         destination = Path(temp) / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"Gallery subpath fixture failed to build: {result.stdout}{result.stderr}")
             return errors

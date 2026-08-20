@@ -1,9 +1,5 @@
-{{- /* Include a page resource or a mounted file (v5 §1.2, replaces readfile).
-       Named parameters only: file (required), code (bool), lang (string, with code).
-       Resolution: page resource → assets → a file under content/ (leading / =
-       content root, else relative to the page directory); a missing file fails
-       the build; no draft placeholder output. Without code=true the file is Markdown
-       rendered in the page context. */ -}}
+{{- /* Include a page resource, asset, or content file. Missing files warn and
+       render nothing; code=false renders Markdown in the page context. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "file" "code" "lang")) -}}
 {{- if or (not .IsNamedParams) (not (isset .Params "file")) -}}
   {{- warnf "shortcode %q requires named parameter file at %s; including nothing" .Name .Position -}}

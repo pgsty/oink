@@ -14,7 +14,7 @@ instead the *outputs* — html, print html, markdown, rss/xml — must satisfy:
   4. <form action> to another host also needs privacy.third_party.
 
 Usage:
-  bin/check-output-security.py --public exampleSite/public --base-url https://example.org/
+  bin/check-output-security.py --public tests/site/public --base-url https://example.org/
   bin/check-output-security.py --public DIR --base-url URL --third-party   # site embeds third-party content
   --allow-host HOST   additional hosts treated as first-party (repeatable; multihost languages)
 Exit 1 with a per-file report on any violation.

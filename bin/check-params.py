@@ -109,6 +109,12 @@ LEGACY_PAGE_KEYS = {
     "downstream_modified",
 }
 
+# A renamed key may be read only by the focused detector that warns and drops
+# it. No renderer or compatibility path may consume the old value.
+LEGACY_PAGE_DETECTORS = {
+    "upstream_attribution": {"layouts/_partials/annotation-items.html"},
+    "downstream_modified": {"layouts/_partials/annotation-items.html"},
+}
 
 
 # The converged shapes must build; the bare-boolean shorthand of every kept
@@ -118,16 +124,20 @@ ACCEPTED_SITE_CASES = [
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
     "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
+    "ui:\n  toc_style: flow\n  toc_taxonomies: false\n  featured_image: hero",
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
     "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
     "body_class: product-td-no-left-sidebar-preview",
     "blog_index: cards\nblog_index_columns: 4",
+    "blog_index: table\nblog_index_toggle: true",
     # The page key is the site key without ui.: a list replaces the site's,
     # and the bare boolean opts one page out of an inherited one.
     "share: [x, copy]",
     "share: false",
+    # The immersive blog recipe, as a section cascade would write it.
+    "featured_image: hero\ntoc_style: flow\ntoc_taxonomies: false\nsidebar_enabled: false",
 ]
 
 INVALID_SITE_CASES = [
@@ -250,9 +260,10 @@ def check_shapes(site: dict[str, set[str]], page: dict[str, set[str]]) -> list[s
                 f"front matter key {key} is not snake_case (read in {sorted(files)[0]})",
                 errors,
             )
+        allowed_detectors = LEGACY_PAGE_DETECTORS.get(first, set())
         require(
-            first not in LEGACY_PAGE_KEYS,
-            f"front matter key {key} was removed; it is still read in {sorted(files)[0]}",
+            first not in LEGACY_PAGE_KEYS or files <= allowed_detectors,
+            f"front matter key {key} was removed; it is still read outside its detector in {sorted(files)[0]}",
             errors,
         )
         require(
@@ -275,11 +286,6 @@ def check_page_parity(site: dict[str, set[str]], page: dict[str, set[str]], para
         )
         require(site_key in site, f"params.{site_key} is documented as page-overridable but no template reads it", errors)
     return errors
-
-
-GENERIC_MEMBERS = {"enable", "disable", "preset", "types", "params"}
-
-
 
 
 def hugo_yaml_values() -> dict[str, str]:
@@ -327,8 +333,6 @@ def check_documented_defaults() -> list[str]:
                 errors,
             )
     return errors
-
-
 
 
 def site_config(params: str) -> str:
@@ -406,7 +410,7 @@ def check_builds(hugo: str) -> list[str]:
 
 
 def check_blog_index_enum(hugo: str) -> list[str]:
-    """A value outside `list | cards` fails the build and names the allowed set.
+    """A value outside `list | cards | table` warns and names the allowed set.
 
     `blog/list.html` is the only reader of the key, and the shared one-page
     fixture above has no blog section, so this case brings its own."""
@@ -426,7 +430,7 @@ def check_blog_index_enum(hugo: str) -> list[str]:
         strict = subprocess.run(command + ["--panicOnWarning"], capture_output=True, text=True, check=False)
         require(result.returncode == 0,
                 f"a form outside the enum stopped the build instead of warning: {output[-400:]}", errors)
-        require("invalid params.ui.blog_index" in output and "list | cards" in output
+        require("invalid params.ui.blog_index" in output and "list | cards | table" in output
                 and "list" in output,
                 f"the blog index warning does not name the allowed forms and the fallback: {output[-400:]}", errors)
         require(strict.returncode != 0,
@@ -434,32 +438,25 @@ def check_blog_index_enum(hugo: str) -> list[str]:
     return errors
 
 
-
 def check_no_errorf() -> list[str]:
-    """The theme never calls errorf (ADR-0002).
-
-    One errorf aborts the whole build, so in `hugo server` a single author's
-    typo serves HTTP 500 on every URL of the site rather than degrading the
-    one page they were editing. Invalid input warns and falls back instead,
-    and --panicOnWarning at every publishing gate is what keeps it fatal
-    where that matters.
-    """
+    """Author input warns and falls back; strict publication rejects warnings."""
     errors: list[str] = []
     pattern = re.compile(r"\berrorf\s+\"")
-    for path in sorted((ROOT / "layouts").rglob("*")):
-        if not path.is_file() or path.suffix not in {".html", ".md", ".xml", ".txt"}:
-            continue
-        hits = len(pattern.findall(path.read_text(encoding="utf-8", errors="ignore")))
-        if hits:
-            relative = path.relative_to(ROOT).as_posix()
-            require(False, f"{relative} calls errorf {hits}x; warn and fall back instead (ADR-0002)", errors)
+    for root in (ROOT / "layouts", ROOT / "assets" / "json"):
+        for path in sorted(root.rglob("*")):
+            if not path.is_file() or path.suffix not in {".html", ".json", ".md", ".xml", ".txt"}:
+                continue
+            hits = len(pattern.findall(path.read_text(encoding="utf-8", errors="ignore")))
+            if hits:
+                relative = path.relative_to(ROOT).as_posix()
+                require(False, f"{relative} calls errorf {hits}x; warn and fall back instead", errors)
     return errors
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--hugo", default="hugo")
-    parser.add_argument("--source-only", action="store_true", help="skip the legacy-key build matrix")
+    parser.add_argument("--source-only", action="store_true", help="skip the invalid-value build matrix")
     args = parser.parse_args()
 
     site, page, param_reads = scan_read_points()

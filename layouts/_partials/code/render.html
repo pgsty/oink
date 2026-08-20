@@ -22,10 +22,7 @@
      {{- if $config.collapsible }} data-td-collapse-lines="{{ $config.collapseLines }}"{{ end }}
      {{- if $config.label }} role="group" aria-label="{{ $config.label }}"
      {{- else if $config.filename }} role="group" aria-labelledby="{{ $config.filenameID }}"{{ end }}
-     {{- range $name, $value := $config.genericAttributes }}
-     {{- $escapedValue := printf "%v" $value | htmlEscape -}}
-     {{ printf ` %s="%s"` $name $escapedValue | safeHTMLAttr }}
-     {{- end }}>
+     {{- partial "content/attrs.html" $config.genericAttributes }}>
   {{- if $config.filename }}
   <div class="td-code__header">
     <span class="td-code__filename" id="{{ $config.filenameID }}" title="{{ $config.filename }}">{{ $config.filename }}</span>

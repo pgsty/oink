@@ -8,9 +8,7 @@
 {{- $languageKey := lower $language -}}
 {{- $outputFormat := $page.Store.Get "tdOutputFormat" | default "html" -}}
 {{- $interactive := eq (lower $outputFormat) "html" -}}
-{{- $renderScope := $page.Store.Get "tdRenderScope" | default "" -}}
 {{- $ownerKey := printf "%v" (.key | default $position) -}}
-{{- if $renderScope }}{{ $ownerKey = printf "%s-%s" $renderScope $ownerKey }}{{ end -}}
 
 {{- $hasFilename := isset $attrs "filename" -}}
 {{- $hasTitle := isset $attrs "title" -}}
@@ -52,6 +50,7 @@
   {{- end -}}
 {{- end -}}
 {{- $autoID := not $rootID -}}
+{{- if not $autoID }}{{ $page.Store.Set "hasAuthoredCodeID" true }}{{ end -}}
 {{- if not $rootID -}}
   {{- $pageHash := printf "%.8s" (md5 $page.RelPermalink) -}}
   {{- $key := $ownerKey | anchorize -}}

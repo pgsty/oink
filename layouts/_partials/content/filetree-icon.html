@@ -1,13 +1,3 @@
-{{- /*
-  Default icon for one FileTree entry.
-
-  Input dict: name, kind (dir | file), icon (author override, may be empty).
-  Returns a slice of Font Awesome class pairs: two for a default directory
-  (closed, open — the <details> state picks one), one otherwise. The file
-  table is keyed by lower-cased extension or by whole file name; anything
-  else is the plain file glyph. Icons stay Font Awesome class pairs — there
-  is no icon registry.
-*/ -}}
 {{- $name := .name -}}
 {{- $kind := .kind -}}
 {{- $result := slice -}}

@@ -19,35 +19,12 @@ from test_site import build_fixture_public, fixture_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
-
-
-def temp_page_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_config: str = "", extra_files: dict[str, str] | None = None) -> tuple[subprocess.CompletedProcess[str], Path, tempfile.TemporaryDirectory]:
-    """Build the example site with a replacement content directory (temp handle returned)."""
-    temp = tempfile.TemporaryDirectory(prefix=prefix)
-    temp_path = Path(temp.name)
-    content = temp_path / "content"
-    for relative, body in pages.items():
-        target = content / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(body, encoding="utf-8")
-    for relative, body in (extra_files or {}).items():
-        target = temp_path / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(body, encoding="utf-8")
-    destination = temp_path / "public"
-    command = [hugo, "--source", str(EXAMPLE), "--contentDir", str(content), "--destination", str(destination), "--logLevel", "warn"]
-    if extra_config:
-        override = temp_path / "override.yaml"
-        override.write_text(extra_config, encoding="utf-8")
-        command.extend(["--config", f"{EXAMPLE / 'hugo.yaml'},{override}"])
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
-    return result, destination, temp
 
 
 def check_outputs(public: Path) -> list[str]:
@@ -278,7 +255,7 @@ def check_subpath(hugo: str) -> list[str]:
     with tempfile.TemporaryDirectory(prefix="oink-primitives-subpath-") as temp:
         destination = Path(temp) / "public"
         result = subprocess.run(
-            [hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn"],
+            [hugo, "--source", str(FIXTURE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -323,7 +300,7 @@ def check_rss_output(hugo: str) -> list[str]:
         override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [RSS]\n")
         destination = temp_path / "public"
         result = subprocess.run(
-            [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", f"{EXAMPLE / 'hugo.yaml'},{override}", "--logLevel", "warn"],
+            [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", f"{FIXTURE / 'hugo.yaml'},{override}", "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -490,7 +467,7 @@ def check_field_parity(html: str) -> list[str]:
 
     The two forms exist because only the shortcode can carry block-level
     descriptions; everything above the description is one shared renderer, and
-    that is what this compares (docs/components.md).
+    that is what this compares (oink.pgsty.com/docs/design/components/).
     """
     errors: list[str] = []
     terms: dict[str, list[str]] = {}
@@ -525,7 +502,7 @@ def check_field_anchors(html: str) -> list[str]:
     it deletes punctuation instead of converting it, and `params.ui.typography`
     becomes `paramsuitypography`, which nobody can link to without reading the
     generated HTML first. The rule is lowercase, then each run of punctuation
-    collapses to one hyphen (docs/components.md).
+    collapses to one hyphen (oink.pgsty.com/docs/design/components/).
     """
     errors: list[str] = []
     for name, anchor in (
@@ -759,57 +736,65 @@ INVALID_CASES = (
 )
 
 
+UNBATCHED_INVALID_CASES = {"field-positional", "include-positional"}
+
+
 def check_invalid_cases(hugo: str) -> list[str]:
     errors: list[str] = []
+    batched = tuple(case for case in INVALID_CASES if case[0] not in UNBATCHED_INVALID_CASES)
+    with tempfile.TemporaryDirectory(prefix="oink-primitives-invalid-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs"
+        content.mkdir(parents=True)
+        for name, body, _ in batched:
+            (content / f"{name}.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
+        (content / "param-map.md").write_text("---\ntitle: Param map\nparams:\n  fixture_map:\n    a: 1\n---\n\n{{< param fixture_map >}}\n")
+        command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn"]
+        result = subprocess.run(
+            [*command, "--destination", str(temp_path / "public")],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode == 0, f"batched invalid cases failed to render safely: {output.strip()}", errors)
+        for name, _, expected in batched:
+            case_output = "\n".join(line for line in output.splitlines() if f"content/docs/{name}.md:" in line)
+            require(expected in case_output, f"invalid case {name} did not report {expected!r} at its position: {case_output or output.strip()}", errors)
+            require((temp_path / f"public/docs/{name}/index.html").is_file(), f"invalid case {name} lost its safe output", errors)
+        param_output = "\n".join(line for line in output.splitlines() if "content/docs/param-map.md:" in line)
+        require("only scalar values" in param_output, f"param map did not report the scalar rule at its position: {param_output or output.strip()}", errors)
+        param_page = temp_path / "public/docs/param-map/index.html"
+        require(param_page.is_file(), "param map lost its safe output", errors)
+        if param_page.is_file():
+            require("fixture_map" not in param_page.read_text(), "param map value reached the rendered page", errors)
+        strict = subprocess.run(
+            [*command, "--destination", str(temp_path / "public-strict"), "--panicOnWarning"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        require(strict.returncode != 0, "batched invalid cases survived --panicOnWarning", errors)
+
     for name, body, expected in INVALID_CASES:
+        if name not in UNBATCHED_INVALID_CASES:
+            continue
         with tempfile.TemporaryDirectory(prefix=f"oink-primitives-{name}-") as temp:
             temp_path = Path(temp)
             content = temp_path / "content/docs"
             content.mkdir(parents=True)
             (content / "invalid.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
+            command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn"]
             result = subprocess.run(
-                [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public"), "--logLevel", "warn"],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            output = result.stdout + result.stderr
-            # Whether a bad value stops the build is no longer the contract --
-            # converted call sites warn and degrade, unconverted ones still
-            # errorf. What must hold either way is that the problem is named
-            # with its position and that it is fatal under --panicOnWarning.
-            if expected not in output:
-                errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
-            if "content/docs/invalid.md:" not in output:
-                errors.append(f"invalid case {name} did not report its position")
-            strict = subprocess.run(
-                [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning"],
+                [*command, "--destination", str(temp_path / "public")],
                 cwd=ROOT, capture_output=True, text=True, check=False,
             )
-            if strict.returncode == 0:
-                errors.append(f"invalid case {name} survived --panicOnWarning")
-    # param with a map value needs front matter
-    with tempfile.TemporaryDirectory(prefix="oink-primitives-param-map-") as temp:
-        temp_path = Path(temp)
-        content = temp_path / "content/docs"
-        content.mkdir(parents=True)
-        (content / "invalid.md").write_text("---\ntitle: Param map\nparams:\n  fixture_map:\n    a: 1\n---\n\n{{< param fixture_map >}}\n")
-        result = subprocess.run(
-            [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public"), "--logLevel", "warn"],
-            cwd=ROOT, capture_output=True, text=True, check=False,
-        )
-        output = result.stdout + result.stderr
-        # param warns and prints nothing rather than stopping the build; what
-        # must hold is that the map never reaches the page and that publishing
-        # still fails.
-        require("only scalar values" in output, "param did not report the non-scalar value", errors)
-        strict = subprocess.run(
-            [hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning"],
-            cwd=ROOT, capture_output=True, text=True, check=False,
-        )
-        require(strict.returncode != 0, "param survived --panicOnWarning", errors)
-        require("only scalar values" in output, f"param map did not report the scalar rule: {output.strip()}", errors)
+            output = result.stdout + result.stderr
+            case_output = "\n".join(line for line in output.splitlines() if "content/docs/invalid.md:" in line)
+            require(expected in case_output, f"invalid case {name} did not report {expected!r} at its position: {case_output or output.strip()}", errors)
+            page = temp_path / "public/docs/invalid/index.html"
+            require(page.is_file() == (result.returncode == 0), f"invalid case {name} left partial output", errors)
+            strict = subprocess.run(
+                [*command, "--destination", str(temp_path / "public-strict"), "--panicOnWarning"],
+                cwd=ROOT, capture_output=True, text=True, check=False,
+            )
+            require(strict.returncode != 0, f"invalid case {name} survived --panicOnWarning", errors)
     return errors
 
 

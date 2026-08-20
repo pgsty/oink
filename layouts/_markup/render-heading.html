@@ -1,12 +1,12 @@
 {{- /* Every heading carries its id and a self-link anchor that the content
      styles reveal on hover (`.td-heading-self-link`). Block attributes follow
      the shared policy: `id` is consumed, `class` passes through validated,
-     data-* / aria-* pass through, anything else fails the build. */ -}}
+     data-* / aria-* pass through, and unsupported attributes warn and drop. */ -}}
 {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id") "position" .Page.Path "kind" "heading") -}}
 {{- $id := index $policy.consumed "id" | default .Anchor -}}
 <h{{ .Level }} id="{{ $id }}"
   {{- with $policy.class }} class="{{ . }}"{{ end -}}
-  {{- range $name, $value := $policy.generic }}{{ printf " %s=%q" $name $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" $policy.generic }}>
   {{- .Text -}}
   <a class="td-heading-self-link" href="#{{ $id | safeURL }}" aria-label="{{ T "ui_heading_self_link" }}"></a>
 </h{{ .Level }}>

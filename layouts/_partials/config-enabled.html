@@ -1,16 +1,3 @@
-{{- /* Resolve an on/off feature that keeps a map because it carries further
-     settings (params.comments, params.plantuml, params.drawio, ...). Both
-     forms are accepted:
-
-       plantuml: false            bare boolean
-       plantuml: { enable: true } map with an `enable` member
-
-     Anything else warns and resolves to `false`. An opt-in feature that cannot
-     read its own switch is off, which is the state the theme ships anyway;
-     `--panicOnWarning` still turns the typo into a failure where it counts.
-
-     Input: dict "value" <raw parameter> "key" "params.<name>".
-     Returns: bool. */ -}}
 {{- $value := .value -}}
 {{- $enabled := false -}}
 {{- if eq (printf "%T" $value) "bool" -}}

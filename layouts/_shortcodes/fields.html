@@ -1,39 +1,13 @@
-{{- /* Render ordered field definitions collected by field children (`<`
-       collector: children keep raw Markdown descriptions, the parent renders
-       them with RenderString for HTML / print / RSS and emits the source
-       Markdown for the Markdown output). Shared <dl> renderer:
-       content/fields-list.html (also used by the `{.fields}` table hook). */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "attributes" true "allowed" (slice "label" "id")) -}}
-{{- /* Container attributes mirror the `{.fields}` table hook (content/attributes.html):
-       named parameters, plus class token validation and data- / aria- passthrough,
-       so the same block can be styled and targeted whichever form wrote it. */ -}}
 {{- $allowed := slice "label" "id" -}}
-{{- $generic := dict -}}
-{{- $classes := slice -}}
-{{- range $name, $value := .Params -}}
-  {{- $lower := lower $name -}}
-  {{- if in $allowed $lower -}}
-  {{- else if eq $lower "class" -}}
-    {{- range $token := split (strings.TrimSpace (printf "%v" $value)) " " -}}
-      {{- $token = strings.TrimSpace $token -}}
-      {{- if $token -}}
-        {{- if not (findRE `^[A-Za-z0-9_-]+$` $token) -}}
-          {{- warnf "shortcode %q: class token %q contains unsupported characters at %s; ignoring it" $.Name $token $.Position -}}{{- continue -}}
-        {{- end -}}
-        {{- if not (in $classes $token) }}{{ $classes = $classes | append $token }}{{ end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- else if or (strings.HasPrefix $lower "on") (eq $lower "style") (eq $lower "srcdoc") -}}
-    {{- warnf "shortcode %q: unsafe attribute %q is not supported at %s; ignoring it" $.Name $name $.Position -}}
-  {{- else if or (strings.HasPrefix $lower "data-") (strings.HasPrefix $lower "aria-") -}}
-    {{- if not (findRE `^[a-z][a-z0-9_:.-]*$` $lower) -}}
-      {{- warnf "shortcode %q: invalid attribute name %q at %s; ignoring it" $.Name $name $.Position -}}
-    {{- end -}}
-    {{- $generic = merge $generic (dict $lower (printf "%v" $value)) -}}
-  {{- else -}}
-    {{- warnf "shortcode %q: unsupported parameter %q at %s; ignoring it" $.Name $name $.Position -}}
-  {{- end -}}
-{{- end -}}
+{{- $attributes := dict -}}
+{{- if .IsNamedParams }}{{ $attributes = .Params }}{{ end -}}
+{{- $policy := partial "content/attributes.html" (dict
+  "attributes" $attributes "allowed" $allowed
+  "position" .Position "kind" (printf "shortcode %q" .Name)
+) -}}
+{{- $generic := $policy.generic -}}
+{{- $classes := $policy.classes -}}
 
 {{- $id := "" -}}
 {{- if and .IsNamedParams (isset .Params "id") -}}
@@ -108,13 +82,7 @@
       "default" $entry.default
     ) -}}
     {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%d#%s" $.Ordinal $key)) -}}
-    {{- /* The anchor is also the render scope. A scope derived from the name
-           instead is not unique -- two names that slug alike (`a.b` and `a-b`)
-           produce one scope, and the ids that nested hooks generate inside both
-           descriptions collide, which is a duplicate id in the document, not
-           merely an ugly one. The anchor registry has already resolved exactly
-           that collision to allocate `field-a-b` and `field-a-b-2`, so reusing
-           its answer is the only source of uniqueness worth having here. */ -}}
+    {{- /* The collision-resolved anchor is also the render scope. */ -}}
     {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" $anchor "content" $entry.description "origin" (printf "shortcode %q at %s" $.Name $.Position))) "descriptionMarkdown" false) -}}
   {{- end -}}
   {{- partial "content/fields-list.html" (dict

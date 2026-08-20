@@ -1,17 +1,5 @@
-// Native (CSS-only) component forms selected by Goldmark block-attribute
-// markers on ordinary Markdown lists (plan/design/components.md v5 §1.4):
-//
-//   1. …          - [Title](/x/) — desc
-//   {.steps}      {.cards}
-//
-// The marker is the class on the list element itself (there is no list render
-// hook), so these selectors are the authoring API. Everything else the theme
-// generates keeps the td- prefix.
-//
-// FileTree and Gallery used to live here too. Both became data fences
-// (```filetree, ```gallery) because a list marker is CSS-only: with no list
-// render hook the theme cannot see the items, so it can give them neither
-// per-item attributes nor — in Gallery's case — an Image Zoom marker.
+// Goldmark list classes are the authoring API for CSS-only steps and cards.
+// FileTree and Gallery use data fences because they need per-item markup.
 
 // ---------------------------------------------------------------------------
 // Steps — ordered list

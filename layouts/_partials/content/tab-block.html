@@ -1,13 +1,3 @@
-{{- /*
-  Wrapper for one block that carries the `tab` attribute (adjacent-block tabs,
-  plan/design/components.md v5 §3.2). Server output is a titled block; the
-  tabs runtime groups adjacent wrappers of the same kind into one tablist.
-
-  Input dict: page, position, tab (label), group, value, kind (code|table),
-  content (HTML). Rules: group  ^[a-z][a-z0-9_-]*$ (optional, first block of
-  the run); value ^[a-z0-9][a-z0-9_-]*$ (required when the run has a group,
-  forbidden otherwise — validated at runtime across the run and here per block).
-*/ -}}
 {{- $page := .page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $tab := strings.TrimSpace (.tab | default "") -}}

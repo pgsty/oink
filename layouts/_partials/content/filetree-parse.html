@@ -1,33 +1,3 @@
-{{- /*
-  Parse the body of a ```filetree fence into a flat, ordered list of nodes.
-
-  Input dict:
-    source    the fence body (.Inner)
-    position  .Position for error messages
-
-  Line grammar:
-
-    <indent> [- | * | + | ├── | └── | |-- | `--] name[/] [# comment] [{key=value …}]
-
-  - Depth comes from an indent stack, so two spaces, four spaces, tabs (= 4
-    columns) and `tree` output (`│   ` groups + a 4-column connector) all work
-    as long as a dedent returns to a level that is open. A bare first line
-    (the `.` or path root that `tree` prints) is a node too.
-  - `[name](url)` is a linked entry; the URL goes through content/url.html.
-  - Everything after the first whitespace-preceded `#` is the comment; `\#`
-    is a literal hash.
-  - A trailing `{…}` block is attributes: icon (one Font Awesome class pair),
-    tone (neutral | info | success | warning | danger), open (true | false,
-    directories only), type (dir | file).
-  - The `N directories, M files` summary line that `tree` prints is skipped.
-
-  Output dict:
-    nodes        slice of dicts: line depth name href external comment icon
-                 tone open type kind children width
-    hasComments  bool
-    nameWidth    max row width in ch (indent + icon slot + name), for the
-                 build-time name column
-*/ -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $source := replace (printf "%s" .source) "\r" "" -}}
 {{- $lines := split (strings.TrimRight "\n" $source) "\n" -}}

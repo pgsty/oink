@@ -296,39 +296,6 @@ a > img.td-image {
   white-space: nowrap;
 }
 
-.td-book-example {
-  display: flex;
-  gap: 0.35em;
-  align-items: baseline;
-  width: 100%;
-  margin-block: 2rem 0.75rem;
-  padding: 0.7rem 0.9rem;
-  scroll-margin-block-start: var(--td-scroll-padding-top);
-  border: 1px solid var(--bs-border-color);
-  border-inline-start: 4px solid var(--bs-primary);
-  border-radius: var(--bs-border-radius);
-  background: var(--bs-tertiary-bg);
-  font-family: var(--td-ui-font-family);
-  font-size: 0.95rem;
-  line-height: 1.5;
-
-  &__label {
-    flex: none;
-    color: var(--bs-body-color);
-    font-family: var(--td-meta-font-family);
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-  }
-
-  &__caption {
-    min-width: 0;
-  }
-}
-
-.td-book-example + :is(.highlight, pre, .td-code) {
-  margin-block-start: 0;
-}
-
 .td-book-toc,
 .td-book-figures {
   max-width: 100%;

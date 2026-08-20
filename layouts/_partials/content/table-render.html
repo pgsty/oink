@@ -1,29 +1,4 @@
-{{- /*
-  The table render hook's implementation, shared by every output format.
-
-  Hugo resolves render hooks per output format. Image, blockquote, and code
-  block hooks fall back to the base `_markup/render-<kind>.html` for a custom
-  format, but the table hook does not: under `print` or `rss` Goldmark's default
-  table renderer runs instead, which drops the whole table family (`.fields`
-  becomes a bare <table>, `caption`/`meta`/`num` leak as HTML attributes).
-  `_markup/render-table.{html,print.html,rss.xml}` are therefore one-line
-  delegates to this partial. Verified on Hugo 0.160.1 and 0.164.0.
-*/ -}}
-{{- /*
-  Table family (plan/design/components.md v5 §3.11):
-
-    | … |                       default table (scroll wrapper, th scope=col)
-    {.full-width}               overflow the prose column
-    {.fields}                   reference table -> <dl> (positional rule)
-    {.fields meta="type - default"} name the semantic role of each middle column
-    {.matrix}                   row headers + sticky first column / header
-    {caption="…"}               <caption> (no number, not a Book target)
-    {#id num="9-1" caption="…"} Book numbered table (registers a `tbl` target)
-    {tab="…" group= value=}     adjacent tables become tabs
-
-  Any other class token passes through for site CSS; unknown keys / style /
-  on* are build errors (content/attributes.html).
-*/ -}}
+{{- /* Validate mutually exclusive table modes and attributes. */ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id" "caption" "num" "tab" "group" "value" "meta") "position" .Position "kind" "table") -}}

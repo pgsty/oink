@@ -1,15 +1,3 @@
-{{- /* ```gallery — a responsive grid of related images as a data fence. The body is parsed by
-     content/gallery-parse.html, one `![alt](src) # description {…}` per line.
-
-     Because the theme now renders the images itself, every eligible image
-     carries the explicit Image Zoom marker at emit time; Zoom needs no
-     structural exception for galleries any more.
-
-     Outputs: interactive HTML gets the grid with zoom markers; print and RSS
-     get the same grid stacked and without the markers. Markdown output needs
-     no branch here — layouts/all.md emits `.RenderShortcodes`, which expands
-     shortcodes but does not run render hooks, so the fence reaches that
-     output as its own source, exactly like every other data fence. */ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $policy := partial "content/attributes.html" (dict
@@ -46,8 +34,7 @@
   {{- end -}}
   {{- $rows = $rows | append (printf `<li class="%s">%s</li>` (delimit $itemClasses " ") $body) -}}
 {{- end -}}
-{{- $genericAttrs := "" -}}
-{{- range $name, $value := $policy.generic }}{{ $genericAttrs = printf `%s %s="%s"` $genericAttrs $name (htmlEscape $value) }}{{ end -}}
+{{- $genericAttrs := partial "content/attrs.html" $policy.generic -}}
 {{- $html := printf `<ul class="%s"%s>%s</ul>` (delimit $classes " ") $genericAttrs (delimit $rows "") -}}
 
 {{- if $tab -}}

@@ -14,7 +14,7 @@ from test_site import build_fixture_public, fixture_config, fixture_media_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 PAGE_IMAGE = ROOT / "tests/site/content/fixtures/media-primitives/page.png"
 
 
@@ -32,6 +32,13 @@ def check_outputs(public: Path) -> list[str]:
     page = (public / "fixtures/media-primitives/index.html").read_text()
     markdown = (public / "fixtures/media-primitives/index.md").read_text()
     print_page = (public / "_print/fixtures/index.html").read_text()
+
+    def feature_bundle(source: str) -> str:
+        match = re.search(r'<script src="([^"]*/js/page-[^"]+\.js)"', source)
+        if not match:
+            return ""
+        path = public / match.group(1).lstrip("/")
+        return path.read_text(encoding="utf-8") if path.is_file() else ""
 
     for marker in (
         # attribute line + {command=/options=}: processed figure, Zoom marker
@@ -73,6 +80,11 @@ def check_outputs(public: Path) -> list[str]:
     require(page.count('loading="lazy" decoding="async"') == 8, "images lack stable loading attributes", errors)
     require("td-imgproc" not in page and "card-img-top" not in page, "legacy imgproc markup survived", errors)
     require("resources.GetRemote" not in page, "rendered media output leaked template code", errors)
+    require('id="td-drawio-config"' in page and "drawioframe" in feature_bundle(page),
+            "a page with PNG/SVG candidates did not load the Draw.io runtime", errors)
+    badge = (public / "docs/badge/index.html").read_text()
+    require('id="td-drawio-config"' not in badge and "drawioframe" not in feature_bundle(badge),
+            "Draw.io leaked onto a page without image candidates", errors)
 
     # Every image form is now a render hook, and layouts/all.md emits
     # .RenderShortcodes, which does not run hooks — so Markdown output is the
@@ -138,7 +150,7 @@ def check_resolver_matrix(hugo: str) -> list[str]:
             '{{< media-resolve-test src="https://example.invalid/remote.png?fixture=1" alt="Remote raster" >}}\n'
         )
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_media_config(), "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_media_config(), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"resolver matrix failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -197,7 +209,7 @@ def check_image_hook_matrix(hugo: str) -> list[str]:
         override = temp_path / "rss.yaml"
         override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [HTML, markdown, RSS]\n")
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", fixture_media_config(override), "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", fixture_media_config(override), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"image hook matrix failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -241,7 +253,7 @@ def check_subpath(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-media-subpath-") as temp:
         destination = Path(temp) / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"media subpath fixture failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -275,7 +287,7 @@ def check_rss_output(hugo: str) -> list[str]:
         override = temp_path / "rss.yaml"
         override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [RSS]\n")
         destination = temp_path / "public"
-        result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", f"{EXAMPLE / 'hugo.yaml'},{override}", "--logLevel", "warn")
+        result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", f"{FIXTURE / 'hugo.yaml'},{override}", "--logLevel", "warn")
         if result.returncode != 0:
             errors.append(f"RSS media fixture failed to build: {result.stdout}{result.stderr}")
             return errors
@@ -375,16 +387,13 @@ def check_invalid_cases(hugo: str) -> list[str]:
             if "{{< image" in body:
                 body = f"{body.rstrip()}{{{{< /image >}}}}\n"
             (content / "index.md").write_text(f"---\ntitle: Invalid media {name}\n---\n\n{body}")
-            result = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public"), "--logLevel", "warn")
+            result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public"), "--logLevel", "warn")
             output = result.stdout + result.stderr
-            # Converted hooks warn and drop the image; unconverted ones still
-            # errorf. Both must name the problem with its position and fail
-            # under --panicOnWarning.
             if expected not in output:
                 errors.append(f"invalid media case {name} did not report {expected!r}: {output.strip()}")
             if "content/docs/invalid/index.md:" not in output:
                 errors.append(f"invalid media case {name} did not report its position")
-            strict = run_hugo(hugo, "--source", str(EXAMPLE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning")
+            strict = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning")
             if strict.returncode == 0:
                 errors.append(f"invalid media case {name} survived --panicOnWarning")
     return errors
@@ -406,7 +415,7 @@ def check_template_contracts() -> list[str]:
     # numbering, linking and captions, and the render hook owns all of them.
     require(not (ROOT / "layouts/_shortcodes/image.html").exists(), "image.html must stay deleted", errors)
     require("data-zoom-src" not in hook, "the render hook emits the retired data-zoom-src attribute", errors)
-    for marker in ('partial "content/image-process.html"', '"command"', '"options"', '"link"', "td-figure__byline", 'partial "content/image-resolve.html"', 'partial "content/attributes.html"', ".IsBlock", '"width" "height"', 'partial "book/register-target.html"', "wrapStandAloneImageWithinParagraph", 'loading="lazy" decoding="async"', "absURL", "td-figure", "td-image", ".Title"):
+    for marker in ('partial "content/image-process.html"', '"command"', '"options"', '"link"', "td-figure__byline", 'partial "content/image-resolve.html"', 'partial "content/attributes.html"', ".IsBlock", '"width" "height"', 'partial "book/register-target.html"', 'loading="lazy" decoding="async"', "absURL", "td-figure", "td-image", ".Title"):
         require(marker in hook, f"render-image.html lacks {marker}", errors)
     require(not (ROOT / "layouts/_shortcodes/imgproc.html").exists(), "imgproc.html must stay deleted", errors)
     static_output = 'partial "content/static-image-output.html"'

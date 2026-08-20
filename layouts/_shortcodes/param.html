@@ -1,7 +1,7 @@
 {{- /* Print a page parameter, falling back to site configuration. Positional: name.
        A missing value or a non-scalar warns and prints nothing rather than
        stopping the build; only scalars (string / number / bool) are printed,
-       and output is HTML-escaped plain text (v5 §1.2). */ -}}
+       and output is HTML-escaped plain text. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- $name := .Get 0 -}}
 {{- $value := "" -}}

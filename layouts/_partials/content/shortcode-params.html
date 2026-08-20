@@ -1,25 +1,5 @@
-{{/* Reject unknown and mis-shaped shortcode parameters.
-
-     A typo like `{{< fig num="1-1" captoin="…" >}}` would otherwise build
-     cleanly and silently drop the caption. This warns instead, naming the
-     parameter and the position, and the shortcode renders without it — one
-     mistyped attribute costs that attribute, not every page of the site.
-     --panicOnWarning is what keeps it fatal on publish. Every shortcode calls
-     this, so the check cannot be forgotten for a new one.
-
-     Parameters:
-       shortcode  the calling shortcode's context (`.`)
-       allowed    slice of accepted named parameters (default: none)
-       attributes true when the shortcode also mirrors the block-attribute
-                  policy (class plus data-* / aria-* passthrough) and validates
-                  those values itself — see content/attributes.html
-       form       "named"      named parameters only (default)
-                  "none"       the shortcode takes no parameters
-                  "positional" positional parameters only
-                  "any"        a positional shorthand is allowed; named
-                               parameters are still checked against `allowed`
-
-     Returns "" so it composes as {{ partial … }} at the top of a shortcode. */ -}}
+{{/* Reject unknown parameters and named/positional form mismatches. Attribute
+     passthrough is validated by the caller. */ -}}
 {{- $sc := .shortcode -}}
 {{- $allowed := .allowed | default (slice) -}}
 {{- $form := .form | default "named" -}}

@@ -1,28 +1,8 @@
-{{- /*
-  Shared Fields renderer (<dl>) used by the `{{% fields %}}` shortcode and the
-  `{.fields}` table hook (plan/design/components.md v5 §3.5).
-
-  Input dict:
-    label        optional plain-text label above the list
-    labelID      id for the label element (required when label is set)
-    format       output format ("html" | "print" | "rss"). Entry anchors and the
-                 self-link are HTML-only: print and RSS both concatenate many
-                 pages into one document, where page-scoped ids would collide
-    entries      slice of dicts:
-                   name          field name (already HTML-safe)
-                   anchor        page-unique id for the entry (content/field-anchor.html)
-                   meta          slice of {label, value, class}; value/label HTML-safe;
-                                 an empty value renders the label alone
-                   description   HTML (descriptionMarkdown=false) or raw Markdown
-                   descriptionMarkdown  when true the description is emitted as
-                                 Markdown surrounded by blank lines so Goldmark
-                                 renders it (only valid from `%` shortcodes)
-*/ -}}
 {{- $label := .label | default "" -}}
 {{- $labelID := .labelID | default "" -}}
 {{- $format := lower (.format | default "html") -}}
 <div class="td-fields{{ with .class }} {{ . }}{{ end }}"{{ with .id }} id="{{ . }}"{{ end }}
-  {{- range $key, $value := (.generic | default dict) }}{{ printf " %s=%q" $key $value | safeHTMLAttr }}{{ end }}>
+  {{- partial "content/attrs.html" (.generic | default dict) }}>
 {{- if $label }}
 <p class="td-fields__label" id="{{ $labelID }}">{{ $label }}</p>
 {{- end }}

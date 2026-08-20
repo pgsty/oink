@@ -1,26 +1,5 @@
-{{- /*
-  Shared block-attribute policy for render hooks (table / image / codeblock /
-  passthrough / blockquote).
-
-  Input dict:
-    attributes  the hook's .Attributes map (Goldmark block attributes)
-    allowed     slice of attribute names this hook consumes
-    position    .Position for the warning messages
-    kind        hook name for the warning messages ("table", "image", ...)
-
-  Rules (plan/design/components.md v5 §1.4):
-    - allowed keys are returned under "consumed" (present keys only);
-    - "class" is token-validated and passed through (site CSS is legitimate);
-    - data-* and aria-* pass through unchanged;
-    - style, srcdoc, on*, and any other unknown key warn and are dropped.
-      Nothing here stops the build: refusing to emit the attribute is the
-      protection, and --panicOnWarning keeps it fatal on publish. `on*` is
-      listed for completeness -- Goldmark strips an event handler from a block
-      attribute before this partial runs, so in practice the warning fires for
-      it only when a shortcode passes its own parameters through.
-
-  Output dict: consumed (map), class (string), classes (slice), generic (map).
-*/ -}}
+{{- /* Validate consumed, class, data-* and aria-* attributes. Unsafe or
+       unknown keys warn and are omitted. */ -}}
 {{- $attrs := .attributes | default (dict) -}}
 {{- $allowed := .allowed | default (slice) -}}
 {{- $position := .position | default "" -}}
@@ -48,6 +27,7 @@
   {{- else if or (strings.HasPrefix $lower "data-") (strings.HasPrefix $lower "aria-") -}}
     {{- if not (findRE `^[a-z][a-z0-9_:.-]*$` $lower) -}}
       {{- warnf "%s attributes: invalid attribute name %q at %s; ignoring it" $kind $name $position -}}
+      {{- continue -}}
     {{- end -}}
     {{- $generic = merge $generic (dict $lower $text) -}}
   {{- else -}}

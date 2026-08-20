@@ -1,13 +1,4 @@
-// Tabs (plan/design/components.md v5 §3.2): one DOM for the `{{< tabs >}}`
-// shortcode and for adjacent-block runs regrouped by assets/js/tabs.js.
-//
-// .td-tabs
-//   .td-tabs__list[role=tablist] > .td-tabs__tab[role=tab]
-//   .td-tabs__panel[role=tabpanel] > .td-tabs__panel-title + .td-tabs__panel-body
-//
-// Before the runtime marks the set with data-td-tabs-ready every panel is
-// visible with its own title (also the print / no-JS rendering) and the
-// tablist is hidden.
+// Before enhancement and in print, every panel remains visible.
 
 // The tab set shares the code block's card: same canvas, border, radius, and
 // header surface, so a tabbed code group and a single block read as one family.

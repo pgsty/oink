@@ -1,33 +1,3 @@
-{{- /*
-  Parse the body of a ```gallery fence into an ordered list of items.
-
-  Input dict:
-    source    the fence body (.Inner)
-    position  .Position for error messages
-    page      the page, for the shared image resolver
-
-  Line grammar, one item per line:
-
-    ![alt](src) [# description] [{key=value …}]
-
-  - `![alt](src)` is required and anchored at the start of the line, so the alt
-    text stays a first-class field rather than an attribute that is easy to
-    forget. It doubles as the item's title. An empty alt marks the image
-    decorative: it is never zoomed and carries no title.
-  - Everything after a whitespace-preceded `#` is the description; `\#` is a
-    literal hash. Because the image is parsed first, a `#` inside the alt text
-    or the source needs no escaping.
-  - A trailing `{…}` block is attributes: link (the item becomes a link, which
-    also makes it non-zoomable) and class (site CSS tokens).
-  - Sources resolve through content/image-resolve.html, so page resources,
-    global assets, static paths and remote URLs behave exactly as they do for
-    `![alt](src)` in ordinary content.
-
-  Output dict:
-    items          slice of dicts: line src alt description href external class
-                   decorative width height markdownSrc zoomable
-    hasDescription bool
-*/ -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $page := .page -}}
 {{- $source := replace (printf "%s" .source) "\r" "" -}}

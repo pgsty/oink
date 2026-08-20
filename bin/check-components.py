@@ -18,7 +18,7 @@ from test_site import build_fixture_public
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 CANONICAL_TYPES = ("note", "tip", "important", "warning", "caution", "success", "danger", "question", "example", "quote")
 REMOVED_SHORTCODES = (
     "blocks/cover", "blocks/feature", "blocks/lead", "blocks/link-down", "blocks/section",
@@ -243,9 +243,12 @@ def check_data_fences(hugo: str) -> list[str]:
         ("echarts-height", '```echarts {height="wide"}\nseries: []\n```\n', "not a safe CSS length"),
         ("echarts-full", '```echarts {full="yes"}\nseries: []\n```\n', "full must be true or false"),
         ("infographic-empty", "```infographic\n\n```\n", "requires DSL content"),
-        ("infographic-height", '```infographic {height="tall"}\nx\n```\n', "not auto or a safe CSS length"),
+        # Both fences validate the length through `validate.html` now, so they
+        # report it the same way; the message names `auto` as the fallback.
+        ("infographic-height", '```infographic {height="tall"}\nx\n```\n', 'is not a safe CSS length'),
+        ("infographic-height-fallback", '```infographic {height="tall"}\nx\n```\n', 'using "auto"'),
         ("infographic-full", '```infographic {full="yes"}\nx\n```\n', "full must be true or false"),
-        ("checksums-no-base", "```checksums\n" + "a" * 64 + "  file.rpm\n```\n", "base is required unless the page has release front matter"),
+        ("checksums-no-base", "```checksums\n" + "a" * 64 + "  file.rpm\n```\n", "base is required unless the page has release_url front matter"),
         ("checksums-bad-algo", '```checksums {base="https://example.org/dl/" algo="crc"}\n' + "a" * 64 + "  file.rpm\n```\n", "algo must be md5, sha1, sha256, or sha512"),
         ("checksums-bad-group", '```checksums {base="https://example.org/dl/" group="yes"}\n' + "a" * 64 + "  file.rpm\n```\n", "group must be auto"),
         ("checksums-empty", '```checksums {base="https://example.org/dl/"}\n\n```\n', "requires checksum lines"),
@@ -255,9 +258,6 @@ def check_data_fences(hugo: str) -> list[str]:
         result, destination, temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-")
         with temp:
             output = result.stdout + result.stderr
-            # Converted fences warn and render nothing; unconverted ones still
-            # errorf. What holds for both: the problem is named, and the build
-            # fails under --panicOnWarning.
             require(expected in output, f"invalid data fence {name} did not report {expected!r}: {output.strip()[-400:]}", errors)
             strict, _strict_destination, strict_temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-strict-", panic_on_warning=True)
             with strict_temp:
@@ -341,8 +341,6 @@ def check_openapi(hugo: str) -> list[str]:
         )
         with temp:
             output = result.stdout + result.stderr
-            # Converted shortcodes warn and render nothing; unconverted ones
-            # still errorf. Both name the problem and fail --panicOnWarning.
             require(expected in output, f"invalid OpenAPI case {name} did not report {expected!r}: {output[-400:]}", errors)
             strict, _strict_destination, strict_temp = build_site(
                 hugo,
@@ -396,7 +394,7 @@ def check_template_contracts() -> list[str]:
     for name, markers in {
         "render-codeblock-echarts.html": ('partial "content/attributes.html"', '(slice "height" "theme" "full")', "$policy.generic", "full must be true or false", "transform.Unmarshal", "reflect.IsMap", "td-echarts-source", 'Store.Set "hasEcharts" true'),
         "render-codeblock-infographic.html": ('(slice "height" "full")', "$policy.generic", "full must be true or false", "td-infographic-source", 'Store.Set "hasInfographic" true'),
-        "render-codeblock-checksums.html": ('(slice "base" "algo" "group")', '"generic" $policy.generic', 'partial "release/assets-parse.html"', 'partial "release/assets-table.html"', 'partial "release/assets-markdown.html"', "base is required unless the page has release front matter"),
+        "render-codeblock-checksums.html": ('(slice "base" "algo" "group")', '"generic" $policy.generic', 'partial "release/assets-parse.html"', 'partial "release/assets-table.html"', 'partial "release/assets-markdown.html"', "base is required unless the page has release_url front matter"),
     }.items():
         source = (ROOT / "layouts/_markup" / name).read_text()
         for marker in markers:

@@ -1,9 +1,15 @@
-{{ $opts := dict "output" "htmlAndMathml" "displayMode" (not (eq ($.Type) "inline")) -}}
+{{- $display := not (eq ($.Type) "inline") -}}
+{{- $format := lower ($.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $opts := dict "output" "htmlAndMathml" "displayMode" $display -}}
 {{ with try (transform.ToMath .Inner $opts) -}}
   {{ with .Err -}}
     {{ warnf "Unable to render mathematical markup to HTML using the transform.ToMath function. The KaTeX display engine threw the following error: %s: see %s. The expression is left as written." . $.Position -}}
   {{ else -}}
-    {{ .Value -}}
+    {{- if and $display (eq $format "html") -}}
+      {{- replace (printf "%s" .Value) `<span class="katex-display">` `<span class="katex-display" tabindex="0">` | safeHTML -}}
+    {{- else -}}
+      {{- .Value -}}
+    {{- end -}}
     {{ $.Page.Store.Set "hasMath" true -}}
   {{ end -}}
 {{ end -}}

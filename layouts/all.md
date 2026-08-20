@@ -40,7 +40,7 @@ newline and is load-bearing; do not "simplify" it away. */ -}}
 
 {{/* Link this language's index. `relURL` would point every translation at the
 default language's llms.txt even though Hugo publishes one per language. */ -}}
-LLMS index: [ {{- path.Base $llmsIndexURL -}} ]( {{- $llmsIndexURL -}} )
+{{ T "markdown_llms_index" }} [ {{- path.Base $llmsIndexURL -}} ]( {{- $llmsIndexURL -}} )
 {{ $needSeparator = true -}}
 {{ end -}}
 
@@ -67,7 +67,7 @@ LLMS index: [ {{- path.Base $llmsIndexURL -}} ]( {{- $llmsIndexURL -}} )
 {{ else }}
 {{ end -}}
 
-Section pages:
+{{ T "markdown_section_pages" }}
 
 {{ range . -}}
 - [ {{- .Title | strings.TrimSpace -}} ]( {{- .RelPermalink -}} )

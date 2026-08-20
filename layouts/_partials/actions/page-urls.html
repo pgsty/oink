@@ -15,7 +15,10 @@
 {{- $repo := $p.Param "github_repo" -}}
 {{- $projectRepo := $p.Param "github_project_repo" | default $repo | default "" -}}
 {{- if and $p.File $repo -}}
-  {{- $sourcePath := strings.TrimPrefix (add hugo.WorkingDir "/") $p.File.Filename -}}
+  {{- $workingPrefix := add hugo.WorkingDir "/" -}}
+  {{- $sourcePath := $p.File.Filename -}}
+  {{- $inWorkingDir := hasPrefix $sourcePath $workingPrefix -}}
+  {{- if $inWorkingDir }}{{ $sourcePath = strings.TrimPrefix $workingPrefix $sourcePath }}{{ end -}}
   {{- $subdir := $p.Param "github_subdir" | default "" -}}
   {{- $branch := $p.Param "github_branch" | default "main" -}}
   {{- $pathBase := $p.Param "path_base_for_github_subdir" -}}
@@ -24,16 +27,28 @@
     {{- $pathRename = $pathBase.to -}}
     {{- $pathBase = $pathBase.from -}}
   {{- end -}}
-  {{- with $pathBase }}{{ $sourcePath = replaceRE . $pathRename $sourcePath }}{{ end -}}
-  {{- $repoPath = printf "%s/%s/%s" $branch $subdir $sourcePath | replaceRE "//+" "/" -}}
-  {{- $editURL = printf "%s/edit/%s" $repo $repoPath -}}
-  {{- /* Same derivation as the edit link, so a repository that supports one
-         supports the other. */ -}}
-  {{- $historyURL = printf "%s/commits/%s" $repo $repoPath -}}
+  {{- $mapped := $inWorkingDir -}}
+  {{- with $pathBase -}}
+    {{- if findRE . $sourcePath -}}
+      {{- $sourcePath = replaceRE . $pathRename $sourcePath -}}
+      {{- $mapped = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* A mounted file outside the working directory has no trustworthy
+         repository path unless the site supplied an explicit mapping above.
+         Leave source-derived actions unavailable instead of publishing an
+         absolute build-machine path or inventing a target-relative one. */ -}}
+  {{- if $mapped -}}
+    {{- $repoPath = printf "%s/%s/%s" $branch $subdir $sourcePath | replaceRE "//+" "/" -}}
+    {{- $editURL = printf "%s/edit/%s" $repo $repoPath -}}
+    {{- /* Same derivation as the edit link, so a repository that supports one
+           supports the other. */ -}}
+    {{- $historyURL = printf "%s/commits/%s" $repo $repoPath -}}
+    {{- $stub := resources.Get "stubs/new-page-template.md" -}}
+    {{- $childQS := querify "value" $stub.Content "filename" "change-me.md" -}}
+    {{- $childURL = printf "%s/new/%s?%s" $repo (path.Dir $repoPath) $childQS -}}
+  {{- end -}}
   {{- $issueURL = printf "%s/issues/new?%s" $repo (querify "title" $p.Title) -}}
-  {{- $stub := resources.Get "stubs/new-page-template.md" -}}
-  {{- $childQS := querify "value" $stub.Content "filename" "change-me.md" -}}
-  {{- $childURL = printf "%s/new/%s?%s" $repo (path.Dir $repoPath) $childQS -}}
 {{- end -}}
 {{- /* A project issue is filed against the product, not against the page, so
        it needs no source path and no `github_repo`. Nesting it with the

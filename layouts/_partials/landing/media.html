@@ -1,13 +1,3 @@
-{{- /* One landing item's visual: a configured image, a Font Awesome pair, an
-       image used as an icon, or a literal glyph.
-
-       Every image source goes through the shared URL policy, so a landing
-       image is held to the same trust boundary as an image in content —
-       bin/check-output-security.py treats <img> as a remote element, and
-       this partial used to bypass the policy entirely with a bare relURL.
-       The full resolver (intrinsic dimensions) is deliberately not used here:
-       it fails the build when a source resolves to a non-image resource, and
-       landing sources come from site configuration rather than page bundles. */ -}}
 {{- $item := .item -}}
 {{- $label := $item.name | default $item.title | default "" -}}
 {{- $alt := $item.alt | default ($label | markdownify | plainify) -}}

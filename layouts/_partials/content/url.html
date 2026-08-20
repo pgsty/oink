@@ -1,13 +1,5 @@
-{{- /* Validate one author- or config-supplied URL.
-
-     A URL that does not pass warns and resolves to the empty string. That is
-     the safe result rather than a convenience: refusing to emit the value is
-     the whole protection, so an unsupported scheme never reaches an href, and
-     an empty attribute is inert. Callers that would otherwise render a dead
-     link check `valid` and drop the link instead.
-
-     Returns: href, markdown, external, valid. */ -}}
 {{- $name := .name | default "content component" -}}
+{{- $label := .label | default (printf "shortcode %q" $name) -}}
 {{- $parameter := .parameter | default "URL" -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $kind := .kind | default "link" -}}
@@ -16,44 +8,46 @@
 {{- $raw := "" -}}
 
 {{- if ne (printf "%T" $value) "string" -}}
-  {{- warnf "shortcode %q: %s must be a string at %s; dropping it" $name $parameter $position -}}
+  {{- warnf "%s: %s must be a string at %s; dropping it" $label $parameter $position -}}
   {{- $ok = false -}}
 {{- else -}}
   {{- $raw = printf "%s" $value -}}
   {{- if not $raw -}}
-    {{- warnf "shortcode %q: %s must not be empty at %s; dropping it" $name $parameter $position -}}
+    {{- warnf "%s: %s must not be empty at %s; dropping it" $label $parameter $position -}}
     {{- $ok = false -}}
   {{- else if findRE `[\x00-\x20\x7f]` $raw -}}
-    {{- warnf "shortcode %q: %s must not contain whitespace or control characters at %s; dropping it" $name $parameter $position -}}
+    {{- warnf "%s: %s must not contain whitespace or control characters at %s; dropping it" $label $parameter $position -}}
     {{- $ok = false -}}
   {{- else if hasPrefix $raw "//" -}}
-    {{- warnf "shortcode %q: %s must not use a protocol-relative URL at %s; dropping it" $name $parameter $position -}}
+    {{- warnf "%s: %s must not use a protocol-relative URL at %s; dropping it" $label $parameter $position -}}
     {{- $ok = false -}}
   {{- end -}}
 {{- end -}}
 
 {{- $scheme := "" -}}
+{{- $urlPath := "" -}}
 {{- $parsed := false -}}
 {{- if $ok -}}
   {{- $parsedResult := try (urls.Parse $raw) -}}
   {{- if $parsedResult.Err -}}
-    {{- warnf "shortcode %q: invalid %s %q at %s: %s; dropping it" $name $parameter $raw $position $parsedResult.Err -}}
+    {{- warnf "%s: invalid %s %q at %s: %s; dropping it" $label $parameter $raw $position $parsedResult.Err -}}
     {{- $ok = false -}}
   {{- else -}}
     {{- $parsed = $parsedResult.Value -}}
     {{- $scheme = lower $parsed.Scheme -}}
-    {{- $allowed := cond (eq $kind "image") (slice "http" "https") (slice "http" "https" "mailto") -}}
+    {{- $urlPath = $parsed.Path -}}
+    {{- $allowed := cond (in (slice "image" "web") $kind) (slice "http" "https") (slice "http" "https" "mailto") -}}
     {{- if and $scheme (not (in $allowed $scheme)) -}}
-      {{- warnf "shortcode %q: unsupported %s scheme %q at %s; dropping it" $name $parameter $scheme $position -}}
+      {{- warnf "%s: unsupported %s scheme %q at %s; dropping it" $label $parameter $scheme $position -}}
       {{- $ok = false -}}
     {{- else if and (in (slice "http" "https") $scheme) (not $parsed.Host) -}}
-      {{- warnf "shortcode %q: %s %q requires a host at %s; dropping it" $name $parameter $raw $position -}}
+      {{- warnf "%s: %s %q requires a host at %s; dropping it" $label $parameter $raw $position -}}
       {{- $ok = false -}}
     {{- else if and (eq $scheme "mailto") (not (or $parsed.Opaque $parsed.Path)) -}}
-      {{- warnf "shortcode %q: %s %q requires an address at %s; dropping it" $name $parameter $raw $position -}}
+      {{- warnf "%s: %s %q requires an address at %s; dropping it" $label $parameter $raw $position -}}
       {{- $ok = false -}}
     {{- else if and (eq $kind "image") (not $scheme) (not $parsed.Path) -}}
-      {{- warnf "shortcode %q: %s %q requires an image path at %s; dropping it" $name $parameter $raw $position -}}
+      {{- warnf "%s: %s %q requires an image path at %s; dropping it" $label $parameter $raw $position -}}
       {{- $ok = false -}}
     {{- end -}}
   {{- end -}}
@@ -71,4 +65,7 @@
 {{- $markdown := replace $href `\` `\\` -}}
 {{- $markdown = replace $markdown "(" `\(` -}}
 {{- $markdown = replace $markdown ")" `\)` -}}
-{{- return (dict "href" $href "markdown" $markdown "external" (and $ok (ne $scheme "")) "valid" $ok) -}}
+{{- return (dict
+  "href" $href "markdown" $markdown "external" (and $ok (ne $scheme "")) "valid" $ok
+  "raw" (cond $ok $raw "") "scheme" (cond $ok $scheme "") "path" (cond $ok $urlPath "")
+) -}}

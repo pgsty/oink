@@ -1,4 +1,5 @@
 {{- /* Render once, then register content-derived runtimes. */ -}}
 {{- $content := .Content -}}
+{{- partial "code/register-rendered-ids.html" (dict "page" . "content" $content) -}}
 {{- partial "content/register-derived.html" (dict "page" . "html" $content "raw" .RawContent) -}}
 {{- return $content -}}

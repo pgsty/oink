@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Freeze the theme's public naming surface.
 
-Over the built exampleSite (--public, default exampleSite/public):
+Over the built regression fixture (--public, default tests/site/public):
 
   1. every class the theme generates starts with `td-`;
   2. every data attribute the theme generates starts with `data-td-`;
@@ -27,10 +27,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 # Author-facing markers: an author types these, so they stay unprefixed.
-# docs/components.md owns the public marker namespace.
+# oink.pgsty.com/docs/design/components/ owns the public marker namespace.
 AUTHOR_MARKERS = {
     "steps", "cards", "fields", "matrix", "full-width", "no-step-marker",
 }
+
+# Site-owned markers used only by the self-contained regression fixture. They
+# prove that the shared attribute emitter preserves safe authored class and
+# data-* names; they are not part of the theme's public namespace.
+FIXTURE_CLASSES = {"attr-escape"}
+FIXTURE_DATA = {"data-probe", "data-z"}
 
 # Docsy heritage. `taxonomy` and `taxo-<plural>` are upstream Docsy class names
 # that consuming stylesheets already target; the theme emits its own
@@ -102,6 +108,7 @@ THIRD_PARTY_DATA = {
 THIRD_PARTY_PROPERTY = re.compile(
     r"^--term-(color-(foreground|background|\d+)|font-family|line-height|cols|rows)$"
 )
+BEM_CLASS = re.compile(r"^[a-z][a-z0-9-]*(?:__|--)[a-z0-9_-]+$")
 PLAYER_THEME_RE = re.compile(
     r"asciinema-player-theme-(td-light|td-dark)\s*\{[^}]*--term-color-background\s*:"
 )
@@ -134,16 +141,17 @@ def check_html(public: Path) -> list[str]:
     errors: list[str] = []
     classes, attributes, pages = scan_html(public)
     if pages == 0:
-        return ["no HTML pages found — build exampleSite first"]
+        return ["no HTML pages found — build tests/site first"]
 
     stray_classes = sorted(
         name
         for name in classes
         if not name.startswith("td-")
         and name not in AUTHOR_MARKERS
+        and name not in FIXTURE_CLASSES
         and not THIRD_PARTY_CLASS.match(name)
         and not DOCSY_HERITAGE_CLASS.match(name)
-        # exampleSite fixtures use their own site-local classes on purpose
+        # Regression fixtures use their own site-local classes on purpose.
         and "fixture" not in name
     )
     for name in stray_classes:
@@ -152,7 +160,9 @@ def check_html(public: Path) -> list[str]:
     stray_attributes = sorted(
         name
         for name in attributes
-        if not name.startswith(("data-td-", "data-bs-")) and name not in THIRD_PARTY_DATA
+        if not name.startswith(("data-td-", "data-bs-"))
+        and name not in THIRD_PARTY_DATA
+        and name not in FIXTURE_DATA
     )
     for name in stray_attributes:
         errors.append(f"attribute {name!r} is theme-generated but not data-td- prefixed ({attributes[name]}×)")
@@ -235,6 +245,23 @@ def check_sources() -> list[str]:
                     f"{path.name}: dataset.{prop} has no matching {attribute} source attribute"
                 )
 
+    # A theme-generated class is BEM (`block__element`, `block--modifier`);
+    # Bootstrap and Font Awesome never use that punctuation. So a literal class
+    # token in a template that carries BEM but no `td-` prefix is a namespace
+    # slip, and the rendered-output check above cannot see it unless some
+    # fixture happens to reach that branch. `nav-hover-menu__divider` sat
+    # unstyled in the version menu for exactly that reason: no fixture
+    # configures a version menu, so the class was never in any built page.
+    for path in sorted((ROOT / "layouts").rglob("*.html")):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for match in re.finditer(r'class="([^"{}]*)"', text):
+            for token in match.group(1).split():
+                if token.startswith("td-") or not BEM_CLASS.match(token):
+                    continue
+                errors.append(
+                    f"{path.relative_to(ROOT)}: class {token!r} is BEM but not td- prefixed"
+                )
+
     feedback = (ROOT / "assets/js/feedback.js").read_text(encoding="utf-8")
     for marker in ("data(root, 'tdPagePath')", "data(root, 'tdLanguage')"):
         if marker not in feedback:
@@ -278,7 +305,7 @@ def check_sources() -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", type=Path, default=ROOT / "exampleSite/public")
+    parser.add_argument("--public", type=Path, default=ROOT / "tests/site/public")
     args = parser.parse_args()
 
     errors = check_html(args.public) + check_css(args.public) + check_sources()

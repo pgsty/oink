@@ -1,21 +1,3 @@
-{{- /* Decide whether a page needs the Image Zoom runtime.
-
-       Everything the theme renders declares its own eligibility with
-       `data-td-image-zoom` (the image render hook for block images and
-       figures, the `image` shortcode, Book `fig`, the `gallery` fence), so a
-       containment test answers the question for theme-authored content without
-       re-deriving the runtime's rules — the drift that made this partial a
-       second implementation of `isEligible()` is gone.
-
-       The one structural case left is an image a site wrote as raw HTML in its
-       content. That branch keeps the exclusions, because the conditional
-       runtime loading is only worth having if a page of decorative images does
-       not pull the runtime in.
-
-       One over-approximation is accepted and pre-existing: a linked standalone
-       image carries the marker (the hook cannot see the wrapping anchor) but is
-       skipped in the browser, so its page loads a runtime it never uses. The
-       runtime remains the only authority on eligibility. */ -}}
 {{- $html := printf "%s" (.html | default "") -}}
 {{- $candidate := strings.Contains $html "data-td-image-zoom" -}}
 {{- if and (not $candidate) (strings.Contains $html "<img") -}}

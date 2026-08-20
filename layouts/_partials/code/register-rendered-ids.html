@@ -1,0 +1,14 @@
+{{- $page := .page -}}
+{{- if $page.Store.Get "hasAuthoredCodeID" -}}
+  {{- $content := printf "%s" .content -}}
+  {{- $counts := newScratch -}}
+  {{- range findRESubmatch `id="([^"]+)" data-td-code(?:\s|>)` $content -}}
+    {{- $id := index . 1 -}}
+    {{- $occurrence := $counts.Get $id | default 0 -}}
+    {{- if gt $occurrence 0 -}}
+      {{- warnf "code component: duplicate id %q at %s; keeping the first" $id $page.Path -}}
+    {{- end -}}
+    {{- $counts.Set $id (add $occurrence 1) -}}
+  {{- end -}}
+{{- end -}}
+{{- return "" -}}

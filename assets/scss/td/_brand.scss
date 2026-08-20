@@ -56,10 +56,10 @@
   --bs-border-color-translucent: rgba(48, 74, 105, 0.14);
   --bs-link-color: #245f94;
   --bs-link-color-rgb: 36, 95, 148;
-  // Hover brightens toward the sky, not deeper into the navy: the jump from
-  // the resting slate blue is what makes the sitewide color glide visible.
-  --bs-link-hover-color: #2f8fdd;
-  --bs-link-hover-color-rgb: 47, 143, 221;
+  // Hover brightens toward the sky, not deeper into the navy. Keep the azure
+  // dark enough for AA contrast on the translucent light navbar surface.
+  --bs-link-hover-color: #3372a8;
+  --bs-link-hover-color-rgb: 51, 114, 168;
   --bs-code-color: #925b20;
   --td-pre-bg: #fff;
   --td-brand-elev: #fff;

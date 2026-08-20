@@ -960,9 +960,11 @@ params:
 languages:
   en:
     label: English
+    locale: en-US
     weight: 1
   zh:
     label: 简体中文
+    locale: zh-CN
     weight: 2
 """,
             encoding="utf-8",

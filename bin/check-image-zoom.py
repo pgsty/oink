@@ -400,10 +400,22 @@ def check_template_contracts() -> list[str]:
     for match in re.finditer(r"^\s*(?:transition|animation)\s*:", styles, re.M):
         selectors = " ".join(enclosing_selectors(styles, match.start()))
         require("td-image-zoom" not in selectors, "Zoom adds motion without a reduction path", errors)
-    if re.search(r"^\s*(?:transition|animation)\s*:", styles, re.M):
+    motion = list(re.finditer(r"^\s*(?:transition|animation)\s*:(.*?);", styles, re.M | re.S))
+    if motion:
         reduce_block = re.search(r"@media \(prefers-reduced-motion: reduce\)\s*\{(.*?)\n\}", styles, re.S)
+        tokens = (ROOT / "assets/scss/td/shell/_tokens.scss").read_text()
+        shared_reduce = re.search(
+            r"@media \(prefers-reduced-motion: reduce\).*?"
+            r"--td-motion-duration-fast:\s*0ms;.*?"
+            r"--td-motion-duration:\s*0ms;.*?"
+            r"--td-motion-duration-slow:\s*0ms;",
+            tokens,
+            re.S,
+        )
+        uses_shared_duration = all("var(--td-motion-duration" in item.group(0) for item in motion)
         require(
-            reduce_block is not None and "transition: none" in reduce_block.group(1),
+            (reduce_block is not None and "transition: none" in reduce_block.group(1))
+            or (uses_shared_duration and shared_reduce is not None),
             "content primitives declare motion without a prefers-reduced-motion path",
             errors,
         )

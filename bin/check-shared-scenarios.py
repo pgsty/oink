@@ -15,7 +15,7 @@ from test_site import fixture_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -56,7 +56,7 @@ def build(
         command.append("--panicOnWarning")
     if layout_dir is not None:
         command.extend(["--layoutDir", str(layout_dir)])
-    if source == EXAMPLE:
+    if source == FIXTURE:
         command.extend(["--config", fixture_config(*([config] if config else []))])
     elif config is not None:
         command.extend(["--config", f"{source / 'hugo.yaml'},{config}"])
@@ -293,7 +293,7 @@ def check_development_robots(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-components-robots-") as temp:
         public = Path(temp) / "public"
-        result = build(hugo, EXAMPLE, public, environment="development")
+        result = build(hugo, FIXTURE, public, environment="development")
         if result.returncode != 0:
             return [f"development robots fixture failed: {result.stdout}{result.stderr}"]
         source = (public / "robots.txt").read_text(encoding="utf-8")
@@ -329,14 +329,14 @@ def check_invalid_config(hugo: str) -> list[str]:
             temp_path = Path(temp)
             override = temp_path / "override.yaml"
             write(override, "params:\n  ui:\n" + value)
-            result = build(hugo, EXAMPLE, temp_path / "public", config=override)
+            result = build(hugo, FIXTURE, temp_path / "public", config=override)
             output = result.stdout + result.stderr
             require(expected in output, f"invalid {name} config did not report {expected!r}", errors)
             # A bad value warns and falls back; only --panicOnWarning turns
             # that into a failure.
             require(result.returncode == 0,
                     f"invalid {name} config stopped the build instead of warning", errors)
-            strict = build(hugo, EXAMPLE, temp_path / "strict", config=override,
+            strict = build(hugo, FIXTURE, temp_path / "strict", config=override,
                            panic_on_warning=True)
             require(strict.returncode != 0,
                     f"invalid {name} config survived --panicOnWarning", errors)
@@ -345,13 +345,13 @@ def check_invalid_config(hugo: str) -> list[str]:
         temp_path = Path(temp)
         override = temp_path / "override.yaml"
         write(override, "params:\n  offline_search_on_serve: 0\n")
-        result = build(hugo, EXAMPLE, temp_path / "public", config=override)
+        result = build(hugo, FIXTURE, temp_path / "public", config=override)
         output = result.stdout + result.stderr
         expected = "params.offline_search_on_serve must be a boolean"
         require(expected in output, f"invalid offline_search_on_serve config did not report {expected!r}", errors)
         require(result.returncode == 0,
                 "invalid offline_search_on_serve stopped the build instead of warning", errors)
-        strict = build(hugo, EXAMPLE, temp_path / "strict", config=override, panic_on_warning=True)
+        strict = build(hugo, FIXTURE, temp_path / "strict", config=override, panic_on_warning=True)
         require(strict.returncode != 0,
                 "invalid offline_search_on_serve survived --panicOnWarning", errors)
 
@@ -562,7 +562,7 @@ def main() -> int:
     if args.public is None:
         with tempfile.TemporaryDirectory(prefix="oink-components-misc-") as temp:
             public = Path(temp) / "public"
-            result = build(args.hugo, EXAMPLE, public)
+            result = build(args.hugo, FIXTURE, public)
             if result.returncode != 0:
                 print("shared scenario fixture failed to build:")
                 print(result.stdout + result.stderr)

@@ -1,8 +1,5 @@
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-dir="ltr"
-lang="en-US"
-data-td-typography="technical" data-td-theme-init>
+<html itemscope itemtype="http://schema.org/WebPage" dir="ltr" lang="en-US" data-td-typography="technical" data-td-theme-init>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -80,7 +77,7 @@ if (localStorage.getItem('td-shell-toc-collapsed') === '1'
 html.setAttribute('data-td-shell-toc', 'collapsed');
 }
 var blogIndex = localStorage.getItem('td-blog-index');
-if (blogIndex === 'cards' || blogIndex === 'list') {
+if (blogIndex === 'cards' || blogIndex === 'list' || blogIndex === 'table') {
 html.setAttribute('data-td-blog-index', blogIndex);
 }
 if (sessionStorage.getItem('td-kbd-zen') === '1') {
@@ -99,59 +96,45 @@ html.setAttribute('data-td-kbd-zen', '');
 aria-label="Oink Example — Home">
 <img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
 <span class="td-nav-title">Oink Example</span>
-</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
-<a class="nav-link td-nav-menu__parent-link active" href="/docs/"
+</a><div class="td-nav-links td-nav-menu-zone"><a class="nav-link active" href="/docs/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Docs"
 data-td-navbar-region="desktop" data-td-navbar-label="Docs"
-data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+data-td-navbar-external="false">
 <i class="fa-solid fa-cubes" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Docs</span></a>
-<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
-style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/callout/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Callouts"
-data-td-navbar-region="desktop" data-td-navbar-label="Callouts"
-data-td-navbar-external="false">
-<i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Callouts</span><small class="td-navbar-entry__description">Notes, warnings and disclosures from a blockquote</small></a>
-<a class="td-nav-menu__item-link" href="/docs/code/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Code blocks"
-data-td-navbar-region="desktop" data-td-navbar-label="Code blocks"
-data-td-navbar-external="false">
-<i class="fa-solid fa-code" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Code blocks</span><small class="td-navbar-entry__description">Titles, copy, line numbers, folding</small></a>
-<a class="td-nav-menu__item-link" href="/docs/table/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Tables"
-data-td-navbar-region="desktop" data-td-navbar-label="Tables"
-data-td-navbar-external="false">
-<i class="fa-solid fa-table" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Tables</span><small class="td-navbar-entry__description">Captions, matrices, field lists, tabs</small></a>
-<a class="td-nav-menu__item-link" href="/docs/mermaid/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Mermaid"
-data-td-navbar-region="desktop" data-td-navbar-label="Mermaid"
-data-td-navbar-external="false">
-<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Mermaid</span><small class="td-navbar-entry__description">Diagrams rendered from text, locally</small></a>
-</div>
-</div><a class="nav-link" href="/blog/"
+<div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link" href="/blog/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Blog"
 data-td-navbar-region="desktop" data-td-navbar-label="Blog"
-data-td-navbar-external="false">
+data-td-navbar-external="false" aria-controls="td-navbar-desktop-blog-1" aria-expanded="false">
 <i class="fa-solid fa-blog" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Blog</span></a>
-<a class="nav-link" href="/book/"
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-blog-1" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/blog/oink/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Oink"
+data-td-navbar-region="desktop" data-td-navbar-label="Oink"
+data-td-navbar-external="false">
+<i class="fa-solid fa-pen-nib" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Oink</span><small class="td-navbar-entry__description">Announcements, engineering stories, and implementation notes</small></a>
+<a class="td-nav-menu__item-link" href="/blog/release/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Releases"
+data-td-navbar-region="desktop" data-td-navbar-label="Releases"
+data-td-navbar-external="false">
+<i class="fa-solid fa-rocket" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Releases</span><small class="td-navbar-entry__description">Every OINK release note, newest first</small></a>
+</div>
+</div><a class="nav-link" href="/book/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Book"
 data-td-navbar-region="desktop" data-td-navbar-label="Book"
 data-td-navbar-external="false">
 <i class="fa-solid fa-book" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Book</span></a>
-<a class="nav-link" href="https://pigsty.com/"
+<a class="nav-link" href="https://pigsty.io/"
 data-td-navbar-level="0" data-td-navbar-kind="link"
 aria-label="Pigsty"
 data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
@@ -165,7 +148,7 @@ aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td
 <kbd class="td-nav-search-box__kbd" aria-hidden="true">/</kbd>
 </button>
 <div class="td-language-selector td-language-selector--menu td-nav-util td-site-nav__language">
-<a class="td-language-selector__trigger" href="https://example.org/zh/fixtures/callouts/"
+<a class="td-language-selector__trigger" href="/zh/fixtures/callouts/"
 lang="zh-CN" hreflang="zh-CN" dir="ltr"
 title="Switch language: 简体中文"
 aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false">
@@ -177,7 +160,7 @@ aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="f
 <span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
 </li>
 <li>
-<a class="td-language-selector__item" href="https://example.org/zh/fixtures/callouts/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+<a class="td-language-selector__item" href="/zh/fixtures/callouts/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
 </li>
 </ul>
 </div><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
@@ -439,6 +422,13 @@ id="m-fixturessharedisabled"><span>Share opt-out</span></a>
 </div>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
+id="m-fixturesattribute-escaping-li">
+<div class="td-shell-tree__row">
+<a href="/fixtures/attribute-escaping/" title="Attribute escaping"
+class="td-shell-tree__link"
+id="m-fixturesattribute-escaping"><span>Attribute escaping</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
 id="m-fixturesdownload-demo-li">
 <div class="td-shell-tree__row">
 <a href="/fixtures/download-demo/" title="Download data demo"
@@ -484,7 +474,7 @@ id="m-fixturesdownload-pending"><span>Unpublished download demo</span></a>
 </div><div class="td-shell-sidebar__footer">
 <div class="td-shell-sidebar__footer-start">
 <div class="td-language-selector td-language-selector--menu td-shell-language-selector">
-<a class="td-language-selector__trigger" href="https://example.org/zh/fixtures/callouts/"
+<a class="td-language-selector__trigger" href="/zh/fixtures/callouts/"
 lang="zh-CN" hreflang="zh-CN" dir="ltr"
 title="Switch language: 简体中文"
 aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false"><i class="td-shell-icon td-shell-icon--languages fa-solid fa-language" aria-hidden="true"></i>
@@ -495,7 +485,7 @@ aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="f
 <span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
 </li>
 <li>
-<a class="td-language-selector__item" href="https://example.org/zh/fixtures/callouts/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+<a class="td-language-selector__item" href="/zh/fixtures/callouts/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
 </li>
 </ul>
 </div>
@@ -631,14 +621,14 @@ href="https://claude.ai/new?q=Read&#43;from&#43;https%3A%2F%2Fexample.org%2Ffixt
 <li><a class="td-page-actions__item" data-td-action="view_markdown" href="/fixtures/callouts/index.md" target="_blank" rel="noopener">
 <i class="fa-brands fa-markdown" aria-hidden="true"></i><span>View markdown</span>
 </a></li>
-<li><a class="td-page-actions__item" data-td-action="view_history" href="https://github.com/pgsty/oink/commits/main/exampleSite/Users/vonng/pgsty/.oink-blog/polish/oink/tests/site/content/fixtures/callouts.md" target="_blank" rel="noopener">
+<li><a class="td-page-actions__item" data-td-action="view_history" href="https://github.com/pgsty/oink/commits/main/tests/site/content/fixtures/callouts.md" target="_blank" rel="noopener">
 <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span>View edit history</span>
 </a></li>
 <li class="td-page-actions__separator" role="separator"></li>
-<li><a class="td-page-actions__item" data-td-action="edit_page" href="https://github.com/pgsty/oink/edit/main/exampleSite/Users/vonng/pgsty/.oink-blog/polish/oink/tests/site/content/fixtures/callouts.md" target="_blank" rel="noopener">
+<li><a class="td-page-actions__item" data-td-action="edit_page" href="https://github.com/pgsty/oink/edit/main/tests/site/content/fixtures/callouts.md" target="_blank" rel="noopener">
 <i class="fa-solid fa-pencil" aria-hidden="true"></i><span>Edit this page</span>
 </a></li>
-<li><a class="td-page-actions__item" data-td-action="create_child_page" href="https://github.com/pgsty/oink/new/main/exampleSite/Users/vonng/pgsty/.oink-blog/polish/oink/tests/site/content/fixtures?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60get-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" target="_blank" rel="noopener">
+<li><a class="td-page-actions__item" data-td-action="create_child_page" href="https://github.com/pgsty/oink/new/main/tests/site/content/fixtures?filename=change-me.md&amp;value=---%0Atitle%3A&#43;%22Long&#43;Page&#43;Title%22%0AlinkTitle%3A&#43;%22Short&#43;Nav&#43;Title%22%0Aweight%3A&#43;100%0Adescription%3A&#43;%3E-%0A&#43;&#43;&#43;&#43;&#43;Page&#43;description&#43;for&#43;heading&#43;and&#43;indexes.%0A---%0A%0A%23%23&#43;Heading%0A%0AEdit&#43;this&#43;template&#43;to&#43;create&#43;your&#43;new&#43;page.%0A%0A%2A&#43;Give&#43;it&#43;a&#43;good&#43;name%2C&#43;ending&#43;in&#43;%60.md%60&#43;-&#43;e.g.&#43;%60get-started.md%60%0A%2A&#43;Edit&#43;the&#43;%22front&#43;matter%22&#43;section&#43;at&#43;the&#43;top&#43;of&#43;the&#43;page&#43;%28weight&#43;controls&#43;how&#43;its&#43;ordered&#43;amongst&#43;other&#43;pages&#43;in&#43;the&#43;same&#43;directory%3B&#43;lowest&#43;number&#43;first%29.%0A%2A&#43;Add&#43;a&#43;good&#43;commit&#43;message&#43;at&#43;the&#43;bottom&#43;of&#43;the&#43;page&#43;%28%3C80&#43;characters%3B&#43;use&#43;the&#43;extended&#43;description&#43;field&#43;for&#43;more&#43;detail%29.%0A%2A&#43;Create&#43;a&#43;new&#43;branch&#43;so&#43;you&#43;can&#43;preview&#43;your&#43;new&#43;file&#43;and&#43;request&#43;a&#43;review&#43;via&#43;Pull&#43;Request.%0A" target="_blank" rel="noopener">
 <i class="fa-solid fa-file-circle-plus" aria-hidden="true"></i><span>Create child page</span>
 </a></li>
 <li><a class="td-page-actions__item" data-td-action="create_issue" href="https://github.com/pgsty/oink/issues/new?title=Callouts" target="_blank" rel="noopener">
@@ -865,7 +855,7 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <li><a href="https://oink.pgsty.com/docs/about/features/" target="_blank" rel="noopener noreferrer">Highlights</a></li>
 <li><a href="https://oink.pgsty.com/docs/customize/config/" target="_blank" rel="noopener noreferrer">Configuration</a></li>
 <li><a href="https://oink.pgsty.com/docs/about/showcase/" target="_blank" rel="noopener noreferrer">Showcase</a></li>
-<li><a href="https://pigsty.com/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
+<li><a href="https://pigsty.io/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
 </ul>
 </nav>
 <nav class="td-site-footer__column" aria-label="Resources">
@@ -910,7 +900,7 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <div class="td-shell-footline__right">
 <div class="td-shell-footline__lang">
 <div class="td-language-selector td-language-selector--list td-shell-language-selector"
-role="group" aria-label="Choose language"><span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span><a class="td-language-selector__item" href="https://example.org/zh/fixtures/callouts/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+role="group" aria-label="Choose language"><span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span><a class="td-language-selector__item" href="/zh/fixtures/callouts/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
 </div>
 </div>
 <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
@@ -922,8 +912,7 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 </div>
 </footer>
 </div>
-<script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
-<script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"Copy Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":"/fixtures/callouts/index.md"},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/fixtures/callouts/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Ffixtures%2Fcallouts%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Ffixtures%2Fcallouts%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"View markdown","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":"/fixtures/callouts/index.md"},{"available":true,"description":"View edit history","disabledReason":"","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":"https://github.com/pgsty/oink/commits/main/exampleSite/Users/vonng/pgsty/.oink-blog/polish/oink/tests/site/content/fixtures/callouts.md"},{"available":true,"description":"Edit this page","disabledReason":"","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":"https://github.com/pgsty/oink/edit/main/exampleSite/Users/vonng/pgsty/.oink-blog/polish/oink/tests/site/content/fixtures/callouts.md"},{"available":true,"description":"Create child page","disabledReason":"","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":"https://github.com/pgsty/oink/new/main/exampleSite/Users/vonng/pgsty/.oink-blog/polish/oink/tests/site/content/fixtures?filename=change-me.md\u0026value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60get-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A"},{"available":true,"description":"Create docs issue","disabledReason":"","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":"https://github.com/pgsty/oink/issues/new?title=Callouts"},{"available":true,"description":"Create project issue","disabledReason":"","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":"https://github.com/pgsty/oink/issues/new"},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/fixtures/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/fixtures/callouts/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/fixtures/callouts/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Real OINK release notes and engineering posts, wired to every blog feature.","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"Copy Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":"/fixtures/callouts/index.md"},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/fixtures/callouts/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Ffixtures%2Fcallouts%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Ffixtures%2Fcallouts%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"View markdown","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":"/fixtures/callouts/index.md"},{"available":true,"description":"View edit history","disabledReason":"","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":"https://github.com/pgsty/oink/commits/main/tests/site/content/fixtures/callouts.md"},{"available":true,"description":"Edit this page","disabledReason":"","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":"https://github.com/pgsty/oink/edit/main/tests/site/content/fixtures/callouts.md"},{"available":true,"description":"Create child page","disabledReason":"","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":"https://github.com/pgsty/oink/new/main/tests/site/content/fixtures?filename=change-me.md\u0026value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60get-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A"},{"available":true,"description":"Create docs issue","disabledReason":"","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":"https://github.com/pgsty/oink/issues/new?title=Callouts"},{"available":true,"description":"Create project issue","disabledReason":"","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":"https://github.com/pgsty/oink/issues/new"},{"available":true,"description":"Print entire section","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":"/_print/fixtures/"},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"/fixtures/callouts/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"/zh/fixtures/callouts/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Real OINK release notes and engineering posts, wired to every blog feature.","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden

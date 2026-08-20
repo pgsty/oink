@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 # ---------------------------------------------------------------------------
 # Corpus noise
@@ -563,11 +563,11 @@ def prepare_workspace(snapshot: Path, theme: Path) -> None:
                    check=True, capture_output=True)
 
 
-def measure_build(name: str, snapshot: Path, hugo: str, theme: Path, *, example: bool,
+def measure_build(name: str, snapshot: Path, hugo: str, theme: Path, *, fixture: bool,
                   config_extra: Path | None = None) -> dict:
     env = dict(os.environ)
     extra: list[str] = []
-    if example:
+    if fixture:
         extra += ["--themesDir", str(theme.parent)]
     else:
         prepare_workspace(snapshot, theme)
@@ -740,13 +740,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", choices=["noise", "assets", "all"])
     parser.add_argument("--sites", nargs="*", default=[], help="site checkouts to measure (default: none)")
-    parser.add_argument("--example-site", action="store_true", help="also measure the theme's exampleSite fixture")
+    parser.add_argument("--fixture-site", action="store_true", help="also measure the theme's tests/site fixture")
     parser.add_argument("--theme", default=str(ROOT), help="theme checkout used for builds (default: this repo)")
     parser.add_argument("--hugo", default="hugo")
     parser.add_argument("--exclude", action="append", default=None,
                         help="glob (relative to a site root) of generated corpus to exclude; repeatable. "
                              "Default: built-in per-site list.")
-    parser.add_argument("--rtl", action="store_true", help="also build the exampleSite with languages.en.direction=rtl")
+    parser.add_argument("--rtl", action="store_true", help="also build the fixture with languages.en.direction=rtl")
     parser.add_argument("--worktree", action="append", default=[], metavar="SITE",
                         help="measure this site's working tree instead of HEAD (flagged in the report); repeatable")
     parser.add_argument("--keep", help="directory to keep snapshots and builds in (default: temp dir, removed)")
@@ -780,8 +780,8 @@ def main() -> int:
     total_excluded = new_counter()
 
     targets: list[tuple[str, Path, bool]] = []
-    if args.example_site:
-        targets.append(("exampleSite", EXAMPLE if theme == ROOT else theme / "exampleSite", True))
+    if args.fixture_site:
+        targets.append(("fixture", FIXTURE if theme == ROOT else theme / "tests/site", True))
     for raw in args.sites:
         path = Path(raw).resolve()
         if not path.is_dir():
@@ -789,12 +789,12 @@ def main() -> int:
             continue
         targets.append((path.name, path, False))
 
-    for name, path, example in targets:
+    for name, path, fixture in targets:
         print(f"== {name}", file=sys.stderr, flush=True)
         entry: dict = {"path": str(path)}
         snapshot = work_root / name
         shutil.rmtree(snapshot, ignore_errors=True)
-        if example:
+        if fixture:
             shutil.copytree(path, snapshot, ignore=shutil.ignore_patterns("public", "resources", "themes"), symlinks=False)
             entry.update({"snapshot": "worktree", "revision": report["theme"]["commit"], "branch": None,
                           "dirty_worktree": report["theme"]["dirty"]})
@@ -806,8 +806,8 @@ def main() -> int:
             add_counter(total_noise, entry["noise"]["included"])
             add_counter(total_excluded, entry["noise"]["excluded_generated"])
         if do_assets:
-            entry["build"] = measure_build(name, snapshot, args.hugo, theme, example=example)
-            if example and args.rtl:
+            entry["build"] = measure_build(name, snapshot, args.hugo, theme, fixture=fixture)
+            if fixture and args.rtl:
                 rtl_cfg = work_root / "rtl.yaml"
                 rtl_cfg.write_text("languages:\n  en:\n    direction: rtl\n")
                 rtl_snapshot = work_root / f"{name}-rtl"
@@ -815,7 +815,7 @@ def main() -> int:
                 shutil.copytree(path, rtl_snapshot, ignore=shutil.ignore_patterns("public", "resources", "themes"), symlinks=False)
                 report["sites"][f"{name}-rtl"] = {
                     "path": str(path), "snapshot": "worktree", "revision": report["theme"]["commit"],
-                    "build": measure_build(f"{name}-rtl", rtl_snapshot, args.hugo, theme, example=True,
+                    "build": measure_build(f"{name}-rtl", rtl_snapshot, args.hugo, theme, fixture=True,
                                            config_extra=rtl_cfg),
                 }
         report["sites"][name] = entry

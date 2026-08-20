@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Four-state output goldens for the private fixture overlay.
+"""Four-state output goldens for the regression fixture.
 
-The pages listed in tests/goldens/manifest.json are built by mounting
-tests/site/ over exampleSite, normalised
+The pages listed in tests/goldens/manifest.json are built from tests/site and normalised
 (fingerprint hashes, SRI attributes, Hugo version, absolute build paths) and
 compared line-for-line (indentation-insensitive, blank lines dropped) against tests/goldens/<name>. One golden per output state
 per surface: html, print, markdown, rss, llms.
@@ -29,9 +28,16 @@ from pathlib import Path
 from test_site import build_fixture_public
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 GOLDENS = ROOT / "tests/goldens"
 MANIFEST = GOLDENS / "manifest.json"
+MACHINE_PATH_MARKERS = (
+    "/Users/",
+    "/home/runner/",
+    "/private/tmp/",
+    "/private<tmp>/",
+    "/var/folders/",
+)
 
 NORMALISERS = [
     (re.compile(r"\.min\.[0-9a-f]{64}\."), ".min.<hash>."),
@@ -43,7 +49,7 @@ NORMALISERS = [
     (re.compile(r"offline-search-index\.([a-z-]+)\.[0-9a-f]{32}\.json"), r"offline-search-index.\1.<hash>.json"),  # index hash tracks all fixture content
     (re.compile(r'content="Hugo \d+\.\d+\.\d+[^"]*"'), 'content="Hugo <version>"'),
     (re.compile(r"Hugo v?\d+\.\d+\.\d+"), "Hugo <version>"),
-    (re.compile(r"/tmp/[A-Za-z0-9._-]+/|/private/tmp/[A-Za-z0-9._/-]+?/exampleSite/"), "<tmp>/"),
+    (re.compile(r"/tmp/[A-Za-z0-9._-]+/|/private/tmp/[A-Za-z0-9._/-]+?/tests/site/"), "<tmp>/"),
 ]
 
 
@@ -58,15 +64,17 @@ def normalise(text: str) -> str:
 
 
 def build(hugo: str) -> Path:
+    # No --quiet: the output is captured and only printed when the build
+    # fails, and --quiet suppressed the --panicOnWarning reason too, so a
+    # failure reported nothing at all about which warning caused it.
     dest, result = build_fixture_public(
         hugo,
         "--printPathWarnings",
         "--panicOnWarning",
-        "--quiet",
     )
     if result.returncode != 0:
         print(result.stdout + result.stderr, file=sys.stderr)
-        raise SystemExit("exampleSite build failed")
+        raise SystemExit("regression fixture build failed")
     return dest
 
 
@@ -87,6 +95,13 @@ def main() -> int:
             continue
         actual = normalise(source.read_text(encoding="utf-8", errors="replace"))
         golden = GOLDENS / golden_name
+        leaked = [marker for marker in MACHINE_PATH_MARKERS if marker in actual]
+        if leaked:
+            errors.append(
+                f"{golden_name}: rendered output contains build-machine path marker(s): "
+                + ", ".join(leaked)
+            )
+            continue
         if args.update:
             golden.parent.mkdir(parents=True, exist_ok=True)
             golden.write_text(actual, encoding="utf-8")
@@ -95,6 +110,13 @@ def main() -> int:
             errors.append(f"{golden_name}: golden missing (run --update)")
             continue
         expected = golden.read_text(encoding="utf-8")
+        leaked = [marker for marker in MACHINE_PATH_MARKERS if marker in expected]
+        if leaked:
+            errors.append(
+                f"{golden_name}: golden contains build-machine path marker(s): "
+                + ", ".join(leaked)
+            )
+            continue
         if expected != actual:
             diff = list(difflib.unified_diff(expected.splitlines(), actual.splitlines(), f"golden/{golden_name}", output_path, lineterm="", n=2))
             errors.append(f"{golden_name} differs from {output_path}:\n    " + "\n    ".join(diff[: args.diff_lines]))

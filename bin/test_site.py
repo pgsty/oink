@@ -1,21 +1,22 @@
-"""Shared paths and Hugo config arguments for the private fixture site."""
+"""Shared paths and Hugo config arguments for the regression fixture site."""
 
 from __future__ import annotations
 
+import atexit
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
 TEST_SITE = ROOT / "tests/site"
 
 
 def fixture_config(*extra: Path) -> str:
-    """Return the merged example + private-fixture config list."""
+    """Return the fixture config followed by any test-specific overrides."""
 
-    configs = [EXAMPLE / "hugo.yaml", TEST_SITE / "hugo.yaml", *extra]
+    configs = [TEST_SITE / "hugo.yaml", *extra]
     return ",".join(str(path) for path in configs)
 
 
@@ -24,9 +25,9 @@ def fixture_config_args(*extra: Path) -> list[str]:
 
 
 def fixture_media_config(*extra: Path) -> str:
-    """Return configs that add private media without replacing test content."""
+    """Return configs that keep fixture media while replacing test content."""
 
-    configs = [EXAMPLE / "hugo.yaml", TEST_SITE / "media.yaml", *extra]
+    configs = [TEST_SITE / "hugo.yaml", TEST_SITE / "media.yaml", *extra]
     return ",".join(str(path) for path in configs)
 
 
@@ -34,14 +35,20 @@ def build_fixture_public(
     hugo: str,
     *extra_args: str,
 ) -> tuple[Path, subprocess.CompletedProcess[str]]:
-    """Build exampleSite with the private behaviour fixtures mounted."""
+    """Build the self-contained regression fixture."""
 
-    destination = Path(tempfile.mkdtemp(prefix="oink-private-fixtures-")) / "public"
+    # The caller reads from this directory for the rest of its run, so the
+    # cleanup is deferred to interpreter exit rather than scoped with a
+    # context manager. Without it every local check run left a complete site
+    # build behind: hundreds of directories and gigabytes over a few weeks.
+    temp = Path(tempfile.mkdtemp(prefix="oink-private-fixtures-"))
+    atexit.register(shutil.rmtree, temp, ignore_errors=True)
+    destination = temp / "public"
     result = subprocess.run(
         [
             hugo,
             "--source",
-            str(EXAMPLE),
+            str(TEST_SITE),
             "--themesDir",
             str(ROOT.parent),
             "--destination",

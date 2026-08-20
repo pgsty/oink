@@ -1,0 +1,12 @@
+module:
+  mounts:
+    - source: content
+      target: content
+    - source: ../fixtures/external-actions/content
+      target: content
+    - source: assets
+      target: assets
+    - source: layouts
+      target: layouts
+    - source: static
+      target: static

@@ -100,17 +100,8 @@
     grid-column: 3;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: 0.25rem;
     min-width: 0;
-  }
-
-  &__lang {
-    min-width: 0;
-
-    .td-language-selector__item {
-      padding: 4px 7px;
-      font-size: 12px;
-    }
   }
 
   &__copy {
@@ -136,7 +127,7 @@
     }
 
     &__right {
-      justify-content: center;
+      justify-content: flex-end;
     }
   }
 }

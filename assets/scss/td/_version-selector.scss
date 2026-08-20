@@ -114,3 +114,18 @@
   > .td-shell-icon--chevron-down {
   transform: none;
 }
+
+// Icon-only triggers are used in the persistent bottom bar. The menu remains
+// a dropup and keeps the full configured labels inside its choices.
+.td-version-menu--icon-only .td-version-menu__title {
+  width: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 4px;
+  justify-content: center;
+  border-radius: 6px;
+
+  > .td-shell-icon--code-branch {
+    --td-shell-icon-size: 16px;
+  }
+}

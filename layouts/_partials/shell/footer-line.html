@@ -10,6 +10,7 @@
   {{- $collapsible = .collapsible | default false -}}
 {{- end -}}
 {{- with $p -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{- $center := "Powered by [Oink](https://oink.pgsty.com)" -}}
 {{- if isset .Site.Params "footer_center_info" -}}
   {{- $center = strings.TrimSpace (printf "%v" .Site.Params.footer_center_info) -}}
@@ -29,12 +30,41 @@
   <div class="td-shell-footline__center">{{ $p.RenderString (dict "display" "inline") . }}</div>
   {{- end }}
   <div class="td-shell-footline__right">
-    <div class="td-shell-footline__lang">
-      {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
-      {{- if le (len (partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang)) 1 }}
-        {{- with (partial "landing/alt-site.html" .) }}<a class="td-shell-alt-site" href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .label }}</a>{{ end -}}
-      {{- end }}
+    {{- /* Persistent utility dock for every rendered footer style. The four
+         controls keep the same order and open upward from the bottom bar. */ -}}
+    {{- if .Site.Params.versions }}
+    <div class="td-shell-footline__version">
+      {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true "iconOnly" true) }}
     </div>
+    {{- end }}
+    {{ partial "language-selector.html" (dict "page" . "class" "td-shell-footline__language" "icon" "shell") }}
+    {{- if le (len (partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang)) 1 }}
+      {{- with (partial "landing/alt-site.html" .) }}
+    <a class="td-shell-iconbtn td-shell-footline__language" href="{{ .url }}" target="_blank" rel="noopener noreferrer"
+      title="{{ .label }}" aria-label="{{ .label }}">{{ partialCached "shell/icon.html" "languages" "footer-alt-language" }}</a>
+      {{- end }}
+    {{- end }}
+    {{- if $darkMode.showMenu }}
+    <div class="td-shell-footline__theme td-nav-hover-menu" data-td-nav-hover>
+      <button type="button" class="td-shell-iconbtn" data-td-nav-hover-trigger data-td-theme-toggle
+        title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}" aria-expanded="false">
+        {{- partialCached "shell/icon.html" "moon" "footer-moon" -}}
+        {{- partialCached "shell/icon.html" "sun" "footer-sun" -}}
+      </button>
+      <div class="td-nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
+        <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
+          {{- partialCached "shell/icon.html" "sun" "footer-theme-light" -}}<span>{{ T "ui_theme_light" }}</span>
+        </button>
+        <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
+          {{- partialCached "shell/icon.html" "moon" "footer-theme-dark" -}}<span>{{ T "ui_theme_dark" }}</span>
+        </button>
+        <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
+          {{- partialCached "shell/icon.html" "contrast" "footer-theme-auto" -}}<span>{{ T "ui_theme_auto" }}</span>
+        </button>
+      </div>
+    </div>
+    {{- end }}
+    {{ partial "shell/keyboard-help.html" . }}
     {{- if $collapsible }}
     {{- /* Collapses the fat footer above this line; footer-collapse.js owns the
          behavior and persists the choice in localStorage. */}}

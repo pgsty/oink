@@ -1,16 +1,19 @@
 {{/* cSpell:ignore pagelinks */ -}}
 {{- $page := .page -}}
 {{- $dropup := .dropup | default false -}}
-{{- $menuName := $page.Site.Params.version_menu -}}
+{{- $iconOnly := .iconOnly | default false -}}
+{{- $menuName := $page.Site.Params.version_menu | default "Version" -}}
 {{- $path := "" -}}
 {{- if $page.Site.Params.version_menu_pagelinks }}{{ $path = $page.Page.RelPermalink }}{{ end -}}
 {{- $baseURL := strings.TrimSuffix "/" $page.Site.BaseURL -}}
 
-<div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}" data-td-version-menu>
+<div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}{{ if $iconOnly }} td-version-menu--icon-only{{ end }}" data-td-version-menu>
   <button class="td-version-menu__title" type="button" data-bs-toggle="dropdown"
     aria-haspopup="true" aria-expanded="false" aria-label="{{ $menuName | plainify }}">
     {{- partialCached "shell/icon.html" "code-branch" "version-code-branch" -}}
+    {{- if not $iconOnly }}
     <span class="td-version-menu__title-text">{{ $menuName | markdownify }}</span>
+    {{- end }}
   </button>
   <ul class="dropdown-menu{{ if $dropup }} dropdown-menu-up{{ end }}">
     {{- range $page.Site.Params.versions -}}

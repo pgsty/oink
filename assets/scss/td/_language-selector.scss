@@ -137,21 +137,17 @@ a.td-language-selector__item:focus-visible {
   }
 }
 
-.td-shell-footline .td-language-selector--menu > ul {
-  inset-block: auto calc(100% + 0.35rem);
-  transform-origin: bottom right;
-}
-
-// Sidebar footer row: icon-only trigger sized like the neighbouring icon
-// buttons, with the list opening upward since the row sits on the bottom edge.
-.td-shell-sidebar__footer .td-language-selector--menu {
+// The bottom bar owns the icon-only language trigger. Its list opens upward
+// and end-aligns with the utility row so it cannot run beyond the viewport.
+.td-shell-footline .td-language-selector--menu {
   padding: 0;
 
   > .td-language-selector__trigger {
-    min-width: 30px;
-    min-height: 30px;
-    padding: 6px;
-    border-radius: 8px;
+    width: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 4px;
+    border-radius: 6px;
     color: var(--td-shell-muted-fg);
 
     > span {
@@ -159,7 +155,7 @@ a.td-language-selector__item:focus-visible {
     }
 
     .td-shell-icon {
-      --td-shell-icon-size: 18px;
+      --td-shell-icon-size: 16px;
     }
 
     &:hover {
@@ -170,12 +166,11 @@ a.td-language-selector__item:focus-visible {
 
   > ul {
     inset-block: auto calc(100% + 0.35rem);
-    inset-inline-start: 0;
-    inset-inline-end: auto;
-    transform-origin: bottom left;
+    inset-inline-end: 0;
+    transform-origin: bottom right;
   }
 }
 
-[dir='rtl'] .td-shell-sidebar__footer .td-language-selector--menu > ul {
+[dir='rtl'] .td-shell-footline .td-language-selector--menu > ul {
   transform-origin: bottom right;
 }

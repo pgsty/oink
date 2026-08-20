@@ -162,6 +162,47 @@
   }
 }
 
+// Persistent bottom-bar utilities. Version, language, theme, and keyboard
+// help share one compact target size; their menus rise above the bar.
+.td-shell-footline__right {
+  > .td-shell-iconbtn,
+  .td-shell-keyboard > .td-shell-iconbtn,
+  .td-shell-footline__theme > .td-shell-iconbtn {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    border-radius: 6px;
+  }
+
+  .td-shell-icon {
+    --td-shell-icon-size: 16px;
+    color: currentColor;
+  }
+
+  .td-nav-hover-menu__pop {
+    top: auto;
+    bottom: calc(100% + 8px);
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+
+    &::before {
+      top: 100%;
+      height: 9px;
+    }
+  }
+
+  .td-nav-hover-menu__option > .td-shell-icon {
+    flex: 0 0 auto;
+    --td-shell-icon-size: 15px;
+    color: var(--bs-tertiary-color);
+  }
+}
+
+.td-shell-footline__version .dropdown-menu {
+  max-height: unquote('min(26rem, calc(100dvh - 5rem))');
+  overflow-y: auto;
+}
+
 // The collapse arrow at the right edge of the copyright line. It hides the
 // column grid above; when collapsed the chevron flips to point back up.
 .td-shell-footline__toggle {
@@ -169,8 +210,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: 0;
   border-radius: 6px;

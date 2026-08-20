@@ -572,20 +572,15 @@
 }
 
 @media (max-width: 767.98px) {
-  // The rendered menu toggle is the authority for the alternate Landing
-  // navbar. Do not key this off [data-td-landing]: the homepage uses the
-  // Landing renderer too, but its compact navbar must keep the single
-  // visible link tree and utility controls.
+  // The rendered menu toggle is the authority for the alternate Home/Landing
+  // navbar. Its drawer keeps every named root reachable without crowding the
+  // persistent search and menu actions at the end edge.
   body:has([data-td-landing-menu-toggle]) {
     .td-site-header .td-nav-menu-zone,
     .td-site-header
       .td-nav-util-zone
       > :not(.td-nav-search-box):not(.td-site-drawer-toggle) {
       display: none;
-    }
-
-    .td-site-header .td-site-drawer-toggle {
-      display: inline-flex;
     }
   }
 }
@@ -697,26 +692,6 @@
     border-top: 1px solid var(--bs-border-color);
     opacity: 1;
   }
-}
-
-// Footer popovers rise into the sidebar instead of dropping below the
-// viewport. Start-side and end-side ownership keep both surfaces inside the
-// rail at its minimum width.
-.td-shell-sidebar__footer .td-nav-hover-menu__pop {
-  top: auto;
-  bottom: calc(100% + 8px);
-  inset-inline-start: auto;
-  inset-inline-end: 0;
-
-  &::before {
-    top: 100%;
-  }
-}
-
-.td-shell-sidebar__footer .td-nav-hover-menu__option > .td-shell-icon {
-  flex: 0 0 auto;
-  --td-shell-icon-size: 15px;
-  color: var(--bs-tertiary-color);
 }
 
 // Between lg and the widest layouts the centered menu leaves less room for

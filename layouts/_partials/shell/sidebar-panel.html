@@ -55,46 +55,5 @@
          so the table of contents and the taxonomies stay reachable from the drawer. Empty until then. */ -}}
     <div class="td-shell-sidebar__aside" data-td-shell-aside-slot hidden></div>
   </div>
-  {{- /* Keep the global utilities at the bottom of both the desktop rail and
-       the mobile drawer. Language/version anchor to the start; theme/GitHub
-       anchor to the end. Every menu opens upward from this edge. */ -}}
-  {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-  <div class="td-shell-sidebar__footer">
-    <div class="td-shell-sidebar__footer-start">
-      {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "icon" "shell") }}
-      {{ if .Site.Params.versions -}}
-      <div class="td-shell-sidebar__version">
-        {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true) }}
-      </div>
-      {{ end -}}
-    </div>
-    <div class="td-shell-sidebar__footer-end">
-      {{ partial "shell/keyboard-help.html" . }}
-      {{- if $darkMode.showMenu }}
-      <div class="td-shell-sidebar__theme td-nav-hover-menu" data-td-nav-hover>
-        <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-nav-hover-trigger data-td-theme-toggle
-          title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}" aria-expanded="false">
-          {{- partialCached "shell/icon.html" "moon" "sidebar-moon" -}}
-          {{- partialCached "shell/icon.html" "sun" "sidebar-sun" -}}
-        </button>
-        <div class="td-nav-hover-menu__pop" role="group" aria-label="{{ T "ui_theme_toggle" }}">
-          <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="light" aria-pressed="false">
-            {{- partialCached "shell/icon.html" "sun" "sidebar-theme-light" -}}<span>{{ T "ui_theme_light" }}</span>
-          </button>
-          <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="dark" aria-pressed="false">
-            {{- partialCached "shell/icon.html" "moon" "sidebar-theme-dark" -}}<span>{{ T "ui_theme_dark" }}</span>
-          </button>
-          <button type="button" class="td-nav-hover-menu__option" data-bs-theme-value="auto" aria-pressed="false">
-            {{- partialCached "shell/icon.html" "contrast" "sidebar-theme-auto" -}}<span>{{ T "ui_theme_auto" }}</span>
-          </button>
-        </div>
-      </div>
-      {{- end }}
-      {{- with $config.projectRepo }}
-      <a class="td-shell-iconbtn" href="{{ . }}" target="_blank" rel="noopener noreferrer"
-        title="GitHub" aria-label="GitHub">{{ partialCached "shell/icon.html" "github" "github" }}</a>
-      {{- end }}
-    </div>
-  </div>
   <div class="td-shell-sidebar__resizer" data-td-shell-resizer aria-hidden="true"></div>
 </div>

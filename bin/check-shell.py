@@ -42,6 +42,7 @@ def check_sources() -> list[str]:
     page_context_styles = (ROOT / "assets/scss/td/shell/_page-context.scss").read_text()
     breadcrumb_state = (ROOT / "layouts/_partials/shell/breadcrumb-enabled.html").read_text()
     sidebar_panel = (ROOT / "layouts/_partials/shell/sidebar-panel.html").read_text()
+    footer_line = (ROOT / "layouts/_partials/shell/footer-line.html").read_text()
     keyboard_help = (ROOT / "layouts/_partials/shell/keyboard-help.html").read_text()
     subnav = (ROOT / "layouts/_partials/shell/subnav.html").read_text()
     sidebar_styles = (ROOT / "assets/scss/td/shell/_sidebar.scss").read_text()
@@ -163,40 +164,53 @@ def check_sources() -> list[str]:
     require('class="td-shell-subnav__menu"' in subnav
             and 'partial "navbar-entry-link.html"' in subnav,
             "navbar-off mobile bar lost its content-generated center menu", errors)
-    footer = sidebar_panel.split('class="td-shell-sidebar__footer"', 1)[1].split(
-        'class="td-shell-sidebar__resizer"', 1)[0]
     footer_order = [
-        footer.index('partial "language-selector.html"'),
-        footer.index('partial "navbar-version-selector.html"'),
-        footer.index('partial "shell/keyboard-help.html"'),
-        footer.index("td-shell-quick-theme"),
-        footer.index('aria-label="GitHub"'),
+        footer_line.index('partial "navbar-version-selector.html"'),
+        footer_line.index('partial "language-selector.html"'),
+        footer_line.index("td-shell-footline__theme"),
+        footer_line.index('partial "shell/keyboard-help.html"'),
+        footer_line.index("td-shell-footline__toggle"),
     ]
     require(footer_order == sorted(footer_order),
-            "sidebar footer order is not language/version/help/theme/GitHub", errors)
-    require("td-shell-sidebar__footer-start" in footer
-            and "td-shell-sidebar__footer-end" in footer
-            and "justify-content: space-between" in sidebar_styles,
-            "sidebar footer no longer splits language/version from theme/GitHub", errors)
-    require("if not $navbar" not in footer
-            and ".td-shell-sidebar__footer .td-language-selector--menu" in language_styles
-            and "inset-inline-start: 0" in language_styles,
-            "sidebar footer is no longer unconditional or its language menu lost dropup styling", errors)
+            "bottom bar order is not version/language/theme/help/collapse", errors)
+    require("td-shell-sidebar__footer" not in sidebar_panel
+            and "td-shell-sidebar__footer" not in sidebar_styles
+            and 'aria-label="GitHub"' not in footer_line,
+            "sidebar or bottom bar still carries the retired utility/GitHub dock", errors)
+    require('"dropup" true "iconOnly" true' in footer_line
+            and "td-version-menu--icon-only" in version
+            and "if not $iconOnly" in version
+            and ".td-version-menu--icon-only" in (ROOT / "assets/scss/td/_version-selector.scss").read_text(),
+            "bottom-bar version switcher exposes text or lost its dropup", errors)
+    require('"icon" "shell"' in footer_line
+            and '"mode" "list"' not in footer_line
+            and ".td-shell-footline .td-language-selector--menu" in language_styles
+            and "inset-inline-end: 0" in language_styles,
+            "bottom-bar language control is expanded or no longer opens upward", errors)
     require("dropdown.show()" in base_js and "menu.addEventListener('pointerenter'" in base_js,
-            "sidebar version menu no longer opens on pointer hover", errors)
-    require(all(f'data-bs-theme-value="{value}"' in footer
+            "bottom-bar version menu no longer opens on pointer hover", errors)
+    require(all(f'data-bs-theme-value="{value}"' in footer_line
                 for value in ("light", "dark", "auto"))
-            and "data-td-nav-hover" in footer
-            and base_js.count("menu.closest('#td-shell-sidebar') ? ['drawer'] : []") >= 2,
-            "sidebar theme trigger no longer exposes the three-mode hover menu", errors)
+            and "data-td-nav-hover" in footer_line
+            and ".td-shell-footline__right" in footer_styles
+            and "bottom: calc(100% + 8px)" in footer_styles,
+            "bottom-bar theme trigger no longer exposes its upward three-mode menu", errors)
+    phone_footline = layout_styles.split("@media (max-width: 575.98px)", 1)[1].split(
+        "/* --------------------------------------------------------- mobile subnav */", 1
+    )[0]
+    require("&__right" in phone_footline
+            and "justify-content: flex-end" in phone_footline,
+            "phone bottom-bar utilities are no longer right-aligned", errors)
     require('data-td-nav-hover-open' in keyboard_help
             and 'class="td-kbd-sequence"' in keyboard_help
             and all(key in keyboard_help for key in ('<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>'))
             and ".td-shell-keyboard-help__row" in keyboard_styles
-            and ".td-shell-sidebar__footer .td-shell-keyboard" in keyboard_styles
+            and ".td-shell-footline .td-shell-keyboard" in keyboard_styles
             and "position: static" in keyboard_styles
-            and "inset-inline: 8px" in keyboard_styles,
-            "sidebar shortcut help lost its hover trigger or KBD cheat sheet", errors)
+            and "width: unquote('min(21rem, calc(100vw - 2rem))')" in keyboard_styles
+            and "inset-inline-start: auto" in keyboard_styles
+            and "inset-inline-end: 1rem" in keyboard_styles,
+            "bottom-bar shortcut help lost its compact viewport-bound card or KBD cheat sheet", errors)
     # One icon system in the shell chrome: shell/icon.html dispenses Font Awesome
     # glyphs under role-named classes, version controls take theirs from it, and
     # the page action menu takes action icons from the registry rather than a
@@ -782,9 +796,14 @@ def build_example(hugo: str) -> list[str]:
             require('class="td-shell-sidebar__brand-row"' in source,
                     "rendered sidebar lost its identity row", errors)
             require('class="td-shell-iconbtn td-shell-sidebar__search"' in source
-                    and 'class="td-shell-sidebar__footer"' in source
-                    and 'class="td-shell-keyboard td-nav-hover-menu"' in source,
-                    "rendered sidebar lost its search action or bottom utility dock", errors)
+                    and 'class="td-shell-sidebar__footer"' not in source,
+                    "rendered sidebar kept its utility dock or lost its search action", errors)
+            footline = source.find('class="td-shell-footline d-print-none"')
+            require(footline >= 0
+                    and source.find("td-shell-footline__language", footline) >= 0
+                    and source.find('class="td-shell-footline__theme', footline) >= 0
+                    and source.find('class="td-shell-keyboard td-nav-hover-menu"', footline) >= 0,
+                    "rendered bottom bar lost its language/theme/help controls", errors)
             require('aria-label="breadcrumb"' in source,
                     "nested documentation page lost its breadcrumb", errors)
             require('class="td-shell-root__item' in source and 'href="/blog/"' in source,
@@ -892,6 +911,90 @@ def build_example(hugo: str) -> list[str]:
 
         errors += check_featured_image_output(public)
         errors += check_immersive_output(public)
+    return errors
+
+
+def build_footer_utilities_fixture(hugo: str) -> list[str]:
+    """The slim footer owns the icon dock and the sidebar owns none of it."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-footer-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        public = root / "public"
+        (source / "content/docs").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"""baseURL: https://example.org/
+title: Footer utilities fixture
+theme: {ROOT.name}
+defaultContentLanguage: en
+disableKinds: [RSS, sitemap, taxonomy, term]
+params:
+  offline_search: false
+  version: v1
+  version_menu: Version 1
+  versions:
+    - {{name: Version 1, version: v1, url: https://v1.example.org}}
+    - {{name: Version 2, version: v2, url: https://v2.example.org}}
+  ui:
+    footer_style: slim
+    dark_mode: true
+    shell_types: [docs]
+languages:
+  en:
+    label: English
+    weight: 1
+  zh:
+    label: 简体中文
+    weight: 2
+""",
+            encoding="utf-8",
+        )
+        (source / "content/docs/_index.md").write_text(
+            "---\ntitle: Docs\ntype: docs\n---\n\nBody.\n", encoding="utf-8"
+        )
+        (source / "content/docs/_index.zh.md").write_text(
+            "---\ntitle: 文档\ntype: docs\n---\n\n正文。\n", encoding="utf-8"
+        )
+
+        result = subprocess.run(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(public), "--panicOnWarning"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        if result.returncode:
+            return ["footer utilities fixture failed to build:\n" + result.stdout + result.stderr]
+
+        output = public / "docs/index.html"
+        require(output.is_file(), "footer utilities fixture page is missing", errors)
+        if not output.is_file():
+            return errors
+        html = output.read_text(encoding="utf-8")
+        require('class="td-shell-sidebar__footer"' not in html,
+                "rendered sidebar still owns a utility dock", errors)
+        start = html.find('class="td-shell-footline d-print-none"')
+        end = html.find("</footer>", start)
+        footline = html[start:end]
+        markers = [
+            "td-shell-footline__version",
+            "td-shell-footline__language",
+            "td-shell-footline__theme",
+            "td-shell-keyboard td-nav-hover-menu",
+        ]
+        order = [footline.find(marker) for marker in markers]
+        require(start >= 0 and end >= 0 and all(index >= 0 for index in order)
+                and order == sorted(order),
+                "rendered slim footer order is not version/language/theme/help", errors)
+        version_start = footline.find("td-version-menu--icon-only")
+        version_end = footline.find("</button>", version_start)
+        version_trigger = footline[version_start:version_end]
+        require("td-shell-icon--code-branch" in version_trigger
+                and "td-version-menu__title-text" not in version_trigger,
+                "rendered footer version trigger is not icon-only", errors)
+        require('aria-label="GitHub"' not in footline
+                and "td-shell-footline__toggle" not in footline,
+                "slim footer gained GitHub or the fat-footer chevron", errors)
     return errors
 
 
@@ -1578,7 +1681,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
-    errors = (check_sources() + build_example(args.hugo) + build_self_root_fixture(args.hugo)
+    errors = (check_sources() + build_example(args.hugo) + build_footer_utilities_fixture(args.hugo)
+              + build_self_root_fixture(args.hugo)
               + build_featured_image_rejection(args.hugo)
               + build_navbar_menu_columns(args.hugo)
               + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo)

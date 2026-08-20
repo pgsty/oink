@@ -245,6 +245,13 @@ All notable changes to OINK are documented here. The project follows
   already named in the sentence, and their sentence now carries the word
   count and minutes under the same `reading_time` switch that governs
   everywhere else.
+- The global utilities live in the bottom bar. Version, language, theme,
+  and the keyboard cheat sheet move from the sidebar footer to a persistent
+  icon dock at the end of the footline, opening upward on every rendered
+  footer style; the sidebar keeps only navigation. The GitHub link stays in
+  the navbar and the fat footer rather than repeating in the dock, and the
+  footline version trigger is icon-only while its menu keeps the full
+  configured labels.
 - Release facts are one URL. The 0.5 `release` map -- product, version, repo,
   tag, date, prev, checksums -- declared seven things a GitHub release URL
   already carries or the page already knows, so front matter is now

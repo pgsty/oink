@@ -44,16 +44,16 @@ html[data-td-kbd-zen] .td-shell-subnav {
 }
 
 // Shortcut help reuses the KBD component keycaps in a compact, readable list.
-// On desktop it opens toward the article; inside the right-hand mobile drawer
-// it end-aligns so the card stays inside the viewport.
-.td-shell-sidebar__footer .td-shell-keyboard .td-shell-keyboard-help {
+// The bottom bar end-aligns it on wide screens and gives it the footer as a
+// containing block on phones so the card stays inside the viewport.
+.td-shell-footline .td-shell-keyboard .td-shell-keyboard-help {
   width: unquote('min(21rem, calc(100vw - 2rem))');
   max-height: calc(100dvh - 5rem);
   gap: 0;
   padding: 0;
   overflow-y: auto;
-  inset-inline-start: 0;
-  inset-inline-end: auto;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
 }
 
 .td-shell-keyboard-help__header {
@@ -137,20 +137,16 @@ html[data-td-kbd-zen] .td-shell-subnav {
 }
 
 @include media-breakpoint-down(md) {
-  .td-shell-sidebar__footer {
-    position: relative;
-  }
-
-  // Anchor the help card to the drawer footer rather than to the small help
-  // button. End-aligning a 21rem card to that first utility icon pushed its
-  // start edge beyond narrow viewports.
-  .td-shell-sidebar__footer .td-shell-keyboard {
+  // Anchor the help card to the full bottom line rather than to its small
+  // trigger, which sits near the center once the footer stacks.
+  .td-shell-footline .td-shell-keyboard {
     position: static;
   }
 
-  .td-shell-sidebar__footer .td-shell-keyboard .td-shell-keyboard-help {
-    inset-inline: 8px;
-    width: auto;
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help {
+    width: unquote('min(21rem, calc(100vw - 2rem))');
+    inset-inline-start: auto;
+    inset-inline-end: 1rem;
   }
 }
 

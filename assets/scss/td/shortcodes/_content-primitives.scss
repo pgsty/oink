@@ -5,6 +5,7 @@
 
   display: inline-flex;
   align-items: center;
+  gap: 0.4em;
   max-width: 100%;
   padding: 0.16em 0.55em;
   border: 1px solid var(--td-badge-border);
@@ -18,12 +19,30 @@
   text-decoration: none;
   vertical-align: 0.08em;
 
+  > i {
+    font-size: 0.85em;
+  }
+
   &--filled {
     background: var(--td-badge-bg);
   }
 
   &--outline {
     background: transparent;
+  }
+
+  // Taxonomy term chips: a solid brand fill with the label knocked out in the
+  // page ground. The border repeats the fill so forced-colors mode, which
+  // strips the background, still draws the chip's boundary.
+  &--solid {
+    --td-badge-fg: var(--td-brand-elev);
+    --td-badge-bg: var(--td-brand-silk);
+    --td-badge-border: var(--td-brand-silk);
+    padding: 0.2em 0.66em;
+    background: var(--td-badge-bg);
+    transition:
+      background-color var(--td-motion-duration-fast) ease,
+      border-color var(--td-motion-duration-fast) ease;
   }
 
   &--info {
@@ -62,6 +81,22 @@ a.td-badge {
     color: var(--td-badge-fg);
     outline: 2px solid currentColor;
     outline-offset: 2px;
+  }
+}
+
+// The knockout text stays fixed on hover; the fill shifts to the copper
+// accent instead. The focus ring cannot use currentColor here -- the knockout
+// foreground is the page ground, which would hide the ring against it.
+a.td-badge--solid {
+  &:hover {
+    --td-badge-bg: var(--td-brand-copper);
+    --td-badge-border: var(--td-brand-copper);
+    color: var(--td-badge-fg);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline-color: var(--td-badge-bg);
   }
 }
 

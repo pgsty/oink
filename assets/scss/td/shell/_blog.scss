@@ -244,17 +244,23 @@
     }
   }
 
+  // A block sibling below the sentence, not a run inside it: the badges get
+  // one wrapping line of their own.
   &__terms {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-inline-start: 0.4rem;
-    vertical-align: text-bottom;
+    margin: 0.35rem 0 0.6rem;
 
     .td-badge {
       font-size: 11px;
     }
   }
+}
+
+// Tucked under its sentence: the pair reads as one metadata unit.
+.td-blog-meta + .td-blog-meta__terms {
+  margin-block-start: -0.3rem;
 }
 
 // Inside a card the whole face is the title link's ::after overlay, so the

@@ -2,9 +2,10 @@
 {{ $taxo := .taxo -}}
 {{ if (gt (len ($context.GetTerms $taxo)) 0) -}}
 <div class="taxonomy td-taxonomy-terms-article taxo-{{ urlize $taxo }}" role="group" aria-label="{{ partial "taxonomy-label.html" (dict "page" $context "key" $taxo) }}">
+  {{ $icon := partial "taxonomy-icon.html" (dict "page" $context "plural" $taxo "kind" "term") -}}
   <ul class="td-taxonomy-terms">
     {{ range ($context.GetTerms $taxo) -}}
-      <li><a class="td-badge td-badge--neutral td-badge--outline" href="{{ .Permalink }}">{{ .LinkTitle }}</a></li>
+      <li><a class="td-badge td-badge--solid" href="{{ .Permalink }}"><i class="{{ $icon }}" aria-hidden="true"></i>{{ .LinkTitle }}</a></li>
     {{ end -}}
   </ul>
 </div>

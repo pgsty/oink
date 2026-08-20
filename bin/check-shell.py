@@ -346,14 +346,18 @@ def check_sources() -> list[str]:
             "blog card lost the external semantics of manual_link", errors)
     require("figcaption" not in blog_card and 'alt=""' in blog_card,
             "blog card carries a byline or names an image the title already names", errors)
-    # A card reads the meta sentence -- date, author, section -- then tags,
-    # then the description, in that order.
+    # A card reads the meta sentence -- date, author, word count, minutes --
+    # then terms, then the description, in that order.
     require('"authors" false' not in blog_card,
             "the card meta line no longer names the author", errors)
-    require('isset .Site.Taxonomies "tags"' in blog_card
-            and '.GetTerms "tags"' in blog_card
+    require('"length" false' not in blog_card,
+            "the card meta line dropped the word count and minutes", errors)
+    # Terms cover every taxonomy except authors, whom the sentence above the
+    # badges already names.
+    require('shell/blog-terms.html' in blog_card
+            and '"exclude" (slice "authors")' in blog_card
             and "td-blog-card__tags" in blog_card,
-            "the card no longer offers the post's tags", errors)
+            "the card no longer offers every taxonomy's terms minus authors", errors)
     require(0 <= blog_card.find('shell/blog-meta.html')
             < blog_card.find("td-blog-card__tags")
             < blog_card.find("td-blog-card__summary"),

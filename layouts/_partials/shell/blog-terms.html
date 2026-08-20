@@ -1,0 +1,18 @@
+{{- /* The page's terms across every declared taxonomy, grouped per taxonomy
+     with its term glyph. Ranging the taxonomies map is what orders the
+     groups alphabetically by plural. `exclude` names plurals another surface
+     on the same card or row already carries. Returns a slice of
+     dict "plural" / "icon" / "terms". */ -}}
+{{- $page := .page -}}
+{{- $exclude := .exclude | default (slice) -}}
+{{- $groups := slice -}}
+{{- range $plural, $_ := $page.Site.Taxonomies -}}
+  {{- if in $exclude $plural }}{{ continue }}{{ end -}}
+  {{- with $page.GetTerms $plural -}}
+    {{- $groups = $groups | append (dict
+        "plural" $plural
+        "icon" (partial "taxonomy-icon.html" (dict "page" $page "plural" $plural "kind" "term"))
+        "terms" .) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $groups -}}

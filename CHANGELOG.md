@@ -225,6 +225,26 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Taxonomy chips wear their taxonomy. A term badge -- the article's page-end
+  row, the blog meta line, cards, the table's tag column -- is now a solid
+  brand chip with the label knocked out of the fill, led by a glyph that says
+  which classification it names: `folder` for a category, `tag` for a tag,
+  `cube` for a module, `user-pen` for an author, `book` for a series,
+  `shapes` for anything else. The whole classification wears the plural of
+  the same glyph -- `folder-open`, `tags`, `cubes`, `users`,
+  `book-bookmark` -- on the right-rail cloud head, and only there: cloud
+  chips and the term-archive filter chips stay text plus count, since a glyph
+  repeated beside an announced taxonomy is noise. One partial
+  (`taxonomy-icon.html`) owns the vocabulary; `ui.taxonomy_icons` still
+  overrides per plural, now with either one string for both surfaces or a
+  `taxonomy`/`term` map, and an unusable icon warns and keeps the built-in.
+- The index metadata unit is a sentence plus a badge line. List rows and
+  cards put every taxonomy's terms -- taxonomies in alphabetical order, each
+  badge wearing its term glyph -- on one wrapping line under the meta
+  sentence, instead of a tags-only run inside it. Cards leave out `authors`,
+  already named in the sentence, and their sentence now carries the word
+  count and minutes under the same `reading_time` switch that governs
+  everywhere else.
 - Release facts are one URL. The 0.5 `release` map -- product, version, repo,
   tag, date, prev, checksums -- declared seven things a GitHub release URL
   already carries or the page already knows, so front matter is now

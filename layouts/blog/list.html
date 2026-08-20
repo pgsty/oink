@@ -42,7 +42,7 @@
         <td class="td-blog-table__date">{{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (.Param "time_format_blog") }}</time>{{ end }}</td>
         <td class="td-blog-table__title"><a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>{{ if $isExternal }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}</td>
         <td class="td-blog-table__tags">
-          {{- if isset .Site.Taxonomies "tags" }}{{ range .GetTerms "tags" }}<a class="td-badge td-badge--neutral td-badge--outline" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ end -}}
+          {{- if isset .Site.Taxonomies "tags" }}{{ $icon := partial "taxonomy-icon.html" (dict "page" . "plural" "tags" "kind" "term") }}{{ range .GetTerms "tags" }}<a class="td-badge td-badge--solid" href="{{ .RelPermalink }}"><i class="{{ $icon }}" aria-hidden="true"></i>{{ .LinkTitle }}</a>{{ end }}{{ end -}}
         </td>
       </tr>
       {{ end -}}

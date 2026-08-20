@@ -1,0 +1,45 @@
+{{- /* One icon vocabulary per taxonomy, on two surfaces: `kind` "taxonomy" is
+     the whole classification (cloud group head), `kind` "term" is one badge
+     naming a single term. Built-in pairs cover the common taxonomies under
+     either plural spelling; anything else shares the generic shapes glyph.
+
+     `params.ui.taxonomy_icons.<plural>` overrides: a bare string sets both
+     surfaces, a map sets them separately (`taxonomy` / `term`, a missing key
+     keeps the built-in). Unusable input warns and falls back, so a config
+     typo never breaks `hugo server`. */ -}}
+{{- $page := .page -}}
+{{- $plural := .plural -}}
+{{- $kind := .kind | default "term" -}}
+{{- $canonical := index (dict
+  "category" "categories"
+  "tag" "tags"
+  "module" "modules"
+  "author" "authors"
+) $plural | default $plural -}}
+{{- $builtins := dict
+  "categories" (dict "taxonomy" "fa-solid fa-folder-open" "term" "fa-solid fa-folder")
+  "tags" (dict "taxonomy" "fa-solid fa-tags" "term" "fa-solid fa-tag")
+  "modules" (dict "taxonomy" "fa-solid fa-cubes" "term" "fa-solid fa-cube")
+  "authors" (dict "taxonomy" "fa-solid fa-users" "term" "fa-solid fa-user-pen")
+  "series" (dict "taxonomy" "fa-solid fa-book-bookmark" "term" "fa-solid fa-book")
+-}}
+{{- $pair := index $builtins $canonical | default (dict "taxonomy" "fa-solid fa-shapes" "term" "fa-solid fa-shapes") -}}
+{{- $override := "" -}}
+{{- with partial "ui-param.html" (dict "page" $page "key" "taxonomy_icons") -}}
+  {{- if not (reflect.IsMap .) -}}
+    {{- warnf "params.ui.taxonomy_icons must map taxonomy plurals to icons; ignoring %v" . -}}
+  {{- else -}}
+    {{- with index . $plural -}}
+      {{- if reflect.IsMap . -}}
+        {{- with index . $kind }}{{ $override = . }}{{ end -}}
+      {{- else -}}
+        {{- $override = . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and $override (ne (printf "%T" $override) "string") -}}
+  {{- warnf "params.ui.taxonomy_icons.%s: an icon is one Font Awesome class string; got %v, using the built-in" $plural $override -}}
+  {{- $override = "" -}}
+{{- end -}}
+{{- return ($override | default (index $pair $kind)) -}}

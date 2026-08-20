@@ -22,6 +22,14 @@ def write_site(source: Path, plural: str | None) -> None:
     taxonomy = ""
     english_menu = ""
     chinese_menu = ""
+    # The `modules` run overrides the cloud-head glyph through the map form of
+    # `taxonomy_icons`; its absent `term` key must fall back to the built-in.
+    icons = ""
+    if plural == "modules":
+        icons = """
+    taxonomy_icons:
+      modules:
+        taxonomy: fa-solid fa-boxes-stacked"""
     if plural:
         taxonomy = f"\ntaxonomies:\n  module: {plural}\n"
         english_menu = f"""
@@ -62,7 +70,7 @@ languages:
 
 params:
   ui:
-    shell_types: [docs, blog]
+    shell_types: [docs, blog]{icons}
 """,
         encoding="utf-8",
     )
@@ -209,6 +217,18 @@ def check_shell_cloud_scope(public: Path, plural: str) -> list[str]:
                 f"{path} taxonomy cloud counts are {counts}, expected {expected}",
                 errors,
             )
+            # The head carries the whole-taxonomy glyph (the `modules` run
+            # overrides it through the map form); chips stay text + count.
+            # Repeating the glyph on every chip is noise, so its absence is
+            # part of the contract.
+            head_icon = "fa-solid fa-boxes-stacked" if plural == "modules" else "fa-solid fa-cubes"
+            require(
+                f'<i class="{head_icon}" aria-hidden="true"></i>' in cloud
+                and 'aria-hidden="true"></i><span>' not in cloud,
+                f"{path} cloud glyphs drifted (expect {head_icon} on the head alone, "
+                "no glyph on chips)",
+                errors,
+            )
 
         disabled = public / f"{file_prefix}docs/no-cloud/index.html"
         require(disabled.is_file(), f"missing toc_taxonomies:false page {disabled}", errors)
@@ -318,6 +338,12 @@ def check_enabled(hugo: str, root: Path, plural: str) -> list[str]:
                 and '<span class="td-taxonomy-title">' not in html,
                 f"{path} lost its localized article taxonomy group label {label}, "
                 "or regrew the visible prefix (the cloud's <h5> title is its own)",
+                errors,
+            )
+            require(
+                'class="td-badge td-badge--solid"' in html
+                and '<i class="fa-solid fa-cube" aria-hidden="true"></i>' in html,
+                f"{path} article term badges lost the solid chip or its term glyph",
                 errors,
             )
     errors.extend(check_shell_cloud_scope(public, plural))

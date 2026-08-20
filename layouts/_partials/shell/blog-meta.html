@@ -29,14 +29,19 @@
   {{- if lt $minutes 1 }}{{ $minutes = 1 }}{{ end -}}
   {{- $segments = $segments | append (T "post_reading_minutes" (dict "Minutes" $minutes) | htmlEscape) -}}
 {{- end -}}
-{{- $terms := slice -}}
-{{- if and $withTerms (isset $page.Site.Taxonomies "tags") }}{{ $terms = $page.GetTerms "tags" }}{{ end -}}
-{{- if or $segments $terms }}
+{{- $termGroups := slice -}}
+{{- if $withTerms }}{{ $termGroups = partial "shell/blog-terms.html" (dict "page" $page "exclude" (.terms_exclude | default slice)) }}{{ end -}}
+{{- if $segments }}
 <p class="td-blog-meta"><small class="text-body-secondary">
   {{- delimit $segments ` <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> ` | safeHTML -}}
-</small>
-  {{- with $terms }}<span class="td-blog-meta__terms">
-    {{- range . }}<a class="td-badge td-badge--neutral td-badge--outline" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end -}}
-  </span>{{ end -}}
+</small></p>
+{{- end -}}
+{{- /* Every taxonomy's terms on one wrapping line of their own under the
+     sentence, alphabetical by taxonomy, each badge wearing its term glyph. */ -}}
+{{- with $termGroups }}
+<p class="td-blog-meta__terms">
+  {{- range . }}{{ $icon := .icon -}}
+    {{- range .terms }}<a class="td-badge td-badge--solid" href="{{ .RelPermalink }}"><i class="{{ $icon }}" aria-hidden="true"></i>{{ .LinkTitle }}</a>{{ end -}}
+  {{- end -}}
 </p>
 {{- end -}}

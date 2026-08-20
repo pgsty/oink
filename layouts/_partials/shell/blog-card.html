@@ -6,8 +6,9 @@
 {{- end -}}
 {{- $summary = $summary | truncate 200 -}}
 {{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}
-{{- $tags := slice -}}
-{{- if isset .Site.Taxonomies "tags" }}{{ $tags = .GetTerms "tags" }}{{ end -}}
+{{- /* Authors are excluded: the meta sentence above the terms already names
+     them, and a badge repeating the byline is noise. */ -}}
+{{- $termGroups := partial "shell/blog-terms.html" (dict "page" . "exclude" (slice "authors")) -}}
 <article class="td-content-card td-blog-card">
   {{- with $found.resource }}
   {{- if reflect.IsImageResourceProcessable . }}
@@ -26,11 +27,13 @@
       <a class="td-content-card__title" href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
       {{- if $isExternal }}<i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}
     </h3>
-    {{ partial "shell/blog-meta.html" (dict "page" . "section" false "length" false) }}
-    {{- with $tags }}
+    {{ partial "shell/blog-meta.html" (dict "page" . "section" false) }}
+    {{- with $termGroups }}
     <ul class="td-blog-card__tags">
-      {{- range . }}
-      <li><a class="td-badge td-badge--neutral td-badge--outline" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
+      {{- range . }}{{ $icon := .icon }}
+      {{- range .terms }}
+      <li><a class="td-badge td-badge--solid" href="{{ .RelPermalink }}"><i class="{{ $icon }}" aria-hidden="true"></i>{{ .LinkTitle }}</a></li>
+      {{- end }}
       {{- end }}
     </ul>
     {{- end }}

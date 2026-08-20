@@ -5,7 +5,6 @@
 {{- $global := or (not $root) (eq $root $site.Home) -}}
 {{- $settingsPage := $site.Home -}}
 {{- with $root }}{{ $settingsPage = . }}{{ end -}}
-{{- $taxonomyIcons := partial "ui-param.html" (dict "page" $settingsPage "key" "taxonomy_icons") -}}
 {{- range $plural, $taxonomy := $site.Taxonomies -}}
   {{- $items := slice -}}
   {{- range $taxonomy.ByCount -}}
@@ -22,11 +21,7 @@
   {{- if gt (len $items) 0 -}}
     {{- $title := partial "taxonomy-label.html" (dict "page" $site.Home "key" $plural) -}}
     {{- $id := printf "td-shell-taxonomy-%s-%s" $plural ($rootURL | anchorize) -}}
-    {{- $icon := "" -}}
-    {{- with $taxonomyIcons }}{{ with index . $plural }}{{ $icon = . }}{{ end }}{{ end -}}
-    {{- if not $icon -}}
-      {{- $icon = index (dict "categories" "fa-solid fa-folder" "tags" "fa-solid fa-tags") $plural | default "fa-solid fa-shapes" -}}
-    {{- end -}}
+    {{- $icon := partial "taxonomy-icon.html" (dict "page" $settingsPage "plural" $plural "kind" "taxonomy") -}}
 <div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="{{ $plural }}" data-td-taxonomy-root="{{ $rootURL }}">
   <button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
     aria-expanded="true" aria-controls="{{ $id }}-children"
@@ -43,6 +38,8 @@
     <div class="td-shell-tree__children-inner">
       <div class="td-shell-tags-cloud__chips">
         {{- range sort $items "count" "desc" }}
+        {{- /* Text and count alone: the taxonomy's glyph already sits on the
+             group head, so repeating it on every chip is pure noise. */}}
         <a class="td-shell-tag" href="{{ .page.RelPermalink }}">
           <span>{{ .page.LinkTitle }}</span><span class="td-shell-tag__count">{{ .count }}</span>
         </a>

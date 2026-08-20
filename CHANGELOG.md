@@ -225,6 +225,16 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- The auto-hidden navbar keeps its slot. With `navbar_autohide` the bar no
+  longer collapses into a floating overlay that reclaims its height: the
+  sticky band stays in the layout in both states, so the article title and
+  table of contents sit exactly where a visible navbar would put them, and
+  revealing simply fades the bar in over its own band instead of covering
+  content. Hero pages keep their overlay bar and ignore the policy. The
+  content start line moves down a touch (`--td-shell-content-top` 2.5rem to
+  2.75rem, hero offset `clamp(150px, 32vh, 360px)`), and the hero navbar is
+  now solid through its control row with the wash fading in over a band
+  below the bar, so the featured color never touches the search box.
 - **Breaking.** Dropdown panels are one column of icon-and-title rows. The
   0.5 mega panel is retired together with its `columns` menu parameter --
   setting `columns` now emits a targeted warning and the panel keeps its

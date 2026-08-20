@@ -130,7 +130,7 @@
 
 // Match shell/_layout.scss specificity so this later import wins.
 .td-main.td-shell-layout--hero {
-  padding-block-start: var(--td-featured-hero-space, clamp(120px, 30vh, 340px));
+  padding-block-start: var(--td-featured-hero-space, clamp(150px, 32vh, 360px));
 }
 
 @include media-breakpoint-down(md) {
@@ -154,14 +154,25 @@
   inset-inline: 0;
   z-index: 60;
   border-block-end: 0;
-  background: linear-gradient(
-    to bottom,
-    var(--td-brand-header-bg) 0%,
-    var(--td-brand-header-bg) 58%,
-    transparent 100%
-  );
+  // Solid through the whole control row; the wash may not reach the search
+  // box. The soft boundary lives in the band below the bar instead.
+  background: var(--td-brand-header-bg);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: 0;
+    height: 34px;
+    background: linear-gradient(
+      to bottom,
+      var(--td-brand-header-bg),
+      transparent
+    );
+    pointer-events: none;
+  }
 }
 
 .td-shell-chrome--hero .td-site-header.td-scrolled {

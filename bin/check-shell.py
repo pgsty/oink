@@ -267,6 +267,18 @@ def check_sources() -> list[str]:
             and "--td-navbar-reveal-height: 60%" in navbar_styles
             and "pointer-events: none" in navbar_styles,
             "navbar reveal strip no longer reserves its corner exclusion zones", errors)
+    autohide_tier = navbar_styles.split(
+        "@media (min-width: 768px) and (hover: hover) and (pointer: fine)", 1
+    )
+    autohide_slice = autohide_tier[1].split("@media", 1)[0] if len(autohide_tier) == 2 else ""
+    require("position: sticky" in autohide_slice
+            and "opacity: 0" in autohide_slice
+            and "--td-shell-nav-h: 0px" not in autohide_slice
+            and "body.td-shell-chrome--hero > .td-navbar-autohide" in autohide_slice
+            and "html:has(body.td-shell-chrome--navbar > .td-navbar-autohide)"
+            not in navbar_styles,
+            "the hidden navbar must keep its sticky slot, fade in place, and "
+            "step aside on hero pages", errors)
     require('$taxonomyPage' in navbar_item and 'Kind "taxonomy"' in navbar_item
             and 'partialCached "navbar-taxonomy-tags.html"' in navbar_item
             and ".Site.LanguagePrefix" in navbar_item,
@@ -648,11 +660,14 @@ def check_featured_image_sources() -> list[str]:
     require("@media (forced-colors: active)" in styles and "@media print" in styles
             and styles.count("display: none") >= 4,
             "the wash and the hero are not dropped in forced colors and in print", errors)
-    # The overlay navbar cannot ask arbitrary artwork for text contrast: it
-    # sits on a header-coloured scrim that fades out before the opening.
-    require("var(--td-brand-header-bg) 58%" in styles
-            and "transparent 100%" in styles,
-            "the hero navbar overlay lost its readability scrim", errors)
+    # The overlay navbar cannot ask arbitrary artwork for text contrast: the
+    # bar is solid through its control row, and the header-coloured scrim
+    # fades out in a band below it so the wash never reaches the controls.
+    require("background: var(--td-brand-header-bg);" in styles
+            and "inset-block-start: 100%" in styles
+            and styles.index("inset-block-start: 100%")
+            > styles.index("background: var(--td-brand-header-bg);"),
+            "the hero navbar lost its solid row or its below-bar scrim band", errors)
     require("margin-inline" in styles and "padding-inline" in styles
             and "margin-left" not in styles and "padding-left" not in styles,
             "the featured image styles use physical instead of logical properties", errors)

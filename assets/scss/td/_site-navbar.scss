@@ -21,17 +21,20 @@
 }
 
 @media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  // The hidden navbar keeps its slot. The wrapper stays in normal flow as
+  // the sticky band the header always owns, so hiding reclaims nothing,
+  // toggling never reflows the page, and content at rest is never covered —
+  // the bar fades in place over whatever has scrolled beneath the band.
   .td-navbar-autohide {
     --td-navbar-reveal-inset: 64px;
     --td-navbar-reveal-height: 60%;
-    position: fixed;
+    position: sticky;
     inset-block-start: 0;
-    inset-inline: 0;
     z-index: 100;
     display: block;
     height: $td-navbar-min-height;
-    // The wrapper itself must not steal clicks from collapsed-rail restore
-    // controls sitting in the two top corners.
+    // The band itself must not steal clicks from content scrolled beneath
+    // it or from collapsed-rail restore controls in the two top corners.
     pointer-events: none;
   }
 
@@ -53,30 +56,35 @@
     inset-inline: 0;
     z-index: 1;
     width: 100%;
-    transform: translateY(-100%);
+    opacity: 0;
     pointer-events: none;
     transition:
-      transform 180ms ease,
+      opacity 180ms ease,
       box-shadow 200ms ease;
   }
 
   .td-navbar-autohide:hover,
   .td-navbar-autohide:focus-within {
     > .td-site-header {
-      transform: translateY(0);
+      opacity: 1;
       pointer-events: auto;
     }
   }
 
-  // The hidden navbar is a fixed overlay: shell rails and anchor jumps should
-  // not reserve its height in normal flow.
-  html:has(body.td-shell-chrome--navbar > .td-navbar-autohide) {
-    --td-shell-nav-h: 0px;
-    scroll-padding-top: 1.5rem;
-  }
+  // Hero pages own their navbar treatment: the bar overlays the featured
+  // image and scrolls away with it, so the auto-hide band steps aside.
+  body.td-shell-chrome--hero > .td-navbar-autohide {
+    display: contents;
 
-  body:has(> .td-navbar-autohide):not(.td-shell-chrome) .td-outer {
-    min-height: 100dvh;
+    &::before {
+      content: none;
+    }
+
+    > .td-site-header {
+      opacity: 1;
+      pointer-events: auto;
+      transition: none;
+    }
   }
 }
 

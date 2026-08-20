@@ -1,23 +1,7 @@
-{{- /* Whether this page offers the reader a choice of index form.
-
-     `params.ui.blog_index` picks the form a page is published in; this decides
-     whether a reader may swap it. The two are separate because they cost
-     different things: the parameter is free, the choice means both forms are
-     in the document so the swap needs no round trip.
-
-     Off by default for that reason. A site that turns it on doubles the markup
-     of its index pages -- not the images: the inactive form is `display: none`,
-     and every thumbnail in it is `loading="lazy"`, so nothing in a hidden form
-     is ever fetched.
-
-     Live only where `blog/list.html` actually renders an index: a section with
-     posts and no layout of its own. The release index sets `layout: releases`
-     and draws release cards instead, so a toggle there would swap nothing.
-
-     Input: a page. Returns: true or false. */ -}}
 {{- $page := . -}}
 {{- $enabled := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" $page "key" "blog_index_toggle")) "kind" "bool"
-    "fallback" false "key" "params.ui.blog_index_toggle" "where" $page.Path) -}}
+    "fallback" false "key" "params.ui.blog_index_toggle"
+    "where" (cond (isset $page.Params "blog_index_toggle") $page.Path "")) -}}
 {{- $renders := and (eq $page.Kind "section") (not $page.Layout) $page.Pages -}}
 {{- return (and $enabled $renders true) -}}

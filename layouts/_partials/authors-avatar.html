@@ -1,16 +1,3 @@
-{{- /* Render one author's portrait at a caller-chosen size.
-
-Three states, one element box: a processable page resource is cropped square,
-any other selected image is framed as-is, and an author with no image at all
-gets an initial in a circle rather than a broken frame or a blank gap.
-
-`alt` is deliberately empty everywhere. The portrait always sits next to the
-author's name, so a described image would make a screen reader say the name
-twice; the accessible name of the link is the name text.
-
-Input: `author` (an `authors-descriptor.html` dict), `size` (CSS pixels), and
-`class` (one BEM element name -- the placeholder appends `--placeholder` to
-it). Returns: markup. */ -}}
 {{- $author := .author -}}
 {{- $size := .size | default 28 -}}
 {{- $class := .class -}}

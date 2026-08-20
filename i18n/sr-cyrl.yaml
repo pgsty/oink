@@ -8,30 +8,21 @@ callout_warning: Упозорење
 # UI strings. Buttons and similar.
 ui_pager_prev: Претходно
 ui_pager_next: Наредно
-ui_read_more: Прочитајте више
 ui_search: Претражите сајт…
-
-# Used in sentences such as "Posted in News"
-ui_in: у
 
 # Used in sentences such as "All Tags"
 ui_all: све
 
 # Footer text
 footer_all_rights_reserved: Сва права задржана
-footer_privacy_policy: Политика приватности
 
 # Post (blog, article, etc.)
-post_byline_by: Аутор
-post_created: Креирано
 post_last_mod: Последњи пут измењено
 post_edit_this: Уредите ову страницу
 post_view_markdown: Погледајте Markdown
-post_view_this: Погледајте извор странице
 post_create_child_page: Креирајте подстраницу
 post_create_issue: Креирајте issue за документацију
 post_create_project_issue: Креирајте issue за пројекат
-post_posts_in: Објава у
 post_reading_time: минута за читање
 post_less_than_a_minute_read: мање од минута за читање
 
@@ -41,19 +32,14 @@ print_click_to_print: Кликните овде за штампање
 print_show_regular: Повратак на обичан преглед ове странице
 print_entire_section: Одштампајте читаву секцију
 
-# Community
-
 # Feedback
-feedback_title: Feedback
 feedback_question: Да ли вам је ова страница била од помоћи?
 feedback_positive: Да
 feedback_negative: Не
 
 # Table of contents
 toc_on_this_page: На овој страници
-toc_top_of_page: Врх странице
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_search_empty: No results found
 ui_search_loading: Loading search index…
@@ -71,7 +57,6 @@ ui_palette_actions: Actions
 ui_palette_commands: Commands
 ui_palette_preferences: Preferences
 ui_palette_page_actions: Page actions
-ui_palette_empty_query: Quick links and actions
 ui_sidebar_nav: Section navigation
 ui_heading_self_link: Link to this heading
 ui_main_nav: Main navigation
@@ -95,7 +80,6 @@ ui_toc_hide: Hide table of contents
 ui_toc_show: Show table of contents
 ui_language_select: Choose language
 ui_language_switch: Switch language
-ui_details: Details
 ui_skip_to_content: Skip to content
 ui_page_actions: Actions
 ui_copy_markdown: Copy Markdown
@@ -112,7 +96,6 @@ error_404_body: >-
   Sorry, this page does not exist. Try starting again from the home page.
 error_404_home: Go to the home page
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_code_copy: Copy
 ui_code_copy_label: Copy code
@@ -124,19 +107,16 @@ ui_kbd_with: with
 ui_field_required: required
 ui_action_unavailable: unavailable
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_open_in_chatgpt: Open in ChatGPT
 ui_open_in_claude: Open in Claude
 ui_open_in_prompt: Read from %s so I can ask questions about it.
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_image_zoom_dialog: Image preview
 ui_image_zoom_open: Open image preview
 ui_image_zoom_close: Close image preview
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 version_banner_archived: >-
   Version {{ .Version }} of the documentation is no longer actively maintained.
@@ -148,19 +128,14 @@ version_banner_latest_link: latest version
 comments_noscript: JavaScript is required to load comments.
 comments_noscript_link: View discussions on GitHub.
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_open_in_prompt_label: Ask about this page
 ui_view_history: View edit history
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_footer_collapse: Hide footer links
 ui_footer_expand: Show footer links
 
-# Post (blog, article, etc.)
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_release_view: View release
 ui_release_source: Source
@@ -168,9 +143,6 @@ ui_release_compare: Compare changes
 ui_release_released: Released
 ui_release_checksums: Checksums
 
-# Used in sentences such as "Posted in News"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_assets_file: File
 ui_assets_checksum: Checksum
@@ -179,57 +151,40 @@ ui_assets_copied: Copied
 ui_assets_copy_all: Copy all checksums
 ui_assets_download: Download asset
 
-# Used in sentences such as "Posted in News"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_download_channels: Download channels
 ui_download_unpublished: Pending release
 
-# Used in sentences such as "Posted in News"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_pricing_featured: Recommended
 ui_pricing_included: Included
 ui_pricing_excluded: Not included
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_table_scroll: "Scrollable table"
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 book_figure: Figure
 book_table: Table
 book_equation: Equation
-book_lof: List of figures
-book_lot: List of tables
 book_toc: Book contents
 book_draft: Draft
 book_draft_notice: This chapter is still being revised.
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_marquee_pause: Pause motion
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 book_example: Example
 contributors_count: contributors
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_modules_title: Modules
 ui_module_title: Module
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 feedback_thanks: Thanks for your feedback.
 
-# Table of contents
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_keyboard_shortcuts: Keyboard shortcuts
 ui_shortcut_tree_move: Move through sidebar
@@ -244,7 +199,6 @@ ui_shortcut_language: Switch language
 ui_shortcut_theme: Switch theme
 ui_shortcut_route: Cycle top-level pages
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 feedback_reason_prompt: What got in the way? (optional)
 feedback_reason_missing: Missing information
@@ -254,13 +208,9 @@ feedback_reason_unclear: Hard to understand
 feedback_details: Add details in the comments
 feedback_change: Change response
 
-# Table of contents
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_page_annotation: Page information
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 callout_success: Success
 callout_danger: Danger
@@ -269,26 +219,19 @@ callout_example: Example
 callout_quote: Quote
 callout_details: Details
 
-# UI strings. Buttons and similar.
-
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_tabs_label: Tabs
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_filetree_divider: "Resize the file tree comment column"
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_field_self_link: Link to this field
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_preview_source: Markdown
 ui_preview_rendered: Rendered
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
 post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
@@ -298,29 +241,35 @@ post_upstream_history: change history
 post_translated: This page is a translation; the {{ .original }} governs.
 post_translated_original: original
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_authors_title: Authors
 ui_author_title: Author
 ui_series_title: Series
 ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_series_next: "Next: {{ .Link }}"
 ui_share: Share
 ui_share_email: Email
 ui_copy_link: Copy link
 ui_copy_link_success: Link copied
 ui_copy_link_error: Could not copy the link
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_list_separator: ", "
 
 # Footer text
-post_meta_by_in: "{{ .Date }}, By {{ .Authors }}, In {{ .Section }}"
-post_meta_in: "{{ .Date }}, In {{ .Section }}"
+post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
+post_meta_in: "In {{ .Section }}"
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_blog_index_toggle: Switch layout
 
-# Footer text
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+post_word_count: '{{ .Count }} words'
+post_reading_minutes: '{{ .Minutes }} min'
+post_read_original: Read More
+
+# Print support
+
+# Markdown output (explicit English fallbacks)
+markdown_llms_index: "LLMS index:"
+markdown_section_pages: "Section pages:"

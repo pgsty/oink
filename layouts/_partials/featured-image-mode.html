@@ -1,27 +1,6 @@
-{{- /* Decide how a blog article presents its featured image.
-
-`params.ui.featured_image` selects the mode -- `none`, `banner`, or `wash` --
-and front matter `featured_image` overrides it for one page or, in a cascade,
-one section, the way every `ui.` parameter is overridden.
-
-Returns "" for an article that renders no featured image, so a caller emits no
-wrapper around an image that is not there. Three things reduce to "":
-
-  * the mode is `none`, the theme default;
-  * the output is not HTML -- print, Markdown, and RSS reach the article
-    through their own templates, and this is the depth behind that;
-  * the page carries no image. An absent image is a legal state, not an error:
-    a section turns the mode on through a cascade and individual posts opt in
-    by carrying an image at all.
-
-An invalid mode warns and falls back to `none`. A typo reads exactly like a
-deliberate opt-out, which is why it is said out loud; it is not worth stopping
-a dev server over, and `--panicOnWarning` still stops CI.
-
-Input: a page. Returns: "" | "banner" | "wash". */ -}}
 {{- $mode := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" . "key" "featured_image")) "kind" "enum"
-    "allowed" (slice "none" "banner" "wash") "fallback" "none"
+    "allowed" (slice "none" "banner" "wash" "hero") "fallback" "none"
     "key" "params.ui.featured_image" "where" (cond (isset .Params "featured_image") .Path "")) -}}
 {{- $active := "" -}}
 {{- if and (ne $mode "none") (eq (.Store.Get "tdOutputFormat") "html") -}}

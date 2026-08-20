@@ -1,0 +1,35 @@
+{{- /* Feed the shared representative image to Hugo's metadata templates. */ -}}
+{{- $imgs := slice }}
+{{- $resources := .Resources.ByType "image" }}
+{{- $imgParams := slice }}
+
+{{- $found := partialCached "featured-image-resolve.html" . .RelPermalink }}
+{{- with $found.resource }}
+{{- $imgs = $imgs | append (dict "Image" . "RelPermalink" .RelPermalink "Permalink" .Permalink) }}
+{{- else }}
+{{- if $found.href }}
+{{- $imgs = $imgs | append (dict "RelPermalink" $found.href "Permalink" $found.permalink) }}
+{{- else }}
+{{- $imgParams = first 1 (partial "images-param.html" site.Params.images) }}
+{{- end }}
+{{- end }}
+
+{{- range $imgParams }}
+{{- $img := . }}
+{{- $validated := partial "content/url.html" (dict
+  "name" "featured-image" "parameter" "images" "position" $.Path
+  "value" $img "kind" "image"
+) }}
+{{- if $validated.valid -}}
+  {{- if $validated.external }}
+    {{- $imgs = $imgs | append (dict "RelPermalink" $validated.href "Permalink" $validated.raw) }}
+  {{- else }}
+    {{- with or ($resources.GetMatch $validated.raw) (resources.GetMatch $validated.raw) -}}
+      {{- $imgs = $imgs | append (dict "Image" . "RelPermalink" .RelPermalink "Permalink" .Permalink) }}
+    {{- else }}
+      {{- $imgs = $imgs | append (dict "RelPermalink" $validated.href "Permalink" (strings.TrimPrefix "/" $validated.raw | absURL)) }}
+    {{- end }}
+  {{- end }}
+{{- end -}}
+{{- end }}
+{{- return $imgs }}

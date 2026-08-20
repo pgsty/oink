@@ -1,25 +1,3 @@
-{{- /*
-  The series strip: one line above an article saying which series it belongs
-  to, where the reader is in it, and what comes next, with the whole list
-  behind a disclosure. No JavaScript, no page-store flag, no bundle member.
-
-  A site activates it by declaring the taxonomy -- `taxonomies: {series:
-  series}` is the entire switch. Where it is not declared, `series:` in front
-  matter stays an ordinary page parameter that nothing reads, and this partial
-  renders nothing.
-
-  Two rules the markup encodes:
-
-    * a member of several series gets one strip, for the first term it names;
-    * a series of one member gets none, because a list of one has nowhere to
-      navigate to.
-
-  Reading order, the ordinal, and the next link all come from
-  series-pages.html, so the strip and the term page can never disagree.
-
-  Numbering, cross-references, and aggregate output are Book's, not this: a
-  series is a reading path through independent articles.
-*/ -}}
 {{- $page := . -}}
 {{- with index $page.Site.Taxonomies "series" -}}
   {{- with $page.GetTerms "series" -}}
@@ -27,39 +5,33 @@
     {{- $members := partial "series-pages.html" $term -}}
     {{- $total := len $members -}}
     {{- $part := 0 -}}
-    {{- $next := false -}}
     {{- range $index, $member := $members -}}
       {{- if eq $member.RelPermalink $page.RelPermalink -}}
         {{- $part = add $index 1 -}}
-        {{- if lt $part $total }}{{ $next = index $members $part }}{{ end -}}
       {{- end -}}
     {{- end -}}
     {{- if and (gt $total 1) (gt $part 0) }}
 <nav class="td-series-strip" aria-label="{{ printf "%s %s" (T "ui_series_title") $term.LinkTitle }}">
-  <p class="td-series-strip__line">
+  <div class="td-series-strip__line">
     <a class="td-series-strip__name" href="{{ $term.RelPermalink }}">{{ $term.LinkTitle }}</a>
     <span class="td-series-strip__sep" aria-hidden="true">&middot;</span>
-    <span class="td-series-strip__part">{{ T "ui_series_part" (dict "Part" $part "Total" $total) }}</span>
-    {{- with $next }}
-    <span class="td-series-strip__sep" aria-hidden="true">&middot;</span>
-    {{- $link := printf `<a class="td-series-strip__next-link" href="%s">%s</a>` (.RelPermalink | htmlEscape) (.LinkTitle | htmlEscape) }}
-    <span class="td-series-strip__next">{{ T "ui_series_next" (dict "Link" $link) | safeHTML }}</span>
-    {{- end }}
-  </p>
-  <details class="td-series-strip__all">
-    <summary class="td-series-strip__summary">{{ T "ui_series_title" }} ({{ $total }})</summary>
-    <ol class="td-series-strip__list">
-      {{- range $members }}
-      <li class="td-series-strip__item">
-        {{- if eq .RelPermalink $page.RelPermalink -}}
-          <a class="td-series-strip__link" href="{{ .RelPermalink }}" aria-current="page">{{ .LinkTitle }}</a>
-        {{- else -}}
-          <a class="td-series-strip__link" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-        {{- end -}}
-      </li>
-      {{- end }}
-    </ol>
-  </details>
+    <details class="td-series-strip__all">
+      <summary class="td-series-strip__summary">
+        <span class="td-series-strip__part">{{ T "ui_series_part" (dict "Part" $part "Total" $total) }}</span>
+      </summary>
+      <ol class="td-series-strip__list">
+        {{- range $members }}
+        <li class="td-series-strip__item">
+          {{- if eq .RelPermalink $page.RelPermalink -}}
+            <a class="td-series-strip__link" href="{{ .RelPermalink }}" aria-current="page">{{ .LinkTitle }}</a>
+          {{- else -}}
+            <a class="td-series-strip__link" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+          {{- end -}}
+        </li>
+        {{- end }}
+      </ol>
+    </details>
+  </div>
 </nav>
     {{- end -}}
   {{- end -}}

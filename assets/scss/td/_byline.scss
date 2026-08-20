@@ -1,47 +1,79 @@
-// ============================================================
-// Author bylines and author archive profiles.
-// ============================================================
+.td-article-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin-block: 0.25rem 0.5rem;
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
 
-// Names are separated by gap, never by a rendered separator: a punctuated
-// list would need a connector word in each of 32 locales, and the flex row
-// reflows correctly in RTL without any of them.
+  &__sep {
+    color: var(--bs-tertiary-color);
+  }
+
+  &__author,
+  &__section {
+    color: inherit;
+    transition: color var(--td-motion-duration-fast) ease;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--td-shell-primary);
+    }
+  }
+
+  &__original {
+    color: inherit;
+    text-decoration: none;
+
+    i {
+      font-size: 0.7em;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: var(--td-shell-primary);
+      text-decoration: underline;
+    }
+  }
+}
+
 .td-byline--authors {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 0.6rem;
-}
-
-.td-byline--row {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.2rem 0.4rem;
-  margin-inline-start: 0.35rem;
+  gap: 0.75rem 1.75rem;
+  margin-block-start: 0.75rem;
 }
 
 .td-byline {
-  &__label {
-    color: var(--bs-secondary-color);
-  }
-
   &__author {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.65rem;
     color: inherit;
     text-decoration: none;
 
-    &:hover,
-    &:focus-visible {
+    &:hover .td-byline__name,
+    &:focus-visible .td-byline__name {
       color: var(--bs-link-color);
       text-decoration: underline;
     }
   }
 
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.35;
+  }
+
+  &__bio {
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+  }
+
   &__avatar {
-    // The element box is fixed by the `width`/`height` attributes; the
-    // portraits are cropped square by Hugo, so a circle never distorts.
     flex: none;
     border-radius: 50%;
     background: var(--bs-secondary-bg);
@@ -51,12 +83,12 @@
 
   &__avatar--placeholder {
     display: inline-grid;
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
     place-items: center;
     color: var(--bs-secondary-color);
     font-family: var(--td-meta-font-family);
-    font-size: 0.75rem;
+    font-size: 1.05rem;
     font-weight: 800;
     line-height: 1;
     text-transform: uppercase;
@@ -73,6 +105,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 1rem;
+    margin-block-end: 1.25rem;
   }
 
   &__avatar {
@@ -112,8 +145,7 @@
 }
 
 @media (forced-colors: active) {
-  // The placeholder circle is a background shape in the normal palette; in a
-  // forced palette it has to be an outline or it disappears entirely.
+  // Keep the placeholder boundary in forced colors.
   .td-byline__avatar,
   .td-author-profile__avatar {
     border: 1px solid CanvasText;

@@ -1,28 +1,5 @@
-{{- /* One blog post as a card in the blog index.
-
-`params.ui.blog_index: cards` selects this form; `shell/blog-row.html` is the
-row form of the same post. The card reuses the shared content-card surface, so
-the whole face is the link: `.td-content-card__title` carries the `::after`
-overlay and the focus ring, which keeps the accessible name to the title and
-leaves the summary out of it. The section link lifts itself back above that
-overlay in CSS rather than nesting a second link inside the first.
-
-The lead image goes through Hugo whenever the resource can be processed. An
-index renders every post at once, so emitting the original URL -- as the row
-form still does -- costs one full-size download per card. SVG, static, and
-remote images cannot be cropped, so CSS frames them in the same 16:9 box.
-
-The card carries no byline, taxonomy, or reading time: image, title, date,
-section, and summary are its information ceiling. Attribution belongs on the
-page that shows the image at size.
-
-Input: a page. */ -}}
 {{- $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
 {{- $isExternal := isset .Params "manual_link" -}}
-{{- /* The description is what the author wrote *about* the post, so it beats
-     the first 160 characters of the post itself -- which on a release note is
-     the date and tag line, not the news. The body is the fallback for a page
-     that describes itself only by starting. */ -}}
 {{- $summary := .Description | default .Params.summary | plainify | htmlUnescape -}}
 {{- if and (not $summary) (not $isExternal) -}}
   {{- $summary = .Plain | htmlUnescape | truncate 160 -}}
@@ -49,13 +26,11 @@ Input: a page. */ -}}
       <a class="td-content-card__title" href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
       {{- if $isExternal }}<i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}
     </h3>
-    {{ partial "shell/blog-meta.html" (dict "page" . "authors" false) }}
-    {{- /* The post's own tags, as the chips the article header uses. A card is
-         a browsing surface: the tag is often why a reader picks one. */ -}}
+    {{ partial "shell/blog-meta.html" (dict "page" . "section" false "length" false) }}
     {{- with $tags }}
     <ul class="td-blog-card__tags">
       {{- range . }}
-      <li><a class="td-taxonomy-term" href="{{ .RelPermalink }}"><span class="td-taxonomy-label">{{ .LinkTitle }}</span></a></li>
+      <li><a class="td-badge td-badge--neutral td-badge--outline" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
       {{- end }}
     </ul>
     {{- end }}

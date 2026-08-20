@@ -1,11 +1,6 @@
 {{- .Page.Store.Set "tdOutputFormat" "print" -}}
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-    dir="{{ .Site.Language.Direction | default "ltr" }}"
-    lang="{{ partial "language-tag.html" . }}"
-    data-td-typography="{{ partial "typography-preset.html" .Site }}"
-    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
+<html{{ partial "shell/document-attrs.html" (dict "page" .) }}>
   <head>
     {{ partial "head.html" . }}
   </head>

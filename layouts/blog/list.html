@@ -6,65 +6,70 @@
 </div>
 {{ $blogPages := .Pages -}}
 {{ if (and .Parent .Parent.IsHome) -}}
-  {{ $blogPages = where .Site.RegularPages "Section" .Section -}}
+  {{ $blogPages = .RegularPagesRecursive -}}
 {{ end -}}
-{{/* The form of the index is the site's decision, not the reader's: rows by
-     default, cards where the posts lead with an image. Both forms group by
-     year and paginate the same groups, so only the group body differs. */ -}}
 {{ $mode := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" . "key" "blog_index")) "kind" "enum"
-    "allowed" (slice "list" "cards") "fallback" "list"
+    "allowed" (slice "list" "cards" "table") "fallback" "list"
     "key" "params.ui.blog_index" "where" (cond (isset .Params "blog_index") .Path "")) -}}
-{{ $columns := (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) | default 3 -}}
+{{ $columns := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) "kind" "number"
+    "fallback" 3 "key" "params.ui.blog_index_columns"
+    "where" (cond (isset .Params "blog_index_columns") .Path "")) -}}
 {{ $size := (partial "ui-param.html" (dict "page" . "key" "blog_index_size")) | default 12 -}}
-
-{{/* With the reader toggle live both forms are in the document and CSS shows
-     one; `data-td-blog-default` records which one the site published, so the
-     first paint matches the configuration and only a stored choice overrides
-     it. Without the toggle only the configured form is rendered at all. */ -}}
 {{ $toggle := partial "shell/blog-index-toggle.html" . -}}
+{{ $pager := false -}}
+{{ if or (ne $mode "table") $toggle -}}
+  {{ $pager = .Paginate ($blogPages.ByDate.Reverse) $size -}}
+{{ end -}}
+{{ $tablePages := slice -}}
+{{ if or (eq $mode "table") $toggle }}{{ $tablePages = $blogPages.ByDate.Reverse }}{{ end -}}
+{{ if $toggle -}}
+  {{/* Toggle views share one page of posts across all three forms. */ -}}
+  {{ $tablePages = $pager.Pages -}}
+{{ end -}}
 {{ if .Pages -}}
 <div class="td-blog-posts" data-td-blog-default="{{ $mode }}">
-  {{ $pager := .Paginate ($blogPages.GroupByDate "2006") $size -}}
-  {{ range $pager.PageGroups -}}
-  <h2>{{ T "post_posts_in" }} {{ .Key }}</h2>
-  {{ if or (eq $mode "cards") $toggle -}}
-  <div class="td-content-cards td-blog-cards" data-td-blog-form="cards" style="--td-card-columns: {{ $columns }}">
-    {{ range .Pages -}}
-    {{ partial "shell/blog-card.html" . -}}
+  {{/* Standalone tables are complete archives; toggle views share one page. */ -}}
+  {{ if or (eq $mode "table") $toggle -}}
+  <table class="td-blog-table" data-td-blog-form="table">
+    <caption class="visually-hidden">{{ .Title }}</caption>
+    <tbody>
+      {{ range $tablePages -}}
+      {{ $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
+      {{ $isExternal := isset .Params "manual_link" -}}
+      <tr>
+        <td class="td-blog-table__date">{{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (.Param "time_format_blog") }}</time>{{ end }}</td>
+        <td class="td-blog-table__title"><a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>{{ if $isExternal }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}</td>
+        <td class="td-blog-table__tags">
+          {{- if isset .Site.Taxonomies "tags" }}{{ range .GetTerms "tags" }}<a class="td-badge td-badge--neutral td-badge--outline" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ end -}}
+        </td>
+      </tr>
+      {{ end -}}
+    </tbody>
+  </table>
+  {{ end -}}
+  {{ if or (ne $mode "table") $toggle -}}
+  <div class="td-blog-posts__paged">
+    {{ if or (eq $mode "cards") $toggle -}}
+    <div class="td-content-cards td-blog-cards" data-td-blog-form="cards" style="--td-card-columns: {{ $columns }}">
+      {{ range $pager.Pages -}}
+      {{ partial "shell/blog-card.html" . -}}
+      {{ end -}}
+    </div>
     {{ end -}}
+    {{ if or (eq $mode "list") $toggle -}}
+    <ul class="td-blog-posts-list" data-td-blog-form="list">
+      {{ range $pager.Pages -}}
+      {{ partial "shell/blog-row.html" (dict "page" . "linkImage" false) -}}
+      {{ end -}}
+    </ul>
+    {{ end -}}
+    <div class="td-blog-posts__pagination">
+      {{ partial "pagination.html" . -}}
+    </div>
   </div>
   {{ end -}}
-  {{ if or (ne $mode "cards") $toggle -}}
-  <ul class="td-blog-posts-list" data-td-blog-form="list">
-    {{ range .Pages -}}
-    {{ $post := . -}}
-    <li class="td-blog-posts-list__item">
-      <div class="td-blog-posts-list__body">
-        <h3 class="h5 mt-0 mb-1"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-        {{ partial "shell/blog-meta.html" (dict "page" $post) }}
-        <header class="td-article-meta">
-          {{- partial "taxonomy-terms-article-wrapper.html" . -}}
-          {{ if partial "reading-time-enabled.html" . -}}
-            {{- partial "reading-time.html" . -}}
-          {{ end -}}
-        </header>
-        {{- $featuredImage := partial "featured-image-src.html" . -}}
-        {{- $summary := .Plain | safeHTML | truncate 250 -}}
-        <div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1{{ if $featuredImage }} td-blog-posts-list__summary-row--with-image{{ end }}">
-          {{- partial "featured-image.html" (dict "p" . "w" 250 "h" 125 "class" "td-blog-posts-list__thumbnail flex-shrink-0 mb-0") -}}
-          <div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
-        </div>
-        <div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
-      </div>
-    </li>
-    {{ end -}}
-  </ul>
-  {{ end -}}
-  {{ end -}}
-</div>
-<div class="td-blog-posts__pagination">
-  {{ partial "pagination.html" . -}}
 </div>
 {{- end -}}
 {{ partial "page-end.html" . }}

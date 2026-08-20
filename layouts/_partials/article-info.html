@@ -1,0 +1,48 @@
+{{- /* The blog article head's one line of facts under the title: the date,
+     one localized author-and-section phrase, then -- when reading time is
+     enabled -- the word count and the minutes, then a link to the original
+     where front matter upstream_link names one. Segments that cannot resolve
+     simply stay away, and the row itself renders only when at least one
+     can. */ -}}
+{{- $page := .page -}}
+{{- $segments := slice -}}
+{{- if not $page.Date.IsZero -}}
+  {{- $segments = $segments | append (printf `<time class="td-article-info__date" datetime="%s">%s</time>`
+      ($page.Date.Format "2006-01-02")
+      ($page.Date.Format $page.Site.Params.time_format_blog | htmlEscape)) -}}
+{{- end -}}
+{{- $names := slice -}}
+{{- range partial "authors-resolve.html" $page -}}
+  {{- $names = $names | append (printf `<a class="td-article-info__author" href="%s">%s</a>` (.url | htmlEscape) (.name | htmlEscape)) -}}
+{{- end -}}
+{{- with $page.CurrentSection -}}
+  {{- $section := printf `<a class="td-article-info__section" href="%s">%s</a>` (.RelPermalink | htmlEscape) (.LinkTitle | htmlEscape) -}}
+  {{- $context := dict "Authors" (delimit $names (T "ui_list_separator")) "Section" $section -}}
+  {{- $sentence := cond (gt (len $names) 0) (T "post_meta_by_in" $context) (T "post_meta_in" $context) -}}
+  {{- /* A locale that writes its interpunct into the sentence gets the same
+       muted separator the line draws between segments. */ -}}
+  {{- $sentence = replace $sentence " · " ` <span class="td-article-info__sep" aria-hidden="true">&middot;</span> ` -}}
+  {{- $segments = $segments | append $sentence -}}
+{{- end -}}
+{{- if partial "reading-time-enabled.html" $page -}}
+  {{- $segments = $segments | append (printf `<span class="td-article-info__words">%s</span>`
+      (T "post_word_count" (dict "Count" $page.WordCount) | htmlEscape)) -}}
+  {{- $minutes := $page.ReadingTime -}}
+  {{- if lt $minutes 1 }}{{ $minutes = 1 }}{{ end -}}
+  {{- $segments = $segments | append (printf `<span class="td-article-info__time">%s</span>`
+      (T "post_reading_minutes" (dict "Minutes" $minutes) | htmlEscape)) -}}
+{{- end -}}
+{{- with index $page.Params "upstream_link" -}}
+  {{- /* The same per-page fact the annotation attributes; here it is only a
+       reader affordance, so the shared URL policy is the whole gate. */ -}}
+  {{- $result := partial "content/url.html" (dict
+      "label" "article info line" "parameter" "upstream_link"
+      "position" $page.Path "value" . "kind" "web") -}}
+  {{- if $result.valid -}}
+    {{- $segments = $segments | append (printf `<a class="td-article-info__original" href="%s" target="_blank" rel="noopener noreferrer">%s <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`
+        ($result.href | htmlEscape) (T "post_read_original" | htmlEscape)) -}}
+  {{- end -}}
+{{- end -}}
+{{- if $segments }}
+	<div class="td-article-info">{{ delimit $segments ` <span class="td-article-info__sep" aria-hidden="true">&middot;</span> ` | safeHTML }}</div>
+{{- end -}}

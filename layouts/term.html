@@ -14,13 +14,13 @@
   {{- if eq .Data.Plural "series" }}
   <ol class="td-blog-posts-list td-blog-posts-list--numbered">
     {{- range partial "series-pages.html" . }}
-      {{- partial "shell/blog-row.html" . -}}
+      {{- partial "shell/blog-row.html" (dict "page" .) -}}
     {{- end }}
   </ol>
   {{- else }}
   <ul class="td-blog-posts-list">
     {{- range .Pages.ByDate.Reverse }}
-      {{- partial "shell/blog-row.html" . -}}
+      {{- partial "shell/blog-row.html" (dict "page" .) -}}
     {{- end }}
   </ul>
   {{- end }}

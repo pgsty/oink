@@ -1,13 +1,3 @@
-{{- /* Normalize one data/download/<key> record before presentation.
-
-     Nothing here stops the build. A malformed record warns and resolves to an
-     empty one, so the download block renders nothing and the rest of the page
-     survives; a malformed channel or step warns and is skipped, so one bad
-     entry costs that entry rather than the whole product. The shape returned
-     is always the same, which is what lets callers stay unguarded.
-
-     Hugo allows a partial exactly one `return`, so record-level failures set
-     $ok and every later stage is guarded by it rather than returning early. */ -}}
 {{- $page := .page -}}
 {{- $key := .key -}}
 {{- $position := .position | default $page.Path -}}
@@ -175,20 +165,11 @@
     {{- end -}}
   {{- end -}}
   {{- $url := "" -}}
-  {{- $urlOk := true -}}
   {{- if isset $channel "url" -}}
     {{- $url = partial "download/interpolate.html" (dict "value" $channel.url "field" "url" "kind" $kind "version" $version "tag" $tag "position" $channelPosition) -}}
-    {{- $parsedResult := try (urls.Parse $url) -}}
-    {{- with $parsedResult.Err }}{{ warnf "%s: url is invalid: %s; dropping the link" $channelPosition . }}{{ $urlOk = false }}{{ end -}}
-    {{- if $urlOk -}}
-      {{- $parsed := $parsedResult.Value -}}
-      {{- if findRE `[\x00-\x20\x7f]` $url }}{{ warnf "%s: url must not contain whitespace or control characters; dropping the link" $channelPosition }}{{ $urlOk = false }}{{ end -}}
-      {{- if and $urlOk (hasPrefix $url "//") }}{{ warnf "%s: url must not use a protocol-relative URL; dropping the link" $channelPosition }}{{ $urlOk = false }}{{ end -}}
-      {{- if and $urlOk $parsed.Scheme (not (in (slice "http" "https") (lower $parsed.Scheme))) }}{{ warnf "%s: url must use http or https; dropping the link" $channelPosition }}{{ $urlOk = false }}{{ end -}}
-      {{- if and $urlOk $parsed.Scheme (not $parsed.Host) }}{{ warnf "%s: url requires a host; dropping the link" $channelPosition }}{{ $urlOk = false }}{{ end -}}
-      {{- if and $urlOk (not $parsed.Scheme) }}{{ $url = strings.TrimPrefix "/" $url | relURL }}{{ end -}}
-    {{- end -}}
-    {{- if not $urlOk }}{{ $url = "" }}{{ end -}}
+    {{- $url = (partial "content/url.html" (dict
+      "name" "download" "parameter" "url" "position" $channelPosition "value" $url "kind" "web"
+    )).href -}}
   {{- end -}}
   {{- $steps := slice -}}
   {{- if isset $channel "steps" -}}

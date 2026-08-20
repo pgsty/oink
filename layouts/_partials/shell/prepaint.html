@@ -21,7 +21,7 @@
         html.setAttribute('data-td-shell-toc', 'collapsed');
       }
       var blogIndex = localStorage.getItem('td-blog-index');
-      if (blogIndex === 'cards' || blogIndex === 'list') {
+      if (blogIndex === 'cards' || blogIndex === 'list' || blogIndex === 'table') {
         html.setAttribute('data-td-blog-index', blogIndex);
       }
       {{- end }}

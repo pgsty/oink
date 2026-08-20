@@ -1,40 +1,17 @@
-{{- /* Render who wrote a page, in its article head.
-
-Two paths, and which one runs is decided by the site's data, never by a
-parameter:
-
-  * The site declared the `authors` taxonomy and the page names authors ->
-    portraits and linked names, in the page's own order.
-  * Anything else -> the 0.4 `author:` string, rendered exactly as 0.4
-    rendered it. 853 pages across the family sites carry that string and 180
-    of them put Markdown in it, so this branch is a fixed point: the markup,
-    the `markdownify`, the `<b>`, the trailing pipe and the whitespace are
-    reproduced byte for byte, and `tests/site/content/blog/legacy-byline.md`
-    exists to prove it. `authors` wins where both are present; neither warns,
-    because a family of sites migrates 853 pages at its own pace.
-
-Names are separated by CSS gap, never by a rendered comma or "and". A
-punctuation list would need a connector word per locale, and there are 32.
-
-A list row or a card names its authors inside one translated sentence
-instead, which is `shell/blog-meta.html`; this partial is the article head.
-
-Input: `page`; optional `authors` (a pre-resolved list, for a caller that
-already needed to know whether the page has any). Returns: markup. */ -}}
+{{- /* Date and length belong to the separate article info line. */ -}}
 {{- $page := .page -}}
 {{- $authors := .authors -}}
 {{- if not $authors -}}{{ $authors = partial "authors-resolve.html" $page }}{{- end -}}
 {{- if $authors }}
 	<div class="td-byline td-byline--authors mb-4">
-		<span class="td-byline__label">{{ T "post_byline_by" }}</span>
 		{{- range $authors }}
-		<a class="td-byline__author" href="{{ .url }}">{{ partial "authors-avatar.html" (dict "author" . "size" 28 "class" "td-byline__avatar") }}<span class="td-byline__name">{{ .name }}</span></a>
+		<a class="td-byline__author" href="{{ .url }}">{{ partial "authors-avatar.html" (dict "author" . "size" 44 "class" "td-byline__avatar") }}<span class="td-byline__identity"><span class="td-byline__name">{{ .name }}</span>{{ with .description }}<span class="td-byline__bio">{{ . }}</span>{{ end }}</span></a>
 		{{- end }}
-		<time datetime="{{ $page.Date.Format "2006-01-02" }}" class="text-body-secondary">{{ $page.Date.Format $page.Site.Params.time_format_blog }}</time>
 	</div>
 {{- else }}
+	{{- with $page.Params.author }}
 	<div class="td-byline mb-4">
-		{{ with $page.Params.author }}{{ T "post_byline_by" }} <b>{{ . | markdownify }}</b> |{{ end}}
-		<time datetime="{{  $page.Date.Format "2006-01-02" }}" class="text-body-secondary">{{ $page.Date.Format $page.Site.Params.time_format_blog  }}</time>
+		<b>{{ . | markdownify }}</b>
 	</div>
+	{{- end }}
 {{- end -}}

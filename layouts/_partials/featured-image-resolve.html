@@ -1,42 +1,3 @@
-{{- /* Decide which image represents a page, and resolve it.
-
-This is the one place that answers the question, so the image a reader sees and
-the image a social card carries cannot disagree. Three consumers share it:
-
-  * `featured-image.html` and `shell/blog-row.html` render it.
-  * `_funcs/get-page-images.html` hands it to Hugo's `opengraph.html`,
-    `twitter_cards.html`, and `schema.html`.
-
-The theme invents no key for this. Hugo's `images` carries it at every level:
-on the page, through a section `cascade`, and site-wide as `params.images`.
-
-Order:
-  1. `images` set on the page itself.
-  2. A page resource matching `**featured*`, then Hugo's own `*feature*` and
-     `{*cover*,*thumbnail*}` conventions, in that order.
-  3. `images` inherited from a section cascade.
-
-Hugo merges a cascade into `.Params`, so 1 and 3 are the same key and have to
-be told apart: the value is treated as inherited when it equals the nearest
-ancestor that carries one. A page that repeats its section's value verbatim is
-read as inheriting it, which selects the same image unless the page also
-carries a bundled one -- the case where a bundled image is the better answer
-anyway.
-
-Site-wide `params.images` is deliberately absent here. It is a social card, not
-a per-page image, so only `_funcs/get-page-images.html` falls back to it; a blog
-row must not render it as a thumbnail.
-
-A selected value is held to the shared image URL policy here, resolved against
-page and global resources here, and returned in both URL forms here, so neither
-consumer carries URL logic of its own. That matters for a site deployed under a
-subpath: Hugo reads a leading slash as the host root, the theme reads it as the
-site root, and a card that disagreed with the rendered image would point at a
-file that is not there.
-
-Input: a page. Returns: a dict with `resource` (a Resource or ""), `href` (the
-relative URL of a non-resource image, or ""), and `permalink` (the absolute form
-of `href`). `resource` and `href` are mutually exclusive. */ -}}
 {{- $resource := "" -}}
 {{- $path := "" -}}
 {{- $href := "" -}}
@@ -74,15 +35,17 @@ of `href`). `resource` and `href` are mutually exclusive. */ -}}
     "name" "featured-image" "parameter" "images" "position" $.Path
     "value" . "kind" "image"
   ) -}}
-  {{- if $validated.external -}}
-    {{- $href = . -}}
-    {{- $permalink = . -}}
-  {{- else -}}
-    {{- with or ($images.GetMatch .) (resources.GetMatch .) -}}
-      {{- $resource = . -}}
-    {{- else -}}
+  {{- if $validated.valid -}}
+    {{- if $validated.external -}}
       {{- $href = $validated.href -}}
-      {{- $permalink = strings.TrimPrefix "/" $path | absURL -}}
+      {{- $permalink = $validated.raw -}}
+    {{- else -}}
+      {{- with or ($images.GetMatch $validated.raw) (resources.GetMatch $validated.raw) -}}
+        {{- $resource = . -}}
+      {{- else -}}
+        {{- $href = $validated.href -}}
+        {{- $permalink = strings.TrimPrefix "/" $validated.raw | absURL -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}

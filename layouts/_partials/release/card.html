@@ -4,18 +4,15 @@
        would emit links like https://github.com//releases/tag/. */ -}}
 {{- if $meta.valid -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- /* Four links, all derivable from the URL alone: the release, both source
+     archives, and the repository. Checksum files live in the assets table
+     below a note, and comparisons live on GitHub. */ -}}
 {{- $links := slice
   (dict "label" (T "ui_release_view") "url" $meta.releaseURL "icon" "fa-brands fa-github")
   (dict "label" (printf "%s · tar.gz" (T "ui_release_source")) "url" $meta.sourceTarURL "icon" "fa-solid fa-file-zipper")
   (dict "label" (printf "%s · zip" (T "ui_release_source")) "url" $meta.sourceZipURL "icon" "fa-solid fa-file-zipper")
+  (dict "label" $meta.repo "url" $meta.repoURL "icon" "fa-solid fa-code-branch")
 -}}
-{{- with $meta.checksumsURL -}}
-  {{- $links = $links | append (dict "label" (T "ui_release_checksums") "url" . "icon" "fa-solid fa-shield-halved") -}}
-{{- end -}}
-{{- with $meta.compareURL -}}
-  {{- $links = $links | append (dict "label" (T "ui_release_compare") "url" . "icon" "fa-solid fa-code-compare") -}}
-{{- end -}}
-{{- $links = $links | append (dict "label" $meta.repo "url" $meta.repoURL "icon" "fa-solid fa-code-branch") -}}
 
 {{- if eq $format "markdown" -}}
   {{- $rows := slice (printf "**%s · %s**" (partial "content/markdown-escape.html" $meta.tag) $meta.dateDisplay) -}}

@@ -3,7 +3,7 @@ title: A typography regression article
 description: A compact fixture for long-form reading and CJK fallback.
 date: 2026-08-11
 weight: 10
-authors: [oink-maintainers, vonng]
+authors: [oink, vonng]
 series: [typography-notes]
 ---
 

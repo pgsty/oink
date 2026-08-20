@@ -4,7 +4,8 @@
 The annotation's upstream attribution exists to discharge a licence
 obligation, so its failure mode matters more than its appearance: a page that
 silently omits an attribution looks exactly like a page that never needed one.
-Every rule below therefore fails the build rather than degrading.
+Every rule below warns and omits an invalid notice; strict publication rejects
+the same warning.
 
 1. `upstream_link` is the per-page fact and is read from front matter only. A
    cascade counts (that is how a vendored tree is marked), site params do not.
@@ -79,6 +80,7 @@ class Case:
         cascade: str = "",
         front: str = "",
         data: bool = False,
+        licenses: str = "",
         error: str | None = None,
         expect: tuple[str, ...] = (),
         reject: tuple[str, ...] = (),
@@ -92,6 +94,7 @@ class Case:
         self.cascade = cascade
         self.front = front
         self.data = data
+        self.licenses = licenses
         self.error = error
         self.expect = expect
         self.reject = reject
@@ -153,6 +156,7 @@ CASES = [
         cascade="  upstream_source: minio-docs\n",
         front="",
         error="needs upstream_link",
+        reject=("td-page-meta__upstream",),
     ),
     Case(
         "empty-link-opts-out",
@@ -166,16 +170,19 @@ CASES = [
         "modified-without-link-fails",
         front="upstream_modified: true\n",
         error="upstream_modified needs upstream_link",
+        reject=("td-page-meta__upstream",),
     ),
     Case(
         "incomplete-attribution-fails",
         front="upstream_link: https://docs.min.io/community/console.html\n",
         error="upstream_link needs upstream_name",
+        reject=("td-page-meta__upstream",),
     ),
     Case(
         "unknown-license-fails",
         front=FULL_PAGE.replace("CC-BY-4.0", "CC-BY4.0"),
         error='upstream_license "CC-BY4.0" is not in data/licenses',
+        reject=("td-page-meta__upstream",),
     ),
     Case(
         "unknown-registry-entry-fails",
@@ -184,11 +191,51 @@ CASES = [
             "upstream_source: not-a-key\n"
         ),
         error='upstream_source "not-a-key" has no entry',
+        reject=("td-page-meta__upstream",),
     ),
     Case(
         "non-boolean-modified-fails",
         front=FULL_PAGE.replace("upstream_modified: true", 'upstream_modified: "yes"'),
         error="upstream_modified must be a boolean",
+        expect=("td-page-meta__upstream", "minio/docs"),
+        reject=("Adapted from", "change history"),
+    ),
+    Case(
+        "unsafe-upstream-link",
+        front=FULL_PAGE.replace(
+            "https://docs.min.io/community/console.html", "javascript:alert(1)"
+        ),
+        error='unsupported upstream_link scheme "javascript"',
+        reject=("td-page-meta__upstream", "javascript:"),
+    ),
+    Case(
+        "unsafe-upstream-notice",
+        front=FULL_PAGE.replace("/about/attribution/", "javascript:alert(2)"),
+        error='unsupported upstream_notice scheme "javascript"',
+        reject=("td-page-meta__upstream", "javascript:"),
+    ),
+    Case(
+        "unsafe-license-url",
+        front=FULL_PAGE,
+        licenses=(
+            "CC-BY-4.0:\n"
+            "  name: CC BY 4.0\n"
+            "  url: javascript:alert(3)\n"
+        ),
+        error='unsupported upstream_license URL scheme "javascript"',
+        reject=("td-page-meta__upstream", "javascript:"),
+    ),
+    Case(
+        "legacy-upstream-attribution",
+        front="upstream_attribution: https://docs.min.io/community/console.html\n",
+        error="upstream_attribution was renamed",
+        reject=("td-page-meta__upstream",),
+    ),
+    Case(
+        "legacy-downstream-modified",
+        front="downstream_modified: true\n",
+        error="downstream_modified was renamed",
+        reject=("td-page-meta__upstream",),
     ),
     Case(
         "site-params-supply-constants",
@@ -270,6 +317,24 @@ CASES = [
         target="zh/docs/page",
         reject=("td-page-meta__translation",),
     ),
+    Case(
+        "translation-notice-invalid-language",
+        params="ui:\n  translation_notice: eng\n",
+        languages=True,
+        page_zh="",
+        target="zh/docs/page",
+        error='invalid params.ui.translation_notice "eng"',
+        reject=("td-page-meta__translation",),
+    ),
+    Case(
+        "translation-notice-true",
+        params="ui:\n  translation_notice: true\n",
+        languages=True,
+        page_zh="",
+        target="zh/docs/page",
+        error="translation_notice must name an authoritative language code",
+        reject=("td-page-meta__translation",),
+    ),
 ]
 
 
@@ -302,9 +367,12 @@ def build(hugo: str, case: Case, panic_on_warning: bool = False) -> tuple[str, s
         source = Path(temp)
         (source / "content/docs").mkdir(parents=True)
         (source / "hugo.yaml").write_text(site_config(case), encoding="utf-8")
-        if case.data:
+        if case.data or case.licenses:
             (source / "data").mkdir()
+        if case.data:
             (source / "data/upstreams.yaml").write_text(UPSTREAMS, encoding="utf-8")
+        if case.licenses:
+            (source / "data/licenses.yaml").write_text(case.licenses, encoding="utf-8")
         # Only an upstream cascade obliges the section page to name its own source.
         section_link = "upstream_link: https://docs.min.io/community/\n" if "upstream" in case.cascade else ""
         (source / "content/docs/_index.md").write_text(
@@ -401,7 +469,9 @@ def main() -> int:
                     errors.append(f"{case.name}: did not report {case.error!r}: {message[-400:]}")
                 if not strict:
                     errors.append(f"{case.name}: survived --panicOnWarning")
-                continue
+                if failure:
+                    errors.append(f"{case.name}: warning stopped the non-strict build: {failure[-400:]}")
+                    continue
             if failure:
                 errors.append(f"{case.name}: expected a clean build: {failure[-400:]}")
                 continue

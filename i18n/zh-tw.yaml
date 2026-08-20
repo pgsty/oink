@@ -14,14 +14,12 @@ callout_details: 詳情
 # UI strings. Buttons and similar.
 ui_pager_prev: 上一頁
 ui_pager_next: 下一頁
-ui_read_more: 閱讀全文
 ui_search: 搜尋…
 ui_search_empty: 找不到結果
 ui_search_loading: 正在載入搜尋索引…
 ui_search_nav: 選擇
 ui_search_open: 開啟
 ui_search_close: 關閉
-ui_palette_empty_query: 快速連結與操作
 ui_palette_actions: 操作
 ui_palette_page_actions: 頁面操作
 ui_palette_preferences: 偏好設定
@@ -66,10 +64,6 @@ ui_toc_hide: 隱藏目錄
 ui_toc_show: 顯示目錄
 ui_language_select: 選擇語言
 ui_language_switch: 切換語言
-ui_details: 詳情
-
-# Used in sentences such as "Posted in News"
-ui_in: 發布於
 
 # Used in sentences such as "All Tags"
 ui_all: 所有
@@ -77,13 +71,10 @@ ui_all: 所有
 # Footer text
 footer_all_rights_reserved: 保留所有權利
 
-footer_privacy_policy: 隱私政策
 ui_footer_collapse: 收起頁腳連結
 ui_footer_expand: 展開頁腳連結
 
 # Post (blog, article, etc.)
-post_byline_by: 作者：
-post_created: 建立
 post_last_mod: 最後更新於
 post_upstream: "{{ .work }}，{{ .copyright }}，依 {{ .license }} 授權使用，詳見{{ .notice }}。"
 post_upstream_adapted: 本頁改編自 {{ .work }}，{{ .copyright }}，依 {{ .license }} 授權，詳見{{ .notice }}與{{ .history }}。
@@ -94,13 +85,14 @@ post_translated: 本頁為譯文，如有出入以{{ .original }}為準。
 post_translated_original: 原文
 post_edit_this: 編輯目前頁面
 post_view_markdown: 檢視 Markdown 原始碼
-post_view_this: 檢視頁面原始碼
 post_create_child_page: 建立子頁面
 post_create_issue: 建立文件議題
 post_create_project_issue: 建立專案議題
-post_posts_in: 張貼於
 post_reading_time: ' 分鐘閱讀時間'
 post_less_than_a_minute_read: 1 分鐘內可讀完
+post_word_count: '{{ .Count }} 字'
+post_reading_minutes: '{{ .Minutes }} 分鐘'
+post_read_original: 閱讀原文
 
 # Print support
 print_printable_section: 這是本節的多頁可列印檢視。
@@ -108,10 +100,7 @@ print_click_to_print: 點選此處列印
 print_show_regular: 返回此頁面的標準檢視
 print_entire_section: 列印完整章節
 
-# Community
-
 # Feedback
-feedback_title: 意見回饋
 feedback_question: 這篇文件解決了你的問題嗎？
 feedback_positive: 是
 feedback_negative: 否
@@ -126,7 +115,6 @@ feedback_change: 修改回饋
 
 # Table of contents
 toc_on_this_page: 目錄
-toc_top_of_page: 回到頂部
 
 # Error pages
 error_404_title: 頁面不存在
@@ -212,8 +200,6 @@ book_figure: 圖
 book_table: 表
 book_equation: 公式
 book_example: 範例
-book_lof: 插圖目錄
-book_lot: 表格目錄
 book_toc: 全書目錄
 book_draft: 草稿
 book_draft_notice: 本章仍在修訂中。
@@ -222,18 +208,17 @@ contributors_count: 位貢獻者
 # Article series
 ui_series_title: 系列
 ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
-ui_series_next: "下一篇：{{ .Link }}"
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_list_separator: 、
 
 # Footer text
-post_meta_by_in: "{{ .Date }}，由 {{ .Authors }} 發佈於 {{ .Section }}"
-post_meta_in: "{{ .Date }}，發佈於 {{ .Section }}"
+post_meta_by_in: "{{ .Authors }} 發佈於 {{ .Section }}"
+post_meta_in: "發佈於 {{ .Section }}"
 
-# Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_blog_index_toggle: 切换布局
 
-# Footer text
+# Markdown output
+markdown_llms_index: "LLMS 索引："
+markdown_section_pages: "本節頁面："

@@ -102,15 +102,20 @@ test('the switch is hidden until the runtime claims it', () => {
 test('the published form is on the root element before the reader touches it', () => {
   // Prepaint only writes the attribute when a choice is stored. Settling it
   // here is what keeps the glyph from offering the form the page is in.
-  const { root, toggle } = bootstrap({ published: 'cards' });
+  const { root } = bootstrap({ published: 'cards' });
   assert.equal(root.getAttribute('data-td-blog-index'), 'cards');
-  assert.equal(toggle.getAttribute('aria-pressed'), 'true');
 });
 
 test('a stored choice survives the settling', () => {
-  const { root, toggle } = bootstrap({ stored: 'list', published: 'cards' });
+  const { root } = bootstrap({ stored: 'list', published: 'cards' });
   assert.equal(root.getAttribute('data-td-blog-index'), 'list');
-  assert.equal(toggle.getAttribute('aria-pressed'), 'false');
+});
+
+test('a form outside the cycle settles on the list', () => {
+  // A stale stored value -- an old experiment, a renamed form -- must not
+  // leave the page showing nothing.
+  const { root } = bootstrap({ stored: 'grid', published: 'cards' });
+  assert.equal(root.getAttribute('data-td-blog-index'), 'list');
 });
 
 test('a page with no index leaves the control alone', () => {
@@ -149,20 +154,21 @@ test('the first click reads the published form when nothing is stored', () => {
   const { toggle, root, store } = bootstrap({ published: 'list' });
   toggle.handlers.click();
   assert.equal(root.getAttribute('data-td-blog-index'), 'cards');
-  assert.equal(toggle.getAttribute('aria-pressed'), 'true');
   assert.equal(store.get('td-blog-index'), 'cards');
 });
 
 test('the first click reads a stored choice ahead of the published form', () => {
   // Published as rows, but this reader already chose cards elsewhere: the
-  // click has to move away from cards, not back to them.
+  // click has to advance from cards, not restart from the published form.
   const { toggle, root } = bootstrap({ stored: 'cards', published: 'list' });
   toggle.handlers.click();
-  assert.equal(root.getAttribute('data-td-blog-index'), 'list');
+  assert.equal(root.getAttribute('data-td-blog-index'), 'table');
 });
 
-test('clicking twice returns to where it started', () => {
+test('three clicks walk list, cards, table and return', () => {
   const { toggle, root, store } = bootstrap({ published: 'cards' });
+  toggle.handlers.click();
+  assert.equal(root.getAttribute('data-td-blog-index'), 'table');
   toggle.handlers.click();
   assert.equal(root.getAttribute('data-td-blog-index'), 'list');
   toggle.handlers.click();

@@ -14,7 +14,6 @@ callout_details: Details
 # UI strings. Buttons and similar.
 ui_pager_prev: Previous
 ui_pager_next: Next
-ui_read_more: Read more
 ui_search: Search…
 ui_search_empty: No results found
 ui_search_loading: Loading search index…
@@ -22,7 +21,6 @@ ui_search_results: '{count} results found'
 ui_search_nav: Navigate
 ui_search_open: Open
 ui_search_close: Close
-ui_palette_empty_query: Quick links and actions
 ui_palette_actions: Actions
 ui_palette_page_actions: Page actions
 ui_palette_preferences: Preferences
@@ -63,7 +61,6 @@ ui_toc_hide: Hide table of contents
 ui_toc_show: Show table of contents
 ui_language_select: Choose language
 ui_language_switch: Switch language
-ui_details: Details
 ui_skip_to_content: Skip to content
 ui_page_actions: Actions
 ui_open_in_chatgpt: Open in ChatGPT
@@ -125,9 +122,6 @@ ui_assets_download: Download asset
 ui_download_channels: Download channels
 ui_download_unpublished: Pending release
 
-# Used in sentences such as "Posted in News"
-ui_in: in
-
 # Used in sentences such as "All Tags"
 ui_all: all
 ui_list_separator: ", "
@@ -135,13 +129,10 @@ ui_blog_index_toggle: Switch layout
 
 # Footer text
 footer_all_rights_reserved: All Rights Reserved
-footer_privacy_policy: Privacy Policy
 ui_footer_collapse: Hide footer links
 ui_footer_expand: Show footer links
 
 # Post (blog, article, etc.)
-post_byline_by: By
-post_created: Created
 post_last_mod: Last modified
 post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
 post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
@@ -152,16 +143,17 @@ post_translated: This page is a translation; the {{ .original }} governs.
 post_translated_original: original
 post_edit_this: Edit this page
 post_view_markdown: View markdown
-post_view_this: View page source
 post_create_child_page: Create child page
 post_create_issue: Create docs issue
 post_create_project_issue: Create project issue
-post_posts_in: Posts in
 # One sentence per language rather than fragments joined in a template.
-post_meta_by_in: "{{ .Date }}, By {{ .Authors }}, In {{ .Section }}"
-post_meta_in: "{{ .Date }}, In {{ .Section }}"
+post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
+post_meta_in: "In {{ .Section }}"
 post_reading_time: minute read
 post_less_than_a_minute_read: less than a minute
+post_word_count: '{{ .Count }} words'
+post_reading_minutes: '{{ .Minutes }} min'
+post_read_original: Read More
 
 # Print support
 print_printable_section: This is the multi-page printable view of this section.
@@ -169,10 +161,7 @@ print_click_to_print: Click here to print
 print_show_regular: Return to the regular view of this page
 print_entire_section: Print entire section
 
-# Community
-
 # Feedback
-feedback_title: Feedback
 feedback_question: Was this page helpful?
 feedback_positive: Yes
 feedback_negative: No
@@ -187,7 +176,6 @@ feedback_change: Change response
 
 # Table of contents
 toc_on_this_page: Content
-toc_top_of_page: Top of page
 
 # Error pages
 error_404_title: Page not found
@@ -215,8 +203,6 @@ book_figure: Figure
 book_table: Table
 book_equation: Equation
 book_example: Example
-book_lof: List of figures
-book_lot: List of tables
 book_toc: Book contents
 book_draft: Draft
 book_draft_notice: This chapter is still being revised.
@@ -225,4 +211,7 @@ contributors_count: contributors
 # Article series
 ui_series_title: Series
 ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_series_next: "Next: {{ .Link }}"
+
+# Markdown output
+markdown_llms_index: "LLMS index:"
+markdown_section_pages: "Section pages:"

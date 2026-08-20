@@ -1,8 +1,5 @@
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-dir="ltr"
-lang="en-US"
-data-td-typography="technical" data-td-theme-init>
+<html itemscope itemtype="http://schema.org/WebPage" dir="ltr" lang="en-US" data-td-typography="technical" data-td-theme-init>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -39,7 +36,7 @@ document.documentElement.setAttribute('data-theme', theme);
 </script>
 <link rel="alternate" type="application/rss&#43;xml" href="https://example.org/authors/vonng/index.xml">
 <meta name="robots" content="index, follow">
-<title>Feng Ruohang | Oink Example</title>
+<title>Ruohang Feng | Oink Example</title>
 <meta name="description" content="Author of Pigsty; writes most of what ships here.">
 <link rel="canonical" href="https://example.org/authors/vonng/">
 <link rel="alternate" hreflang="en-US" href="https://example.org/authors/vonng/">
@@ -47,20 +44,20 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:locale:alternate" content="zh_CN">
 <meta property="og:url" content="https://example.org/authors/vonng/">
 <meta property="og:site_name" content="Oink Example">
-<meta property="og:title" content="Feng Ruohang">
+<meta property="og:title" content="Ruohang Feng">
 <meta property="og:description" content="Author of Pigsty; writes most of what ships here.">
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://example.org/images/oink.webp">
-<meta itemprop="name" content="Feng Ruohang">
+<meta property="og:image" content="https://example.org/authors/vonng/featured.jpg">
+<meta itemprop="name" content="Ruohang Feng">
 <meta itemprop="description" content="Author of Pigsty; writes most of what ships here.">
-<meta itemprop="datePublished" content="2026-08-18T00:00:00+08:00">
-<meta itemprop="dateModified" content="2026-08-18T00:00:00+08:00">
-<meta itemprop="wordCount" content="26">
-<meta itemprop="image" content="https://example.org/images/oink.webp">
+<meta itemprop="datePublished" content="2026-08-20T00:00:00+08:00">
+<meta itemprop="dateModified" content="2026-08-20T00:00:00+08:00">
+<meta itemprop="wordCount" content="32">
+<meta itemprop="image" content="https://example.org/authors/vonng/featured.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.org/images/oink.webp">
-<meta name="twitter:title" content="Feng Ruohang">
+<meta name="twitter:image" content="https://example.org/authors/vonng/featured.jpg">
+<meta name="twitter:title" content="Ruohang Feng">
 <meta name="twitter:description" content="Author of Pigsty; writes most of what ships here.">
 <link rel="preload" href="/scss/main.min.<hash>.css" as="style" integrity="<sri>" crossorigin="anonymous">
 <link href="/scss/main.min.<hash>.css" rel="stylesheet" integrity="<sri>" crossorigin="anonymous">
@@ -80,7 +77,7 @@ if (localStorage.getItem('td-shell-toc-collapsed') === '1'
 html.setAttribute('data-td-shell-toc', 'collapsed');
 }
 var blogIndex = localStorage.getItem('td-blog-index');
-if (blogIndex === 'cards' || blogIndex === 'list') {
+if (blogIndex === 'cards' || blogIndex === 'list' || blogIndex === 'table') {
 html.setAttribute('data-td-blog-index', blogIndex);
 }
 if (sessionStorage.getItem('td-kbd-zen') === '1') {
@@ -99,59 +96,45 @@ html.setAttribute('data-td-kbd-zen', '');
 aria-label="Oink Example — Home">
 <img src="/icons/logo.svg" alt="" class="td-nav-logo" width="22" height="22">
 <span class="td-nav-title">Oink Example</span>
-</a><div class="td-nav-links td-nav-menu-zone"><div class="td-nav-menu" data-td-navbar-menu>
-<a class="nav-link td-nav-menu__parent-link" href="/docs/"
+</a><div class="td-nav-links td-nav-menu-zone"><a class="nav-link" href="/docs/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Docs"
 data-td-navbar-region="desktop" data-td-navbar-label="Docs"
-data-td-navbar-external="false" aria-controls="td-navbar-desktop-docs-0" aria-expanded="false">
+data-td-navbar-external="false">
 <i class="fa-solid fa-cubes" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Docs</span></a>
-<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-docs-0" data-td-navbar-panel
-style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/docs/callout/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Callouts"
-data-td-navbar-region="desktop" data-td-navbar-label="Callouts"
-data-td-navbar-external="false">
-<i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Callouts</span><small class="td-navbar-entry__description">Notes, warnings and disclosures from a blockquote</small></a>
-<a class="td-nav-menu__item-link" href="/docs/code/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Code blocks"
-data-td-navbar-region="desktop" data-td-navbar-label="Code blocks"
-data-td-navbar-external="false">
-<i class="fa-solid fa-code" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Code blocks</span><small class="td-navbar-entry__description">Titles, copy, line numbers, folding</small></a>
-<a class="td-nav-menu__item-link" href="/docs/table/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Tables"
-data-td-navbar-region="desktop" data-td-navbar-label="Tables"
-data-td-navbar-external="false">
-<i class="fa-solid fa-table" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Tables</span><small class="td-navbar-entry__description">Captions, matrices, field lists, tabs</small></a>
-<a class="td-nav-menu__item-link" href="/docs/mermaid/"
-data-td-navbar-level="1" data-td-navbar-kind="link"
-aria-label="Mermaid"
-data-td-navbar-region="desktop" data-td-navbar-label="Mermaid"
-data-td-navbar-external="false">
-<i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
-<span class="td-navbar-entry__label">Mermaid</span><small class="td-navbar-entry__description">Diagrams rendered from text, locally</small></a>
-</div>
-</div><a class="nav-link" href="/blog/"
+<div class="td-nav-menu" data-td-navbar-menu>
+<a class="nav-link td-nav-menu__parent-link" href="/blog/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Blog"
 data-td-navbar-region="desktop" data-td-navbar-label="Blog"
-data-td-navbar-external="false">
+data-td-navbar-external="false" aria-controls="td-navbar-desktop-blog-1" aria-expanded="false">
 <i class="fa-solid fa-blog" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Blog</span></a>
-<a class="nav-link" href="/book/"
+<div class="td-nav-menu__panel td-nav-menu__panel--mega" id="td-navbar-desktop-blog-1" data-td-navbar-panel
+style="--td-navbar-columns: 2" data-td-navbar-columns="2" hidden><a class="td-nav-menu__item-link" href="/blog/oink/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Oink"
+data-td-navbar-region="desktop" data-td-navbar-label="Oink"
+data-td-navbar-external="false">
+<i class="fa-solid fa-pen-nib" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Oink</span><small class="td-navbar-entry__description">Announcements, engineering stories, and implementation notes</small></a>
+<a class="td-nav-menu__item-link" href="/blog/release/"
+data-td-navbar-level="1" data-td-navbar-kind="link"
+aria-label="Releases"
+data-td-navbar-region="desktop" data-td-navbar-label="Releases"
+data-td-navbar-external="false">
+<i class="fa-solid fa-rocket" aria-hidden="true"></i>
+<span class="td-navbar-entry__label">Releases</span><small class="td-navbar-entry__description">Every OINK release note, newest first</small></a>
+</div>
+</div><a class="nav-link" href="/book/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
 aria-label="Book"
 data-td-navbar-region="desktop" data-td-navbar-label="Book"
 data-td-navbar-external="false">
 <i class="fa-solid fa-book" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Book</span></a>
-<a class="nav-link" href="https://pigsty.com/"
+<a class="nav-link" href="https://pigsty.io/"
 data-td-navbar-level="0" data-td-navbar-kind="link"
 aria-label="Pigsty"
 data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
@@ -165,7 +148,7 @@ aria-controls="td-shell-search" aria-expanded="false"><i class="td-shell-icon td
 <kbd class="td-nav-search-box__kbd" aria-hidden="true">/</kbd>
 </button>
 <div class="td-language-selector td-language-selector--menu td-nav-util td-site-nav__language">
-<a class="td-language-selector__trigger" href="https://example.org/zh/authors/vonng/"
+<a class="td-language-selector__trigger" href="/zh/authors/vonng/"
 lang="zh-CN" hreflang="zh-CN" dir="ltr"
 title="Switch language: 简体中文"
 aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false">
@@ -177,7 +160,7 @@ aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="f
 <span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
 </li>
 <li>
-<a class="td-language-selector__item" href="https://example.org/zh/authors/vonng/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+<a class="td-language-selector__item" href="/zh/authors/vonng/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
 </li>
 </ul>
 </div><div class="td-nav-hover-menu td-nav-theme-menu" data-td-nav-hover>
@@ -285,13 +268,6 @@ id="m-blogtypography-li">
 class="td-shell-tree__link"
 id="m-blogtypography"><span>A typography regression article</span></a>
 </div>
-</li><li class="td-shell-tree__item td-leaf"
-id="m-blogolder-li">
-<div class="td-shell-tree__row">
-<a href="/blog/older/" title="An older regression article"
-class="td-shell-tree__link"
-id="m-blogolder"><span>An older regression article</span></a>
-</div>
 </li><li class="td-shell-tree__item td-has-child"
 id="m-blogoink-li">
 <div class="td-shell-tree__row">
@@ -306,6 +282,13 @@ data-td-label-collapse="Collapse section: Oink"><i class="td-shell-icon td-shell
 </div><div id="m-blogoink-children" class="td-shell-tree__children td-is-open">
 <div class="td-shell-tree__children-inner">
 <ul class="td-shell-tree__list td-shell-tree__list--2"><li class="td-shell-tree__item td-leaf"
+id="m-blogoinkimmersive-reading-li">
+<div class="td-shell-tree__row">
+<a href="/blog/oink/immersive-reading/" title="Immersive reading on the blog shell"
+class="td-shell-tree__link"
+id="m-blogoinkimmersive-reading"><span>Immersive reading</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
 id="m-blogoinkoink-announcement-li">
 <div class="td-shell-tree__row">
 <a href="/blog/oink/oink-announcement/" title="Introducing the OINK implementation preview"
@@ -321,6 +304,13 @@ id="m-blogoinkoink-implementation-diary"><span>OINK implementation diary</span><
 </div>
 </li></ul>
 </div>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogolder-li">
+<div class="td-shell-tree__row">
+<a href="/blog/older/" title="An older regression article"
+class="td-shell-tree__link"
+id="m-blogolder"><span>An older regression article</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-bloglegacy-byline-li">
@@ -352,9 +342,9 @@ id="m-blogreleasepig-190"><span>Pig 1.9.0</span></a>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-blogreleaseshorthand-li">
 <div class="td-shell-tree__row">
-<a href="/blog/release/shorthand/" title="Shorthand release metadata"
+<a href="/blog/release/shorthand/" title="A release URL alone"
 class="td-shell-tree__link"
-id="m-blogreleaseshorthand"><span>Shorthand release metadata</span></a>
+id="m-blogreleaseshorthand"><span>A release URL alone</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-blogreleasemcli-20260813-li">
@@ -364,11 +354,11 @@ class="td-shell-tree__link"
 id="m-blogreleasemcli-20260813"><span>MCLI 20260813</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
-id="m-blogreleaseexpanded-li">
+id="m-blogreleaseplain-note-li">
 <div class="td-shell-tree__row">
-<a href="/blog/release/expanded/" title="Expanded release metadata"
+<a href="/blog/release/plain-note/" title="A plain note between releases"
 class="td-shell-tree__link"
-id="m-blogreleaseexpanded"><span>Expanded release metadata</span></a>
+id="m-blogreleaseplain-note"><span>A plain note between releases</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-blogreleasepig-1100-li">
@@ -376,6 +366,13 @@ id="m-blogreleasepig-1100-li">
 <a href="/blog/release/pig-1.10.0/" title="Pig 1.10.0"
 class="td-shell-tree__link"
 id="m-blogreleasepig-1100"><span>Pig 1.10.0</span></a>
+</div>
+</li><li class="td-shell-tree__item td-leaf"
+id="m-blogrelease060-li">
+<div class="td-shell-tree__row">
+<a href="/blog/release/0.6.0/" title="Oink 0.6.0 — Immersive blog reading, and a build that warns instead of stopping"
+class="td-shell-tree__link"
+id="m-blogrelease060"><span>Oink v0.6.0</span></a>
 </div>
 </li><li class="td-shell-tree__item td-leaf"
 id="m-blogrelease050-li">
@@ -454,7 +451,7 @@ id="m-blogseries-vacuum"><span>Vacuum and bloat</span></a>
 </div><div class="td-shell-sidebar__footer">
 <div class="td-shell-sidebar__footer-start">
 <div class="td-language-selector td-language-selector--menu td-shell-language-selector">
-<a class="td-language-selector__trigger" href="https://example.org/zh/authors/vonng/"
+<a class="td-language-selector__trigger" href="/zh/authors/vonng/"
 lang="zh-CN" hreflang="zh-CN" dir="ltr"
 title="Switch language: 简体中文"
 aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="false"><i class="td-shell-icon td-shell-icon--languages fa-solid fa-language" aria-hidden="true"></i>
@@ -465,7 +462,7 @@ aria-label="Switch language: 简体中文" aria-haspopup="true" aria-expanded="f
 <span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span>
 </li>
 <li>
-<a class="td-language-selector__item" href="https://example.org/zh/authors/vonng/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+<a class="td-language-selector__item" href="/zh/authors/vonng/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
 </li>
 </ul>
 </div>
@@ -567,52 +564,73 @@ title="Expand sidebar" aria-label="Expand sidebar"><i class="td-shell-icon td-sh
 <li class="breadcrumb-item">
 <a href="/authors/">Authors</a></li>
 <li class="breadcrumb-item active" aria-current="page">
-Feng Ruohang</li>
+Ruohang Feng</li>
 </ol>
 </nav>
 <div class="td-content td-shell-blog-index td-author-profile">
 <div class="td-author-profile__head">
-<span class="td-author-profile__avatar td-author-profile__avatar--placeholder" aria-hidden="true">F</span>
+<img class="td-author-profile__avatar" src="/authors/vonng/featured_hu_<hash>.jpg" alt="" width="96" height="96" loading="lazy" decoding="async" referrerpolicy="no-referrer">
 <div class="td-author-profile__identity">
-<h1 class="td-author-profile__name">Feng Ruohang</h1>
+<h1 class="td-author-profile__name">Ruohang Feng</h1>
 <p class="td-author-profile__description">Author of Pigsty; writes most of what ships here.</p>
 </div>
 </div>
-<div class="td-shell-term-summary"><p>This profile carries no <code>images</code>, so the byline falls back to an initial in
-place of a portrait — the other half of the same contract.</p>
+<div class="td-shell-term-summary"><p>The portrait is a bundled <code>featured.jpg</code> page resource, resolved exactly the
+way a post&rsquo;s featured image is — one resolver decides the byline avatar, the
+profile portrait, and the social card alike.</p>
 </div>
 </div>
 <div class="td-blog-posts">
 <ul class="td-blog-posts-list"><li class="td-blog-posts-list__item">
 <div class="td-blog-posts-list__body">
 <h2 class="h5 mt-0 mb-1">
+<a href="/blog/release/0.6.0/">Oink 0.6.0 — Immersive blog reading, and a build that warns instead of stopping</a>
+</h2>
+<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-20">2026-08-20</time> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> By <a class="td-blog-meta__author" href="/authors/vonng/">Ruohang Feng</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> In <a class="td-blog-meta__section" href="/blog/release/">Releases</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 2721 words <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 13 min</small><span class="td-blog-meta__terms"><a class="td-badge td-badge--neutral td-badge--outline" href="/tags/oink/">Oink</a><a class="td-badge td-badge--neutral td-badge--outline" href="/tags/release/">Release</a></span></p><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
+<figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
+<a href="/blog/release/0.6.0/">
+<img src="/images/releasenote.webp" alt="Oink 0.6.0 — Immersive blog reading, and a build that warns instead of stopping" width="250" height="125" style="object-fit: cover;">
+</a>
+</figure>
+<div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">0.5.0 froze the component API. 0.6.0 spends that stability on two things a documentation theme still could not do well: present long-form blog writing without inventing another content type, and survive an author’s typo.
+The first half is a reading …</p></div>
+</div>
+<div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">0.5.0 froze the component API. 0.6.0 spends that stability on two things a documentation theme still could not do well: present long-form blog writing without inventing another content type, and survive an author’s typo.
+The first half is a reading …</p></div>
+</div>
+</li>
+<li class="td-blog-posts-list__item">
+<div class="td-blog-posts-list__body">
+<h2 class="h5 mt-0 mb-1">
+<a href="/blog/oink/immersive-reading/">Immersive reading on the blog shell</a>
+</h2>
+<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-19">2026-08-19</time> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> By <a class="td-blog-meta__author" href="/authors/vonng/">Ruohang Feng</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> In <a class="td-blog-meta__section" href="/blog/oink/">Oink</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 330 words <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 2 min</small><span class="td-blog-meta__terms"><a class="td-badge td-badge--neutral td-badge--outline" href="/tags/oink/">Oink</a></span></p><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
+<figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
+<a href="/blog/oink/immersive-reading/">
+<img src="/blog/oink/immersive-reading/featured.svg" alt="Immersive reading on the blog shell" width="250" height="125" style="object-fit: cover;">
+</a>
+</figure>
+<div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">This page is rendered by the ordinary blog shell — there is no special type behind it. Its front matter sets four keys, and a section can set the same four once, in a cascade:
+featured_image: hero # the image becomes a full-bleed opening toc_style: …</p></div>
+</div>
+<div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">This page is rendered by the ordinary blog shell — there is no special type behind it. Its front matter sets four keys, and a section can set the same four once, in a cascade:
+featured_image: hero # the image becomes a full-bleed opening toc_style: …</p></div>
+</div>
+</li>
+<li class="td-blog-posts-list__item">
+<div class="td-blog-posts-list__body">
+<h2 class="h5 mt-0 mb-1">
 <a href="/blog/release/0.5.0/">Oink 0.5.0 — Component API v5 and the converged configuration</a>
 </h2>
-<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-18">2026-08-18</time>, By <a class="td-blog-meta__author" href="/authors/vonng/">Feng Ruohang</a>, In <a class="td-blog-meta__section" href="/blog/release/">Releases</a></small></p>
-<header class="td-article-meta"><div class="taxonomy td-taxonomy-terms-article taxo-categories">
-<span class="td-taxonomy-title">Categories:</span>
-<ul class="td-taxonomy-terms">
-<li><a class="td-taxonomy-term" href="https://example.org/categories/release/" data-td-taxonomy-term="release"><span class="td-taxonomy-label">Release</span></a></li>
-</ul>
-</div>
-<div class="taxonomy td-taxonomy-terms-article taxo-tags">
-<span class="td-taxonomy-title">Tags:</span>
-<ul class="td-taxonomy-terms">
-<li><a class="td-taxonomy-term" href="https://example.org/tags/oink/" data-td-taxonomy-term="oink"><span class="td-taxonomy-label">Oink</span></a></li>
-<li><a class="td-taxonomy-term" href="https://example.org/tags/release/" data-td-taxonomy-term="release"><span class="td-taxonomy-label">Release</span></a></li>
-</ul>
-</div>
-</header><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
+<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-18">2026-08-18</time> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> By <a class="td-blog-meta__author" href="/authors/vonng/">Ruohang Feng</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> In <a class="td-blog-meta__section" href="/blog/release/">Releases</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 4719 words <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 23 min</small><span class="td-blog-meta__terms"><a class="td-badge td-badge--neutral td-badge--outline" href="/tags/oink/">Oink</a><a class="td-badge td-badge--neutral td-badge--outline" href="/tags/release/">Release</a></span></p><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
 <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
 <a href="/blog/release/0.5.0/">
 <img src="/images/releasenote.webp" alt="Oink 0.5.0 — Component API v5 and the converged configuration" width="250" height="125" style="object-fit: cover;">
 </a>
 </figure>
-<div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">Release date: 2026-08-18 · Theme tag: v0.5.0 · Repository: pgsty/oink · Previous release: v0.4.2
-Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0 line will freeze: the component API v5 (native Markdown forms first, 29 …</p></div>
+<div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0 line will freeze: the component API v5 (native Markdown forms first, 29 shortcodes as full forms), configuration and front matter keys converged on three rules, one naming …</p></div>
 </div>
-<div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">Release date: 2026-08-18 · Theme tag: v0.5.0 · Repository: pgsty/oink · Previous release: v0.4.2
-Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0 line will freeze: the component API v5 (native Markdown forms first, 29 …</p></div>
+<div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0 line will freeze: the component API v5 (native Markdown forms first, 29 shortcodes as full forms), configuration and front matter keys converged on three rules, one naming …</p></div>
 </div>
 </li>
 <li class="td-blog-posts-list__item">
@@ -620,9 +638,7 @@ Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0 li
 <h2 class="h5 mt-0 mb-1">
 <a href="/blog/typography/">A typography regression article</a>
 </h2>
-<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-11">2026-08-11</time>, By <a class="td-blog-meta__author" href="/authors/oink-maintainers/">OINK maintainers</a>, <a class="td-blog-meta__author" href="/authors/vonng/">Feng Ruohang</a>, In <a class="td-blog-meta__section" href="/blog/">Blog</a></small></p>
-<header class="td-article-meta">
-</header><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
+<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-11">2026-08-11</time> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> By <a class="td-blog-meta__author" href="/authors/oink/">Oink</a>, <a class="td-blog-meta__author" href="/authors/vonng/">Ruohang Feng</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> In <a class="td-blog-meta__section" href="/blog/">Blog</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 53 words <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 1 min</small></p><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
 <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
 <a href="/blog/typography/">
 <img src="/images/oink.webp" alt="A typography regression article" width="250" height="125" style="object-fit: cover;">
@@ -640,9 +656,7 @@ A stable foundation Semantic roles reduce …</p></div>
 <h2 class="h5 mt-0 mb-1">
 <a href="/blog/older/">An older regression article</a>
 </h2>
-<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-10">2026-08-10</time>, By <a class="td-blog-meta__author" href="/authors/vonng/">Feng Ruohang</a>, <a class="td-blog-meta__author" href="/authors/ghost/">Ghost</a>, In <a class="td-blog-meta__section" href="/blog/">Blog</a></small></p>
-<header class="td-article-meta">
-</header><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
+<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-10">2026-08-10</time> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> By <a class="td-blog-meta__author" href="/authors/vonng/">Ruohang Feng</a>, <a class="td-blog-meta__author" href="/authors/ghost/">Ghost</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> In <a class="td-blog-meta__section" href="/blog/">Blog</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 13 words <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 1 min</small></p><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
 <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
 <a href="/blog/older/">
 <img src="/images/oink.webp" alt="An older regression article" width="250" height="125" style="object-fit: cover;">
@@ -660,14 +674,7 @@ A stable foundation Semantic roles reduce …</p></div>
 <h2 class="h5 mt-0 mb-1">
 <a href="/blog/oink/oink-announcement/">Introducing the OINK implementation preview</a>
 </h2>
-<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-08">2026-08-08</time>, By <a class="td-blog-meta__author" href="/authors/oink-maintainers/">OINK maintainers</a>, <a class="td-blog-meta__author" href="/authors/vonng/">Feng Ruohang</a>, In <a class="td-blog-meta__section" href="/blog/oink/">Oink</a></small></p>
-<header class="td-article-meta"><div class="taxonomy td-taxonomy-terms-article taxo-tags">
-<span class="td-taxonomy-title">Tags:</span>
-<ul class="td-taxonomy-terms">
-<li><a class="td-taxonomy-term" href="https://example.org/tags/oink/" data-td-taxonomy-term="oink"><span class="td-taxonomy-label">Oink</span></a></li>
-</ul>
-</div>
-</header><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
+<p class="td-blog-meta"><small class="text-body-secondary"><time datetime="2026-08-08">2026-08-08</time> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> By <a class="td-blog-meta__author" href="/authors/oink/">Oink</a>, <a class="td-blog-meta__author" href="/authors/vonng/">Ruohang Feng</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> In <a class="td-blog-meta__section" href="/blog/oink/">Oink</a> <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 798 words <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> 4 min</small><span class="td-blog-meta__terms"><a class="td-badge td-badge--neutral td-badge--outline" href="/tags/oink/">Oink</a></span></p><div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1 td-blog-posts-list__summary-row--with-image">
 <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
 <a href="/blog/oink/oink-announcement/">
 <img src="/images/oink.webp" alt="Introducing the OINK implementation preview" width="250" height="125" style="object-fit: cover;">
@@ -702,33 +709,17 @@ data-td-label-collapse="Collapse section: Authors">
 <div id="td-shell-taxonomy-authors-blog-children" class="td-shell-tree__children td-is-open">
 <div class="td-shell-tree__children-inner">
 <div class="td-shell-tags-cloud__chips">
-<a class="td-shell-tag" href="/authors/oink-maintainers/">
-<span>OINK maintainers</span><span class="td-shell-tag__count">6</span>
+<a class="td-shell-tag" href="/authors/oink/">
+<span>Oink</span><span class="td-shell-tag__count">6</span>
 </a>
 <a class="td-shell-tag" href="/authors/vonng/">
-<span>Feng Ruohang</span><span class="td-shell-tag__count">4</span>
+<span>Ruohang Feng</span><span class="td-shell-tag__count">6</span>
 </a>
 <a class="td-shell-tag" href="/authors/ghost/">
 <span>Ghost</span><span class="td-shell-tag__count">1</span>
 </a>
-</div>
-</div>
-</div>
-</div><div class="td-shell-aside-group td-shell-tags-cloud" data-td-taxonomy="categories" data-td-taxonomy-root="/blog/">
-<button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-tags-cloud__head" data-td-shell-tree-toggle
-aria-expanded="true" aria-controls="td-shell-taxonomy-categories-blog-children"
-aria-label="Collapse section: Categories"
-data-td-label-expand="Expand section: Categories"
-data-td-label-collapse="Collapse section: Categories">
-<span class="td-shell-aside-group__icon"><i class="fa-solid fa-folder" aria-hidden="true"></i></span>
-<span class="td-shell-aside-group__title td-shell-tags-cloud__title">Categories</span>
-<span class="td-shell-tree__chevron" aria-hidden="true"><i class="td-shell-icon td-shell-icon--chevron-down fa-solid fa-angle-down" aria-hidden="true"></i></span>
-</button>
-<div id="td-shell-taxonomy-categories-blog-children" class="td-shell-tree__children td-is-open">
-<div class="td-shell-tree__children-inner">
-<div class="td-shell-tags-cloud__chips">
-<a class="td-shell-tag" href="/categories/release/">
-<span>Release</span><span class="td-shell-tag__count">5</span>
+<a class="td-shell-tag" href="/authors/no-portrait/">
+<span>No Portrait</span><span class="td-shell-tag__count">1</span>
 </a>
 </div>
 </div>
@@ -747,7 +738,7 @@ data-td-label-collapse="Collapse section: Series">
 <div class="td-shell-tree__children-inner">
 <div class="td-shell-tags-cloud__chips">
 <a class="td-shell-tag" href="/series/oink-releases/">
-<span>OINK releases</span><span class="td-shell-tag__count">5</span>
+<span>OINK releases</span><span class="td-shell-tag__count">6</span>
 </a>
 <a class="td-shell-tag" href="/series/pg-internals/">
 <span>Postgres internals</span><span class="td-shell-tag__count">4</span>
@@ -772,10 +763,10 @@ data-td-label-collapse="Collapse section: Tags">
 <div class="td-shell-tree__children-inner">
 <div class="td-shell-tags-cloud__chips">
 <a class="td-shell-tag" href="/tags/oink/">
-<span>Oink</span><span class="td-shell-tag__count">7</span>
+<span>Oink</span><span class="td-shell-tag__count">9</span>
 </a>
 <a class="td-shell-tag" href="/tags/release/">
-<span>Release</span><span class="td-shell-tag__count">5</span>
+<span>Release</span><span class="td-shell-tag__count">6</span>
 </a>
 </div>
 </div>
@@ -806,7 +797,7 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <li><a href="https://oink.pgsty.com/docs/about/features/" target="_blank" rel="noopener noreferrer">Highlights</a></li>
 <li><a href="https://oink.pgsty.com/docs/customize/config/" target="_blank" rel="noopener noreferrer">Configuration</a></li>
 <li><a href="https://oink.pgsty.com/docs/about/showcase/" target="_blank" rel="noopener noreferrer">Showcase</a></li>
-<li><a href="https://pigsty.com/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
+<li><a href="https://pigsty.io/" target="_blank" rel="noopener noreferrer">Pigsty</a></li>
 </ul>
 </nav>
 <nav class="td-site-footer__column" aria-label="Resources">
@@ -851,7 +842,7 @@ title="Show table of contents" aria-label="Show table of contents"><i class="td-
 <div class="td-shell-footline__right">
 <div class="td-shell-footline__lang">
 <div class="td-language-selector td-language-selector--list td-shell-language-selector"
-role="group" aria-label="Choose language"><span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span><a class="td-language-selector__item" href="https://example.org/zh/authors/vonng/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
+role="group" aria-label="Choose language"><span class="td-language-selector__item active" lang="en-US" dir="ltr" aria-current="page">English</span><a class="td-language-selector__item" href="/zh/authors/vonng/" lang="zh-CN" hreflang="zh-CN" dir="ltr">简体中文</a>
 </div>
 </div>
 <button type="button" class="td-shell-footline__toggle" data-td-footer-toggle
@@ -863,8 +854,7 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 </div>
 </footer>
 </div>
-<script type="application/json" id="td-drawio-config">{"server":"https://embed.diagrams.net/"}</script>
-<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/authors/vonng/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fauthors%2Fvonng%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fauthors%2Fvonng%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":true,"description":"View edit history","disabledReason":"","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":"https://github.com/pgsty/oink/commits/main/exampleSite/content/authors/vonng/_index.md"},{"available":true,"description":"Edit this page","disabledReason":"","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":"https://github.com/pgsty/oink/edit/main/exampleSite/content/authors/vonng/_index.md"},{"available":true,"description":"Create child page","disabledReason":"","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":"https://github.com/pgsty/oink/new/main/exampleSite/content/authors/vonng?filename=change-me.md\u0026value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60get-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A"},{"available":true,"description":"Create docs issue","disabledReason":"","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":"https://github.com/pgsty/oink/issues/new?title=Feng+Ruohang"},{"available":true,"description":"Create project issue","disabledReason":"","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":"https://github.com/pgsty/oink/issues/new"},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"https://example.org/authors/vonng/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"https://example.org/zh/authors/vonng/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Real OINK release notes and engineering posts, wired to every blog feature.","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":false,"description":"Copy Markdown","disabledReason":"Copy Markdown: unavailable","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["Copy Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Copy Markdown","url":""},{"available":true,"description":"Copy link","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["Copy link","Share","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Copy link","url":"https://example.org/authors/vonng/"},{"available":true,"description":"Open in ChatGPT","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["Open in ChatGPT","Ask about this page","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in ChatGPT","url":"https://chatgpt.com/?hints=search\u0026prompt=Read+from+https%3A%2F%2Fexample.org%2Fauthors%2Fvonng%2F+so+I+can+ask+questions+about+it."},{"available":true,"description":"Open in Claude","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["Open in Claude","Ask about this page","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"Read from %s so I can ask questions about it.","target":"blank","title":"Open in Claude","url":"https://claude.ai/new?q=Read+from+https%3A%2F%2Fexample.org%2Fauthors%2Fvonng%2F+so+I+can+ask+questions+about+it."},{"available":false,"description":"View markdown","disabledReason":"View markdown: unavailable","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["View markdown","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View markdown","url":""},{"available":true,"description":"View edit history","disabledReason":"","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["View edit history","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"View edit history","url":"https://github.com/pgsty/oink/commits/main/tests/site/content/authors/vonng/_index.md"},{"available":true,"description":"Edit this page","disabledReason":"","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["Edit this page","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Edit this page","url":"https://github.com/pgsty/oink/edit/main/tests/site/content/authors/vonng/_index.md"},{"available":true,"description":"Create child page","disabledReason":"","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["Create child page","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create child page","url":"https://github.com/pgsty/oink/new/main/tests/site/content/authors/vonng?filename=change-me.md\u0026value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60get-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A"},{"available":true,"description":"Create docs issue","disabledReason":"","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["Create docs issue","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create docs issue","url":"https://github.com/pgsty/oink/issues/new?title=Ruohang+Feng"},{"available":true,"description":"Create project issue","disabledReason":"","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["Create project issue","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"Create project issue","url":"https://github.com/pgsty/oink/issues/new"},{"available":false,"description":"Print entire section","disabledReason":"Print entire section: unavailable","icon":"fa-solid fa-print","id":"print_section","keywords":["Print entire section","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"Print entire section","url":""},{"available":true,"description":"Print this page","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["Print this page","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"Print this page","url":""},{"available":false,"description":"Version","disabledReason":"Version: unavailable","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"Switch language","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["Switch language","language"],"kind":"choice","options":[{"active":true,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"/authors/vonng/"},{"active":false,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"/zh/authors/vonng/"}],"placements":{"page":false,"palette":true},"target":"self","title":"Switch language","url":""},{"available":true,"description":"Toggle color theme","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["Toggle color theme","Light","Dark"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"System","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"Light","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"Dark","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"Toggle color theme","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"Open the example status page","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","incident"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"Example service status","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["paper","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"Print this page","url":""},{"action":"","available":true,"description":"Navigate within the example site","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["component","authoring"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"Open the callout page","url":"/docs/callout/"}],"language":"en","quickLinks":[{"available":true,"description":"Markdown Component Examples","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["Docs","docs"],"kind":"url","target":"self","title":"Docs","url":"/docs/"},{"available":true,"description":"Real OINK release notes and engineering posts, wired to every blog feature.","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["Blog","blog"],"kind":"url","target":"self","title":"Blog","url":"/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden

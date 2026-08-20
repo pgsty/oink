@@ -6,7 +6,7 @@
 <description>Recent content in Blog on Oink Example</description>
 <generator>Hugo</generator>
 <language>en-US</language>
-<lastBuildDate>Tue, 18 Aug 2026 00:00:00 +0800</lastBuildDate>
+<lastBuildDate>Thu, 20 Aug 2026 00:00:00 +0800</lastBuildDate>
 <atom:link href="https://example.org/blog/index.xml" rel="self" type="application/rss+xml" />
 <item>
 <title>Pig 1.9.0</title>
@@ -16,7 +16,7 @@
 <description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.9.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.9.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.9.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.9.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
 </item>
 <item>
-<title>Shorthand release metadata</title>
+<title>A release URL alone</title>
 <link>https://example.org/blog/release/shorthand/</link>
 <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
 <guid>https://example.org/blog/release/shorthand/</guid>
@@ -30,10 +30,18 @@
 <description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;RELEASE.2026-08-13T00-00-00Z&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-13&#34;&gt;2026-08-13&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli/releases/tag/RELEASE.2026-08-13T00-00-00Z&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli/archive/refs/tags/RELEASE.2026-08-13T00-00-00Z.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli/archive/refs/tags/RELEASE.2026-08-13T00-00-00Z.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/mcli&#34;&gt;pgsty/mcli&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
 </item>
 <item>
+<title>A plain note between releases</title>
+<link>https://example.org/blog/release/plain-note/</link>
+<pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
+<dc:creator>No Portrait</dc:creator>
+<guid>https://example.org/blog/release/plain-note/</guid>
+<description>&lt;p&gt;The release index lists every page of its section. This one carries no&#xA;&lt;code&gt;release_url&lt;/code&gt;, so its entry is the title above — nothing warns, and nothing&#xA;is left out.&lt;/p&gt;</description>
+</item>
+<item>
 <title>A typography regression article</title>
 <link>https://example.org/blog/typography/</link>
 <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>OINK maintainers</dc:creator><dc:creator>Feng Ruohang</dc:creator>
+<dc:creator>Oink</dc:creator><dc:creator>Ruohang Feng</dc:creator>
 <guid>https://example.org/blog/typography/</guid>
 <description>&lt;p&gt;Good documentation typography separates reading comfort from interface density.&#xA;The theme can evolve article prose without forcing the sidebar, search dialog,&#xA;or terminal components to use the same font.&lt;/p&gt;&#xA;&lt;h2 id=&#34;a-stable-foundation&#34;&gt;A stable foundation&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;Semantic roles reduce selector-level overrides and keep future editorial work&#xA;bounded. Code such as &lt;code&gt;hugo --minify&lt;/code&gt; remains visually distinct from prose.&lt;/p&gt;</description>
 </item>
@@ -41,7 +49,7 @@
 <title>An older regression article</title>
 <link>https://example.org/blog/older/</link>
 <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>Feng Ruohang</dc:creator><dc:creator>Ghost</dc:creator>
+<dc:creator>Ruohang Feng</dc:creator><dc:creator>Ghost</dc:creator>
 <guid>https://example.org/blog/older/</guid>
 <description>&lt;p&gt;Blog navigation keeps Hugo&amp;rsquo;s existing time order instead of using the docs tree.&lt;/p&gt;</description>
 </item>
@@ -50,59 +58,68 @@
 <link>https://example.org/blog/legacy-byline/</link>
 <pubDate>Sun, 09 Aug 2026 00:00:00 +0000</pubDate>
 <guid>https://example.org/blog/legacy-byline/</guid>
-<description>&lt;p&gt;Sites that never declare the &lt;code&gt;authors&lt;/code&gt; taxonomy keep the string byline they&#xA;wrote in 0.4. This page pins that path byte for byte: it must render the same&#xA;markdownified &lt;code&gt;&amp;lt;b&amp;gt;&lt;/code&gt; and pipe separator after the taxonomy byline lands.&lt;/p&gt;</description>
-</item>
-<item>
-<title>Expanded release metadata</title>
-<link>https://example.org/blog/release/expanded/</link>
-<pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-<guid>https://example.org/blog/release/expanded/</guid>
-<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-11&#34;&gt;2026-08-11&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;</description>
+<description>&lt;p&gt;Sites that never declare the &lt;code&gt;authors&lt;/code&gt; taxonomy keep the string byline they&#xA;wrote in 0.4. This page pins that path byte for byte: it must still render the&#xA;same markdownified &lt;code&gt;&amp;lt;b&amp;gt;&lt;/code&gt; after the taxonomy byline lands.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Pig 1.10.0</title>
 <link>https://example.org/blog/release/pig-1.10.0/</link>
 <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
 <guid>https://example.org/blog/release/pig-1.10.0/</guid>
-<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/download/v1.10.0/checksums.txt&#34;&gt;Checksums&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/compare/v1.9.0...v1.10.0&#34;&gt;Compare changes&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;h2 id=&#34;release-assets&#34;&gt;Release assets&#xA;&lt;/h2&gt;&#xA;### `.rpm`&#xA;&#xA;| File | Checksum |&#xA;| --- | --- |&#xA;| [pig\-1\.10\.0\-1\.aarch64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.aarch64.rpm) | SHA-256 · `e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1` |&#xA;| [pig\-1\.10\.0\-1\.x86\_64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.x86_64.rpm) | SHA-256 · `34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8` |</description>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v1.10.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/releases/tag/v1.10.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig/archive/refs/tags/v1.10.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/pig&#34;&gt;pgsty/pig&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;h2 id=&#34;release-assets&#34;&gt;Release assets&#xA;&lt;/h2&gt;&#xA;### `.rpm`&#xA;&#xA;| File | Checksum |&#xA;| --- | --- |&#xA;| [pig\-1\.10\.0\-1\.aarch64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.aarch64.rpm) | SHA-256 · `e3a339fefdd2203825d15438b52f18e729547eb88dae014212a46006a9bd47d1` |&#xA;| [pig\-1\.10\.0\-1\.x86\_64\.rpm](https://github.com/pgsty/pig/releases/download/v1.10.0/pig-1.10.0-1.x86_64.rpm) | SHA-256 · `34ce29d75ef9f669f3bf832cc812ae082abda7320ee2b2336ea61e701b9b67f8` |</description>
+</item>
+<item>
+<title>Oink 0.6.0 — Immersive blog reading, and a build that warns instead of stopping</title>
+<link>https://example.org/blog/release/0.6.0/</link>
+<pubDate>Thu, 20 Aug 2026 00:00:00 +0800</pubDate>
+<dc:creator>Ruohang Feng</dc:creator>
+<guid>https://example.org/blog/release/0.6.0/</guid>
+<description>&lt;p&gt;0.5.0 froze the component API. 0.6.0 spends that stability on two things a&#xA;documentation theme still could not do well: present long-form blog writing&#xA;without inventing another content type, and survive an author&amp;rsquo;s typo.&lt;/p&gt;&#xA;&lt;p&gt;The first half is a reading release. Five independent options on the ordinary&#xA;blog shell remove the sidebar and breadcrumb, leave the outline alone in a&#xA;wider rail, and use the page&amp;rsquo;s own image as a full-bleed backdrop. Around that&#xA;presentation the blog finally has&#xA;the pieces a blog needs: featured images on the post, authors with profiles,&#xA;series with a reading order, card and table indexes beside the row index, and a share&#xA;bar that is sixteen plain links and no third-party script.&lt;/p&gt;</description>
+</item>
+<item>
+<title>Immersive reading on the blog shell</title>
+<link>https://example.org/blog/oink/immersive-reading/</link>
+<pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+<dc:creator>Ruohang Feng</dc:creator>
+<guid>https://example.org/blog/oink/immersive-reading/</guid>
+<description>&lt;p&gt;This page is rendered by the ordinary blog shell — there is no special type&#xA;behind it. Its front matter sets four keys, and a section can set the same&#xA;four once, in a cascade:&lt;/p&gt;&#xA;&lt;div class=&#34;td-code td-code--untitled&#34; id=&#34;td-code-b33790b4-fence-0&#34; data-td-code data-td-code-auto-id&#xA;     data-td-language=&#34;yaml&#34; data-td-line-count=&#34;4&#34;&gt;&#xA;  &lt;div class=&#34;td-code__viewport&#34; id=&#34;td-code-b33790b4-fence-0-viewport&#34; data-td-code-viewport&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;featured_image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;hero     &lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# the image becomes a full-bleed opening&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;toc_style&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;flow          &lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# a wider outline that moves down with it&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;toc_taxonomies&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# the rail carries the outline alone&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;sidebar_enabled&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;h2 id=&#34;the-hero&#34;&gt;The hero&#xA;&lt;/h2&gt;&#xA;&lt;p&gt;A page that carries a featured image opens with it. &lt;code&gt;hero&lt;/code&gt; makes the image a&#xA;full-bleed backdrop across the top of the viewport, masked to nothing before&#xA;the body text starts, with the title block moved down to give it room — and&#xA;because the shell itself paints it, a section index gets the same opening&#xA;above its list. The image is the one the page&amp;rsquo;s card and social preview use,&#xA;resolved once for all three. A page that prefers the framed figure keeps&#xA;&lt;code&gt;featured_image: banner&lt;/code&gt;; a page with no image simply opens normally.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Oink 0.5.0 — Component API v5 and the converged configuration</title>
 <link>https://example.org/blog/release/0.5.0/</link>
 <pubDate>Tue, 18 Aug 2026 00:00:00 +0800</pubDate>
-<dc:creator>Feng Ruohang</dc:creator>
+<dc:creator>Ruohang Feng</dc:creator>
 <guid>https://example.org/blog/release/0.5.0/</guid>
-<description>&lt;p&gt;&lt;strong&gt;Release date:&lt;/strong&gt; 2026-08-18 · &lt;strong&gt;Theme tag:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink/tree/v0.5.0&#34;&gt;v0.5.0&lt;/a&gt; · &lt;strong&gt;Repository:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt; · &lt;strong&gt;Previous release:&lt;/strong&gt; v0.4.2&lt;/p&gt;&#xA;&lt;p&gt;Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0&#xA;line will freeze: the component API v5 (native Markdown forms first, 29&#xA;shortcodes as full forms), configuration and front matter keys converged on&#xA;three rules, one naming namespace for everything the theme emits, the removal&#xA;of the 0.x compatibility layer and of the Docsy leftovers no site used, and a&#xA;migration toolkit that rewrites a 0.4 site. Every retired key, shape, or&#xA;shortcode fails the build with a message that names its replacement.&lt;/p&gt;</description>
+<description>&lt;p&gt;Oink 0.5.0 is the API-freeze release. It contains the change set that the 1.0&#xA;line will freeze: the component API v5 (native Markdown forms first, 29&#xA;shortcodes as full forms), configuration and front matter keys converged on&#xA;three rules, one naming namespace for everything the theme emits, the removal&#xA;of the 0.x compatibility layer and of the Docsy leftovers no site used, and a&#xA;migration toolkit that rewrites a 0.4 site. Every retired key, shape, or&#xA;shortcode fails the build with a message that names its replacement.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Oink 0.4.0 — Scenario components for complete publishing workflows</title>
 <link>https://example.org/blog/release/0.4.0/</link>
 <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>OINK maintainers</dc:creator>
+<dc:creator>Oink</dc:creator>
 <guid>https://example.org/blog/release/0.4.0/</guid>
-<description>&lt;p&gt;&lt;strong&gt;Release date:&lt;/strong&gt; 2026-08-14 · &lt;strong&gt;Signed theme tag:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink/tree/v0.4.0&#34;&gt;v0.4.0&lt;/a&gt; · &lt;strong&gt;Repository:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Oink 0.4.0 delivers the complete Scenario Components system. The original design&#xA;separated Reading &amp;amp; Release, Landing, and Book work into 0.4, 0.5, and 0.6&#xA;milestones. The public release consolidates those tracks into one signed&#xA;&lt;code&gt;v0.4.0&lt;/code&gt; tag so consumers can adopt one coherent contract instead of a chain of&#xA;interdependent previews.&lt;/p&gt;&#xA;&lt;p&gt;The release remains local-first: consumer sites still build with Hugo Extended&#xA;and Go, without Node.js, a browser-time API, or a CDN. Interactive behavior is&#xA;progressive enhancement; HTML, print, Markdown, and RSS output retain the&#xA;content needed to understand each surface.&lt;/p&gt;</description>
+<description>&lt;p&gt;Oink 0.4.0 delivers the complete Scenario Components system. The original design&#xA;separated Reading &amp;amp; Release, Landing, and Book work into 0.4, 0.5, and 0.6&#xA;milestones. The public release consolidates those tracks into one signed&#xA;&lt;code&gt;v0.4.0&lt;/code&gt; tag so consumers can adopt one coherent contract instead of a chain of&#xA;interdependent previews.&lt;/p&gt;&#xA;&lt;p&gt;The release remains local-first: consumer sites still build with Hugo Extended&#xA;and Go, without Node.js, a browser-time API, or a CDN. Interactive behavior is&#xA;progressive enhancement; HTML, print, Markdown, and RSS output retain the&#xA;content needed to understand each surface.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Oink 0.3.0 — Authoring, navigation, and a lighter page</title>
 <link>https://example.org/blog/release/0.3.0/</link>
 <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>OINK maintainers</dc:creator>
+<dc:creator>Oink</dc:creator>
 <guid>https://example.org/blog/release/0.3.0/</guid>
-<description>&lt;p&gt;&lt;strong&gt;Release date:&lt;/strong&gt; 2026-08-12 · &lt;strong&gt;Theme tag:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink/tree/v0.3.0&#34;&gt;v0.3.0&lt;/a&gt; · &lt;strong&gt;Repository:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;Publication gate:&lt;/strong&gt; the linked tag must resolve, the project site must pin&#xA;that exact tag, and the hosted checks must pass. Until then, treat this source&#xA;page as release-candidate material.&lt;/p&gt;&#xA;&lt;p&gt;Oink 0.3.0 is the authoring and navigation release. Writing a page gets a modern&#xA;code-block presentation and a set of small, everyday components; reading one&#xA;gets nested navigation and a Command Palette; and every page gets measurably&#xA;lighter because jQuery is gone.&lt;/p&gt;</description>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v0.3.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-12&#34;&gt;2026-08-12&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/releases/tag/v0.3.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/archive/refs/tags/v0.3.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/archive/refs/tags/v0.3.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;p&gt;&lt;strong&gt;Publication gate:&lt;/strong&gt; the linked tag must resolve, the project site must pin&#xA;that exact tag, and the hosted checks must pass. Until then, treat this source&#xA;page as release-candidate material.&lt;/p&gt;&#xA;&lt;p&gt;Oink 0.3.0 is the authoring and navigation release. Writing a page gets a modern&#xA;code-block presentation and a set of small, everyday components; reading one&#xA;gets nested navigation and a Command Palette; and every page gets measurably&#xA;lighter because jQuery is gone.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Oink 0.2.0 — Richer content and sharper presentation</title>
 <link>https://example.org/blog/release/0.2.0/</link>
 <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>OINK maintainers</dc:creator>
+<dc:creator>Oink</dc:creator>
 <guid>https://example.org/blog/release/0.2.0/</guid>
-<description>&lt;p&gt;&lt;strong&gt;Release date:&lt;/strong&gt; 2026-08-10 · &lt;strong&gt;Theme tag:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink/tree/v0.2.0&#34;&gt;v0.2.0&lt;/a&gt; · &lt;strong&gt;Repository:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Oink 0.2.0 focuses on the parts readers and authors touch most: the homepage,&#xA;brand presentation, blog discovery, section indexes, and instructional content.&#xA;It also turns the Oink project site into a clearer bilingual reference for the&#xA;theme&amp;rsquo;s current contracts.&lt;/p&gt;&#xA;&lt;p&gt;The module path, minimum Hugo version, and Hugo-only consumer build remain&#xA;unchanged. The one configuration rename that can affect an existing site is&#xA;documented in &lt;a href=&#34;https://example.org/blog/release/0.2.0/#breaking-change&#34;&gt;Breaking change&lt;/a&gt;.&lt;/p&gt;</description>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v0.2.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-10&#34;&gt;2026-08-10&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/releases/tag/v0.2.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/archive/refs/tags/v0.2.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/archive/refs/tags/v0.2.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;p&gt;Oink 0.2.0 focuses on the parts readers and authors touch most: the homepage,&#xA;brand presentation, blog discovery, section indexes, and instructional content.&#xA;It also turns the Oink project site into a clearer bilingual reference for the&#xA;theme&amp;rsquo;s current contracts.&lt;/p&gt;&#xA;&lt;p&gt;The module path, minimum Hugo version, and Hugo-only consumer build remain&#xA;unchanged. The one configuration rename that can affect an existing site is&#xA;documented in &lt;a href=&#34;https://example.org/blog/release/0.2.0/#breaking-change&#34;&gt;Breaking change&lt;/a&gt;.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Introducing the OINK implementation preview</title>
 <link>https://example.org/blog/oink/oink-announcement/</link>
 <pubDate>Sat, 08 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>OINK maintainers</dc:creator><dc:creator>Feng Ruohang</dc:creator>
+<dc:creator>Oink</dc:creator><dc:creator>Ruohang Feng</dc:creator>
 <guid>https://example.org/blog/oink/oink-announcement/</guid>
 <description>&lt;p&gt;Today we are publishing the OINK implementation preview: a directly evolved&#xA;Docsy theme with one canonical product shell, a Hugo-only consumer build,&#xA;local-first browser dependencies, a general multilingual framework, and a set of&#xA;reusable content components drawn from PGSTY documentation sites.&lt;/p&gt;&#xA;&lt;p&gt;This is an implementation and documentation milestone, not a public versioned&#xA;release. The final public brand, module and package identities, first version,&#xA;and production Cloudflare Pages deployment remain explicit release gates.&lt;/p&gt;</description>
 </item>
@@ -117,9 +134,9 @@
 <title>Oink 0.1.0 — A stable local-first foundation</title>
 <link>https://example.org/blog/release/0.1.0/</link>
 <pubDate>Sat, 08 Aug 2026 00:00:00 +0000</pubDate>
-<dc:creator>OINK maintainers</dc:creator>
+<dc:creator>Oink</dc:creator>
 <guid>https://example.org/blog/release/0.1.0/</guid>
-<description>&lt;p&gt;&lt;strong&gt;Release date:&lt;/strong&gt; 2026-08-10 · &lt;strong&gt;Theme tag:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink/tree/v0.1.0&#34;&gt;v0.1.0&lt;/a&gt; · &lt;strong&gt;Repository:&lt;/strong&gt;&#xA;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;Oink 0.1.0 is the first stable release of the Oink theme. It incorporates the&#xA;0.0.1 implementation preview and the stabilization work that followed: one&#xA;coherent documentation shell, a Hugo-only consumer build, local-first browser&#xA;assets, multilingual behavior derived from Hugo, and reusable content&#xA;components.&lt;/p&gt;&#xA;&lt;p&gt;This release keeps the module path &lt;code&gt;github.com/pgsty/oink&lt;/code&gt; and requires Hugo&#xA;Extended 0.160.1 or newer. A consuming site does not need Node.js, npm, PostCSS,&#xA;Autoprefixer, or a CDN to build and serve theme-owned functionality.&lt;/p&gt;</description>
+<description>&lt;div class=&#34;td-release-card-static&#34;&gt;&#xA;  &lt;p&gt;&lt;strong&gt;v0.1.0&lt;/strong&gt; · &lt;time datetime=&#34;2026-08-08&#34;&gt;2026-08-08&lt;/time&gt;&lt;/p&gt;&#xA;  &lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/releases/tag/v0.1.0&#34;&gt;View release&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/archive/refs/tags/v0.1.0.tar.gz&#34;&gt;Source · tar.gz&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink/archive/refs/tags/v0.1.0.zip&#34;&gt;Source · zip&lt;/a&gt;&lt;/li&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://github.com/pgsty/oink&#34;&gt;pgsty/oink&lt;/a&gt;&lt;/li&gt;&#xA;  &lt;/ul&gt;&#xA;&lt;/div&gt;&#xA;&lt;p&gt;Oink 0.1.0 is the first stable release of the Oink theme. It incorporates the&#xA;0.0.1 implementation preview and the stabilization work that followed: one&#xA;coherent documentation shell, a Hugo-only consumer build, local-first browser&#xA;assets, multilingual behavior derived from Hugo, and reusable content&#xA;components.&lt;/p&gt;&#xA;&lt;p&gt;This release keeps the module path &lt;code&gt;github.com/pgsty/oink&lt;/code&gt; and requires Hugo&#xA;Extended 0.160.1 or newer. A consuming site does not need Node.js, npm, PostCSS,&#xA;Autoprefixer, or a CDN to build and serve theme-owned functionality.&lt;/p&gt;</description>
 </item>
 <item>
 <title>Write-ahead logging</title>

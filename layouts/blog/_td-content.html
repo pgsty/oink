@@ -3,20 +3,19 @@
 		{{ if eq $featured "banner" }}{{ partial "featured-image-article.html" (dict "page" . "mode" $featured) }}
 		{{ end }}{{ if eq $featured "wash" }}<div class="td-article-header td-article-header--wash">{{ partial "featured-image-article.html" (dict "page" . "mode" $featured) }}
 		{{ end }}{{ partial "page-title.html" . }}
-	{{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
-	{{- partial "byline.html" (dict "page" .) }}
+	{{- partial "article-info.html" (dict "page" .) }}
 	<header class="td-article-meta">
 		{{ partial "taxonomy-terms-article-wrapper.html" . -}}
-		{{ if partial "reading-time-enabled.html" . -}}
-			{{ partial "reading-time.html" . -}}
-		{{ end -}}
 	</header>
+	{{- partial "byline.html" (dict "page" .) }}
 	{{ if eq $featured "wash" }}</div>
 	{{ end -}}
 	{{/* The wash is the backdrop of the article header, so it closes with the
 	     header. The series strip is navigation between articles rather than
-	     part of this one's heading, and stays outside it. */ -}}
+	     part of this one's heading, and stays outside it; the description is
+	     the article's own opening line and leads the body below it. */ -}}
 	{{ partial "series-strip.html" . -}}
+	{{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
 	{{ .Render "_td-content-after-header" -}}
 	{{ partial "content/render.html" . }}
 	{{ partial "page-end.html" . -}}

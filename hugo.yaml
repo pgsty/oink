@@ -62,20 +62,26 @@ params:
     # Non-home pages with `layout: landing` reuse the search/command palette
     # when offline_search is enabled. Set false to omit it from that shell.
     landing_search: true
-    breadcrumb: true
+    # The breadcrumb default is per shell -- on everywhere except the blog,
+    # where an article reads as a standalone piece -- so the resolver
+    # (shell/breadcrumb-enabled.html) owns it. Declaring a value here would
+    # flatten that split into one site-wide answer.
     section_index: list # list | cards
     section_index_columns: 2 # card columns when section_index is cards
-    # Form of the blog section list pages. Front matter `blog_index` (on the
-    # blog root, or through its cascade) overrides it per section.
-    blog_index: list # list | cards
+    # Form of the blog section list pages: list (rows), cards (a grid), or
+    # table (one compact row per post -- the whole section at once, no year
+    # groups, no pagination). Front matter `blog_index` (on the blog root, or
+    # through its cascade) overrides it per section.
+    blog_index: list # list | cards | table
     blog_index_columns: 3 # card columns when blog_index is cards
-    # Let a reader swap the index form from the blog index toolbar. Off by
-    # default: it puts both forms in the document. The hidden one loads no
-    # images, but its markup is real.
+    # Let a reader cycle the index through list, cards, and table from the
+    # index toolbar. Off by default: it puts every form in the document. The
+    # hidden ones load no images, but their markup is real.
     blog_index_toggle: false
-    # Posts per page on a blog index. Hugo ignores `pagination` set by a
-    # theme, so the list template passes this to .Paginate itself. Twelve
-    # divides by two, three, and four, so no card row is left short.
+    # Posts per page on a list or cards blog index; the table form always
+    # shows everything. Hugo ignores `pagination` set by a theme, so the list
+    # template passes this to .Paginate itself. Twelve divides by two, three,
+    # and four, so no card row is left short.
     blog_index_size: 12
     lastmod_commit: subject # subject | hash | none
     # Page provenance / revision block at the end of a page. Front matter
@@ -104,12 +110,23 @@ params:
     shell_types: [docs, book, blog, swagger]
     docs_section: docs
     blog_section: blog
-    # How a blog article presents the featured image `images` selects:
+    # How a blog page presents the featured image `images` selects:
     # none | banner (a framed figure above the title) | wash (the image
-    # behind the article header at a low opacity). Front matter
-    # `featured_image` overrides it for one page or, in a cascade, one
-    # section. An article that carries no image renders nothing either way.
+    # behind the article header at a low opacity) | hero (the immersive
+    # presentation: the blog shell paints the image as its own full-bleed
+    # backdrop and moves the opening down — on single pages and section
+    # indexes alike). Front matter `featured_image` overrides it for one
+    # page or, in a cascade, one section. A page that carries no image
+    # renders nothing either way.
     featured_image: none
+    # Presentation of the right rail: fixed (a panel pinned to the viewport)
+    # or flow (a wider panel in the content flow that starts where the
+    # article starts and pins only on scroll — the immersive blog rail).
+    toc_style: fixed
+    # Taxonomy term clouds on the right rail. Front matter `toc_taxonomies`
+    # (or a section cascade) turns them off; a rail left with neither a TOC
+    # nor clouds renders nothing at all.
+    toc_taxonomies: true
     # Root of the docs sidebar tree: section (the docs section itself) or
     # home (the whole site).
     docs_sidebar_root: section

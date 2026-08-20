@@ -1,55 +1,42 @@
-{{- /* The one line of metadata under a post's title in a list, a card, or a
-     term archive: when it was published, who wrote it, and where it lives.
-
-     Three call sites rendered their own version of this line and drifted --
-     two of them appended the byline after the section instead of inside the
-     sentence, and the card carried no byline at all. They all come here now.
-
-     The whole line is one translated sentence rather than fragments joined in
-     the template, because "in" is not a word every language puts between the
-     same two things, and a byline is not a suffix in every language either:
-
-       English   2026-08-08, By OINK maintainers, In Oink
-       Chinese   2026-08-08，由 OINK 维护者 发布于 Oink
-
-     A post with no `authors` term -- including one that still carries the 0.4
-     `author:` string -- takes the shorter sentence. A page with no date at all
-     gets no line: the sentence opens with the date in both languages, and the
-     row form already suppressed date and section together for that case.
-
-     Authors are joined with `ui_list_separator` because a sentence needs
-     punctuation between names; the article byline still spaces them with CSS
-     gap, where it can.
-
-     A card passes `authors false`: it has room for the date, the section, the
-     tags, and three lines of description, and the byline is the first thing
-     that loses the argument for that space. The article and the row still
-     name who wrote the post.
-
-     Input: dict "page" <page> ["authors" false]. Returns markup, or nothing
-     when the page has neither a date nor a section to name. */ -}}
 {{- $page := .page -}}
-{{- $withAuthors := ne .authors false -}}
-{{- $authors := cond $withAuthors (partial "authors-resolve.html" $page) slice -}}
+{{- $withSection := ne .section false -}}
+{{- $withLength := ne .length false -}}
+{{- $withTerms := eq .terms true -}}
+{{- $authors := partial "authors-resolve.html" $page -}}
 {{- $names := slice -}}
 {{- range $authors -}}
   {{- $names = $names | append (printf `<a class="td-blog-meta__author" href="%s">%s</a>` (.url | htmlEscape) (.name | htmlEscape)) -}}
 {{- end -}}
-{{- $section := "" -}}
-{{- with $page.CurrentSection -}}
-  {{- $section = printf `<a class="td-blog-meta__section" href="%s">%s</a>` (.RelPermalink | htmlEscape) (.LinkTitle | htmlEscape) -}}
-{{- end -}}
-{{- $date := "" -}}
+{{- $segments := slice -}}
 {{- if not $page.Date.IsZero -}}
-  {{- $date = printf `<time datetime="%s">%s</time>` ($page.Date.Format "2006-01-02") ($page.Date.Format ($page.Param "time_format_blog")) -}}
+  {{- $segments = $segments | append (printf `<time datetime="%s">%s</time>` ($page.Date.Format "2006-01-02") ($page.Date.Format ($page.Param "time_format_blog"))) -}}
 {{- end -}}
-{{- if and $date $section -}}
-{{- $context := dict
-  "Date" $date
-  "Authors" (delimit $names (T "ui_list_separator"))
-  "Section" $section
--}}
+{{- if $withSection -}}
+  {{- with $page.CurrentSection -}}
+    {{- $section := printf `<a class="td-blog-meta__section" href="%s">%s</a>` (.RelPermalink | htmlEscape) (.LinkTitle | htmlEscape) -}}
+    {{- $context := dict "Authors" (delimit $names (T "ui_list_separator")) "Section" $section -}}
+    {{- $sentence := cond (gt (len $names) 0) (T "post_meta_by_in" $context) (T "post_meta_in" $context) -}}
+    {{- /* Style locale-provided interpuncts like template separators. */ -}}
+    {{- $sentence = replace $sentence " · " ` <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> ` -}}
+    {{- $segments = $segments | append $sentence -}}
+  {{- end -}}
+{{- else if $names -}}
+  {{- $segments = $segments | append (delimit $names (T "ui_list_separator")) -}}
+{{- end -}}
+{{- if and $withLength (partial "reading-time-enabled.html" $page) -}}
+  {{- $segments = $segments | append (T "post_word_count" (dict "Count" $page.WordCount) | htmlEscape) -}}
+  {{- $minutes := $page.ReadingTime -}}
+  {{- if lt $minutes 1 }}{{ $minutes = 1 }}{{ end -}}
+  {{- $segments = $segments | append (T "post_reading_minutes" (dict "Minutes" $minutes) | htmlEscape) -}}
+{{- end -}}
+{{- $terms := slice -}}
+{{- if and $withTerms (isset $page.Site.Taxonomies "tags") }}{{ $terms = $page.GetTerms "tags" }}{{ end -}}
+{{- if or $segments $terms }}
 <p class="td-blog-meta"><small class="text-body-secondary">
-  {{- if $names }}{{ T "post_meta_by_in" $context | safeHTML }}{{ else }}{{ T "post_meta_in" $context | safeHTML }}{{ end -}}
-</small></p>
+  {{- delimit $segments ` <span class="td-blog-meta__sep" aria-hidden="true">&middot;</span> ` | safeHTML -}}
+</small>
+  {{- with $terms }}<span class="td-blog-meta__terms">
+    {{- range . }}<a class="td-badge td-badge--neutral td-badge--outline" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end -}}
+  </span>{{ end -}}
+</p>
 {{- end -}}

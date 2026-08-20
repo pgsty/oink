@@ -1,28 +1,18 @@
-// Page-end share bar: a row of icon controls, intent links that hand the page's
-// own URL and title to a platform the reader picked, plus one local copy button.
-// Nothing is loaded or measured from a share platform, so the whole feature
-// costs this file and no runtime beyond the action layer every page already
-// carries.
-//
-// One centred row of glyphs and no chrome: no heading over it and no rule above
-// it, because the block that follows -- feedback, the annotation -- already
-// draws the hairline that separates the page end from the article.
 .td-share {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  margin-block: 1.5rem 0;
+  margin-block: 2.5rem 0.5rem;
 
   &__items {
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
-    gap: 0.125rem;
+    gap: 0.4rem;
   }
 
-  // The control is the touch target: 44px square, with the tint that appears
-  // on hover drawn inside it rather than around a smaller hit area.
   &__item {
     display: inline-flex;
     align-items: center;
@@ -31,18 +21,20 @@
     min-height: 44px;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: 999px;
-    background: transparent;
+    border-radius: 10px;
+    background: var(--bs-tertiary-bg);
     color: var(--bs-secondary-color);
     font-size: 1rem;
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
+    transition:
+      background-color var(--td-motion-duration-fast) ease,
+      color var(--td-motion-duration-fast) ease;
 
     &:hover {
-      border-color: var(--bs-border-color);
-      background: var(--bs-tertiary-bg);
-      color: var(--bs-body-color);
+      background: var(--td-shell-primary);
+      color: var(--bs-body-bg);
     }
 
     &:focus-visible {
@@ -59,7 +51,6 @@
     }
   }
 
-  // The check swaps in for the link glyph while the confirmation is up.
   &__icon--done {
     display: none;
     color: var(--bs-success);
@@ -78,12 +69,9 @@
   }
 }
 
-// The share row carries no rule of its own, so the next region's hairline is
-// the first one after the article: it only needs to sit closer than a fresh
-// 2rem, the way feedback and the annotation already do for each other.
 .td-share + .td-feedback,
 .td-share + .td-page-annotation {
-  margin-block-start: 0.5rem;
+  margin-block-start: 1rem;
 }
 
 @media (forced-colors: active) {

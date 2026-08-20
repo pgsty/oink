@@ -1,41 +1,3 @@
-{{- /* Resolve the page annotation's lines as descriptors, once per page.
-
-     This is the data half of the annotation; page-meta-lastmod.html renders
-     it. A site that wants a different line, a different order, or an extra
-     one overrides this partial and keeps the theme's markup, icons, print
-     rules, and accessible label. A site that wants different markup overrides
-     page-meta-lastmod.html instead.
-
-     Returns a slice of dicts: key (used for the `td-page-meta__<key>` class),
-     icon (one Font Awesome class pair), and html (the rendered line, already
-     escaped).
-
-     Upstream attribution -----------------------------------------------
-
-     `upstream_link` is the one per-page fact: the URL of the material this
-     page is derived from. It is read from front matter only (a cascade
-     counts, site params do not), because a site-wide value would make every
-     page claim the same source. An empty value opts one page out of a
-     cascade.
-
-     The constants describing that source resolve site params -> the
-     `data/upstreams` entry named by `upstream_source` -> front matter, so the
-     most specific declaration wins:
-
-       upstream_name       the work, as the attribution names it
-       upstream_copyright  the copyright notice, retained as upstream wrote it
-       upstream_license    SPDX identifier, resolved through data/licenses
-       upstream_notice     page carrying the full notice (license text,
-                           warranty disclaimer, upstream NOTICE, snapshot pin)
-       upstream_ref        optional pinned tag/commit of the snapshot
-       upstream_modified   whether this copy was modified downstream
-
-     One line carries what a reader needs in place -- who, which licence,
-     modified or not, where the original is -- and links to `upstream_notice`
-     for everything a line cannot hold. Every one of those
-     is required when `upstream_link` is set: a partial attribution is worse
-     than an obvious omission, so the build fails instead. */ -}}
-
 {{- $page := . -}}
 {{- $items := slice -}}
 {{- $path := $page.Path -}}
@@ -60,6 +22,12 @@
 {{- end -}}
 
 {{- /* Upstream attribution --------------------------------------------- */ -}}
+{{- if isset $page.Params "upstream_attribution" -}}
+  {{- warnidf "annotation-legacy-upstream-attribution" "front matter upstream_attribution was renamed: use upstream_link with upstream_name, upstream_copyright, upstream_license, and upstream_notice at %s; omitting the attribution" $path -}}
+{{- end -}}
+{{- if isset $page.Params "downstream_modified" -}}
+  {{- warnidf "annotation-legacy-downstream-modified" "front matter downstream_modified was renamed: use upstream_modified at %s; omitting the attribution" $path -}}
+{{- end -}}
 {{- $companions := slice "upstream_name" "upstream_copyright" "upstream_license" "upstream_notice" "upstream_ref" "upstream_source" "upstream_modified" -}}
 {{- $link := "" -}}
 {{- with index $page.Params "upstream_link" }}{{ $link = . }}{{ end -}}
@@ -74,6 +42,7 @@
 {{- end -}}
 
 {{- if $link -}}
+  {{- $valid := true -}}
   {{- /* Least specific to most: site params, the named upstream registry
          entry, then this page's own front matter. */ -}}
   {{- $registry := dict -}}
@@ -84,6 +53,7 @@
     {{- $registry = index (hugo.Data.upstreams | default dict) . | default dict -}}
     {{- if not $registry -}}
       {{- warnf "upstream_source %q has no entry in data/upstreams at %s; omitting the attribution" . $path -}}
+      {{- $valid = false -}}
     {{- end -}}
   {{- end -}}
 
@@ -99,17 +69,39 @@
   {{- range $required := (slice "name" "copyright" "license" "notice") -}}
     {{- if not (index $fields $required) -}}
       {{- warnf "upstream_link needs upstream_%s as well; a page that names a source must name who holds it, the licence it carries, and where the full notice lives (front matter, params, or a data/upstreams entry) at %s; omitting the attribution" $required $path -}}
+      {{- $valid = false -}}
     {{- end -}}
   {{- end -}}
 
   {{- $licence := index (hugo.Data.licenses | default dict) (index $fields "license") -}}
   {{- if not $licence -}}
-    {{- warnf "upstream_license %q is not in data/licenses; use its SPDX identifier or add the entry at %s; omitting the licence row" (index $fields "license") $path -}}
+    {{- warnf "upstream_license %q is not in data/licenses; use its SPDX identifier or add the entry at %s; omitting the attribution" (index $fields "license") $path -}}
+    {{- $valid = false -}}
   {{- end -}}
 
   {{- $notice := index $fields "notice" -}}
-  {{- if not (or (hasPrefix $notice "http://") (hasPrefix $notice "https://")) -}}
-    {{- $notice = relLangURL $notice -}}
+  {{- $licenceURL := "" -}}
+  {{- if $valid -}}
+    {{- $linkResult := partial "content/url.html" (dict
+      "name" "page annotation" "parameter" "upstream_link" "position" $path
+      "value" $link "kind" "web") -}}
+    {{- $noticeResult := partial "content/url.html" (dict
+      "name" "page annotation" "parameter" "upstream_notice" "position" $path
+      "value" $notice "kind" "web") -}}
+    {{- $licenceResult := partial "content/url.html" (dict
+      "name" "page annotation" "parameter" "upstream_license URL" "position" $path
+      "value" (index $licence "url") "kind" "web") -}}
+    {{- if and $linkResult.valid $noticeResult.valid $licenceResult.valid -}}
+      {{- $link = $linkResult.href -}}
+      {{- if or $noticeResult.external (hasPrefix $notice "#") (hasPrefix $notice "?") -}}
+        {{- $notice = $noticeResult.href -}}
+      {{- else -}}
+        {{- $notice = relLangURL $notice -}}
+      {{- end -}}
+      {{- $licenceURL = $licenceResult.href -}}
+    {{- else -}}
+      {{- $valid = false -}}
+    {{- end -}}
   {{- end -}}
 
   {{- /* Modified downstream ------------------------------------------ */ -}}
@@ -119,8 +111,10 @@
   {{- if isset $page.Params "upstream_modified" }}{{ $modified = index $page.Params "upstream_modified" }}{{ end -}}
   {{- if ne (printf "%T" $modified) "bool" -}}
     {{- warnf "upstream_modified must be a boolean; got %v at %s; treating the page as unmodified" $modified $path -}}
+    {{- $modified = false -}}
   {{- end -}}
 
+  {{- if $valid -}}
   {{- /* One line, not two: the licence asks for an indication that the
          material was changed, and the verb carries it. Unmodified material is
          credited; modified material is adapted, and the credit gains a second
@@ -130,7 +124,7 @@
   {{- $context := dict
     "work" $work
     "copyright" (index $fields "copyright" | htmlEscape)
-    "license" (printf `<a href="%s" target="_blank" rel="noopener">%s</a>` (index $licence "url" | htmlEscape) (index $licence "name" | htmlEscape))
+    "license" (printf `<a href="%s" target="_blank" rel="noopener">%s</a>` ($licenceURL | htmlEscape) (index $licence "name" | htmlEscape))
     "notice" (printf `<a href="%s">%s</a>` ($notice | htmlEscape) (T "post_upstream_notice")) -}}
   {{- $key := "post_upstream" -}}
   {{- if $modified -}}
@@ -141,26 +135,26 @@
     {{- end -}}
   {{- end -}}
   {{- $items = $items | append (dict "key" "upstream" "icon" "fa-solid fa-copyright" "html" (T $key $context)) -}}
+  {{- end -}}
 {{- end -}}
 
 {{- /* Translated from the authoritative language ------------------------ */ -}}
-{{- /* params.ui.translation_notice is the language code of the authoritative
-       version, so a translated page can say so and point at it; false (or
-       unset) turns it off, and a page authored natively in this language
-       sets `translation_notice: false`. Being a page key it also cascades, so
-       a site that is only partly translated scopes the claim to the trees
-       where it holds instead of declaring it site-wide.
-
-       This is the annotation's one inferred line -- the site names the
-       authoritative language, the theme infers that everything else is a
-       translation of it -- so it is guarded where the inference cannot hold.
-       A page with no authored text of its own has nothing to be a translation
-       of: a generated taxonomy or term list, or a section index that exists
-       only to carry a title and a child list. Declared lines need no such
-       guard; inferred ones do. */ -}}
+{{- /* Infer translation notices only for authored non-authoritative pages. */ -}}
 {{- $authority := partial "ui-param.html" (dict "page" $page "key" "translation_notice" "default" false) -}}
-{{- if and $authority (ne (printf "%T" $authority) "bool") (ne (printf "%T" $authority) "string") -}}
-  {{- warnf "translation_notice must be a language code or false; got %v at %s; omitting the notice" $authority $path -}}
+{{- $authorityType := printf "%T" $authority -}}
+{{- if and (eq $authorityType "bool") $authority -}}
+  {{- warnidf "translation-notice-true" "translation_notice must name an authoritative language code or be false; got true at %s; omitting the notice" $path -}}
+  {{- $authority = false -}}
+{{- else if and (ne $authorityType "bool") (ne $authorityType "string") -}}
+  {{- warnidf (printf "translation-notice-type:%s:%v" $authorityType $authority) "translation_notice must be a language code or false; got %v at %s; omitting the notice" $authority $path -}}
+  {{- $authority = false -}}
+{{- else if eq $authorityType "string" -}}
+  {{- $languageCodes := slice -}}
+  {{- range hugo.Sites }}{{ $languageCodes = $languageCodes | append .Language.Lang }}{{ end -}}
+  {{- $languageCodes = uniq $languageCodes -}}
+  {{- $authority = partial "validate.html" (dict
+    "value" $authority "kind" "enum" "allowed" $languageCodes "fallback" ""
+    "key" "params.ui.translation_notice" "where" (cond (isset $page.Params "translation_notice") $path "")) -}}
 {{- end -}}
 {{- if and (eq (printf "%T" $authority) "string") (ne $page.Language.Lang $authority) $page.File (strings.TrimSpace $page.RawContent) -}}
   {{- $original := "" -}}

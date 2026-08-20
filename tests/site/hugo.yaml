@@ -1,31 +1,219 @@
-# Behaviour fixtures live outside exampleSite so the published example stays
-# small. Check scripts merge this file with exampleSite/hugo.yaml to mount the
-# fixtures only for regression builds.
-module:
-  mounts:
-    - source: content
-      target: content
-    - source: ../tests/site/content
-      target: content
-    - source: assets
-      target: assets
-    - source: ../tests/site/assets
-      target: assets
-    - source: layouts
-      target: layouts
-    - source: ../tests/site/layouts
-      target: layouts
-    - source: static
-      target: static
-    - source: ../tests/site/static
-      target: static
-
-# Regression builds exercise taxonomy surfaces the published example does not
-# carry. Both keys override exampleSite/hugo.yaml wholesale: Hugo merges a
-# `--config a,b` list with the later file winning per key, so `disableKinds`
-# narrows here and the taxonomy map replaces Hugo's `tags`/`categories`
-# default (no fixture page uses either).
+# Self-contained regression fixture; public examples are not authored here.
+baseURL: https://example.org/
+title: Oink Example
+theme: oink
+defaultContentLanguage: en
+enableRobotsTXT: true
 disableKinds: [sitemap]
+
+# Authors and series have dedicated surfaces; tags remain generic.
 taxonomies:
   author: authors
   series: series
+  tag: tags
+
+# Consumers must enable Goldmark passthrough themselves.
+markup:
+  goldmark:
+    renderer:
+      unsafe: true # `%` container shortcodes emit HTML that Goldmark must keep
+    parser:
+      wrapStandAloneImageWithinParagraph: false # native Book figures need block image attributes
+      attribute:
+        block: true
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block: [['\[', '\]'], ['$$', '$$']]
+          inline: [['\(', '\)']]
+
+# Markdown output activates the corresponding page-action fixtures.
+outputs:
+  home: [HTML, LLMS]
+  section: [HTML, print, RSS, markdown]
+  page: [HTML, markdown]
+
+params:
+  description: Every block on this landing page comes from one YAML file.
+  # Page actions derive from the repository, branch, and subdirectory.
+  github_repo: https://github.com/pgsty/oink
+  github_subdir: tests/site
+  github_project_repo: https://github.com/pgsty/oink
+  # Site-wide social fallback, not a reader thumbnail.
+  images: [/images/oink.webp]
+  # Values exercised by param and download output.
+  version: v0.5.0
+  tdVersion:
+    latest: v0.5.0
+  hugoMinVersion: 0.160.1
+  copyright:
+    authors: '[OINK](https://oink.pgsty.com)'
+    from_year: 2026
+  offline_search: true
+  offline_search_index: summary
+  offline_search_summary_length: 80
+  offline_search_max_results: 10
+  # Explicit endpoints exercise opt-in diagram paths.
+  markmap: true
+  plantuml:
+    enable: true
+    svg_image_url: https://www.plantuml.com/plantuml/svg/
+    svg: false
+  drawio:
+    enable: true
+    drawio_server: https://embed.diagrams.net/
+  ui:
+    github_stars: 2189
+    dark_mode:
+      show_menu: true
+    section_index: cards
+    # The blog index toolbar gets a form switch beside its feed button.
+    blog_index_toggle: true
+    book_draft_banner: true
+    sidebar_headings: 3
+    quick_links: [docs, blog]
+    sidebar_icon_policy: all
+    page_context_menu:
+      assistant_links: true
+    image_zoom: true
+    feedback: false
+
+languages:
+  en:
+    label: English
+    locale: en-US
+    weight: 1
+    title: Oink Example
+    params:
+      description: Every block on this landing page comes from one YAML file.
+      ui:
+        command_palette:
+          commands:
+            - id: example_status
+              title: Example service status
+              description: Open the example status page
+              url: https://status.example.org/
+              icon: fa-solid fa-signal
+              keywords: [uptime, incident]
+            - id: print_example
+              title: Print this page
+              action: print
+              icon: fa-solid fa-print
+              keywords: [paper, pdf]
+            - id: example_docs
+              title: Open the callout page
+              description: Navigate within the example site
+              url: /docs/callout/
+              icon: fa-solid fa-puzzle-piece
+              keywords: [component, authoring]
+    menus:
+      main:
+        - identifier: docs
+          name: Docs
+          pageRef: /docs
+          weight: 10
+        - identifier: blog
+          name: Blog
+          pageRef: /blog
+          weight: 20
+          params:
+            columns: 2
+        - identifier: blog-oink
+          parent: blog
+          name: Oink
+          pageRef: /blog/oink
+          weight: 10
+          params:
+            icon: fa-solid fa-pen-nib
+            description: Announcements, engineering stories, and implementation notes
+        - identifier: blog-release
+          parent: blog
+          name: Releases
+          pageRef: /blog/release
+          weight: 20
+          params:
+            icon: fa-solid fa-rocket
+            description: Every OINK release note, newest first
+        - identifier: book
+          name: Book
+          pageRef: /book
+          weight: 30
+          params:
+            icon: fa-solid fa-book
+        - identifier: pigsty
+          name: Pigsty
+          url: https://pigsty.io/
+          weight: 40
+          params:
+            icon: fa-solid fa-database
+
+  zh:
+    label: 简体中文
+    locale: zh-CN
+    weight: 2
+    title: Oink 示例站
+    # Count CJK characters for the localized reading-time fixture.
+    hasCJKLanguage: true
+    params:
+      description: 这张落地页上的每一块，都来自一个 YAML 文件。
+      ui:
+        command_palette:
+          commands:
+            - id: example_status
+              title: 示例服务状态
+              description: 打开示例状态页
+              url: https://status.example.org/
+              icon: fa-solid fa-signal
+              keywords: [uptime, 可用性, 故障]
+            - id: print_example
+              title: 打印本页
+              action: print
+              icon: fa-solid fa-print
+              keywords: [打印, pdf]
+            - id: example_docs
+              title: 打开提示块组件页
+              description: 在示例站内跳转
+              url: /zh/docs/callout/
+              icon: fa-solid fa-puzzle-piece
+              keywords: [组件, 写作]
+    menus:
+      main:
+        - identifier: docs
+          name: 文档
+          pageRef: /docs
+          weight: 10
+        - identifier: blog
+          name: 博客
+          pageRef: /blog
+          weight: 20
+          params:
+            columns: 2
+        - identifier: blog-oink
+          parent: blog
+          name: Oink 博客
+          pageRef: /blog/oink
+          weight: 10
+          params:
+            icon: fa-solid fa-pen-nib
+            description: 公告、工程实践与实现笔记
+        - identifier: blog-release
+          parent: blog
+          name: 版本发布
+          pageRef: /blog/release
+          weight: 20
+          params:
+            icon: fa-solid fa-rocket
+            description: 全部发布说明，从新到旧
+        - identifier: book
+          name: 书籍
+          pageRef: /book
+          weight: 30
+          params:
+            icon: fa-solid fa-book
+        - identifier: pigsty
+          name: Pigsty
+          url: https://pigsty.io/
+          weight: 40
+          params:
+            icon: fa-solid fa-database

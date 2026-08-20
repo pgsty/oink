@@ -1,12 +1,8 @@
-# Mount only private test media. Synthetic checks that replace contentDir or
-# layoutDir use this config instead of the full fixture overlay.
+# Mount only fixture media. Synthetic checks that replace contentDir or
+# layoutDir merge this config after the fixture's primary config.
 module:
   mounts:
     - source: assets
       target: assets
-    - source: ../tests/site/assets
-      target: assets
     - source: static
-      target: static
-    - source: ../tests/site/static
       target: static

@@ -1,33 +1,38 @@
-{{- $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
-{{- $isExternal := isset .Params "manual_link" -}}
+{{- $p := .page -}}
+{{- $headingLevel := .headingLevel | default 2 -}}
+{{- $linkImage := true -}}
+{{- if isset . "linkImage" }}{{ $linkImage = .linkImage }}{{ end -}}
+{{- $manualLink := cond (isset $p.Params "manual_link") $p.Params.manual_link $p.RelPermalink -}}
+{{- $isExternal := isset $p.Params "manual_link" -}}
 <li class="td-blog-posts-list__item">
   <div class="td-blog-posts-list__body">
+    {{- if eq $headingLevel 3 }}
+    <h3 class="h5 mt-0 mb-1"><a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ $p.Title }}</a>{{ if $isExternal }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}</h3>
+    {{- else }}
     <h2 class="h5 mt-0 mb-1">
-      <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
+      <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ $p.Title }}</a>
       {{ if $isExternal }}<i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}
     </h2>
-    {{ partial "shell/blog-meta.html" (dict "page" .) }}
-    <header class="td-article-meta">
-      {{- partial "taxonomy-terms-article-wrapper.html" . -}}
-      {{- if partial "reading-time-enabled.html" . }}
-        {{- partial "reading-time.html" . -}}
-      {{- end }}
-    </header>
-    {{- $featuredImage := partial "featured-image-src.html" . -}}
-    {{- $pageTitle := .Title -}}
+    {{- end }}
+    {{ partial "shell/blog-meta.html" (dict "page" $p "terms" true) }}
+    {{- $featuredImage := partial "featured-image-src.html" $p -}}
     {{- $summary := "" -}}
     {{- if $isExternal -}}
-      {{- $summary = .Description | default .Params.summary | plainify | htmlUnescape -}}
+      {{- $summary = $p.Description | default $p.Params.summary | plainify | htmlUnescape -}}
     {{- else -}}
-      {{- $summary = .Plain | htmlUnescape | truncate 250 -}}
+      {{- $summary = $p.Plain | htmlUnescape | truncate 250 -}}
     {{- end -}}
     <div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1{{ if $featuredImage }} td-blog-posts-list__summary-row--with-image{{ end }}">
-      {{- with $featuredImage }}
+      {{- if $linkImage -}}
+        {{- with $featuredImage }}
       <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
         <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>
-          <img src="{{ . }}" alt="{{ $pageTitle }}" width="250" height="125" style="object-fit: cover;">
+          <img src="{{ . }}" alt="{{ $p.Title }}" width="250" height="125" style="object-fit: cover;">
         </a>
       </figure>
+        {{- end }}
+      {{- else -}}
+        {{- partial "featured-image.html" (dict "p" $p "w" 250 "h" 125 "class" "td-blog-posts-list__thumbnail flex-shrink-0 mb-0") -}}
       {{- end }}
       <div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
     </div>

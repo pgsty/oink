@@ -4,20 +4,6 @@
 
 /* ------------------------------------------------------------ list page */
 
-// Compact uppercase year labels replace oversized inherited headings.
-.td-shell-chrome .td-blog-posts > h2 {
-  margin: 2.25rem 0 0.25rem;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--td-shell-muted-fg);
-
-  &:first-child {
-    margin-top: 0.75rem;
-  }
-}
-
 .td-blog-posts-list {
   list-style: none;
   margin: 0;
@@ -119,9 +105,6 @@
     }
   }
 
-  .td-article-meta {
-    margin-bottom: 2px;
-  }
 }
 
 .td-blog-posts__pagination {
@@ -174,26 +157,25 @@
     }
   }
 
-  // Tags sit between the date line and the description, close enough to the
-  // date to read as metadata rather than as content.
   &__tags {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-wrap: wrap;
-    gap: 2px;
-    margin: 0.3rem 0 0;
+    gap: 4px;
+    margin: 0.35rem 0 0;
     padding: 0;
     list-style: none;
-    // Two rows of chips is the ceiling; a heavily tagged post does not get to
-    // push the description out of the card.
-    max-block-size: 3.1em;
+    max-block-size: 3.6em;
     overflow: hidden;
 
-    li { margin: 0; }
+    li {
+      display: inline-flex;
+      margin: 0;
+    }
 
-    .td-taxonomy-term {
-      padding-block: 1px;
-      font-size: 11.5px;
-      line-height: 16px;
+    .td-badge {
+      font-size: 11px;
     }
   }
 
@@ -215,9 +197,7 @@
   }
 }
 
-// Below md the shared grid already collapses to one column; between md and xl
-// the reading column is too narrow for a configured three or four.
-@include media-breakpoint-between(md, xl) {
+@include media-breakpoint-between(md, xxl) {
   .td-blog-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -249,6 +229,10 @@
     letter-spacing: 0.01em;
   }
 
+  &__sep {
+    color: var(--bs-tertiary-color);
+  }
+
   &__author,
   &__section {
     color: inherit;
@@ -257,6 +241,18 @@
     &:hover,
     &:focus-visible {
       color: var(--td-shell-primary);
+    }
+  }
+
+  &__terms {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-inline-start: 0.4rem;
+    vertical-align: text-bottom;
+
+    .td-badge {
+      font-size: 11px;
     }
   }
 }
@@ -279,56 +275,107 @@
 
 /* ------------------------------------------- reader-chosen index form */
 
-// Both forms are rendered when `params.ui.blog_index_toggle` is on. The
-// published form is on the wrapper, the reader's choice on the root element,
-// and the reader's wins in both directions. Restoring `display` explicitly
-// matters: the two forms are a grid and a list, not the same box.
-.td-blog-posts[data-td-blog-default='list'] > [data-td-blog-form='cards'],
-.td-blog-posts[data-td-blog-default='cards'] > [data-td-blog-form='list'] {
+.td-blog-posts[data-td-blog-default='list'] .td-blog-posts__paged > [data-td-blog-form='cards'],
+.td-blog-posts[data-td-blog-default='cards'] .td-blog-posts__paged > [data-td-blog-form='list'],
+.td-blog-posts[data-td-blog-default='table'] > .td-blog-posts__paged,
+.td-blog-posts[data-td-blog-default='list'] > [data-td-blog-form='table'],
+.td-blog-posts[data-td-blog-default='cards'] > [data-td-blog-form='table'] {
   display: none;
 }
 
 html[data-td-blog-index='list'] .td-blog-posts {
-  > [data-td-blog-form='cards'] { display: none; }
-  > [data-td-blog-form='list'] { display: block; }
+  > .td-blog-posts__paged { display: block; }
+  > [data-td-blog-form='table'] { display: none; }
+
+  .td-blog-posts__paged > [data-td-blog-form='cards'] { display: none; }
+  .td-blog-posts__paged > [data-td-blog-form='list'] { display: block; }
 }
 
 html[data-td-blog-index='cards'] .td-blog-posts {
-  > [data-td-blog-form='list'] { display: none; }
-  > [data-td-blog-form='cards'] { display: grid; }
+  > .td-blog-posts__paged { display: block; }
+  > [data-td-blog-form='table'] { display: none; }
+
+  .td-blog-posts__paged > [data-td-blog-form='list'] { display: none; }
+  .td-blog-posts__paged > [data-td-blog-form='cards'] { display: grid; }
 }
 
-// The control carries both glyphs and shows the one for the form it switches
-// to, so it reads as a destination rather than as a state.
+html[data-td-blog-index='table'] .td-blog-posts {
+  > .td-blog-posts__paged { display: none; }
+  > [data-td-blog-form='table'] { display: table; }
+}
+
+// Show the destination glyph for the next form in the cycle.
 .td-page-actions__form {
+  .td-page-actions__icon--form-cards,
+  .td-page-actions__icon--form-table { display: none; }
+}
+
+html[data-td-blog-index='list'] .td-page-actions__form {
   .td-page-actions__icon--form-list { display: none; }
+  .td-page-actions__icon--form-cards { display: inline-flex; }
 }
 
 html[data-td-blog-index='cards'] .td-page-actions__form {
-  .td-page-actions__icon { display: none; }
-  .td-page-actions__icon--form-list { display: inline-flex; }
+  .td-page-actions__icon--form-list { display: none; }
+  .td-page-actions__icon--form-table { display: inline-flex; }
+}
+
+/* --------------------------------------------------- table index form */
+
+.td-blog-table {
+  width: 100%;
+  margin-block: 1rem 1.5rem;
+  border-collapse: collapse;
+  border-block-start: 1px solid var(--bs-border-color);
+
+  td {
+    padding: 0.55rem 0;
+    border-block-end: 1px solid var(--bs-border-color);
+    vertical-align: baseline;
+  }
+
+  &__date {
+    width: 7.5em;
+    padding-inline-end: 1rem;
+    color: var(--bs-secondary-color);
+    font-family: var(--td-meta-font-family);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+
+  &__title {
+    overflow-wrap: anywhere;
+
+    a {
+      font-weight: 600;
+    }
+  }
+
+  &__tags {
+    padding-inline-start: 1rem;
+    text-align: end;
+
+    .td-badge {
+      margin-inline-start: 0.3rem;
+    }
+
+    @include media-breakpoint-down(md) {
+      display: none;
+    }
+  }
 }
 
 /* -------------------------------------------- inline taxonomy terms */
 
-// The article/list "Tags:" row rendered by taxonomy_terms_article.
 .taxonomy.td-taxonomy-terms-article {
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  margin: 0.25rem 0;
-
-  .td-taxonomy-title {
-    margin: 0;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--td-shell-muted-fg);
-  }
+  margin: 0.4rem 0;
 
   .td-taxonomy-terms {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px;
+    gap: 5px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -339,7 +386,6 @@ html[data-td-blog-index='cards'] .td-page-actions__form {
   }
 }
 
-// Plain-text terms gain a subtle background on hover.
 a.td-taxonomy-term {
   display: inline-flex;
   align-items: baseline;
@@ -478,17 +524,14 @@ a.td-taxonomy-term {
 
 /* --------------------------------------------------------- series strip */
 
-// Where an article sits in its series. It borrows the taxonomy chip's visual
-// language -- thin border, field background -- one notch quieter, because it
-// sits between the article's metadata row and its first paragraph and must
-// not compete with either. No animation, no colour-only affordance: the
-// border survives forced-colors, where the background does not.
+// CSS-only series disclosure with forced-color-safe borders.
 .td-series-strip {
-  margin-block: 0.75rem 1.25rem;
+  margin-block: 1rem 1.5rem;
   padding-block: 8px;
-  padding-inline: 12px;
+  padding-inline: 14px;
   border: 1px solid var(--bs-border-color);
-  border-radius: 8px;
+  border-inline-start: 3px solid var(--td-shell-primary);
+  border-radius: 10px;
   background: var(--td-shell-field);
   font-size: 13px;
   line-height: 1.6;
@@ -497,35 +540,75 @@ a.td-taxonomy-term {
   &__line {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 6px;
-    margin: 0;
   }
 
   &__name {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 24px;
     font-weight: 600;
+    color: var(--td-shell-primary);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--td-shell-primary);
+      text-decoration: underline;
+    }
+  }
+
+  &__part {
     color: var(--bs-body-color);
   }
 
   &__sep {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 24px;
     color: var(--bs-tertiary-color);
   }
 
   &__all {
-    margin-block-start: 6px;
+    flex: 1 1 8rem;
+    min-inline-size: 0;
   }
 
   &__summary {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 24px;
+    gap: 6px;
     cursor: pointer;
+    // Use a text caret instead of the engine-dependent native marker.
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '\25B8'; // ▸
+      flex: 0 0 auto;
+      color: var(--bs-tertiary-color);
+    }
+
+    &:hover::before {
+      color: var(--bs-body-color);
+    }
+  }
+
+  &__all[open] > &__summary::before {
+    content: '\25BE'; // ▾
   }
 
   &__list {
-    margin-block: 6px 2px;
-    padding-inline-start: 1.5rem;
+    margin-block: 8px 2px;
+    padding-inline-start: 2rem;
   }
 
   &__item {
-    margin-block: 2px;
+    margin-block: 3px;
 
     &::marker {
       color: var(--bs-tertiary-color);
@@ -545,8 +628,21 @@ a.td-taxonomy-term {
   }
 }
 
-// A series term page lists its members in reading order, so the ordinal is
-// information rather than decoration and the <ol> marker stays visible.
+// RTL flips the closed caret; print shows the open state.
+[dir='rtl'] .td-series-strip__summary::before {
+  content: '\25C2'; // ◂
+}
+
+[dir='rtl'] .td-series-strip__all[open] > .td-series-strip__summary::before {
+  content: '\25BE';
+}
+
+@media print {
+  .td-series-strip__summary::before {
+    content: '\25BE';
+  }
+}
+
 ol.td-blog-posts-list--numbered {
   list-style: decimal;
   padding-inline-start: 1.75rem;

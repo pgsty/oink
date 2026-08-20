@@ -3,75 +3,30 @@
   {{- partial "page-title.html" . -}}
   {{- with partial "content/render.html" . }}{{ . }}{{ end -}}
 
+  {{- range slice "release_products" "release_group_by_product" -}}
+    {{- if isset $section.Params . -}}
+      {{- warnf "%s: %s was removed with the release map; the index lists every page in the section" $section.Path . -}}
+    {{- end -}}
+  {{- end -}}
+
   {{- $records := slice -}}
   {{- range .RegularPages -}}
-    {{- $meta := partial "release/meta.html" (dict "page" .) -}}
-    {{- /* meta.html has already warned; a page whose release facts do not
-           parse is left out of the index rather than listed with empty
-           links. */ -}}
-    {{- if not $meta.valid }}{{ continue }}{{ end -}}
+    {{- $meta := partial "release/meta.html" (dict "page" . "required" false) -}}
+    {{- $name := .Title -}}
+    {{- if $meta.valid }}{{ $name = printf "%s %s" $meta.project $meta.tag }}{{ end -}}
     {{- $records = $records | append (dict
       "page" .
-      "product" $meta.product
-      "meta" $meta
-      "sortKey" (printf "%s|%s" $meta.sortKey .RelPermalink)
+      "name" $name
+      "sortKey" (printf "%s|%s|%s" (.Date.UTC.Format "20060102T150405Z") $meta.versionSort .RelPermalink)
     ) -}}
   {{- end -}}
-  {{- $filter := slice -}}
-  {{- if isset .Params "release_products" -}}
-    {{- $rawFilter := .Params.release_products -}}
-    {{- if eq (printf "%T" $rawFilter) "string" -}}
-      {{- $rawFilter = slice $rawFilter -}}
-    {{- else if not (reflect.IsSlice $rawFilter) -}}
-      {{- warnf "%s: release_products must be a string or array of strings; listing every release" .Path -}}
-    {{- end -}}
-    {{- range $rawFilter -}}
-      {{- if or (ne (printf "%T" .) "string") (not (strings.TrimSpace .)) -}}
-        {{- warnf "%s: release_products entries must be non-empty strings; skipping the entry" $section.Path -}}{{- continue -}}
-      {{- end -}}
-      {{- $product := strings.TrimSpace . -}}
-      {{- if in $filter $product }}{{ warnf "%s: release_products contains duplicate %q; skipping the repeat" $section.Path $product }}{{ continue }}{{ end -}}
-      {{- $filter = $filter | append $product -}}
-    {{- end -}}
-    {{- $matched := slice -}}
-    {{- range $records -}}
-      {{- if in $filter .product }}{{ $matched = $matched | append . }}{{ end -}}
-    {{- end -}}
-    {{- $records = $matched -}}
-    {{- if not $records }}{{ warnf "%s: release_products did not match any release pages; listing nothing" .Path }}{{ end -}}
-  {{- end -}}
-
-  {{- $groupByProduct := false -}}
-  {{- if isset .Params "release_group_by_product" -}}
-    {{- if ne (printf "%T" .Params.release_group_by_product) "bool" -}}
-      {{- warnf "%s: release_group_by_product must be a boolean; leaving the list ungrouped" .Path -}}
-    {{- end -}}
-    {{- $groupByProduct = .Params.release_group_by_product -}}
-  {{- end -}}
-  {{- $groups := slice "" -}}
-  {{- if $groupByProduct -}}
-    {{- $groups = slice -}}
-    {{- range $records -}}
-      {{- if not .product }}{{ warnf "%s: grouped release lists require release.product on every matched page; grouping it as untitled" $section.Path }}{{ end -}}
-      {{- if not (in $groups .product) }}{{ $groups = $groups | append .product }}{{ end -}}
-    {{- end -}}
-    {{- $groups = sort $groups -}}
-  {{- end -}}
-
-  {{- range $groups -}}
-    {{- $product := . -}}
-    {{- $group := sort $records "sortKey" "desc" -}}
-    {{- if $groupByProduct }}{{ $group = sort (where $records "product" $product) "sortKey" "desc" }}{{ end -}}
-    {{- if $groupByProduct }}<h2 class="td-release-index__product" dir="auto">{{ $product }}</h2>{{ end -}}
-    <ol class="td-release-index__list">
-      {{- range $group }}
-      <li class="td-release-index__item" data-td-release-product="{{ .meta.product }}">
-        <a class="td-release-index__version" href="{{ .page.RelPermalink }}" dir="auto">{{ .meta.version }}</a>
-        <time class="td-release-index__date" datetime="{{ .meta.date.Format "2006-01-02" }}">{{ .meta.dateDisplay }}</time>
-        {{- with .meta.product }}<span class="td-badge td-badge--neutral td-badge--outline">{{ . }}</span>{{ end -}}
-        {{- with .page.Description }}<p class="td-release-index__description">{{ . }}</p>{{ end -}}
-      </li>
-      {{- end }}
-    </ol>
-  {{- end -}}
+  <ol class="td-release-index__list">
+    {{- range sort $records "sortKey" "desc" }}
+    <li class="td-release-index__item">
+      <a class="td-release-index__name" href="{{ .page.RelPermalink }}" dir="auto">{{ .name }}</a>
+      <time class="td-release-index__date" datetime="{{ .page.Date.Format "2006-01-02" }}">{{ .page.Date.Format "2006-01-02" }}</time>
+      {{- with .page.Description }}<p class="td-release-index__description">{{ . }}</p>{{ end -}}
+    </li>
+    {{- end }}
+  </ol>
 </div>

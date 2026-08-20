@@ -15,7 +15,7 @@ from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 
 
 class NavigationParser(HTMLParser):
@@ -86,7 +86,7 @@ def build_example(hugo: str, destination: Path) -> subprocess.CompletedProcess[s
         [
             hugo,
             "--source",
-            str(EXAMPLE),
+            str(FIXTURE),
             "--destination",
             str(destination),
             *fixture_config_args(),
@@ -128,11 +128,21 @@ def check_math(public: Path) -> list[str]:
 
     require(math_page.count('class="katex"') >= 5, "math fixture lost rendered KaTeX", errors)
     require('class="katex-display"' in math_page, "math fixture lost block rendering", errors)
+    require(
+        math_page.count('class="katex-display" tabindex="0"') >= 4,
+        "block mathematics is not keyboard-focusable for horizontal scrolling",
+        errors,
+    )
     require("<math" in math_page and "<annotation" in math_page, "math fixture lacks MathML", errors)
     require("$$" not in math_page, "math fixture leaked literal dollar delimiters", errors)
     require("third_party/katex/katex.min." in math_page, "math page did not load local KaTeX CSS", errors)
     require("third_party/katex/katex.min." not in plain_page, "formula-free page loaded KaTeX CSS", errors)
     require('class="katex-display"' in print_page, "print output lost block mathematics", errors)
+    require(
+        'class="katex-display" tabindex="0"' not in print_page,
+        "static print mathematics should not add a keyboard focus stop",
+        errors,
+    )
     require("$$" not in print_page, "print output leaked literal dollar delimiters", errors)
     require(
         "$$\n\\lim_{n \\to \\infty}\\left(1 + \\frac{1}{n}\\right)^n = e\n$$" in math_markdown,
@@ -148,6 +158,11 @@ def check_math(public: Path) -> list[str]:
     styles = (ROOT / "assets/scss/td/_content.scss").read_text()
     require(".katex-display" in styles, "theme lacks KaTeX overflow styles", errors)
     require("overflow-x: auto" in styles, "long equations do not scroll within the column", errors)
+    require(
+        ".katex-display:focus-visible" in styles,
+        "focusable display mathematics lacks a visible focus indicator",
+        errors,
+    )
     return errors
 
 
@@ -216,19 +231,21 @@ def check_pager_outputs(public: Path) -> list[str]:
     first_nested = (public / "fixtures/guides/first/index.html").read_text()
     require("Nested guides" in first_nested, "pager card lost its optional parent section", errors)
 
-    # Blog order is weighted pages first, then reverse date, walked as a tree:
-    # the unweighted root posts, then each child section and its own posts. The
-    # real OINK posts under blog/oink/ sit between the root posts and the
-    # release section, which is what the chain below pins.
+    # Blog order is weighted pages first, then reverse date, walked as a tree.
+    # The immersive example remains an ordinary blog page in that sequence.
     blog_cases = {
         "blog/index.html": {"prev": None, "next": "/blog/typography/"},
-        "blog/typography/index.html": {"prev": "/blog/", "next": "/blog/older/"},
-        "blog/older/index.html": {"prev": "/blog/typography/", "next": "/blog/oink/"},
-        "blog/oink/index.html": {"prev": "/blog/older/", "next": "/blog/oink/oink-announcement/"},
-        "blog/legacy-byline/index.html": {
-            "prev": "/blog/oink/oink-implementation-diary/",
-            "next": "/blog/release/",
+        "blog/typography/index.html": {"prev": "/blog/", "next": "/blog/oink/"},
+        "blog/oink/index.html": {"prev": "/blog/typography/", "next": "/blog/oink/immersive-reading/"},
+        "blog/oink/immersive-reading/index.html": {
+            "prev": "/blog/oink/",
+            "next": "/blog/oink/oink-announcement/",
         },
+        "blog/older/index.html": {
+            "prev": "/blog/oink/oink-implementation-diary/",
+            "next": "/blog/legacy-byline/",
+        },
+        "blog/legacy-byline/index.html": {"prev": "/blog/older/", "next": "/blog/release/"},
     }
     for relative, expected in blog_cases.items():
         path = public / relative
@@ -535,9 +552,6 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
             )
             result = run_site(hugo, source)
             output = result.stdout + result.stderr
-            # Converted call sites warn and degrade; unconverted ones still
-            # errorf. The contract that holds for both: the problem is named,
-            # and the build fails under --panicOnWarning.
             require(expected in output, f"invalid eq escape case {name} did not report {expected!r}", errors)
             require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
                     f"invalid eq escape case {name} survived --panicOnWarning", errors)

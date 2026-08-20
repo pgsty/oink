@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7fb2d9"/>
+      <stop offset=".55" stop-color="#cfe3ee"/>
+      <stop offset="1" stop-color="#f4ede2"/>
+    </linearGradient>
+    <linearGradient id="far" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8aa8b8"/>
+      <stop offset="1" stop-color="#b8ccd6"/>
+    </linearGradient>
+    <linearGradient id="mid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5f8a74"/>
+      <stop offset="1" stop-color="#8fb096"/>
+    </linearGradient>
+    <linearGradient id="near" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f5f52"/>
+      <stop offset="1" stop-color="#63836e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1150" cy="250" r="90" fill="#f7e9c8" opacity=".9"/>
+  <path d="M0 520 Q 300 420 640 500 T 1600 470 V900 H0 Z" fill="url(#far)"/>
+  <path d="M0 640 Q 420 520 860 610 T 1600 600 V900 H0 Z" fill="url(#mid)"/>
+  <path d="M0 780 Q 500 660 980 740 T 1600 730 V900 H0 Z" fill="url(#near)"/>
+</svg>

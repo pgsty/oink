@@ -1,4 +1,3 @@
-# Generic Chinese defaults to Simplified Chinese; use zh-tw for Traditional Chinese.
 # Alert labels
 callout_caution: 注意
 callout_important: 重要
@@ -15,7 +14,6 @@ callout_details: 详情
 # UI strings. Buttons and similar.
 ui_pager_prev: 上一页
 ui_pager_next: 下一页
-ui_read_more: 阅读全文
 ui_search: 搜索…
 ui_search_empty: 未找到结果
 ui_search_loading: 正在加载搜索索引……
@@ -23,7 +21,6 @@ ui_search_results: '找到 {count} 条结果'
 ui_search_nav: 选择
 ui_search_open: 打开
 ui_search_close: 关闭
-ui_palette_empty_query: 快速链接与操作
 ui_palette_actions: 操作
 ui_palette_page_actions: 页面操作
 ui_palette_preferences: 偏好设置
@@ -64,7 +61,6 @@ ui_toc_hide: 隐藏目录
 ui_toc_show: 显示目录
 ui_language_select: 选择语言
 ui_language_switch: 切换语言
-ui_details: 详情
 ui_skip_to_content: 跳转到主要内容
 ui_page_actions: 操作
 ui_open_in_chatgpt: 在 ChatGPT 中打开
@@ -126,22 +122,16 @@ ui_assets_download: 下载资产
 ui_download_channels: 下载渠道
 ui_download_unpublished: 待发布
 
-# Used in sentences such as "Posted in News"
-ui_in: 发布于
-
 # Used in sentences such as "All Tags"
 ui_all: 全部
 
 # Footer text
 footer_all_rights_reserved: 保留所有权利
 
-footer_privacy_policy: 隐私政策
 ui_footer_collapse: 收起页脚链接
 ui_footer_expand: 展开页脚链接
 
 # Post (blog, article, etc.)
-post_byline_by: 撰文：
-post_created: 创建
 post_last_mod: 最后修改
 post_upstream: "{{ .work }}，{{ .copyright }}，依 {{ .license }} 授权使用，详见{{ .notice }}。"
 post_upstream_adapted: 本页改编自 {{ .work }}，{{ .copyright }}，依 {{ .license }} 授权，详见{{ .notice }}与{{ .history }}。
@@ -152,13 +142,14 @@ post_translated: 本页为译文，如有出入以{{ .original }}为准。
 post_translated_original: 原文
 post_edit_this: 编辑当前页面
 post_view_markdown: 查阅 Markdown 源码
-post_view_this: 查看页面源码
 post_create_child_page: 添加子页面
 post_create_issue: 提交文档议题
 post_create_project_issue: 提交项目议题
-post_posts_in: 撰写于
 post_reading_time: 分钟阅读
 post_less_than_a_minute_read: 1分钟内可阅读完
+post_word_count: '{{ .Count }} 字'
+post_reading_minutes: '{{ .Minutes }} 分钟'
+post_read_original: 阅读原文
 
 # Print support
 print_printable_section: 这是本节的多页打印视图。
@@ -166,10 +157,7 @@ print_click_to_print: 点击此处打印
 print_show_regular: 返回本页常规视图
 print_entire_section: 打印完整章节
 
-# Community
-
 # Feedback
-feedback_title: 意见反馈
 feedback_question: 这篇文档解决了你的问题吗？
 feedback_positive: 是
 feedback_negative: 否
@@ -184,7 +172,6 @@ feedback_change: 修改反馈
 
 # Table of contents
 toc_on_this_page: 目录
-toc_top_of_page: 回到顶部
 
 # Error pages
 error_404_title: 页面不存在
@@ -211,8 +198,6 @@ book_figure: 图
 book_table: 表
 book_equation: 公式
 book_example: 示例
-book_lof: 插图目录
-book_lot: 表格目录
 book_toc: 全书目录
 book_draft: 草稿
 book_draft_notice: 本章仍在修订中。
@@ -221,9 +206,12 @@ contributors_count: 位贡献者
 # Article series
 ui_series_title: 系列
 ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
-ui_series_next: "下一篇：{{ .Link }}"
 
 ui_list_separator: 、
-post_meta_by_in: "{{ .Date }}，由 {{ .Authors }} 发布于 {{ .Section }}"
-post_meta_in: "{{ .Date }}，发布于 {{ .Section }}"
+post_meta_by_in: "{{ .Authors }} 发布于 {{ .Section }}"
+post_meta_in: "发布于 {{ .Section }}"
 ui_blog_index_toggle: 切换布局
+
+# Markdown output
+markdown_llms_index: "LLMS 索引："
+markdown_section_pages: "本节页面："

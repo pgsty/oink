@@ -4,13 +4,7 @@ description: Numeric semantic-version ordering places this ahead of 1.9.0.
 date: 2026-08-12
 weight: 999
 outputs: [HTML, markdown, print]
-release:
-  product: pig
-  version: 1.10.0
-  repo: pgsty/pig
-  date: 2026-08-12
-  prev: 1.9.0
-  checksums: checksums.txt
+release_url: https://github.com/pgsty/pig/releases/tag/v1.10.0
 ---
 
 {{< release-card >}}

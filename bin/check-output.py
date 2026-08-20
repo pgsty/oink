@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Structural output checks for the theme fixture.
 
-Over the built exampleSite (--public, default exampleSite/public):
+Over the built regression fixture (--public, default tests/site/public):
   1. HTML structure — every strict container element (div, section, nav, ul/ol, table
      parts, a, button, span, main, aside, header, footer, details, summary, figure,
      form, svg, dialog, template, headings, pre, code, blockquote) closes in order;
@@ -18,6 +18,8 @@ Over the built exampleSite (--public, default exampleSite/public):
   5. social cards — exactly one featured image reaches Open Graph, schema, and
      Twitter metadata, all three agree, twitter:card follows, and a local card
      URL names a file the build actually shipped.
+  6. Markdown labels — the LLMS link and section-page heading follow the active
+     language, including localized punctuation in Simplified Chinese.
 """
 
 from __future__ import annotations
@@ -33,7 +35,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 STRICT = {"div", "section", "article", "nav", "ul", "ol", "table", "thead", "tbody", "tfoot", "a", "button", "span",
           "main", "aside", "header", "footer", "details", "summary", "figure", "figcaption", "form", "select", "svg",
           "symbol", "template", "dialog", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "code", "blockquote", "label",
@@ -127,8 +129,7 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         for ident, n in parser.ids.items():
             if n > 1:
                 errors.append(f"{rel}: duplicate id {ident!r} ({n}×)")
-        # Print pages carry no shell runtime at all; every other page loads the
-        # one shared core exactly once and at most one feature bundle.
+        # Print omits the core bundle; every other page loads it exactly once.
         if len(parser.actions) != 1:
             errors.append(f"{rel}: expected exactly one actions bundle, found {len(parser.actions)}")
         if len(parser.manifest_lines) != 1:
@@ -143,16 +144,12 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
             errors.append(f"{rel}: expected {expected_cores} core bundle(s), found {len(parser.cores)}: {parser.cores[:3]}")
         if len(parser.bundles) > 1:
             errors.append(f"{rel}: expected at most one feature bundle, found {len(parser.bundles)}: {parser.bundles[:3]}")
-        if expected_cores == 0 and parser.bundles:
-            # A print page may still need diagram runtimes, but never the shell ones.
-            for b in parser.bundles:
-                bundle_counts[b] = bundle_counts.get(b, 0) + 1
         for b in parser.bundles:
             bundle_counts[b] = bundle_counts.get(b, 0) + 1
         for r in parser.remote:
             errors.append(f"{rel}: remote asset {r}")
     if pages == 0:
-        errors.append("no HTML pages found — build exampleSite first")
+        errors.append("no HTML pages found — build tests/site first")
     return errors, bundle_counts
 
 
@@ -160,7 +157,7 @@ def check_security(public: Path) -> list[str]:
     errors: list[str] = []
     result = subprocess.run([sys.executable, str(ROOT / "bin/check-output-security.py"), "--public", str(public), "--base-url", "https://example.org/", "--third-party"], capture_output=True, text=True)
     if result.returncode != 0:
-        errors.append("check-output-security.py failed on exampleSite:\n" + result.stdout.strip())
+        errors.append("check-output-security.py failed on the regression fixture:\n" + result.stdout.strip())
     bad = ROOT / "tests/fixtures/output-security/bad"
     result = subprocess.run([sys.executable, str(ROOT / "bin/check-output-security.py"), "--public", str(bad), "--base-url", "https://example.org/"], capture_output=True, text=True)
     if result.returncode == 0:
@@ -177,6 +174,8 @@ SCHEMA_IMAGE = re.compile(r'<meta itemprop="image" content="([^"]+)"')
 TWITTER_CARD = re.compile(r'<meta name="twitter:card" content="([^"]+)"')
 TWITTER_IMAGE = re.compile(r'<meta name="twitter:image" content="([^"]+)"')
 BASE_URL = "https://example.org/"
+HREFLANG = re.compile(r'<link rel="alternate" hreflang="[^"]*" href="([^"]+)">')
+LANGUAGE_LINK = re.compile(r'<a class="td-language-selector__(?:trigger|item)" href="([^"]+)"')
 
 
 def check_social_cards(public: Path) -> list[str]:
@@ -232,6 +231,62 @@ def check_social_cards(public: Path) -> list[str]:
     return errors
 
 
+def check_language_links(public: Path) -> list[str]:
+    """Switching language must not switch hosts.
+
+    A language link is an ordinary internal link and is written relative, so a
+    build served from anywhere other than its configured `baseURL` -- `public/`
+    behind a local static server, a deploy preview, a LAN address -- switches
+    the language in place instead of navigating to the configured domain. The
+    absolute form is reserved for a site that gives a language its own
+    `baseURL`, which the fixture site does not. `hreflang` alternates are the
+    opposite case: they are canonical URLs and must stay absolute.
+    """
+
+    errors: list[str] = []
+    switches = 0
+    alternates = 0
+    for page in sorted(public.rglob("*.html")):
+        name = page.relative_to(public).as_posix()
+        text = page.read_text(encoding="utf-8", errors="replace")
+        for href in LANGUAGE_LINK.findall(text):
+            switches += 1
+            if not href.startswith("/"):
+                errors.append(f"{name}: language link {href} is not relative to the serving host")
+        for href in HREFLANG.findall(text):
+            alternates += 1
+            if not href.startswith(BASE_URL):
+                errors.append(f"{name}: hreflang alternate {href} is not an absolute canonical URL")
+    if not switches:
+        errors.append("no page offered a language switch — the bilingual fixture lost its selector")
+    if not alternates:
+        errors.append("no page emitted an hreflang alternate")
+    return errors
+
+
+def check_markdown_localization(public: Path) -> list[str]:
+    """Markdown-only shell labels must use the active page language."""
+
+    errors: list[str] = []
+    cases = (
+        ("fixtures/callouts/index.md", "LLMS index:", "LLMS 索引："),
+        ("docs/index.md", "Section pages:", "本节页面："),
+        ("zh/fixtures/callouts/index.md", "LLMS 索引：", "LLMS index:"),
+        ("zh/docs/index.md", "本节页面：", "Section pages:"),
+    )
+    for relative, expected, forbidden in cases:
+        path = public / relative
+        if not path.is_file():
+            errors.append(f"{relative}: localized Markdown fixture output is missing")
+            continue
+        lines = path.read_text(encoding="utf-8").splitlines()
+        if not any(line.startswith(expected) for line in lines):
+            errors.append(f"{relative}: missing localized Markdown label {expected!r}")
+        if any(line.startswith(forbidden) for line in lines):
+            errors.append(f"{relative}: leaked Markdown label {forbidden!r} from another language")
+    return errors
+
+
 def check_featured_image_contract(hugo: str) -> list[str]:
     """Pin empty-list discovery, single-card metadata, and SVG resources."""
 
@@ -264,7 +319,7 @@ params:
         )
         raster = site / "content/blog/resource/featured.webp"
         raster.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(EXAMPLE / "static/images/oink.webp", raster)
+        shutil.copyfile(FIXTURE / "static/images/oink.webp", raster)
         write(
             "content/blog/vector/index.md",
             "---\ntitle: Bundled vector\ndate: 2026-01-03\nimages: [feature.svg]\n---\n\nAn SVG resource is framed without image processing.\n",
@@ -367,8 +422,8 @@ def check_config_image_policy(hugo: str) -> list[str]:
         ),
         (
             "site-social-card",
-            {"HUGOxPARAMSxIMAGES": "//evil.example/featured.svg"},
-            "images must not use a protocol-relative URL",
+            {"HUGOxPARAMSxIMAGES": "javascript:alert(1)"},
+            "unsupported images scheme",
         ),
     )
     for name, overrides, expected in cases:
@@ -378,7 +433,7 @@ def check_config_image_policy(hugo: str) -> list[str]:
                 [
                     hugo,
                     "--source",
-                    str(EXAMPLE),
+                    str(FIXTURE),
                     "--destination",
                     str(Path(temp) / "public"),
                     "--logLevel",
@@ -396,11 +451,16 @@ def check_config_image_policy(hugo: str) -> list[str]:
             # is that the problem is named and that publishing still fails.
             if expected not in output:
                 errors.append(f"configured image case {name} did not report {expected!r}: {output[-400:]}")
+            if name == "site-social-card":
+                home = Path(temp) / "public/index.html"
+                metadata = home.read_text(encoding="utf-8") if home.is_file() else ""
+                if OG_IMAGE.findall(metadata) or SCHEMA_IMAGE.findall(metadata) or TWITTER_IMAGE.findall(metadata):
+                    errors.append("an invalid site social card still reached page metadata")
             strict = subprocess.run(
                 [
                     hugo,
                     "--source",
-                    str(EXAMPLE),
+                    str(FIXTURE),
                     "--destination",
                     str(Path(temp) / "public-strict"),
                     "--logLevel",
@@ -466,7 +526,7 @@ def check_merge_markers(public: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--public", type=Path, default=EXAMPLE / "public")
+    parser.add_argument("--public", type=Path, default=FIXTURE / "public")
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
     errors = self_test()
@@ -475,6 +535,8 @@ def main() -> int:
     errors += check_merge_markers(args.public)
     errors += check_security(args.public)
     errors += check_social_cards(args.public)
+    errors += check_language_links(args.public)
+    errors += check_markdown_localization(args.public)
     errors += check_featured_image_contract(args.hugo)
     errors += check_config_image_policy(args.hugo)
     if errors:

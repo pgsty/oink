@@ -1,69 +1,3 @@
-{{- /* Resolve the page-end share bar's targets as descriptors, once per page.
-
-     This is the data half of the share bar; share/bar.html renders it. A site
-     that wants a different target, a different order, or another URL template
-     overrides this partial and keeps the theme's markup, icons, print rules,
-     and accessible names. A site that wants different markup overrides
-     share/bar.html instead.
-
-     Returns a slice of dicts: id (used for the `td-share__item--<id>` class),
-     label (the platform's own name, which is not translated), icon (one Font
-     Awesome class pair), url (the intent link, empty for the local control),
-     blank (whether the link opens in a new tab), and action (the registry
-     action ID a local control invokes, empty otherwise).
-
-     Configuration ------------------------------------------------------
-
-     `params.ui.share` is a list drawn from the fixed set below; the empty
-     default means no bar. The page key is the site key without its `ui.`
-     prefix, so a blog section cascade scopes the bar to the pages that want
-     it, a page's own list replaces the inherited one, and `share: false`
-     turns one page's bar off. An unknown entry warns and is dropped: the
-     name is said out loud so it is not mistaken for a platform the
-     reader's device lacks, but a typo does not stop a dev server.
-
-     URL shapes ---------------------------------------------------------
-
-     Every platform below documents its own intent endpoint, and they disagree
-     about how the two facts a share carries -- the page's permalink and its
-     title -- reach the compose box. `form` names the shape rather than
-     repeating the argument order at each call site:
-
-       u    the URL alone (the platform reads the title from the page)
-       ut   the URL, then the title
-       tu   the title, then the URL (a `mailto:` subject precedes its body)
-       m    one merged "Title URL" string, for a compose box that takes plain
-            text and finds the link inside it
-       pin  Pinterest's URL + description, plus `media` when the page has a
-            representative image -- without one Pinterest asks the reader to
-            pick from the page, which needs the page to be publicly fetchable
-       p    an assistant prompt naming the permalink
-
-     Trust boundary -----------------------------------------------------
-
-     Everything this produces is a plain `<a href>` the reader may choose to
-     click, plus one local copy button. There is no share count, no platform
-     SDK, no iframe, and no third-party script or stylesheet, so nothing here
-     reaches the network when the site is built or when the page loads -- the
-     only request a share can cause is the navigation the reader starts. An
-     intent URL carries the page's own public permalink and title and nothing
-     else: no identifiers, no campaign parameters. That is the whole reason
-     the bar can exist in a theme that refuses third-party embeds by default,
-     and `bin/check-output-security.py` (without `--third-party`) is where it
-     is proven.
-
-     `chatgpt` and `claude` hand that same permalink to an assistant with a
-     prompt asking it to read the page. They are not the `open_chatgpt` /
-     `open_claude` actions, which the runtime rewrites at activation time to
-     the live browser URL -- query and hash included -- and which therefore
-     stay behind `page_context_menu.assistant_links`. These two are the
-     build-time permalink and nothing more, so naming them in
-     `params.ui.share` is itself the opt-in.
-
-     Discord has no share-intent URL. There is no documented endpoint that
-     opens a compose box with a link in it, so the bar offers no `discord`
-     entry and `copy` is the honest equivalent. */ -}}
-
 {{- $page := . -}}
 {{- $path := $page.Path -}}
 {{- $allowed := slice
@@ -145,9 +79,7 @@
     {{- else if eq $entry.form "p" }}{{ $href = printf $entry.template $prompt -}}
     {{- else if eq $entry.form "pin" -}}
       {{- $href = printf $entry.template $url $title -}}
-      {{- /* The resolver is the one place that decides which image represents a
-             page, so a pin and the page's own social card cannot disagree. */ -}}
-      {{- $featured := partial "featured-image-resolve.html" $page -}}
+      {{- $featured := partialCached "featured-image-resolve.html" $page $page.RelPermalink -}}
       {{- $media := "" -}}
       {{- with $featured.resource }}{{ $media = .Permalink }}{{ else }}{{ $media = $featured.permalink }}{{ end -}}
       {{- with $media }}{{ $href = printf "%s&media=%s" $href (replace (urlquery .) "+" "%20") }}{{ end -}}

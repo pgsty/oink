@@ -8,5 +8,5 @@ author: |
 ---
 
 Sites that never declare the `authors` taxonomy keep the string byline they
-wrote in 0.4. This page pins that path byte for byte: it must render the same
-markdownified `<b>` and pipe separator after the taxonomy byline lands.
+wrote in 0.4. This page pins that path byte for byte: it must still render the
+same markdownified `<b>` after the taxonomy byline lands.

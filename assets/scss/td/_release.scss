@@ -61,11 +61,6 @@
 }
 
 .td-release-index {
-  &__product {
-    margin-block-start: 2.5rem;
-    text-transform: none;
-  }
-
   &__list {
     display: grid;
     gap: 0;
@@ -76,14 +71,14 @@
 
   &__item {
     display: grid;
-    grid-template-columns: minmax(6rem, auto) auto auto minmax(12rem, 1fr);
-    gap: 0.5rem 1rem;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 1rem;
     align-items: baseline;
     padding-block: 0.9rem;
     border-block-end: 1px solid var(--bs-border-color);
   }
 
-  &__version {
+  &__name {
     overflow-wrap: anywhere;
     font-family: var(--td-heading-font-family);
     font-weight: 700;
@@ -97,19 +92,11 @@
   }
 
   &__description {
+    grid-column: 1 / -1;
     min-width: 0;
     margin: 0;
     overflow-wrap: anywhere;
-  }
-
-  @include media-breakpoint-down(md) {
-    &__item {
-      grid-template-columns: 1fr auto;
-    }
-
-    &__description {
-      grid-column: 1 / -1;
-    }
+    color: var(--bs-secondary-color);
   }
 }
 

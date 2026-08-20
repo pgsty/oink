@@ -14,7 +14,7 @@ from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE = ROOT / "exampleSite"
+FIXTURE = ROOT / "tests/site"
 MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
 
 
@@ -33,7 +33,7 @@ def run(
     panic_on_warning: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [hugo, "--source", str(source), "--logLevel", "warn"]
-    if source == EXAMPLE:
+    if source == FIXTURE:
         command.extend(fixture_config_args())
     if destination is not None:
         command.extend(["--destination", str(destination)])
@@ -305,7 +305,7 @@ INVALID_CASES = (
     ("checksums-rolling", BASE.replace("    steps:", "    checksums: |\n      " + "a" * 64 + "  demo.zip\n    steps:"), '{{< download "demo" >}}', "checksums are valid only for a pinned channel"),
     ("pinned-repo", BASE.replace("repo: pgsty/oink\n", "").replace("kind: rolling", "kind: pinned").replace("    steps:", "    url: https://example.org/file\n    steps:"), '{{< download "demo" >}}', "pinned links/assets require download repo"),
     ("published-type", BASE.replace("channels:", "published: \"false\"\nchannels:"), '{{< download "demo" >}}', "published must be a boolean"),
-    ("bad-url", BASE.replace("    steps:", "    url: javascript:alert(1)\n    steps:"), '{{< download "demo" >}}', "url must use http or https"),
+    ("bad-url", BASE.replace("    steps:", "    url: javascript:alert(1)\n    steps:"), '{{< download "demo" >}}', "unsupported url scheme"),
     ("unknown-field", BASE.replace("channels:", "future: true\nchannels:"), '{{< download "demo" >}}', "unsupported field"),
     ("duplicate-component", BASE, '{{< download "demo" >}}\n{{< download "demo" >}}', "duplicate data key"),
 )
@@ -355,7 +355,7 @@ def main() -> int:
     if args.public is None:
         with tempfile.TemporaryDirectory(prefix="oink-components-download-example-") as temp:
             public = Path(temp) / "public"
-            result = run(args.hugo, EXAMPLE, public)
+            result = run(args.hugo, FIXTURE, public)
             if result.returncode != 0:
                 print("download fixture failed to build:")
                 print(result.stdout + result.stderr)

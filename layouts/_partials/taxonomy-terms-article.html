@@ -1,13 +1,10 @@
 {{ $context := .context -}}
 {{ $taxo := .taxo -}}
 {{ if (gt (len ($context.GetTerms $taxo)) 0) -}}
-<div class="taxonomy td-taxonomy-terms-article taxo-{{ urlize $taxo }}">
-  {{/* A field label, not a section heading: as an <h5> directly after the page
-       <h1> it broke heading order on every article. */ -}}
-  <span class="td-taxonomy-title">{{ partial "taxonomy-label.html" (dict "page" $context "key" $taxo) }}:</span>
+<div class="taxonomy td-taxonomy-terms-article taxo-{{ urlize $taxo }}" role="group" aria-label="{{ partial "taxonomy-label.html" (dict "page" $context "key" $taxo) }}">
   <ul class="td-taxonomy-terms">
     {{ range ($context.GetTerms $taxo) -}}
-      <li><a class="td-taxonomy-term" href="{{ .Permalink }}" data-td-taxonomy-term="{{ urlize .LinkTitle }}"><span class="td-taxonomy-label">{{ .LinkTitle }}</span></a></li>
+      <li><a class="td-badge td-badge--neutral td-badge--outline" href="{{ .Permalink }}">{{ .LinkTitle }}</a></li>
     {{ end -}}
   </ul>
 </div>

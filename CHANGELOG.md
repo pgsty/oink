@@ -18,6 +18,14 @@ All notable changes to OINK are documented here. The project follows
   emitted only under the toggle) and the reader-choice rules are scoped to it,
   so a single-form section always shows its form and a stored choice still
   governs every index that carries all three.
+- The blog table's date column keeps its gap. `.td-blog-table td` sets the
+  cells' padding, and an element-and-class selector outranks the bare
+  `.td-blog-table__date` that declared the 1rem separating a date from the
+  title beside it -- so the declaration never landed, and any locale whose
+  dates run longer than the ISO default (`February 14, 2026`, `2026年01月02日`)
+  rendered them butted straight against the title. Both the date's trailing
+  gap and the tag column's leading one now sit on the base rule, at the
+  specificity that wins.
 
 ## [0.6.0] - 2026-08-20
 

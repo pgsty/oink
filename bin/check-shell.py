@@ -361,6 +361,15 @@ def check_sources() -> list[str]:
             "the index switch is not hidden until the runtime reveals it", errors)
     require("td-blog-index" in prepaint,
             "the reader's index form is not restored before the first paint", errors)
+    require('data-td-blog-forms="all"' in blog_list
+            and "{{ if $toggle }}" in blog_list,
+            "the index no longer marks which forms it published", errors)
+    reader_choice = [line for line in blog_styles.splitlines()
+                     if line.startswith("html[data-td-blog-index=")
+                     and ".td-blog-posts" in line]
+    require(len(reader_choice) == 3
+            and all("[data-td-blog-forms='all']" in line for line in reader_choice),
+            "a stored index form can hide the only form a section published", errors)
     require("data-td-blog-index-toggle" in shell_js and "toggle.hidden = false" in shell_js
             and "['list', 'cards', 'table']" in shell_js,
             "the shell runtime does not claim the index switch or lost its cycle order", errors)
@@ -1428,6 +1437,15 @@ def build_blog_index_forms(hugo: str) -> list[str]:
                 "the table form lost its structure or its tag badges", errors)
         require(not (root / "table/blog/oink/page").exists(),
                 "a table-only index still generated pager pages", errors)
+
+        # Only an index carrying every form answers to the stored choice; the
+        # attribute is written from localStorage on every shell page, so an
+        # index published in one form must be immune to it.
+        require(all('data-td-blog-forms="all"' not in rendered[name]
+                    for name in ("rows", "cards", "table")),
+                "a single-form index claims to carry every form", errors)
+        require('data-td-blog-forms="all"' in rendered["toggle"],
+                "the toggle index does not mark that it carries every form", errors)
 
         # Toggle mode must not repeat the complete table on every pager page.
         toggle = rendered["toggle"]

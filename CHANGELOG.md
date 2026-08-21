@@ -5,6 +5,20 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Fixed
+
+- A stored blog index form no longer blanks a section that publishes one form.
+  `prepaint.html` writes the reader's `td-blog-index` choice onto the root
+  element of every shell page, and the `html[data-td-blog-index=…]` rules
+  applied to any `.td-blog-posts` they found -- so a reader who cycled to
+  cards or table anywhere, then opened a section whose `blog_index_toggle` is
+  off, had the one form that section emitted hidden in favour of markup that
+  was never rendered: the index kept its title and description and listed
+  nothing. The index now declares what it published (`data-td-blog-forms="all"`,
+  emitted only under the toggle) and the reader-choice rules are scoped to it,
+  so a single-form section always shows its form and a stored choice still
+  governs every index that carries all three.
+
 ## [0.6.0] - 2026-08-20
 
 ### Added

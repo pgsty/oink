@@ -289,7 +289,11 @@
   display: none;
 }
 
-html[data-td-blog-index='list'] .td-blog-posts {
+/* The stored choice governs only an index that published every form: the
+   attribute is written from localStorage on every shell page, so a section
+   whose toggle is off carries one form and would otherwise have it hidden in
+   favour of markup that was never emitted. */
+html[data-td-blog-index='list'] .td-blog-posts[data-td-blog-forms='all'] {
   > .td-blog-posts__paged { display: block; }
   > [data-td-blog-form='table'] { display: none; }
 
@@ -297,7 +301,7 @@ html[data-td-blog-index='list'] .td-blog-posts {
   .td-blog-posts__paged > [data-td-blog-form='list'] { display: block; }
 }
 
-html[data-td-blog-index='cards'] .td-blog-posts {
+html[data-td-blog-index='cards'] .td-blog-posts[data-td-blog-forms='all'] {
   > .td-blog-posts__paged { display: block; }
   > [data-td-blog-form='table'] { display: none; }
 
@@ -305,7 +309,7 @@ html[data-td-blog-index='cards'] .td-blog-posts {
   .td-blog-posts__paged > [data-td-blog-form='cards'] { display: grid; }
 }
 
-html[data-td-blog-index='table'] .td-blog-posts {
+html[data-td-blog-index='table'] .td-blog-posts[data-td-blog-forms='all'] {
   > .td-blog-posts__paged { display: none; }
   > [data-td-blog-form='table'] { display: table; }
 }

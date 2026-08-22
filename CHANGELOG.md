@@ -7,6 +7,15 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- A pinned navbar occupies the band the shell reserved for it. Fixed rails
+  clear `--td-shell-nav-h` (the 50px navbar height), and the auto-hide band
+  reserves exactly that, but a pinned `.td-site-header` measured 51px: its
+  bottom rule sat below the band rather than inside it. Every surface that
+  pins the bar therefore started its article column one pixel under the fixed
+  outline rail, so the breadcrumb row and the outline heading beside it never
+  quite lined up. The header now takes `height: $td-navbar-min-height` under
+  border-box sizing, with the container and nav row inheriting it, so the rule
+  is drawn inside the reserved band and the two rows share a baseline again.
 - A stored blog index form no longer blanks a section that publishes one form.
   `prepaint.html` writes the reader's `td-blog-index` choice onto the root
   element of every shell page, and the `html[data-td-blog-index=…]` rules

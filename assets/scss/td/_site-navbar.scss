@@ -92,6 +92,13 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  // Fixed shell rails clear exactly $td-navbar-min-height, and the auto-hide
+  // band reserves exactly that much slot. A pinned bar has to occupy the same
+  // height, so the rule sits inside the band -- a fixed height under
+  // border-box sizing -- rather than adding a pixel below it. Without this a
+  // pinned surface starts its article column one pixel under the fixed TOC
+  // rail, and the breadcrumb row no longer lines up with the outline heading.
+  height: $td-navbar-min-height;
   border-bottom: 1px solid var(--bs-border-color);
   background: var(--td-brand-header-bg);
   transition: box-shadow 200ms ease;
@@ -102,6 +109,12 @@
     box-shadow: var(--td-brand-shadow-sm);
   }
 
+  // The container and the row inherit that height, so the controls stay
+  // centered in the band the header measures rather than in their own content.
+  > .td-site-container {
+    height: 100%;
+  }
+
   // Three zones on one grid row: brand at the start, the site's own menu
   // entries true-centered, and the utility cluster at the end with the
   // search box as its elastic leading edge.
@@ -110,7 +123,7 @@
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     column-gap: 16px;
-    height: $td-navbar-min-height;
+    height: 100%;
   }
 
   .td-nav-brand {

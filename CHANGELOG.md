@@ -5,6 +5,16 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Changed
+
+- The home page's navbar takes the soft boundary a hero page already had. A
+  landing opens on artwork over a ruled grid, and the shell's bottom rule cut
+  a hard line straight across that composition -- the one surface where the
+  bar has no article column to separate itself from. `.td-home .td-site-header`
+  now drops the rule and the scrolled shadow and resolves into a short wash
+  below the bar instead, keeping the translucent background and backdrop blur.
+  Every other surface is untouched.
+
 ### Fixed
 
 - A pinned navbar occupies the band the shell reserved for it. Fixed rails

@@ -11,6 +11,34 @@
   }
 }
 
+// The home page owns its navbar treatment the way a hero page does. A landing
+// opens on artwork and a ruled grid, and a hard rule across the top cuts the
+// composition in two, so the bar keeps its translucent background and drops
+// the rule for a short wash below it: the boundary softens into the page
+// instead of drawing a line. The scrolled shadow would redraw that line, so it
+// steps aside for the same wash.
+.td-home .td-site-header {
+  border-block-end: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: 0;
+    height: 34px;
+    background: linear-gradient(
+      to bottom,
+      var(--td-brand-header-bg),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  &.td-scrolled {
+    box-shadow: none;
+  }
+}
+
 .td-landing-landing {
   --td-grid: rgba(47, 103, 147, 0.06);
   --td-copper: var(--td-brand-copper);

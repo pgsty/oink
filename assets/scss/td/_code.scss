@@ -6,8 +6,16 @@
 
 :root,
 [data-bs-theme='light'] {
-  --td-code-inline-bg: rgba(var(--bs-body-color-rgb), 0.075);
-  --td-code-inline-fg: var(--bs-emphasis-color);
+  --td-code-inline-bg: rgba(var(--bs-body-color-rgb), 0.035);
+  // Inline code is crimson ink on a hairline wash, not a pill. `_brand.scss`
+  // owns the value per palette and keeps it AA on every painted canvas. It is
+  // deliberately fixed: a published theme color retints shell states but
+  // neither links nor code, so a token reads the same in every section.
+  --td-code-inline-fg: var(--bs-code-color);
+  // Bold code is the author raising their voice inside a phrase of code, so
+  // it deepens within the same crimson rather than changing hue: a second
+  // color would read as a second kind of thing.
+  --td-code-strong-fg: #8c1d2c;
   --td-code-header-bg: var(--bs-tertiary-bg);
   --td-code-border-color: var(--bs-border-color);
   --td-code-radius: 0.75rem;
@@ -15,7 +23,8 @@
 
 @include color-mode(dark, true) {
   --td-pre-bg: #{adjust-color($gray-900, $lightness: -2.5%)};
-  --td-code-inline-bg: rgba(var(--bs-body-color-rgb), 0.11);
+  --td-code-inline-bg: rgba(var(--bs-body-color-rgb), 0.06);
+  --td-code-strong-fg: #fb7185;
   --td-code-header-bg: var(--bs-secondary-bg);
 }
 
@@ -349,23 +358,42 @@
   }
 }
 
-// Inline code: a quiet, borderless pill on a body-colour tint. Everything that
-// is not the highlighted source of a block qualifies (prose, list items, table
-// cells, headings, callouts, field descriptions). `:where()` keeps the selector
-// at element specificity, so the theme's own semantic `code` elements (field
-// names, metadata values) override it with a single class, while it still wins
-// over Bootstrap's reboot by source order.
+// Inline code: crimson ink on a hairline wash, not a grey pill. The old tint
+// made every token a lozenge; the much fainter wash now marks token boundaries
+// while the monospace face, semibold weight, and code hue do the identifying.
+// That keeps a token-dense paragraph readable without turning it into a field
+// of grey controls.
+// Everything that is not the highlighted source of a block qualifies (prose,
+// list items, table cells, headings, callouts, field descriptions).
+// `:where()` keeps the selector at element specificity, so the theme's own
+// semantic `code` elements (field names, metadata values) override it with a
+// single class, while it still wins over Bootstrap's reboot by source order.
 :where(.td-content :not(pre)) > code {
-  padding: 0.15em 0.4em;
+  // A hairline wash, an order of magnitude lighter than the old pill: too
+  // faint to read as a lozenge in running prose, but enough that a run of
+  // adjacent tokens -- `baseURL` `title` `languages` in one table cell --
+  // stays countable instead of merging into one long phrase. The ink still
+  // does the identifying; this only draws the token's edges.
+  padding: 0.05em 0.32em;
   margin: 0;
   border: 0;
-  border-radius: 0.375rem;
-  background-color: var(--td-code-inline-bg);
+  border-radius: 4px;
+  background: var(--td-code-inline-bg);
   color: var(--td-code-inline-fg);
   font-size: 0.875em;
+  font-weight: $font-weight-semibold;
   word-break: normal;
 
   br {
     display: none;
   }
+}
+
+// Bold code speaks a deeper shade of the same crimson: `**`code`**` marks the
+// value the reader must not miss, and staying inside one hue keeps it emphasis
+// rather than a second category. The weight already comes from the base rule;
+// only the ink changes.
+:where(.td-content) :is(strong, b) code,
+:where(.td-content) code :is(strong, b) {
+  color: var(--td-code-strong-fg);
 }

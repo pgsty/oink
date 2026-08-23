@@ -36,6 +36,16 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Inline code is crimson ink, not a grey pill. Following Blowfish, prose
+  `code` reads in a semibold monospace crimson on a hairline wash -- an order
+  of magnitude lighter than the old tint, enough that a run of adjacent tokens
+  in one table cell stays countable without turning the paragraph into a field
+  of lozenges. Crimson rather than a blue, so a page dense in identifiers
+  reads as code and prose instead of code and links. Bold code
+  (`` **`code`** ``) deepens within the same crimson: staying inside one hue
+  keeps it emphasis rather than a second category. `--bs-code-color` joins the
+  same family, so Landing narrative fields agree with prose. None of it
+  follows a theme color -- code ink is a reading convention.
 - The sidebar root switcher draws each root's mark in that section's own
   theme color. It is the one place a reader compares the sections against
   each other, so it is the one place the colors appear side by side; the

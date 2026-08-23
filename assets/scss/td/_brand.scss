@@ -74,7 +74,15 @@
   --td-accent-hover: var(--bs-link-hover-color);
   // Keyboard focus rides the accent instead of Bootstrap's stock blue.
   --bs-focus-ring-color: rgba(var(--td-accent-rgb), 0.4);
-  --bs-code-color: #925b20;
+  // Inline code ink, shared by prose (through --td-code-inline-fg) and by
+  // markup outside .td-content such as Landing narrative fields. Crimson,
+  // the Blowfish convention: a page dense in identifiers reads as code and
+  // prose rather than as code and links, which an azure ink one step off the
+  // link blue could not do. Dark enough to clear AA on every surface the ink
+  // actually lands on -- the page canvas, cards, and the tinted callout
+  // bodies. NOT retinted by a published theme color: code ink is a reading
+  // convention, the same in every section.
+  --bs-code-color: #b02a37;
   --td-pre-bg: #fff;
   --td-brand-elev: #fff;
   --td-brand-silk: #5d7189;
@@ -118,7 +126,7 @@
   --td-accent-rgb: var(--bs-link-color-rgb);
   --td-accent-hover: var(--bs-link-hover-color);
   --bs-focus-ring-color: rgba(var(--td-accent-rgb), 0.55);
-  --bs-code-color: #e0a35c;
+  --bs-code-color: #f0899a;
   --td-pre-bg: #0a0f16;
   --td-brand-elev: #121c29;
   --td-brand-silk: #93a3b8;

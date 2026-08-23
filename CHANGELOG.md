@@ -61,6 +61,15 @@ All notable changes to OINK are documented here. The project follows
   slug fill became a pale neutral ground with muted ink, and hover glides the
   whole chip into the section's accent instead of the fixed copper it used
   before.
+- The series strip is one disclosure the width of the bar. The whole row
+  toggles rather than the part counter alone, the text caret became the
+  theme's own chevron parked at the end of the row and rotating on open, the
+  member list starts at the bar's leading edge instead of hanging off the
+  counter, and each member is a full-width target with its ordinal drawn by
+  the link, so a row is clicked rather than a word. The term link stays a
+  sibling of the disclosure -- a focusable descendant of a summary is a nested
+  interactive control -- and is laid over a ghost copy of its own text that
+  reserves the width inside the summary.
 
 ## [0.6.1] - 2026-08-22
 

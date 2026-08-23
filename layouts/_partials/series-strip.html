@@ -11,27 +11,38 @@
       {{- end -}}
     {{- end -}}
     {{- if and (gt $total 1) (gt $part 0) }}
+{{- /* The strip is one disclosure the whole width of the bar, with the series
+     link laid over its leading edge. The link cannot sit inside the summary --
+     a focusable descendant of a summary is a nested interactive control -- and
+     it cannot sit after it either, because everything after a summary is the
+     disclosure's own content and would vanish when closed. So it is a sibling,
+     positioned over a ghost copy of its text that reserves exactly the right
+     width inside the summary. Three things fall out of that: the entire bar
+     toggles, the list underneath starts at the bar's own leading edge instead
+     of hanging off the part counter, and the link keeps working on its own. */ -}}
 <nav class="td-series-strip" aria-label="{{ printf "%s %s" (T "ui_series_title") $term.LinkTitle }}">
-  <div class="td-series-strip__line">
-    <a class="td-series-strip__name" href="{{ $term.RelPermalink }}">{{ $term.LinkTitle }}</a>
-    <span class="td-series-strip__sep" aria-hidden="true">&middot;</span>
-    <details class="td-series-strip__all">
-      <summary class="td-series-strip__summary">
-        <span class="td-series-strip__part">{{ T "ui_series_part" (dict "Part" $part "Total" $total) }}</span>
-      </summary>
-      <ol class="td-series-strip__list">
-        {{- range $members }}
-        <li class="td-series-strip__item">
-          {{- if eq .RelPermalink $page.RelPermalink -}}
-            <a class="td-series-strip__link" href="{{ .RelPermalink }}" aria-current="page">{{ .LinkTitle }}</a>
-          {{- else -}}
-            <a class="td-series-strip__link" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-          {{- end -}}
-        </li>
-        {{- end }}
-      </ol>
-    </details>
-  </div>
+  <a class="td-series-strip__name" href="{{ $term.RelPermalink }}">{{ $term.LinkTitle }}</a>
+  <details class="td-series-strip__all">
+    <summary class="td-series-strip__summary">
+      <span class="td-series-strip__ghost" aria-hidden="true">{{ $term.LinkTitle }}</span>
+      <span class="td-series-strip__sep" aria-hidden="true">&middot;</span>
+      <span class="td-series-strip__part">{{ T "ui_series_part" (dict "Part" $part "Total" $total) }}</span>
+      <span class="td-series-strip__caret" aria-hidden="true">
+        {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+      </span>
+    </summary>
+    <ol class="td-series-strip__list">
+      {{- range $members }}
+      <li class="td-series-strip__item">
+        {{- if eq .RelPermalink $page.RelPermalink -}}
+          <a class="td-series-strip__link" href="{{ .RelPermalink }}" aria-current="page">{{ .LinkTitle }}</a>
+        {{- else -}}
+          <a class="td-series-strip__link" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        {{- end -}}
+      </li>
+      {{- end }}
+    </ol>
+  </details>
 </nav>
     {{- end -}}
   {{- end -}}

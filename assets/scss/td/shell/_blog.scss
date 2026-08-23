@@ -555,28 +555,28 @@ a.td-taxonomy-term {
 
 // CSS-only series disclosure with forced-color-safe borders.
 .td-series-strip {
+  position: relative;
   margin-block: 1rem 1.5rem;
-  padding-block: 8px;
+  padding-block: 6px;
   padding-inline: 14px;
   border: 1px solid var(--bs-border-color);
-  border-inline-start: 3px solid var(--td-shell-primary);
+  border-inline-start: 3px solid var(--td-accent);
   border-radius: 10px;
   background: var(--td-shell-field);
   font-size: 13px;
   line-height: 1.6;
   color: var(--td-shell-muted-fg);
 
-  &__line {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
+  // The link is laid over the ghost copy inside the summary, so it keeps the
+  // reading position of the first word while the summary owns the whole row.
   &__name {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 6px;
+    inset-inline-start: 14px;
     display: inline-flex;
     align-items: center;
-    min-block-size: 24px;
+    min-block-size: 26px;
     font-weight: 600;
     color: var(--td-shell-primary);
 
@@ -587,88 +587,141 @@ a.td-taxonomy-term {
     }
   }
 
-  &__part {
-    color: var(--bs-body-color);
-  }
-
-  &__sep {
-    display: inline-flex;
-    align-items: center;
-    min-block-size: 24px;
-    color: var(--bs-tertiary-color);
+  &__ghost {
+    font-weight: 600;
+    visibility: hidden;
   }
 
   &__all {
-    flex: 1 1 8rem;
     min-inline-size: 0;
   }
 
+  // The whole bar is the control. It reaches the padding box on every side so
+  // there is no dead strip along the edges, and the caret parks at the far end
+  // where a disclosure is looked for.
   &__summary {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    min-block-size: 24px;
     gap: 6px;
+    min-block-size: 26px;
+    // Reaches the padding box on all four sides, so the hover ground fills
+    // the bar edge to edge instead of leaving a pale margin above and below.
+    margin: -6px -14px;
+    padding: 6px 14px;
+    border-radius: 7px;
     cursor: pointer;
-    // Use a text caret instead of the engine-dependent native marker.
     list-style: none;
+    transition: background-color var(--td-motion-duration-fast) ease;
 
     &::-webkit-details-marker {
       display: none;
     }
 
-    &::before {
-      content: '\25B8'; // ▸
-      flex: 0 0 auto;
-      color: var(--bs-tertiary-color);
+    &:hover {
+      background: var(--td-shell-primary-wash);
     }
 
-    &:hover::before {
-      color: var(--bs-body-color);
+    &:focus-visible {
+      outline: 2px solid var(--bs-focus-ring-color);
+      outline-offset: 1px;
     }
   }
 
-  &__all[open] > &__summary::before {
-    content: '\25BE'; // ▾
+  &__sep {
+    color: var(--bs-tertiary-color);
   }
 
+  &__part {
+    color: var(--bs-body-color);
+  }
+
+  // Pushed to the end of the row; it turns rather than swapping glyphs, which
+  // is the same disclosure motion the sidebar and the outline already use.
+  &__caret {
+    display: inline-flex;
+    align-items: center;
+    margin-inline-start: auto;
+    color: var(--bs-tertiary-color);
+    transition: transform var(--td-motion-duration) ease;
+
+    > svg {
+      display: block;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &__summary:hover &__caret {
+    color: var(--bs-body-color);
+  }
+
+  &__all[open] > &__summary > &__caret {
+    transform: rotate(180deg);
+  }
+
+  // Indented from the bar's leading edge by one step, not hung off the part
+  // counter: the titles read as members of the series named above them. The
+  // ordinal is drawn by the link rather than by a list marker, so the whole
+  // row -- number included -- is one target instead of a word-sized one.
   &__list {
-    margin-block: 8px 2px;
-    padding-inline-start: 2rem;
+    margin-block: 4px 0;
+    padding-inline-start: 0;
+    list-style: none;
+    counter-reset: td-series;
   }
 
   &__item {
-    margin-block: 3px;
+    counter-increment: td-series;
+    margin-block: 0;
+  }
 
-    &::marker {
+  &__link {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-inline: -14px;
+    padding-block: 4px;
+    padding-inline: 1.35rem 14px;
+    border-radius: 7px;
+    transition: background-color var(--td-motion-duration-fast) ease;
+
+    &::before {
+      content: counter(td-series) '.';
+      flex: 0 0 auto;
+      min-inline-size: 1em;
       color: var(--bs-tertiary-color);
+      font-variant-numeric: tabular-nums;
+      text-align: end;
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: var(--td-shell-primary-wash);
+      text-decoration: none;
     }
   }
 
   // aria-current announces the reader's own place; on screen the whole row --
-  // ordinal marker included -- goes bold, so the cue is never colour alone.
-  &__item:has(> a[aria-current='page']) {
-    font-weight: 600;
+  // ordinal included -- goes bold, so the cue is never colour alone.
+  &__link[aria-current='page'] {
     color: var(--bs-body-color);
-  }
-
-  &__item > a[aria-current='page'] {
-    color: inherit;
+    font-weight: 600;
     text-decoration: none;
+
+    &::before {
+      color: inherit;
+    }
   }
 }
 
-// RTL flips the closed caret; print shows the open state.
-[dir='rtl'] .td-series-strip__summary::before {
-  content: '\25C2'; // ◂
-}
-
-[dir='rtl'] .td-series-strip__all[open] > .td-series-strip__summary::before {
-  content: '\25BE';
-}
-
+// Print shows the open state; the caret has nothing to say on paper.
 @media print {
-  .td-series-strip__summary::before {
-    content: '\25BE';
+  .td-series-strip__caret {
+    display: none;
+  }
+
+  .td-series-strip__list {
+    display: block;
   }
 }
 

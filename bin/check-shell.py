@@ -722,9 +722,13 @@ def check_series_sources() -> list[str]:
     # bundle member, no behaviour attribute for a runtime to bind to.
     require("<details" in strip and "<summary" in strip,
             "the series list is no longer a plain disclosure", errors)
-    require('<div class="td-series-strip__line">' in strip
-            and strip.index('class="td-series-strip__name"') < strip.index("<details")
-            and "<a " not in strip.split("<summary", 1)[1].split("</summary>", 1)[0],
+    # The term link leads the strip and stays a sibling of the disclosure. It
+    # must never move inside the summary: a focusable descendant of a summary
+    # is a nested interactive control. The ghost span is what lets the summary
+    # own the whole row without swallowing the link.
+    require(strip.index('class="td-series-strip__name"') < strip.index("<details")
+            and "<a " not in strip.split("<summary", 1)[1].split("</summary>", 1)[0]
+            and 'class="td-series-strip__ghost"' in strip,
             "the series term link is no longer a sibling of the disclosure", errors)
     require("data-td-" not in strip and "<script" not in strip and "Store.Set" not in strip,
             "the series strip grew a runtime hook", errors)
@@ -738,7 +742,9 @@ def check_series_sources() -> list[str]:
     require(".td-series-strip {" in blog_styles
             and "margin-block" in blog_styles
             and "padding-inline" in blog_styles
-            and blog_styles.count("min-block-size: 24px") >= 2,
+            and "padding-inline: 1.35rem 14px" in blog_styles
+            and "padding: 4px 14px 4px 1.35rem" not in blog_styles
+            and blog_styles.count("min-block-size: 26px") >= 2,
             "the series strip lost its own styles, logical properties, or minimum target sizes", errors)
 
     # Both taxonomies that carry a surface of their own stay out of the default

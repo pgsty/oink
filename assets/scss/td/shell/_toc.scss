@@ -246,8 +246,11 @@
 
     // Written by docs-shell.js on the heading the reader is inside, which is
     // also where j/k lands. Ordered last so it survives :hover and .active.
+    // This is the one entry the travelling dot is parked on, so it is the one
+    // entry that takes the section's accent -- ink and ground together, rather
+    // than an accent ground under default ink.
     &[aria-current='location'] {
-      color: var(--td-shell-primary);
+      color: var(--td-accent);
 
       &::before {
         background: var(--td-shell-toc-pill-bg);
@@ -326,7 +329,7 @@
   }
 
   path {
-    stroke: var(--td-shell-primary);
+    stroke: var(--td-accent);
     stroke-width: 1;
     fill: none;
     // One dash the length of the range, parked at its start distance; the
@@ -347,8 +350,8 @@
   width: 4px;
   height: 4px;
   border-radius: 999px;
-  background: var(--td-shell-primary);
-  box-shadow: 0 0 0 2px rgba(var(--bs-link-color-rgb), 0.2);
+  background: var(--td-accent);
+  box-shadow: 0 0 0 2px rgba(var(--td-accent-rgb), 0.2);
   // The dot's place *is* the line's end: start plus none or all of the lit
   // length, read from the same animated values the dash is drawn from. The
   // line positions the dot; it has no motion schedule of its own to fall

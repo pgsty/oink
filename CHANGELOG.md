@@ -5,6 +5,53 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Added
+
+- A theme color. `params.ui.theme_color` takes a `#rgb`/`#rrggbb` hex and
+  tints the shell's accent *grounds*: the selected sidebar row, hover washes,
+  the outline pill and its travelling rail and dot, tag and chip hovers, text
+  selection, focus rings, and each root's mark in the sidebar switcher. It
+  deliberately leaves the reading surface alone -- prose links, external URLs
+  and inline code keep the brand palette in every section -- so a colored
+  section is a quiet signal of place rather than a recolor of the text.
+  Front matter `theme_color` overrides the site value per page, and a section
+  root writes it into its `cascade` to give a whole section its own identity,
+  the way a site keeps a navy Docs beside a violet Blog. The optional
+  `theme_color_dark` carries the dark palette; when omitted the dark accent
+  derives by lightening the light color toward white in 4% steps until it
+  reads AA body text on the theme's dark canvas, so a derived palette is
+  never unreadable. Hovers derive by the same lightening move.
+  The implementation is one head-emitted `style` element declaring three
+  custom properties -- `--td-accent`, `--td-accent-rgb`, `--td-accent-hover`
+  -- which every accent ground already resolves through. With neither key set
+  the head carries no style element at all; an invalid value warns and keeps
+  the default palette; a `theme_color_dark` with no `theme_color` to pair with
+  warns and is ignored, so a page is colored in both modes or in neither; and
+  the emitted block is formatted from parsed integer channels only, so no
+  author text can reach the style element. The theme also
+  reads the chosen colors against its own canvases: a palette below AA body
+  text (4.5:1) still ships, but warns with a suppressible id, so the
+  publishing gate catches an unreadable accent while a deliberate palette
+  stays one config line away.
+
+### Changed
+
+- The sidebar root switcher draws each root's mark in that section's own
+  theme color. It is the one place a reader compares the sections against
+  each other, so it is the one place the colors appear side by side; the
+  labels stay body text, and the navbar keeps a single resting tone and picks
+  up the current section's accent only on hover.
+- The selected sidebar row reads as the theme color instead of as grey. At
+  10% even a saturated violet renders as a warm neutral, so the accent ground
+  moved to 14% in light and 16% in dark. Where accent ink sits on a wash of
+  the same accent -- a hovered solid badge, the outline pill -- the readable
+  pairing is tighter than the page canvas suggests, which is what the shipped
+  palettes are tuned against.
+- Taxonomy chips are quiet at rest and light up on the pointer. The solid
+  slug fill became a pale neutral ground with muted ink, and hover glides the
+  whole chip into the section's accent instead of the fixed copper it used
+  before.
+
 ## [0.6.1] - 2026-08-22
 
 ### Changed

@@ -1,0 +1,24 @@
+{{- /* Parse a #rgb or #rrggbb hex color into integer channels.
+
+     Input: any value; only a string matching the hex shape parses. Returns
+     `dict "r" <int> "g" <int> "b" <int>`, or an empty dict for anything
+     else, so callers can warn with their own key name and location. */ -}}
+{{- $raw := printf "%v" . -}}
+{{- $result := dict -}}
+{{- if findRE `^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$` $raw -}}
+  {{- $hex := lower (strings.TrimPrefix "#" $raw) -}}
+  {{- if eq (len $hex) 3 -}}
+    {{- $hex = printf "%s%s%s%s%s%s"
+        (substr $hex 0 1) (substr $hex 0 1)
+        (substr $hex 1 1) (substr $hex 1 1)
+        (substr $hex 2 1) (substr $hex 2 1) -}}
+  {{- end -}}
+  {{- $digits := dict
+      "0" 0 "1" 1 "2" 2 "3" 3 "4" 4 "5" 5 "6" 6 "7" 7
+      "8" 8 "9" 9 "a" 10 "b" 11 "c" 12 "d" 13 "e" 14 "f" 15 -}}
+  {{- $r := add (mul 16 (index $digits (substr $hex 0 1))) (index $digits (substr $hex 1 1)) -}}
+  {{- $g := add (mul 16 (index $digits (substr $hex 2 1))) (index $digits (substr $hex 3 1)) -}}
+  {{- $b := add (mul 16 (index $digits (substr $hex 4 1))) (index $digits (substr $hex 5 1)) -}}
+  {{- $result = dict "r" $r "g" $g "b" $b -}}
+{{- end -}}
+{{- return $result -}}

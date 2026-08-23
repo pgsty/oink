@@ -201,10 +201,13 @@
       background-color var(--td-motion-duration) var(--td-shell-ease-color),
       color var(--td-motion-duration) var(--td-shell-ease-color);
 
+    // One tone for every entry at rest -- the top row is not where a
+    // section's identity belongs. Hovering picks up the accent of the
+    // section the reader is currently in.
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-hover-color);
+      color: var(--td-accent-hover);
       text-decoration: none;
     }
 
@@ -220,7 +223,7 @@
 
   .td-nav-menu.td-is-open .td-nav-menu__parent-link {
     background: var(--td-brand-elev);
-    color: var(--bs-link-hover-color);
+    color: var(--td-accent-hover);
   }
 
   .td-nav-menu__panel {
@@ -331,7 +334,7 @@
     &:hover,
     &:focus-visible {
       background: var(--td-brand-elev);
-      color: var(--bs-link-hover-color);
+      color: var(--td-accent-hover);
       text-decoration: none;
 
       > i {

@@ -54,12 +54,26 @@
   --bs-tertiary-bg-rgb: 246, 249, 252;
   --bs-border-color: rgba(48, 74, 105, 0.14);
   --bs-border-color-translucent: rgba(48, 74, 105, 0.14);
+  // The link family. Every link the reader can click resolves through these
+  // four tokens, and a published theme color never touches them: prose links
+  // and external URLs stay this navy in every section, so a colored section
+  // does not turn its running text into a second kind of thing. What a theme
+  // color does move is --td-accent below. Hover brightens toward the sky,
+  // not deeper into the navy; kept dark enough for AA contrast on the
+  // translucent light navbar surface.
   --bs-link-color: #245f94;
   --bs-link-color-rgb: 36, 95, 148;
-  // Hover brightens toward the sky, not deeper into the navy. Keep the azure
-  // dark enough for AA contrast on the translucent light navbar surface.
   --bs-link-hover-color: #3372a8;
   --bs-link-hover-color-rgb: 51, 114, 168;
+  // The theme accent. It defaults to the brand link color, and a published
+  // `theme_color` redeclares just these three in the head -- never the
+  // Bootstrap link family, so prose links and external URLs keep the brand
+  // blue in every section. The accent's job is grounds and hovers.
+  --td-accent: var(--bs-link-color);
+  --td-accent-rgb: var(--bs-link-color-rgb);
+  --td-accent-hover: var(--bs-link-hover-color);
+  // Keyboard focus rides the accent instead of Bootstrap's stock blue.
+  --bs-focus-ring-color: rgba(var(--td-accent-rgb), 0.4);
   --bs-code-color: #925b20;
   --td-pre-bg: #fff;
   --td-brand-elev: #fff;
@@ -100,6 +114,10 @@
   --bs-link-color-rgb: 93, 162, 221;
   --bs-link-hover-color: #7fb8e8;
   --bs-link-hover-color-rgb: 127, 184, 232;
+  --td-accent: var(--bs-link-color);
+  --td-accent-rgb: var(--bs-link-color-rgb);
+  --td-accent-hover: var(--bs-link-hover-color);
+  --bs-focus-ring-color: rgba(var(--td-accent-rgb), 0.55);
   --bs-code-color: #e0a35c;
   --td-pre-bg: #0a0f16;
   --td-brand-elev: #121c29;
@@ -112,6 +130,27 @@
   --td-brand-shadow-md: 0 14px 44px rgba(2, 8, 18, 0.45);
   --td-brand-mark-from: #7fb8e8;
   --td-brand-mark-to: #e0a35c;
+}
+
+// A section's own color, carried per element as a light/dark pair. The
+// stylesheet picks the half: an inline custom property outranks every rule,
+// so writing the resolved value inline would freeze light into dark mode.
+.td-section-tint {
+  --td-section-color: var(--td-section-light);
+}
+
+[data-bs-theme='dark'] .td-section-tint {
+  --td-section-color: var(--td-section-dark);
+}
+
+// Text selection carries the accent too -- on a section with its own theme
+// color, even dragging across a paragraph says which section this is.
+::selection {
+  background: rgba(var(--td-accent-rgb), 0.22);
+}
+
+[data-bs-theme='dark'] ::selection {
+  background: rgba(var(--td-accent-rgb), 0.35);
 }
 
 a {

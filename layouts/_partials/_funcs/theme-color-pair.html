@@ -1,0 +1,46 @@
+{{- /* Resolve a page's accent pair: the light color it publishes and the dark
+     one that goes with it.
+
+     Input: a page. Returns `dict "light" <rgb|false> "dark" <rgb|false>`,
+     where each value is the channel dict `_funcs/parse-hex-color.html`
+     returns. Both are false when the page publishes no theme color, which is
+     the unconfigured default -- callers must emit nothing in that case.
+
+     The light color is the key. Without a valid `theme_color` there is no
+     pair at all: a `theme_color_dark` on its own, or one beside an invalid
+     light value, resolves to the default palette in both modes, so the head
+     block and the switcher can never disagree about whether a page is colored.
+
+     This is the single answer to "what color is this page", so the head block
+     and the navbar cannot drift: `theme-color.html` asks it about the page
+     being rendered, and `shell/root-menu.html` asks it about each section in
+     the root switcher, which is how a Book entry stays orange while a reader
+     is in the violet Blog.
+
+     Deliberately silent. Invalid values, an unpaired dark color and unreadable
+     contrast are reported once per page by `theme-color.html`; a menu that
+     names six sections must not multiply those warnings by six. */ -}}
+{{- $page := . -}}
+{{- $light := false -}}
+{{- $dark := false -}}
+{{- with partial "ui-param.html" (dict "page" $page "key" "theme_color") -}}
+  {{- $light = partial "_funcs/parse-hex-color.html" (printf "%v" .) -}}
+{{- end -}}
+{{- if $light -}}
+  {{- with partial "ui-param.html" (dict "page" $page "key" "theme_color_dark") -}}
+    {{- $dark = partial "_funcs/parse-hex-color.html" (printf "%v" .) -}}
+  {{- end -}}
+  {{- if not $dark -}}
+    {{- /* Lighten toward white from 32% in 4% steps until the candidate reads
+         AA body text on the theme's dark canvas; 80% is unreachable in
+         practice, so a derived accent is never unreadable. */ -}}
+    {{- range $pct := seq 32 4 80 -}}
+      {{- $candidate := partial "_funcs/mix-white.html" (dict "color" $light "pct" $pct) -}}
+      {{- if or (ge (partial "_funcs/contrast-on-canvas.html" (dict "color" $candidate "canvas" "dark")) 4.5) (eq $pct 80) -}}
+        {{- $dark = $candidate -}}
+        {{- break -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return dict "light" $light "dark" $dark -}}

@@ -402,6 +402,141 @@ params:
     return errors
 
 
+THEME_COLOR_STYLE = re.compile(r"<style>[^<]*--td-accent[^<]*</style>")
+
+
+def check_theme_color_contract(hugo: str) -> list[str]:
+    """Pin the theme-color emission: exact derived palettes, no emission
+    without configuration, no emission into print, and an invalid value
+    dropped whole rather than repaired."""
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-output-theme-color-") as temp:
+        site = Path(temp)
+
+        def write(relative: str, body: str) -> None:
+            path = site / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(body, encoding="utf-8")
+
+        write(
+            "hugo.yaml",
+            f"""baseURL: {BASE_URL}
+title: Theme color fixture
+theme: {ROOT.name}
+disableKinds: [RSS, sitemap, taxonomy, term]
+outputs:
+  section: [HTML, print]
+""",
+        )
+        write("content/docs/_index.md", "---\ntitle: Docs\n---\n\nDefault palette.\n")
+        # An explicit light/dark pair is emitted verbatim with derived hovers.
+        write(
+            "content/pair/_index.md",
+            "---\ntitle: Pair\ncascade:\n  theme_color: '#7c3aed'\n  theme_color_dark: '#a78bfa'\n---\n\nBoth palettes written.\n",
+        )
+        write("content/pair/page.md", "---\ntitle: Pair page\n---\n\nInherits both.\n")
+        # A light-only section derives its dark palette toward white.
+        write(
+            "content/solo/_index.md",
+            "---\ntitle: Solo\ncascade:\n  theme_color: '#7c3aed'\n---\n\nDark derives.\n",
+        )
+        write(
+            "content/solo/own.md",
+            "---\ntitle: Own\ntheme_color: '#0f766e'\n---\n\nPage override, full derived palette.\n",
+        )
+        # A dark corporate navy: the first +32% step still reads under 4.5:1
+        # on the dark canvas, so the derivation walks to +36% -- the
+        # derive-to-target contract, not a fixed constant.
+        write(
+            "content/deep/_index.md",
+            "---\ntitle: Deep\ncascade:\n  theme_color: '#1e3a8a'\n---\n\nNavy walks a step further.\n",
+        )
+
+        public = site / "public"
+        command = [hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
+                   "--destination", str(public), "--printPathWarnings", "--panicOnWarning"]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        if result.returncode != 0:
+            return [f"theme-color fixture failed to build: {result.stdout}{result.stderr}"]
+
+        # A theme color drives accent GROUNDS only. The Bootstrap link family
+        # is deliberately absent: prose links, external URLs and inline code
+        # keep the brand palette in every section.
+        light_7c = (":root,[data-bs-theme=light]{--td-accent:#7c3aed;"
+                    "--td-accent-rgb:124,58,237;--td-accent-hover:#8c52ef}")
+        expected = {
+            "pair/page/index.html": "<style>" + light_7c
+            + "[data-bs-theme=dark]{--td-accent:#a78bfa;--td-accent-rgb:167,139,250;"
+              "--td-accent-hover:#baa5fb}</style>",
+            "solo/index.html": "<style>" + light_7c
+            + "[data-bs-theme=dark]{--td-accent:#a679f3;--td-accent-rgb:166,121,243;"
+              "--td-accent-hover:#ba96f6}</style>",
+            "solo/own/index.html": "<style>:root,[data-bs-theme=light]{--td-accent:#0f766e;"
+            "--td-accent-rgb:15,118,110;--td-accent-hover:#2c867f}"
+            "[data-bs-theme=dark]{--td-accent:#5ca29c;--td-accent-rgb:92,162,156;"
+            "--td-accent-hover:#80b6b2}</style>",
+            "deep/index.html": "<style>:root,[data-bs-theme=light]{--td-accent:#1e3a8a;"
+            "--td-accent-rgb:30,58,138;--td-accent-hover:#395298}"
+            # The hover's blue channel lands on an exact .5 and Hugo's
+            # math.Round goes away from zero: 180 + round(75*0.22) = 197.
+            "[data-bs-theme=dark]{--td-accent:#6f81b4;--td-accent-rgb:111,129,180;"
+            "--td-accent-hover:#8f9dc5}</style>",
+        }
+        for relative, style in expected.items():
+            source = (public / relative).read_text(encoding="utf-8")
+            found = THEME_COLOR_STYLE.findall(source)
+            if found != [style]:
+                errors.append(f"{relative}: expected the exact theme-color style block, got {found}")
+        for relative in ("docs/index.html", "_print/solo/index.html"):
+            if "--td-accent:#" in (public / relative).read_text(encoding="utf-8"):
+                errors.append(f"{relative}: emitted theme-color tokens it must not carry")
+
+        # An invalid value warns, builds, and emits nothing -- never a
+        # repaired or partial style block. A low-contrast value warns too,
+        # but ships: the contrast check is advisory, not a validity gate.
+        write("content/solo/bad.md",
+              "---\ntitle: Bad\ntheme_color: 'url(x);}html{--x:'\n---\n\nDropped whole.\n")
+        write("content/solo/loud.md",
+              "---\ntitle: Loud\ntheme_color: '#ffff00'\n---\n\nWarned, kept.\n")
+        # The light color is the key. A dark color alone, or one beside an
+        # invalid light value, must not leak a dark-only block: the page is
+        # colored in both modes or in neither, and the head block and the
+        # root switcher read the same answer.
+        write("content/dusk/_index.md",
+              "---\ntitle: Dusk\ncascade:\n  theme_color_dark: '#a78bfa'\n---\n\nUnpaired dark.\n")
+        write("content/solo/mixed.md",
+              "---\ntitle: Mixed\ntheme_color: tomato\ntheme_color_dark: '#a78bfa'\n---\n\nInvalid light, valid dark.\n")
+        result = subprocess.run([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
+                                 "--destination", str(public), "--logLevel", "warn"],
+                                capture_output=True, text=True, check=False)
+        output = result.stdout + result.stderr
+        if result.returncode != 0:
+            errors.append(f"an invalid theme_color stopped the build instead of warning: {output[-400:]}")
+        if "is not a #rgb or #rrggbb hex color" not in output:
+            errors.append(f"an invalid theme_color did not warn with the hex shape: {output[-400:]}")
+        bad = (public / "solo/bad/index.html").read_text(encoding="utf-8")
+        if "url(x)" in bad:
+            errors.append("an invalid theme_color leaked into the emitted output")
+        # The page's own key shadows the cascade in Hugo's params merge, so
+        # dropping the invalid value leaves the default palette -- no block
+        # at all, never a repaired or partial one.
+        if THEME_COLOR_STYLE.findall(bad):
+            errors.append("an invalid page theme_color still emitted a style block")
+        if "AA body text needs 4.5:1" not in output:
+            errors.append(f"a low-contrast theme_color did not warn with the AA reading: {output[-400:]}")
+        loud = (public / "solo/loud/index.html").read_text(encoding="utf-8")
+        if "--td-accent:#ffff00" not in loud:
+            errors.append("a low-contrast theme_color was dropped; the contrast warning is advisory and must ship the color")
+        if "has no theme_color to pair with" not in output:
+            errors.append(f"an unpaired theme_color_dark did not warn: {output[-400:]}")
+        for relative, case in (("dusk/index.html", "an unpaired theme_color_dark"),
+                               ("solo/mixed/index.html", "a theme_color_dark beside an invalid theme_color")):
+            if THEME_COLOR_STYLE.findall((public / relative).read_text(encoding="utf-8")):
+                errors.append(f"{case} leaked a dark-only style block")
+    return errors
+
+
 def check_config_image_policy(hugo: str) -> list[str]:
     """Configured shell images must reach the same URL policy as content."""
 
@@ -538,6 +673,7 @@ def main() -> int:
     errors += check_language_links(args.public)
     errors += check_markdown_localization(args.public)
     errors += check_featured_image_contract(args.hugo)
+    errors += check_theme_color_contract(args.hugo)
     errors += check_config_image_policy(args.hugo)
     if errors:
         print("Output checks failed:")

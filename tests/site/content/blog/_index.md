@@ -12,6 +12,11 @@ blog_index: cards
 cascade:
   type: blog
   images: [/images/oink.webp]
+  # Fumadocs-style section identity: the blog reads through a violet accent
+  # while docs keep the default navy. Only the light color is written, so the
+  # emitted dark palette pins the lighten-toward-white derivation; one post
+  # (featured-wash.md) overrides the color per page.
+  theme_color: '#7c3aed'
   # The article info line under each title carries the date always; this
   # switch adds the word count and the minutes beside it.
   reading_time: true

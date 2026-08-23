@@ -418,9 +418,13 @@ a.td-taxonomy-term {
     background-color var(--td-motion-duration-fast) ease,
     color var(--td-motion-duration-fast) ease;
 
+  // Hovering a tag says "this is the accent you are about to filter by", so
+  // it pours the theme color rather than a neutral grey -- a section with its
+  // own theme color hovers in that color. Kept one step under the active
+  // state, which adds a tinted border and a heavier weight on top.
   &:hover {
-    background: var(--td-shell-accent);
-    color: var(--bs-body-color);
+    background: var(--td-shell-primary-wash);
+    color: var(--td-shell-primary);
     text-decoration: none;
   }
 
@@ -441,9 +445,13 @@ a.td-taxonomy-term {
   align-items: baseline;
   gap: 5px;
   padding: 3px 9px;
-  border: 1px solid var(--bs-border-color);
+  // Lighter at rest than the fields around it: a tag is a quiet label until
+  // the pointer says otherwise, and a page can carry twenty of them. The
+  // hover below is what gives it weight, gliding the whole chip into the
+  // section's theme color on the shared color curve.
+  border: 1px solid color-mix(in srgb, var(--bs-border-color) 55%, transparent);
   border-radius: 7px;
-  background: var(--td-shell-field);
+  background: color-mix(in srgb, var(--td-shell-field) 55%, transparent);
   font-size: 12.5px;
   line-height: 18px;
   color: var(--td-shell-muted-fg);
@@ -453,9 +461,14 @@ a.td-taxonomy-term {
     color var(--td-motion-duration-fast) ease,
     border-color var(--td-motion-duration-fast) ease;
 
+  // Hovering a tag says "this is the accent you are about to filter by", so
+  // it pours the theme color rather than a neutral grey -- a section with its
+  // own theme color hovers in that color. Kept one step under the active
+  // state, which adds a stronger fill, a tinted border and a heavier weight.
   &:hover {
-    background: var(--td-shell-accent);
-    color: var(--bs-body-color);
+    background: var(--td-shell-primary-wash);
+    border-color: color-mix(in srgb, var(--td-shell-primary) 25%, var(--bs-border-color));
+    color: var(--td-shell-primary);
     text-decoration: none;
   }
 
@@ -500,7 +513,7 @@ a.td-taxonomy-term {
     }
 
     &:hover {
-      background: var(--td-shell-accent);
+      background: var(--td-shell-primary-wash);
     }
 
     &.td-is-active {

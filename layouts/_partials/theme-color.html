@@ -1,0 +1,96 @@
+{{- /* Emit the page's theme color as shell-accent overrides.
+
+     `params.ui.theme_color` recolors the shell's accent grounds sitewide; front
+     matter `theme_color` overrides it per page, and a section root writes
+     it into its `cascade` to give a whole section its own identity, the
+     way one site keeps a navy Docs section beside a violet Blog. The
+     optional `theme_color_dark` carries the dark palette; without it the
+     dark accent is derived by lightening the light color toward white,
+     and hovers always derive by the same move.
+
+     A color is a `#rgb` or `#rrggbb` hex. Anything else warns and emits
+     nothing, keeping the default palette -- the safe fallback is the
+     brand's own accent. The light color is the key: a `theme_color_dark`
+     without a valid `theme_color` is reported and ignored, so a page is
+     either colored in both modes or in neither. When no light color
+     resolves, this partial emits nothing at all, so an unconfigured site's
+     head is byte-identical.
+
+     The emitted block redeclares `--td-accent`, `--td-accent-rgb` and
+     `--td-accent-hover` only, on the same selectors `_brand.scss` uses,
+     after the stylesheet. It deliberately does NOT touch the Bootstrap link
+     family: prose links, external URLs and inline code are reading
+     conventions and stay the brand's own blue in every section. A theme
+     color is a quiet signal of place -- selected grounds, hover washes, the
+     outline pill, the section's own mark in the root switcher -- not a coat
+     of paint over the running text. Every accent ground already resolves
+     through those three tokens, so nothing else needs to know the feature
+     exists. Every emitted byte is re-formatted from parsed integer channels,
+     never from author text, which is what makes the `safeCSS` below safe. */ -}}
+{{- $page := . -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $format "html" -}}
+  {{- /* Validation and its warnings live here, once per page; the resolver
+       below is silent so the root switcher can ask it about every section
+       without repeating them. */ -}}
+  {{- $raw := dict -}}
+  {{- $valid := dict -}}
+  {{- range $key := slice "theme_color" "theme_color_dark" -}}
+    {{- $value := printf "%v" (partial "ui-param.html" (dict "page" $page "key" $key) | default "") -}}
+    {{- if ne $value "" -}}
+      {{- $raw = merge $raw (dict $key $value) -}}
+      {{- $parsed := partial "_funcs/parse-hex-color.html" $value -}}
+      {{- if $parsed -}}
+        {{- $valid = merge $valid (dict $key $parsed) -}}
+      {{- else -}}
+        {{- $where := cond (isset $page.Params $key) (printf " at %s" $page.Path) "" -}}
+        {{- warnidf (printf "theme-color:%s:%s" $key $value)
+            "%s %q%s is not a #rgb or #rrggbb hex color -- keeping the default palette"
+            $key $value $where -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and (isset $valid "theme_color_dark") (not (isset $raw "theme_color")) -}}
+    {{- /* An invalid light color has already said the palette stays default;
+         only a dark color with no light counterpart at all needs its own
+         word, or the author would see nothing happen and not know why. */ -}}
+    {{- $where := cond (isset $page.Params "theme_color_dark") (printf " at %s" $page.Path) "" -}}
+    {{- warnidf (printf "theme-color:unpaired:%s" (index $raw "theme_color_dark"))
+        "theme_color_dark %q%s has no theme_color to pair with -- ignored; set theme_color as well"
+        (index $raw "theme_color_dark") $where -}}
+  {{- end -}}
+  {{- $pair := partial "_funcs/theme-color-pair.html" $page -}}
+  {{- with $pair.light -}}
+    {{- /* Advisory contrast check against the theme's own canvases, for the
+         colors the author wrote themselves -- a derived dark color is built
+         to clear the bar. The color ships either way: a custom canvas or a
+         deliberate palette is the author's call, and each warning carries a
+         suppression id. But the person choosing a hex is the one who cannot
+         see the consequence, so a reading below AA body text (4.5:1) is
+         said out loud. */ -}}
+    {{- $ratio := partial "_funcs/contrast-on-canvas.html" (dict "color" . "canvas" "light") -}}
+    {{- if lt $ratio 4.5 -}}
+      {{- $hex := printf "#%02x%02x%02x" .r .g .b -}}
+      {{- warnidf (printf "theme-color-contrast:light:%s" $hex)
+          "theme_color %s reads at about %.1f:1 against the theme's light canvas; AA body text needs 4.5:1"
+          $hex $ratio -}}
+    {{- end -}}
+    {{- if isset $valid "theme_color_dark" -}}
+      {{- $dark := $pair.dark -}}
+      {{- $ratio := partial "_funcs/contrast-on-canvas.html" (dict "color" $dark "canvas" "dark") -}}
+      {{- if lt $ratio 4.5 -}}
+        {{- $hex := printf "#%02x%02x%02x" $dark.r $dark.g $dark.b -}}
+        {{- warnidf (printf "theme-color-contrast:dark:%s" $hex)
+            "theme_color_dark %s reads at about %.1f:1 against the theme's dark canvas; AA body text needs 4.5:1"
+            $hex $ratio -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $lightHover := partial "_funcs/mix-white.html" (dict "color" . "pct" 12) -}}
+    {{- $darkHover := partial "_funcs/mix-white.html" (dict "color" $pair.dark "pct" 22) -}}
+    {{- $css := printf ":root,[data-bs-theme=light]{--td-accent:#%02x%02x%02x;--td-accent-rgb:%d,%d,%d;--td-accent-hover:#%02x%02x%02x}"
+        .r .g .b .r .g .b $lightHover.r $lightHover.g $lightHover.b -}}
+    {{- $css = printf "%s[data-bs-theme=dark]{--td-accent:#%02x%02x%02x;--td-accent-rgb:%d,%d,%d;--td-accent-hover:#%02x%02x%02x}"
+        $css $pair.dark.r $pair.dark.g $pair.dark.b $pair.dark.r $pair.dark.g $pair.dark.b $darkHover.r $darkHover.g $darkHover.b -}}
+<style>{{ $css | safeCSS }}</style>
+{{ end -}}
+{{- end -}}

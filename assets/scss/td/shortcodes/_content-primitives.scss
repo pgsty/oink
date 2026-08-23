@@ -31,18 +31,21 @@
     background: transparent;
   }
 
-  // Taxonomy term chips: a solid brand fill with the label knocked out in the
-  // page ground. The border repeats the fill so forced-colors mode, which
-  // strips the background, still draws the chip's boundary.
+  // Taxonomy term chips. At rest they are the quietest thing on a card: a
+  // pale neutral ground and muted ink, because a post can carry six of them
+  // and a row of solid slugs competes with the title above it. The color
+  // arrives on the pointer -- the chip glides into the section's own accent,
+  // which is where a theme color earns its place.
   &--solid {
-    --td-badge-fg: var(--td-brand-elev);
-    --td-badge-bg: var(--td-brand-silk);
-    --td-badge-border: var(--td-brand-silk);
+    --td-badge-fg: var(--bs-secondary-color);
+    --td-badge-bg: rgba(var(--bs-body-color-rgb), 0.05);
+    --td-badge-border: color-mix(in srgb, var(--bs-border-color) 60%, transparent);
     padding: 0.2em 0.66em;
     background: var(--td-badge-bg);
     transition:
       background-color var(--td-motion-duration-fast) ease,
-      border-color var(--td-motion-duration-fast) ease;
+      border-color var(--td-motion-duration-fast) ease,
+      color var(--td-motion-duration-fast) ease;
   }
 
   &--info {
@@ -84,19 +87,23 @@ a.td-badge {
   }
 }
 
-// The knockout text stays fixed on hover; the fill shifts to the copper
-// accent instead. The focus ring cannot use currentColor here -- the knockout
-// foreground is the page ground, which would hide the ring against it.
+// Only a chip that goes somewhere lights up, and it lights up in the accent
+// of the section it belongs to -- the theme color's one appearance in a card.
+// The fill stays a wash rather than a solid so the label keeps reading as
+// text. The focus ring cannot use currentColor here, which is now the accent
+// itself and would vanish against the ground it sits on.
 a.td-badge--solid {
-  &:hover {
-    --td-badge-bg: var(--td-brand-copper);
-    --td-badge-border: var(--td-brand-copper);
+  &:hover,
+  &:focus-visible {
+    --td-badge-fg: var(--td-accent);
+    --td-badge-bg: rgba(var(--td-accent-rgb), 0.12);
+    --td-badge-border: rgba(var(--td-accent-rgb), 0.34);
     color: var(--td-badge-fg);
     text-decoration: none;
   }
 
   &:focus-visible {
-    outline-color: var(--td-badge-bg);
+    outline-color: var(--td-accent);
   }
 }
 

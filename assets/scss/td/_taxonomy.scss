@@ -73,8 +73,8 @@
   clip-path: polygon(100% 0, 100% 100%, 0.8em 100%, 0 50%, 0.8em 0);
 
   &:hover {
-    background-color: var(--bs-primary-bg-subtle);
-    color: var(--bs-body-color-dark);
+    background-color: var(--td-shell-primary-wash, var(--bs-primary-bg-subtle));
+    color: var(--bs-link-color);
   }
 }
 

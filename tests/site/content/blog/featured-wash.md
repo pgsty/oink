@@ -5,6 +5,9 @@ date: 2026-08-08
 weight: 40
 outputs: [HTML, print]
 featured_image: wash
+# A page override beats the section cascade; with no dark value in sight,
+# the emitted dark palette derives from this teal.
+theme_color: '#0f766e'
 build:
   list: never
 ---

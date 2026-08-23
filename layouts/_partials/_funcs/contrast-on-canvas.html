@@ -1,0 +1,21 @@
+{{- /* WCAG contrast ratio of a parsed color against a theme canvas.
+
+     Input: `dict "color" <dict r g b> "canvas" "light"|"dark"`. Returns the
+     ratio as a float. The canvas luminances are precomputed from the brand
+     canvases in `_brand.scss` -- #f1f4f8 light, #0b1119 dark -- so this is
+     advisory against the theme's own defaults, not against whatever a
+     consumer site may repaint. */ -}}
+{{- $color := .color -}}
+{{- $lum := 0.0 -}}
+{{- range slice
+    (dict "v" $color.r "w" 0.2126)
+    (dict "v" $color.g "w" 0.7152)
+    (dict "v" $color.b "w" 0.0722) -}}
+  {{- $cs := div (float .v) 255 -}}
+  {{- $lin := cond (le $cs 0.04045) (div $cs 12.92) (math.Pow (div (add $cs 0.055) 1.055) 2.4) -}}
+  {{- $lum = add $lum (mul .w $lin) -}}
+{{- end -}}
+{{- $canvas := cond (eq .canvas "dark") 0.005422 0.901795 -}}
+{{- $hi := math.Max $lum $canvas -}}
+{{- $lo := math.Min $lum $canvas -}}
+{{- return div (add $hi 0.05) (add $lo 0.05) -}}

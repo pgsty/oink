@@ -85,6 +85,8 @@ PAGE_OVERRIDES = {
     "reading_width": "reading_width",
     "blog_index": "ui.blog_index",
     "blog_index_columns": "ui.blog_index_columns",
+    "theme_color": "ui.theme_color",
+    "theme_color_dark": "ui.theme_color_dark",
 }
 
 # Old page keys that must never be read again.
@@ -125,6 +127,7 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
     "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
     "ui:\n  toc_style: flow\n  toc_taxonomies: false\n  featured_image: hero",
+    "ui:\n  theme_color: '#7c3aed'\n  theme_color_dark: '#a78bfa'",
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
@@ -138,6 +141,9 @@ ACCEPTED_PAGE_CASES = [
     "share: false",
     # The immersive blog recipe, as a section cascade would write it.
     "featured_image: hero\ntoc_style: flow\ntoc_taxonomies: false\nsidebar_enabled: false",
+    # Section identity: the shorthand three-digit hex is part of the contract.
+    "theme_color: '#06c'",
+    "theme_color: '#0f766e'\ntheme_color_dark: '#5ca29c'",
 ]
 
 INVALID_SITE_CASES = [
@@ -149,10 +155,22 @@ INVALID_SITE_CASES = [
     ("ui:\n  share: x", "params.ui.share must be a list of share targets"),
     ("comments:\n  enable: definitely", "params.comments.enable must be true or false"),
     ("comments:\n  type: true", "params.comments.type must be a string"),
+    # A named color never parses: the hex gate is what makes the emitted
+    # style block provably safe, so it admits no other syntax.
+    ("ui:\n  theme_color: tomato", "is not a #rgb or #rrggbb hex color"),
+    # A valid hex below AA body-text contrast ships, but says so out loud;
+    # the suppressible warning is what the publishing gate trips on.
+    ("ui:\n  theme_color: '#ff0'", "AA body text needs 4.5:1"),
+    # The dark half is a companion, never a palette of its own.
+    ("ui:\n  theme_color_dark: '#a78bfa'", "has no theme_color to pair with"),
 ]
 INVALID_PAGE_CASES = [
     ("comments: definitely", "front matter comments must be a boolean"),
     ("share: [wechat]", 'invalid params.ui.share entry "wechat"'),
+    # A CSS-injection attempt is dropped whole, never repaired.
+    ("theme_color: 'red;}body{background:red'", "is not a #rgb or #rrggbb hex color"),
+    ("theme_color_dark: '#12345'", "theme_color_dark \"#12345\" at"),
+    ("theme_color_dark: '#a78bfa'", "theme_color_dark \"#a78bfa\" at"),
 ]
 
 

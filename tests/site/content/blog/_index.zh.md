@@ -11,6 +11,9 @@ blog_index: cards
 cascade:
   type: blog
   images: [/images/oink.webp]
+  # Fumadocs 式栏目标识：博客整体走紫罗兰主题色，docs 保持默认藏青。只写浅色，
+  # 发射出的深色调即固定「向白提亮」派生；featured-wash.md 按页覆盖这个颜色。
+  theme_color: '#7c3aed'
   # 标题下的信息行总是带日期；这个开关在旁边加上字数与阅读分钟数。
   reading_time: true
   # 纯静态意图链接加一个本地复制按钮。读者不点，就没有任何请求。这里用了十六个可选

@@ -26,7 +26,22 @@
   <div class="td-shell-root__pop" hidden>
     {{- range $entries }}
     {{- $active := eq . $current -}}
-    <a class="td-shell-root__item{{ if $active }} td-is-active{{ end }}" href="{{ .RelPermalink }}"{{ if $active }} aria-current="page"{{ end }}>
+    {{- /* Each root wears its own theme color here, and only here. This list
+         is the one place a reader compares the sections against each other,
+         so a section's mark is the thing that carries its color -- not the
+         running text, and not the top row, where four colored labels would
+         be decoration rather than information. */ -}}
+    {{- $tint := "" -}}
+    {{- /* Cached per section and language: this menu names the same few roots
+         on every page of the site, and a root's color does not change between
+         them. The logical path carries no language, so the variant needs both. */ -}}
+    {{- $pair := partialCached "_funcs/theme-color-pair.html" . .Language.Lang .Path -}}
+    {{- if $pair.light -}}
+      {{- $tint = printf "--td-section-light:#%02x%02x%02x;--td-section-dark:#%02x%02x%02x"
+          $pair.light.r $pair.light.g $pair.light.b
+          $pair.dark.r $pair.dark.g $pair.dark.b -}}
+    {{- end -}}
+    <a class="td-shell-root__item{{ if $active }} td-is-active{{ end }}{{ if $tint }} td-section-tint{{ end }}" href="{{ .RelPermalink }}"{{ with $tint }} style="{{ . | safeCSS }}"{{ end }}{{ if $active }} aria-current="page"{{ end }}>
       <span class="td-shell-root__icon">{{ with .Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
       <span class="td-shell-root__meta">
         <span class="td-shell-root__item-title">{{ .LinkTitle }}</span>

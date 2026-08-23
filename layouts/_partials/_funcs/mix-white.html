@@ -1,0 +1,11 @@
+{{- /* Mix a parsed color toward white by a percentage.
+
+     Input: `dict "color" <dict r g b> "pct" <number>`. Returns the mixed
+     channels as `dict "r" "g" "b"`, rounded half away from zero, matching
+     what `color-mix(in srgb, c, white pct%)` would produce channel-wise. */ -}}
+{{- $color := .color -}}
+{{- $f := div (float .pct) 100 -}}
+{{- return dict
+    "r" (int (math.Round (add $color.r (mul (sub 255 $color.r) $f))))
+    "g" (int (math.Round (add $color.g (mul (sub 255 $color.g) $f))))
+    "b" (int (math.Round (add $color.b (mul (sub 255 $color.b) $f)))) -}}

@@ -1,7 +1,11 @@
 // ============================================================
 // Documentation shell tokens layered on Bootstrap's color system.
 // Surface hierarchy: page (--bs-body-bg), sidebar (--td-shell-card), then
-// popover (--td-shell-popover). Interactive accents follow --bs-link-color.
+// popover (--td-shell-popover). Accent TEXT follows --bs-link-color, which a
+// theme color never touches; accent GROUNDS -- selected rows, hover washes,
+// the outline pill -- follow --td-accent, which a theme color does set. That
+// split is what keeps a section's color a quiet signal of place rather than a
+// recolor of everything the reader is trying to read.
 // ============================================================
 
 :root {
@@ -60,10 +64,17 @@
 [data-bs-theme='light'] {
   --td-shell-primary: var(--bs-link-color);
   --td-shell-primary-hover: var(--bs-link-hover-color);
-  --td-shell-primary-dim: rgba(var(--bs-link-color-rgb), 0.1);
+  // The selected ground. Strong enough to read as the theme color rather
+  // than as grey -- at 10% even a saturated violet renders as a warm
+  // neutral -- and held at the ceiling where accent text on this ground
+  // still clears AA (4.58:1 for the worst of the shipped palettes).
+  --td-shell-primary-dim: rgba(var(--td-accent-rgb), 0.14);
+  // A lighter pour of the same accent, for hover states that must stay
+  // clearly below a selected or active one.
+  --td-shell-primary-wash: rgba(var(--td-accent-rgb), 0.07);
   // Fainter than primary-dim: the outline cursor pill marks a place the
   // reader already knows, so it only needs a breath of tint.
-  --td-shell-toc-pill-bg: rgba(var(--bs-link-color-rgb), 0.06);
+  --td-shell-toc-pill-bg: rgba(var(--td-accent-rgb), 0.06);
   --td-shell-card: color-mix(
     in srgb,
     var(--bs-body-bg) 96%,
@@ -80,8 +91,9 @@
 [data-bs-theme='dark'] {
   --td-shell-primary: var(--bs-link-color);
   --td-shell-primary-hover: var(--bs-link-hover-color);
-  --td-shell-primary-dim: rgba(var(--bs-link-color-rgb), 0.13);
-  --td-shell-toc-pill-bg: rgba(var(--bs-link-color-rgb), 0.08);
+  --td-shell-primary-dim: rgba(var(--td-accent-rgb), 0.16);
+  --td-shell-primary-wash: rgba(var(--td-accent-rgb), 0.1);
+  --td-shell-toc-pill-bg: rgba(var(--td-accent-rgb), 0.08);
   --td-shell-card: color-mix(in srgb, var(--bs-body-bg) 96%, #fff 4%);
   // Use the brighter secondary color for sidebar text in dark mode.
   --td-shell-muted-fg: var(--bs-secondary-color);

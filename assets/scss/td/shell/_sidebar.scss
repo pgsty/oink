@@ -586,10 +586,24 @@
   border-radius: 8px;
   color: var(--bs-body-color);
 
+  // Each root's mark is drawn in that section's own color, so this list reads
+  // as four places rather than four rows. The label stays body text: the mark
+  // is enough to tell them apart, and coloring the words as well would turn a
+  // switcher into a swatch card.
+  &.td-section-tint .td-shell-root__icon {
+    color: var(--td-section-color);
+  }
+
   &:hover {
     background: var(--td-shell-accent);
     color: var(--bs-body-color);
     text-decoration: none;
+  }
+
+  // Hovering a root previews its color on the ground behind it.
+  &.td-section-tint:hover {
+    background: rgba(0, 0, 0, 0);
+    background: color-mix(in srgb, var(--td-section-color) 9%, transparent);
   }
 
   .td-shell-root__icon {

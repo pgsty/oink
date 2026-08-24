@@ -246,6 +246,7 @@ def check_template_contracts() -> list[str]:
     render_block = (ROOT / "layouts/_partials/content/render-block.html").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     runtime = (ROOT / "assets/js/tabs.js").read_text()
+    print_styles = (ROOT / "assets/scss/td/_print.scss").read_text()
 
     require("data-td-code-auto-id" in render, "automatic code-ID marker is missing", errors)
     require("tdRenderScope" not in normalize and "tdRenderScope" not in render_block, "nested-render code IDs still depend on Page Store state", errors)
@@ -272,6 +273,12 @@ def check_template_contracts() -> list[str]:
     for marker in ("td-tabs:v1:", "data-td-tabs-ready", "ArrowLeft", "ArrowRight", "Home", "End", "replaceState", "groupAdjacentBlocks", "aria-selected", "tabindex"):
         require(marker in runtime, f"tabs runtime lacks {marker}", errors)
     require("bootstrap" not in runtime.lower(), "tabs runtime depends on Bootstrap", errors)
+    require(
+        re.search(r"pre code \{[^}]*white-space: inherit !important", print_styles, re.S)
+        is not None,
+        "print code children can override the paper-edge wrapping policy",
+        errors,
+    )
     for relative in ("layouts/_shortcodes/tabpane.html", "layouts/_shortcodes/code-group.html", "layouts/_shortcodes/code-tab.html", "layouts/_shortcodes/alert.html"):
         require(not (ROOT / relative).exists(), f"{relative} must stay deleted", errors)
     return errors

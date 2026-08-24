@@ -33,6 +33,18 @@ All notable changes to OINK are documented here. The project follows
   text (4.5:1) still ships, but warns with a suppressible id, so the
   publishing gate catches an unreadable accent while a deliberate palette
   stays one config line away.
+- An opt-in `BookManifest` output records the existing Book sequence, stable
+  page/heading/numbered-object targets, per-page HTML and Markdown, and xrefs
+  without guessing publication metadata or changing default builds. The theme
+  repository now ships generic `book-epub.py` and `book-pdf.py` publication
+  steps plus EPUB/PDF artifact checkers. EPUB packaging consumes the same
+  whole-Book Print semantics through pinned Pandoc and EPUBCheck gates; PDF
+  rendering uses an explicit Chrome/Chromium binary, a temporary loopback
+  server with a script-blocking Content Security Policy, offline-by-default
+  resource validation, A4 output and CSS page numbers. Missing, out-of-tree,
+  and remote resources fail unless an explicit opt-in applies; that opt-in
+  permits only passive HTTP(S) media, never local-file schemes or remote
+  scripts. Existing artifacts are never replaced implicitly.
 
 ### Changed
 

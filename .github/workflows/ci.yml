@@ -25,6 +25,128 @@ jobs:
       - name: Run browser runtime tests
         run: node --test 'tests/js/**/*.test.js'
 
+  publication:
+    name: Book publication
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.164.0'
+          extended: true
+
+      - name: Install PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends poppler-utils
+
+      - name: Install pinned publication tools
+        shell: bash
+        run: |
+          pandoc_archive="$RUNNER_TEMP/pandoc-3.10-linux-amd64.tar.gz"
+          curl --fail --location --silent --show-error \
+            --output "$pandoc_archive" \
+            https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-amd64.tar.gz
+          echo "e0f8af62d0f267d22baa5bcefe6d5dda3a097ccc60de794b759fe03159923244  $pandoc_archive" \
+            | sha256sum --check
+          tar --extract --gzip --file "$pandoc_archive" --directory "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/pandoc-3.10/bin" >> "$GITHUB_PATH"
+
+          epubcheck_archive="$RUNNER_TEMP/epubcheck-5.3.0.zip"
+          curl --fail --location --silent --show-error \
+            --output "$epubcheck_archive" \
+            https://github.com/w3c/epubcheck/releases/download/v5.3.0/epubcheck-5.3.0.zip
+          echo "6c07e68584b2e2ce2f89fe06e1246dfead3eb36b46b340e7d93524f29dcff6c5  $epubcheck_archive" \
+            | sha256sum --check
+          unzip -q "$epubcheck_archive" -d "$RUNNER_TEMP/epubcheck"
+          echo "EPUBCHECK_JAR=$RUNNER_TEMP/epubcheck/epubcheck-5.3.0/epubcheck.jar" >> "$GITHUB_ENV"
+
+          chrome_archive="$RUNNER_TEMP/chrome-headless-shell-151.0.7922.34.zip"
+          curl --fail --location --silent --show-error \
+            --output "$chrome_archive" \
+            https://storage.googleapis.com/chrome-for-testing-public/151.0.7922.34/linux64/chrome-headless-shell-linux64.zip
+          echo "3cfc2bd00d1bafcf8a68dc74c9c92bb7150ddc8d26ade948a776316e1cec4f14  $chrome_archive" \
+            | sha256sum --check
+          unzip -q "$chrome_archive" -d "$RUNNER_TEMP/chrome"
+          chrome="$RUNNER_TEMP/chrome/chrome-headless-shell-linux64/chrome-headless-shell"
+          test -x "$chrome"
+          echo "OINK_CHROME=$chrome" >> "$GITHUB_ENV"
+
+      - name: Package and validate the Book fixture
+        shell: bash
+        run: |
+          public="$RUNNER_TEMP/oink-book-public"
+          epub="$RUNNER_TEMP/oink-book.epub"
+          pdf="$RUNNER_TEMP/oink-book.pdf"
+          hugo --source tests/site --themesDir "$GITHUB_WORKSPACE/.." \
+            --destination "$public" --minify --printPathWarnings --panicOnWarning
+          python3 bin/book-epub.py \
+            --manifest "$public/book/book.json" \
+            --public "$public" \
+            --metadata tests/fixtures/book/metadata.yaml \
+            --output "$epub"
+          python3 bin/check-book-epub.py "$epub" \
+            --manifest "$public/book/book.json"
+          java -jar "$EPUBCHECK_JAR" "$epub"
+          python3 - "$public/_print/book/index.html" <<'PY'
+          from pathlib import Path
+          import sys
+
+          path = Path(sys.argv[1])
+          source = path.read_text(encoding="utf-8")
+          probe = (
+              '<p id="td-pdf-js-probe">OINK_JS_DISABLED</p>'
+              '<script>document.getElementById("td-pdf-js-probe").textContent="OINK_JS_EXECUTED"</script>'
+          )
+          if "</main>" not in source:
+              raise SystemExit("Print fixture has no </main> for the JavaScript probe")
+          path.write_text(source.replace("</main>", probe + "</main>", 1), encoding="utf-8")
+          PY
+          python3 bin/book-pdf.py \
+            --manifest "$public/book/book.json" \
+            --public "$public" \
+            --chrome "$OINK_CHROME" \
+            --output "$pdf"
+          python3 bin/check-book-pdf.py "$pdf" \
+            --manifest "$public/book/book.json"
+          pdf_text="$RUNNER_TEMP/oink-book.txt"
+          pdftotext "$pdf" "$pdf_text"
+          grep -q OINK_JS_DISABLED "$pdf_text"
+          if grep -q OINK_JS_EXECUTED "$pdf_text"; then
+            echo "PDF JavaScript probe executed despite the disabled-script contract" >&2
+            exit 1
+          fi
+
+          subpath_public="$RUNNER_TEMP/oink-book-subpath-public"
+          subpath_epub="$RUNNER_TEMP/oink-book-subpath.epub"
+          subpath_pdf="$RUNNER_TEMP/oink-book-subpath.pdf"
+          hugo --source tests/site --themesDir "$GITHUB_WORKSPACE/.." \
+            --destination "$subpath_public" --baseURL https://example.org/subpath/ \
+            --minify --printPathWarnings --panicOnWarning
+          python3 bin/book-epub.py \
+            --manifest "$subpath_public/book/book.json" \
+            --public "$subpath_public" \
+            --metadata tests/fixtures/book/metadata.yaml \
+            --output "$subpath_epub"
+          python3 bin/check-book-epub.py "$subpath_epub" \
+            --manifest "$subpath_public/book/book.json"
+          java -jar "$EPUBCHECK_JAR" "$subpath_epub"
+          python3 bin/book-pdf.py \
+            --manifest "$subpath_public/book/book.json" \
+            --public "$subpath_public" \
+            --chrome "$OINK_CHROME" \
+            --output "$subpath_pdf"
+          python3 bin/check-book-pdf.py "$subpath_pdf" \
+            --manifest "$subpath_public/book/book.json"
+
   build:
     name: Hugo ${{ matrix.hugo-version }}
     runs-on: ubuntu-latest

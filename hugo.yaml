@@ -208,6 +208,11 @@ params:
     keyboard_nav: true
 
 outputFormats:
+  BookManifest:
+    baseName: book
+    isPlainText: true
+    mediaType: application/json
+    notAlternative: true
   LLMS:
     baseName: llms
     isPlainText: true

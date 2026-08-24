@@ -5,7 +5,7 @@ type: book
 icon: fa-solid fa-book
 weight: 30
 book_kind: book
-outputs: [HTML, print, markdown]
+outputs: [HTML, print, markdown, BookManifest]
 cascade:
   type: book
 ---

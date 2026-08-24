@@ -1,6 +1,13 @@
 @page {
   size: A4;
   margin: 18mm 16mm 20mm;
+
+  @bottom-center {
+    content: counter(page);
+    color: #70757d;
+    font-family: var(--td-ui-font-family);
+    font-size: 8pt;
+  }
 }
 
 .td-print-view {
@@ -53,7 +60,8 @@
   .td-print-shell,
   .td-print-document,
   .row,
-  [class*='col-'] {
+  .row > .col,
+  .row > [class*='col-'] {
     display: block !important;
     width: 100% !important;
     max-width: none !important;
@@ -122,6 +130,15 @@
       white-space: pre-wrap !important;
       overflow-wrap: anywhere;
       break-inside: avoid-page;
+    }
+
+    // The ordinary code rule gives the child an explicit `white-space: pre`,
+    // which otherwise defeats the print-only wrapping set on its parent and
+    // clips long data-fence fallbacks at the paper edge.
+    pre code {
+      white-space: inherit !important;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     code {

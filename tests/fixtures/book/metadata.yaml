@@ -1,0 +1,7 @@
+title: OINK Book publication fixture
+author:
+  - OINK maintainers
+lang: en-US
+identifier: urn:uuid:7a674180-dfd4-4afd-b8e0-a37362e44343
+rights: Apache-2.0 fixture content
+cover-image: ../../site/static/images/oink.webp

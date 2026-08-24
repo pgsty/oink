@@ -1,0 +1,60 @@
+body {
+  line-height: 1.55;
+}
+
+h1 {
+  break-before: page;
+}
+
+figure,
+table,
+pre,
+blockquote {
+  break-inside: avoid;
+}
+
+figure {
+  margin: 1.25em auto;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  margin-top: 0.5em;
+  font-size: 0.9em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.35em 0.5em;
+  border: 1px solid currentcolor;
+  vertical-align: top;
+}
+
+pre {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.td-callout {
+  margin: 1em 0;
+  padding: 0.75em 1em;
+  border-inline-start: 0.25em solid currentcolor;
+}
+
+.td-callout__title {
+  font-weight: 700;
+}
+
+.katex-html[aria-hidden='true'] {
+  display: none;
+}

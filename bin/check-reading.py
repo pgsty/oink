@@ -7,6 +7,7 @@ import argparse
 from html.parser import HTMLParser
 from pathlib import Path
 import json
+import re
 import subprocess
 import tempfile
 from urllib.parse import urlsplit
@@ -156,11 +157,18 @@ def check_math(public: Path) -> list[str]:
     require('partial "scripts/math.html"' in eq, "eq escape hatch bypasses the shared math renderer", errors)
 
     styles = (ROOT / "assets/scss/td/_content.scss").read_text()
+    print_styles = (ROOT / "assets/scss/td/_print.scss").read_text()
     require(".katex-display" in styles, "theme lacks KaTeX overflow styles", errors)
     require("overflow-x: auto" in styles, "long equations do not scroll within the column", errors)
     require(
         ".katex-display:focus-visible" in styles,
         "focusable display mathematics lacks a visible focus indicator",
+        errors,
+    )
+    require(
+        ".row > [class*='col-']" in print_styles
+        and re.search(r"^\s*\[class\*=.?col-.?\]\s*\{", print_styles, re.M) is None,
+        "print Bootstrap-column reset can still match KaTeX col-align internals",
         errors,
     )
     return errors

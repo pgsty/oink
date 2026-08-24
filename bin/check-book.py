@@ -7,6 +7,8 @@ import argparse
 from collections import Counter, defaultdict
 from html import unescape
 from html.parser import HTMLParser
+import importlib.util
+import json
 from pathlib import Path
 import re
 import subprocess
@@ -279,6 +281,126 @@ def check_consumer_public(public: Path) -> list[str]:
     return errors
 
 
+def check_manifest(public: Path) -> list[str]:
+    errors: list[str] = []
+    path = public / "book/book.json"
+    manifests = sorted(public.rglob("book.json"))
+    require(manifests == [path], f"BookManifest must be opt-in on exactly the Book root: {manifests}", errors)
+    require(path.is_file(), "Book manifest output is missing", errors)
+    if not path.is_file():
+        return errors
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        return [f"Book manifest is invalid JSON: {error}"]
+
+    require(manifest.get("schemaVersion") == 1, "Book manifest schemaVersion is not 1", errors)
+    require(manifest.get("language") == "en", "Book manifest language changed", errors)
+    pages = manifest.get("pages")
+    require(isinstance(pages, list), "Book manifest pages must be a list", errors)
+    if not isinstance(pages, list):
+        return errors
+    expected_paths = [
+        "/book",
+        "/book/chapter-one",
+        "/book/chapter-two",
+        "/book/chapter-three",
+        "/book/chapter-four",
+    ]
+    require([page.get("path") for page in pages] == expected_paths, "Book manifest page order changed", errors)
+    by_path = {page.get("path"): page for page in pages if isinstance(page, dict)}
+    for page in pages:
+        require(isinstance(page, dict), "Book manifest contains a non-object page", errors)
+        if not isinstance(page, dict):
+            continue
+        require(isinstance(page.get("number"), str), f"{page.get('path')}: Book number is not a string", errors)
+        markdown = page.get("markdown")
+        require(isinstance(markdown, str) and bool(markdown), f"{page.get('path')}: Markdown URL is missing", errors)
+        if isinstance(markdown, str) and markdown:
+            require((public / markdown.lstrip("/")).is_file(), f"{page.get('path')}: Markdown target is missing: {markdown}", errors)
+        targets = page.get("targets", [])
+        require(isinstance(page.get("aggregateId"), str) and page.get("aggregateId", "").startswith("pg-"),
+                f"{page.get('path')}: aggregateId is missing", errors)
+        target_ids = {target.get("id") for target in targets if isinstance(target, dict)}
+        require(len(target_ids) == len(targets), f"{page.get('path')}: duplicate or invalid target in manifest", errors)
+
+    for page in pages:
+        if not isinstance(page, dict):
+            continue
+        for xref in page.get("xrefs", []):
+            if not isinstance(xref, dict):
+                errors.append(f"{page.get('path')}: manifest contains a non-object xref")
+                continue
+            target_page = by_path.get(xref.get("targetPath"))
+            require(target_page is not None, f"{page.get('path')}: xref target page is missing: {xref}", errors)
+            if not target_page:
+                continue
+            target_by_id = {
+                target.get("id"): target
+                for target in target_page.get("targets", [])
+                if isinstance(target, dict)
+            }
+            anchor = xref.get("anchor")
+            headings = set(target_page.get("headings", []))
+            require(anchor in target_by_id or anchor in headings,
+                    f"{page.get('path')}: xref target is missing: {xref}", errors)
+            if anchor in target_by_id and xref.get("kind"):
+                target = target_by_id[anchor]
+                require(target.get("kind") == xref.get("kind") and target.get("num") == xref.get("num"),
+                        f"{page.get('path')}: xref kind/number disagrees with target: {xref}", errors)
+    require("/Users/" not in path.read_text(encoding="utf-8"), "Book manifest leaked a machine path", errors)
+    return errors
+
+
+def check_home_manifest(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-home-manifest-") as temp:
+        source = Path(temp)
+        write(
+            source / "hugo.yaml",
+            f"""baseURL: https://example.org/
+title: Home Book
+theme: {ROOT.name}
+disableKinds: [RSS, sitemap, taxonomy, term]
+outputs:
+  home: [HTML, print, markdown, BookManifest]
+  page: [HTML, markdown]
+params:
+  offline_search: false
+  ui:
+    pager_types: [book]
+""",
+        )
+        write(
+            source / "content/_index.md",
+            "---\ntitle: Home Book\ntype: book\nno_print: true\ncascade:\n  type: book\n---\n\nHome.\n",
+        )
+        write(
+            source / "content/chapter.md",
+            "---\ntitle: Chapter\n---\n\n"
+            '{{< fig num="1-1" id="fig-home" src="/figure.svg" caption="Home figure" />}}\n\n'
+            '{{< xref fig="1-1" />}}\n',
+        )
+        write(source / "static/figure.svg", '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>\n')
+        public = source / "public"
+        result = build(hugo, source, public, "--printPathWarnings", "--panicOnWarning")
+        if result.returncode != 0:
+            return [f"home BookManifest fixture failed: {result.stdout}{result.stderr}"]
+        path = public / "book.json"
+        require(path.is_file(), "home BookManifest did not publish /book.json", errors)
+        if path.is_file():
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            require([page.get("path") for page in manifest.get("pages", [])] == ["/", "/chapter"],
+                    "home BookManifest page order or legacy root no_print behavior changed", errors)
+            require(manifest.get("book", {}).get("html") == "/", "home BookManifest HTML URL is not the home page", errors)
+            require(manifest.get("book", {}).get("print") == "/_print/", "home BookManifest Print URL changed", errors)
+            chapter = manifest.get("pages", [{}, {}])[-1]
+            require(chapter.get("markdown") == "/chapter/index.md", "home BookManifest chapter Markdown URL changed", errors)
+            require([target.get("id") for target in chapter.get("targets", [])] == ["fig-home"],
+                    "home BookManifest lost its numbered target", errors)
+    return errors
+
+
 def check_example(public: Path) -> list[str]:
     errors: list[str] = []
     paths = {
@@ -300,6 +422,7 @@ def check_example(public: Path) -> list[str]:
     source = {name: path.read_text(encoding="utf-8") for name, path in paths.items()}
     documents = load_book_documents(public)
     errors.extend(validate_documents(documents))
+    errors.extend(check_manifest(public))
     expected_pages = {
         "/book/",
         "/book/chapter-one/",
@@ -509,6 +632,11 @@ def check_example(public: Path) -> list[str]:
     )
     duplicate_aggregate_ids = sorted(key for key, count in Counter(aggregate.ids).items() if count > 1)
     require(not duplicate_aggregate_ids, f"whole-Book print contains duplicate IDs: {duplicate_aggregate_ids}", errors)
+    require(
+        "third_party/katex/katex.min." in source["book_print"],
+        "whole-Book print did not propagate child mathematics to the KaTeX stylesheet gate",
+        errors,
+    )
     # Footnotes are numbered per page, so the aggregate must namespace them the
     # way it namespaces heading IDs; chapters one to four all carry references.
     require('id="fn:pg-' in source["book_print"], "whole-Book print did not namespace footnote IDs", errors)
@@ -910,7 +1038,11 @@ def check_sources() -> list[str]:
         "layouts/_shortcodes/contributors.html": ("contributors/items.html", "contributors/wall.html", "markdown"),
         "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
         "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-td-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
-        "layouts/_partials/book/print.html": ("nav-flatten.html", 'partialCached "print/page-content.html"', '"book" true', "data-td-book-page"),
+        "layouts/_partials/book/pages.html": ("nav-flatten.html", "IsDescendant"),
+        "layouts/_partials/book/print.html": ("book/pages.html", "no_print", 'partialCached "print/page-content.html"', '"book" true', 'Store.Get "hasMath"', "data-td-book-page"),
+        "layouts/_partials/book/manifest.json": ("schemaVersion", "baseURL", "aggregateId", "book/pages.html", "tdBookTargetOrder", "tdBookXrefs", "OutputFormats.Get"),
+        "layouts/index.bookmanifest.json": ("book/manifest.json",),
+        "layouts/book/list.bookmanifest.json": ("book/manifest.json",),
         "layouts/_partials/book/toc-headings.html": ("htmlUnescape",),
         "layouts/_partials/print/page-content.html": ("tdBookAggregate", "namespace-print-headings.html", "static-image-output.html"),
         "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink", "fnref[0-9]*|fn"),
@@ -931,6 +1063,98 @@ def check_sources() -> list[str]:
     i18n = (ROOT / "i18n/en.yaml").read_text(encoding="utf-8")
     for key in ("book_figure", "book_table", "book_equation", "book_example", "book_toc", "book_draft", "book_draft_notice", "contributors_count"):
         require(re.search(rf"^{key}:", i18n, re.M) is not None, f"English i18n lacks {key}", errors)
+    return errors
+
+
+def check_publication_helpers() -> list[str]:
+    """Pin packager path and remote-resource safety without external tools."""
+    errors: list[str] = []
+
+    def load(name: str, relative: str):
+        spec = importlib.util.spec_from_file_location(name, ROOT / relative)
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f"cannot load {relative}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    try:
+        epub = load("oink_book_epub", "bin/book-epub.py")
+        pdf = load("oink_book_pdf", "bin/book-pdf.py")
+        expected = (Path(tempfile.gettempdir()) / "publication-public/docs2/file.png").resolve()
+        for label, module in (("EPUB", epub), ("PDF", pdf)):
+            actual = module.public_file(
+                Path(tempfile.gettempdir()) / "publication-public",
+                "/docs2/file.png",
+                "/docs",
+            )
+            require(actual == expected, f"{label} base-path stripping ignores path-segment boundaries", errors)
+
+        pages = [{"path": "/chapter", "html": "/docs/chapter/", "aggregateId": "pg-1"}]
+        renderer = epub.BookHTML(
+            public=ROOT,
+            base_url="https://example.org/docs/",
+            pages=pages,
+            anchor_owners={},
+            allow_remote_resources=True,
+        )
+        for value, tag in (("file:///etc/passwd", "img"), ("https://cdn.example/app.js", "script")):
+            try:
+                renderer._resource(value, tag)
+                errors.append(f"EPUB accepted unsafe remote resource <{tag}> {value}")
+            except ValueError:
+                pass
+        require(
+            renderer._resource("https://cdn.example/poster.jpg", "img")
+            == "https://cdn.example/poster.jpg",
+            "EPUB remote-media opt-in rejected a passive image",
+            errors,
+        )
+        try:
+            renderer._chunk("/missing", "self-test")
+            errors.append("EPUB missing manifest owner did not fail cleanly")
+        except ValueError:
+            pass
+        renderer.feed(
+            '<iframe src="https://cdn.example/frame"></iframe>'
+            '<object data="https://cdn.example/object"></object>'
+            '<embed src="https://cdn.example/embed">'
+        )
+        require(
+            not any(tag in renderer.html() for tag in ("<iframe", "<object", "<embed")),
+            "EPUB kept active embedded content",
+            errors,
+        )
+
+        with tempfile.TemporaryDirectory(prefix="oink-publication-safety-") as temp:
+            root = Path(temp)
+            document = root / "index.html"
+            for source in (
+                '<script src="https://cdn.example/app.js"></script>',
+                '<img src="file:///etc/passwd" alt="">',
+            ):
+                write(document, source)
+                try:
+                    pdf.validate_resources(
+                        document,
+                        public=root,
+                        document_route="/docs/print/",
+                        base_path="/docs",
+                        allow_remote_resources=True,
+                    )
+                    errors.append(f"PDF accepted unsafe resource fixture: {source}")
+                except ValueError:
+                    pass
+            write(document, '<img src="https://cdn.example/poster.jpg" alt="">')
+            pdf.validate_resources(
+                document,
+                public=root,
+                document_route="/docs/print/",
+                base_path="/docs",
+                allow_remote_resources=True,
+            )
+    except (OSError, RuntimeError, ValueError) as error:
+        errors.append(f"publication helper self-test failed: {error}")
     return errors
 
 
@@ -968,6 +1192,7 @@ def main() -> int:
 
     errors += (
         check_toc_heading_entities(args.hugo)
+        + check_home_manifest(args.hugo)
         + check_reading_time(args.hugo)
         + check_invalid_components(args.hugo)
         + check_footnotes(args.hugo)
@@ -975,6 +1200,7 @@ def main() -> int:
         + check_ddia_compatibility(args.hugo)
         + check_rss_output(args.hugo)
         + check_validator_regressions()
+        + check_publication_helpers()
         + check_sources()
     )
     if errors:

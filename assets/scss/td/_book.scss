@@ -392,7 +392,17 @@ a > img.td-image {
   }
 
   .td-book-figure--eq {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+
+    .td-book-equation__body {
+      overflow: visible;
+    }
+
+    figcaption {
+      white-space: normal;
+      text-align: end;
+    }
   }
 
   .td-book-figure {

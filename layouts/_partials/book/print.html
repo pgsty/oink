@@ -1,14 +1,9 @@
+{{- $book := . -}}
 {{- $section := .CurrentSection -}}
 {{- if .IsSection }}{{ $section = . }}{{ end -}}
-{{- $navRoot := partial "shell/sidebar-root.html" . -}}
-{{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" . "root" $navRoot) $navRoot.Path .Site.Language.Lang -}}
+{{- $sequence := partial "book/pages.html" . -}}
 {{- $pages := slice -}}
-{{- range $sequence -}}
-  {{- if and (ne .Params.no_print true) (or (eq . $section) (.IsDescendant $section)) -}}
-    {{- $pages = $pages | append . -}}
-  {{- end -}}
-{{- end -}}
-{{- if not (in $pages $section) }}{{ $pages = (slice $section) | append $pages }}{{ end -}}
+{{- range $sequence }}{{ if or (eq . $section) (ne .Params.no_print true) }}{{ $pages = $pages | append . }}{{ end }}{{ end -}}
 <div class="td-content td-book-print-cover">
   {{ partial "print/page-heading.html" $section }}
   <nav class="td-book-print-toc" aria-label="{{ T "book_toc" }}">
@@ -21,6 +16,7 @@
 </div>
 {{- range $pages -}}
   {{- $content := partialCached "print/page-content.html" (dict "page" . "book" true) .RelPermalink "book" -}}
+  {{- if .Store.Get "hasMath" }}{{ $book.Store.Set "hasMath" true }}{{ end -}}
 <section class="td-content td-book-print-page" id="pg-{{ .File.UniqueID }}" data-td-book-page="{{ .Path }}">
   <h1>{{ with .Params.book_number }}<span class="td-book-number">{{ . }}</span> {{ end }}{{ .Title }}</h1>
   {{ with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}

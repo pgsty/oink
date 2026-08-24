@@ -1,0 +1,15 @@
+{{- /* Return the existing Book/section sequence without rendering it. Print
+     and any future opt-in publication intermediate share this navigation
+     authority, while each caller keeps its own output-specific exclusions. */ -}}
+{{- $section := .CurrentSection -}}
+{{- if .IsSection }}{{ $section = . }}{{ end -}}
+{{- $navRoot := partial "shell/sidebar-root.html" . -}}
+{{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" . "root" $navRoot) $navRoot.Path .Site.Language.Lang -}}
+{{- $pages := slice -}}
+{{- range $sequence -}}
+  {{- if or (eq . $section) (.IsDescendant $section) -}}
+    {{- $pages = $pages | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (in $pages $section) }}{{ $pages = (slice $section) | append $pages }}{{ end -}}
+{{- return $pages -}}

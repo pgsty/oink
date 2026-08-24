@@ -63,6 +63,11 @@ def main() -> int:
             "Lunr is not gated by the canonical capability",
         )
         require(
+            '$outputFormat := lower (.Store.Get "tdOutputFormat"' in head
+            and 'and hugo.IsProduction (eq $outputFormat "html")' in head,
+            "Google Analytics is not excluded from Print and machine outputs",
+        )
+        require(
             '{{ if $localSearch -}}' in scripts
             and all(
                 f'resources.Get "js/{name}.js"' in scripts

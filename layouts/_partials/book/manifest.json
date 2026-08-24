@@ -1,0 +1,70 @@
+{{- /* Opt-in machine-readable Book handoff. This is an intermediate for a
+     publication packager, never an EPUB package itself. */ -}}
+{{- $root := . -}}
+{{- if ne $root.Type "book" -}}
+  {{- warnf "BookManifest output requires a page of type book at %s; emitting an empty manifest" $root.Path -}}
+{{- end -}}
+{{- $sequence := slice -}}
+{{- if eq $root.Type "book" }}{{ $sequence = partial "book/pages.html" $root }}{{ end -}}
+{{- $pages := slice -}}
+{{- range $sequence }}{{ if or (eq . $root) (ne .Params.no_print true) }}{{ $pages = $pages | append . }}{{ end }}{{ end -}}
+{{- $entries := slice -}}
+{{- range $page := $pages -}}
+  {{- /* Render semantic content once so native hooks and shortcodes register
+       the same headings, numbered targets, and xrefs the HTML output owns. */ -}}
+  {{- $page.Store.Set "tdOutputFormat" "html" -}}
+  {{- $discard := $page.Content -}}
+  {{- $markdownURL := "" -}}
+  {{- with $page.OutputFormats.Get "markdown" }}{{ $markdownURL = .RelPermalink }}{{ end -}}
+  {{- if not $markdownURL -}}
+    {{- warnf "BookManifest page %s has no Markdown output; add markdown to that page kind or front matter" $page.Path -}}
+  {{- end -}}
+  {{- $htmlURL := "" -}}
+  {{- with $page.OutputFormats.Get "html" }}{{ $htmlURL = .RelPermalink }}{{ end -}}
+  {{- $headings := slice -}}
+  {{- range $page.Fragments.Identifiers }}{{ $headings = $headings | append . }}{{ end -}}
+  {{- $targets := slice -}}
+  {{- range ($page.Store.Get "tdBookTargetOrder" | default dict) -}}
+    {{- $targets = $targets | append (dict
+      "id" .id "kind" .kind "num" .num "caption" .caption
+    ) -}}
+  {{- end -}}
+  {{- $xrefs := slice -}}
+  {{- range ($page.Store.Get "tdBookXrefs" | default dict) -}}
+    {{- $targetPath := "" -}}
+    {{- with .targetPage }}{{ $targetPath = .Path }}{{ end -}}
+    {{- $xrefs = $xrefs | append (dict
+      "anchor" .anchor "kind" .kind "num" .num
+      "pageRef" .pageRef "targetPath" $targetPath
+    ) -}}
+  {{- end -}}
+  {{- $number := "" -}}
+  {{- with $page.Params.book_number }}{{ $number = printf "%v" . }}{{ end -}}
+  {{- $aggregatePrefix := partial "book/aggregate-heading-anchor.html" (dict "page" $page "anchor" "") -}}
+  {{- $aggregateID := strings.TrimSuffix "--" $aggregatePrefix -}}
+  {{- $entries = $entries | append (dict
+    "path" $page.Path
+    "title" $page.Title
+    "linkTitle" $page.LinkTitle
+    "number" $number
+    "aggregateId" $aggregateID
+    "html" $htmlURL
+    "markdown" $markdownURL
+    "headings" $headings
+    "targets" $targets
+    "xrefs" $xrefs
+  ) -}}
+{{- end -}}
+{{- $rootHTML := "" -}}
+{{- with $root.OutputFormats.Get "html" }}{{ $rootHTML = .RelPermalink }}{{ end -}}
+{{- $rootPrint := "" -}}
+{{- with $root.OutputFormats.Get "print" }}{{ $rootPrint = .RelPermalink }}{{ end -}}
+{{- if not $rootPrint }}{{ warnf "BookManifest root %s has no Print output; add print beside BookManifest" $root.Path }}{{ end -}}
+{{- dict
+  "schemaVersion" 1
+  "language" $root.Site.Language.Lang
+  "baseURL" $root.Site.BaseURL
+  "book" (dict "path" $root.Path "title" $root.Title "html" $rootHTML "print" $rootPrint)
+  "pages" $entries
+  | jsonify
+-}}

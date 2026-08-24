@@ -101,7 +101,7 @@ rendered, so read that instead of re-deriving it from the output-format lists. *
 {{ partial "hooks/head-end.html" . -}}
 
 {{/* To comply with GDPR, cookie consent scripts places in head-end must execute before Google Analytics is enabled */ -}}
-{{ if hugo.IsProduction -}}
+{{ if and hugo.IsProduction (eq $outputFormat "html") -}}
   {{ partial "google_analytics.html" . -}}
 {{ end -}}
 

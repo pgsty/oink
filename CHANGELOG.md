@@ -17,7 +17,8 @@ All notable changes to OINK are documented here. The project follows
   two-finger pinch, or `+`/`-`, and reset with `0`. A diagram that would have
   to shrink below half size to fit opens at 1:1 at its starting corner
   instead of as a thumbnail, because a fitted view of an unreadable diagram
-  is the problem, not the fix. Nothing is downloaded for it, there is no
+  is the problem, not the fix; zooming back out always reaches the whole
+  diagram, however large it is. Nothing is downloaded for it, there is no
   switch to set, and the viewer is its own dialog rather than a second mode
   bolted onto Image Zoom's.
 - A theme color. `params.ui.theme_color` takes a `#rgb`/`#rrggbb` hex and
@@ -116,7 +117,9 @@ All notable changes to OINK are documented here. The project follows
   reader wanted one flush right. Markdown, RSS and Print carry the source
   block that `echarts` and `infographic` already emit there -- Print had been
   carrying a `<pre class="mermaid">` no runtime ever reached, set to
-  `font-size: 0`, so a printed diagram was a blank gap.
+  `font-size: 0`, so a printed diagram was a blank gap. A page whose Mermaid
+  asset fails to arrive falls back to the same source block rather than to an
+  empty figure.
 - Switching colour scheme re-renders the diagrams instead of reloading the
   page. The old runtime reloaded on every theme change on any page holding a
   diagram, citing a Mermaid limitation from the 8.x era; Mermaid 11

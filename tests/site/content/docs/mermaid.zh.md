@@ -43,7 +43,7 @@ sequenceDiagram
   participant CDN as 静态托管
   participant JS as 页面脚本包
   读者->>CDN: GET /zh/docs/mermaid/
-  CDN-->>读者: HTML（含 <pre class="mermaid">）
+  CDN-->>读者: HTML（一个 figure 加围栏源码）
   读者->>CDN: GET 本页的脚本包
   CDN-->>读者: mermaid.min.js
   JS->>JS: 把围栏源码渲染成 SVG
@@ -58,7 +58,7 @@ sequenceDiagram
   participant CDN as 静态托管
   participant JS as 页面脚本包
   读者->>CDN: GET /zh/docs/mermaid/
-  CDN-->>读者: HTML（含 <pre class="mermaid">）
+  CDN-->>读者: HTML（一个 figure 加围栏源码）
   读者->>CDN: GET 本页的脚本包
   CDN-->>读者: mermaid.min.js
   JS->>JS: 把围栏源码渲染成 SVG
@@ -253,9 +253,7 @@ flowchart TD
 
 ## 深浅色 {#dark-mode}
 
-页面初始化时主题读取当前配色模式：深色模式下用 Mermaid 的 `dark` 主题，浅色模式下用站点配置的主题。Mermaid 不支持重新初始化，读者切换配色时会 **重载整个页面**，图的配色随之更新。
-
-因此不要把 Mermaid 图放进需要保留输入状态的页面，例如带表单的页面。
+页面初始化时主题读取当前配色模式：深色模式下用 Mermaid 的 `dark` 主题，浅色模式下用站点配置的主题。读者切换配色时图会就地重绘，**页面不会重载**；重绘期间每张图保持原有高度，页面不会在读者眼皮底下跳动。
 
 站点级默认写在 `hugo.yaml` 里，键名小写，主题按 Mermaid 的默认配置匹配回正确的大小写：
 
@@ -317,10 +315,10 @@ flowchart LR
 
 | 输出 | 呈现 |
 | --- | --- |
-| HTML | `<pre class="mermaid">` + 本地 Mermaid 运行时，浏览器画成 SVG |
-| 打印 | 与 HTML 相同：打印视图同样加载运行时，图会画出来 |
+| HTML | 一个 `figure`，里面是空舞台加上以 JSON 保存的围栏源码，页面的 Mermaid 运行时把 SVG 画进去 |
+| 打印 | `<pre class="td-mermaid-source">` 包着的源码，静态输出，不跑运行时 |
 | Markdown | 原样保留 `mermaid` 围栏与它的源码 |
-| RSS | 输出 `<pre class="mermaid">` 包着的图表源码，订阅端看到的是文本 |
+| RSS | `<pre class="td-mermaid-source">` 包着的源码，订阅端看到的是文本 |
 
 ## 参数参考 {#reference}
 
@@ -349,7 +347,7 @@ flowchart LR
 - 图不能编号：Mermaid 输出的是内联 SVG，不是 `<img>`，`{#id num=}` 编号不适用；需要编号时导出成图片，按[图片](/zh/docs/image/)的编号写法使用。
 - 围栏属性无效：宽度在图里控制（`flowchart` 的方向、`classDiagram` 的布局），或者用 CSS。也没有对齐属性——图总是居中。
 - 语法错误只在浏览器里可见：Hugo 不解析 Mermaid 语法，写错的图在页面上显示一条带解析错误与图源码的提示，构建照样通过，发布前要在浏览器里确认。
-- RSS 订阅者只能看到源码：结论要写在正文里，不要只画在图上。
+- RSS、Markdown 与打印输出里是源码而不是图：结论要写在正文里，不要只画在图上。
 
 ## 相关 {#related}
 

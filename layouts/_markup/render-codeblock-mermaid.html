@@ -9,14 +9,16 @@
      natural size for the zoom dialog rather than magnifying one that has
      already been scaled down to fit the column.
 
-     Non-interactive outputs keep the source block: an RSS reader or a
-     Markdown consumer would otherwise receive an empty stage. Print stays on
-     the interactive path, where it has always rendered the diagram itself. */ -}}
+     Non-interactive outputs keep the source block: an RSS reader, a Markdown
+     consumer or a Print bundle would otherwise receive an empty stage. Print
+     never rendered these diagrams -- it carried a `<pre class="mermaid">` that
+     no runtime ever reached, at `font-size: 0` -- so it joins `echarts` and
+     `infographic` on the static branch and shows the source instead. */ -}}
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $source := strings.TrimSpace .Inner -}}
 {{- if not $source }}{{ warnf "mermaid: the fence requires diagram source at %s; rendering nothing" .Position }}{{ end -}}
-{{- if or (not $source) (in (slice "markdown" "rss") $format) -}}
+{{- if or (not $source) (in (slice "markdown" "rss" "print") $format) -}}
 {{- with $source }}<pre class="td-mermaid-source"><code class="language-mermaid">{{ . }}</code></pre>{{ end -}}
 {{- else -}}
 {{- $page.Store.Set "hasmermaid" true -}}

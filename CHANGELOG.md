@@ -113,8 +113,10 @@ All notable changes to OINK are documented here. The project follows
   diagram's own size, so anything narrower than the column used to sit
   against the start edge with up to 300px of empty bordered box beside it.
   There is deliberately no alignment attribute; a diagram is a figure, and no
-  reader wanted one flush right. Markdown and RSS keep the source block they
-  always had, and Print still renders the diagram.
+  reader wanted one flush right. Markdown, RSS and Print carry the source
+  block that `echarts` and `infographic` already emit there -- Print had been
+  carrying a `<pre class="mermaid">` no runtime ever reached, set to
+  `font-size: 0`, so a printed diagram was a blank gap.
 - Switching colour scheme re-renders the diagrams instead of reloading the
   page. The old runtime reloaded on every theme change on any page holding a
   diagram, citing a Mermaid limitation from the 8.x era; Mermaid 11

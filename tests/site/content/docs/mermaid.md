@@ -51,7 +51,7 @@ sequenceDiagram
   participant CDN as Static hosting
   participant JS as Page script bundle
   Reader->>CDN: GET /docs/mermaid/
-  CDN-->>Reader: HTML (containing <pre class="mermaid">)
+  CDN-->>Reader: HTML (a figure plus the fence source)
   Reader->>CDN: GET this page's bundle
   CDN-->>Reader: mermaid.min.js
   JS->>JS: render the fence source into SVG
@@ -66,7 +66,7 @@ sequenceDiagram
   participant CDN as Static hosting
   participant JS as Page script bundle
   Reader->>CDN: GET /docs/mermaid/
-  CDN-->>Reader: HTML (containing <pre class="mermaid">)
+  CDN-->>Reader: HTML (a figure plus the fence source)
   Reader->>CDN: GET this page's bundle
   CDN-->>Reader: mermaid.min.js
   JS->>JS: render the fence source into SVG
@@ -270,11 +270,9 @@ flowchart TD
 
 The theme reads the current colour scheme when the page initializes: in dark
 mode it uses Mermaid's `dark` theme, in light mode the theme the site
-configured. Mermaid cannot be re-initialized, so switching the colour scheme
-**reloads the whole page** and the diagrams come back in the new colours.
-
-For that reason, keep Mermaid diagrams off pages that must preserve input
-state — a page with a form, for instance.
+configured. Switching the colour scheme redraws the diagrams in place — the
+page is not reloaded, and each diagram holds its height while it is redrawn,
+so nothing on the page moves under you.
 
 Site-wide defaults go in `hugo.yaml` with lowercase keys; the theme matches them
 back to Mermaid's own casing:
@@ -343,10 +341,10 @@ Each step inside `{{%/* steps */%}}` is page-level Markdown and can hold a
 
 | Output | Shape |
 | --- | --- |
-| HTML | `<pre class="mermaid">` plus the local Mermaid runtime; the browser draws the SVG |
-| Print | Same as HTML: the print view loads the runtime too, so the diagrams are drawn |
+| HTML | A `figure` holding an empty stage and the fence source as JSON; the page's Mermaid runtime draws the SVG into it |
+| Print | The source inside `<pre class="td-mermaid-source">`, static — no runtime runs there |
 | Markdown | The `mermaid` fence and its source, kept as written |
-| RSS | The diagram source inside `<pre class="mermaid">` — subscribers see text |
+| RSS | The source inside `<pre class="td-mermaid-source">` — subscribers see text |
 
 ## Parameter reference {#reference}
 
@@ -386,8 +384,8 @@ and there is no switch to set: the viewer ships with the fence.
 - Syntax errors show up only in the browser: Hugo does not parse Mermaid, so a
   broken diagram renders an alert carrying the parse error and its own source,
   while the build still passes. Check in a browser before publishing.
-- RSS subscribers see the source only: put the conclusion in the prose, not only
-  in the picture.
+- RSS, Markdown and Print carry the source, not the picture: put the conclusion
+  in the prose, not only in the diagram.
 
 ## Related {#related}
 

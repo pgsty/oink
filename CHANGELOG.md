@@ -48,6 +48,31 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- First-party browser behavior now publishes as stable capability chunks under
+  `js/chunks/`; page flags select script tags instead of creating one
+  concatenated bundle for every feature combination. Execution order and the
+  fixed action/core layers remain unchanged, while cache identities grow with
+  capabilities rather than with `2^N` page combinations.
+- Font Awesome's compiled distribution is a separately fingerprinted
+  `scss/fontawesome.css` resource, loaded before the consumer-specific main
+  stylesheet. An ordinary theme or site CSS edit no longer invalidates the
+  vendor bytes. Fingerprinted URLs make immutable caching safe when the
+  deployment host supplies an appropriate cache policy; the theme does not
+  claim control over host response headers.
+- Visual checker ownership follows the rendered surface: geometry, computed
+  color, sizing and spacing assertions live in the documentation site's
+  Playwright suites, while source checkers keep forbidden-input and
+  non-observable topology contracts. This removes brittle CSS-value grep from
+  the theme gate without weakening browser coverage.
+- Whole-Book Print propagates child mathematics to the aggregate KaTeX asset
+  gate. Print code children inherit paper-edge wrapping, Bootstrap column
+  resets are scoped to direct `.row` children instead of matching KaTeX
+  `col-align-*`, and numbered equations use the full paper width with their
+  caption below. Chrome 131+ also receives centered CSS page numbers. These
+  fixes came from rendered EPUB/PDF publication review and leave screen layout
+  unchanged.
+- Google Analytics is limited to interactive HTML output; Print and machine
+  outputs no longer request analytics during rendering or packaging.
 - Inline code is crimson ink, not a grey pill. Following Blowfish, prose
   `code` reads in a semibold monospace crimson on a hairline wash -- an order
   of magnitude lighter than the old tint, enough that a run of adjacent tokens

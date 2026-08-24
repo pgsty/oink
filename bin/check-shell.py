@@ -117,31 +117,22 @@ def check_sources() -> list[str]:
             and 'title="{{ .LinkTitle }}"' in pager
             and pager.count("td-pager__arrow") == 2,
             "pager links lost their arrow/title/full-title structure", errors)
-    require("max-width: calc(50% - 0.5rem)" in pager_styles
-            and "text-overflow: ellipsis" in pager_styles
-            and "white-space: nowrap" in pager_styles
-            and "&__link--prev {\n    margin-inline-end: auto;" in pager_styles
-            and "&__link--next {\n    margin-inline-start: auto;" in pager_styles
-            and "font-family: var(--td-body-font-family)" in pager_styles,
-            "pager links no longer cap at half width, truncate, or keep their own edge", errors)
     require(".td-page-end > .td-pager:first-child" in pager_styles,
             "a pager that opens the page end lost its separating rule", errors)
-    annotation_styles = content_styles.split(".td-page-annotation", 1)[1].split("}", 1)[0]
-    require("font-family: var(--td-body-font-family)" in annotation_styles,
-            "page annotation reverted to a code-like font", errors)
-    feedback_styles = content_styles.split(".td-feedback", 1)[1].split(".td-page-annotation", 1)[0]
-    require("border-block-start" in feedback_styles
-            and "border-block:" not in feedback_styles
-            and "flex-wrap: nowrap" in feedback_styles,
-            "feedback prompt lost its compact single-divider row", errors)
+    # The prev/next placement must stay logical properties: the Playwright
+    # geometry proof runs LTR only, so RTL correctness is guaranteed here, by
+    # construction, not by measurement.
+    require("margin-inline-end: auto" in pager_styles
+            and "margin-inline-start: auto" in pager_styles
+            and "margin-left" not in pager_styles
+            and "margin-right" not in pager_styles,
+            "pager edges are no longer placed with logical properties (RTL)", errors)
     require(".td-pager + &" in comments_styles,
             "pager-to-discussion spacing is no longer compact", errors)
     require("display: table" in content_styles and "margin-block-end: $spacer" in content_styles,
             "Markdown tables no longer fill their viewport or separate following prose", errors)
     require("not $.IsPage" in breadcrumb_state and ".IsHome" in breadcrumb_state,
             "top-level nodes no longer suppress their redundant breadcrumb", errors)
-    require("min-height: 29px" in page_context_styles,
-            "page actions no longer keep a stable topline height", errors)
     require("td-shell-topline--actions-only" in page_context_styles
             and "height: 0" in page_context_styles
             and "td-shell-topline--actions-only" in docs_layout
@@ -191,27 +182,12 @@ def check_sources() -> list[str]:
             "bottom-bar version menu no longer opens on pointer hover", errors)
     require(all(f'data-bs-theme-value="{value}"' in footer_line
                 for value in ("light", "dark", "auto"))
-            and "data-td-nav-hover" in footer_line
-            and ".td-shell-footline__right" in footer_styles
-            and "bottom: calc(100% + 8px)" in footer_styles,
-            "bottom-bar theme trigger no longer exposes its upward three-mode menu", errors)
-    stacked_footline = layout_styles.split(".td-shell-footline", 1)[1].split(
-        "/* --------------------------------------------------------- mobile subnav */", 1
-    )[0].split("@include media-breakpoint-down(lg)", 1)
-    require(len(stacked_footline) == 2
-            and "&__right" in stacked_footline[1]
-            and "justify-content: center" in stacked_footline[1],
-            "stacked bottom bar no longer centers its rows below lg", errors)
+            and "data-td-nav-hover" in footer_line,
+            "bottom-bar theme trigger no longer exposes its three-mode menu", errors)
     require('data-td-nav-hover-open' in keyboard_help
             and 'class="td-kbd-sequence"' in keyboard_help
-            and all(key in keyboard_help for key in ('<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>'))
-            and ".td-shell-keyboard-help__row" in keyboard_styles
-            and ".td-shell-footline .td-shell-keyboard" in keyboard_styles
-            and "position: static" in keyboard_styles
-            and "width: unquote('min(21rem, calc(100vw - 2rem))')" in keyboard_styles
-            and "inset-inline-start: auto" in keyboard_styles
-            and "inset-inline-end: 1rem" in keyboard_styles,
-            "bottom-bar shortcut help lost its compact viewport-bound card or KBD cheat sheet", errors)
+            and all(key in keyboard_help for key in ('<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>')),
+            "bottom-bar shortcut help lost its KBD cheat sheet", errors)
     # One icon system in the shell chrome: shell/icon.html dispenses Font Awesome
     # glyphs under role-named classes, version controls take theirs from it, and
     # the page action menu takes action icons from the registry rather than a
@@ -402,18 +378,11 @@ def check_sources() -> list[str]:
             "the card order is no longer date, tags, description", errors)
     require(".Description | default" in blog_card,
             "the card summarises the body where the author wrote a description", errors)
-    require("min-block-size: calc(3 * 1.55em)" in blog_styles
-            and "-webkit-line-clamp: 3" in blog_styles,
-            "the card description no longer reserves its three lines", errors)
     require('"key" "blog_index_size"' in blog_list
             and "$blogPages.ByDate.Reverse) $size" in blog_list,
             "the blog index no longer passes its own pager size, which Hugo ignores from a theme", errors)
-    require("td-blog-cards" in blog_styles
-            and "aspect-ratio: 16 / 9" in blog_styles
-            and "-webkit-line-clamp: 3" in blog_styles
-            and "overflow-wrap: anywhere" in blog_styles
-            and "forced-colors: active" in blog_styles,
-            "blog card styles lost the grid, the 16:9 frame, the clamp, or forced colours", errors)
+    require("td-blog-cards" in blog_styles and "forced-colors: active" in blog_styles,
+            "blog card styles lost the shared grid or forced-colours support", errors)
 
     # The legacy author string remains Markdown-capable.
     byline = (ROOT / "layouts/_partials/byline.html").read_text()
@@ -563,9 +532,6 @@ def check_sources() -> list[str]:
     require("td-share__label" not in share_bar and "<h2" not in share_bar
             and 'role="group" aria-label="{{ T "ui_share" }}"' in share_bar,
             "the share row grew a visible heading or lost its group name", errors)
-    require("justify-content: center" in share_styles
-            and "border-block-start" not in share_styles,
-            "the share row is no longer a centred row without a rule of its own", errors)
     require('class="td-share d-print-none"' in share_bar
             and 'eq $format "html"' in share_bar,
             "share bar is no longer confined to the interactive HTML output", errors)
@@ -573,9 +539,8 @@ def check_sources() -> list[str]:
             and "data-td-page-context" in share_bar
             and "data-td-page-context-status" in share_bar,
             "share copy control is no longer a registry action with its own live region", errors)
-    require("min-height: 44px" in share_styles and "forced-colors" in share_styles
-            and "margin-inline" not in share_styles and "padding-left" not in share_styles,
-            "share controls lost their touch target, forced-colors, or logical properties", errors)
+    require("forced-colors" in share_styles and "padding-left" not in share_styles,
+            "share controls lost forced-colors support or regressed to physical padding", errors)
     errors += check_featured_image_sources()
     errors.extend(check_series_sources())
     return errors

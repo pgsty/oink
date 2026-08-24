@@ -1,0 +1,67 @@
+{{- /* Normalize one selected media source into the shared media-result shape.
+
+     Input: `dict "resource" <resource|falsy> "href" <string> "permalink"
+     <string, optional>`. The caller has already decided WHICH source wins --
+     content resolution in `content/image-resolve.html`, representative
+     ranking in `featured-image-resolve.html` -- and this partial only answers
+     what every consumer then asks: where is it, how big is it, can Hugo
+     process it, what does the resource itself say about alt text and
+     attribution. Returns:
+
+       src         relative URL (resource RelPermalink, else the href)
+       permalink   absolute form where one exists ("" otherwise)
+       width       intrinsic pixels, 0 when the source carries no metadata
+       height      likewise -- an SVG, static file, or remote URL never
+                   pretends to have dimensions it did not provide
+       mediaType   the resource's media type, "" for non-resources
+       processable whether Hugo image operations may be called on it
+       alt         the resource's own `alt` metadata ("" otherwise)
+       byline      the resource's own `byline` metadata ("" otherwise)
+       external    true when no local resource backs the URL
+       resource    the resource itself (falsy for external/static), for
+                   callers that go on to process it
+
+     One shape, so the content, representative, and Landing surfaces cannot
+     drift in what a "resolved image" means. */ -}}
+{{- $resource := .resource -}}
+{{- $href := .href | default "" -}}
+{{- $permalink := .permalink | default "" -}}
+{{- $result := dict
+    "src" $href
+    "permalink" $permalink
+    "width" 0
+    "height" 0
+    "mediaType" ""
+    "processable" false
+    "alt" ""
+    "byline" ""
+    "external" true
+    "resource" false -}}
+{{- with $resource -}}
+  {{- $width := 0 -}}
+  {{- $height := 0 -}}
+  {{- if reflect.IsImageResourceWithMeta . -}}
+    {{- $width = .Width -}}
+    {{- $height = .Height -}}
+  {{- end -}}
+  {{- $alt := "" -}}
+  {{- $byline := "" -}}
+  {{- with .Params -}}
+    {{- with index . "alt" -}}
+      {{- if eq (printf "%T" .) "string" }}{{ $alt = strings.TrimSpace . }}{{ end -}}
+    {{- end -}}
+    {{- with index . "byline" }}{{ $byline = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- end -}}
+  {{- $result = dict
+      "src" .RelPermalink
+      "permalink" .Permalink
+      "width" $width
+      "height" $height
+      "mediaType" .MediaType.Type
+      "processable" (reflect.IsImageResourceProcessable .)
+      "alt" $alt
+      "byline" $byline
+      "external" false
+      "resource" . -}}
+{{- end -}}
+{{- return $result -}}

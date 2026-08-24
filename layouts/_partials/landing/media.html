@@ -3,11 +3,22 @@
 {{- $alt := $item.alt | default ($label | markdownify | plainify) -}}
 {{- $asset := $item.image | default $item.logo -}}
 {{- $where := printf "landing item %q" ($label | default "(untitled)") -}}
+{{- /* Explicit dimensions in Landing data always win, as a pair: intrinsic
+     metadata fills in only when the author named neither, because one
+     authored dimension beside one measured dimension would hand the browser
+     a wrong aspect-ratio hint. */ -}}
 {{- with $asset -}}
   {{- $url := partial "content/url.html" (dict
     "name" "landing" "parameter" "image" "position" $where "value" (printf "%v" .) "kind" "image"
   ) -}}
-<img src="{{ $url.href }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
+  {{- $media := partial "landing/media-resolve.html" (dict "url" $url "page" page) -}}
+  {{- $width := $item.width -}}
+  {{- $height := $item.height -}}
+  {{- if and (not $width) (not $height) (gt $media.width 0) -}}
+    {{- $width = $media.width -}}
+    {{- $height = $media.height -}}
+  {{- end -}}
+<img src="{{ $media.src }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $width }} width="{{ . }}"{{ end }}{{ with $height }} height="{{ . }}"{{ end }}>
 {{- else -}}
   {{- with $item.icon -}}
     {{- $icon := printf "%v" . -}}
@@ -17,7 +28,14 @@
       {{- $url := partial "content/url.html" (dict
         "name" "landing" "parameter" "icon" "position" $where "value" $icon "kind" "image"
       ) -}}
-<img src="{{ $url.href }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $item.width }} width="{{ . }}"{{ end }}{{ with $item.height }} height="{{ . }}"{{ end }}>
+      {{- $media := partial "landing/media-resolve.html" (dict "url" $url "page" page) -}}
+      {{- $width := $item.width -}}
+      {{- $height := $item.height -}}
+      {{- if and (not $width) (not $height) (gt $media.width 0) -}}
+        {{- $width = $media.width -}}
+        {{- $height = $media.height -}}
+      {{- end -}}
+<img src="{{ $media.src }}" alt="{{ $alt }}" loading="{{ $item.loading | default "lazy" }}"{{ with $width }} width="{{ . }}"{{ end }}{{ with $height }} height="{{ . }}"{{ end }}>
     {{- else -}}
 <span aria-hidden="true">{{ $icon }}</span>
     {{- end -}}

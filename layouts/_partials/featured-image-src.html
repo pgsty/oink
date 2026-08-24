@@ -5,8 +5,4 @@ only picks the relative form of what it selected.
 
 Input: a page. Returns: a string. */ -}}
 {{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}
-{{- $src := $found.href -}}
-{{- with $found.resource -}}
-  {{- $src = .RelPermalink -}}
-{{- end -}}
-{{- return $src -}}
+{{- return $found.media.src -}}

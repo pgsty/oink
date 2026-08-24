@@ -48,26 +48,35 @@
 {{- if $resource -}}
   {{- if not (reflect.IsImageResource $resource) -}}
     {{- warnf "%s: src %q resolved to a non-image %s resource at %s; dropping the image" $label $source $kind $position -}}
+    {{- /* The same drop the URL policy uses: an empty src, never a repaired
+         one -- and never a field read off the dropped resource, which is
+         what used to stop the build here instead of degrading. */ -}}
     {{- $resource = false -}}
+    {{- $src = "" -}}
+    {{- $fullSrc = "" -}}
   {{- else -}}
-    {{- $src = $resource.RelPermalink -}}
-    {{- $fullSrc = $resource.RelPermalink -}}
-    {{- $mediaType = $resource.MediaType.Type -}}
-  {{- end -}}
-  {{- $processable = reflect.IsImageResourceProcessable $resource -}}
-  {{- if reflect.IsImageResourceWithMeta $resource -}}
-    {{- $width = $resource.Width -}}
-    {{- $height = $resource.Height -}}
-  {{- end -}}
-  {{- with $resource.Params -}}
-    {{- if isset . "alt" -}}
-      {{- $metadataAlt := index . "alt" -}}
-      {{- if ne (printf "%T" $metadataAlt) "string" -}}
-        {{- warnf "%s: image resource alt metadata must be a string at %s; ignoring it" $label $position -}}
+    {{- /* The mechanical half of the answer -- URL, dimensions, media type,
+         processability -- comes from the shared media-result contract, the
+         same shape the representative and Landing resolvers speak. */ -}}
+    {{- $media := partial "_funcs/media-result.html" (dict "resource" $resource) -}}
+    {{- $src = $media.src -}}
+    {{- $fullSrc = $media.src -}}
+    {{- $mediaType = $media.mediaType -}}
+    {{- $processable = $media.processable -}}
+    {{- $width = $media.width -}}
+    {{- $height = $media.height -}}
+    {{- /* Alt validation stays here, where the warning belongs: the shared
+         contract reads metadata, this surface owns the author-facing rules. */ -}}
+    {{- with $resource.Params -}}
+      {{- if isset . "alt" -}}
+        {{- $metadataAlt := index . "alt" -}}
+        {{- if ne (printf "%T" $metadataAlt) "string" -}}
+          {{- warnf "%s: image resource alt metadata must be a string at %s; ignoring it" $label $position -}}
+        {{- end -}}
+        {{- $resourceAlt = strings.TrimSpace $metadataAlt -}}
       {{- end -}}
-      {{- $resourceAlt = strings.TrimSpace $metadataAlt -}}
+      {{- with index . "byline" }}{{ $byline = strings.TrimSpace (printf "%v" .) }}{{ end -}}
     {{- end -}}
-    {{- with index . "byline" }}{{ $byline = strings.TrimSpace (printf "%v" .) }}{{ end -}}
   {{- end -}}
 {{- else -}}
   {{- $extension := lower (strings.TrimPrefix "." (path.Ext $validated.path)) -}}

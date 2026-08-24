@@ -46,8 +46,17 @@ All notable changes to OINK are documented here. The project follows
   permits only passive HTTP(S) media, never local-file schemes or remote
   scripts. Existing artifacts are never replaced implicitly.
 
-### Changed
-
+- One media-result contract behind every resolved image. The content
+  resolver, the representative (featured) resolver, and Landing media now
+  answer "where is it, how big is it, can Hugo process it" in one shared
+  shape (`_funcs/media-result.html`) instead of three private ones. Landing
+  items gain from it directly: an `image:` or image `icon:` that names a page
+  bundle or global asset resolves to that resource and ships its intrinsic
+  `width`/`height` -- an explicit authored pair still wins verbatim, and only
+  as a pair, while static files and remote URLs never pretend to carry
+  metadata they did not provide. The full `fig` source form is now pinned as
+  a numbered container whose parameters deliberately exclude processing;
+  a processed numbered image is a native block image with `num`.
 - First-party browser behavior now publishes as stable capability chunks under
   `js/chunks/`; page flags select script tags instead of creating one
   concatenated bundle for every feature combination. Execution order and the
@@ -123,6 +132,13 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- An image `src` that resolves to a non-image resource degrades instead of
+  detonating. The resolver warned "dropping the image" and then read fields
+  off the resource it had just dropped, stopping the build -- the one path
+  the media fixtures never walked. It now drops to the same empty `src` the
+  URL policy uses, and every invalid-media fixture newly asserts the
+  ordinary build stays alive, which is what had let the crash hide behind a
+  passing warning check.
 - `theme_color: false` opts a page out of an inherited section color -- the
   theme's bare-boolean idiom, inherited dark half included, silent because it
   is deliberate. Every other non-hex value now warns: a numeric `0` used to

@@ -386,6 +386,8 @@ def check_invalid_cases(hugo: str) -> list[str]:
             (content / "index.md").write_text(f"---\ntitle: Invalid media {name}\n---\n\n{body}")
             result = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public"), "--logLevel", "warn")
             output = result.stdout + result.stderr
+            if result.returncode != 0:
+                errors.append(f"invalid media case {name} stopped the ordinary build instead of degrading: {output.strip()[-300:]}")
             if expected not in output:
                 errors.append(f"invalid media case {name} did not report {expected!r}: {output.strip()}")
             if "content/docs/invalid/index.md:" not in output:
@@ -405,8 +407,19 @@ def check_template_contracts() -> list[str]:
     require("$page.Resources.Get" in resolver, "resolver lacks exact page resources", errors)
     require("resources.Get $lookup" in resolver, "resolver lacks global resources", errors)
     require(resolver.index("$page.Resources.Get") < resolver.index("resources.Get $lookup"), "resolver order is not page then global", errors)
-    require("reflect.IsImageResourceProcessable" in resolver, "resolver does not test processability", errors)
-    require("reflect.IsImageResourceWithMeta" in resolver, "resolver does not guard dimensions", errors)
+    # The mechanical answer -- URL, dimensions, media type, processability --
+    # lives in the shared media-result contract; the resolver must consume it
+    # rather than re-deriving its own, and the contract must keep the guards.
+    media_contract = (ROOT / "layouts/_partials/_funcs/media-result.html").read_text()
+    require('partial "_funcs/media-result.html"' in resolver, "resolver does not consume the shared media contract", errors)
+    require("reflect.IsImageResourceProcessable" in media_contract, "media contract does not test processability", errors)
+    require("reflect.IsImageResourceWithMeta" in media_contract, "media contract does not guard dimensions", errors)
+    landing_media = (ROOT / "layouts/_partials/landing/media-resolve.html").read_text()
+    featured = (ROOT / "layouts/_partials/featured-image-resolve.html").read_text()
+    for name, source in (("landing", landing_media), ("featured", featured)):
+        require('partial "_funcs/media-result.html"' in source,
+                f"{name} resolver does not speak the shared media contract", errors)
+    require("resources.GetRemote" not in media_contract + landing_media, "media contract fetches remote images", errors)
     require("try ($image.resource.Fit" in processor, "image operations are not guarded", errors)
     # The `image` shortcode is retired: the attribute line carries processing,
     # numbering, linking and captions, and the render hook owns all of them.

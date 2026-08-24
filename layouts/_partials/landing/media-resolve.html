@@ -1,0 +1,24 @@
+{{- /* Resolve one validated Landing URL through the shared media contract.
+
+     Landing items live on the page that declares them, so the eligible local
+     sources are that page's own bundle resources and global assets -- the
+     same two rungs the content resolver climbs, minus the section rung a
+     landing page does not have. Static files and remote URLs stay plain
+     URLs: they never pretend to carry resource metadata. A local resource
+     that turns out not to be an image degrades to the plain URL the same
+     way, which is exactly what Landing emitted before it knew about
+     resources at all.
+
+     Input: `dict "url" <content/url.html result> "page" <page>`.
+     Returns the `_funcs/media-result.html` shape. */ -}}
+{{- $url := .url -}}
+{{- $resource := false -}}
+{{- if and $url.valid (not $url.external) -}}
+  {{- $lookup := strings.TrimPrefix "/" $url.raw -}}
+  {{- with .page -}}
+    {{- $resource = .Resources.Get $lookup -}}
+  {{- end -}}
+  {{- if not $resource }}{{ $resource = resources.Get $lookup }}{{ end -}}
+  {{- if and $resource (not (reflect.IsImageResource $resource)) }}{{ $resource = false }}{{ end -}}
+{{- end -}}
+{{- return partial "_funcs/media-result.html" (dict "resource" $resource "href" $url.href) -}}

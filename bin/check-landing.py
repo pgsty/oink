@@ -114,6 +114,12 @@ def check_example(public: Path) -> list[str]:
         'class="nav nav-tabs" role="tablist"',
         '--td-bar-width: 100.0000%',
         '--td-bar-width: 3.8839%',
+        # The media contract, exercised three ways: a global-asset raster
+        # gains its intrinsic dimensions, an explicit pair wins verbatim, and
+        # a static file never pretends to carry metadata.
+        '<img src="/media/content-primitives-global.png" alt="Asset raster" loading="lazy" width="64" height="40">',
+        '<img src="/media/content-primitives-global.png" alt="Sized raster" loading="lazy" width="64" height="64">',
+        '<img src="/media/content-primitives-static.svg" alt="Static vector" loading="lazy">',
     )
     for marker in section_markers:
         require(marker in html, f"landing section fixture lost {marker}", errors)

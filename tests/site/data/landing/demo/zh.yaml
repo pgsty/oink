@@ -56,6 +56,10 @@ sections:
         - { title: PostgreSQL, icon: fa-solid fa-database, url: /zh/docs/ }
         - { title: Hugo, icon: fa-solid fa-bolt }
         - { title: OINK, icon: fa-solid fa-layer-group }
+        # M2 媒体契约：全局资源图取得内在尺寸；显式宽高成对优先；静态文件不冒充元数据。
+        - { title: 资源位图, image: media/content-primitives-global.png }
+        - { title: 显式尺寸, image: media/content-primitives-global.png, width: 64, height: 64 }
+        - { title: 静态矢量, image: /media/content-primitives-static.svg }
   - type: cta
     data:
       title: 一套外壳，多种场景

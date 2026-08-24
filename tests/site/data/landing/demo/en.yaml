@@ -56,6 +56,11 @@ sections:
         - { title: PostgreSQL, icon: fa-solid fa-database, url: /docs/ }
         - { title: Hugo, icon: fa-solid fa-bolt }
         - { title: OINK, icon: fa-solid fa-layer-group }
+        # M2 media contract: a global-asset image gains intrinsic dimensions,
+        # an explicit pair still wins, and a static file claims none.
+        - { title: Asset raster, image: media/content-primitives-global.png }
+        - { title: Sized raster, image: media/content-primitives-global.png, width: 64, height: 64 }
+        - { title: Static vector, image: /media/content-primitives-static.svg }
   - type: cta
     data:
       title: One shell, many scenarios

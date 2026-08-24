@@ -50,4 +50,8 @@
   {{- end -}}
 {{- end -}}
 
-{{- return (dict "resource" $resource "href" $href "permalink" $permalink) -}}
+{{- /* The ranking above decides WHICH source represents the page; the shared
+     media-result contract answers everything after that, in the same shape
+     the content and Landing resolvers use. */ -}}
+{{- return (dict "resource" $resource "href" $href "permalink" $permalink
+    "media" (partial "_funcs/media-result.html" (dict "resource" $resource "href" $href "permalink" $permalink))) -}}

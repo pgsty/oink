@@ -129,6 +129,12 @@ All notable changes to OINK are documented here. The project follows
   vanish into the resolver's `default` on the way to the warning, violating
   the "non-hex warns" contract, and `true` warned only by the accident of its
   spelling. Negative fixtures pin all three shapes.
+- The featured-banner heading takes its full measure back on phones. The
+  page-title band reserved 5rem of clearance for the floating actions button,
+  but a banner page parks that button on the artwork -- the heading below it
+  was holding a 390px Chinese title to ~278px and wrapping one orphaned
+  character per line. A banner heading now drops the reservation; a browser
+  test measures both languages at 360 and 390px.
 - The outline's lit range reads in the section's accent, not just its cursor.
   `docs-shell.js` marks every heading the viewport stands over; those entries
   now take the same theme-color ink the rail's lit line and travelling dot

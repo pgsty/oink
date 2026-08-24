@@ -57,6 +57,15 @@
   }
 }
 
+// A banner page parks the floating actions on the artwork, so the heading --
+// which sits below the banner with nothing to clear -- takes its full measure
+// back. Without this, a 390px phone held a Chinese title to ~278px and broke
+// it one orphaned character per line under a reservation for a button that
+// was never beside it.
+.td-shell-topline--actions-only + .td-content > .td-featured-banner + .td-page-heading {
+  padding-inline-end: 0;
+}
+
 .td-page-actions {
   position: relative;
   display: flex;

@@ -72,6 +72,17 @@
   // A lighter pour of the same accent, for hover states that must stay
   // clearly below a selected or active one.
   --td-shell-primary-wash: rgba(var(--td-accent-rgb), 0.07);
+  // The ground a navigation row takes under the pointer. It carries the
+  // accent's hue, so the row the pointer is over belongs to the section's
+  // palette rather than reading as a stray grey -- but the hue is greyed
+  // toward the rail's own neutral and poured thinner than the selected
+  // ground above, so a trail of hovers never competes with the one row the
+  // reader is actually on.
+  --td-shell-row-hover: color-mix(
+    in srgb,
+    rgba(var(--td-accent-rgb), 0.1) 60%,
+    var(--td-shell-accent)
+  );
   // Fainter than primary-dim: the outline cursor pill marks a place the
   // reader already knows, so it only needs a breath of tint.
   --td-shell-toc-pill-bg: rgba(var(--td-accent-rgb), 0.06);
@@ -93,6 +104,13 @@
   --td-shell-primary-hover: var(--bs-link-hover-color);
   --td-shell-primary-dim: rgba(var(--td-accent-rgb), 0.16);
   --td-shell-primary-wash: rgba(var(--td-accent-rgb), 0.1);
+  // Same recipe on the dark canvas, where every ground sits one step up and
+  // the accent being poured is the dark half of the pair.
+  --td-shell-row-hover: color-mix(
+    in srgb,
+    rgba(var(--td-accent-rgb), 0.14) 60%,
+    var(--td-shell-accent)
+  );
   --td-shell-toc-pill-bg: rgba(var(--td-accent-rgb), 0.08);
   --td-shell-card: color-mix(in srgb, var(--bs-body-bg) 96%, #fff 4%);
   // Use the brighter secondary color for sidebar text in dark mode.

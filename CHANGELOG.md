@@ -8,12 +8,17 @@ All notable changes to OINK are documented here. The project follows
 ### Added
 
 - A theme color. `params.ui.theme_color` takes a `#rgb`/`#rrggbb` hex and
-  tints the shell's accent *grounds*: the selected sidebar row, hover washes,
-  the outline pill and its travelling rail and dot, tag and chip hovers, text
-  selection, focus rings, and each root's mark in the sidebar switcher. It
-  deliberately leaves the reading surface alone -- prose links, external URLs
-  and inline code keep the brand palette in every section -- so a colored
-  section is a quiet signal of place rather than a recolor of the text.
+  tints the shell's accent *grounds*: the selected sidebar row and the greyed
+  ground its neighbours take under the pointer, hover washes, the outline pill
+  and its travelling rail and dot, tag and chip hovers, a content card's
+  hovered edge, a share button's hover fill, text selection, focus rings, and
+  each root's mark in the sidebar switcher. Ink that belongs to the shell
+  rather than to the prose follows it as well -- the outline anchors the
+  viewport is standing over, and a Book chapter's headings under the pointer
+  or keyboard focus. It deliberately leaves the reading surface alone -- prose
+  links, external URLs and inline code keep the brand palette in every section
+  -- so a colored section is a quiet signal of place rather than a recolor of
+  the text.
   Front matter `theme_color` overrides the site value per page, and a section
   root writes it into its `cascade` to give a whole section its own identity,
   the way a site keeps a navy Docs beside a violet Blog. The optional

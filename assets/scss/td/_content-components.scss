@@ -349,11 +349,15 @@
     border-color 160ms ease,
     box-shadow 160ms ease;
 
+  // The edge that appears under the pointer is a ground, so it follows the
+  // section's accent -- a card grid in a Case section lights up in that
+  // section's color. --td-card-accent stays the link family above: the icon
+  // and the badge are marks on a reading surface.
   &:hover,
   &:focus-within {
     border-color: color-mix(
       in srgb,
-      var(--td-card-accent) 45%,
+      var(--td-accent) 45%,
       var(--bs-border-color)
     );
     box-shadow: 0 2px 10px rgba($black, 0.06);

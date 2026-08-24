@@ -129,10 +129,13 @@ ul.cards {
       border-color 160ms ease,
       box-shadow 160ms ease;
 
+    // The same split as .td-content-card: the hovered edge is a ground and
+    // follows the section's accent, while the focus outline below stays with
+    // the link family.
     &:hover,
     &:focus-within {
       transform: translateY(-1px);
-      border-color: color-mix(in srgb, var(--td-card-accent) 45%, var(--bs-border-color));
+      border-color: color-mix(in srgb, var(--td-accent) 45%, var(--bs-border-color));
       box-shadow: var(--bs-box-shadow);
     }
 

@@ -34,7 +34,7 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--td-shell-accent);
+    background: var(--td-shell-row-hover);
     text-decoration: none;
   }
 }
@@ -269,9 +269,11 @@
     padding-block: 6px;
   }
 
-  // Hover appears immediately and fades out over the base duration.
+  // Hover appears immediately and fades out over the base duration. The
+  // ground is the section's own, greyed: near enough to the selected row to
+  // read as one family, far enough to never be mistaken for it.
   &:hover {
-    background: var(--td-shell-accent);
+    background: var(--td-shell-row-hover);
     transition: none;
 
     > .td-shell-tree__link {

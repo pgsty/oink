@@ -356,9 +356,12 @@ a > img.td-image {
     text-decoration: none;
   }
 
+  // These sit inside the sidebar, not inside the prose, so they follow the
+  // section's accent rather than the link family: a Book with its own theme
+  // color lights its headings in that color instead of the brand blue.
   a:hover,
   a:focus-visible {
-    color: var(--bs-link-color);
+    color: var(--td-accent);
   }
 }
 

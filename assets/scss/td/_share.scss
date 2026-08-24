@@ -32,8 +32,10 @@
       background-color var(--td-motion-duration-fast) ease,
       color var(--td-motion-duration-fast) ease;
 
+    // A filled ground, so it takes the section's accent: sharing from a
+    // violet Blog fills violet, from an orange Book orange.
     &:hover {
-      background: var(--td-shell-primary);
+      background: var(--td-accent);
       color: var(--bs-body-bg);
     }
 
@@ -54,6 +56,19 @@
   &__icon--done {
     display: none;
     color: var(--bs-success);
+  }
+
+  // The pointer is still on the button when the copy lands, so the copied
+  // state is normally read on the filled hover ground -- where success green
+  // is at the accent's mercy: about 2:1 on a saturated violet or teal, and
+  // only a pale accent clears the 3:1 a meaningful glyph needs. There the
+  // check takes the fill's own foreground instead, which is legible by the
+  // same reading the theme already checks an accent against its canvas for --
+  // contrast is symmetric, so it inherits the guarantee `theme_color` makes
+  // and warns about. Nothing is lost: the state is announced by the glyph
+  // swapping to a check, never by color.
+  &__item:hover &__icon--done {
+    color: var(--bs-body-bg);
   }
 
   &__item.td-is-copied {

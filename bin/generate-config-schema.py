@@ -44,6 +44,35 @@ def load_check_params():
     return module
 
 
+def split_items(inner: str) -> list[str]:
+    """Split an inline list on its separating commas only.
+
+    A plain ``inner.split(",")`` would cut ``['a, b', c]`` in half, and the
+    drift gate could not catch it because it compares this parser against
+    itself -- so the split tracks quote state, and an unterminated quote is a
+    hard error rather than a silent misreading."""
+    items: list[str] = []
+    current = ""
+    quote = ""
+    for char in inner:
+        if quote:
+            current += char
+            if char == quote:
+                quote = ""
+        elif char in "'\"":
+            quote = char
+            current += char
+        elif char == ",":
+            items.append(current)
+            current = ""
+        else:
+            current += char
+    if quote:
+        raise SystemExit(f"generate-config-schema: unterminated quote in inline list: {inner!r}")
+    items.append(current)
+    return items
+
+
 def parse_scalar(raw: str):
     """Parse the scalar subset hugo.yaml uses: booleans, numbers, quoted and
     bare strings, and inline lists of the same."""
@@ -52,7 +81,7 @@ def parse_scalar(raw: str):
         inner = text[1:-1].strip()
         if not inner:
             return []
-        return [parse_scalar(part) for part in inner.split(",")]
+        return [parse_scalar(part) for part in split_items(inner)]
     if (text.startswith("'") and text.endswith("'")) or (text.startswith('"') and text.endswith('"')):
         return text[1:-1]
     if text in ("true", "false"):
@@ -157,9 +186,22 @@ def build(check_params) -> dict[str, str]:
     params_schema = to_schema(tree, "", set(check_params.KEPT_MAPS))
     # Keys the templates read without a declared default still belong to the
     # authoring surface; surface them rather than pretending they don't exist.
-    undeclared = sorted(k for k in site_keys if lookup(tree, k) is None and "." not in k)
-    for key in undeclared:
-        params_schema["properties"].setdefault(key, {"description": "Read by the theme's templates; no declared default."})
+    # Nested ones (ui.breadcrumb, plantuml.svg) matter as much as top-level
+    # ones, so walk the dotted path and open each missing level on the way --
+    # dropping them would leave the schema quietly incomplete, which is the
+    # same failure as drifting from the authority.
+    read_only_note = "Read by the theme's templates; no declared default."
+    for key in sorted(k for k in site_keys if lookup(tree, k) is None):
+        properties = params_schema["properties"]
+        parts = key.split(".")
+        for part in parts[:-1]:
+            node = properties.setdefault(part, {})
+            if "properties" not in node:
+                node.setdefault("type", "object")
+                node.setdefault("additionalProperties", True)
+                node["properties"] = {}
+            properties = node["properties"]
+        properties.setdefault(parts[-1], {"description": read_only_note})
 
     front_properties = {}
     for key in sorted(page_keys):

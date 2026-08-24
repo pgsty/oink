@@ -74,6 +74,12 @@
             "enable": {
               "type": "boolean",
               "default": false
+            },
+            "svg": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "svg_image_url": {
+              "description": "Read by the theme's templates; no declared default."
             }
           }
         },
@@ -87,6 +93,9 @@
             "enable": {
               "type": "boolean",
               "default": false
+            },
+            "drawio_server": {
+              "description": "Read by the theme's templates; no declared default."
             }
           }
         },
@@ -415,6 +424,27 @@
               "description": "Single-key keyboard navigation (WASD/arrow tree focus, j/k outline jumps, q/e paging, and shell/palette toggles). Set false to drop the runtime from the bundle; pages can also opt out via front matter or a section cascade.",
               "type": "boolean",
               "default": true
+            },
+            "alt_site": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "breadcrumb": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "command_palette": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "github_stars": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "quick_links": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "sidebar_enabled": {
+              "description": "Read by the theme's templates; no declared default."
+            },
+            "taxonomy_icons": {
+              "description": "Read by the theme's templates; no declared default."
             }
           }
         },
@@ -458,10 +488,24 @@
           "description": "Read by the theme's templates; no declared default."
         },
         "search": {
-          "description": "Read by the theme's templates; no declared default."
+          "description": "Read by the theme's templates; no declared default.",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "algolia": {
+              "description": "Read by the theme's templates; no declared default."
+            }
+          }
         },
         "taxonomy": {
-          "description": "Read by the theme's templates; no declared default."
+          "description": "Read by the theme's templates; no declared default.",
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "page_header": {
+              "description": "Read by the theme's templates; no declared default."
+            }
+          }
         },
         "upstream_modified": {
           "description": "Read by the theme's templates; no declared default."

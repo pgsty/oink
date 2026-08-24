@@ -248,6 +248,13 @@
 }
 
 .td-shell-tree__row {
+  // The ink a selected row takes. A row that rests muted lifts to the section
+  // accent, so the row the reader is on still outranks the one under the
+  // pointer. A row that already rests at body colour keeps it and lets the
+  // selected ground carry the state alone -- lifting those would make being
+  // somewhere look like a link to somewhere else.
+  --td-shell-row-selected-fg: var(--td-accent);
+
   position: relative;
   display: flex;
   align-items: center;
@@ -278,7 +285,7 @@
 
     > .td-shell-tree__link,
     &:hover > .td-shell-tree__link {
-      color: var(--td-shell-primary);
+      color: var(--td-shell-row-selected-fg);
     }
   }
 }
@@ -444,7 +451,7 @@
   inset-block: 6px;
   inset-inline-start: 10px;
   width: 1px;
-  background: var(--td-shell-primary);
+  background: var(--td-accent);
   z-index: 2;
 }
 
@@ -452,11 +459,31 @@
 
 .td-shell-tree__row--root {
   margin-bottom: 4px;
+  // Every other top-level row keeps body colour when it is the one selected --
+  // it wins that through its own resting rule -- and this row was the single
+  // exception, lifting to the brand link colour because nothing outranked the
+  // selected-ink rule. It is a place, not a link to one: same as the rows
+  // below it.
+  --td-shell-row-selected-fg: var(--bs-body-color);
 
   > .td-shell-tree__link {
     font-weight: 600;
     color: var(--bs-body-color);
+
+    // The mark of the section the reader is in, in that section's own colour --
+    // the same mark the switcher directly above draws, so the two agree.
+    > i {
+      color: var(--td-accent);
+    }
   }
+}
+
+// Outranks `.td-shell-tree__row.td-shell-active .td-shell-tree__link > i`,
+// which lifts an active row's mark to its label's colour. This row's mark
+// answers "which section", not "are you standing on it", so it is the section's
+// colour either way.
+.td-shell-tree .td-shell-tree__row--root.td-shell-active > .td-shell-tree__link > i {
+  color: var(--td-accent);
 }
 
 /* --------------------------------------------------------------- footer */
@@ -539,6 +566,16 @@
   &:empty {
     display: none;
   }
+}
+
+// The closed switcher shows the root the reader is already in, so its mark is
+// that section's own -- the same color the open list draws beside this root's
+// name, and the color every accent ground on the page is already using. Scoped
+// to the trigger rather than set on the icon itself: a root with no color of
+// its own keeps the brand mark in the list below, and must not borrow the
+// accent of whichever section happens to be open.
+.td-shell-root__trigger > .td-shell-root__icon {
+  color: var(--td-accent);
 }
 
 .td-shell-root__title {
@@ -640,7 +677,7 @@
   flex-shrink: 0;
   margin-inline-start: auto;
   padding-top: 3px;
-  color: var(--td-shell-primary);
+  color: var(--td-accent);
 
   .td-shell-icon {
     --td-shell-icon-size: 14px;

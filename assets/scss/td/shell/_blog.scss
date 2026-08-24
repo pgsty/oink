@@ -659,7 +659,10 @@ a.td-taxonomy-term {
     }
 
     &:hover {
-      background: var(--td-shell-row-hover);
+      // The greyed theme-tinted ground sidebar navigation uses for the same
+      // state. The fallback is the ground this bar had before that token
+      // existed, so the strip never depends on it having landed.
+      background: var(--td-shell-row-hover, var(--td-shell-primary-wash));
     }
 
     &:focus-visible {
@@ -773,7 +776,7 @@ a.td-taxonomy-term {
 
     &:hover,
     &:focus-visible {
-      background: var(--td-shell-row-hover);
+      background: var(--td-shell-row-hover, var(--td-shell-primary-wash));
       color: var(--td-accent);
       text-decoration: none;
     }

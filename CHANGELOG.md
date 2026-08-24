@@ -194,6 +194,19 @@ All notable changes to OINK are documented here. The project follows
   `::details-content`. Forcing `display` on the children left the subtree out
   of layout, so a collapsed series strip, file tree or callout printed as its
   summary alone.
+- The sidebar agrees with itself about what being somewhere looks like. The
+  row naming the section you are in was the one row that lifted to the link
+  colour when selected, because nothing outranked the selected-ink rule --
+  every other top-level row keeps body text and lets the selected ground say
+  it. It now does the same: a place, not a link to one. The ink travels as a
+  token the row sets and the link reads, so the two rules that used to express
+  that intent no longer have to win a specificity contest to agree.
+  Everything that answers "which section" is drawn in that section's own
+  colour rather than the brand's: the mark on that row, the mark in the
+  switcher's closed trigger, the tick beside the root you are in, the rail
+  down an open branch, and a selected row's ink wherever it does lift. A site
+  with no theme color sees the brand accent throughout, as before -- except
+  the root row, which stops turning blue when you are standing on it.
 
 ### Fixed
 

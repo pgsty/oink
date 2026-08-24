@@ -168,6 +168,50 @@ def check_sources() -> list[str]:
             and "td-shell-sidebar__footer" not in sidebar_styles
             and 'aria-label="GitHub"' not in footer_line,
             "sidebar or bottom bar still carries the retired utility/GitHub dock", errors)
+    # The theme color's own docstring lists "the section's own mark in the root
+    # switcher" among the surfaces it owns. The open list colours each root from
+    # its own section; the closed trigger shows the root the reader is already
+    # in, so it reads the page's accent rather than the brand link colour. It
+    # must stay scoped to the trigger: setting it on the shared icon class would
+    # give a colourless root the accent of whichever section happens to be open.
+    require(".td-shell-root__trigger > .td-shell-root__icon" in sidebar_styles
+            and re.search(r"\.td-shell-root__trigger > \.td-shell-root__icon \{\s*"
+                          r"color: var\(--td-accent\);", sidebar_styles)
+            and "&.td-section-tint .td-shell-root__icon" in sidebar_styles
+            # Reverting or moving the rule is not the only way back to the bug:
+            # a second `--td-accent` on the bare icon class would satisfy every
+            # condition above and still paint a colourless root with whichever
+            # section is open. The shared class must never name the accent.
+            and "--td-accent" not in scss_block(sidebar_styles, "\n.td-shell-root__icon {"),
+            "the closed root switcher stopped following the section's theme color, "
+            "or its mark leaked onto every root in the open list", errors)
+    # A selected row's ink follows the same accent its ground already does, and
+    # it travels as a token so the row decides and the link reads -- no rule in
+    # this file has to outrank another to say it. The root row is a place, not a
+    # link to one: it keeps body colour like every other top-level row, and
+    # carries the section's colour on its mark instead, matching the switcher
+    # directly above it.
+    require("--td-shell-row-selected-fg: var(--td-accent)" in sidebar_styles
+            and "color: var(--td-shell-row-selected-fg)" in sidebar_styles
+            and "color: var(--td-shell-primary);" not in scss_block(
+                sidebar_styles, "\n.td-shell-tree__row {")
+            and "--td-shell-row-selected-fg: var(--bs-body-color)" in scss_block(
+                sidebar_styles, "\n.td-shell-tree__row--root {"),
+            "the selected sidebar row stopped following the section's theme color, "
+            "or the root row went back to reading as a link", errors)
+    require("color: var(--td-accent)" in scss_block(
+                sidebar_styles, "\n.td-shell-tree__row--root {"),
+            "the root row's mark no longer carries the section's own color", errors)
+    # Every other mark that answers "where am I" follows the section too: the
+    # rail down an open branch, and the tick beside the root the reader is in.
+    # `.td-shell-root__icon`'s own brand default is deliberate and stays -- it
+    # is what a root with no color of its own shows in the open list.
+    require("background: var(--td-accent)" in scss_block(
+                sidebar_styles, ".td-shell-tree__list--2 .td-shell-tree__row.td-shell-active::before {")
+            and "color: var(--td-accent)" in scss_block(
+                sidebar_styles, "\n.td-shell-root__check {"),
+            "a sidebar selected-state mark went back to the brand color instead of "
+            "the section's", errors)
     require('"dropup" true "iconOnly" true' in footer_line
             and "td-version-menu--icon-only" in version
             and "if not $iconOnly" in version
@@ -764,6 +808,44 @@ def check_series_sources() -> list[str]:
     return errors
 
 
+def check_css_token_integrity(public: Path) -> list[str]:
+    """Every `--td-*` the stylesheet reads is one somebody actually writes.
+
+    A custom property that is referenced but never set resolves to nothing, and
+    the declaration using it is dropped -- no warning, no failed build, just a
+    hover ground or a measure that quietly stops existing. That is how a token
+    living in one author's uncommitted work can be consumed by another's
+    committed code and still pass every gate. A reference is answered three
+    ways: the stylesheet defines it, a template or the browser runtime sets it
+    on an element, or the reference carries its own fallback.
+    """
+
+    errors: list[str] = []
+    sheets = sorted((public / "scss").glob("main.min.*.css"))
+    if not sheets:
+        return ["no compiled stylesheet to check for dangling custom properties"]
+    css = "".join(sheet.read_text(encoding="utf-8") for sheet in sheets)
+    defined = set(re.findall(r"(--td-[a-z0-9-]+)\s*:", css))
+    # `var(--x)` is a bare reference; `var(--x, ...)` answers itself and is how
+    # the theme exposes an author-overridable knob.
+    bare = set(re.findall(r"var\(\s*(--td-[a-z0-9-]+)\s*\)", css))
+    dangling = sorted(bare - defined)
+    if not dangling:
+        return errors
+    written = ""
+    for folder in ("layouts", "assets/js"):
+        for path in (ROOT / folder).rglob("*"):
+            if path.is_file() and path.suffix in {".html", ".js"}:
+                written += path.read_text(encoding="utf-8", errors="ignore")
+    for token in dangling:
+        if token not in written:
+            errors.append(
+                f"{token} is read by the stylesheet but never set -- define it, "
+                f"set it from a template or the runtime, or give the reference "
+                f"a fallback")
+    return errors
+
+
 def build_example(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-shell-") as temporary:
@@ -785,6 +867,7 @@ def build_example(hugo: str) -> list[str]:
         )
         if result.returncode:
             return ["fixture failed to build:\n" + result.stdout + result.stderr]
+        errors.extend(check_css_token_integrity(public))
         page = public / "fixtures/content-primitives/index.html"
         require(page.is_file(), "feedback fixture page is missing", errors)
         if page.is_file():

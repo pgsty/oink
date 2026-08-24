@@ -1,0 +1,31 @@
+{{- /* One dialog per page, shared by every diagram on it. It is deliberately
+     separate from the image zoom dialog: that one is built around a single
+     `<img>` and its caption, while a diagram is re-rendered into a pannable
+     viewport at its natural size. Sharing one element would give two runtimes
+     one owner. */ -}}
+<dialog class="td-diagram-zoom d-print-none" data-td-diagram-zoom-dialog
+        aria-label="{{ T "ui_diagram_zoom_dialog" }}">
+  <div class="td-diagram-zoom__surface">
+    <div class="td-diagram-zoom__controls">
+      <button class="td-diagram-zoom__control" type="button" data-td-diagram-zoom-out>
+        {{- partialCached "shell/icon.html" "zoom-out" "diagram-zoom-out" -}}
+        <span class="visually-hidden">{{ T "ui_diagram_zoom_out" }}</span>
+      </button>
+      <button class="td-diagram-zoom__control" type="button" data-td-diagram-zoom-in>
+        {{- partialCached "shell/icon.html" "zoom-in" "diagram-zoom-in" -}}
+        <span class="visually-hidden">{{ T "ui_diagram_zoom_in" }}</span>
+      </button>
+      <button class="td-diagram-zoom__control" type="button" data-td-diagram-zoom-reset>
+        {{- partialCached "shell/icon.html" "reset" "diagram-zoom-reset" -}}
+        <span class="visually-hidden">{{ T "ui_diagram_zoom_reset" }}</span>
+      </button>
+      <button class="td-diagram-zoom__control td-diagram-zoom__close" type="button" data-td-diagram-zoom-close>
+        {{- partialCached "shell/icon.html" "x" "diagram-zoom-close" -}}
+        <span class="visually-hidden">{{ T "ui_diagram_zoom_close" }}</span>
+      </button>
+    </div>
+    <div class="td-diagram-zoom__viewport" data-td-diagram-zoom-viewport>
+      <div class="td-diagram-zoom__canvas" data-td-diagram-zoom-canvas></div>
+    </div>
+  </div>
+</dialog>

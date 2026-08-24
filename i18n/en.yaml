@@ -104,6 +104,13 @@ ui_action_unavailable: unavailable
 ui_image_zoom_dialog: Image preview
 ui_image_zoom_open: Open image preview
 ui_image_zoom_close: Close image preview
+ui_diagram_expand: Enlarge diagram
+ui_diagram_zoom_dialog: Diagram preview
+ui_diagram_zoom_close: Close diagram preview
+ui_diagram_zoom_in: Zoom in
+ui_diagram_zoom_out: Zoom out
+ui_diagram_zoom_reset: Reset view
+ui_diagram_error: The diagram could not be rendered
 ui_print_page: Print this page
 ui_sidebar_expand_section: Expand section
 ui_sidebar_collapse_section: Collapse section

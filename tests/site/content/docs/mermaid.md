@@ -352,7 +352,7 @@ Each step inside `{{%/* steps */%}}` is page-level Markdown and can hold a
 
 Fence attributes: none. A `mermaid` fence reads no attribute line; writing
 `{height=…}` or `{class=…}` neither works nor errors. Size follows the diagram
-itself and the container width.
+itself and the container width, and the diagram is centred in it.
 
 Site parameters (`hugo.yaml`):
 
@@ -365,19 +365,27 @@ Site parameters (`hugo.yaml`):
 Per-diagram configuration goes in the YAML header at the top of the fence body
 (`title`, `config`). That is Mermaid syntax, not a theme parameter.
 
+## Enlarging a diagram {#zoom}
+
+A diagram is centred in the column, and Mermaid scales anything wider than the
+column down to fit — a wide sequence diagram can land near a third of its own
+size on a phone. Hovering a diagram (or reaching it with the keyboard) reveals
+a control in its corner that opens the diagram on its own: rendered again at
+full size, panned by dragging, zoomed with the wheel, a pinch, or the `+` and
+`-` keys, and reset with `0`. `Esc` closes it. Nothing is downloaded for this
+and there is no switch to set: the viewer ships with the fence.
+
 ## Limits {#limits}
 
-- Switching colour scheme reloads the page: Mermaid cannot be re-initialized,
-  and the theme chose correct rendering over avoiding the reload.
-- Diagrams cannot be numbered or zoomed: Mermaid emits inline SVG, not an
-  `<img>`, so `{#id num=}` numbering and image zoom do not apply. Export to an
-  image when you need a number and use the [image](/docs/image/)
-  numbering.
+- Diagrams cannot be numbered: Mermaid emits inline SVG, not an `<img>`, so
+  `{#id num=}` numbering does not apply. Export to an image when you need a
+  number and use the [image](/docs/image/) numbering.
 - Fence attributes do nothing: control width inside the diagram (flowchart
-  direction, class-diagram layout) or with CSS.
+  direction, class-diagram layout) or with CSS. There is no alignment
+  attribute — a diagram is always centred.
 - Syntax errors show up only in the browser: Hugo does not parse Mermaid, so a
-  broken diagram renders Mermaid's error box while the build still passes. Check
-  in a browser before publishing.
+  broken diagram renders an alert carrying the parse error and its own source,
+  while the build still passes. Check in a browser before publishing.
 - RSS subscribers see the source only: put the conclusion in the prose, not only
   in the picture.
 
@@ -386,4 +394,4 @@ Per-diagram configuration goes in the YAML header at the top of the fence body
 - [PlantUML](/docs/plantuml/) — more complete UML, at the price of a rendering server
 - [Markmap](/docs/markmap/) — outline-shaped hierarchies
 - [ECharts](/docs/echarts/) — charts with numbers in them
-- [Images](/docs/image/) — hand-drawn SVG, numbering and zoom
+- [Images](/docs/image/) — hand-drawn SVG and numbering

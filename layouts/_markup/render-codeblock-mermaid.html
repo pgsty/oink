@@ -1,5 +1,31 @@
-{{ .Page.Store.Set "hasmermaid" true -}}
+{{- /* ```mermaid — diagram source as a data fence.
 
-<pre class="mermaid">
-  {{- .Inner -}}
-</pre>
+     The source is kept as JSON beside an empty stage instead of being handed
+     to Mermaid as the text of a `<pre>` it consumes in place. Keeping it
+     readable afterwards is what lets the runtime (a) render late, because a
+     diagram measured inside a `display: none` tab panel collapses to its
+     padding and Mermaid never recomputes it, (b) re-render on a colour-scheme
+     change instead of reloading the page, and (c) draw a second copy at its
+     natural size for the zoom dialog rather than magnifying one that has
+     already been scaled down to fit the column.
+
+     Non-interactive outputs keep the source block: an RSS reader or a
+     Markdown consumer would otherwise receive an empty stage. Print stays on
+     the interactive path, where it has always rendered the diagram itself. */ -}}
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $source := strings.TrimSpace .Inner -}}
+{{- if not $source }}{{ warnf "mermaid: the fence requires diagram source at %s; rendering nothing" .Position }}{{ end -}}
+{{- if or (not $source) (in (slice "markdown" "rss") $format) -}}
+{{- with $source }}<pre class="td-mermaid-source"><code class="language-mermaid">{{ . }}</code></pre>{{ end -}}
+{{- else -}}
+{{- $page.Store.Set "hasmermaid" true -}}
+<figure class="td-diagram td-diagram--mermaid" data-td-diagram>
+  <div class="td-diagram__stage" data-td-diagram-stage></div>
+  <button class="td-diagram__expand d-print-none" type="button" hidden data-td-diagram-expand aria-haspopup="dialog">
+    {{- partialCached "shell/icon.html" "expand" "diagram-expand" -}}
+    <span class="visually-hidden">{{ T "ui_diagram_expand" }}</span>
+  </button>
+  <script type="application/json" data-td-diagram-source>{{ $source | jsonify | safeJS }}</script>
+</figure>
+{{- end -}}

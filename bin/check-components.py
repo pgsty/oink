@@ -221,13 +221,31 @@ def check_data_fences(hugo: str) -> list[str]:
             'data-td-infographic data-td-height="300px" aria-label="Infographic" data-fixture="infographic">',
             '<script type="application/json" data-td-infographic-syntax>"infographic list-row-simple-horizontal-arrow"</script>',
             'class="td-asset-list site-assets" data-td-asset-list aria-label="Checksums" data-fixture="assets">',
-            '<pre class="mermaid">',
+            '<figure class="td-diagram td-diagram--mermaid" data-td-diagram>',
+            '<div class="td-diagram__stage" data-td-diagram-stage></div>',
+            '<script type="application/json" data-td-diagram-source>"graph TD; A--\\u003eB;"</script>',
+            'data-td-diagram-expand aria-haspopup="dialog"',
         ):
             require(marker in html, f"data fence HTML missing {marker}", errors)
+        require(
+            '<pre class="mermaid">' not in html,
+            "mermaid still hands Mermaid a <pre> to consume in place",
+            errors,
+        )
         require("td-max-width-on-larger-screens" not in html.split("td-infographic")[0].split("td-echarts")[-1], "echarts full=true still constrains the width", errors)
-        for marker in ('<pre class="td-echarts-source"><code class="language-echarts">', '<pre class="td-infographic-source"><code class="language-infographic">'):
+        for marker in (
+            '<pre class="td-echarts-source"><code class="language-echarts">',
+            '<pre class="td-infographic-source"><code class="language-infographic">',
+            '<pre class="td-mermaid-source"><code class="language-mermaid">',
+        ):
             require(marker in rss, f"data fence RSS lost {marker}", errors)
-        require("data-td-echarts" not in rss and "data-td-infographic" not in rss, "RSS rendered a chart runtime container", errors)
+        require(
+            "data-td-echarts" not in rss
+            and "data-td-infographic" not in rss
+            and "data-td-diagram" not in rss,
+            "RSS rendered a chart runtime container",
+            errors,
+        )
         require('```echarts {height="240px" theme="dark" full=true class="site-chart" data-fixture="chart" aria-label="Chart"}' in markdown and "```infographic" in markdown, "data fence Markdown lost the source fences", errors)
 
     invalid = (

@@ -222,3 +222,13 @@ ui_blog_index_toggle: 切换布局
 # Markdown output
 markdown_llms_index: "LLMS 索引："
 markdown_section_pages: "本節頁面："
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_diagram_expand: 放大圖表
+ui_diagram_zoom_dialog: 圖表預覽
+ui_diagram_zoom_close: 關閉圖表預覽
+ui_diagram_zoom_in: 放大
+ui_diagram_zoom_out: 縮小
+ui_diagram_zoom_reset: 重設檢視
+ui_diagram_error: 圖表無法呈現

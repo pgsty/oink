@@ -1,0 +1,196 @@
+// Browser-rendered diagrams (currently Mermaid) and the viewport that lets a
+// reader look at one properly.
+//
+// The fence used to reuse the code block's `<pre>`, which gave a diagram a
+// code frame it never earned: Mermaid emits `width="100%"` with a `max-width`
+// at the diagram's natural size, so anything narrower than the column sat
+// against the start edge with the remaining third of a bordered box empty
+// beside it.
+
+.td-diagram {
+  position: relative;
+  margin-block: $spacer;
+  margin-inline: 0;
+}
+
+.td-diagram__stage {
+  // Centred, and there is no alignment switch: a diagram is a figure, not
+  // running text, and no reader has ever wanted one flush right.
+  > svg {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+    margin-inline: auto;
+  }
+}
+
+.td-diagram__error {
+  margin: 0;
+  padding: $spacer;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-code-radius);
+  background-color: var(--td-pre-bg);
+  color: var(--bs-body-color);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+// Corner control, the same idea as the code block's own: present for keyboard
+// and touch, quiet until the pointer arrives.
+.td-diagram__expand {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  display: grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-body-bg);
+  color: var(--bs-secondary-color);
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+
+  &:hover {
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.td-diagram:hover > .td-diagram__expand,
+.td-diagram:focus-within > .td-diagram__expand {
+  opacity: 1;
+}
+
+// Without hover there is nothing to reveal the control, so it stays out.
+@media (hover: none) {
+  .td-diagram__expand {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-diagram__expand {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-diagram__expand {
+    opacity: 1;
+    border-color: ButtonBorder;
+  }
+}
+
+// ---------------------------------------------------------------- dialog --
+
+.td-diagram-zoom {
+  inline-size: auto;
+  max-inline-size: 100vw;
+  max-block-size: 100vh;
+  max-block-size: 100dvh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--bs-body-color);
+  overflow: visible;
+
+  &::backdrop {
+    background: rgba(var(--bs-dark-rgb), 0.82);
+  }
+}
+
+.td-diagram-zoom:not([open]) {
+  display: none;
+}
+
+.td-diagram-zoom__surface {
+  position: relative;
+  inline-size: calc(100vw - 2rem);
+  block-size: calc(100vh - 2rem);
+  block-size: calc(100dvh - 2rem);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-body-bg);
+  box-shadow: var(--bs-box-shadow-lg);
+  overflow: hidden;
+}
+
+.td-diagram-zoom__controls {
+  position: absolute;
+  inset-block-start: 0.55rem;
+  inset-inline-end: 0.55rem;
+  z-index: 1;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.td-diagram-zoom__control {
+  display: grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 50%;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+
+  svg,
+  i {
+    inline-size: 1rem;
+    block-size: 1rem;
+    font-size: 0.875rem;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: var(--bs-tertiary-bg);
+  }
+
+  &:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.td-diagram-zoom__viewport {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  cursor: grab;
+  // Pan and pinch are handled here, so the browser must not claim the gesture.
+  touch-action: none;
+  // The pan/zoom transform is a physical coordinate space: a translate of +x
+  // moves the drawing right in every writing mode. Anchoring the canvas to a
+  // start edge that flips would put the zoom-to-pointer maths half a viewport
+  // out in RTL, so this one box is pinned to LTR. Mermaid sets its own text
+  // anchors, so nothing inside the drawing depends on inheriting the page's.
+  direction: ltr;
+
+  &.is-grabbing {
+    cursor: grabbing;
+  }
+}
+
+.td-diagram-zoom__canvas {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+
+  > svg {
+    display: block;
+  }
+}

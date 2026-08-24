@@ -34,6 +34,7 @@
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
 {{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
 {{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
+{{ $hasMermaid := .Page.Store.Get "hasmermaid" | default false -}}
 {{ $hasAuthoredA11y := and $interactiveOutput (.Page.Store.Get "hasAuthoredA11y" | default false) -}}
 
 {{ if $hasMarkmap -}}
@@ -237,7 +238,7 @@ window.markmap = {
   ) -}}
 {{ end -}}
 
-{{ if .Page.Store.Get "hasmermaid" -}}
+{{ if $hasMermaid -}}
   {{ partial "scripts/mermaid.html" . -}}
 {{ end -}}
 
@@ -296,6 +297,12 @@ window.markmap = {
 {{ if $hasImageZoom -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/image-zoom.js" "members" (slice (resources.Get "js/image-zoom.js"))) -}}
 {{ end -}}
+{{ if $hasMermaid -}}
+  {{/* Labels and the site's Mermaid config vary by language, so the target
+       carries the language the way the other generated runtimes do. */ -}}
+  {{ $jsMermaid := resources.Get "js/mermaid.js" | resources.ExecuteAsTemplate (printf "js/generated/mermaid-%s.js" .Site.Language.Lang) .Site.Home -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" (printf "js/chunks/mermaid-%s.js" .Site.Language.Lang) "members" (slice $jsMermaid)) -}}
+{{ end -}}
 {{ if $hasFileTree -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/filetree.js" "members" (slice (resources.Get "js/filetree.js"))) -}}
 {{ end -}}
@@ -308,6 +315,7 @@ window.markmap = {
 {{ end -}}
 
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
+{{ if $hasMermaid }}{{ partial "content/diagram-zoom-dialog.html" . }}{{ end -}}
 {{ range $jsChunks -}}
   {{ partialCached "script-resource.html" . .target -}}
 {{ end -}}

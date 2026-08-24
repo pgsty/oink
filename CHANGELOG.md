@@ -7,6 +7,19 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- A Mermaid diagram can be opened at its own size. Mermaid never overflows a
+  narrow column, it *shrinks* to fit it, so `overflow-x` never offered a way
+  back: on a 390px phone the sequence diagram in the theme's own
+  documentation rendered at 35% of its natural width, with 14px labels
+  arriving as five. Hovering a diagram -- or reaching it with the keyboard --
+  now reveals a control in its corner that renders the diagram a second time
+  into a dialog at full size, panned by dragging, zoomed with the wheel, a
+  two-finger pinch, or `+`/`-`, and reset with `0`. A diagram that would have
+  to shrink below half size to fit opens at 1:1 at its starting corner
+  instead of as a thumbnail, because a fitted view of an unreadable diagram
+  is the problem, not the fix. Nothing is downloaded for it, there is no
+  switch to set, and the viewer is its own dialog rather than a second mode
+  bolted onto Image Zoom's.
 - A theme color. `params.ui.theme_color` takes a `#rgb`/`#rrggbb` hex and
   tints the shell's accent *grounds*: the selected sidebar row and the greyed
   ground its neighbours take under the pointer, hover washes, the outline pill
@@ -90,6 +103,23 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- A `mermaid` fence renders through a figure, not through the code block's
+  `<pre>`. It keeps its source in a `<script type="application/json">` beside
+  an empty stage -- the shape `echarts` and `infographic` already use -- and a
+  runtime owns when the diagram is drawn. That is what makes the three
+  entries around this one possible: the source is still readable after
+  Mermaid has run. The diagram is now centred, and the code frame it never
+  earned is gone: Mermaid emits `width="100%"` with a `max-width` at the
+  diagram's own size, so anything narrower than the column used to sit
+  against the start edge with up to 300px of empty bordered box beside it.
+  There is deliberately no alignment attribute; a diagram is a figure, and no
+  reader wanted one flush right. Markdown and RSS keep the source block they
+  always had, and Print still renders the diagram.
+- Switching colour scheme re-renders the diagrams instead of reloading the
+  page. The old runtime reloaded on every theme change on any page holding a
+  diagram, citing a Mermaid limitation from the 8.x era; Mermaid 11
+  re-initializes cleanly, and the stage holds its height across the swap so
+  the page does not collapse under the reader.
 - Book numbers and captions read in the prose face. The sidebar chapter number
   and the in-prose `Figure`/`Table`/`Equation`/`Example` labels were set in the
   bundled `IBM Plex Mono`, which ships a Latin subset only: a Chinese label
@@ -215,6 +245,17 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- A Mermaid diagram inside a tab that is not the open one renders at its
+  proper size. Docsy's `startOnLoad` ran after the tab runtime had set
+  `panel.hidden`, and inside `display: none` every text measurement returns
+  zero, so Mermaid wrote `max-width: 16px` into the SVG and -- having marked
+  it processed -- never recomputed it; revealing the tab did not recover it.
+  The theme's own Mermaid page shipped one such squashed diagram. Diagrams
+  are now drawn before anything hides them, and a stage that has no box when
+  its turn comes waits for one through a `ResizeObserver`, the same recovery
+  ECharts already relies on here. `visibility: hidden` and
+  `content-visibility: hidden` were never affected, which is why a folded
+  callout was always fine.
 - An image `src` that resolves to a non-image resource degrades instead of
   detonating. The resolver warned "dropping the image" and then read fields
   off the resource it had just dropped, stopping the build -- the one path

@@ -335,12 +335,6 @@
     }
   }
 
-  pre.mermaid {
-    background-color: inherit;
-    font-size: 0;
-    padding: 0;
-  }
-
   .chroma {
     // Console blocks: exclude prompt and output from selection so copy yields
     // only the command(s). Chroma: .gp is GenericPrompt (e.g. $), .go is

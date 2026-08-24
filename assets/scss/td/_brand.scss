@@ -58,13 +58,14 @@
   // four tokens, and a published theme color never touches them: prose links
   // and external URLs stay this navy in every section, so a colored section
   // does not turn its running text into a second kind of thing. What a theme
-  // color does move is --td-accent below. Hover brightens toward the sky,
-  // not deeper into the navy; kept dark enough for AA contrast on the
-  // translucent light navbar surface.
+  // color does move is --td-accent below. Hover leaves the muted navy for a
+  // vivid azure -- the Tailwind move, saturation doing as much of the work
+  // as lightness -- held at the brightest step that still reads AA body
+  // text on the sky canvas (4.62:1) and the white surfaces (5.09:1).
   --bs-link-color: #245f94;
   --bs-link-color-rgb: 36, 95, 148;
-  --bs-link-hover-color: #3372a8;
-  --bs-link-hover-color-rgb: 51, 114, 168;
+  --bs-link-hover-color: #1d6fc4;
+  --bs-link-hover-color-rgb: 29, 111, 196;
   // The theme accent. It defaults to the brand link color, and a published
   // `theme_color` redeclares just these three in the head -- never the
   // Bootstrap link family, so prose links and external URLs keep the brand

@@ -108,6 +108,12 @@ All notable changes to OINK are documented here. The project follows
   interactive control -- and is laid over a ghost copy of its own text that
   reserves the width inside the summary.
 
+- Link hover leaves the muted navy for a vivid azure. The resting color is
+  unchanged; the hover target moves from a half-step within the navy to
+  `#1d6fc4`, the Tailwind move where saturation does as much of the work as
+  lightness, held at the brightest step that still reads AA body text on the
+  sky canvas (4.62:1) and the white surfaces (5.09:1). The 150ms glide on the
+  shared colors curve, and the dark palette, are unchanged.
 ### Fixed
 
 - The outline's lit range reads in the section's accent, not just its cursor.

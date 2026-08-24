@@ -240,15 +240,19 @@
       text-decoration: none;
     }
 
+    // The whole lit range reads in the section's accent: these are the
+    // headings the viewport is standing over, the same span the rail's lit
+    // line covers, so ink and line tell one story. docs-shell.js toggles
+    // .active on every entry in that range.
     &.active {
-      color: var(--td-shell-primary);
+      color: var(--td-accent);
     }
 
-    // Written by docs-shell.js on the heading the reader is inside, which is
-    // also where j/k lands. Ordered last so it survives :hover and .active.
-    // This is the one entry the travelling dot is parked on, so it is the one
-    // entry that takes the section's accent -- ink and ground together, rather
-    // than an accent ground under default ink.
+    // Written by docs-shell.js on the one heading the reader is inside, which
+    // is also where j/k lands. Ordered last so it survives :hover. Within the
+    // lit range this entry alone adds the pill ground -- the dot is parked
+    // here, and one ground under the whole range would read as a block
+    // selection rather than a place.
     &[aria-current='location'] {
       color: var(--td-accent);
 
@@ -258,12 +262,25 @@
     }
   }
 
+  // The first and last entries drop the padding that would push the list's
+  // text off the body's own edges -- but the pill is drawn inside the link
+  // box, so each trimmed side compensates with the 5px the box no longer
+  // carries. The body's 12px block padding gives the overhang room, keeping
+  // the cursor pill the same height on every row.
   > ul > li:first-child > a {
     padding-top: 0;
+
+    &::before {
+      inset-block-start: -5px;
+    }
   }
 
   > ul > li:last-child > a:only-child {
     padding-bottom: 0;
+
+    &::before {
+      inset-block-end: -5px;
+    }
   }
 }
 

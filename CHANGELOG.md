@@ -108,6 +108,18 @@ All notable changes to OINK are documented here. The project follows
   interactive control -- and is laid over a ghost copy of its own text that
   reserves the width inside the summary.
 
+### Fixed
+
+- The outline's lit range reads in the section's accent, not just its cursor.
+  `docs-shell.js` marks every heading the viewport stands over; those entries
+  now take the same theme-color ink the rail's lit line and travelling dot
+  already carry, and the cursor entry alone keeps the pill ground, so the ink
+  and the line tell one story instead of two.
+- The cursor pill is the same height on every outline row. The first and last
+  entries trim the padding that would push the list off the body's edges, and
+  the pill -- drawn inside the link box -- silently shrank with them; each
+  trimmed side now compensates by the 5px the box no longer carries.
+
 ## [0.6.1] - 2026-08-22
 
 ### Changed

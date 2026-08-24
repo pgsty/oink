@@ -25,12 +25,6 @@
       line-height: 1;
     }
 
-    // Styling adjustments for the navbar
-    @at-root {
-      .td-navbar & {
-        color: inherit;
-      }
-    }
   }
 
   // Search input element
@@ -44,17 +38,6 @@
 
     &.form-control:focus {
       color: inherit;
-    }
-
-    // Styling adjustments for the navbar
-    @at-root {
-      .td-navbar & {
-        color: inherit;
-
-        @include placeholder {
-          color: inherit;
-        }
-      }
     }
   }
 

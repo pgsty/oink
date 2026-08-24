@@ -476,7 +476,7 @@ def check_tabs_behaviour(hugo: str) -> list[str]:
             'data-td-tab="APT" data-td-tab-value="apt"',
             'data-td-tab="环境变量" data-td-tab-kind="code"',
             'data-td-tab="配置项" data-td-tab-kind="code"',
-            'data-td-tab="A **literal** [label]"' if False else '>A **literal** [label]</button>',
+            '>A **literal** [label]</button>',
             '<div class="td-tabs__panel-title" aria-hidden="true">B</div>',
             "<td>1</td>",
             "<li>one</li>",

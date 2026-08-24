@@ -22,8 +22,10 @@ public example, integration-test authority, or visual approval surface. The
 public site pins a released OINK tag; local cross-repo validation uses an inline
 `HUGO_MODULE_REPLACEMENTS` for that command. Never commit a filesystem replace.
 
-`main` is the next-release branch; `release` is current stable. Immutable
-`vX.Y.Z` tags count as published only after push and Go-proxy verification.
+`main` is the next-release branch; `release` tracks current stable and is
+fast-forwarded to each stable tag as a release step. Immutable `vX.Y.Z` tags
+are the authority and count as published only after push and Go-proxy
+verification.
 
 ## PRDs and design changes
 
@@ -82,7 +84,7 @@ Use Hugo Extended 0.160.1 for the compatibility floor. Output checkers accept
 
 ## Non-negotiable contracts
 
-- The current 0.6.0 draft contracts are published from the sibling site's
+- The current draft contracts are published from the sibling site's
   `content/docs/design/` tree. History belongs in Git and `CHANGELOG.md`, not
   parallel proposal documents.
 - Reading shells are `docs`, `book`, `blog`, and `swagger`, plus explicit

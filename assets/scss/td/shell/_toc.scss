@@ -140,26 +140,6 @@
   }
 }
 
-.td-shell-toc__title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  margin: 10px 0 0;
-  padding-inline-start: 4px;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  color: var(--td-shell-muted-fg);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  .td-shell-icon {
-    flex: 0 0 auto;
-    --td-shell-icon-size: 16px;
-  }
-}
 
 .td-shell-toc__inner {
   display: flex;

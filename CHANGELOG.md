@@ -140,6 +140,12 @@ All notable changes to OINK are documented here. The project follows
   the full suite so a release carries its own green, every job has a timeout,
   and the shared-scenarios checker bounds each Hugo subprocess -- a wedged
   build once idled a CI job for six hours before cancellation ever spoke.
+- Housekeeping: dead selectors left behind by retired markup are gone
+  (`.td-shell-toc__title`, the sidebar-footer language-selector wrapper, the
+  retired image shortcode's `.td-figure__image`, two `.td-navbar` scopes from
+  the Docsy era), SCSS entry-point comments point at the pages that exist
+  today instead of a retired information architecture, and an unreachable
+  test expression lost its dead branch.
 - The outline's lit range reads in the section's accent, not just its cursor.
   `docs-shell.js` marks every heading the viewport stands over; those entries
   now take the same theme-color ink the rail's lit line and travelling dot

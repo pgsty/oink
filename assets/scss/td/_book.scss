@@ -119,11 +119,10 @@ body.td-book .td-shell-tree__link {
 }
 
 // Every figure image is the same centered block, whether it sits directly in
-// the figure or inside that anchor. Declared once; the `td-figure__image` /
-// `td-book-figure__image` class names stay in the markup for one major version
-// so downstream site CSS keeps matching.
+// the figure or inside that anchor. Book image partials still write
+// `td-book-figure__image`; the retired image shortcode's `td-figure__image`
+// left the markup and its selector left with it.
 .td-figure > img,
-.td-figure > .td-figure__image,
 .td-figure__link > img,
 .td-book-figure__image {
   display: block;

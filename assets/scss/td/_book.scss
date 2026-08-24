@@ -1,7 +1,9 @@
+// Chapter numbers read as part of the sidebar row, not as a technical token:
+// they inherit the surrounding face so a Chinese title and its number are one
+// line of one font. `tabular-nums` keeps the column aligned without mono.
 .td-book-number {
   flex: none;
   color: var(--bs-secondary-color);
-  font-family: var(--td-meta-font-family);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
@@ -281,13 +283,16 @@ a > img.td-image {
   margin-block: 0;
 }
 
+// `Figure 2-1` / `图 2-1` sits inside running prose. A face the label does not
+// share with the sentence around it splits every CJK label across two fonts,
+// because the bundled mono ships Latin only. Bold in the prose face is enough.
 .td-fig-label,
 .td-tbl-label,
 .td-eq-label,
 .td-eg-label,
 .td-book-label {
   color: var(--bs-body-color);
-  font-family: var(--td-meta-font-family);
+  font-variant-numeric: tabular-nums;
   font-weight: 700;
 }
 

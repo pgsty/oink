@@ -33,6 +33,23 @@ All notable changes to OINK are documented here. The project follows
   text (4.5:1) still ships, but warns with a suppressible id, so the
   publishing gate catches an unreadable accent while a deliberate palette
   stays one config line away.
+- `params.ui.fonts` reaches the theme's seven typography roles from
+  configuration. A site that wants a different face no longer needs to mount
+  SCSS or add a stylesheet: `ui` is the main face, and because
+  `--td-body-font-family` and `--td-heading-font-family` resolve through it,
+  one line moves chrome, prose and headings together. The other keys --
+  `body`, `heading`, `code`, `display`, `meta`, `print` -- narrow from there.
+  The key names faces and never loads them: a family must be one the reader
+  already has or one the site declared in an `@font-face` of its own, so a
+  normal build still downloads nothing and every list should end in a generic
+  family. Values are gated to plain font family syntax -- quoted names, bare
+  identifiers, a leading hyphen, and names spelled in any script -- and the
+  emitted `:root` block is rebuilt from the matched parts. A boolean, an
+  unknown role, or an unsafe value warns and is dropped on its own, leaving
+  the rest of the map in force; a site that sets nothing gets no style element
+  at all. The block renders after the stylesheet, which is what lets an
+  authored face outrank the `params.ui.typography` preset at equal
+  specificity.
 - An opt-in `BookManifest` output records the existing Book sequence, stable
   page/heading/numbered-object targets, per-page HTML and Markdown, and xrefs
   without guessing publication metadata or changing default builds. The theme
@@ -68,6 +85,15 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Book numbers and captions read in the prose face. The sidebar chapter number
+  and the in-prose `Figure`/`Table`/`Equation`/`Example` labels were set in the
+  bundled `IBM Plex Mono`, which ships a Latin subset only: a Chinese label
+  split across two faces mid-sentence, the digits in Plex and the character in
+  whatever monospace fallback the reader had. They now inherit the surrounding
+  face and keep their weight, with `tabular-nums` holding the sidebar column
+  aligned. A Book no longer carries typography of its own; it reads as Docs
+  does, and a site that wants technical labels back sets them from its own
+  stylesheet.
 - First-party browser behavior now publishes as stable capability chunks under
   `js/chunks/`; page flags select script tags instead of creating one
   concatenated bundle for every feature combination. Execution order and the

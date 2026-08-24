@@ -121,6 +121,17 @@ params:
     # `dark_mode: { enable: true, show_menu: true }`.
     dark_mode: false
     typography: technical # technical | system
+    # Font faces by typography role, for a site that wants a different face
+    # without mounting SCSS or adding a stylesheet. `ui` is the main face:
+    # prose and headings resolve through it, so one line moves the whole site.
+    # The rest narrow from there: body | heading | code | display | meta |
+    # print. Names only -- the theme never loads a font file, so a family here
+    # must be one the reader has or one the site declared in an `@font-face` of
+    # its own, and every list should end in a generic family.
+    # fonts:
+    #   ui: "'Source Han Sans SC', sans-serif"
+    #   code: "'Sarasa Mono SC', monospace"
+
     shell_types: [docs, book, blog, swagger]
     docs_section: docs
     blog_section: blog

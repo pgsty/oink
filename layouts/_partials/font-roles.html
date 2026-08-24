@@ -1,0 +1,72 @@
+{{- /* Emit `params.ui.fonts` as typography-role overrides.
+
+     The theme's seven text roles are CSS custom properties, so a site has
+     always been able to rewrite them from its own stylesheet. This key is the
+     same seam reached from configuration, for the site that wants a different
+     face without mounting SCSS or adding a CSS file:
+
+       params:
+         ui:
+           fonts:
+             ui: "'Source Han Sans SC', sans-serif"
+             code: "'Sarasa Mono SC', monospace"
+
+     `ui` is the main face: `--td-body-font-family` and, unless the project
+     assigned `$headings-font-family`, `--td-heading-font-family` both resolve
+     through it, so one line changes chrome, prose and headings together. The
+     other keys -- body, heading, code, display, meta, print -- narrow from
+     there.
+
+     Names only, never files. Setting a family the visitor does not have and
+     the site has not declared in an `@font-face` of its own simply falls
+     through to the next family in the list, which is why every stack should
+     end in a generic (sans-serif, monospace). Keeping files out is also what
+     keeps this key free of the network contract: a normal build still
+     downloads nothing.
+
+     An unknown role or an unsafe value warns and is dropped; the rest of the
+     map still ships, because one bad line should not silently take the others
+     with it. A site that sets nothing gets no `<style>` block at all, so an
+     unconfigured head stays byte-identical. This must render after
+     `head-css.html`: `:root` here and `[data-td-typography='system']` in the
+     stylesheet carry the same specificity, so source order is what makes the
+     authored face win over the preset. */ -}}
+{{- $roles := slice "ui" "body" "heading" "code" "display" "meta" "print" -}}
+{{- $decls := slice -}}
+{{- with site.Params.ui.fonts -}}
+  {{- if reflect.IsMap . -}}
+    {{- range $key, $value := . -}}
+      {{- $role := lower (printf "%v" $key) -}}
+      {{- if in $roles $role -}}
+        {{- /* A bare `false` is the theme's opt-out idiom elsewhere, and it
+             would sail through the family gate as the CSS identifier `false`
+             -- a family nobody has, which drops the whole site to the
+             browser's default face with nothing said. Omitting the key is how
+             a role keeps its default, so a boolean here is a mistake that has
+             to be heard. */ -}}
+        {{- $stack := "" -}}
+        {{- if ne (printf "%T" $value) "bool" -}}
+          {{- $stack = partial "_funcs/font-family-value.html" $value -}}
+        {{- end -}}
+        {{- if $stack -}}
+          {{- $decls = $decls | append (printf "--td-%s-font-family:%s" $role $stack) -}}
+        {{- else -}}
+          {{- warnidf (printf "font-roles:value:%s:%v" $role $value)
+              "params.ui.fonts.%s %q is not a list of plain font family names -- ignored; quote any name with spaces and end the list with a generic family"
+              $role (printf "%v" $value) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- warnidf (printf "font-roles:key:%s" $role)
+            "params.ui.fonts.%s is not a typography role (allowed: %s) -- ignored"
+            $role (delimit $roles " | ") -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnidf (printf "font-roles:shape:%v" .)
+        "params.ui.fonts must be a map of typography role to font family list (allowed roles: %s) -- ignored"
+        (delimit $roles " | ") -}}
+  {{- end -}}
+{{- end -}}
+{{- with $decls -}}
+<style>{{ printf ":root{%s}" (delimit . ";") | safeCSS }}</style>
+{{ end -}}

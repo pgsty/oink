@@ -52,6 +52,7 @@ KEPT_MAPS = {
     "mermaid",
     "copyright",
     "ui.taxonomy_icons",
+    "ui.fonts",
 }
 
 # Values handed to an external runtime keep that runtime's key names.
@@ -128,6 +129,9 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
     "ui:\n  toc_style: flow\n  toc_taxonomies: false\n  featured_image: hero",
     "ui:\n  theme_color: '#7c3aed'\n  theme_color_dark: '#a78bfa'",
+    # Font roles by name. Quoted names, bare identifiers, a leading hyphen and
+    # a family spelled in its own script are all ordinary CSS.
+    "ui:\n  fonts:\n    ui: \"'Source Han Sans SC', 'PingFang SC', sans-serif\"\n    code: \"'Sarasa Mono SC', monospace\"\n    display: -apple-system\n    meta: 苹方",
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
@@ -168,6 +172,19 @@ INVALID_SITE_CASES = [
     # A number is neither a hex nor the boolean opt-out; `default` must not
     # swallow it on the way to the warning.
     ("ui:\n  theme_color: 0", 'theme_color "0"'),
+    # Font roles are the seven the stylesheet defines; anything else would
+    # emit a custom property nothing reads.
+    ("ui:\n  fonts:\n    main: Inter", "params.ui.fonts.main is not a typography role"),
+    # Names only. The value reaches a <style> block, so the gate admits font
+    # family syntax and nothing else -- and drops the value whole.
+    ("ui:\n  fonts:\n    ui: 'red;}body{background:red'", "is not a list of plain font family names"),
+    ("ui:\n  fonts:\n    body: 'Foo</style><script>alert(1)</script>'", "is not a list of plain font family names"),
+    ("ui:\n  fonts:\n    heading: \"'Unbalanced, sans-serif\"", "is not a list of plain font family names"),
+    ("ui:\n  fonts: Inter", "params.ui.fonts must be a map of typography role"),
+    # A bare boolean is the opt-out idiom elsewhere, and `false` is a valid CSS
+    # identifier: unguarded it would emit a family nobody has and silently drop
+    # the site to the browser's default face.
+    ("ui:\n  fonts:\n    ui: false", "is not a list of plain font family names"),
 ]
 INVALID_PAGE_CASES = [
     ("comments: definitely", "front matter comments must be a boolean"),

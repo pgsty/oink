@@ -1,0 +1,29 @@
+{{- /* Validate one authored CSS font-family list and return it normalized,
+     or "" when any family in it is not a plain name.
+
+     `params.ui.fonts` names faces; it never loads them. A site that ships its
+     own webfont still writes the `@font-face` in its own stylesheet, so this
+     value is only ever a list of family names -- which is what makes emitting
+     it into a `<style>` block provably safe. Each comma-separated family is
+     either quoted ('Source Han Sans SC') or a bare identifier that may carry
+     spaces and a leading hyphen (-apple-system, sans-serif). Letters of every
+     script are names: a Chinese family name is spelled in Chinese. Everything
+     else -- semicolons, braces, parentheses, url(), angle brackets, an
+     unbalanced quote -- fails the gate, and the caller drops the whole value
+     rather than repairing it. The returned string is rebuilt from the matched
+     parts, never passed through from author text unexamined. */ -}}
+{{- $raw := trim (printf "%v" .) " \t" -}}
+{{- $names := slice -}}
+{{- $ok := ne $raw "" -}}
+{{- range $part := split $raw "," -}}
+  {{- $name := trim $part " \t" -}}
+  {{- if or
+        (findRE `^'[\p{L}\p{N} ._-]+'$` $name)
+        (findRE `^"[\p{L}\p{N} ._-]+"$` $name)
+        (findRE `^-?[\p{L}][\p{L}\p{N} ._-]*$` $name) -}}
+    {{- $names = $names | append $name -}}
+  {{- else -}}
+    {{- $ok = false -}}
+  {{- end -}}
+{{- end -}}
+{{- return cond $ok (delimit $names ", ") "" -}}

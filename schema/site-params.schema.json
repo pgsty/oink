@@ -434,6 +434,9 @@
             "command_palette": {
               "description": "Read by the theme's templates; no declared default."
             },
+            "fonts": {
+              "description": "Read by the theme's templates; no declared default."
+            },
             "github_stars": {
               "description": "Read by the theme's templates; no declared default."
             },

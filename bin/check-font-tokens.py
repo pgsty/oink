@@ -104,6 +104,40 @@ def main() -> int:
         if count == 0:
             errors.append(f"{token_path.relative_to(ROOT)}: missing {token}")
 
+    # `params.ui.fonts` is the same role set reached from configuration. The
+    # partial must name exactly the roles the stylesheet defines, or a site
+    # could set a key that emits a custom property nothing reads -- and it must
+    # render after the stylesheet, because `:root` there and
+    # `[data-td-typography='system']` here carry the same specificity, so
+    # source order is the whole mechanism.
+    roles_path = LAYOUT_ROOT / "_partials" / "font-roles.html"
+    if not roles_path.exists():
+        errors.append("layouts/_partials/font-roles.html: missing config-side role resolver")
+    else:
+        roles_source = roles_path.read_text()
+        declared = re.search(r"\$roles\s*:=\s*slice\s+(?P<list>(?:\"[a-z]+\"\s*)+)", roles_source)
+        if not declared:
+            errors.append(f"{roles_path.relative_to(ROOT)}: no $roles slice to compare with the stylesheet")
+        else:
+            configured = tuple(re.findall(r'"([a-z]+)"', declared.group("list")))
+            expected = tuple(role.removesuffix("-font-family") for role in PUBLIC_ROLES)
+            if set(configured) != set(expected):
+                errors.append(
+                    f"{roles_path.relative_to(ROOT)}: params.ui.fonts roles "
+                    f"{sorted(configured)} do not match the stylesheet roles "
+                    f"{sorted(expected)}"
+                )
+        head_source = (LAYOUT_ROOT / "_partials" / "head.html").read_text()
+        css_at = head_source.find("head-css.html")
+        roles_at = head_source.find("font-roles.html")
+        if roles_at < 0:
+            errors.append("layouts/_partials/head.html: font-roles.html is never rendered")
+        elif css_at < 0 or roles_at < css_at:
+            errors.append(
+                "layouts/_partials/head.html: font-roles.html must render after "
+                "head-css.html or the preset outranks the authored face"
+            )
+
     all_source = "\n".join(sources.values())
     definitions = set(re.findall(r"--(td-[\w-]*font-family)\s*:", all_source))
     references = set(re.findall(r"var\(--(td-[\w-]*font-family)", all_source))

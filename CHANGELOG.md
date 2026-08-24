@@ -3,6 +3,27 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## Unreleased
+
+### Changed
+
+- The shared-scenarios checker survives a wedged Hugo instead of spending a
+  run on it. Hugo can deadlock under `--panicOnWarning`: the panic is raised
+  while the warning logger still holds its mutex, the lock is never released,
+  and the next goroutine to reach the logger blocks forever
+  (gohugoio/hugo#9380, fixed in 0.92.0 and seen again on 0.164.0 and
+  0.165.0). It is a scheduling race, reproduced once in 240 local runs at
+  `GOMAXPROCS=2` and never at higher parallelism, which is why it read as
+  noise: it passed on the same commit forty minutes earlier and again on a
+  rerun. The per-build ceiling drops from ten minutes to two -- still roughly
+  twenty times the slowest build on a cold CI cache -- and a build that wedges
+  is retried once, loudly, naming the command. A build that wedges twice still
+  fails the run, because a timeout that reproduces is a result rather than
+  noise, and a timeout is not a return code, so retrying one cannot weaken
+  what the case asserts. The ten-minute ceiling did not cause any of this; it
+  revealed it, because a six-hour hang reads as a stuck runner while a bounded
+  one reads as a bug.
+
 ## [0.7.0] - 2026-08-25
 
 ### Added

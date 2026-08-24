@@ -4,11 +4,14 @@
 from __future__ import annotations
 
 import argparse
+from functools import partial
 import hashlib
 import os
 from pathlib import Path
 import re
+import shlex
 import subprocess
+import sys
 import tempfile
 
 from test_site import fixture_config
@@ -26,6 +29,55 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 def write(path: Path, source: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(source, encoding="utf-8")
+
+
+# A hard ceiling per build. A wedged Hugo subprocess once idled a CI job for
+# six hours before cancellation; the ceiling that replaced that idling did not
+# cause the failures that followed, it revealed them, because a six-hour hang
+# reads as a stuck runner while a bounded one reads as a bug. Two minutes is
+# roughly twenty times the slowest scenario build observed on a cold CI cache,
+# and it keeps a wedge cheap enough to be worth retrying.
+BUILD_TIMEOUT = 120
+
+
+def run_build(
+    command: list[str], *, env: dict[str, str]
+) -> subprocess.CompletedProcess[str]:
+    """Run one scenario build, retrying once if Hugo wedges.
+
+    Hugo can deadlock under --panicOnWarning: the panic is raised while the
+    warning logger still holds its mutex, the lock is never released, and the
+    next goroutine to reach the logger blocks forever. That is
+    gohugoio/hugo#9380, fixed in 0.92.0 and seen again here on 0.164.0 and
+    0.165.0. It is a scheduling race -- one wedge in 240 local runs at
+    GOMAXPROCS=2, none at higher parallelism -- so a second attempt nearly
+    always completes.
+
+    The retry is announced rather than silent: these wedges are only countable
+    if each one leaves a line behind, and that log is the upstream report if
+    the rate ever climbs. A build that wedges twice still fails the run,
+    because a timeout that reproduces is a result rather than noise.
+    """
+
+    attempt = partial(
+        subprocess.run,
+        command,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+        timeout=BUILD_TIMEOUT,
+    )
+    try:
+        return attempt()
+    except subprocess.TimeoutExpired:
+        print(
+            f"hugo wedged after {BUILD_TIMEOUT}s, retrying once: {shlex.join(command)}",
+            file=sys.stderr,
+            flush=True,
+        )
+    return attempt()
 
 
 def build(
@@ -63,18 +115,7 @@ def build(
     process_env = os.environ.copy()
     if env:
         process_env.update(env)
-    # A hard ceiling per build: a wedged Hugo subprocess once idled a CI job
-    # for six hours before cancellation. Ten minutes is an order of magnitude
-    # above the slowest observed scenario build.
-    return subprocess.run(
-        command,
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-        env=process_env,
-        timeout=600,
-    )
+    return run_build(command, env=process_env)
 
 
 def check_example(public: Path) -> list[str]:

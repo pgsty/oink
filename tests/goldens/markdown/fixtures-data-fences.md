@@ -21,3 +21,8 @@ formatter: "$fn:bytesFormatter"
 f0b8c9d84dd2b877e0b952130b73e218106fec04c23852271d390213a1ff96f4  pig-1.7.0-1.aarch64.rpm
 fbd9b5a696a3cbdcd49ec946664bcdb4a7963919380d3809beb5cefdcfe8bcdf  pig-1.7.0-1.x86_64.rpm
 ```
+## Mermaid
+```mermaid
+flowchart LR
+Fence --> Figure --> Runtime
+```

@@ -220,7 +220,7 @@
     if (!entry.bound) {
       entry.bound = true;
       button.addEventListener('click', function () {
-        open(entry, button);
+        openDialog(entry, button);
       });
     }
     button.hidden = false;
@@ -228,6 +228,10 @@
 
   var MIN_SCALE = 0.2;
   var MAX_SCALE = 8;
+  // Zooming out stops at MIN_SCALE, except that a diagram too big to fit even
+  // there must still be reachable whole -- so the floor drops to whatever it
+  // takes to see all of it.
+  var minScale = MIN_SCALE;
   var view = { scale: 1, x: 0, y: 0 };
   // Where "reset" goes back to: the whole diagram, centred, never enlarged
   // past its natural size. A diagram that already fits opens at 1:1.
@@ -242,12 +246,14 @@
 
   function fit(svg) {
     home = { scale: 1, x: 0, y: 0 };
+    minScale = MIN_SCALE;
     if (svg) {
       var frame = viewport.getBoundingClientRect();
       var width = svg.width && svg.width.baseVal ? svg.width.baseVal.value : 0;
       var height = svg.height && svg.height.baseVal ? svg.height.baseVal.value : 0;
       if (width > 0 && height > 0 && frame.width > 0 && frame.height > 0) {
         var fitted = Math.min(1, frame.width / width, frame.height / height);
+        minScale = Math.min(MIN_SCALE, fitted);
         // Fitting a wide diagram into a phone means opening it at the same
         // unreadable scale the page already showed. Below half size, open at
         // the diagram's own size instead and let panning do the work: the
@@ -271,7 +277,7 @@
   }
 
   function zoomBy(factor, cx, cy) {
-    var next = Math.min(MAX_SCALE, Math.max(MIN_SCALE, view.scale * factor));
+    var next = Math.min(MAX_SCALE, Math.max(minScale, view.scale * factor));
     if (next === view.scale) return;
     if (typeof cx === 'number' && typeof cy === 'number') {
       // Keep the point under the pointer where it is.
@@ -317,7 +323,7 @@
     });
   }
 
-  function open(entry, button) {
+  function openDialog(entry, button) {
     if (!usable) return;
     origin = button;
     openEntry = entry;

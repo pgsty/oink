@@ -129,6 +129,12 @@ def check_outputs(public: Path) -> list[str]:
     require("data-td-echarts" not in fences_md and "td-asset-list" not in fences_md, "data-fence Markdown output contains HTML", errors)
     require('<pre class="td-echarts-source"><code class="language-echarts">' in print_page, "print output lost the ECharts source fallback", errors)
     require("data-td-echarts" not in print_page, "print output kept the ECharts runtime container", errors)
+    # Print never reached a Mermaid runtime -- every first-party chunk there is
+    # gated on interactive output -- so it prints the source like its siblings.
+    require('<pre class="td-mermaid-source"><code class="language-mermaid">' in print_page, "print output lost the Mermaid source fallback", errors)
+    require("data-td-diagram" not in print_page, "print output kept the Mermaid runtime container", errors)
+    require('<figure class="td-diagram td-diagram--mermaid" data-td-diagram>' in fences, "data-fence fixture lost the Mermaid figure", errors)
+    require("mermaid" in source, "data-fence chunks lack the Mermaid runtime", errors)
     return errors
 
 

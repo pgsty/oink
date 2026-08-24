@@ -53,7 +53,7 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Data fences">
 <meta itemprop="description" content="Declarative charts, infographics and checksum lists as fenced code blocks.">
-<meta itemprop="wordCount" content="18">
+<meta itemprop="wordCount" content="21">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
@@ -597,6 +597,14 @@ data-td-echarts>
 </table>
 </div>
 </div>
+<h2 id="mermaid">Mermaid<a class="td-heading-self-link" href="#mermaid" aria-label="Link to this heading"></a>
+</h2>
+<figure class="td-diagram td-diagram--mermaid" data-td-diagram>
+<div class="td-diagram__stage" data-td-diagram-stage></div>
+<button class="td-diagram__expand d-print-none" type="button" hidden data-td-diagram-expand aria-haspopup="dialog"><i class="td-shell-icon td-shell-icon--expand fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true"></i><span class="visually-hidden">Enlarge diagram</span>
+</button>
+<script type="application/json" data-td-diagram-source>"flowchart LR\n  Fence --\u003e Figure --\u003e Runtime"</script>
+</figure>
 <div class="td-page-end">
 <nav class="td-pager d-print-none" data-td-pager
 aria-label="Previous / Next">
@@ -637,6 +645,7 @@ data-td-label-collapse="Collapse section: Content"><span class="td-shell-aside-g
 <ul>
 <li><a href="#echarts">ECharts</a></li>
 <li><a href="#checksums-release-pack-native-form">Checksums (Release pack native form)</a></li>
+<li><a href="#mermaid">Mermaid</a></li>
 </ul>
 </nav>
 </div>
@@ -818,6 +827,7 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/third_party/echarts/echarts.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/third_party/mermaid/mermaid.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden
 data-td-index-src="/offline-search-index.en.<hash>.json"
 data-td-max-results="10"
@@ -858,6 +868,24 @@ data-td-shell-search-status></div>
 <span><kbd>esc</kbd> Close</span>
 </div>
 </div>
-</div><script src="/js/chunks/content-components.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/shell.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/keyboard.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/footer-collapse.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/local-search.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/dark-mode.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/asset-list.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
+</div><dialog class="td-diagram-zoom d-print-none" data-td-diagram-zoom-dialog
+aria-label="Diagram preview">
+<div class="td-diagram-zoom__surface">
+<div class="td-diagram-zoom__controls">
+<button class="td-diagram-zoom__control" type="button" data-td-diagram-zoom-out><i class="td-shell-icon td-shell-icon--zoom-out fa-solid fa-magnifying-glass-minus" aria-hidden="true"></i><span class="visually-hidden">Zoom out</span>
+</button>
+<button class="td-diagram-zoom__control" type="button" data-td-diagram-zoom-in><i class="td-shell-icon td-shell-icon--zoom-in fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i><span class="visually-hidden">Zoom in</span>
+</button>
+<button class="td-diagram-zoom__control" type="button" data-td-diagram-zoom-reset><i class="td-shell-icon td-shell-icon--reset fa-solid fa-arrows-rotate" aria-hidden="true"></i><span class="visually-hidden">Reset view</span>
+</button>
+<button class="td-diagram-zoom__control td-diagram-zoom__close" type="button" data-td-diagram-zoom-close><i class="td-shell-icon td-shell-icon--x fa-solid fa-xmark" aria-hidden="true"></i><span class="visually-hidden">Close diagram preview</span>
+</button>
+</div>
+<div class="td-diagram-zoom__viewport" data-td-diagram-zoom-viewport>
+<div class="td-diagram-zoom__canvas" data-td-diagram-zoom-canvas></div>
+</div>
+</div>
+</dialog>
+<script src="/js/chunks/content-components.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/shell.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/keyboard.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/footer-collapse.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/local-search.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/dark-mode.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/asset-list.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script><script src="/js/chunks/mermaid-en.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 </body>
 </html>

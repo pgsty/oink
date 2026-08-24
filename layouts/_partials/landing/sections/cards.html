@@ -8,7 +8,7 @@
     <div class="td-landing-card-grid" style="--td-columns: {{ $data.columns | default 3 }}">
       {{- range . }}
       <article class="td-landing-card{{ with .class }} {{ . }}{{ end }}">
-        {{- if or .image .logo .icon }}<div class="td-landing-card__media">{{ partial "landing/media.html" (dict "item" .) }}</div>{{ end }}
+        {{- if or .image .logo .icon }}<div class="td-landing-card__media">{{ partial "landing/media.html" (dict "page" $page "item" .) }}</div>{{ end }}
         {{- with .meta }}<p class="td-landing-card__meta">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
         {{- with (.title | default .name) }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
         {{- with (.desc | default .text) }}<div class="td-landing-card__description">{{ partial "landing/markdown-block.html" (dict "page" $page "value" .) }}</div>{{ end }}

@@ -9,7 +9,7 @@
       {{- range $index, $item := . }}
       <article>
         <span>{{ printf "%02d" (add $index 1) }}</span>
-        <div class="td-landing-principle__icon">{{ partial "landing/media.html" (dict "item" $item) }}</div>
+        <div class="td-landing-principle__icon">{{ partial "landing/media.html" (dict "page" $page "item" $item) }}</div>
         <h3>{{ partial "landing/markdown.html" (dict "page" $page "value" ($item.title | default $item.name)) }}</h3>
         {{- with ($item.desc | default $item.text) }}<p>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
       </article>

@@ -1,6 +1,6 @@
 {{- $page := .page -}}{{- $data := .data -}}{{- $item := .item -}}
 <article class="td-landing-logo-card{{ with $item.class }} {{ . }}{{ end }}">
-  {{- if or $item.image $item.logo $item.icon }}<div class="td-landing-logo-card__media">{{ partial "landing/media.html" (dict "item" $item) }}</div>{{ end }}
+  {{- if or $item.image $item.logo $item.icon }}<div class="td-landing-logo-card__media">{{ partial "landing/media.html" (dict "page" $page "item" $item) }}</div>{{ end }}
   <div class="td-landing-logo-card__copy">
     {{- with ($item.name | default $item.title) }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
     {{- with ($item.desc | default $item.text) }}<p>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}

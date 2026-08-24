@@ -1,3 +1,4 @@
+{{- $page := .page -}}
 {{- $item := .item -}}
 {{- $label := $item.name | default $item.title | default "" -}}
 {{- $alt := $item.alt | default ($label | markdownify | plainify) -}}
@@ -11,7 +12,7 @@
   {{- $url := partial "content/url.html" (dict
     "name" "landing" "parameter" "image" "position" $where "value" (printf "%v" .) "kind" "image"
   ) -}}
-  {{- $media := partial "landing/media-resolve.html" (dict "url" $url "page" page) -}}
+  {{- $media := partial "landing/media-resolve.html" (dict "url" $url "page" $page) -}}
   {{- $width := $item.width -}}
   {{- $height := $item.height -}}
   {{- if and (not $width) (not $height) (gt $media.width 0) -}}
@@ -28,7 +29,7 @@
       {{- $url := partial "content/url.html" (dict
         "name" "landing" "parameter" "icon" "position" $where "value" $icon "kind" "image"
       ) -}}
-      {{- $media := partial "landing/media-resolve.html" (dict "url" $url "page" page) -}}
+      {{- $media := partial "landing/media-resolve.html" (dict "url" $url "page" $page) -}}
       {{- $width := $item.width -}}
       {{- $height := $item.height -}}
       {{- if and (not $width) (not $height) (gt $media.width 0) -}}

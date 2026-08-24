@@ -1,7 +1,7 @@
 {{- $page := .page -}}{{- $data := .data -}}{{- $item := .item -}}{{- $marquee := .marquee | default false -}}
 <article class="td-landing-gallery-card{{ with $item.class }} {{ . }}{{ end }}">
   {{- if or $item.image $item.logo $item.icon }}
-  <div class="td-landing-gallery-card__media">{{ partial "landing/media.html" (dict "item" (merge $item (cond $marquee (dict "loading" "lazy") dict))) }}</div>
+  <div class="td-landing-gallery-card__media">{{ partial "landing/media.html" (dict "page" $page "item" (merge $item (cond $marquee (dict "loading" "lazy") dict))) }}</div>
   {{- end }}
   <div class="td-landing-gallery-card__body">
     {{- with $item.badge }}<p class="td-landing-gallery-card__badge">{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}

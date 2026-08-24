@@ -8,7 +8,7 @@
     <div class="td-landing-contributor-grid{{ if not (isset $data "columns") }} td-landing-contributor-grid--row{{ end }}" style="--td-columns: {{ $data.columns | default 4 }}">
       {{- range . }}
       <article class="td-landing-contributor{{ with .class }} {{ . }}{{ end }}">
-        {{- if or .image .logo .icon }}<div class="td-landing-contributor__avatar">{{ partial "landing/media.html" (dict "item" .) }}</div>{{ end }}
+        {{- if or .image .logo .icon }}<div class="td-landing-contributor__avatar">{{ partial "landing/media.html" (dict "page" $page "item" .) }}</div>{{ end }}
         <div class="td-landing-contributor__copy">
           {{- with (.name | default .title) }}<h3>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</h3>{{ end }}
           {{- with (.desc | default .role) }}<p>{{ partial "landing/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}

@@ -140,6 +140,34 @@ All notable changes to OINK are documented here. The project follows
   allow-discrete` holding the exit and an `@starting-style` block feeding the
   entry. Browsers without discrete display transitions keep today's instant
   toggle, and reduced motion zeroes the duration tokens.
+- The series strip is a panel now, not a stack of links. It is translucent over
+  a blur rather than an opaque card, because a `hero` article paints its
+  featured image behind exactly this band and a solid ground punched a hole
+  through the picture; on a plain article the tint resolves to the page's own
+  ground, so one treatment serves both. The bar carries the series' taxonomy
+  icon beside its name and its part counter as a soft pill in tabular figures,
+  with a hairline ruling it off from the reading order below -- on one surface,
+  not a second ground stacked inside the first. Each ordinal sits at the end of
+  a fixed square track, so the titles hold a straight edge where a two-digit
+  part used to shove every row after the ninth to the right, and a member title
+  now carries its own weight on its own element instead of inheriting the prose
+  rule that thickens links in running text -- thirty-five parts read as a
+  reading order rather than thirty-five shouted links. The members themselves
+  became cells on one adaptive grid: `auto-fit` tracks at a readable minimum
+  measure, so the same markup is one column on a phone and several on a wide
+  desk with no template threshold for a particular series length, and cell
+  order stays DOM order, which keeps tab order and visual order identical.
+  Hover and the reader's own place borrow the two grounds sidebar navigation
+  already uses for those states, so a series panel and the tree beside it agree
+  about what "under the pointer" and "you are here" look like; the current
+  member adds a filled ordinal and a heavier title, so the cue is never colour
+  alone. A cell's margin reset is scoped through the list, because the prose
+  rule that spaces `ol` items carries two classes and a type and had been
+  adding 4px of rhythm to every cell that the component never asked for.
+- Print expands a closed disclosure again in browsers that hide one through
+  `::details-content`. Forcing `display` on the children left the subtree out
+  of layout, so a collapsed series strip, file tree or callout printed as its
+  summary alone.
 
 ### Fixed
 

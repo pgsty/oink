@@ -648,6 +648,23 @@ def check_featured_image_sources() -> list[str]:
     return errors
 
 
+def scss_block(styles: str, opener: str) -> str:
+    """The source of one brace-balanced SCSS block, opener included."""
+
+    start = styles.find(opener)
+    if start < 0:
+        return ""
+    depth = 0
+    for index in range(start, len(styles)):
+        if styles[index] == "{":
+            depth += 1
+        elif styles[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return styles[start:index + 1]
+    return ""
+
+
 def check_series_sources() -> list[str]:
     """The series strip is one placement, one resolver, and no runtime."""
 
@@ -704,13 +721,39 @@ def check_series_sources() -> list[str]:
             "print no longer expands closed disclosures, so the series list would print collapsed", errors)
     require("d-print-none" not in strip,
             "the series strip hides itself from print", errors)
-    require(".td-series-strip {" in blog_styles
-            and "margin-block" in blog_styles
-            and "padding-inline" in blog_styles
-            and "padding-inline: 1.35rem 14px" in blog_styles
-            and "padding: 4px 14px 4px 1.35rem" not in blog_styles
-            and blog_styles.count("min-block-size: 26px") >= 2,
-            "the series strip lost its own styles, logical properties, or minimum target sizes", errors)
+    block = scss_block(blog_styles, ".td-series-strip {")
+    require(bool(block), "the series strip lost its own styles", errors)
+    require(not re.search(r"\b(?:margin|padding)-(?:left|right)\b", block)
+            and not re.search(r"^\s*(?:left|right|width|height):", block, re.M),
+            "the series strip uses physical instead of logical properties", errors)
+    require("min-block-size: 44px" in block
+            and "min-block-size: 42px" in block,
+            "the series strip lost the minimum target size on its bar or its rows", errors)
+    # The ordinal is drawn by the link and lives in one fixed square track,
+    # which keeps titles aligned while giving every number the same shape.
+    require("grid-template-columns: var(--td-series-ordinal)" in block
+            and "content: counter(td-series)" in block
+            and re.search(r"inline-size: var\(--td-series-ordinal\);\s*"
+                          r"block-size: var\(--td-series-ordinal\);", block)
+            and "place-items: center end" in block,
+            "the series ordinals left their shared track, so long lists no longer align", errors)
+    # A `hero` article paints its featured image behind this band, so the panel
+    # is translucent over a blur; an opaque ground would punch a hole through the
+    # picture. Browsers without the blur take the opaque card back, because 55%
+    # over a photograph is not readable.
+    require("backdrop-filter: blur" in block
+            and "-webkit-backdrop-filter: blur" in block
+            and "background: var(--td-shell-field)" in block
+            and "@supports not" in block,
+            "the series panel stopped being translucent over a blur, or lost the "
+            "opaque fallback that keeps it readable without one", errors)
+    # The list keeps DOM order and lets the available measure decide whether it
+    # is one, two, or more equal columns; no template threshold should fork the
+    # markup for a particular series length.
+    require("td-series-strip__list--split" not in strip
+            and "repeat(auto-fit" in block
+            and re.search(r"minmax\(\d+rem,\s*1fr\)", block),
+            "the series list is no longer one adaptive, DOM-ordered grid", errors)
 
     # Both taxonomies that carry a surface of their own stay out of the default
     # chips row; naming one in params.taxonomy.page_header still opts back in.

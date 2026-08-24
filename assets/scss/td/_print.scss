@@ -255,6 +255,16 @@
     opacity: 1 !important;
   }
 
+  // Browsers that hide closed disclosures through `::details-content` skip the
+  // subtree's layout, so forcing `display` on the children alone leaves them
+  // out of the printed box. Unknown pseudo-elements drop the whole rule, which
+  // is exactly the right outcome for browsers that never had the wrapper.
+  details:not([open])::details-content {
+    content-visibility: visible !important;
+    block-size: auto !important;
+    overflow: visible !important;
+  }
+
 
 
   .td-content-cards {

@@ -114,6 +114,13 @@ All notable changes to OINK are documented here. The project follows
   lightness, held at the brightest step that still reads AA body text on the
   sky canvas (4.62:1) and the white surfaces (5.09:1). The 150ms glide on the
   shared colors curve, and the dark palette, are unchanged.
+- The navbar's dropdown panels breathe in and out instead of popping. A 100ms
+  fade with a 4px settle rides the shared hover curve in both directions; the
+  runtime still toggles only `hidden`, with `transition: display
+  allow-discrete` holding the exit and an `@starting-style` block feeding the
+  entry. Browsers without discrete display transitions keep today's instant
+  toggle, and reduced motion zeroes the duration tokens.
+
 ### Fixed
 
 - The outline's lit range reads in the section's accent, not just its cursor.

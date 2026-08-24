@@ -34,7 +34,7 @@
 {{ $hasLanding := and $interactiveOutput (.Page.Store.Get "hasLanding" | default false) -}}
 {{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
 {{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
-{{ $hasMermaid := .Page.Store.Get "hasmermaid" | default false -}}
+{{ $hasMermaid := and $interactiveOutput (.Page.Store.Get "hasmermaid" | default false) -}}
 {{ $hasAuthoredA11y := and $interactiveOutput (.Page.Store.Get "hasAuthoredA11y" | default false) -}}
 
 {{ if $hasMarkmap -}}

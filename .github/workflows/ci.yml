@@ -301,6 +301,9 @@ jobs:
       - name: Check the parameter contract and legacy-key errors
         run: python3 bin/check-params.py
 
+      - name: Config schemas match their sources
+        run: python3 bin/generate-config-schema.py --check
+
       - name: Check consuming-site Goldmark prerequisites
         run: python3 bin/check-site-markup.py --site tests/site
 

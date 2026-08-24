@@ -57,6 +57,17 @@ All notable changes to OINK are documented here. The project follows
   metadata they did not provide. The full `fig` source form is now pinned as
   a numbered container whose parameters deliberately exclude processing;
   a processed numbered image is a native block image with `num`.
+- Generated configuration schemas. `bin/generate-config-schema.py` projects
+  `schema/site-params.schema.json` and `schema/front-matter.schema.json` from
+  the two existing authorities -- `hugo.yaml`'s defaults with their comment
+  documentation, and `check-params.py`'s template read-point scan -- for
+  editor completion and hover help. The schemas are generated artifacts,
+  never a second configuration authority: CI regenerates them and fails on
+  drift, and the front-matter schema deliberately carries no type constraints
+  because several keys accept a bare-boolean opt-out beside their site type.
+
+### Changed
+
 - First-party browser behavior now publishes as stable capability chunks under
   `js/chunks/`; page flags select script tags instead of creating one
   concatenated bundle for every feature combination. Execution order and the

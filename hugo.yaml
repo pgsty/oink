@@ -62,7 +62,8 @@ params:
     # own identity. `theme_color_dark` carries the dark palette; when omitted
     # it is derived by lightening the light color until it reads AA on the
     # dark canvas. Blank keeps the brand navy, and an invalid value warns and
-    # keeps it too.
+    # keeps it too; front matter `theme_color: false` opts a page out of an
+    # inherited color entirely.
     theme_color: ''
     theme_color_dark: ''
     # The site navbar and footer render on every layout by default. Rendering,

@@ -63,6 +63,9 @@ def build(
     process_env = os.environ.copy()
     if env:
         process_env.update(env)
+    # A hard ceiling per build: a wedged Hugo subprocess once idled a CI job
+    # for six hours before cancellation. Ten minutes is an order of magnitude
+    # above the slowest observed scenario build.
     return subprocess.run(
         command,
         cwd=ROOT,
@@ -70,6 +73,7 @@ def build(
         text=True,
         check=False,
         env=process_env,
+        timeout=600,
     )
 
 

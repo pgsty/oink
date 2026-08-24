@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
 
 permissions:
@@ -12,10 +13,11 @@ jobs:
   scripts:
     name: Browser runtime tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -28,6 +30,7 @@ jobs:
   publication:
     name: Book publication
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v7
@@ -150,10 +153,14 @@ jobs:
   build:
     name: Hugo ${{ matrix.hugo-version }}
     runs-on: ubuntu-latest
+    # The longest matrix leg finishes in well under an hour; a leg that
+    # reaches this ceiling is hung infrastructure, and a cancelled six-hour
+    # job must never again stand in for a release verdict.
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        hugo-version: ['0.160.1', '0.164.0']
+        hugo-version: ['0.160.1', '0.164.0', '0.165.0']
 
     steps:
       - uses: actions/checkout@v7

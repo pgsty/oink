@@ -135,6 +135,11 @@ All notable changes to OINK are documented here. The project follows
   was holding a 390px Chinese title to ~278px and wrapping one orphaned
   character per line. A banner heading now drops the reservation; a browser
   test measures both languages at 360 and 390px.
+- CI hardening: the theme-unit matrix gains Hugo 0.165.0 (verified locally:
+  strict fixture build plus every Hugo-consuming checker), `v*` tags now run
+  the full suite so a release carries its own green, every job has a timeout,
+  and the shared-scenarios checker bounds each Hugo subprocess -- a wedged
+  build once idled a CI job for six hours before cancellation ever spoke.
 - The outline's lit range reads in the section's accent, not just its cursor.
   `docs-shell.js` marks every heading the viewport stands over; those entries
   now take the same theme-color ink the rail's lit line and travelling dot

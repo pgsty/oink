@@ -123,6 +123,12 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- `theme_color: false` opts a page out of an inherited section color -- the
+  theme's bare-boolean idiom, inherited dark half included, silent because it
+  is deliberate. Every other non-hex value now warns: a numeric `0` used to
+  vanish into the resolver's `default` on the way to the warning, violating
+  the "non-hex warns" contract, and `true` warned only by the accident of its
+  spelling. Negative fixtures pin all three shapes.
 - The outline's lit range reads in the section's accent, not just its cursor.
   `docs-shell.js` marks every heading the viewport stands over; those entries
   now take the same theme-color ink the rail's lit line and travelling dot

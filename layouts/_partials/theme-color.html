@@ -35,22 +35,36 @@
        without repeating them. */ -}}
   {{- $raw := dict -}}
   {{- $valid := dict -}}
+  {{- $optout := dict -}}
   {{- range $key := slice "theme_color" "theme_color_dark" -}}
-    {{- $value := printf "%v" (partial "ui-param.html" (dict "page" $page "key" $key) | default "") -}}
-    {{- if ne $value "" -}}
-      {{- $raw = merge $raw (dict $key $value) -}}
-      {{- $parsed := partial "_funcs/parse-hex-color.html" $value -}}
-      {{- if $parsed -}}
-        {{- $valid = merge $valid (dict $key $parsed) -}}
-      {{- else -}}
-        {{- $where := cond (isset $page.Params $key) (printf " at %s" $page.Path) "" -}}
-        {{- warnidf (printf "theme-color:%s:%s" $key $value)
-            "%s %q%s is not a #rgb or #rrggbb hex color -- keeping the default palette"
-            $key $value $where -}}
+    {{- $rawValue := partial "ui-param.html" (dict "page" $page "key" $key) -}}
+    {{- if eq $rawValue false -}}
+      {{- /* The theme's bare-boolean idiom: `false` opts a page out of an
+           inherited color the way `share: false` opts out of an inherited
+           share list. Deliberate, so silent -- and an inherited dark half is
+           part of what a false theme_color declines. Only genuine booleans
+           qualify; every other non-hex value falls through and warns. */ -}}
+      {{- $optout = merge $optout (dict $key true) -}}
+    {{- else if ne $rawValue nil -}}
+      {{- /* No `default`: it would also swallow a numeric 0, and a number
+           here is a mistake the author must hear about. */ -}}
+      {{- $value := printf "%v" $rawValue -}}
+      {{- if ne $value "" -}}
+        {{- $raw = merge $raw (dict $key $value) -}}
+        {{- $parsed := partial "_funcs/parse-hex-color.html" $value -}}
+        {{- if $parsed -}}
+          {{- $valid = merge $valid (dict $key $parsed) -}}
+        {{- else -}}
+          {{- $where := cond (isset $page.Params $key) (printf " at %s" $page.Path) "" -}}
+          {{- warnidf (printf "theme-color:%s:%s" $key $value)
+              "%s %q%s is not a #rgb or #rrggbb hex color -- keeping the default palette"
+              $key $value $where -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- if and (isset $valid "theme_color_dark") (not (isset $raw "theme_color")) -}}
+  {{- if and (isset $valid "theme_color_dark")
+        (not (isset $raw "theme_color")) (not (isset $optout "theme_color")) -}}
     {{- /* An invalid light color has already said the palette stays default;
          only a dark color with no light counterpart at all needs its own
          word, or the author would see nothing happen and not know why. */ -}}

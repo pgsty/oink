@@ -141,8 +141,10 @@ ACCEPTED_PAGE_CASES = [
     "share: false",
     # The immersive blog recipe, as a section cascade would write it.
     "featured_image: hero\ntoc_style: flow\ntoc_taxonomies: false\nsidebar_enabled: false",
-    # Section identity: the shorthand three-digit hex is part of the contract.
+    # Section identity: the shorthand three-digit hex is part of the contract,
+    # and bare-boolean false opts a page out of an inherited section color.
     "theme_color: '#06c'",
+    "theme_color: false",
     "theme_color: '#0f766e'\ntheme_color_dark: '#5ca29c'",
 ]
 
@@ -163,6 +165,9 @@ INVALID_SITE_CASES = [
     ("ui:\n  theme_color: '#ff0'", "AA body text needs 4.5:1"),
     # The dark half is a companion, never a palette of its own.
     ("ui:\n  theme_color_dark: '#a78bfa'", "has no theme_color to pair with"),
+    # A number is neither a hex nor the boolean opt-out; `default` must not
+    # swallow it on the way to the warning.
+    ("ui:\n  theme_color: 0", 'theme_color "0"'),
 ]
 INVALID_PAGE_CASES = [
     ("comments: definitely", "front matter comments must be a boolean"),

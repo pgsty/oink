@@ -472,6 +472,13 @@ outputs:
             "content/solo/own.md",
             "---\ntitle: Own\ntheme_color: '#0f766e'\n---\n\nPage override, full derived palette.\n",
         )
+        # The bare-boolean idiom: false opts a page out of the section's
+        # color, inherited dark half included, without a word -- this file
+        # sits inside the --panicOnWarning build, which is the proof.
+        write(
+            "content/solo/optout.md",
+            "---\ntitle: Optout\ntheme_color: false\n---\n\nDeliberately plain.\n",
+        )
         # A dark corporate navy: the first +32% step still reads under 4.5:1
         # on the dark canvas, so the derivation walks to +36% -- the
         # derive-to-target contract, not a fixed constant.
@@ -515,7 +522,7 @@ outputs:
             found = THEME_COLOR_STYLE.findall(source)
             if found != [style]:
                 errors.append(f"{relative}: expected the exact theme-color style block, got {found}")
-        for relative in ("docs/index.html", "_print/solo/index.html"):
+        for relative in ("docs/index.html", "solo/optout/index.html", "_print/solo/index.html"):
             if "--td-accent:#" in (public / relative).read_text(encoding="utf-8"):
                 errors.append(f"{relative}: emitted theme-color tokens it must not carry")
 
@@ -534,6 +541,8 @@ outputs:
               "---\ntitle: Dusk\ncascade:\n  theme_color_dark: '#a78bfa'\n---\n\nUnpaired dark.\n")
         write("content/solo/mixed.md",
               "---\ntitle: Mixed\ntheme_color: tomato\ntheme_color_dark: '#a78bfa'\n---\n\nInvalid light, valid dark.\n")
+        write("content/solo/zero.md",
+              "---\ntitle: Zero\ntheme_color: 0\n---\n\nA number is a mistake, said out loud.\n")
         result = subprocess.run([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
                                  "--destination", str(public), "--logLevel", "warn"],
                                 capture_output=True, text=True, check=False)
@@ -555,6 +564,10 @@ outputs:
         loud = (public / "solo/loud/index.html").read_text(encoding="utf-8")
         if "--td-accent:#ffff00" not in loud:
             errors.append("a low-contrast theme_color was dropped; the contrast warning is advisory and must ship the color")
+        if 'theme_color "0"' not in output:
+            errors.append(f"a numeric theme_color was swallowed instead of warned: {output[-400:]}")
+        if THEME_COLOR_STYLE.findall((public / "solo/zero/index.html").read_text(encoding="utf-8")):
+            errors.append("a numeric theme_color still emitted a style block")
         if "has no theme_color to pair with" not in output:
             errors.append(f"an unpaired theme_color_dark did not warn: {output[-400:]}")
         for relative, case in (("dusk/index.html", "an unpaired theme_color_dark"),

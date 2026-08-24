@@ -14,6 +14,7 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import combined_source, referenced_chunks
 from test_site import build_fixture_public
 
 
@@ -120,11 +121,9 @@ def check_outputs(public: Path) -> list[str]:
         "SHA-256",
     ):
         require(marker in fences, f"data-fence fixture missing {marker}", errors)
-    require(re.search(r'<script src="[^"]*js/page-[^"]+"', fences) is not None, "data-fence page lacks its bundle", errors)
-    bundle = re.search(r'<script src="(/js/page-[^"]+)"', fences)
-    if bundle:
-        source = (public / bundle.group(1).lstrip("/")).read_text()
-        require("OinkEchartsFunctions" in source and "data-td-echarts" in source, "data-fence bundle lacks the ECharts runtime", errors)
+    require(bool(referenced_chunks(public, fences)), "data-fence page lacks runtime chunks", errors)
+    source = combined_source(public, fences)
+    require("OinkEchartsFunctions" in source and "data-td-echarts" in source, "data-fence chunks lack the ECharts runtime", errors)
     for marker in ('```echarts {height="320px"}', 'formatter: "$fn:bytesFormatter"', '```checksums {base="https://downloads.example.org/releases/stable" algo="sha256"}'):
         require(marker in fences_md, f"data-fence Markdown output lost {marker}", errors)
     require("data-td-echarts" not in fences_md and "td-asset-list" not in fences_md, "data-fence Markdown output contains HTML", errors)

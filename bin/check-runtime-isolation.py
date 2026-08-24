@@ -99,7 +99,7 @@ def main() -> int:
         )
         require(
             "$hasGoogleSearch" in scripts and ".Site.Language.Lang" in scripts,
-            "bundle key is missing search or language discriminators",
+            "templated runtime chunk targets are missing search or language identity",
         )
         require(
             "function initSearch()" not in docs_shell

@@ -9,14 +9,12 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import chunk, combined_source, referenced_chunks
 from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
-MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
-
-
 # Landing display surfaces that keep a dark canvas regardless of the site theme.
 ALWAYS_DARK_SURFACES = ("td-landing-codeplate", "td-landing-preview__pane--source")
 
@@ -45,11 +43,6 @@ def run(
     return subprocess.run(
         command, cwd=ROOT, capture_output=True, text=True, check=False
     )
-
-
-def bundle_path(source: str) -> str:
-    match = MAIN_SCRIPT.search(source)
-    return match.group("src") if match else ""
 
 
 def check_example(public: Path) -> list[str]:
@@ -141,18 +134,14 @@ def check_example(public: Path) -> list[str]:
         errors,
     )
 
-    landing_bundle = bundle_path(html)
-    docs_bundle = bundle_path(docs)
-    require(landing_bundle and docs_bundle, "landing or docs bundle is missing", errors)
-    require(landing_bundle != docs_bundle, "hasLanding did not alter the bundle key", errors)
-    if landing_bundle:
-        source = (public / landing_bundle.lstrip("/")).read_text(encoding="utf-8")
-        require("OinkLanding" in source, "landing runtime was not bundled", errors)
-        require("td-tabs:v1:" in source, "Preview tabs runtime was not bundled", errors)
-        require("data-td-code-copy" in source, "Preview code runtime was not bundled", errors)
-    if docs_bundle:
-        source = (public / docs_bundle.lstrip("/")).read_text(encoding="utf-8")
-        require("OinkLanding" not in source, "docs page bundled the landing runtime", errors)
+    require(bool(referenced_chunks(public, html)), "landing runtime chunks are missing", errors)
+    require(bool(referenced_chunks(public, docs)), "docs runtime chunks are missing", errors)
+    require(chunk(public, html, "landing") is not None, "landing runtime was not bundled", errors)
+    require(chunk(public, docs, "landing") is None, "docs page bundled the landing runtime", errors)
+    source = combined_source(public, html)
+    require("OinkLanding" in source, "landing runtime source is missing", errors)
+    require("td-tabs:v1:" in source, "Preview tabs runtime was not bundled", errors)
+    require("data-td-code-copy" in source, "Preview code runtime was not bundled", errors)
 
     for marker in (
         "td-landing-marquee--static",
@@ -485,12 +474,11 @@ echo preview
         require(source.count("data-td-image-zoom") >= 2, "Preview images were not registered for Zoom", errors)
         require("data-td-image-zoom-dialog" in source, "Preview did not emit the Zoom dialog", errors)
 
-        bundle = bundle_path(source)
-        require(bool(bundle), "Preview fixture has no feature bundle", errors)
-        if bundle:
-            runtime = (site / "public" / bundle.lstrip("/")).read_text(encoding="utf-8")
-            for marker in ('input[type="checkbox"]', "data-td-image-zoom-dialog", "td-tabs:v1:"):
-                require(marker in runtime, f"Preview feature bundle lacks {marker}", errors)
+        public = site / "public"
+        require(bool(referenced_chunks(public, source)), "Preview fixture has no runtime chunks", errors)
+        runtime = combined_source(public, source)
+        for marker in ('input[type="checkbox"]', "data-td-image-zoom-dialog", "td-tabs:v1:"):
+            require(marker in runtime, f"Preview runtime chunks lack {marker}", errors)
     return errors
 
 

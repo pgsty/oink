@@ -473,7 +473,10 @@ def measure_page(public: Path, page: Path, cache: AssetCache) -> dict:
     js = [j for j in js if j]
     fonts = sorted({f for c in css for f in c["fonts"]})
     third = sorted({t for a in css + js for t in a["third_party"]})
-    bundle = next((j["path"] for j in js if "/page-" in "/" + j["path"] and j["path"].endswith(".js")), None)
+    runtime_chunks = [
+        item["path"] for item in js
+        if "/js/chunks/" in "/" + item["path"] and item["path"].endswith(".js")
+    ]
     fa_usage = len(re.findall(r'class=["\']?[^"\'>]*\bfa-(?:solid|regular|brands)\b', html))
     return {
         "type": classify_page(html, rel),
@@ -490,7 +493,7 @@ def measure_page(public: Path, page: Path, cache: AssetCache) -> dict:
         "fa_icon_uses": fa_usage,
         "third_party": third,
         "remote_requests": remote,
-        "bundle": bundle,
+        "runtime_chunks": runtime_chunks,
     }
 
 
@@ -518,13 +521,14 @@ def summarise_pages(pages: dict[str, dict]) -> dict:
     return summary
 
 
-def bundle_table(public: Path, pages: dict[str, dict], cache: AssetCache) -> list[dict]:
+def chunk_table(public: Path, pages: dict[str, dict], cache: AssetCache) -> list[dict]:
     usage: dict[str, int] = {}
     for info in pages.values():
-        if info["bundle"]:
-            usage[info["bundle"]] = usage.get(info["bundle"], 0) + 1
+        for runtime_chunk in info["runtime_chunks"]:
+            usage[runtime_chunk] = usage.get(runtime_chunk, 0) + 1
     table = []
-    for rel in sorted((public / "js").glob("page-*.js")) if (public / "js").is_dir() else []:
+    chunks_dir = public / "js/chunks"
+    for rel in sorted(chunks_dir.glob("*.js")) if chunks_dir.is_dir() else []:
         entry = cache.info("/" + rel.relative_to(public).as_posix())
         if entry:
             table.append({
@@ -596,12 +600,17 @@ def measure_build(name: str, snapshot: Path, hugo: str, theme: Path, *, fixture:
         pages[rel] = measure_page(dest, page, cache)
     result["pages_measured"] = len(pages)
     result["by_type"] = summarise_pages(pages)
-    result["bundles"] = bundle_table(dest, pages, cache)
-    result["bundle_count"] = len(result["bundles"])
+    result["chunks"] = chunk_table(dest, pages, cache)
+    result["chunk_count"] = len(result["chunks"])
     css_files = sorted(dest.glob("scss/main*.css"))
     result["main_css"] = [
         {"file": p.name, "bytes": p.stat().st_size, "gzip": len(gzip.compress(p.read_bytes(), 6))}
         for p in css_files
+    ]
+    fontawesome_css = sorted(dest.glob("scss/fontawesome*.css"))
+    result["fontawesome_css"] = [
+        {"file": p.name, "bytes": p.stat().st_size, "gzip": len(gzip.compress(p.read_bytes(), 6))}
+        for p in fontawesome_css
     ]
     fonts_dir = [p for p in dest.rglob("*.woff2")]
     result["font_files"] = {
@@ -674,7 +683,7 @@ def render_markdown(report: dict) -> str:
     if any("build" in s for s in report["sites"].values()):
         out.append("## Builds (strict: --minify --printPathWarnings --panicOnWarning; isolated snapshot; local theme via go.work)")
         out.append("")
-        out.append("| site | strict | cold wall s | cold hugo ms | warm wall s | warm hugo ms | pages | bundles | main.css KB (gz) | fonts (FA) KB | public MB |")
+        out.append("| site | strict | cold wall s | cold hugo ms | warm wall s | warm hugo ms | pages | chunks | main + FA CSS KB (gz) | fonts (FA) KB | public MB |")
         out.append("| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
         for name, site in report["sites"].items():
             b = site.get("build")
@@ -682,11 +691,16 @@ def render_markdown(report: dict) -> str:
                 continue
             css = b.get("main_css", [{}])
             css0 = css[0] if css else {}
+            fontawesome_css = b.get("fontawesome_css", [{}])
+            fontawesome0 = fontawesome_css[0] if fontawesome_css else {}
+            css_bytes = css0.get("bytes", 0) + fontawesome0.get("bytes", 0)
+            css_gzip = css0.get("gzip", 0) + fontawesome0.get("gzip", 0)
             fonts = b.get("font_files", {})
             out.append(f"| {name} | {'ok' if b['strict_build_ok'] else 'FAIL'} | {b['cold']['wall_seconds']} | {b['cold']['hugo_total_ms']} | "
                        f"{b['warm']['wall_seconds'] if b.get('warm') else '—'} | {b['warm']['hugo_total_ms'] if b.get('warm') else '—'} | "
-                       f"{b.get('pages_measured', '—')} | {b.get('bundle_count', '—')} | {kb(css0.get('bytes'))} ({kb(css0.get('gzip'))}) | "
-                       f"{kb(fonts.get('bytes'))} ({kb(fonts.get('font_awesome_bytes'))}) | {b.get('public_bytes', 0) / 1048576:.1f} |")
+                       f"{b.get('pages_measured', '—')} | {b.get('chunk_count', '—')} | {kb(css_bytes)} ({kb(css_gzip)}) | "
+                       f"{kb(fonts.get('bytes'))} ({kb(fonts.get('font_awesome_bytes'))}) | "
+                       f"{b.get('public_bytes', 0) / 1048576:.1f} |")
         out.append("")
         out.append("### Per page type (median; KB raw / gz)")
         out.append("")
@@ -701,15 +715,15 @@ def render_markdown(report: dict) -> str:
                            f"{kb(s['js_bytes']['median'])} / {kb(s['js_gzip']['median'])} | {kb(s['html_bytes']['median'])} | "
                            f"{s['pages_with_third_party']} | {s['pages_with_remote_requests']} | {s['pages_with_fa_icon_uses']} |")
         out.append("")
-        out.append("### JS bundles (page-*.js; combinations of runtime flags)")
+        out.append("### Stable JS capability chunks")
         out.append("")
-        out.append("| site | bundle | KB (gz) | pages | third-party |")
+        out.append("| site | chunk | KB (gz) | pages | third-party |")
         out.append("| --- | --- | ---: | ---: | --- |")
         for name, site in report["sites"].items():
             b = site.get("build")
-            if not b or "bundles" not in b:
+            if not b or "chunks" not in b:
                 continue
-            for entry in b["bundles"]:
+            for entry in b["chunks"]:
                 out.append(f"| {name} | `{entry['file'].split('/')[-1][:48]}…` | {kb(entry['bytes'])} ({kb(entry['gzip'])}) | {entry['pages']} | {', '.join(entry['third_party']) or '—'} |")
         out.append("")
         for name, site in report["sites"].items():

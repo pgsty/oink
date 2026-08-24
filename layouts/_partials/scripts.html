@@ -160,21 +160,24 @@ window.markmap = {
   {{ end -}}
 {{ end -}}
 
-{{ $jsArray := slice -}}
+{{/* Optional first-party runtimes publish as stable capability chunks. Page
+     flags choose script tags; they never create a new concatenation identity. */ -}}
+{{ $jsChunks := slice -}}
 {{ if $hasPlantuml -}}
   {{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
   {{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
-  {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate "js/plantuml.js" .Site.Home -}}
-  {{ $jsArray = $jsArray | append $jsPako -}}
-  {{ if $plantumlSVG }}{{ $jsArray = $jsArray | append $jsSvgLoader }}{{ end -}}
-  {{ $jsArray = $jsArray | append $jsPlantuml -}}
+  {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate (printf "js/generated/plantuml-%s.js" .Site.Language.Lang) .Site.Home -}}
+  {{ $members := slice $jsPako -}}
+  {{ if $plantumlSVG }}{{ $members = $members | append $jsSvgLoader }}{{ end -}}
+  {{ $members = $members | append $jsPlantuml -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" (printf "js/chunks/plantuml-%s.js" .Site.Language.Lang) "members" $members) -}}
 {{ end -}}
 {{ if $hasMarkmap -}}
-  {{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" .Site.Home -}}
-  {{ $jsArray = $jsArray | append $jsMarkmap -}}
+  {{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate (printf "js/generated/markmap-%s.js" .Site.Language.Lang) .Site.Home -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" (printf "js/chunks/markmap-%s.js" .Site.Language.Lang) "members" (slice $jsMarkmap)) -}}
 {{ end -}}
 {{ if $drawioActive -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/drawio.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/drawio.js" "members" (slice (resources.Get "js/drawio.js"))) -}}
 {{ end -}}
 {{ $hasAsciinema := .Page.Store.Get "hasAsciinema" -}}
 {{ $hasEcharts := .Page.Store.Get "hasEcharts" -}}
@@ -209,27 +212,29 @@ window.markmap = {
     {{- with $infographicJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 {{ if or $hasAsciinema $hasEcharts $hasInfographic -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/content-components.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/content-components.js" "members" (slice (resources.Get "js/content-components.js"))) -}}
 {{ end -}}
 {{ if $shell -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/docs-shell.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/shell.js" "members" (slice (resources.Get "js/docs-shell.js"))) -}}
 {{ end -}}
 {{ if and $interactiveOutput $hasGoogleSearch -}}
-  {{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate "js/search.js" .Site.Home -}}
-  {{ $jsArray = $jsArray | append $jsSearch -}}
+  {{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate (printf "js/generated/google-search-%s.js" .Site.Language.Lang) .Site.Home -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" (printf "js/chunks/google-search-%s.js" .Site.Language.Lang) "members" (slice $jsSearch)) -}}
 {{ end -}}
 {{ if $hasKeyboardNav -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/keyboard-nav.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/keyboard.js" "members" (slice (resources.Get "js/keyboard-nav.js"))) -}}
 {{ end -}}
 {{ if $hasFooterCollapse -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/footer-collapse.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/footer-collapse.js" "members" (slice (resources.Get "js/footer-collapse.js"))) -}}
 {{ end -}}
 {{ if $localSearch -}}
-  {{ $jsArray = $jsArray | append
-    (resources.Get "js/search-engine.js")
-    (resources.Get "js/palette-model.js")
-    (resources.Get "js/command-palette.js")
-  -}}
+  {{ $jsChunks = $jsChunks | append (dict
+    "target" "js/chunks/local-search.js"
+    "members" (slice
+      (resources.Get "js/search-engine.js")
+      (resources.Get "js/palette-model.js")
+      (resources.Get "js/command-palette.js"))
+  ) -}}
 {{ end -}}
 
 {{ if .Page.Store.Get "hasmermaid" -}}
@@ -267,57 +272,44 @@ window.markmap = {
 {{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch }}{{ end -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{ if and $interactiveOutput $darkMode.enable -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/dark-mode.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/dark-mode.js" "members" (slice (resources.Get "js/dark-mode.js"))) -}}
 {{ end -}}
 {{ if and $interactiveOutput $hasGiscus -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/giscus.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/giscus.js" "members" (slice (resources.Get "js/giscus.js"))) -}}
 {{ end -}}
 {{ $hasFeedback := and $interactiveOutput (.Page.Store.Get "hasFeedback" | default false) -}}
 {{ if $hasFeedback -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/feedback.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/feedback.js" "members" (slice (resources.Get "js/feedback.js"))) -}}
 {{ end -}}
 {{ if $hasCodeRuntime -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/code-block.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/code-block.js" "members" (slice (resources.Get "js/code-block.js"))) -}}
 {{ end -}}
 {{ if $hasAssetList -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/asset-list.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/asset-list.js" "members" (slice (resources.Get "js/asset-list.js"))) -}}
 {{ end -}}
 {{ if $hasLanding -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/landing.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/landing.js" "members" (slice (resources.Get "js/landing.js"))) -}}
 {{ end -}}
 {{ if $hasTabRuntime -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/tabs.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/tabs.js" "members" (slice (resources.Get "js/tabs.js"))) -}}
 {{ end -}}
 {{ if $hasImageZoom -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/image-zoom.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/image-zoom.js" "members" (slice (resources.Get "js/image-zoom.js"))) -}}
 {{ end -}}
 {{ if $hasFileTree -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/filetree.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/filetree.js" "members" (slice (resources.Get "js/filetree.js"))) -}}
 {{ end -}}
 {{ if $hasAuthoredA11y -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/authored-a11y.js") -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/authored-a11y.js" "members" (slice (resources.Get "js/authored-a11y.js"))) -}}
 {{ end -}}
 
 {{ if and $interactiveOutput (eq (partial "ui-param.html" (dict "page" . "key" "scroll_spy")) true) -}}
-  {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
-  {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/scrollspy.js" "members" (slice (resources.Get "js/scrollspy-patch.js"))) -}}
 {{ end -}}
 
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
-{{/* Only templated members make otherwise identical bundles language-specific. */ -}}
-{{ with $jsArray -}}
-  {{ $bundleKey := "" -}}
-  {{ if or $hasPlantuml $hasMarkmap (and $interactiveOutput $hasGoogleSearch) -}}
-    {{ $bundleKey = $.Site.Language.Lang -}}
-  {{ end -}}
-  {{ range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}{{ end -}}
-  {{ $js := . | resources.Concat (printf "js/page-%s.js" (md5 $bundleKey)) -}}
-  {{ if hugo.IsProduction -}}
-    {{ $js = $js | minify | fingerprint -}}
-    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"></script>
-  {{ else -}}
-    <script src="{{ $js.RelPermalink }}"></script>
-  {{ end -}}
+{{ range $jsChunks -}}
+  {{ partialCached "script-resource.html" . .target -}}
 {{ end -}}
 
 {{ if partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}

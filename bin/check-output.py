@@ -7,18 +7,20 @@ Over the built regression fixture (--public, default tests/site/public):
      form, svg, dialog, template, headings, pre, code, blockquote) closes in order;
      void elements and elements with optional end tags are ignored.
   2. duplicate IDs — no id value appears twice on one page.
-  3. bundle graph — every page references exactly one shared js/actions bundle,
+  3. runtime graph — every page references exactly one shared js/actions bundle,
      every non-print page additionally references the shared js/core shell bundle,
-     any page references at most one per-page js/page-<key> feature bundle, no
-     remote <script src> / stylesheet <link> appears, and the number of distinct
-     feature bundles is reported.
-  4. output security — bin/check-output-security.py over the same build (the
+     optional first-party features use unique stable js/chunks/<capability> files,
+     no legacy page-combination bundle or remote script appears, and the number
+     of distinct capability chunks is reported.
+  4. stylesheet graph — the stable Font Awesome distribution precedes the
+     consumer-specific main stylesheet on every rendered page.
+  5. output security — bin/check-output-security.py over the same build (the
      fixture opts into third-party embeds) plus a synthetic negative fixture that must
      be rejected.
-  5. social cards — exactly one featured image reaches Open Graph, schema, and
+  6. social cards — exactly one featured image reaches Open Graph, schema, and
      Twitter metadata, all three agree, twitter:card follows, and a local card
      URL names a file the build actually shipped.
-  6. Markdown labels — the LLMS link and section-page heading follow the active
+  7. Markdown labels — the LLMS link and section-page heading follow the active
      language, including localized punctuation in Simplified Chinese.
 """
 
@@ -51,9 +53,11 @@ class Structure(HTMLParser):
         self.stack: list[tuple[str, int]] = []
         self.ids: dict[str, int] = {}
         self.problems: list[str] = []
-        self.bundles: list[str] = []
+        self.chunks: list[str] = []
+        self.legacy_bundles: list[str] = []
         self.cores: list[str] = []
         self.actions: list[str] = []
+        self.base_stylesheets: list[str] = []
         self.action_lines: list[int] = []
         self.manifest_lines: list[int] = []
         self.remote: list[str] = []
@@ -78,12 +82,23 @@ class Structure(HTMLParser):
                 self.action_lines.append(self.getpos()[0])
             if re.search(r"/js/core(?:\.min\.[0-9a-f]{64})?\.js$", clean):
                 self.cores.append(src)
+            chunk_match = re.search(
+                r"/js/chunks/([a-z0-9-]+?)(?:\.min\.[0-9a-f]{64})?\.js$",
+                clean,
+            )
+            if chunk_match:
+                self.chunks.append(chunk_match.group(1))
             if re.search(r"/js/page-[0-9a-f]{32}(?:\.min\.[0-9a-f]{64})?\.js$", clean):
-                self.bundles.append(src)
+                self.legacy_bundles.append(src)
             if src.startswith(("http://", "https://", "//")):
                 self.remote.append(f"script {src[:60]}")
-        if tag == "link" and "stylesheet" in (attrs.get("rel") or "") and (attrs.get("href") or "").startswith(("http://", "https://", "//")):
-            self.remote.append(f"stylesheet {attrs.get('href')[:60]}")
+        if tag == "link" and "stylesheet" in (attrs.get("rel") or ""):
+            href = attrs.get("href") or ""
+            clean = href.split("?", 1)[0]
+            if re.search(r"/scss/(?:fontawesome|main)(?:\.min\.[0-9a-f]{64})?\.css$", clean):
+                self.base_stylesheets.append(href)
+            if href.startswith(("http://", "https://", "//")):
+                self.remote.append(f"stylesheet {href[:60]}")
 
     def handle_startendtag(self, tag: str, attrs_list) -> None:
         # <foo/> — treat as open+close only for non-void tags
@@ -114,7 +129,7 @@ class Structure(HTMLParser):
 
 def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
     errors: list[str] = []
-    bundle_counts: dict[str, int] = {}
+    chunk_counts: dict[str, int] = {}
     pages = 0
     for path in sorted(public.rglob("*.html")):
         rel = path.relative_to(public).as_posix()
@@ -142,15 +157,27 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         expected_cores = 0 if "/_print/" in f"/{rel}" else 1
         if len(parser.cores) != expected_cores:
             errors.append(f"{rel}: expected {expected_cores} core bundle(s), found {len(parser.cores)}: {parser.cores[:3]}")
-        if len(parser.bundles) > 1:
-            errors.append(f"{rel}: expected at most one feature bundle, found {len(parser.bundles)}: {parser.bundles[:3]}")
-        for b in parser.bundles:
-            bundle_counts[b] = bundle_counts.get(b, 0) + 1
+        if parser.legacy_bundles:
+            errors.append(f"{rel}: legacy page-combination bundle survived: {parser.legacy_bundles[:3]}")
+        if len(parser.chunks) != len(set(parser.chunks)):
+            errors.append(f"{rel}: repeated runtime chunk(s): {parser.chunks}")
+        stylesheet_roles = []
+        for href in parser.base_stylesheets:
+            match = re.search(r"/scss/(fontawesome|main)(?:\.min\.[0-9a-f]{64})?\.css(?:\?.*)?$", href)
+            if match:
+                stylesheet_roles.append(match.group(1))
+        if stylesheet_roles != ["fontawesome", "main"]:
+            errors.append(
+                f"{rel}: expected Font Awesome then main stylesheet, found "
+                f"{stylesheet_roles}: {parser.base_stylesheets[:4]}"
+            )
+        for name in parser.chunks:
+            chunk_counts[name] = chunk_counts.get(name, 0) + 1
         for r in parser.remote:
             errors.append(f"{rel}: remote asset {r}")
     if pages == 0:
         errors.append("no HTML pages found — build tests/site first")
-    return errors, bundle_counts
+    return errors, chunk_counts
 
 
 def check_security(public: Path) -> list[str]:
@@ -665,7 +692,7 @@ def main() -> int:
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
     errors = self_test()
-    html_errors, bundles = check_html(args.public)
+    html_errors, chunks = check_html(args.public)
     errors += html_errors
     errors += check_merge_markers(args.public)
     errors += check_security(args.public)
@@ -680,7 +707,7 @@ def main() -> int:
         for error in errors:
             print(f"  {error}")
         return 1
-    print(f"Output checks passed ({len(bundles)} distinct feature bundles)")
+    print(f"Output checks passed ({len(chunks)} stable runtime chunks)")
     return 0
 
 

@@ -12,6 +12,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from runtime_assets import referenced_chunks
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
@@ -32,16 +33,11 @@ def load_actions() -> Any:
 
 
 def referenced_bundles(output: Path, html: str) -> list[str]:
-    sources = re.findall(r'<script\b[^>]*\bsrc="([^"]*?/js/page-[^"]+\.js)"', html)
-    bundles: list[str] = []
-    for source in sources:
-        relative = re.sub(r"^https?://[^/]+", "", source).split("?", 1)[0]
-        relative = re.sub(r"^/preview/", "/", relative).lstrip("/")
-        path = output / relative
-        require(path.is_file(), f"referenced Palette bundle is missing: {source}")
-        bundles.append(path.read_text(encoding="utf-8"))
-    require(bundles, "page references no feature bundle")
-    return bundles
+    chunks = referenced_chunks(output, html)
+    for item in chunks:
+        require(item.path.is_file(), f"referenced Palette chunk is missing: {item.src}")
+    require(chunks, "page references no runtime chunks")
+    return [item.path.read_text(encoding="utf-8") for item in chunks]
 
 
 def main() -> int:

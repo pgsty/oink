@@ -12,6 +12,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from runtime_assets import referenced_chunks
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
@@ -43,15 +44,11 @@ def load_actions() -> Any:
 
 
 def referenced_bundles(output: Path, html: str) -> list[str]:
-    sources = re.findall(r'<script\b[^>]*\bsrc="([^"]*?/js/page-[^"]+\.js)"', html)
-    bundles: list[str] = []
-    for source in sources:
-        relative = re.sub(r"^https?://[^/]+", "", source).split("?", 1)[0]
-        path = output / relative.lstrip("/")
-        require(path.is_file(), f"referenced bundle is missing: {source}")
-        bundles.append(path.read_text(encoding="utf-8"))
-    require(bundles, "page references no feature bundle")
-    return bundles
+    chunks = referenced_chunks(output, html)
+    for item in chunks:
+        require(item.path.is_file(), f"referenced runtime chunk is missing: {item.src}")
+    require(chunks, "page references no runtime chunks")
+    return [item.path.read_text(encoding="utf-8") for item in chunks]
 
 
 def check_sources() -> None:
@@ -61,8 +58,9 @@ def check_sources() -> None:
         "scripts.html does not assemble keyboard-nav.js",
     )
     require(
-        "$hasKeyboardNav -}}" in scripts and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts,
-        "keyboard-nav is not appended under its flag into the derived bundle key",
+        "$hasKeyboardNav -}}" in scripts
+        and '"target" "js/chunks/keyboard.js"' in scripts,
+        "keyboard-nav is not gated as its stable capability chunk",
     )
     require(
         "params.ui.keyboard_nav must be a boolean" in scripts,
@@ -171,8 +169,8 @@ def check_sources() -> None:
     require(
         'resources.Get "js/footer-collapse.js"' in scripts
         and "$hasFooterCollapse -}}" in scripts
-        and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts,
-        "scripts.html does not assemble or key the footer-collapse runtime",
+        and '"target" "js/chunks/footer-collapse.js"' in scripts,
+        "scripts.html does not gate the stable footer-collapse runtime",
     )
     require(
         '$hasFooterCollapse := and $interactiveOutput (or $footerData.brand $footerData.columns)'

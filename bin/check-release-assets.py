@@ -10,14 +10,12 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import chunk, referenced_chunks
 from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
-MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
-
-
 def require(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
@@ -121,11 +119,6 @@ def card_fragment(source: str) -> str:
     return match.group(0) if match else ""
 
 
-def bundle_path(source: str) -> str:
-    match = MAIN_SCRIPT.search(source)
-    return match.group("src") if match else ""
-
-
 def check_example(public: Path) -> list[str]:
     errors: list[str] = []
     paths = {
@@ -205,16 +198,14 @@ def check_example(public: Path) -> list[str]:
     )
     require(">Linux<" in base and ">amd64<" in base, "asset OS/arch badges are missing", errors)
 
-    asset_bundle = bundle_path(pig)
     plain = paths["pig-1.9.0"].read_text(encoding="utf-8")
-    plain_bundle = bundle_path(plain)
-    require(asset_bundle and plain_bundle, "fixture pages lost their feature bundle", errors)
-    require(asset_bundle != plain_bundle, "hasAssetList did not change the bundle key", errors)
-    if asset_bundle:
-        script = public / asset_bundle.lstrip("/")
-        require(script.exists(), "asset-list bundle file is missing", errors)
-        if script.exists():
-            require("OinkAssetList" in script.read_text(encoding="utf-8"), "asset-list runtime was not bundled", errors)
+    require(bool(referenced_chunks(public, pig)), "asset fixture lost its runtime chunks", errors)
+    require(bool(referenced_chunks(public, plain)), "plain release lost its runtime chunks", errors)
+    asset_runtime = chunk(public, pig, "asset-list")
+    require(asset_runtime is not None and asset_runtime.path.is_file(), "asset-list runtime file is missing", errors)
+    require(chunk(public, plain, "asset-list") is None, "asset-list runtime leaked onto a plain release", errors)
+    if asset_runtime and asset_runtime.path.is_file():
+        require("OinkAssetList" in asset_runtime.path.read_text(encoding="utf-8"), "asset-list runtime was not bundled", errors)
 
     markdown = (public / "blog/release/pig-1.10.0/index.md").read_text(encoding="utf-8")
     for checksum in hashes:
@@ -496,8 +487,8 @@ def check_sources() -> list[str]:
     require('$hasAssetList' in scripts and 'resources.Get "js/asset-list.js"' in scripts, "asset-list runtime is not conditionally wired", errors)
     require(
         "$hasAssetList -}}" in scripts
-        and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts,
-        "asset-list is not appended under its flag into the derived bundle key",
+        and '"target" "js/chunks/asset-list.js"' in scripts,
+        "asset-list is not gated as its stable capability chunk",
         errors,
     )
     require("line %d" in parser, "asset parser errors do not retain line numbers", errors)

@@ -41,8 +41,6 @@ MACHINE_PATH_MARKERS = (
 
 NORMALISERS = [
     (re.compile(r"\.min\.[0-9a-f]{64}\."), ".min.<hash>."),
-    (re.compile(r"page-[0-9a-f]{32}\.min\.<hash>\.js"), "page-<bundle>.min.<hash>.js"),
-    (re.compile(r"page-[0-9a-f]{32}\.js"), "page-<bundle>.js"),
     (re.compile(r'integrity="sha256-[A-Za-z0-9+/=&#;]+"'), 'integrity="<sri>"'),
     (re.compile(r"[?&]v=[0-9a-f]{6,}"), "?v=<hash>"),
     (re.compile(r"_hu_[0-9a-f]+\."), "_hu_<hash>."),  # processed image cache keys differ per Hugo version

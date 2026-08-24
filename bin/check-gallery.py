@@ -9,12 +9,12 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import chunk
 from test_site import build_fixture_public, fixture_config
 
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
-MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/page-[^"]+\.js)"[^>]*>')
 VALID_IMAGE = "/media/content-primitives-static.svg"
 TALL_IMAGE = "/media/content-primitives-tall.svg"
 
@@ -30,10 +30,8 @@ def run_hugo(hugo: str, *args: str) -> subprocess.CompletedProcess[str]:
 
 def bundle_path(public: Path, page: str) -> tuple[Path | None, str]:
     html = (public / page).read_text()
-    match = MAIN_SCRIPT.search(html)
-    if not match:
-        return None, html
-    return public / match.group(1).lstrip("/"), html
+    runtime = chunk(public, html, "image-zoom")
+    return (runtime.path if runtime else None), html
 
 
 def image_tag(source: str, alt: str) -> str:
@@ -72,17 +70,14 @@ def check_outputs(public: Path) -> list[str]:
     require(gallery.count("<img") == 4, "Gallery lost an image", errors)
     require(gallery.count('loading="lazy" decoding="async"') == 4, "Gallery loading attributes diverged", errors)
     require(html.count("data-td-image-zoom-dialog") == 1, "Gallery page did not request one Zoom dialog", errors)
-    require(bundle is not None and bundle.exists(), "Gallery has no local feature bundle", errors)
+    require(bundle is not None and bundle.exists(), "Gallery has no local image-zoom chunk", errors)
     if bundle and bundle.exists():
-        require("data-td-image-zoom-dialog" in bundle.read_text(), "Gallery bundle omits Image Zoom", errors)
+        require("data-td-image-zoom-dialog" in bundle.read_text(), "Gallery chunk omits Image Zoom", errors)
     disabled_gallery = gallery_block(disabled)
     require(disabled_gallery.count("<img") == 2, "disabled Gallery lost its images", errors)
     require("Static Gallery overview" in disabled and "Static Gallery detail" in disabled, "disabled Gallery lost content", errors)
     require("data-td-image-zoom-dialog" not in disabled, "disabled Gallery emitted a dialog", errors)
-    require(disabled_bundle is not None and disabled_bundle.exists(), "disabled Gallery has no feature bundle", errors)
-    if disabled_bundle and disabled_bundle.exists():
-        require("data-td-image-zoom-dialog" not in disabled_bundle.read_text(), "disabled Gallery loaded Zoom", errors)
-    require(bundle != disabled_bundle, "enabled and disabled Gallery reused one bundle target", errors)
+    require(disabled_bundle is None, "disabled Gallery loaded Zoom", errors)
 
     page_tag = image_tag(gallery, "Blue and gold local dashboard overview")
     global_tag = image_tag(gallery, "Green and violet global dashboard detail")
@@ -320,9 +315,9 @@ def check_zoom_reuse(hugo: str) -> list[str]:
             bundle, page = bundle_path(destination, "docs/index.html")
             require(bool(gallery_block(page)), f"Gallery Zoom case {name} lost its grid", errors)
             require(("data-td-image-zoom-dialog" in page) == expected, f"Gallery Zoom case {name} dialog state is wrong", errors)
-            require(bundle is not None and bundle.exists(), f"Gallery Zoom case {name} lacks a bundle", errors)
+            require((bundle is not None and bundle.exists()) == expected, f"Gallery Zoom case {name} runtime state is wrong", errors)
             if bundle and bundle.exists():
-                require(("data-td-image-zoom-dialog" in bundle.read_text()) == expected, f"Gallery Zoom case {name} bundle state is wrong", errors)
+                require("data-td-image-zoom-dialog" in bundle.read_text(), f"Gallery Zoom case {name} runtime content is wrong", errors)
             if expected:
                 require(page.count("data-td-image-zoom-dialog") == 1, "Gallery emitted duplicate dialogs", errors)
     return errors

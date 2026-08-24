@@ -4,20 +4,17 @@
 from __future__ import annotations
 
 import argparse
-from html import unescape
 from pathlib import Path
 import re
 import subprocess
 import tempfile
 
+from runtime_assets import chunk
 from test_site import build_fixture_public
 
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
-MAIN_SCRIPT = re.compile(r'<script src="([^"]*/js/page-[^"]+\.js)"[^>]*>')
-
-
 def require(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
@@ -55,11 +52,8 @@ def run_hugo(hugo: str, *args: str, env: dict[str, str] | None = None) -> subpro
 
 def bundle_path(public: Path, page: str) -> tuple[Path | None, str]:
     source = (public / page).read_text()
-    match = MAIN_SCRIPT.search(source)
-    if not match:
-        return None, source
-    relative = unescape(match.group(1)).split("?", 1)[0].lstrip("/")
-    return public / relative, source
+    runtime = chunk(public, source, "image-zoom")
+    return (runtime.path if runtime else None), source
 
 
 def check_outputs(public: Path) -> list[str]:
@@ -92,7 +86,7 @@ def check_outputs(public: Path) -> list[str]:
     ):
         require(marker in zoom, f"enabled Zoom fixture missing {marker}", errors)
     require(zoom.count("data-td-image-zoom-dialog") == 1, "enabled page emitted more than one dialog", errors)
-    require(zoom_path is not None and zoom_path.exists(), "enabled page has no local feature bundle", errors)
+    require(zoom_path is not None and zoom_path.exists(), "enabled page has no local image-zoom chunk", errors)
     if zoom_path and zoom_path.exists():
         zoom_bundle = zoom_path.read_text()
         require("data-td-image-zoom-dialog" in zoom_bundle, "enabled bundle omits Image Zoom", errors)
@@ -104,24 +98,15 @@ def check_outputs(public: Path) -> list[str]:
         ("candidate-free", plain, plain_path),
     ):
         require("data-td-image-zoom-dialog" not in page, f"{label} page emitted a dialog", errors)
-        require(path is not None and path.exists(), f"{label} page has no feature bundle", errors)
-        if path and path.exists():
-            require(
-                "data-td-image-zoom-dialog" not in path.read_text(),
-                f"{label} page loaded the Zoom runtime",
-                errors,
-            )
+        require(path is None, f"{label} page loaded the Zoom runtime", errors)
 
-    require(zoom_path != disabled_path, "Zoom and non-Zoom pages reused one bundle target", errors)
-    zoom_tag = MAIN_SCRIPT.search(zoom)
-    require(zoom_tag is not None, "enabled page lacks its feature script tag", errors)
-    if zoom_tag:
-        tag_end = zoom.find(">", zoom_tag.start())
-        tag = zoom[zoom_tag.start() : tag_end + 1]
-        require('integrity="sha256-' in tag, "Zoom bundle is not fingerprinted with SRI", errors)
-        require("http://" not in tag and "https://" not in tag, "Zoom bundle is not local", errors)
+    zoom_runtime = chunk(public, zoom, "image-zoom")
+    require(zoom_runtime is not None, "enabled page lacks its image-zoom chunk", errors)
+    if zoom_runtime:
+        require('integrity="sha256-' in zoom_runtime.tag, "Zoom chunk is not fingerprinted with SRI", errors)
+        require("http://" not in zoom_runtime.tag and "https://" not in zoom_runtime.tag, "Zoom chunk is not local", errors)
     require(
-        zoom.index("data-td-image-zoom-dialog") < zoom.index(zoom_tag.group(0)) if zoom_tag else False,
+        zoom.index("data-td-image-zoom-dialog") < zoom_runtime.start if zoom_runtime else False,
         "dialog is not present before the runtime executes",
         errors,
     )
@@ -142,7 +127,7 @@ def check_outputs(public: Path) -> list[str]:
     # because the title beside it is the link. Either satisfies the fixture.
     require("td-blog-posts-list__thumbnail" in blog or "td-blog-card__image" in blog,
             "blog scope fixture lacks a featured thumbnail", errors)
-    require(blog_path is not None and blog_path.exists(), "blog scope fixture lacks a feature bundle", errors)
+    require(blog_path is not None and blog_path.exists(), "blog scope fixture lacks the image-zoom chunk", errors)
     return errors
 
 
@@ -333,23 +318,17 @@ def check_template_contracts() -> list[str]:
             errors,
         )
 
-    # The feature bundle name is derived from the members themselves, so a
-    # runtime that is appended under a flag is keyed by construction; there is
-    # no hand-maintained argument list that can drift out of sync.
     require(
-        'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts,
-        "scripts.html no longer derives the bundle key from its members",
-        errors,
-    )
-    require(
-        "$hasImageZoom -}}" in scripts and 'js/image-zoom.js' in scripts,
-        "Zoom runtime is not appended under its flag",
+        "$hasImageZoom -}}" in scripts
+        and 'js/image-zoom.js' in scripts
+        and '"target" "js/chunks/image-zoom.js"' in scripts,
+        "Zoom runtime is not gated as its stable capability chunk",
         errors,
     )
 
     require('resources.Get "js/image-zoom.js"' in scripts, "scripts.html does not append Zoom", errors)
     require('partial "content/image-zoom-dialog.html"' in scripts, "scripts.html does not emit the dialog", errors)
-    require(scripts.index('partial "content/image-zoom-dialog.html"') < scripts.index("$js := . | resources.Concat"), "dialog renders after the bundle", errors)
+    require(scripts.index('partial "content/image-zoom-dialog.html"') < scripts.index("range $jsChunks"), "dialog renders after the runtime chunks", errors)
     require('partial "content/register-derived.html"' in render, "content renderer bypasses derived runtime registration", errors)
     require('partial "content/image-zoom-candidate.html"' in derived, "derived runtime registration does not scan Zoom candidates", errors)
     require('.Store.Set "hasImageZoom" true' in derived, "derived runtime registration does not set the Zoom flag", errors)

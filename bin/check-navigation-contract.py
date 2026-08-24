@@ -623,7 +623,11 @@ def observe_variant(
     cache = workspace / "cache"
     copy_fixture_site(site, variant, offline_search, subpath)
     log = run_hugo(site, output, cache)
-    main_bundles = sorted(list((output / "js").glob("actions*.js")) + list((output / "js").glob("core*.js")) + list((output / "js").glob("page-*.js")))
+    main_bundles = sorted(
+        list((output / "js").glob("actions*.js"))
+        + list((output / "js").glob("core*.js"))
+        + list((output / "js/chunks").glob("*.js"))
+    )
     palette_bundles = {
         str(bundle.relative_to(output))
         for bundle in main_bundles

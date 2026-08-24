@@ -10,14 +10,12 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import chunk, referenced_chunks
 from test_site import fixture_config_args
 
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
-MAIN_SCRIPT = re.compile(r'<script src="(?P<src>/js/page-[^"]+\.js)"')
-
-
 def require(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
@@ -74,11 +72,6 @@ params:
     )
     if data:
         write(root / "data/download/demo.yaml", data)
-
-
-def bundle(source: str) -> str:
-    match = MAIN_SCRIPT.search(source)
-    return match.group("src") if match else ""
 
 
 class TextParser(HTMLParser):
@@ -159,21 +152,19 @@ def check_example(public: Path) -> list[str]:
         errors,
     )
 
-    demo_bundle = bundle(demo)
-    pending_bundle = bundle(pending)
     plain = (public / "blog/release/pig-1.9.0/index.html").read_text(encoding="utf-8")
-    plain_bundle = bundle(plain)
-    require(demo_bundle and pending_bundle and plain_bundle, "download fixture lost a bundle", errors)
-    require(demo_bundle != plain_bundle, "download code/assets did not alter runtime bundle", errors)
-    require(pending_bundle != plain_bundle, "rolling download code did not alter runtime bundle", errors)
-    if demo_bundle:
-        source = (public / demo_bundle.lstrip("/")).read_text(encoding="utf-8")
-        require("OinkAssetList" in source, "published download did not bundle asset runtime", errors)
-        require("OINK code block: unable to copy code:" in source, "published download did not bundle code runtime", errors)
-    if pending_bundle:
-        source = (public / pending_bundle.lstrip("/")).read_text(encoding="utf-8")
-        require("OinkAssetList" not in source, "unpublished download bundled disabled asset runtime", errors)
-        require("OINK code block: unable to copy code:" in source, "unpublished rolling channel lost code runtime", errors)
+    require(bool(referenced_chunks(public, demo)), "published download lost its runtime chunks", errors)
+    require(bool(referenced_chunks(public, pending)), "pending download lost its runtime chunks", errors)
+    require(bool(referenced_chunks(public, plain)), "plain release lost its runtime chunks", errors)
+    demo_assets = chunk(public, demo, "asset-list")
+    pending_assets = chunk(public, pending, "asset-list")
+    plain_assets = chunk(public, plain, "asset-list")
+    demo_code = chunk(public, demo, "code-block")
+    pending_code = chunk(public, pending, "code-block")
+    require(demo_assets is not None and demo_assets.path.is_file(), "published download did not load asset runtime", errors)
+    require(pending_assets is None and plain_assets is None, "asset runtime leaked onto a page without published assets", errors)
+    require(demo_code is not None and demo_code.path.is_file(), "published download did not load code runtime", errors)
+    require(pending_code is not None and pending_code.path.is_file(), "unpublished rolling channel lost code runtime", errors)
 
     demo_md = (public / "fixtures/download-demo/index.md").read_text(encoding="utf-8")
     pending_md = (public / "fixtures/download-pending/index.md").read_text(encoding="utf-8")

@@ -15,6 +15,7 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import combined_source, referenced_chunks
 from test_site import build_fixture_public, fixture_config
 
 
@@ -38,14 +39,10 @@ def check_outputs(public: Path) -> list[str]:
     steps_markdown = (public / "fixtures/steps/index.md").read_text()
     tables = (public / "fixtures/tables/index.html").read_text()
     tables_markdown = (public / "fixtures/tables/index.md").read_text()
-    bundle_match = re.search(r'<script src="([^"]*/page-[^"]+\.js)"', lists)
-    require(bundle_match is not None, "lists fixture has no feature bundle", errors)
-    lists_bundle = ""
-    if bundle_match:
-        bundle = public / bundle_match.group(1).lstrip("/")
-        require(bundle.is_file(), "lists feature bundle is missing", errors)
-        if bundle.is_file():
-            lists_bundle = bundle.read_text(encoding="utf-8")
+    chunks = referenced_chunks(public, lists)
+    require(bool(chunks), "lists fixture has no runtime chunks", errors)
+    require(all(item.path.is_file() for item in chunks), "lists runtime chunk is missing", errors)
+    lists_bundle = combined_source(public, lists)
 
     # --- Badge / Kbd / Fields shortcode / full-width table -------------------
     for marker in (
@@ -870,7 +867,11 @@ def check_template_contracts() -> list[str]:
     for marker in ('partial "content/attributes.html"', "$policy.generic", 'partial "content/filetree-parse.html"', 'partial "content/filetree-icon.html"', 'partial "content/tab-block.html"', "td-filetree--static", "td-filetree-source", "```filetree", '$page.Store.Set "hasFileTree" true', 'role="separator"', 'T "ui_filetree_divider"'):
         require(marker in filetree_hook, f"render-codeblock-filetree.html lacks {marker}", errors)
     scripts_html = (ROOT / "layouts/_partials/scripts.html").read_text()
-    require('.Page.Store.Get "hasFileTree"' in scripts_html and 'resources.Get "js/filetree.js"' in scripts_html and "$hasFileTree -}}" in scripts_html and 'range . }}{{ $bundleKey = printf "%s|%s" $bundleKey .Name }}' in scripts_html, "scripts.html does not load filetree.js on hasFileTree (and key the bundle on it)", errors)
+    require('.Page.Store.Get "hasFileTree"' in scripts_html
+            and 'resources.Get "js/filetree.js"' in scripts_html
+            and "$hasFileTree -}}" in scripts_html
+            and '"target" "js/chunks/filetree.js"' in scripts_html,
+            "scripts.html does not gate filetree.js as its stable capability chunk", errors)
     filetree_runtime = (ROOT / "assets/js/filetree.js").read_text()
     for marker in ("OinkFileTree", "module.exports", "data-td-filetree-divider", "pointerdown", "'ArrowRight'", "'Home'", "'End'", "--td-filetree-name-col"):
         require(marker in filetree_runtime, f"filetree.js lacks {marker}", errors)

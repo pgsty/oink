@@ -598,7 +598,11 @@ def main() -> int:
                         f"{deployment}/{lang} page without Markdown lost the actions menu",
                     )
 
-                bundles = sorted(list((output / "js").glob("actions*.js")) + list((output / "js").glob("core*.js")) + list((output / "js").glob("page-*.js")))
+                bundles = sorted(
+                    list((output / "js").glob("actions*.js"))
+                    + list((output / "js").glob("core*.js"))
+                    + list((output / "js/chunks").glob("*.js"))
+                )
                 require(bundles, f"{deployment} emitted no theme bundle")
                 require(
                     any("OinkActionRegistry" in bundle.read_text(encoding="utf-8") for bundle in bundles),
@@ -633,7 +637,11 @@ def main() -> int:
             require('id="td-shell-search"' not in html, "search-off page gained Palette markup")
             search_off_bundles = [
                 bundle.read_text(encoding="utf-8")
-                for bundle in sorted(list((output / "js").glob("actions*.js")) + list((output / "js").glob("core*.js")) + list((output / "js").glob("page-*.js")))
+                for bundle in sorted(
+                    list((output / "js").glob("actions*.js"))
+                    + list((output / "js").glob("core*.js"))
+                    + list((output / "js/chunks").glob("*.js"))
+                )
             ]
             require(
                 any("OinkActionRegistry" in source for source in search_off_bundles),

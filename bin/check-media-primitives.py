@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 
+from runtime_assets import combined_source
 from test_site import build_fixture_public, fixture_config, fixture_media_config
 
 
@@ -34,11 +35,7 @@ def check_outputs(public: Path) -> list[str]:
     print_page = (public / "_print/fixtures/index.html").read_text()
 
     def feature_bundle(source: str) -> str:
-        match = re.search(r'<script src="([^"]*/js/page-[^"]+\.js)"', source)
-        if not match:
-            return ""
-        path = public / match.group(1).lstrip("/")
-        return path.read_text(encoding="utf-8") if path.is_file() else ""
+        return combined_source(public, source)
 
     for marker in (
         # attribute line + {command=/options=}: processed figure, Zoom marker

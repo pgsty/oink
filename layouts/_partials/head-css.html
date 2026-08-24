@@ -2,19 +2,30 @@
 {{ $scss := resources.Get $scssMain
       | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
 {{/* Font Awesome 7's source SCSS requires Dart Sass, while Hugo Extended
-     uses LibSass. Concatenate the official compiled CSS so the dependency
-     stays local and remains part of the theme's single stylesheet. */ -}}
+     uses LibSass. Concatenate its official compiled CSS into one stable vendor
+     resource. Keep it separate from consumer SCSS so an ordinary theme or site
+     style edit does not invalidate the icon distribution. The target remains
+     under scss/ so Font Awesome's ../webfonts URLs keep their public shape. */ -}}
 {{ $fontAwesome := slice
       (resources.Get "third_party/Font-Awesome/css/fontawesome.css")
       (resources.Get "third_party/Font-Awesome/css/solid.css")
       (resources.Get "third_party/Font-Awesome/css/regular.css")
       (resources.Get "third_party/Font-Awesome/css/brands.css")
--}}
-{{ $css := $fontAwesome | append $scss | resources.Concat "scss/main.css" -}}
+      | resources.Concat "scss/fontawesome.css" -}}
+{{ $css := $scss -}}
 
 {{ if hugo.IsProduction -}}
+  {{ $fontAwesome = $fontAwesome | minify | fingerprint -}}
   {{ $css = $css | minify | fingerprint -}}
   <link rel="preload" href="{{ $css.RelPermalink }}" as="style" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{ end -}}
+
+{{ with $fontAwesome -}}
+  <link href="{{ .RelPermalink }}" rel="stylesheet"
+  {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end -}}
+  >
+{{ else -}}
+  {{ warnf "stylesheet: Font Awesome resources were not found; authored and theme icons will not render" -}}
 {{ end -}}
 
 {{ with $css -}}

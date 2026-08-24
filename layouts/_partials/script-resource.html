@@ -1,0 +1,10 @@
+{{- /* Publish one first-party runtime chunk without changing classic-script
+     execution order. The caller owns the stable target path and membership;
+     this partial owns the production minify/fingerprint/SRI policy. */ -}}
+{{- $script := .members | resources.Concat .target -}}
+{{- if hugo.IsProduction -}}
+  {{- $script = $script | minify | fingerprint -}}
+  <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" crossorigin="anonymous"></script>
+{{- else -}}
+  <script src="{{ $script.RelPermalink }}"></script>
+{{- end -}}

@@ -10,6 +10,7 @@ import re
 import subprocess
 import tempfile
 
+from runtime_assets import combined_source
 from test_site import build_fixture_public
 
 
@@ -52,10 +53,7 @@ def chroma_palette_rules(source: str) -> dict[str, dict[str, str]]:
 
 
 def bundle_source(page: str, public: Path) -> str:
-    match = re.search(r'<script src="(?P<src>/js/page-[^"]+\.js)"', page)
-    if not match:
-        return ""
-    return (public / match.group("src").lstrip("/")).read_text()
+    return combined_source(public, page)
 
 
 def temp_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_config: str = "") -> tuple[subprocess.CompletedProcess[str], Path, tempfile.TemporaryDirectory]:

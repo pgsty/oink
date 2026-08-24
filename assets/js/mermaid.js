@@ -18,13 +18,11 @@
 (function () {
   'use strict';
 
-  if (!window.mermaid) return;
-
   var blocks = Array.prototype.slice.call(
     document.querySelectorAll('[data-td-diagram]'),
   );
   if (!blocks.length) {
-    window.mermaid.initialize({ startOnLoad: false });
+    if (window.mermaid) window.mermaid.initialize({ startOnLoad: false });
     return;
   }
 
@@ -53,7 +51,8 @@
   }
 
   function settings() {
-    var value = norm(window.mermaid.mermaidAPI.defaultConfig, PARAMS);
+    var api = window.mermaid.mermaidAPI;
+    var value = norm((api && api.defaultConfig) || {}, PARAMS);
     value.startOnLoad = false;
     if (document.documentElement.getAttribute('data-bs-theme') === 'dark') {
       value.theme = 'dark';
@@ -65,13 +64,17 @@
 
   // Mermaid 11 re-initializes cleanly, so a theme change is a re-render rather
   // than the page reload the old runtime fell back to.
-  function drawInto(target, source) {
+  function drawInto(target, source, isCurrent) {
     var id = 'td-mermaid-' + (seq += 1);
     return Promise.resolve()
       .then(function () {
         return window.mermaid.render(id, source);
       })
       .then(function (result) {
+        // Two renders of one stage can be in flight -- a colour-scheme change
+        // during the first. Whichever was asked for last owns the stage, no
+        // matter which promise settles first.
+        if (isCurrent && !isCurrent()) return null;
         target.innerHTML = result.svg;
         if (typeof result.bindFunctions === 'function') {
           result.bindFunctions(target);
@@ -110,6 +113,23 @@
   });
   if (!entries.length) return;
 
+  function showSource(entry) {
+    var block = document.createElement('pre');
+    var code = document.createElement('code');
+    block.className = 'td-mermaid-source';
+    code.className = 'language-mermaid';
+    code.textContent = entry.source;
+    block.appendChild(code);
+    entry.stage.replaceChildren(block);
+  }
+
+  // The vendored library can fail to arrive. Falling back to the source keeps
+  // the diagram readable as text instead of leaving a blank figure behind.
+  if (!window.mermaid) {
+    entries.forEach(showSource);
+    return;
+  }
+
   function hasBox(element) {
     return element.getClientRects().length > 0;
   }
@@ -131,6 +151,11 @@
 
   function render(entry) {
     entry.drawn = true;
+    var token = (entry.token || 0) + 1;
+    entry.token = token;
+    function current() {
+      return entry.token === token;
+    }
     // Re-rendering empties the stage for a frame. Holding the height it
     // already had keeps a colour-scheme change from collapsing the page and
     // taking the reader's scroll position with it.
@@ -139,12 +164,14 @@
     function release() {
       entry.stage.style.minBlockSize = '';
     }
-    return drawInto(entry.stage, entry.source).then(
+    return drawInto(entry.stage, entry.source, current).then(
       function () {
+        if (!current()) return;
         release();
         reveal(entry);
       },
       function (error) {
+        if (!current()) return;
         release();
         fail(entry, error);
       },
@@ -206,7 +233,7 @@
   // past its natural size. A diagram that already fits opens at 1:1.
   var home = { scale: 1, x: 0, y: 0 };
   var origin = null;
-  var current = null;
+  var openEntry = null;
 
   function applyView() {
     canvas.style.transform =
@@ -271,11 +298,16 @@
 
   function paint(entry) {
     canvas.replaceChildren();
-    return drawInto(canvas, entry.source).then(function (svg) {
+    function current() {
+      return openEntry === entry && dialog.open;
+    }
+    return drawInto(canvas, entry.source, current).then(function (svg) {
+      if (!svg) return null;
       naturalSize(svg);
       fit(svg);
       return svg;
     }, function (error) {
+      if (!current()) return;
       var box = document.createElement('pre');
       box.className = 'td-diagram__error';
       box.setAttribute('role', 'alert');
@@ -288,7 +320,7 @@
   function open(entry, button) {
     if (!usable) return;
     origin = button;
-    current = entry;
+    openEntry = entry;
     home = { scale: 1, x: 0, y: 0 };
     resetView();
     dialog.showModal();
@@ -442,7 +474,7 @@
       // A queued close event can arrive after another trigger reopened it.
       if (dialog.open) return;
       canvas.replaceChildren();
-      current = null;
+      openEntry = null;
       pointers.clear();
       pinchDistance = 0;
       viewport.classList.remove('is-grabbing');
@@ -474,9 +506,10 @@
     entries.forEach(function (entry) {
       if (entry.drawn) render(entry);
     });
-    if (current && dialog && dialog.open) {
+    if (openEntry && dialog && dialog.open) {
       var keep = { scale: view.scale, x: view.x, y: view.y };
-      paint(current).then(function () {
+      paint(openEntry).then(function (svg) {
+        if (!svg) return;
         // A colour change is not a reason to lose the reader's place.
         view.scale = keep.scale;
         view.x = keep.x;

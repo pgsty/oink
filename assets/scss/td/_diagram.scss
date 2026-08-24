@@ -174,8 +174,11 @@
   // The pan/zoom transform is a physical coordinate space: a translate of +x
   // moves the drawing right in every writing mode. Anchoring the canvas to a
   // start edge that flips would put the zoom-to-pointer maths half a viewport
-  // out in RTL, so this one box is pinned to LTR. Mermaid sets its own text
-  // anchors, so nothing inside the drawing depends on inheriting the page's.
+  // out in RTL, so this one box is pinned to LTR -- the same treatment code
+  // blocks get in `support/_rtl.scss`, and `rtl:ignore` keeps rtlcss from
+  // helpfully flipping it back. Mermaid sets its own text anchors, so nothing
+  // inside the drawing depends on inheriting the page's direction.
+  /*rtl:ignore*/
   direction: ltr;
 
   &.is-grabbing {

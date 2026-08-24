@@ -83,6 +83,18 @@ jobs:
           test -x "$chrome"
           echo "OINK_CHROME=$chrome" >> "$GITHUB_ENV"
 
+          # Ubuntu 24.04 restricts unprivileged user namespaces through
+          # AppArmor, and the Chrome zygote sandbox needs them: without this
+          # the headless shell aborts with "No usable sandbox" before it draws
+          # a page. Relaxing the runner sysctl keeps Chrome sandboxed, where
+          # --no-sandbox would weaken bin/book-pdf.py for every consumer to
+          # work around one runner image. The guard keeps a runner without the
+          # knob from failing the step over a restriction it never had.
+          userns=/proc/sys/kernel/apparmor_restrict_unprivileged_userns
+          if [ -e "$userns" ]; then
+            sudo sysctl --write kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
       - name: Package and validate the Book fixture
         shell: bash
         run: |

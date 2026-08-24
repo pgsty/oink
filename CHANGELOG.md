@@ -245,6 +245,14 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- The Book publication job renders its PDF. It never had: `chrome-headless-shell`
+  needs unprivileged user namespaces for its zygote sandbox, and Ubuntu 24.04
+  -- what `ubuntu-latest` now resolves to -- restricts them through AppArmor,
+  so the job aborted with "No usable sandbox" on the first run it ever had on
+  a runner; EPUB packaging and epubcheck had already passed above it. CI now
+  relaxes that one sysctl before rendering, which leaves Chrome's own sandbox
+  on. `bin/book-pdf.py` is untouched: `--no-sandbox` would have weakened the
+  render for every consumer to work around a single runner image.
 - A Mermaid diagram inside a tab that is not the open one renders at its
   proper size. Docsy's `startOnLoad` ran after the tab runtime had set
   `panel.hidden`, and inside `display: none` every text measurement returns

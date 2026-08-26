@@ -42,7 +42,10 @@
 {{- end -}}
 
 {{- $withChild := gt (len $pages) 0 -}}
-{{- $foldable := and (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) (ge $ulNr 1) $withChild -}}
+{{- $foldable := and (partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) "kind" "bool"
+    "fallback" true "key" "params.ui.sidebar_menu_foldable"
+    "where" (cond (isset $p.Params "sidebar_menu_foldable") $p.Path ""))) (ge $ulNr 1) $withChild -}}
 
 {{- $childMarkup := "" -}}
 {{- if $withChild -}}

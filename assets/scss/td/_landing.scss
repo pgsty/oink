@@ -899,18 +899,20 @@
 
     > span {
       display: block;
-      width: 100%;
+      // The template hands each rule its authored width through --w; the
+      // per-position values below are only the fallback rhythm.
+      width: var(--w, 100%);
       height: 8px;
       margin-top: 12px;
       border-radius: 999px;
       background: var(--bs-secondary-bg);
 
       &:nth-of-type(2) {
-        width: 84%;
+        width: var(--w, 84%);
       }
 
       &:nth-of-type(3) {
-        width: 62%;
+        width: var(--w, 62%);
       }
     }
   }

@@ -5,9 +5,10 @@
   {{ $toc := "" -}}
   {{ if not .Params.notoc }}{{ $toc = .TableOfContents }}{{ end -}}
   {{ $hasToc := and $toc (ne $toc `<nav id="TableOfContents"></nav>`) -}}
-  {{ $sidebarMin := (partial "ui-param.html" (dict "page" . "key" "sidebar_width_min")) | default 220 -}}
-  {{ $sidebarMax := (partial "ui-param.html" (dict "page" . "key" "sidebar_width_max")) | default 480 -}}
-  {{ $navWrap := eq (partial "ui-param.html" (dict "page" . "key" "sidebar_item_overflow")) "wrap" -}}
+  {{ $sidebarMetrics := partial "shell/sidebar-metrics.html" (dict "page" .) -}}
+  {{ $sidebarMin := $sidebarMetrics.min -}}
+  {{ $sidebarMax := $sidebarMetrics.max -}}
+  {{ $navWrap := $sidebarMetrics.wrap -}}
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
   {{ $navbar := partial "shell/navbar-enabled.html" . -}}
   {{ $pageWidth := partial "shell/page-width.html" . -}}

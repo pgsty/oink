@@ -1,31 +1,30 @@
-{{- /* Embed Swagger UI. Required named parameter: src. */ -}}
+{{- /* Embed Swagger UI. Required named parameter: src. Only the HTML output
+       embeds the explorer; print, Markdown, and RSS get a static link to the
+       specification and register no runtime. The initializer lives in
+       js/chunks/swagger-init.js and pins validatorUrl to null, so a same-
+       origin spec page never contacts the online validator. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "src")) -}}
+{{- $ok := true -}}
 {{- if or (not .IsNamedParams) (not (isset .Params "src")) -}}
   {{- warnf "shortcode %q requires named parameter src at %s; rendering nothing" .Name .Position -}}
+  {{- $ok = false -}}
 {{- end -}}
-{{- $original := .Get "src" -}}
-{{- $validated := partial "content/url.html" (dict
-  "name" .Name "parameter" "src" "position" .Position "value" $original "kind" "image"
-) -}}
+{{- $validated := dict "valid" false -}}
+{{- if $ok -}}
+  {{- $validated = partial "content/url.html" (dict
+    "name" .Name "parameter" "src" "position" .Position "value" (.Get "src") "kind" "image"
+  ) -}}
+  {{- $ok = $validated.valid -}}
+{{- end -}}
+{{- if $ok -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if in (slice "markdown" "rss") $format -}}
+[{{ partial "content/markdown-escape.html" (T "ui_openapi_spec") }}]({{ $validated.markdown }})
+{{- else if eq $format "print" -}}
+<p class="td-swagger-print">{{ T "ui_openapi_spec" }} — <a href="{{ $validated.href }}">{{ $validated.href }}</a></p>
+{{- else -}}
 {{- $id := printf "td-swagger-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
 {{- .Page.Store.Set "hasSwagger" true -}}
-<div id="{{ $id }}" class="td-swagger-ui"></div>
-<script>
-(() => {
-  const start = () => {
-    SwaggerUIBundle({
-      url: {{ $validated.href | jsonify | safeJS }},
-      dom_id: '#{{ $id }}',
-      presets: [
-        SwaggerUIBundle.presets.apis,
-        SwaggerUIStandalonePreset
-      ]
-    });
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once: true });
-  } else {
-    start();
-  }
-})();
-</script>
+<div id="{{ $id }}" class="td-swagger-ui" data-td-swagger data-td-spec-url="{{ $validated.href }}"></div>
+{{- end -}}
+{{- end -}}

@@ -284,3 +284,7 @@ ui_diagram_zoom_in: Zoom in
 ui_diagram_zoom_out: Zoom out
 ui_diagram_zoom_reset: Reset view
 ui_diagram_error: The diagram could not be rendered
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_openapi_spec: OpenAPI specification

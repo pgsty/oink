@@ -167,6 +167,7 @@ ui_print_page: 列印此頁
 ui_sidebar_expand_section: 展開章節
 ui_sidebar_collapse_section: 收合章節
 ui_asciinema_timer: 播放時間
+ui_openapi_spec: OpenAPI 規格檔案
 ui_release_view: 檢視發布
 ui_release_source: 原始碼
 ui_release_compare: 比較變更

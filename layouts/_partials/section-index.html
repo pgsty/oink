@@ -32,8 +32,8 @@
     "allowed" (slice "list" "cards") "fallback" "list"
     "key" "params.ui.section_index" "where" (cond (isset $page.Params "section_index") $page.Path "")) -}}
 {{- $columns := partial "validate.html" (dict
-    "value" (partial "ui-param.html" (dict "page" $page "key" "section_index_columns")) "kind" "number"
-    "fallback" 2 "key" "params.ui.section_index_columns"
+    "value" (partial "ui-param.html" (dict "page" $page "key" "section_index_columns")) "kind" "int"
+    "min" 1 "fallback" 2 "key" "params.ui.section_index_columns"
     "where" (cond (isset $page.Params "section_index_columns") $page.Path "")) -}}
 <div class="td-section-index td-section-index--{{ $mode }}{{ if eq $mode "cards" }} td-content-cards{{ end }}"{{ if eq $mode "cards" }} style="--td-card-columns: {{ $columns }}"{{ end }}>
     {{ if $page.Params.simple_list -}}

@@ -47,16 +47,10 @@
     "code_copy": {
       "description": "Copy control on code blocks. `false` sets the site-wide default only; a fence that names `copy` explicitly still wins."
     },
-    "columns": {
-      "description": "Front matter key read by the theme's templates."
-    },
     "comments": {
       "description": "`comments: false` is the boolean shorthand for this map."
     },
     "description": {
-      "description": "Front matter key read by the theme's templates."
-    },
-    "downstream_modified": {
       "description": "Front matter key read by the theme's templates."
     },
     "featured_image": {
@@ -81,7 +75,7 @@
       "description": "Front matter key read by the theme's templates."
     },
     "image_zoom": {
-      "description": "Optional local chrome data (never fetched by the browser): github_stars: 5500 alt_site: { label: 中文站, url: https://example.cn/ } Native image preview. Front matter `image_zoom: true|false` overrides."
+      "description": "Native image preview. Front matter `image_zoom: true|false` overrides."
     },
     "images": {
       "description": "Front matter key read by the theme's templates."
@@ -137,9 +131,6 @@
     "reading_width": {
       "description": "Inner reading measure for Book pages: slim | normal | wide. Unlike page_width, this changes content rather than the surrounding shell."
     },
-    "release": {
-      "description": "Front matter key read by the theme's templates."
-    },
     "release_url": {
       "description": "Front matter key read by the theme's templates."
     },
@@ -156,7 +147,7 @@
       "description": "Front matter key read by the theme's templates."
     },
     "section_index": {
-      "description": "The breadcrumb default is per shell -- on everywhere except the blog, where an article reads as a standalone piece -- so the resolver (shell/breadcrumb-enabled.html) owns it. Declaring a value here would flatten that split into one site-wide answer."
+      "description": "Form of a branch page's child index: list or cards."
     },
     "section_index_columns": {
       "description": "Front matter key read by the theme's templates."
@@ -244,9 +235,6 @@
     },
     "translation_notice": {
       "description": "Language code of the authoritative version, so a translated page can say so and link to it; false disables the line. Front matter `translation_notice: false` opts out a page written natively in this language."
-    },
-    "upstream_attribution": {
-      "description": "Front matter key read by the theme's templates."
     },
     "upstream_link": {
       "description": "Front matter key read by the theme's templates."

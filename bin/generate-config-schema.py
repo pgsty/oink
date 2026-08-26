@@ -34,6 +34,39 @@ GENERATOR = "bin/generate-config-schema.py"
 
 KEY_LINE = re.compile(r"^(\s*)([A-Za-z_][A-Za-z0-9_]*):(?:\s+(.*?))?\s*$")
 
+# Keys the read-point scan reports that are NOT part of the page authoring
+# surface: three removed keys read only by their migration-warning resolvers,
+# and one navbar menu-entry parameter the page-context regex cannot tell
+# apart from front matter. Excluding them keeps editor completion from
+# advertising keys that only ever warn; ``build`` asserts each entry is still
+# observed so this list cannot outlive the resolvers that justify it.
+FRONT_SCHEMA_EXCLUDES = {
+    "release": "replaced by release_url; read only by the release/meta.html migration warning",
+    "upstream_attribution": "renamed to the upstream_link companions; read only by the annotation-items.html migration warning",
+    "downstream_modified": "renamed to upstream_modified; read only by the annotation-items.html migration warning",
+    "columns": "navbar menu-entry parameter (navbar-item.html), not page front matter",
+}
+
+
+def strip_inline_comment(text: str) -> str:
+    """Drop a trailing ``# comment`` that sits outside quotes.
+
+    YAML starts an inline comment only at a ``#`` preceded by whitespace,
+    which is also what keeps quoted values (``'#abc'``) and bare URL
+    fragments (``.../page#anchor``) intact."""
+    if text.lstrip().startswith("#"):
+        raise SystemExit(f"generate-config-schema: a key with only a comment for a value is ambiguous: {text!r}")
+    quote = ""
+    for index, char in enumerate(text):
+        if quote:
+            if char == quote:
+                quote = ""
+        elif char in "'\"":
+            quote = char
+        elif char == "#" and index > 0 and text[index - 1] in " \t":
+            return text[:index].rstrip()
+    return text
+
 
 def load_check_params():
     spec = importlib.util.spec_from_file_location("oink_check_params", ROOT / "bin/check-params.py")
@@ -127,6 +160,8 @@ def parse_params(lines: list[str]) -> dict:
         node = {"description": " ".join(comments)} if comments else {}
         comments = []
         stack[-1][1][key] = node
+        if value is not None:
+            value = strip_inline_comment(value).strip()
         if value is None or value == "":
             node["children"] = {}
             pending = (indent, node["children"])
@@ -203,8 +238,14 @@ def build(check_params) -> dict[str, str]:
             properties = node["properties"]
         properties.setdefault(parts[-1], {"description": read_only_note})
 
+    for key, reason in FRONT_SCHEMA_EXCLUDES.items():
+        if key not in page_keys:
+            raise SystemExit(
+                f"generate-config-schema: FRONT_SCHEMA_EXCLUDES entry {key!r} is no longer read anywhere; "
+                f"drop it ({reason})")
+
     front_properties = {}
-    for key in sorted(page_keys):
+    for key in sorted(k for k in page_keys if k not in FRONT_SCHEMA_EXCLUDES):
         entry: dict = {}
         site_node = lookup(tree, f"ui.{key}") or lookup(tree, key)
         if site_node is not None:
@@ -239,11 +280,56 @@ def build(check_params) -> dict[str, str]:
     }
 
 
+def verify_documents(documents: dict[str, str]) -> None:
+    """Regression tripwires for the two parser defects this generator had:
+    inline comments bleeding into defaults, and legacy-only read points being
+    advertised as front matter. These check the OUTPUT, so they hold even if
+    the parser regresses in a new way that reproduces the same symptom."""
+    site = json.loads(documents["site-params.schema.json"])
+    front = json.loads(documents["front-matter.schema.json"])
+
+    def walk(node, path=""):
+        if isinstance(node, dict):
+            default = node.get("default")
+            if isinstance(default, str) and re.search(r"\s#\s", default):
+                raise SystemExit(f"generate-config-schema: default at {path} still carries an inline comment: {default!r}")
+            for key, value in node.items():
+                walk(value, f"{path}/{key}")
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                walk(value, f"{path}[{index}]")
+
+    walk(site)
+    params = site["properties"]["params"]["properties"]
+    pins = (
+        (("print", "toc"), bool),
+        (("print", "section_break_wordcount"), int),
+        (("ui", "blog_index_columns"), int),
+        (("ui", "section_index_columns"), int),
+    )
+    for path, expected in pins:
+        node = params
+        for part in path[:-1]:
+            node = node[part]["properties"]
+        default = node[path[-1]].get("default")
+        if not isinstance(default, expected) or (expected is int and isinstance(default, bool)):
+            raise SystemExit(
+                f"generate-config-schema: params.{'.'.join(path)} default should be {expected.__name__}, got {default!r}")
+
+    front_keys = set(front["properties"])
+    for key in FRONT_SCHEMA_EXCLUDES:
+        if key in front_keys:
+            raise SystemExit(f"generate-config-schema: excluded key {key!r} leaked into the front matter schema")
+    if "release_url" not in front_keys:
+        raise SystemExit("generate-config-schema: release_url disappeared from the front matter schema")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="fail if the committed schemas drift from the sources")
     args = parser.parse_args()
     documents = build(load_check_params())
+    verify_documents(documents)
     if args.check:
         drift = []
         for name, body in documents.items():

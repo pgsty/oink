@@ -139,6 +139,9 @@ ACCEPTED_PAGE_CASES = [
     "body_class: product-td-no-left-sidebar-preview",
     "blog_index: cards\nblog_index_columns: 4",
     "blog_index: table\nblog_index_toggle: true",
+    # Shell metrics as bare front matter keys: a page narrows its own sidebar,
+    # and sidebar_expand_levels: 0 is a legitimate fully-collapsed tree.
+    "sidebar_width_min: 260\nsidebar_width_max: 520\nsidebar_menu_foldable: false\nsidebar_expand_levels: 0",
     # The page key is the site key without ui.: a list replaces the site's,
     # and the bare boolean opts one page out of an inherited one.
     "share: [x, copy]",
@@ -150,6 +153,8 @@ ACCEPTED_PAGE_CASES = [
     "theme_color: '#06c'",
     "theme_color: false",
     "theme_color: '#0f766e'\ntheme_color_dark: '#5ca29c'",
+    "ui:\n  sidebar_width_min: 260\n  sidebar_width_max: 520",
+    "ui:\n  sidebar_expand_levels: 0",
 ]
 
 INVALID_SITE_CASES = [
@@ -185,7 +190,24 @@ INVALID_SITE_CASES = [
     # identifier: unguarded it would emit a family nobody has and silently drop
     # the site to the browser's default face.
     ("ui:\n  fonts:\n    ui: false", "is not a list of plain font family names"),
+    # The shell metrics and sidebar tree consume these on every reading
+    # shell, so the one-page fixture reaches each read point. A bad value
+    # must warn with the shared validator wording and keep building.
+    ("ui:\n  sidebar_width_min: '1; color: red'",
+     'params.ui.sidebar_width_min "1; color: red" is not a whole number'),
+    ("ui:\n  sidebar_width_min: -50", "params.ui.sidebar_width_min must be at least 1"),
+    ("ui:\n  sidebar_width_min: 600", "is larger than sidebar_width_max"),
+    ("ui:\n  sidebar_item_overflow: clip", "invalid params.ui.sidebar_item_overflow"),
+    ("ui:\n  sidebar_menu_foldable: definitely", "params.ui.sidebar_menu_foldable must be true or false"),
+    ("ui:\n  sidebar_expand_levels: nope", 'params.ui.sidebar_expand_levels "nope" is not a whole number'),
+    ("ui:\n  sidebar_menu_truncate: nope", 'params.ui.sidebar_menu_truncate "nope" is not a whole number'),
+    ("ui:\n  sidebar_cache_limit: nope", 'params.ui.sidebar_cache_limit "nope" is not a whole number'),
+    ("offline_search: true\noffline_search_summary_length: nope",
+     'params.offline_search_summary_length "nope" is not a whole number'),
+    ("offline_search: true\noffline_search_max_results: nope",
+     'params.offline_search_max_results "nope" is not a whole number'),
 ]
+
 INVALID_PAGE_CASES = [
     ("comments: definitely", "front matter comments must be a boolean"),
     ("share: [wechat]", 'invalid params.ui.share entry "wechat"'),
@@ -193,6 +215,10 @@ INVALID_PAGE_CASES = [
     ("theme_color: 'red;}body{background:red'", "is not a #rgb or #rrggbb hex color"),
     ("theme_color_dark: '#12345'", "theme_color_dark \"#12345\" at"),
     ("theme_color_dark: '#a78bfa'", "theme_color_dark \"#a78bfa\" at"),
+    # Page overrides of the shell metrics ride the same resolvers, so a bad
+    # front matter value must warn with the page's path, not fail the build.
+    ("sidebar_width_min: nope", 'params.ui.sidebar_width_min "nope" is not a whole number'),
+    ("sidebar_menu_foldable: definitely", "params.ui.sidebar_menu_foldable must be true or false"),
 ]
 
 
@@ -478,6 +504,90 @@ def check_blog_index_enum(hugo: str) -> list[str]:
     return errors
 
 
+def check_blog_numeric_params(hugo: str) -> list[str]:
+    """The blog pagination size and card columns are whole numbers: a bad
+    value warns and falls back instead of stopping `.Paginate` or handing
+    `repeat()` a fraction, and the shared one-page fixture has no blog
+    section, so this case brings its own."""
+    errors: list[str] = []
+    cases = (
+        ("size-string", "ui:\n  blog_index_size: nope",
+         'params.ui.blog_index_size "nope" is not a whole number'),
+        ("size-zero", "ui:\n  blog_index_size: 0", "params.ui.blog_index_size must be at least 1"),
+        ("columns-fraction", "ui:\n  blog_index: cards\n  blog_index_columns: 2.5",
+         'params.ui.blog_index_columns "2.5" is not a whole number'),
+    )
+    for name, params, expected in cases:
+        with tempfile.TemporaryDirectory(prefix=f"oink-params-blog-{name}-") as temp:
+            source = Path(temp)
+            (source / "content/blog").mkdir(parents=True)
+            (source / "hugo.yaml").write_text(site_config(params), encoding="utf-8")
+            (source / "content/blog/_index.md").write_text(
+                "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n", encoding="utf-8")
+            (source / "content/blog/post.md").write_text(
+                "---\ntitle: Post\ndate: 2026-08-19\n---\n\nBody.\n", encoding="utf-8")
+            command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                       "--destination", str(source / "public"), "--logLevel", "warn"]
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
+            output = result.stdout + result.stderr
+            strict = subprocess.run(command + ["--panicOnWarning"], capture_output=True, text=True, check=False)
+            require(result.returncode == 0,
+                    f"blog case {name} stopped the build instead of warning: {output[-400:]}", errors)
+            require(expected in output,
+                    f"blog case {name} did not warn with {expected!r}: {output[-400:]}", errors)
+            require(strict.returncode != 0, f"blog case {name} survived --panicOnWarning", errors)
+
+    # A leading zero must read as decimal, not octal: the int validator casts
+    # through float (base 10), where Hugo's string-to-int cast uses base 0 and
+    # would turn "010" into 8.
+    with tempfile.TemporaryDirectory(prefix="oink-params-blog-octal-") as temp:
+        source = Path(temp)
+        (source / "content/blog").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(site_config("ui:\n  blog_index: cards\n  blog_index_columns: '010'"), encoding="utf-8")
+        (source / "content/blog/_index.md").write_text(
+            "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n", encoding="utf-8")
+        (source / "content/blog/post.md").write_text(
+            "---\ntitle: Post\ndate: 2026-08-19\n---\n\nBody.\n", encoding="utf-8")
+        command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                   "--destination", str(source / "public"), "--logLevel", "warn", "--panicOnWarning"]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        require(result.returncode == 0,
+                f"a leading-zero column count did not build cleanly: {(result.stdout + result.stderr)[-400:]}", errors)
+        index = source / "public/blog/index.html"
+        if index.is_file():
+            html = index.read_text(encoding="utf-8")
+            require("--td-card-columns: 10" in html and "--td-card-columns: 8" not in html,
+                    "a leading-zero column count was read as octal instead of decimal", errors)
+    return errors
+
+
+def check_print_params(hugo: str) -> list[str]:
+    """`print.toc` and `print.section_break_wordcount` only run inside the
+    print output, so this case builds a section that renders one."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-params-print-") as temp:
+        source = Path(temp)
+        (source / "content/docs").mkdir(parents=True)
+        config = site_config("print:\n  toc: nope\n  section_break_wordcount: lots")
+        config += "outputs:\n  section: [HTML, print]\n"
+        (source / "hugo.yaml").write_text(config, encoding="utf-8")
+        (source / "content/docs/_index.md").write_text("---\ntitle: Docs\n---\n\nSection.\n", encoding="utf-8")
+        (source / "content/docs/page.md").write_text("---\ntitle: Page\n---\n\nBody.\n", encoding="utf-8")
+        command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                   "--destination", str(source / "public"), "--logLevel", "warn"]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        output = result.stdout + result.stderr
+        strict = subprocess.run(command + ["--panicOnWarning"], capture_output=True, text=True, check=False)
+        require(result.returncode == 0,
+                f"invalid print params stopped the build instead of warning: {output[-400:]}", errors)
+        require("params.print.toc must be true or false" in output,
+                f"print.toc did not warn as a boolean: {output[-400:]}", errors)
+        require('params.print.section_break_wordcount "lots" is not a whole number' in output,
+                f"section_break_wordcount did not warn as a whole number: {output[-400:]}", errors)
+        require(strict.returncode != 0, "invalid print params survived --panicOnWarning", errors)
+    return errors
+
+
 def check_no_errorf() -> list[str]:
     """Author input warns and falls back; strict publication rejects warnings."""
     errors: list[str] = []
@@ -507,7 +617,8 @@ def main() -> int:
         + check_documented_defaults()
     )
     if not args.source_only:
-        errors += check_builds(args.hugo) + check_blog_index_enum(args.hugo)
+        errors += (check_builds(args.hugo) + check_blog_index_enum(args.hugo)
+                   + check_blog_numeric_params(args.hugo) + check_print_params(args.hugo))
 
     if errors:
         print("Parameter contract check failed:")

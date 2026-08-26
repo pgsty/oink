@@ -28,7 +28,9 @@
   {{ $pages = where $pages ".Params.sidebar_divider" "!=" true }}
   {{ $subSection := 1 }}
 
-  {{ $breakOnWordCount := default 50 ($s.Site.Param "print.section_break_wordcount") }}
+  {{ $breakOnWordCount := partial "validate.html" (dict
+      "value" ($s.Site.Param "print.section_break_wordcount") "kind" "int"
+      "min" 0 "fallback" 50 "key" "params.print.section_break_wordcount") }}
   {{ $doPageBreak := gt (countwords $s.Content) $breakOnWordCount }}
 
   {{ range $pages }}
@@ -55,7 +57,9 @@
 </div>
 {{ partial "print/page-heading.html" . }}
 
-{{ if ne (.Param "print.toc") false }}
+{{ if partial "validate.html" (dict
+    "value" (.Param "print.toc") "kind" "bool"
+    "fallback" true "key" "params.print.toc") }}
     <ul>
     {{ template "recurse-toc" (dict "section" .CurrentSection "psid" "") }}
     </ul>

@@ -1,0 +1,28 @@
+{{- /* Resolve the shell sidebar metrics every reading baseof shares: the
+     validated `sidebar_width_min`/`sidebar_width_max` pixel counts and the
+     `sidebar_item_overflow` mode. Invalid values warn and fall back; a min
+     above its max keeps neither value, because guessing an order the site
+     never wrote would hide the mistake.
+
+     Input: dict "page" <page>. Returns dict "min" <int> "max" <int>
+     "wrap" <bool>. */ -}}
+{{- $page := .page -}}
+{{- $min := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $page "key" "sidebar_width_min")) "kind" "int"
+    "min" 1 "fallback" 220 "key" "params.ui.sidebar_width_min"
+    "where" (cond (isset $page.Params "sidebar_width_min") $page.Path "")) -}}
+{{- $max := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $page "key" "sidebar_width_max")) "kind" "int"
+    "min" 1 "fallback" 480 "key" "params.ui.sidebar_width_max"
+    "where" (cond (isset $page.Params "sidebar_width_max") $page.Path "")) -}}
+{{- if gt $min $max -}}
+  {{- warnidf (printf "sidebar-width-pair:%v:%v" $min $max)
+      "params.ui.sidebar_width_min %v is larger than sidebar_width_max %v -- using 220 and 480" $min $max -}}
+  {{- $min = 220 -}}
+  {{- $max = 480 -}}
+{{- end -}}
+{{- $overflow := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $page "key" "sidebar_item_overflow")) "kind" "enum"
+    "allowed" (slice "ellipsis" "wrap") "fallback" "ellipsis" "key" "params.ui.sidebar_item_overflow"
+    "where" (cond (isset $page.Params "sidebar_item_overflow") $page.Path "")) -}}
+{{- return (dict "min" $min "max" $max "wrap" (eq $overflow "wrap")) -}}

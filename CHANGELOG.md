@@ -5,6 +5,85 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Security
+
+- Swagger UI no longer contacts the online validator. The vendored bundle
+  defaults `validatorUrl` to `https://validator.swagger.io/validator` and
+  only skips it for localhost spec URLs, so every deployed `swagger` page
+  quietly sent its spec URL to a third party -- against the theme's
+  zero-implicit-network promise. The initializer now pins
+  `validatorUrl: null`, and it moved out of the shortcode's inline
+  `<script>` into the stable `js/chunks/swagger-init.js` chunk
+  (one initializer per page, any number of containers).
+- The two configured URL surfaces that bypassed the shared URL policy now go
+  through it: `params.ui.page_context_menu.links` entries and
+  `params.url_latest_version` used to reach `href` via `safeURL` unchecked,
+  so a `javascript:` URL in site configuration rendered as a clickable
+  script. Both now warn and drop an unsafe link; custom links also skip
+  entries without a string, non-blank name or a string URL, a non-array
+  `links` value warns and is ignored, and the menu separator only renders
+  when a valid link survives. The archived-version banner additionally
+  HTML-escapes the URL at its `safeHTML` sink -- the shared policy clears the
+  scheme and host, but a quote in an otherwise valid URL would still break
+  out of the attribute without escaping.
+- Landing hero `media.ratio` and `media.max_width` were interpolated into a
+  `safeCSS` style attribute unvalidated, so front matter `sections` -- an
+  author-level input -- could inject arbitrary CSS with zero warnings.
+  `ratio` now accepts exactly two `<number>(fr|px|rem|em|%)` tracks (the
+  documented `'1fr 240px'` shape), `max_width` a plain CSS length; anything
+  else warns and is ignored.
+
+### Fixed
+
+- Invalid configuration values warn and fall back instead of stopping an
+  ordinary build or silently emitting broken output, per the diagnostics
+  contract. `blog_index_size`, `sidebar_expand_levels`,
+  `sidebar_menu_truncate`, and `offline_search_summary_length` crashed
+  `hugo server` on a non-numeric value; `sidebar_width_min/max` accepted
+  CSS-injection text (emitted as `ZgotmplZpx`) and negatives with zero
+  warnings; `blog_index_columns`/`section_index_columns` fed fractions into
+  CSS `repeat()`; `sidebar_item_overflow`, `sidebar_menu_foldable`,
+  `print.toc`, `sidebar_cache_limit`, `print.section_break_wordcount`,
+  `offline_search_max_results`, and `blog_index_size: 0` changed behavior
+  silently. All of them now resolve through the shared validator (a new
+  `int` kind checks the whole-number lexical form and casts through float so
+  the value is read as base-10 -- Hugo's string-to-int cast is base-0, which
+  would read `010` as octal 8 and overflow-error on very long input), a min
+  above its max falls back to the 220/480 pair, and every
+  case is in the check-params invalid matrix (warn on normal builds, fail
+  under `--panicOnWarning`).
+- Asciinema, ReDoc, and Swagger respect the output contract. Their
+  shortcodes rendered the full interactive component into every output:
+  page Markdown/LLMS carried `td-*` markup and JSON config, RSS the same,
+  print rendered dead containers -- and a page-level print output loaded the
+  full player runtime. All three now read the output format like the other
+  sixteen gated shortcodes: Markdown and RSS get a plain link line, print a
+  static labelled link, and only interactive HTML registers the runtime
+  flags (scripts.html additionally gates the three runtime loads on the
+  interactive output, since a Page Store can carry values across a page's
+  output renders). The asciinema numeric parameters (`speed`, `startAt`,
+  `cols`, `rows`, `idleTimeLimit`, marker times) validate lexically and
+  warn instead of failing the build on author input, and the cast/spec URLs
+  of all three now pass the shared URL policy. Covered by a new
+  `fixtures/media-embeds` fixture with HTML/print/Markdown/RSS goldens and a
+  four-state component check with runtime absence assertions.
+- The landing capabilities `rules` bars now render at their authored widths:
+  the template emitted `--w` per bar but the stylesheet hardcoded the
+  fallback rhythm and never read it. Widths validate as CSS lengths (bad
+  entries warn and keep the default), `rules` must be an array, and the
+  capabilities `columns` and marquee `rows` counts validate as whole numbers
+  instead of crashing the build on a bad string.
+- The generated configuration schemas match what Hugo actually parses. The
+  hugo.yaml reader kept trailing inline comments inside scalar values, so
+  eleven defaults shipped as comment-contaminated strings (`print.toc` was
+  the string `"true # section print views..."` instead of boolean `true`),
+  and four comment blocks attached to the wrong key. The parser now strips
+  unquoted trailing comments, the misattached blocks are separated, and the
+  front matter schema no longer advertises keys read only by migration
+  warnings (`release`, `upstream_attribution`, `downstream_modified`) or the
+  navbar menu-entry `columns`; regeneration self-checks these invariants so
+  the drift gate cannot re-approve the bug it compares against.
+
 ### Changed
 
 - The shared-scenarios checker survives a wedged Hugo instead of spending a

@@ -37,11 +37,25 @@
 {{- if not (in (slice "start" "center") $align) }}{{ warnf "%s: hero.align must be start or center; using start" $page.Path }}{{ $align = "start" }}{{ end -}}
 {{- if and (eq $align "center") $hero.image }}{{ warnf "%s: hero.align center is a text-only layout; using align start so the image is kept" $page.Path }}{{ $align = "start" }}{{ end -}}
 {{- $media := $hero.media | default dict -}}
-{{- if and $media (not (reflect.IsMap $media)) }}{{ warnf "%s: hero.media must be a map; dropping the media" $page.Path }}{{ $media = false }}{{ end -}}
+{{- if and $media (not (reflect.IsMap $media)) }}{{ warnf "%s: hero.media must be a map; dropping the media" $page.Path }}{{ $media = dict }}{{ end -}}
 {{- $breakpoint := strings.TrimSpace (printf "%v" ($media.hide_below | default "")) -}}
 {{- if and $breakpoint (not (in (slice "sm" "md" "lg" "xl") $breakpoint)) }}{{ warnf "%s: hero.media.hide_below must be sm, md, lg, or xl; ignoring it" $page.Path }}{{ $breakpoint = "" }}{{ end -}}
-{{- with $media.ratio }}{{ $heroStyle = printf "%s --td-hero-columns: %s;" $heroStyle . }}{{ end -}}
-{{- with $media.max_width }}{{ $heroStyle = printf "%s --td-hero-media-max: %s;" $heroStyle . }}{{ end -}}
+{{- with $media.ratio -}}
+  {{- /* The style attribute is emitted through safeCSS, so only this narrow
+       track grammar may pass -- anything else could smuggle arbitrary CSS. */ -}}
+  {{- $ratio := strings.TrimSpace (printf "%v" .) -}}
+  {{- if findRE `^[0-9]+(\.[0-9]+)?(fr|px|rem|em|%)\s+[0-9]+(\.[0-9]+)?(fr|px|rem|em|%)$` $ratio -}}
+    {{- $heroStyle = printf "%s --td-hero-columns: %s;" $heroStyle $ratio -}}
+  {{- else -}}
+    {{- warnf "%s: hero.media.ratio must be two space-separated track sizes, each a number with fr, px, rem, em, or %%, like \"1fr 240px\"; ignoring it" $page.Path -}}
+  {{- end -}}
+{{- end -}}
+{{- with $media.max_width -}}
+  {{- $maxWidth := partial "validate.html" (dict
+      "value" . "kind" "length" "fallback" ""
+      "key" "hero.media.max_width" "where" $page.Path) -}}
+  {{- with $maxWidth }}{{ $heroStyle = printf "%s --td-hero-media-max: %s;" $heroStyle . }}{{ end -}}
+{{- end -}}
 {{- if $hasImage -}}
   {{- $imageStyle = printf "--td-hero-image-light: url(%q); --td-hero-image-dark: url(%q);" ($imageLight | relURL) ($imageDark | relURL) -}}
 {{- end -}}

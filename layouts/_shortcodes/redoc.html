@@ -1,15 +1,24 @@
-{{- /* Embed a ReDoc specification. Positional: one spec path/URL. */ -}}
+{{- /* Embed a ReDoc specification. Positional: one spec path/URL. Only the
+       HTML output embeds the reader; print, Markdown, and RSS get a static
+       link to the specification and register no runtime. The component
+       styles live in assets/scss/redoc.scss, loaded beside the runtime. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
+{{- $ok := true -}}
 {{- if ne (len .Params) 1 -}}
   {{- warnf "shortcode %q requires exactly one positional spec path or URL at %s; rendering nothing" .Name .Position -}}
+  {{- $ok = false -}}
 {{- end -}}
-{{- $file := .Get 0 -}}
-{{- if ne (printf "%T" $file) "string" }}{{ warnf "shortcode %q: spec must be a string at %s; rendering nothing" .Name .Position }}{{ $file = "" }}{{ end -}}
-{{- $file = strings.TrimSpace $file -}}
-{{- if not $file }}{{ warnf "shortcode %q: spec must not be empty at %s; rendering nothing" .Name .Position }}{{ end -}}
+{{- $file := "" -}}
+{{- if $ok -}}
+  {{- $file = .Get 0 -}}
+  {{- $validated := partial "content/url.html" (dict
+    "name" .Name "parameter" "spec" "position" .Position "value" $file "kind" "image"
+  ) -}}
+  {{- $ok = $validated.valid -}}
+  {{- if $ok }}{{ $file = $validated.raw }}{{ end -}}
+{{- end -}}
+{{- if $ok -}}
 {{- $url := "" -}}
-{{- .Page.Store.Set "hasRedoc" true -}}
-
 {{- if hasPrefix $file "http" -}}
   {{- $url = $file -}}
 {{- else if fileExists (print .Page.File.Dir $file) -}}
@@ -17,20 +26,17 @@
 {{- else -}}
   {{- $url = print .Page.Site.BaseURL $file -}}
 {{- end -}}
-
-<style>
-  .td-redoc input { height: 64px; }
-  .td-redoc span[type="put"], .td-redoc span[type="get"],
-  .td-redoc span[type="delete"], .td-redoc span[type="post"],
-  .td-redoc span[type="options"], .td-redoc span[type="patch"],
-  .td-redoc span[type="basic"], .td-redoc span[type="link"],
-  .td-redoc span[type="head"] { border-radius: 4px; }
-  .td-redoc h2 { margin-top: 0; }
-  .td-redoc img[alt="redocly logo"] { display: none; }
-  .td-redoc a[href="https://redocly.com/redoc/"] { display: none; }
-</style>
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if in (slice "markdown" "rss") $format -}}
+[{{ partial "content/markdown-escape.html" (T "ui_openapi_spec") }}]({{ partial "content/markdown-url.html" $url }})
+{{- else if eq $format "print" -}}
+<p class="td-redoc-print">{{ T "ui_openapi_spec" }} — <a href="{{ $url }}">{{ $url }}</a></p>
+{{- else -}}
+{{- .Page.Store.Set "hasRedoc" true -}}
 {{- $id := printf "td-redoc-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
 <div id="{{ $id }}" class="td-redoc">
   <redoc spec-url="{{ $url }}" hide-hostname="true" hide-logo="true"
     suppress-warnings="true" lazy-rendering native-scrollbars></redoc>
 </div>
+{{- end -}}
+{{- end -}}

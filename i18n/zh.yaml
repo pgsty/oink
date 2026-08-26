@@ -108,6 +108,7 @@ ui_print_page: 打印此页面
 ui_sidebar_expand_section: 展开章节
 ui_sidebar_collapse_section: 收起章节
 ui_asciinema_timer: 播放时间
+ui_openapi_spec: OpenAPI 规格文件
 ui_release_view: 查看发布
 ui_release_source: 源码
 ui_release_compare: 比较变更

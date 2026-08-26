@@ -1,5 +1,13 @@
 {{ if .Site.Params.archived_version -}}
-  {{ $latestVersion := .Site.Params.url_latest_version -}}
+  {{ $latestVersion := "" -}}
+  {{ with .Site.Params.url_latest_version -}}
+    {{/* Site configuration is high-trust input, but it still goes through the
+         shared URL policy: an unsafe value warns and drops the link. */ -}}
+    {{ $validated := partial "content/url.html" (dict
+      "label" "params.url_latest_version" "parameter" "URL"
+      "position" "site configuration" "value" . "kind" "web") -}}
+    {{ if $validated.valid }}{{ $latestVersion = $validated.href }}{{ end -}}
+  {{ end -}}
   {{ $currentVersion := .Site.Params.version -}}
   <div class="td-page-notice td-page-notice--primary">
     {{ with $currentVersion -}}
@@ -7,8 +15,10 @@
         {{ T "version_banner_archived" (dict "Version" (. | markdownify)) | safeHTML }}
         {{ with $latestVersion -}}
           {{/* Build the anchor here so translators localize word order without
-               editing markup. The URL comes from trusted site configuration. */ -}}
-          {{ $link := printf "<a href=%q target=\"_blank\" rel=\"noopener\">%s</a>" (. | safeURL) (T "version_banner_latest_link") -}}
+               editing markup. htmlEscape, not %q: %q escapes for Go, not for
+               an HTML attribute, so a quote in the URL would break out of it
+               even after the shared URL policy has cleared the scheme/host. */ -}}
+          {{ $link := printf "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">%s</a>" (htmlEscape .) (T "version_banner_latest_link") -}}
           {{ T "version_banner_latest" (dict "Link" $link) | safeHTML -}}
         {{ end -}}
       </p>

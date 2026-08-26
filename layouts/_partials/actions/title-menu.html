@@ -19,7 +19,41 @@
 {{ $byID := $actionContext.byId -}}
 {{ $customLinks := slice -}}
 {{ with $p.Site.Params.ui.page_context_menu -}}
-  {{ if reflect.IsMap . }}{{ with .links }}{{ $customLinks = . }}{{ end }}{{ end -}}
+  {{ if reflect.IsMap . -}}
+    {{ $rawLinks := .links -}}
+    {{ if and $rawLinks (not (reflect.IsSlice $rawLinks)) -}}
+      {{ warnf "params.ui.page_context_menu.links must be an array of link maps; got %v; ignoring it" $rawLinks -}}
+      {{ $rawLinks = slice -}}
+    {{ end -}}
+    {{ range (cond (reflect.IsSlice $rawLinks) $rawLinks slice) -}}
+      {{ if not (reflect.IsMap .) -}}
+        {{ warnf "params.ui.page_context_menu.links entries must be maps with name and url; got %v; skipping it" . -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ if ne (printf "%T" .name) "string" -}}
+        {{ warnf "params.ui.page_context_menu.links entry name must be a string; got %v; skipping it" (.name | default "") -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ $name := strings.TrimSpace .name -}}
+      {{ if not $name -}}
+        {{ warnf "params.ui.page_context_menu.links entry needs a non-empty name; skipping it" -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ if ne (printf "%T" .url) "string" -}}
+        {{ warnf "params.ui.page_context_menu.links entry %q needs a string url; skipping it" $name -}}
+        {{ continue -}}
+      {{ end -}}
+      {{ $url := partial "url-template.html" (dict "template" .url "values" (dict
+        "url" $p.Permalink "title" $p.Title "markdown_url" $markdownURL)) -}}
+      {{/* The filled-in template goes through the shared URL policy like any
+           other author-facing URL: unsafe schemes are dropped, not repaired. */ -}}
+      {{ $validated := partial "content/url.html" (dict
+        "label" "params.ui.page_context_menu.links" "parameter" (printf "link %q url" $name)
+        "position" "site configuration" "value" $url "kind" "link") -}}
+      {{ if not $validated.valid }}{{ continue }}{{ end -}}
+      {{ $customLinks = $customLinks | append (dict "name" $name "icon" .icon "href" $validated.href) -}}
+    {{ end -}}
+  {{ end -}}
 {{ end -}}
 <div class="td-page-actions d-print-none" data-td-page-actions data-td-page-context
   data-td-t-copied="{{ T "ui_copy_success" }}" data-td-t-copy-error="{{ T "ui_copy_error" }}">
@@ -113,10 +147,8 @@
     {{- end }}
     {{- with $customLinks }}
     <li class="td-page-actions__separator" role="separator"></li>
-    {{- range . -}}
-      {{- $url := partial "url-template.html" (dict "template" .url "values" (dict
-        "url" $p.Permalink "title" $p.Title "markdown_url" $markdownURL)) }}
-    <li><a class="td-page-actions__item" href="{{ $url | safeURL }}" target="_blank" rel="noopener noreferrer">
+    {{- range . }}
+    <li><a class="td-page-actions__item" href="{{ .href }}" target="_blank" rel="noopener noreferrer">
       {{ with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ else }}{{ partialCached "shell/icon.html" "external-link" "external-link" }}{{ end }}<span>{{ .name }}</span>
     </a></li>
     {{- end }}

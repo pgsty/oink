@@ -16,7 +16,10 @@
   {{- $forceExpanded := $s.Params.sidebar_expanded | default false -}}
   {{- $shouldExpand := or $activePath $forceExpanded -}}
   {{- $withChild := gt (len $node.children) 0 -}}
-  {{- $foldable := and (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) $withChild -}}
+  {{- $foldable := and (partial "validate.html" (dict
+      "value" (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) "kind" "bool"
+      "fallback" true "key" "params.ui.sidebar_menu_foldable"
+      "where" (cond (isset $p.Params "sidebar_menu_foldable") $p.Path ""))) $withChild -}}
 
   {{- $childMarkup := "" -}}
   {{- if $withChild -}}

@@ -40,6 +40,10 @@
     "html/blog-legacy-byline.html": "blog/legacy-byline/index.html",
     "html/authors-profile.html": "authors/vonng/index.html",
     "rss/blog.xml": "blog/index.xml",
-    "llms/llms.txt": "llms.txt"
+    "llms/llms.txt": "llms.txt",
+    "html/fixtures-media-embeds.html": "fixtures/media-embeds/index.html",
+    "markdown/fixtures-media-embeds.md": "fixtures/media-embeds/index.md",
+    "print/fixtures-media-embeds.html": "_print/fixtures/media-embeds/index.html",
+    "rss/fixtures.xml": "fixtures/index.xml"
   }
 }

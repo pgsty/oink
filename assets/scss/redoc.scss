@@ -1,0 +1,30 @@
+// Theme overrides for the ReDoc reader. Compiled standalone and loaded only
+// on pages that render the interactive component, next to its runtime -- the
+// global stylesheet must not carry per-capability rules to every page.
+.td-redoc input {
+  height: 64px;
+}
+
+.td-redoc span[type='put'],
+.td-redoc span[type='get'],
+.td-redoc span[type='delete'],
+.td-redoc span[type='post'],
+.td-redoc span[type='options'],
+.td-redoc span[type='patch'],
+.td-redoc span[type='basic'],
+.td-redoc span[type='link'],
+.td-redoc span[type='head'] {
+  border-radius: 4px;
+}
+
+.td-redoc h2 {
+  margin-top: 0;
+}
+
+.td-redoc img[alt='redocly logo'] {
+  display: none;
+}
+
+.td-redoc a[href='https://redocly.com/redoc/'] {
+  display: none;
+}

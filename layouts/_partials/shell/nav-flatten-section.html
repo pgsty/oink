@@ -13,7 +13,9 @@
   {{- $children = $children.ByWeight -}}
 {{- end -}}
 {{- $children = where $children ".Params.toc_hide" "!=" true -}}
-{{- $truncate := $section.Site.Params.ui.sidebar_menu_truncate | default 2000 -}}
+{{- $truncate := partial "validate.html" (dict
+    "value" $section.Site.Params.ui.sidebar_menu_truncate "kind" "int"
+    "min" 1 "fallback" 2000 "key" "params.ui.sidebar_menu_truncate") -}}
 {{- $children = $children | first $truncate -}}
 {{- range $children -}}
   {{- if and (eq $section $section.Site.Home) (eq .Params.toc_root true) -}}

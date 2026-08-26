@@ -26,7 +26,7 @@
         },
         "offline_search_index": {
           "type": "string",
-          "default": "content # content | summary"
+          "default": "content"
         },
         "offline_search_summary_length": {
           "type": "integer",
@@ -52,7 +52,7 @@
         },
         "page_width": {
           "type": "string",
-          "default": "normal # normal | wide | full"
+          "default": "normal"
         },
         "reading_width": {
           "description": "Inner reading measure for Book pages: slim | normal | wide. Unlike page_width, this changes content rather than the surrounding shell.",
@@ -107,12 +107,12 @@
           "additionalProperties": true,
           "properties": {
             "toc": {
-              "type": "string",
-              "default": "true # section print views start with a table of contents"
+              "type": "boolean",
+              "default": true
             },
             "section_break_wordcount": {
-              "type": "string",
-              "default": "50 # pages longer than this start a new print page"
+              "type": "integer",
+              "default": 50
             }
           }
         },
@@ -194,7 +194,7 @@
             },
             "footer_style": {
               "type": "string",
-              "default": "fat # fat | slim | none"
+              "default": "fat"
             },
             "landing_search": {
               "description": "Non-home pages with `layout: landing` reuse the search/command palette when offline_search is enabled. Set false to omit it from that shell.",
@@ -202,22 +202,22 @@
               "default": true
             },
             "section_index": {
-              "description": "The breadcrumb default is per shell -- on everywhere except the blog, where an article reads as a standalone piece -- so the resolver (shell/breadcrumb-enabled.html) owns it. Declaring a value here would flatten that split into one site-wide answer.",
+              "description": "Form of a branch page's child index: list or cards.",
               "type": "string",
-              "default": "list # list | cards"
+              "default": "list"
             },
             "section_index_columns": {
-              "type": "string",
-              "default": "2 # card columns when section_index is cards"
+              "type": "integer",
+              "default": 2
             },
             "blog_index": {
               "description": "Form of the blog section list pages: list (rows), cards (a grid), or table (one compact row per post -- the whole section at once, no year groups, no pagination). Front matter `blog_index` (on the blog root, or through its cascade) overrides it per section.",
               "type": "string",
-              "default": "list # list | cards | table"
+              "default": "list"
             },
             "blog_index_columns": {
-              "type": "string",
-              "default": "3 # card columns when blog_index is cards"
+              "type": "integer",
+              "default": 3
             },
             "blog_index_toggle": {
               "description": "Let a reader cycle the index through list, cards, and table from the index toolbar. Off by default: it puts every form in the document. The hidden ones load no images, but their markup is real.",
@@ -231,7 +231,7 @@
             },
             "lastmod_commit": {
               "type": "string",
-              "default": "subject # subject | hash | none"
+              "default": "subject"
             },
             "annotation": {
               "description": "Page provenance / revision block at the end of a page. Front matter `annotation: false` turns it off for one page. Its upstream attribution line is driven by front matter (`upstream_link` plus `upstream_name`, `upstream_copyright`, `upstream_license`, `upstream_notice`); the theme declares no defaults for those because they are the site's own facts.",
@@ -249,7 +249,7 @@
               "default": false
             },
             "image_zoom": {
-              "description": "Optional local chrome data (never fetched by the browser): github_stars: 5500 alt_site: { label: 中文站, url: https://example.cn/ } Native image preview. Front matter `image_zoom: true|false` overrides.",
+              "description": "Native image preview. Front matter `image_zoom: true|false` overrides.",
               "type": "boolean",
               "default": false
             },
@@ -260,7 +260,7 @@
             },
             "typography": {
               "type": "string",
-              "default": "technical # technical | system"
+              "default": "technical"
             },
             "shell_types": {
               "type": "array",
@@ -300,12 +300,12 @@
               "default": "section"
             },
             "sidebar_icon_policy": {
-              "description": "Shell quick links default to [docs_section, blog_section]; declaring a value here would break that derivation, so a site sets it explicitly. quick_links: [docs, blog] Sidebar icon density: all | groups | none.",
+              "description": "Sidebar icon density: all | groups | none.",
               "type": "string",
               "default": "all"
             },
             "pager_types": {
-              "description": "Taxonomy sidebar icons default to built-in categories/tags glyphs; a site adds or overrides one entry per taxonomy plural name. taxonomy_icons: { categories: fa-solid fa-folder, tags: fa-solid fa-tag } Sequential navigation is on by default for reading-oriented content. Override this list site-wide, or set `pager: false` in front matter.",
+              "description": "Sequential navigation is on by default for reading-oriented content. Override this list site-wide, or set `pager: false` in front matter.",
               "type": "array",
               "default": [
                 "docs",

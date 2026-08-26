@@ -1,4 +1,6 @@
-{{- $sidebarCacheLimit := .Site.Params.ui.sidebar_cache_limit | default 500 -}}
+{{- $sidebarCacheLimit := partial "validate.html" (dict
+    "value" .Site.Params.ui.sidebar_cache_limit "kind" "int"
+    "min" 1 "fallback" 500 "key" "params.ui.sidebar_cache_limit") -}}
 {{- $cacheSidebar := ge (len .Site.Pages) $sidebarCacheLimit -}}
 {{- $sidebarRoot := partial "shell/sidebar-root.html" . -}}
 {{- $iconPolicy := partial "shell/sidebar-icon-policy.html" . -}}

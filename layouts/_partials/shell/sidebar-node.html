@@ -14,7 +14,10 @@
 {{- $children := .children | default "" -}}
 
 {{- $showIcon := partial "shell/sidebar-icon-enabled.html" (dict "policy" $iconPolicy "root" $iconRoot "hasChildren" $withChild) -}}
-{{- $ellipsis := ne (partial "ui-param.html" (dict "page" $p "key" "sidebar_item_overflow")) "wrap" -}}
+{{- $ellipsis := ne (partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" $p "key" "sidebar_item_overflow")) "kind" "enum"
+    "allowed" (slice "ellipsis" "wrap") "fallback" "ellipsis" "key" "params.ui.sidebar_item_overflow"
+    "where" (cond (isset $p.Params "sidebar_item_overflow") $p.Path ""))) "wrap" -}}
 {{- $nodeID := $s.RelPermalink | default $s.Path | default $s.Title -}}
 {{- $mid := printf "m-%s" ($nodeID | anchorize) -}}
 {{- $manualLink :=

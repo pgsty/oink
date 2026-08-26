@@ -445,6 +445,88 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
     require(strict.returncode != 0, f"invalid {name} command survived --panicOnWarning")
 
 
+def strict_fails(site: Path, workspace: Path, name: str) -> bool:
+    strict = subprocess.run(
+        ["hugo", "--source", str(site), "--themesDir", str(ROOT.parent),
+         "--destination", str(workspace / f"strict-{name}"),
+         "--cacheDir", str(workspace / f"cache-strict-{name}"), "--panicOnWarning"],
+        cwd=site, env={**os.environ, "HUGO_ENVIRONMENT": "development"},
+        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    )
+    return strict.returncode != 0
+
+
+def validate_custom_url_policy(helper: Any, workspace: Path) -> None:
+    """params.ui.page_context_menu.links and params.url_latest_version reach an
+    href, so both run through the shared URL policy: a bad entry warns and is
+    dropped, never repaired, and its value reaches no rendered page. A build
+    that dies takes the whole site down over one config line, so the drop is a
+    warning; --panicOnWarning still fails where publishing happens."""
+    base = action_config(helper, True)
+    marker = "    page_context_menu:\n      assistant_links: true\n"
+    require(marker in base, "action config lost the page_context_menu block")
+
+    mixed = base.replace(marker, marker.rstrip("\n") + "\n"
+        "      links:\n"
+        "        - name: Handbook\n"
+        "          url: https://handbook.example.com/\n"
+        "        - name: Danger\n"
+        "          url: 'javascript:alert(1)'\n"
+        "        - name: 42\n"
+        "          url: https://numeric-name.example.com/\n"
+        "        - name: BadUrl\n"
+        "          url: [not, a, string]\n"
+        "        - name: '   '\n"
+        "          url: https://blank-name.example.com/\n")
+    site = workspace / "site-custom-links"
+    output, log = build(helper, workspace, "custom-links", mixed)
+    html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(encoding="utf-8")
+    require('href="https://handbook.example.com/"' in html and "Handbook" in html,
+            "a valid custom link was not rendered")
+    for dropped in ("javascript:alert(1)", "numeric-name.example.com",
+                    "blank-name.example.com", "not,a,string"):
+        leaked = [p for p in output.rglob("*") if p.is_file() and dropped in p.read_text(errors="ignore")]
+        require(not leaked, f"a dropped custom link leaked {dropped!r} into {leaked[:2]}")
+    for expected in ("unsupported", "name must be a string", "non-empty name", "needs a string url"):
+        require(expected in log, f"custom-link policy did not warn with {expected!r}:\n{log}")
+    # One separator precedes the acting group, one precedes the custom links;
+    # the valid Handbook link is what earns the second.
+    require(html.count("td-page-actions__separator") == 2,
+            "the custom-link separator is missing when a valid link survives")
+    require(strict_fails(site, workspace, "custom-links"),
+            "invalid custom links survived --panicOnWarning")
+
+    all_bad = base.replace(marker, marker.rstrip("\n") + "\n"
+        "      links:\n"
+        "        - name: Danger\n"
+        "          url: 'javascript:alert(1)'\n")
+    output_bad, _ = build(helper, workspace, "custom-links-all-bad", all_bad)
+    html_bad = (output_bad / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(encoding="utf-8")
+    require(html_bad.count("td-page-actions__separator") == 1,
+            "the custom-link separator rendered with no valid link to precede")
+
+    not_array = base.replace(marker, marker.rstrip("\n") + "\n      links: nope\n")
+    _, log_na = build(helper, workspace, "custom-links-not-array", not_array)
+    require("links must be an array" in log_na,
+            f"a non-array links value did not warn:\n{log_na}")
+
+    archived = base.replace(
+        "  version: v1\n",
+        "  version: v1\n  archived_version: true\n"
+        "  url_latest_version: 'https://example.org/\"onmouseover=alert(1)>'\n",
+        1,
+    )
+    site_arch = workspace / "site-archived"
+    output_arch, log_arch = build(helper, workspace, "archived", archived)
+    banner_pages = [p for p in output_arch.rglob("index.html")
+                    if "td-page-notice--primary" in p.read_text(errors="ignore")]
+    require(banner_pages, "the archived-version banner never rendered")
+    for page in banner_pages:
+        text = page.read_text(errors="ignore")
+        require("onmouseover=alert(1)>" not in text,
+                f"the archived-version URL broke out of its attribute in {page}")
+
+
 def main() -> int:
     try:
         helper = load_contract_module()
@@ -738,6 +820,8 @@ def main() -> int:
             }
             for name, (yaml, expected) in invalid_cases.items():
                 run_invalid_build(helper, workspace, name, yaml, expected)
+
+            validate_custom_url_policy(helper, workspace)
 
         for script in (
             "action-registry.test.js",

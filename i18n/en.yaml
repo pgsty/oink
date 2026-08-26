@@ -115,6 +115,7 @@ ui_print_page: Print this page
 ui_sidebar_expand_section: Expand section
 ui_sidebar_collapse_section: Collapse section
 ui_asciinema_timer: Playback time
+ui_openapi_spec: OpenAPI specification
 ui_release_view: View release
 ui_release_source: Source
 ui_release_compare: Compare changes

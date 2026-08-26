@@ -80,6 +80,8 @@ params:
     # where an article reads as a standalone piece -- so the resolver
     # (shell/breadcrumb-enabled.html) owns it. Declaring a value here would
     # flatten that split into one site-wide answer.
+
+    # Form of a branch page's child index: list or cards.
     section_index: list # list | cards
     section_index_columns: 2 # card columns when section_index is cards
     # Form of the blog section list pages: list (rows), cards (a grid), or
@@ -115,6 +117,7 @@ params:
     # Optional local chrome data (never fetched by the browser):
     # github_stars: 5500
     # alt_site: { label: 中文站, url: https://example.cn/ }
+
     # Native image preview. Front matter `image_zoom: true|false` overrides.
     image_zoom: false
     # Dark palette and theme menu: `dark_mode: true` is the shorthand for
@@ -158,11 +161,13 @@ params:
     # Shell quick links default to [docs_section, blog_section]; declaring a
     # value here would break that derivation, so a site sets it explicitly.
     # quick_links: [docs, blog]
+
     # Sidebar icon density: all | groups | none.
     sidebar_icon_policy: all
     # Taxonomy sidebar icons default to built-in categories/tags glyphs; a
     # site adds or overrides one entry per taxonomy plural name.
     # taxonomy_icons: { categories: fa-solid fa-folder, tags: fa-solid fa-tag }
+
     # Sequential navigation is on by default for reading-oriented content.
     # Override this list site-wide, or set `pager: false` in front matter.
     pager_types: [docs, book, blog]
@@ -232,8 +237,11 @@ outputFormats:
     notAlternative: true
   print:
     baseName: index
-    # FIXME: leave isHTML unset (i.e. false) until we get a Hugo fix for
-    # https://github.com/gohugoio/hugo/issues/14381
+    # isHTML stays unset (i.e. false) on purpose. The original blocker --
+    # alias redirects pointing at the print URL, gohugoio/hugo#14381 -- is
+    # fixed upstream, but flipping the classification changes template
+    # lookup and alternate-link behavior, so it needs its own review against
+    # the print goldens before it lands.
     # isHTML: true
     mediaType: text/html
     path: _print

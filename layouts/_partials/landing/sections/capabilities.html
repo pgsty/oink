@@ -45,7 +45,20 @@
         <div class="td-landing-shell-demo__main">
           <small>{{ .eyebrow }}</small>
           <strong>{{ range .title_lines }}{{ . }}<br>{{ end }}</strong>
-          {{- range .rules }}<span style="--w: {{ . }}"></span>{{ end }}
+          {{- $rules := .rules -}}
+          {{- if and $rules (not (reflect.IsSlice $rules)) -}}
+            {{- warnf "%s: capabilities visual rules must be an array of CSS lengths; ignoring them" $page.Path -}}
+            {{- $rules = slice -}}
+          {{- end -}}
+          {{- range (cond (reflect.IsSlice $rules) $rules slice) -}}
+            {{- $w := strings.TrimSpace (printf "%v" .) -}}
+            {{- if findRE `^[0-9]+(\.[0-9]+)?(%|px|rem|em)$` $w -}}
+          <span style="--w: {{ $w }}"></span>
+            {{- else -}}
+              {{- warnf "%s: capabilities visual rule %q is not a CSS length; rendering it at the default width" $page.Path $w -}}
+          <span></span>
+            {{- end -}}
+          {{- end }}
         </div>
       </div>
         {{- else if eq $visualType "components" }}
@@ -53,8 +66,10 @@
         {{- range .items }}
           {{- if or .url .href }}{{ $interactive = true }}{{ end }}
         {{- end }}
-        {{- $columns := int (.columns | default 2) }}
-        {{- if lt $columns 1 }}{{ $columns = 1 }}{{ else if gt $columns 4 }}{{ $columns = 4 }}{{ end }}
+        {{- $columns := partial "validate.html" (dict
+            "value" .columns "kind" "int" "min" 1 "fallback" 2
+            "key" "capabilities visual columns" "where" $page.Path) }}
+        {{- if gt $columns 4 }}{{ $columns = 4 }}{{ end }}
       <div class="td-landing-component-board{{ if $interactive }} td-landing-component-board--nav{{ end }}{{ if .compact }} td-landing-component-board--compact{{ end }}"
            style="--td-component-columns: {{ $columns }}"
            {{- if $interactive }} role="navigation" aria-label="{{ .aria_label | default $module.title }}"{{ else }} aria-hidden="true"{{ end }}>

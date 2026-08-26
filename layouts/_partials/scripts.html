@@ -180,9 +180,12 @@ window.markmap = {
 {{ if $drawioActive -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/drawio.js" "members" (slice (resources.Get "js/drawio.js"))) -}}
 {{ end -}}
-{{ $hasAsciinema := .Page.Store.Get "hasAsciinema" -}}
-{{ $hasEcharts := .Page.Store.Get "hasEcharts" -}}
-{{ $hasInfographic := .Page.Store.Get "hasInfographic" -}}
+{{/* The media shortcodes set their flags only when they render the HTML
+     component, but a Page Store can carry values across a page's output
+     renders, so the interactive-output gate stays as the second lock. */ -}}
+{{ $hasAsciinema := and $interactiveOutput (.Page.Store.Get "hasAsciinema") -}}
+{{ $hasEcharts := and $interactiveOutput (.Page.Store.Get "hasEcharts") -}}
+{{ $hasInfographic := and $interactiveOutput (.Page.Store.Get "hasInfographic") -}}
 {{ if $hasAsciinema -}}
   {{ $asciinemaCSS := resources.Get "third_party/asciinema/asciinema-player.css" -}}
   {{ if hugo.IsProduction }}{{ $asciinemaCSS = $asciinemaCSS | minify | fingerprint }}{{ end -}}
@@ -246,14 +249,18 @@ window.markmap = {
   {{ partial "scripts/katex.html" . -}}
 {{ end -}}
 
-{{ if .Page.Store.Get "hasRedoc" -}}
+{{ if and $interactiveOutput (.Page.Store.Get "hasRedoc") -}}
+  {{ $redocCSS := resources.Get "scss/redoc.scss" | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
+  {{ if hugo.IsProduction }}{{ $redocCSS = $redocCSS | minify | fingerprint }}{{ end -}}
+  <link rel="stylesheet" href="{{ $redocCSS.RelPermalink }}"
+    {{- with $redocCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
   {{ $redoc := resources.Get "third_party/redoc/redoc.standalone.js" -}}
   {{ if hugo.IsProduction }}{{ $redoc = $redoc | fingerprint }}{{ end -}}
   <script src="{{ $redoc.RelPermalink }}"
     {{- with $redoc.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 
-{{ if .Page.Store.Get "hasSwagger" -}}
+{{ if and $interactiveOutput (.Page.Store.Get "hasSwagger") -}}
   {{ $swaggerCSS := resources.Get "third_party/swagger-ui/swagger-ui.css" -}}
   {{ $swaggerBundle := resources.Get "third_party/swagger-ui/swagger-ui-bundle.js" -}}
   {{ $swaggerPreset := resources.Get "third_party/swagger-ui/swagger-ui-standalone-preset.js" -}}
@@ -268,6 +275,7 @@ window.markmap = {
     {{- with $swaggerBundle.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
   <script src="{{ $swaggerPreset.RelPermalink }}"
     {{- with $swaggerPreset.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/swagger-init.js" "members" (slice (resources.Get "js/swagger-init.js"))) -}}
 {{ end -}}
 
 {{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch }}{{ end -}}

@@ -13,10 +13,13 @@
     "allowed" (slice "list" "cards" "table") "fallback" "list"
     "key" "params.ui.blog_index" "where" (cond (isset .Params "blog_index") .Path "")) -}}
 {{ $columns := partial "validate.html" (dict
-    "value" (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) "kind" "number"
-    "fallback" 3 "key" "params.ui.blog_index_columns"
+    "value" (partial "ui-param.html" (dict "page" . "key" "blog_index_columns")) "kind" "int"
+    "min" 1 "fallback" 3 "key" "params.ui.blog_index_columns"
     "where" (cond (isset .Params "blog_index_columns") .Path "")) -}}
-{{ $size := (partial "ui-param.html" (dict "page" . "key" "blog_index_size")) | default 12 -}}
+{{ $size := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "blog_index_size")) "kind" "int"
+    "min" 1 "fallback" 12 "key" "params.ui.blog_index_size"
+    "where" (cond (isset .Params "blog_index_size") .Path "")) -}}
 {{ $toggle := partial "shell/blog-index-toggle.html" . -}}
 {{ $pager := false -}}
 {{ if or (ne $mode "table") $toggle -}}

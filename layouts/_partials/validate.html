@@ -1,5 +1,8 @@
-{{/* Validate enum, bool, CSS length, or number values. Blank values use the
-     fallback; invalid values warn once per key and value, then use it. */ -}}
+{{/* Validate enum, bool, CSS length, number, or int values. Blank values use
+     the fallback; invalid values warn once per key and value, then use it.
+     `int` checks the whole-number lexical form before converting -- a bare
+     `int` cast would silently truncate 2.5 -- and honors optional `min` and
+     `max` bounds. */ -}}
 
 {{- $value := .value -}}
 {{- $kind := .kind | default "enum" -}}
@@ -41,6 +44,24 @@
       {{- warnidf $id "%s %q is not a number%s -- using %v" $key $raw $at $fallback -}}
     {{- else -}}
       {{- $result = $cast.Value -}}
+    {{- end -}}
+  {{- else if eq $kind "int" -}}
+    {{- /* Up to 15 digits: read literally through float (base 10) rather than
+         int's string cast (base 0), which would read a leading zero as octal
+         (`010` -> 8) and overflow-error on very long input. Fifteen digits
+         stays inside float64's exact-integer range and every real config
+         count. */ -}}
+    {{- if findRE `^-?[0-9]{1,15}$` $raw -}}
+      {{- $int := int (float $raw) -}}
+      {{- if and (ne .min nil) (lt $int .min) -}}
+        {{- warnidf $id "%s must be at least %v; got %v%s -- using %v" $key .min $int $at $fallback -}}
+      {{- else if and (ne .max nil) (gt $int .max) -}}
+        {{- warnidf $id "%s must be at most %v; got %v%s -- using %v" $key .max $int $at $fallback -}}
+      {{- else -}}
+        {{- $result = $int -}}
+      {{- end -}}
+    {{- else -}}
+      {{- warnidf $id "%s %q is not a whole number%s -- using %v" $key $raw $at $fallback -}}
     {{- end -}}
   {{- else -}}
     {{- warnidf $id "validate.html: unknown kind %q for %s -- using %v" $kind $key $fallback -}}

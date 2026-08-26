@@ -2,7 +2,9 @@
 {{- $indexURL := partialCached "offline-search-index.html" . .Site.Language.Lang -}}
 <div id="td-shell-search" class="td-shell-search" hidden
      data-td-index-src="{{ $indexURL }}"
-     data-td-max-results="{{ .Site.Params.offline_search_max_results | default 10 }}"
+     data-td-max-results="{{ partial "validate.html" (dict
+       "value" .Site.Params.offline_search_max_results "kind" "int"
+       "min" 1 "fallback" 10 "key" "params.offline_search_max_results") }}"
      data-td-t-empty="{{ T "ui_search_empty" }}"
      data-td-t-loading="{{ T "ui_search_loading" }}"
      data-td-t-results="{{ T "ui_search_results" }}"

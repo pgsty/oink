@@ -357,6 +357,17 @@ INVALID_CASES = (
     ("bad-marquee", "sections:\n  - type: logo-wall\n    data:\n      layout: carousel\n      items: [{title: Logo}]\n", "layout must be grid or marquee"),
     ("bad-compare", "sections:\n  - type: pricing-compare\n    data:\n      tiers: [Free, Pro]\n      groups:\n        - name: Group\n          rows: [{name: Row, cells: [Y]}]\n", "has 1 cells for 2 tiers"),
     ("bad-bar", "sections:\n  - type: bar-chart\n    data:\n      items: [{label: Bad, value: nope}]\n", "value must be numeric"),
+    # The hero style attribute goes through safeCSS, so its inputs are the
+    # narrow grammars below; a bad value warns and drops that declaration
+    # instead of smuggling CSS into the attribute.
+    ("bad-hero-media", "sections:\n  - type: hero\n    data:\n      title: Bad\n      media: nope\n", "hero.media must be a map"),
+    ("bad-hero-ratio", "sections:\n  - type: hero\n    data:\n      title: Bad\n      media:\n        ratio: '1fr; background-image: url(https://example.invalid/x)'\n", "hero.media.ratio must be two space-separated track sizes"),
+    ("bad-hero-media-max", "sections:\n  - type: hero\n    data:\n      title: Bad\n      media:\n        max_width: '240px; color: red'\n", "is not a safe CSS length"),
+    ("bad-capabilities-columns", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual:\n            type: components\n            columns: nope\n            items: [{title: A, icon: fa-solid fa-star}]\n", 'capabilities visual columns "nope" is not a whole number'),
+    ("zero-capabilities-columns", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual:\n            type: components\n            columns: 0\n            items: [{title: A, icon: fa-solid fa-star}]\n", "capabilities visual columns must be at least 1"),
+    ("bad-capabilities-rules", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual:\n            type: shell\n            rules: not-a-list\n", "rules must be an array"),
+    ("bad-capabilities-rule-width", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual:\n            type: shell\n            rules: ['88%', 'nope']\n", "is not a CSS length"),
+    ("bad-marquee-rows", "sections:\n  - type: logo-wall\n    data:\n      layout: marquee\n      rows: nope\n      items: [{title: Logo}]\n", 'marquee rows "nope" is not a whole number'),
 )
 
 

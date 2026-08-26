@@ -350,11 +350,29 @@ def check_openapi(hugo: str) -> list[str]:
             ids = re.findall(r'id="(td-(?:swagger|redoc)-[^"]+)"', html)
             require(len(ids) == 4 and len(set(ids)) == 4, f"OpenAPI instance IDs are not unique: {ids}", errors)
             require("window.onload" not in html and "window.ui" not in html, "Swagger replaces global page state", errors)
-            require(html.count("SwaggerUIBundle({") == 2, "Swagger did not initialize both instances", errors)
+            require("SwaggerUIBundle({" not in html,
+                    "Swagger still initializes through an inline shortcode script instead of the chunk", errors)
+            require(html.count('data-td-spec-url="/spec-a.yaml"') == 1 and html.count('data-td-spec-url="/spec-b.yaml"') == 1,
+                    "each Swagger container does not carry its own spec URL", errors)
+            require(len(re.findall(r'src="[^"]*js/chunks/swagger-init[^"]*"', html)) == 1,
+                    "the Swagger initializer chunk is not loaded exactly once", errors)
+            chunks = sorted(destination.glob("js/chunks/swagger-init*.js"))
+            require(bool(chunks) and re.search(r"validatorUrl\s*:\s*null", chunks[0].read_text()) is not None,
+                    "the Swagger initializer chunk does not pin validatorUrl to null", errors)
+            require(".td-redoc input" not in html,
+                    "the ReDoc overrides are still inlined in the shortcode instead of the standalone stylesheet", errors)
+            require(re.search(r'href="[^"]*redoc[^"]*\.css[^"]*"', html) is not None,
+                    "the ReDoc standalone stylesheet is not loaded beside the runtime", errors)
 
     invalid = (
         ("swagger-missing-src", "{{< swagger >}}", "requires named parameter src"),
+        ("swagger-unsafe-src", '{{< swagger src="javascript:alert(1)" >}}', "unsupported src scheme"),
         ("redoc-extra-options", '{{< redoc "/spec.yaml" `theme="dark"` >}}', "requires exactly one positional"),
+        ("redoc-unsafe-spec", '{{< redoc "javascript:alert(1)" >}}', "unsupported spec scheme"),
+        ("asciinema-bad-speed", '{{< asciinema file="x.cast" speed="fast" >}}', "speed must be a positive number"),
+        ("asciinema-bad-cols", '{{< asciinema file="x.cast" cols="1.5" >}}', "cols must be a positive whole number"),
+        ("asciinema-bad-marker", '{{< asciinema file="x.cast" markers="abc:Nope" >}}', "needs a numeric time"),
+        ("asciinema-unsafe-file", '{{< asciinema file="javascript:alert(1)" >}}', "unsupported file scheme"),
     )
     for name, body, expected in invalid:
         result, _destination, temp = build_site(
@@ -373,6 +391,51 @@ def check_openapi(hugo: str) -> list[str]:
             )
             with strict_temp:
                 require(strict.returncode != 0, f"invalid OpenAPI case {name} survived --panicOnWarning", errors)
+    return errors
+
+
+def check_media_output_states(hugo: str) -> list[str]:
+    """asciinema/redoc/swagger are interactive-HTML-only: print gets a static
+    link and loads no runtime, Markdown and RSS get a pure link line with no
+    component markup, and every runtime still loads in the HTML output."""
+    errors: list[str] = []
+    page = (
+        "---\ntitle: Media states\noutputs: [HTML, print, markdown, RSS]\n---\n\n"
+        '{{< asciinema file="images/install.cast" title="Walkthrough" speed="2" markers="10:Boot" >}}\n\n'
+        '{{< redoc "/spec-a.yaml" >}}\n\n'
+        '{{< swagger src="/spec-a.yaml" >}}\n'
+    )
+    result, destination, temp = build_site(
+        hugo,
+        {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/media.md": page},
+        prefix="oink-components-media-states-",
+        extra_files={"static/images/install.cast": "{}\n"},
+        panic_on_warning=True,
+    )
+    with temp:
+        if result.returncode != 0:
+            errors.append(f"media states fixture failed to build: {result.stdout}{result.stderr}")
+            return errors
+        html = (destination / "docs/media/index.html").read_text()
+        markdown = (destination / "docs/media/index.md").read_text()
+        printed = (destination / "_print/docs/media/index.html").read_text()
+        rss = (destination / "docs/media/index.xml").read_text()
+        require("data-td-asciinema" in html and "data-td-swagger" in html and "<redoc" in html,
+                "the HTML output lost its interactive components", errors)
+        require("asciinema-player" in html and "swagger-ui-bundle" in html and "redoc.standalone" in html,
+                "the HTML output does not load the three runtimes", errors)
+        for name, text in (("markdown", markdown), ("rss", rss)):
+            require("<script" not in text and 'class="td-' not in text
+                    and "data-td-asciinema" not in text and "<redoc" not in text,
+                    f"the {name} output still carries component markup", errors)
+        require("[Walkthrough](/images/install.cast)" in markdown,
+                "the markdown output lost the asciinema link line", errors)
+        for runtime in ("asciinema-player", "swagger-ui-bundle", "redoc.standalone", "swagger-init"):
+            require(runtime not in printed, f"the print output still loads {runtime}", errors)
+        require("data-td-asciinema" not in printed and "data-td-swagger" not in printed and "<redoc" not in printed,
+                "the print output still renders interactive containers", errors)
+        require(printed.count('-print"') >= 3 and 'href="/spec-a.yaml"' in printed,
+                "the print output lacks the static fallback links", errors)
     return errors
 
 
@@ -457,6 +520,7 @@ def main() -> int:
         + check_data_fences(args.hugo)
         + check_steps_container(args.hugo)
         + check_openapi(args.hugo)
+        + check_media_output_states(args.hugo)
         + check_removed_shortcodes(args.hugo)
         + check_i18n()
         + check_template_contracts()

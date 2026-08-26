@@ -1,11 +1,25 @@
 {{- /* Embed an asciinema cast. Required: file (named or positional). Optional:
-       title, theme, fit, autoplay, loop, preload, speed, timing, and size. */ -}}
+       title, theme, fit, autoplay, loop, preload, speed, timing, and size.
+       Only the HTML output embeds the player; print, Markdown, and RSS get a
+       static link to the recording and register no runtime. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "any" "allowed" (slice
   "file" "title" "theme" "fit" "autoplay" "loop" "preload" "speed" "startAt"
   "idleTimeLimit" "poster" "markers" "pauseOnMarkers" "cols" "rows"
 )) -}}
 {{- $file := .Get "file" | default (.Get 0) -}}
-{{- if not $file }}{{ warnf "%s: asciinema requires a file parameter; rendering nothing" .Position }}{{ end -}}
+{{- $ok := true -}}
+{{- if not $file -}}
+  {{- warnf "%s: asciinema requires a file parameter; rendering nothing" .Position -}}
+  {{- $ok = false -}}
+{{- end -}}
+{{- $validated := dict "valid" false -}}
+{{- if $ok -}}
+  {{- $validated = partial "content/url.html" (dict
+    "name" .Name "parameter" "file" "position" .Position "value" $file "kind" "image"
+  ) -}}
+  {{- $ok = $validated.valid -}}
+{{- end -}}
+{{- if $ok -}}
 {{- $title := .Get "title" | default $file -}}
 {{- $theme := .Get "theme" | default "auto" -}}
 {{- $fit := .Get "fit" | default "width" -}}
@@ -13,13 +27,44 @@
   {{- warnf "%s: asciinema fit must be width, height, both, or none; using width" .Position -}}{{- $fit = "width" -}}
 {{- end -}}
 {{- $src := "" -}}
-{{- if (urls.Parse $file).Scheme -}}
-  {{- $src = $file -}}
+{{- if $validated.scheme -}}
+  {{- $src = $validated.raw -}}
 {{- else -}}
-  {{- with resources.Get $file -}}
+  {{- with resources.Get $validated.raw -}}
     {{- $src = .RelPermalink -}}
   {{- else -}}
-    {{- $src = strings.TrimPrefix "/" $file | relURL -}}
+    {{- $src = strings.TrimPrefix "/" $validated.raw | relURL -}}
+  {{- end -}}
+{{- end -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if in (slice "markdown" "rss") $format -}}
+[{{ partial "content/markdown-escape.html" (printf "%v" $title) }}]({{ partial "content/markdown-url.html" $src }})
+{{- else if eq $format "print" -}}
+<p class="td-asciinema-print">{{ $title }} — <a href="{{ $src }}">{{ $src }}</a></p>
+{{- else -}}
+{{- /* Every number is validated lexically before it is cast: a bad value
+       warns and falls back (or drops the option) instead of stopping an
+       ordinary build over author input. */ -}}
+{{- /* Digit caps keep a very long but lexically valid number from
+       overflowing the float/int cast and stopping the build. Playback
+       timings never approach these bounds. */ -}}
+{{- $number := `^[0-9]{1,6}(\.[0-9]{1,4})?$` -}}
+{{- $speed := 1.0 -}}
+{{- with .Get "speed" -}}
+  {{- $raw := strings.TrimSpace (printf "%v" .) -}}
+  {{- if and (findRE $number $raw) (gt (float $raw) 0) -}}
+    {{- $speed = float $raw -}}
+  {{- else -}}
+    {{- warnf "%s: asciinema speed must be a positive number; got %q; using 1" $.Position $raw -}}
+  {{- end -}}
+{{- end -}}
+{{- $startAt := 0.0 -}}
+{{- with .Get "startAt" -}}
+  {{- $raw := strings.TrimSpace (printf "%v" .) -}}
+  {{- if findRE $number $raw -}}
+    {{- $startAt = float $raw -}}
+  {{- else -}}
+    {{- warnf "%s: asciinema startAt must be a number of seconds; got %q; using 0" $.Position $raw -}}
   {{- end -}}
 {{- end -}}
 {{- $options := dict
@@ -27,13 +72,28 @@
   "fit" $fit
   "loop" (eq (lower (printf "%v" (.Get "loop"))) "true")
   "preload" (eq (lower (printf "%v" (.Get "preload"))) "true")
-  "speed" (float (.Get "speed" | default 1))
-  "startAt" (float (.Get "startAt" | default 0))
+  "speed" $speed
+  "startAt" $startAt
 -}}
 {{- with .Get "poster" }}{{ $options = merge $options (dict "poster" .) }}{{ end -}}
-{{- with .Get "cols" }}{{ $options = merge $options (dict "cols" (int .)) }}{{ end -}}
-{{- with .Get "rows" }}{{ $options = merge $options (dict "rows" (int .)) }}{{ end -}}
-{{- with .Get "idleTimeLimit" }}{{ $options = merge $options (dict "idleTimeLimit" (float .)) }}{{ end -}}
+{{- range $key := slice "cols" "rows" -}}
+  {{- with $.Get $key -}}
+    {{- $raw := strings.TrimSpace (printf "%v" .) -}}
+    {{- if findRE `^[1-9][0-9]{0,4}$` $raw -}}
+      {{- $options = merge $options (dict $key (int $raw)) -}}
+    {{- else -}}
+      {{- warnf "%s: asciinema %s must be a positive whole number; got %q; ignoring it" $.Position $key $raw -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with .Get "idleTimeLimit" -}}
+  {{- $raw := strings.TrimSpace (printf "%v" .) -}}
+  {{- if findRE $number $raw -}}
+    {{- $options = merge $options (dict "idleTimeLimit" (float $raw)) -}}
+  {{- else -}}
+    {{- warnf "%s: asciinema idleTimeLimit must be a number of seconds; got %q; ignoring it" $.Position $raw -}}
+  {{- end -}}
+{{- end -}}
 {{- if eq (lower (printf "%v" (.Get "pauseOnMarkers"))) "true" -}}
   {{- $options = merge $options (dict "pauseOnMarkers" true) -}}
 {{- end -}}
@@ -42,10 +102,15 @@
   {{- range split . "," -}}
     {{- if not . }}{{ continue }}{{ end -}}
     {{- $parts := split . ":" -}}
+    {{- $time := strings.TrimSpace (index $parts 0) -}}
+    {{- if not (findRE $number $time) -}}
+      {{- warnf "%s: asciinema marker %q needs a numeric time before its label; skipping it" $.Position . -}}
+      {{- continue -}}
+    {{- end -}}
     {{- $label := delimit (after 1 $parts) ":" -}}
-    {{- $markers = $markers | append (slice (float (index $parts 0)) $label) -}}
+    {{- $markers = $markers | append (slice (float $time) $label) -}}
   {{- end -}}
-  {{- $options = merge $options (dict "markers" $markers) -}}
+  {{- with $markers }}{{ $options = merge $options (dict "markers" .) }}{{ end -}}
 {{- end -}}
 {{- $id := printf "td-asciinema-%s-%d" (md5 .Page.RelPermalink) .Ordinal -}}
 {{- .Page.Store.Set "hasAsciinema" true -}}
@@ -58,3 +123,5 @@
   <div data-td-asciinema-player></div>
   <script type="application/json" data-td-asciinema-config>{{ dict "src" $src "theme" $theme "options" $options | jsonify | safeJS }}</script>
 </div>
+{{- end -}}
+{{- end -}}

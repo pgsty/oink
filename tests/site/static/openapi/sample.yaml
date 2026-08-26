@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: Fixture API
+  version: 1.0.0
+paths:
+  /ping:
+    get:
+      summary: Liveness probe
+      responses:
+        '200':
+          description: OK

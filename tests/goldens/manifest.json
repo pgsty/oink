@@ -46,6 +46,8 @@
   "print/fixtures-media-embeds.html": "_print/fixtures/media-embeds/index.html",
   "rss/fixtures.xml": "fixtures/index.xml",
   "llmsfull/docs.txt": "docs/llms-full.txt",
-  "navjson/navigation.json": "navigation.json"
+  "navjson/navigation.json": "navigation.json",
+  "html/fixtures-backlinks-alpha.html": "fixtures/backlinks/alpha/index.html",
+  "markdown/fixtures-backlinks-alpha.md": "fixtures/backlinks/alpha/index.md"
  }
 }

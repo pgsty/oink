@@ -81,5 +81,24 @@ default language's llms.txt even though Hugo publishes one per language. */ -}}
     : {{ . -}}
   {{ end }}
 {{ end -}}
+{{ $needSeparator = true -}}
+
+{{ end -}}
+
+{{/* Backlinks, when the policy is on and pages link here -------------- */ -}}
+
+{{ with partial "backlinks-sources.html" . -}}
+
+{{ if $needSeparator }}
+---
+
+{{ else }}
+{{ end -}}
+
+{{ T "markdown_backlinks" }}
+
+{{ range . -}}
+- [ {{- .LinkTitle | default .Title | strings.TrimSpace -}} ]( {{- .RelPermalink -}} )
+{{ end -}}
 
 {{ end -}}

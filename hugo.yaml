@@ -106,6 +106,12 @@ params:
     # `upstream_copyright`, `upstream_license`, `upstream_notice`); the theme
     # declares no defaults for those because they are the site's own facts.
     annotation: true
+
+    # Static backlinks: list the pages that link here, between the page
+    # annotation and the pager. Derived from ordinary Markdown links and
+    # ref/relref at build time; no runtime. Pages override with the front
+    # matter key `backlinks`.
+    backlinks: false
     # Language code of the authoritative version, so a translated page can say
     # so and link to it; false disables the line. Front matter
     # `translation_notice: false` opts out a page written natively in this

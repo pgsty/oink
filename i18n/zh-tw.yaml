@@ -158,6 +158,7 @@ ui_shortcut_language: 切換語言
 ui_shortcut_theme: 切換主題
 ui_shortcut_route: 切換頂層頁面
 ui_page_annotation: 頁面資訊
+ui_backlinks: 反向連結
 ui_field_required: 必填
 ui_action_unavailable: 暂不可用
 ui_image_zoom_dialog: 圖片預覽
@@ -222,6 +223,7 @@ ui_blog_index_toggle: 切换布局
 
 # Markdown output
 markdown_llms_index: "LLMS 索引："
+markdown_backlinks: "反向連結："
 markdown_section_pages: "本節頁面："
 
 # Explicit English fallbacks for untranslated OINK UI strings.

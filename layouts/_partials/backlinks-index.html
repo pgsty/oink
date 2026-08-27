@@ -1,0 +1,56 @@
+{{- /* The per-language reverse link index: target page path -> ordered
+       source pages. Derived once per language from the content authors
+       already write -- ordinary Markdown links plus ref/relref -- with no
+       parallel syntax and no JavaScript discovery. Call through
+       partialCached keyed on the language so the site scans once.
+
+       The extraction contract (knowledge-graph proposal, G1): strip fenced
+       and inline code first, resolve only in-site pages, drop fragments for
+       page identity, exclude self-links, merge duplicate references, keep
+       languages isolated. Scanning raw source has known gaps -- URLs inside
+       custom shortcode parameters or raw HTML anchors do not become edges --
+       and unresolvable destinations are dropped silently: this is a local
+       navigation enhancement, not a link checker. */ -}}
+{{- $site := . -}}
+{{- $siteHost := (urls.Parse $site.BaseURL).Host -}}
+{{- $prefix := $site.LanguagePrefix -}}
+{{- $backlinkIndex := dict -}}
+{{- range $source := where $site.Pages "Kind" "in" (slice "home" "section" "page") -}}
+  {{- if not $source.RelPermalink }}{{ continue }}{{ end -}}
+  {{- $clean := $source.RawContent -}}
+  {{- $clean = replaceRE "(?s)```+.*?```+" " " $clean -}}
+  {{- $clean = replaceRE "(?s)~~~+.*?~~~+" " " $clean -}}
+  {{- $clean = replaceRE "`[^`\n]+`" " " $clean -}}
+  {{- $dests := slice -}}
+  {{- range findRESubmatch "\\[[^\\]]*\\]\\(\\s*<?([^)\\s>]+)" $clean -}}
+    {{- $dests = $dests | append (index . 1) -}}
+  {{- end -}}
+  {{- range findRESubmatch "\\{\\{[<%]\\s*(?:rel)?ref\\s+\"([^\"]+)\"" $clean -}}
+    {{- $dests = $dests | append (index . 1) -}}
+  {{- end -}}
+  {{- $seen := dict -}}
+  {{- range $dest := $dests -}}
+    {{- if or (not $dest) (hasPrefix $dest "#") }}{{ continue }}{{ end -}}
+    {{- $u := urls.Parse $dest -}}
+    {{- if and $u.Scheme (not (in (slice "http" "https") $u.Scheme)) }}{{ continue }}{{ end -}}
+    {{- if and $u.Host (ne $u.Host $siteHost) }}{{ continue }}{{ end -}}
+    {{- $path := $u.Path -}}
+    {{- if not $path }}{{ continue }}{{ end -}}
+    {{- if and $prefix (hasPrefix $path $prefix) -}}
+      {{- $path = strings.TrimPrefix $prefix $path -}}
+    {{- end -}}
+    {{- $lookup := strings.TrimSuffix "/" $path | default "/" -}}
+    {{- /* GetPage errors on an ambiguous reference; an ambiguous or missing
+         destination is a dropped edge, never a broken build. */ -}}
+    {{- $attempt := try ($source.GetPage $lookup) -}}
+    {{- $target := cond (eq $attempt.Err nil) $attempt.Value nil -}}
+    {{- if not $target }}{{ continue }}{{ end -}}
+    {{- if not (in (slice "home" "section" "page") $target.Kind) }}{{ continue }}{{ end -}}
+    {{- if eq $target $source }}{{ continue }}{{ end -}}
+    {{- if index $seen $target.Path }}{{ continue }}{{ end -}}
+    {{- $seen = merge $seen (dict $target.Path true) -}}
+    {{- $existing := index $backlinkIndex $target.Path | default (slice) -}}
+    {{- $backlinkIndex = merge $backlinkIndex (dict $target.Path ($existing | append $source)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $backlinkIndex -}}

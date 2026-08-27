@@ -1,0 +1,21 @@
+{{- /* Policy-gated inbound pages for one page, in stable path order. The
+       HTML block (backlinks.html) and the Markdown document body both
+       consume this partial, so the two outputs cannot disagree about what
+       links here. Site: params.ui.backlinks (boolean, default off).
+       Page: front matter backlinks; a section can cascade it. */ -}}
+{{- $page := . -}}
+{{- $enabled := partial "validate.html" (dict
+    "value" (index $page.Site.Params.ui "backlinks") "kind" "bool"
+    "fallback" false "key" "params.ui.backlinks") -}}
+{{- $enabled = partial "validate.html" (dict
+    "value" (index $page.Params "backlinks") "kind" "bool"
+    "fallback" $enabled "key" "front matter backlinks"
+    "where" (cond (isset $page.Params "backlinks") $page.Path "")) -}}
+{{- $sources := slice -}}
+{{- if $enabled -}}
+  {{- $backlinkIndex := partialCached "backlinks-index.html" $page.Site $page.Site.Language.Lang -}}
+  {{- range sort (index $backlinkIndex $page.Path | default (slice)) "Path" -}}
+    {{- $sources = $sources | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- return $sources -}}

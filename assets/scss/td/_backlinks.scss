@@ -1,0 +1,43 @@
+// Static reverse navigation at the page end: a quiet labelled list of the
+// pages that link here. No cards, no chrome; reads like the pager's family.
+// Logical properties keep RTL correct; print inherits the static list as-is.
+.td-backlinks {
+  margin-block: 1.5rem 0.75rem;
+  font-family: var(--td-body-font-family);
+
+  &__title {
+    margin-block: 0 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: $font-weight-medium;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+  }
+
+  // Direct-child scope: the page prose list rules outrank single-class
+  // selectors inside .td-content, so the list styles its own items only.
+  &__list {
+    margin-block: 0;
+    padding-inline-start: 0;
+    list-style: none;
+  }
+
+  &__list > .td-backlinks__item {
+    margin-block: 0.15rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+
+    > a {
+      color: var(--bs-body-color);
+      text-decoration: none;
+      transition: color 120ms ease;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--bs-link-color);
+        text-decoration: underline;
+      }
+    }
+  }
+}

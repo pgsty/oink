@@ -603,6 +603,51 @@
 "url": "https://example.org/fixtures/attribute-escaping/"
 },
 {
+"children": [
+{
+"id": "/fixtures/backlinks/alpha/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/alpha/index.md",
+"title": "Alpha",
+"url": "https://example.org/fixtures/backlinks/alpha/"
+},
+{
+"id": "/fixtures/backlinks/beta/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/beta/index.md",
+"title": "Beta",
+"url": "https://example.org/fixtures/backlinks/beta/"
+},
+{
+"id": "/fixtures/backlinks/gamma/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/gamma/index.md",
+"title": "Gamma",
+"url": "https://example.org/fixtures/backlinks/gamma/"
+},
+{
+"id": "/fixtures/backlinks/delta/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/delta/index.md",
+"title": "Delta",
+"url": "https://example.org/fixtures/backlinks/delta/"
+},
+{
+"id": "/fixtures/backlinks/quiet/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/quiet/index.md",
+"title": "Quiet",
+"url": "https://example.org/fixtures/backlinks/quiet/"
+}
+],
+"description": "Reverse navigation derived from ordinary links.",
+"id": "/fixtures/backlinks/",
+"kind": "section",
+"markdown": "https://example.org/fixtures/backlinks/index.md",
+"title": "Backlinks",
+"url": "https://example.org/fixtures/backlinks/"
+},
+{
 "description": "Rolling and pinned channels render from one validated data record.",
 "id": "/fixtures/download-demo/",
 "kind": "page",

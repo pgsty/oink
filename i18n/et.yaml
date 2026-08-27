@@ -289,3 +289,8 @@ ui_diagram_error: The diagram could not be rendered
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_openapi_spec: OpenAPI specification
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_backlinks: Linked from
+markdown_backlinks: "Linked from:"

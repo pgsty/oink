@@ -238,6 +238,11 @@
               "type": "boolean",
               "default": true
             },
+            "backlinks": {
+              "description": "Static backlinks: list the pages that link here, between the page annotation and the pager. Derived from ordinary Markdown links and ref/relref at build time; no runtime. Pages override with the front matter key `backlinks`.",
+              "type": "boolean",
+              "default": false
+            },
             "translation_notice": {
               "description": "Language code of the authoritative version, so a translated page can say so and link to it; false disables the line. Front matter `translation_notice: false` opts out a page written natively in this language.",
               "type": "boolean",

@@ -237,19 +237,39 @@ This is the multi-page printable view of this section.
 18: <a href="#pg-e005eb9587f0711b5ee451c312f4e410">Attribute escaping</a>
 </li>
 <li>
-19: <a href="#pg-fe374610cd145213b824be4bb62ccd02">Download data demo</a>
+19: <a href="#pg-2f5083f4f9ff37aa6b27a3dedbf6a64f">Backlinks</a>
+<ul>
+<li>
+19.1: <a href="#pg-23cd16524f060f1ac739a7b39529e5f4">Alpha</a>
 </li>
 <li>
-20: <a href="#pg-82ea1e4a320b0d43194cc5530d3567f0">Gallery</a>
+19.2: <a href="#pg-57c5231cc55c58ecb6fd5bba52dcbf91">Beta</a>
 </li>
 <li>
-21: <a href="#pg-2164a2231d264a382d4b9831c465448f">Gallery with Zoom disabled</a>
+19.3: <a href="#pg-fa3e8f3a7fd9fa63ed41e48d84607edb">Gamma</a>
 </li>
 <li>
-22: <a href="#pg-beae680f515707991ae9c5e4f979169d">Release assets with an explicit base</a>
+19.4: <a href="#pg-bd8c7f229cbf484098e0d6e2b37e7148">Delta</a>
 </li>
 <li>
-23: <a href="#pg-34079bc88b9b61091ef94e0599cfb2e2">Unpublished download demo</a>
+19.5: <a href="#pg-1d457f12b5c189690d34581290750bb3">Quiet</a>
+</li>
+</ul>
+</li>
+<li>
+20: <a href="#pg-fe374610cd145213b824be4bb62ccd02">Download data demo</a>
+</li>
+<li>
+21: <a href="#pg-82ea1e4a320b0d43194cc5530d3567f0">Gallery</a>
+</li>
+<li>
+22: <a href="#pg-2164a2231d264a382d4b9831c465448f">Gallery with Zoom disabled</a>
+</li>
+<li>
+23: <a href="#pg-beae680f515707991ae9c5e4f979169d">Release assets with an explicit base</a>
+</li>
+<li>
+24: <a href="#pg-34079bc88b9b61091ef94e0599cfb2e2">Unpublished download demo</a>
 </li>
 </ul>
 <div class="content">
@@ -1397,7 +1417,52 @@ attribute block that was never parsed in the first place.</p>
 <img class="td-image attr-escape" src="/media/content-primitives-global.png" alt="Blue and gold standalone preview" width="64" height="40" loading="lazy" decoding="async" data-probe="q&#34; onmouseover=alert(4) data-z=&#34;q">
 </div>
 <div class="td-content" style="page-break-before: always">
-<h1 id="pg-fe374610cd145213b824be4bb62ccd02">19 - Download data demo</h1>
+<h1 id="pg-2f5083f4f9ff37aa6b27a3dedbf6a64f">19 - Backlinks</h1>
+<div class="lead">Reverse navigation derived from ordinary links.</div>
+<p>Pages in this section link each other so the derived reverse index has edges
+to show.</p>
+</div>
+<div class="td-content" style="">
+<h1 id="pg-23cd16524f060f1ac739a7b39529e5f4">19.1 - Alpha</h1>
+<p>Alpha links its siblings every way authors actually write links: a relative
+link to <a href="/fixtures/backlinks/beta/">Beta</a>, an absolute link to <a href="/fixtures/backlinks/gamma/">Gamma</a>,
+a fragment-carrying repeat of <a href="/fixtures/backlinks/beta/#part">Beta again</a>, a self link to
+<a href="/fixtures/backlinks/alpha/">Alpha</a>, an external link to
+<a href="https://example.com/nothing">nowhere</a>, a same-page anchor to
+<a href="#pg-23cd16524f060f1ac739a7b39529e5f4--part">the heading</a>, and a shortcode reference to
+<a href="/fixtures/backlinks/quiet/">Quiet</a>.</p>
+<p>Links inside code never become edges:</p>
+<div class="td-code td-code--untitled" id="td-code-05521877-fence-0" data-td-code data-td-code-auto-id
+data-td-language="markdown" data-td-line-count="1">
+<div class="td-code__viewport" id="td-code-05521877-fence-0-viewport" data-td-code-viewport><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">[<span class="nt">Delta</span>](<span class="na">delta</span>)</span></span></code></pre></div></div>
+</div>
+<p>Nor does inline code such as <code>[Delta](delta)</code>.</p>
+<h2 id="pg-23cd16524f060f1ac739a7b39529e5f4--part">A heading
+</h2>
+<p>The fragment above resolves here.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-57c5231cc55c58ecb6fd5bba52dcbf91">19.2 - Beta</h1>
+<p>Beta links <a href="/fixtures/backlinks/alpha/">Alpha</a> twice — once relative and once absolute, as
+<a href="/fixtures/backlinks/alpha/">Alpha again</a> — and the two references merge into
+one edge.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-fa3e8f3a7fd9fa63ed41e48d84607edb">19.3 - Gamma</h1>
+<p>Gamma links nothing; it only receives.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-bd8c7f229cbf484098e0d6e2b37e7148">19.4 - Delta</h1>
+<p>Delta is referenced only from inside Alpha&rsquo;s code samples, so nothing links
+here and no backlink block renders.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-1d457f12b5c189690d34581290750bb3">19.5 - Quiet</h1>
+<p>Alpha links here, but this page turns the block off with its own front
+matter — the cascade sets the default, the page has the last word.</p>
+</div>
+<div class="td-content" style="page-break-before: always">
+<h1 id="pg-fe374610cd145213b824be4bb62ccd02">20 - Download data demo</h1>
 <div class="lead">Rolling and pinned channels render from one validated data record.</div>
 <div class="td-download td-download--static" data-td-download-key="demo">
 <section class="td-download__channel" id="download-demo-script" data-td-download-kind="rolling">
@@ -1456,17 +1521,17 @@ data-td-language="bash" data-td-line-count="1" role="group" aria-labelledby="td-
 </div>
 </div>
 <div class="td-content" style="page-break-before: always">
-<h1 id="pg-82ea1e4a320b0d43194cc5530d3567f0">20 - Gallery</h1>
+<h1 id="pg-82ea1e4a320b0d43194cc5530d3567f0">21 - Gallery</h1>
 <div class="lead">Regression fixtures for a static-first responsive image Gallery.</div>
 <ul class="td-gallery td-gallery--static td-gallery--described"><li class="td-gallery__item"><img class="td-gallery__image" src="/fixtures/gallery/page.png" alt="Blue and gold local dashboard overview" width="64" height="40" loading="lazy" decoding="async"><p class="td-gallery__description">Local page resource with intrinsic dimensions.</p></li><li class="td-gallery__item"><img class="td-gallery__image" src="/media/content-primitives-global.png" alt="Green and violet global dashboard detail" width="64" height="40" loading="lazy" decoding="async"><p class="td-gallery__description">A deliberately long caption that must wrap inside its own card without widening the page or covering the neighboring image.</p></li><li class="td-gallery__item"><img class="td-gallery__image" src="/media/content-primitives-tall.svg" alt="Tall static SVG settings overview" loading="lazy" decoding="async"><p class="td-gallery__description">واجهة إعدادات عربية طويلة لاختبار الالتفاف والاتجاه التلقائي</p></li><li class="td-gallery__item"><a class="td-gallery__link" href="/fixtures/gallery/"><img class="td-gallery__image" src="https://example.invalid/gallery/remote.webp?view=full" alt="Remote deployment history view" loading="lazy" decoding="async"></a><p class="td-gallery__description">远程图片保持静态 URL，构建过程不会下载它。</p></li></ul>
 </div>
 <div class="td-content" style="page-break-before: always">
-<h1 id="pg-2164a2231d264a382d4b9831c465448f">21 - Gallery with Zoom disabled</h1>
+<h1 id="pg-2164a2231d264a382d4b9831c465448f">22 - Gallery with Zoom disabled</h1>
 <div class="lead">Gallery remains complete when page-level Image Zoom is disabled.</div>
 <ul class="td-gallery td-gallery--static td-gallery--described"><li class="td-gallery__item"><img class="td-gallery__image" src="/media/content-primitives-static.svg" alt="Static Gallery overview" loading="lazy" decoding="async"><p class="td-gallery__description">The first static figure remains readable without JavaScript.</p></li><li class="td-gallery__item"><img class="td-gallery__image" src="/media/content-primitives-tall.svg" alt="Static Gallery detail" loading="lazy" decoding="async"><p class="td-gallery__description">The second static figure keeps its caption and author order.</p></li></ul>
 </div>
 <div class="td-content" style="page-break-before: always">
-<h1 id="pg-beae680f515707991ae9c5e4f979169d">22 - Release assets with an explicit base</h1>
+<h1 id="pg-beae680f515707991ae9c5e4f979169d">23 - Release assets with an explicit base</h1>
 <div class="lead">Asset tables can remain useful outside release pages without inventing version facts.</div>
 <div class="td-asset-list td-asset-list--static">
 <div class="td-asset-list__table-wrap" tabindex="0" role="region" aria-label="Download asset">
@@ -1496,7 +1561,7 @@ data-td-language="bash" data-td-line-count="1" role="group" aria-labelledby="td-
 </div>
 </div>
 <div class="td-content" style="page-break-before: always">
-<h1 id="pg-34079bc88b9b61091ef94e0599cfb2e2">23 - Unpublished download demo</h1>
+<h1 id="pg-34079bc88b9b61091ef94e0599cfb2e2">24 - Unpublished download demo</h1>
 <div class="lead">Pinned release facts remain visible without exposing download actions.</div>
 <div class="td-download td-download--static" data-td-download-key="pending">
 <section class="td-download__channel" id="download-pending-repository" data-td-download-kind="rolling">

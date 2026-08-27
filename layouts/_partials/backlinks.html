@@ -1,0 +1,16 @@
+{{- /* Static reverse navigation: the pages that link here, as ordinary
+       links. No runtime, no disclosure-only content; omitted entirely when
+       nothing links in or the feature is off. aria-label instead of a
+       labelled heading id, because section print aggregates concatenate
+       pages and must not repeat ids. */ -}}
+{{- $sources := partial "backlinks-sources.html" . -}}
+{{- with $sources -}}
+<nav class="td-backlinks" aria-label="{{ T "ui_backlinks" }}">
+  <h2 class="td-backlinks__title">{{ T "ui_backlinks" }}</h2>
+  <ul class="td-backlinks__list">
+    {{- range . }}
+    <li class="td-backlinks__item"><a href="{{ .RelPermalink }}">{{ .LinkTitle | default .Title }}</a></li>
+    {{- end }}
+  </ul>
+</nav>
+{{- end -}}

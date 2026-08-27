@@ -2,15 +2,18 @@
      this order in individual content templates.
 
      The order follows what a reader does after the last paragraph: hand the
-     page on, say whether it helped, see where it came from, go to the next
-     one, and join the discussion. Share leads because it is the only block
-     that points outward, and because a reader who has decided to pass a page
-     on has decided it before being asked how it went. */ -}}
+     page on, say whether it helped, see where it came from, see what points
+     here, go to the next one, and join the discussion. Share leads because
+     it is the only block that points outward, and because a reader who has
+     decided to pass a page on has decided it before being asked how it went.
+     Backlinks sit between provenance and the pager: where the page came
+     from, then what refers to it, then onward. */ -}}
 {{- $commentsState := partial "comments-state.html" . -}}
 <div class="td-page-end">
   {{ partial "share/bar.html" . }}
   {{ partial "feedback.html" . }}
   {{ partial "page-annotation.html" . }}
+  {{ partial "backlinks.html" . }}
   {{ partial "pager.html" . }}
   {{ partial "comments.html" . }}
   {{- if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) }}

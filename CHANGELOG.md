@@ -7,6 +7,21 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Opt-in static backlinks (knowledge-graph proposal, stage G1): with
+  `params.ui.backlinks: true` — or the prefix-free front matter key
+  `backlinks`, which a section can cascade — every page lists the pages
+  that link to it, between the page annotation and the pager. The
+  per-language reverse index derives at build time from ordinary Markdown
+  links and `ref`/`relref` in raw source: fenced and inline code are
+  stripped first, duplicate references merge into one edge, self links,
+  external links, and same-page anchors never count, fragments drop for
+  page identity, and languages stay isolated. No runtime, no new syntax;
+  the block renders only when pages actually link in, sorted by stable
+  page path. The per-page Markdown output carries the same list through
+  the same partial; RSS omits it. Unresolvable destinations are dropped
+  silently — a documented gap, not a link checker. An invalid value warns,
+  falls back to off, and fails `--panicOnWarning`.
+  `bin/check-backlinks.py` owns the contract.
 - Opt-in `NAVJSON` output format: a machine-readable navigation tree
   (`navigation.json`), one file per language at the language root, enabled
   through the site's `outputs.home`. The tree serializes the same authority

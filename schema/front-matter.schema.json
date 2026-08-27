@@ -12,7 +12,7 @@
       "description": "Front matter key read by the theme's templates."
     },
     "backlinks": {
-      "description": "Static backlinks: list the pages that link here, between the page annotation and the pager. Derived from ordinary Markdown links and ref/relref at build time; no runtime. Pages override with the front matter key `backlinks`."
+      "description": "Static backlinks: a right-rail group beside the table of contents listing the pages that link here. Derived from ordinary Markdown links and ref/relref at build time; no runtime. Pages override with the front matter key `backlinks`."
     },
     "blog_index": {
       "description": "Form of the blog section list pages: list (rows), cards (a grid), or table (one compact row per post -- the whole section at once, no year groups, no pagination). Front matter `blog_index` (on the blog root, or through its cascade) overrides it per section."

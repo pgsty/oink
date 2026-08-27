@@ -107,9 +107,9 @@ params:
     # declares no defaults for those because they are the site's own facts.
     annotation: true
 
-    # Static backlinks: list the pages that link here, between the page
-    # annotation and the pager. Derived from ordinary Markdown links and
-    # ref/relref at build time; no runtime. Pages override with the front
+    # Static backlinks: a right-rail group beside the table of contents
+    # listing the pages that link here. Derived from ordinary Markdown links
+    # and ref/relref at build time; no runtime. Pages override with the front
     # matter key `backlinks`.
     backlinks: false
     # Language code of the authoritative version, so a translated page can say

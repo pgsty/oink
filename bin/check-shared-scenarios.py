@@ -41,7 +41,7 @@ BUILD_TIMEOUT = 120
 
 
 def run_build(
-    command: list[str], *, env: dict[str, str]
+    command: list[str], *, env: dict[str, str], expect_failure: bool = False
 ) -> subprocess.CompletedProcess[str]:
     """Run one scenario build, retrying once if Hugo wedges.
 
@@ -57,6 +57,13 @@ def run_build(
     if each one leaves a line behind, and that log is the upstream report if
     the rate ever climbs. A build that wedges twice still fails the run,
     because a timeout that reproduces is a result rather than noise.
+
+    A build declared expect_failure exists to prove that a warning stops
+    publication, and its caller has already asserted the warning text on a
+    plain build of the same site. For that build the deadlock is the panic
+    path seizing -- a process that cannot exit certainly did not publish --
+    so a wedge is returned as the failure it is instead of retried, and the
+    run on 0.164.0 no longer spends four minutes re-proving it.
     """
 
     attempt = partial(
@@ -72,6 +79,19 @@ def run_build(
     try:
         return attempt()
     except subprocess.TimeoutExpired:
+        if expect_failure:
+            print(
+                f"hugo wedged after {BUILD_TIMEOUT}s under --panicOnWarning; "
+                f"counting the wedge as the expected failure: {shlex.join(command)}",
+                file=sys.stderr,
+                flush=True,
+            )
+            return subprocess.CompletedProcess(
+                command,
+                returncode=124,
+                stdout="",
+                stderr=f"hugo wedged after {BUILD_TIMEOUT}s and was killed",
+            )
         print(
             f"hugo wedged after {BUILD_TIMEOUT}s, retrying once: {shlex.join(command)}",
             file=sys.stderr,
@@ -90,6 +110,7 @@ def build(
     config: Path | None = None,
     env: dict[str, str] | None = None,
     panic_on_warning: bool = False,
+    expect_failure: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     command = [
         hugo,
@@ -115,7 +136,7 @@ def build(
     process_env = os.environ.copy()
     if env:
         process_env.update(env)
-    return run_build(command, env=process_env)
+    return run_build(command, env=process_env, expect_failure=expect_failure)
 
 
 def check_example(public: Path) -> list[str]:
@@ -382,7 +403,7 @@ def check_invalid_config(hugo: str) -> list[str]:
             require(result.returncode == 0,
                     f"invalid {name} config stopped the build instead of warning", errors)
             strict = build(hugo, FIXTURE, temp_path / "strict", config=override,
-                           panic_on_warning=True)
+                           panic_on_warning=True, expect_failure=True)
             require(strict.returncode != 0,
                     f"invalid {name} config survived --panicOnWarning", errors)
 
@@ -396,7 +417,8 @@ def check_invalid_config(hugo: str) -> list[str]:
         require(expected in output, f"invalid offline_search_on_serve config did not report {expected!r}", errors)
         require(result.returncode == 0,
                 "invalid offline_search_on_serve stopped the build instead of warning", errors)
-        strict = build(hugo, FIXTURE, temp_path / "strict", config=override, panic_on_warning=True)
+        strict = build(hugo, FIXTURE, temp_path / "strict", config=override,
+                       panic_on_warning=True, expect_failure=True)
         require(strict.returncode != 0,
                 "invalid offline_search_on_serve survived --panicOnWarning", errors)
 
@@ -423,7 +445,8 @@ disableKinds: [home, RSS, sitemap, taxonomy, term]
         result = build(hugo, source, temp_path / "public")
         output = result.stdout + result.stderr
         # The hook warns and its keywords are ignored; publishing still fails.
-        require(build(hugo, source, temp_path / "public-strict", panic_on_warning=True).returncode != 0,
+        require(build(hugo, source, temp_path / "public-strict",
+                      panic_on_warning=True, expect_failure=True).returncode != 0,
                 "non-array search hook survived --panicOnWarning", errors)
         require(
             "must return an array" in output,

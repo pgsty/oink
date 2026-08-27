@@ -1,0 +1,28 @@
+{{- /* The one child-selection rule for navigation consumers: ordered,
+       visible children of a section. The flattened reading chain
+       (nav-flatten-section.html) and the navigation JSON tree walk
+       (nav-json-node.html) both consume it, so a visibility or ordering
+       change lands in every derived surface at once. toc_hide prunes the
+       whole subtree here; placeholder handling (dividers, manual links)
+       stays with each consumer because the sidebar shows them while the
+       reading chain skips them. */ -}}
+{{- $section := .section -}}
+{{- $children := union $section.Pages $section.Sections -}}
+{{- if eq $section.Type "blog" -}}
+  {{- $children = partial "shell/blog-pages.html" $children -}}
+{{- else -}}
+  {{- $children = $children.ByWeight -}}
+{{- end -}}
+{{- $children = where $children ".Params.toc_hide" "!=" true -}}
+{{- $truncate := partial "validate.html" (dict
+    "value" $section.Site.Params.ui.sidebar_menu_truncate "kind" "int"
+    "min" 1 "fallback" 2000 "key" "params.ui.sidebar_menu_truncate") -}}
+{{- $children = $children | first $truncate -}}
+{{- $selected := slice -}}
+{{- range $children -}}
+  {{- if and (eq $section $section.Site.Home) (eq .Params.toc_root true) -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $selected = $selected | append . -}}
+{{- end -}}
+{{- return $selected -}}

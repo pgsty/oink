@@ -1,0 +1,669 @@
+{
+"baseURL": "https://example.org/",
+"language": "en",
+"root": {
+"children": [
+{
+"children": [
+{
+"description": "Write notes, warnings and collapsible asides — with colour, icon and title — as `\u003e [!NOTE]` blockquotes, no shortcode involved.",
+"id": "/docs/callout/",
+"kind": "page",
+"markdown": "https://example.org/docs/callout/index.md",
+"title": "Callouts",
+"url": "https://example.org/docs/callout/"
+},
+{
+"description": "Plain Markdown image syntax plus one attribute line gives you captions, sizing, zoom, links, numbering and Hugo image processing.",
+"id": "/docs/image/",
+"kind": "page",
+"markdown": "https://example.org/docs/image/index.md",
+"title": "Images",
+"url": "https://example.org/docs/image/"
+},
+{
+"description": "A plain Markdown fence plus one attribute line gives you a filename title, exact copy, line numbers, highlighting, wrapping, folding and linkable lines.",
+"id": "/docs/code/",
+"kind": "page",
+"markdown": "https://example.org/docs/code/index.md",
+"title": "Code blocks",
+"url": "https://example.org/docs/code/"
+},
+{
+"description": "A `{tab=}` attribute on adjacent fences or tables makes a tab set; add a group and it becomes linkable, synchronized and remembered.",
+"id": "/docs/tabs/",
+"kind": "page",
+"markdown": "https://example.org/docs/tabs/index.md",
+"title": "Tabs",
+"url": "https://example.org/docs/tabs/"
+},
+{
+"description": "A plain GFM table plus one attribute line becomes a captioned table, a compatibility matrix, a field list, a numbered table or a tab set; wide tables scroll on their own.",
+"id": "/docs/table/",
+"kind": "page",
+"markdown": "https://example.org/docs/table/index.md",
+"title": "Tables",
+"url": "https://example.org/docs/table/"
+},
+{
+"description": "A plain table plus `{.fields}` documents configuration keys, command flags and API fields — name, type, default and description each in place, readable on a narrow screen, every entry individually linkable.",
+"id": "/docs/fields/",
+"kind": "page",
+"markdown": "https://example.org/docs/fields/index.md",
+"title": "Fields",
+"url": "https://example.org/docs/fields/"
+},
+{
+"description": "An ordered list plus `{.steps}` becomes a numbered procedure with dots and a connecting rule; switch to the steps shortcode when each step needs a heading in the table of contents.",
+"id": "/docs/steps/",
+"kind": "page",
+"markdown": "https://example.org/docs/steps/index.md",
+"title": "Steps",
+"url": "https://example.org/docs/steps/"
+},
+{
+"description": "A link list plus `{.cards}` lays out a grid of navigation cards; switch to the shortcode when you need icons, badges or images.",
+"id": "/docs/cards/",
+"kind": "page",
+"markdown": "https://example.org/docs/cards/index.md",
+"title": "Cards",
+"url": "https://example.org/docs/cards/"
+},
+{
+"description": "A `filetree` fence draws an annotated directory structure — aligned comment column, per-entry icons, collapsible directories, a draggable split.",
+"id": "/docs/filetree/",
+"kind": "page",
+"markdown": "https://example.org/docs/filetree/index.md",
+"title": "File trees",
+"url": "https://example.org/docs/filetree/"
+},
+{
+"description": "Inline and display mathematics with KaTeX, rendered at build time — the reader downloads no script.",
+"id": "/docs/math/",
+"kind": "page",
+"markdown": "https://example.org/docs/math/index.md",
+"title": "Mathematics",
+"url": "https://example.org/docs/math/"
+},
+{
+"description": "A `mermaid` fence turns text into flowcharts, sequence diagrams, Gantt charts, class diagrams and state diagrams — rendered locally, theme-aware, diff-friendly.",
+"id": "/docs/mermaid/",
+"kind": "page",
+"markdown": "https://example.org/docs/mermaid/index.md",
+"title": "Mermaid",
+"url": "https://example.org/docs/mermaid/"
+},
+{
+"description": "A `plantuml` fence writes sequence, class, component, activity and use-case diagrams; rendering requires a PlantUML server you configure yourself.",
+"id": "/docs/plantuml/",
+"kind": "page",
+"markdown": "https://example.org/docs/plantuml/index.md",
+"title": "PlantUML",
+"url": "https://example.org/docs/plantuml/"
+},
+{
+"description": "A `markmap` fence turns a Markdown outline into an expandable, zoomable mind map — and the source stays a readable outline.",
+"id": "/docs/markmap/",
+"kind": "page",
+"markdown": "https://example.org/docs/markmap/index.md",
+"title": "Markmap",
+"url": "https://example.org/docs/markmap/"
+},
+{
+"description": "Put a `.drawio.svg` that carries an editable copy on the page as an ordinary image; hovering gives the reader a button that opens the Draw.io editor.",
+"id": "/docs/drawio/",
+"kind": "page",
+"markdown": "https://example.org/docs/drawio/index.md",
+"title": "Draw.io",
+"url": "https://example.org/docs/drawio/"
+},
+{
+"description": "Write ECharts options as YAML or JSON in an `echarts` fence; Hugo validates them at build time and the browser draws a theme-aware chart with the local ECharts.",
+"id": "/docs/echarts/",
+"kind": "page",
+"markdown": "https://example.org/docs/echarts/index.md",
+"title": "ECharts",
+"url": "https://example.org/docs/echarts/"
+},
+{
+"description": "An `infographic` fence picks an AntV template and renders a title plus a list of items as a flow, timeline, funnel, grid or hierarchy.",
+"id": "/docs/infographic/",
+"kind": "page",
+"markdown": "https://example.org/docs/infographic/index.md",
+"title": "Infographic",
+"url": "https://example.org/docs/infographic/"
+},
+{
+"description": "A `gallery` fence arranges related screenshots in a responsive grid, each with an optional description or link, reusing the page's image zoom dialog.",
+"id": "/docs/gallery/",
+"kind": "page",
+"markdown": "https://example.org/docs/gallery/index.md",
+"title": "Galleries",
+"url": "https://example.org/docs/gallery/"
+},
+{
+"description": "Put a semantic status label next to a feature name, a version or a table cell — five tones, no custom colours.",
+"id": "/docs/badge/",
+"kind": "page",
+"markdown": "https://example.org/docs/badge/index.md",
+"title": "Badges",
+"url": "https://example.org/docs/badge/"
+},
+{
+"description": "Write shortcuts with `kbd` — one shortcode, a list of key names, a semantic key sequence that stays readable in print and in Markdown output.",
+"id": "/docs/kbd/",
+"kind": "page",
+"markdown": "https://example.org/docs/kbd/index.md",
+"title": "Keys",
+"url": "https://example.org/docs/kbd/"
+},
+{
+"description": "Pull an external file in with include, print a site parameter with param, and write a note that reaches no output at all with comment.",
+"id": "/docs/include/",
+"kind": "page",
+"markdown": "https://example.org/docs/include/index.md",
+"title": "Include",
+"url": "https://example.org/docs/include/"
+},
+{
+"description": "Put a .cast terminal recording on the page — the text stays selectable text, and the player ships with the theme rather than coming from a CDN.",
+"id": "/docs/asciinema/",
+"kind": "page",
+"markdown": "https://example.org/docs/asciinema/index.md",
+"title": "Asciinema",
+"url": "https://example.org/docs/asciinema/"
+}
+],
+"description": "Markdown Component Examples",
+"id": "/docs/",
+"kind": "section",
+"markdown": "https://example.org/docs/index.md",
+"title": "Docs",
+"url": "https://example.org/docs/"
+},
+{
+"children": [
+{
+"description": "A compact fixture for long-form reading and CJK fallback.",
+"id": "/blog/typography/",
+"kind": "page",
+"markdown": "https://example.org/blog/typography/index.md",
+"title": "A typography regression article",
+"url": "https://example.org/blog/typography/"
+},
+{
+"children": [
+{
+"description": "Four front-matter keys turn a blog page into a reading-first layout: a hero drawn from the featured image, no chrome but the outline rail, and every blog component in its usual place below the fold.",
+"id": "/blog/oink/immersive-reading/",
+"kind": "page",
+"markdown": "https://example.org/blog/oink/immersive-reading/index.md",
+"title": "Immersive reading",
+"url": "https://example.org/blog/oink/immersive-reading/"
+},
+{
+"description": "OINK turns a directly customized Docsy codebase into a local-first, Hugo-only documentation theme with multilingual infrastructure and reusable content components.",
+"id": "/blog/oink/oink-announcement/",
+"kind": "page",
+"markdown": "https://example.org/blog/oink/oink-announcement/index.md",
+"title": "Introducing OINK",
+"url": "https://example.org/blog/oink/oink-announcement/"
+},
+{
+"description": "A technical diary of the decisions, migrations, safety boundaries, tests, and documentation work behind the OINK implementation preview.",
+"id": "/blog/oink/oink-implementation-diary/",
+"kind": "page",
+"markdown": "https://example.org/blog/oink/oink-implementation-diary/index.md",
+"title": "OINK implementation diary",
+"url": "https://example.org/blog/oink/oink-implementation-diary/"
+}
+],
+"description": "OINK announcements, engineering stories, and implementation notes",
+"id": "/blog/oink/",
+"kind": "section",
+"markdown": "https://example.org/blog/oink/index.md",
+"title": "Oink",
+"url": "https://example.org/blog/oink/"
+},
+{
+"description": "A second entry that fixes the blog pager's chronological behavior.",
+"id": "/blog/older/",
+"kind": "page",
+"markdown": "https://example.org/blog/older/index.md",
+"title": "An older regression article",
+"url": "https://example.org/blog/older/"
+},
+{
+"description": "The 0.4 `author` string, including the Markdown block form.",
+"id": "/blog/legacy-byline/",
+"kind": "page",
+"markdown": "https://example.org/blog/legacy-byline/index.md",
+"title": "A legacy byline article",
+"url": "https://example.org/blog/legacy-byline/"
+},
+{
+"children": [
+{
+"description": "An older semantic version with a deliberately lower weight.",
+"id": "/blog/release/pig-1.9.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/pig-1.9.0/index.md",
+"title": "Pig 1.9.0",
+"url": "https://example.org/blog/release/pig-1.9.0/"
+},
+{
+"description": "One GitHub release URL is the whole release input.",
+"id": "/blog/release/shorthand/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/shorthand/index.md",
+"title": "A release URL alone",
+"url": "https://example.org/blog/release/shorthand/"
+},
+{
+"description": "Date-style tags remain valid and deterministic.",
+"id": "/blog/release/mcli-20260813/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/mcli-20260813/index.md",
+"title": "MCLI 20260813",
+"url": "https://example.org/blog/release/mcli-20260813/"
+},
+{
+"description": "A page without release facts is a titled entry, not a warning.",
+"id": "/blog/release/plain-note/",
+"kind": "page",
+"title": "A plain note between releases",
+"url": "https://example.org/blog/release/plain-note/"
+},
+{
+"description": "Numeric semantic-version ordering places this ahead of 1.9.0.",
+"id": "/blog/release/pig-1.10.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/pig-1.10.0/index.md",
+"title": "Pig 1.10.0",
+"url": "https://example.org/blog/release/pig-1.10.0/"
+},
+{
+"description": "Oink 0.6.0 adds an immersive presentation to the existing blog shell, then finishes it with featured images, authors, series, three index forms and a share bar, and adds attribution for vendored pages. Underneath, the theme stopped calling errorf: a bad value now warns, falls back to the documented default, and lets the build finish.",
+"id": "/blog/release/0.6.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/0.6.0/index.md",
+"title": "Oink v0.6.0",
+"url": "https://example.org/blog/release/0.6.0/"
+},
+{
+"description": "Oink 0.5.0 replaces most shortcodes with native Markdown forms, converges every configuration and front matter key on three rules, removes the 0.x compatibility layer, and ships the migration toolkit that rewrites a 0.4 site. Every old key, shape, and shortcode fails the build with its replacement instead of being silently ignored.",
+"id": "/blog/release/0.5.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/0.5.0/index.md",
+"title": "Oink v0.5.0",
+"url": "https://example.org/blog/release/0.5.0/"
+},
+{
+"description": "Oink 0.4.0 adds sequential reading and release surfaces, reusable landing pages, Book publishing with stable references, and a keyboard-first site shell in one consolidated Scenario Components release.",
+"id": "/blog/release/0.4.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/0.4.0/index.md",
+"title": "Oink v0.4.0",
+"url": "https://example.org/blog/release/0.4.0/"
+},
+{
+"description": "Oink 0.3.0 adds enhanced code blocks and code groups, everyday content primitives, nested navigation with a Command Palette, semantic typography presets, and removes jQuery from every page.",
+"id": "/blog/release/0.3.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/0.3.0/index.md",
+"title": "Oink v0.3.0",
+"url": "https://example.org/blog/release/0.3.0/"
+},
+{
+"description": "Oink 0.2.0 adds composable homepage sections, theme-aware media, wordmarks, navigable component boards, a steps shortcode, polished terminal recordings, and a clearer release-publishing experience.",
+"id": "/blog/release/0.2.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/0.2.0/index.md",
+"title": "Oink v0.2.0",
+"url": "https://example.org/blog/release/0.2.0/"
+},
+{
+"description": "The first stable Oink release turns the implementation preview into a polished Hugo module with a responsive shell, multilingual infrastructure, local-first components, and a stronger accessibility baseline.",
+"id": "/blog/release/0.1.0/",
+"kind": "page",
+"markdown": "https://example.org/blog/release/0.1.0/index.md",
+"title": "Oink v0.1.0",
+"url": "https://example.org/blog/release/0.1.0/"
+}
+],
+"description": "Every OINK release note, newest first, each one a part of the same series.",
+"id": "/blog/release/",
+"kind": "section",
+"markdown": "https://example.org/blog/release/index.md",
+"title": "Releases",
+"url": "https://example.org/blog/release/"
+},
+{
+"description": "Reading position 1 by weight, and the newest of the four by date.",
+"id": "/blog/series-wal/",
+"kind": "page",
+"markdown": "https://example.org/blog/series-wal/index.md",
+"title": "Write-ahead logging",
+"url": "https://example.org/blog/series-wal/"
+},
+{
+"description": "Reading position 2 by weight, second-newest by date.",
+"id": "/blog/series-mvcc/",
+"kind": "page",
+"markdown": "https://example.org/blog/series-mvcc/index.md",
+"title": "Multiversion concurrency control",
+"url": "https://example.org/blog/series-mvcc/"
+},
+{
+"description": "No weight and the second-oldest date, so it reads last.",
+"id": "/blog/series-buffers/",
+"kind": "page",
+"markdown": "https://example.org/blog/series-buffers/index.md",
+"title": "The buffer manager",
+"url": "https://example.org/blog/series-buffers/"
+},
+{
+"description": "No weight and the oldest date, so it reads third, ahead of the other unweighted member.",
+"id": "/blog/series-vacuum/",
+"kind": "page",
+"markdown": "https://example.org/blog/series-vacuum/index.md",
+"title": "Vacuum and bloat",
+"url": "https://example.org/blog/series-vacuum/"
+}
+],
+"description": "Real OINK release notes and engineering posts, wired to every blog feature.",
+"id": "/blog/",
+"kind": "section",
+"markdown": "https://example.org/blog/index.md",
+"title": "Blog",
+"url": "https://example.org/blog/"
+},
+{
+"children": [
+{
+"description": "Start a technical book with visible assumptions and measurable evidence.",
+"id": "/book/chapter-one/",
+"kind": "page",
+"markdown": "https://example.org/book/chapter-one/index.md",
+"title": "Establish the baseline",
+"url": "https://example.org/book/chapter-one/"
+},
+{
+"description": "Turn a reviewed change into a traceable release.",
+"id": "/book/chapter-two/",
+"kind": "page",
+"markdown": "https://example.org/book/chapter-two/index.md",
+"title": "Release workflow",
+"url": "https://example.org/book/chapter-two/"
+},
+{
+"description": "Close the loop with observable service goals and a repeatable review.",
+"id": "/book/chapter-three/",
+"kind": "page",
+"markdown": "https://example.org/book/chapter-three/index.md",
+"title": "Operate and review",
+"url": "https://example.org/book/chapter-three/"
+},
+{
+"description": "What a chapter looks like when the argument is carried by mathematics rather than by prose.",
+"id": "/book/chapter-four/",
+"kind": "page",
+"markdown": "https://example.org/book/chapter-four/index.md",
+"title": "Formulas and derivations",
+"url": "https://example.org/book/chapter-four/"
+}
+],
+"description": "Book Press Kit",
+"id": "/book/",
+"kind": "section",
+"markdown": "https://example.org/book/index.md",
+"title": "Book",
+"url": "https://example.org/book/"
+},
+{
+"children": [
+{
+"description": "GitHub / Obsidian style callouts rendered by the blockquote render hook.",
+"id": "/fixtures/callouts/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/callouts/index.md",
+"title": "Callouts",
+"url": "https://example.org/fixtures/callouts/"
+},
+{
+"description": "Representative prose, labels, and code for theme regression checks.",
+"id": "/fixtures/typography/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/typography/index.md",
+"title": "Typography fixture",
+"url": "https://example.org/fixtures/typography/"
+},
+{
+"description": "Regression fixtures for the shared Chroma shell and code groups.",
+"id": "/fixtures/code-blocks/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/code-blocks/index.md",
+"title": "Enhanced code blocks",
+"url": "https://example.org/fixtures/code-blocks/"
+},
+{
+"description": "Ordered-list steps (native form) and heading steps (full form).",
+"id": "/fixtures/steps/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/steps/index.md",
+"title": "Steps",
+"url": "https://example.org/fixtures/steps/"
+},
+{
+"description": "Regression fixtures for delimiter-style server-rendered mathematics.",
+"id": "/fixtures/math-passthrough/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/math-passthrough/index.md",
+"title": "Math passthrough",
+"url": "https://example.org/fixtures/math-passthrough/"
+},
+{
+"description": "Regression fixtures for inline everyday content primitives.",
+"id": "/fixtures/content-primitives/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/content-primitives/index.md",
+"title": "Content primitives",
+"url": "https://example.org/fixtures/content-primitives/"
+},
+{
+"description": "List-based native forms selected by a trailing marker.",
+"id": "/fixtures/lists/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/lists/index.md",
+"title": "Cards / FileTree / Gallery",
+"url": "https://example.org/fixtures/lists/"
+},
+{
+"description": "Regression fixtures for shared image resolution and the processed image shortcode.",
+"id": "/fixtures/media-primitives/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/media-primitives/index.md",
+"title": "Media primitives",
+"url": "https://example.org/fixtures/media-primitives/"
+},
+{
+"description": "Regression fixtures for opt-in native image preview.",
+"id": "/fixtures/image-zoom/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/image-zoom/index.md",
+"title": "Image Zoom",
+"url": "https://example.org/fixtures/image-zoom/"
+},
+{
+"description": "Regression fixtures for the asciinema, redoc, and swagger output states — interactive HTML, static print, and pure Markdown/RSS.",
+"id": "/fixtures/media-embeds/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/media-embeds/index.md",
+"title": "Media embeds",
+"url": "https://example.org/fixtures/media-embeds/"
+},
+{
+"description": "A page-level false value wins over the enabled example site.",
+"id": "/fixtures/image-zoom-disabled/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/image-zoom-disabled/index.md",
+"title": "Image Zoom disabled",
+"url": "https://example.org/fixtures/image-zoom-disabled/"
+},
+{
+"description": "A page with only ineligible images must not load the runtime.",
+"id": "/fixtures/image-zoom-exclusions/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/image-zoom-exclusions/index.md",
+"title": "Image Zoom exclusions",
+"url": "https://example.org/fixtures/image-zoom-exclusions/"
+},
+{
+"description": "The `{{\u003c/* cards */\u003e}}` / `{{\u003c/* card */\u003e}}` full form with icons, badges, images and Markdown bodies.",
+"id": "/fixtures/cards/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/cards/index.md",
+"title": "Cards (rich)",
+"url": "https://example.org/fixtures/cards/"
+},
+{
+"children": [
+{
+"description": "The first leaf below a section index.",
+"id": "/fixtures/guides/first/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/guides/first/index.md",
+"title": "First nested guide",
+"url": "https://example.org/fixtures/guides/first/"
+},
+{
+"description": "A page-level fixture for disabling sequential navigation.",
+"id": "/fixtures/guides/opt-out/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/guides/opt-out/index.md",
+"title": "Pager opt-out",
+"url": "https://example.org/fixtures/guides/opt-out/"
+}
+],
+"description": "A section fixture that proves tree-order navigation across levels.",
+"id": "/fixtures/guides/",
+"kind": "section",
+"markdown": "https://example.org/fixtures/guides/index.md",
+"title": "Nested guides",
+"url": "https://example.org/fixtures/guides/"
+},
+{
+"description": "Table family — fields, matrix, caption, numbered, tabs, full-width.",
+"id": "/fixtures/tables/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/tables/index.md",
+"title": "Tables",
+"url": "https://example.org/fixtures/tables/"
+},
+{
+"description": "Declarative charts, infographics and checksum lists as fenced code blocks.",
+"id": "/fixtures/data-fences/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/data-fences/index.md",
+"title": "Data fences",
+"url": "https://example.org/fixtures/data-fences/"
+},
+{
+"children": [
+{
+"description": "Seven inherited targets - one intent link per URL shape, plus the local copy control.",
+"id": "/fixtures/share/enabled/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/share/enabled/index.md",
+"title": "Shared page",
+"url": "https://example.org/fixtures/share/enabled/"
+},
+{
+"description": "A page-level fixture for turning an inherited share bar off.",
+"id": "/fixtures/share/disabled/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/share/disabled/index.md",
+"title": "Share opt-out",
+"url": "https://example.org/fixtures/share/disabled/"
+}
+],
+"description": "A section fixture for the page-end share bar and its opt-out.",
+"id": "/fixtures/share/",
+"kind": "section",
+"markdown": "https://example.org/fixtures/share/index.md",
+"title": "Share bar",
+"url": "https://example.org/fixtures/share/"
+},
+{
+"description": "Generic data-* values that try to close their own attribute, on every render hook that emits them.",
+"id": "/fixtures/attribute-escaping/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/attribute-escaping/index.md",
+"title": "Attribute escaping",
+"url": "https://example.org/fixtures/attribute-escaping/"
+},
+{
+"description": "Rolling and pinned channels render from one validated data record.",
+"id": "/fixtures/download-demo/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/download-demo/index.md",
+"title": "Download data demo",
+"url": "https://example.org/fixtures/download-demo/"
+},
+{
+"description": "Regression fixtures for a static-first responsive image Gallery.",
+"id": "/fixtures/gallery/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/gallery/index.md",
+"title": "Gallery",
+"url": "https://example.org/fixtures/gallery/"
+},
+{
+"description": "Gallery remains complete when page-level Image Zoom is disabled.",
+"id": "/fixtures/gallery-disabled/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/gallery-disabled/index.md",
+"title": "Gallery with Zoom disabled",
+"url": "https://example.org/fixtures/gallery-disabled/"
+},
+{
+"description": "Asset tables can remain useful outside release pages without inventing version facts.",
+"id": "/fixtures/release-assets-base/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/release-assets-base/index.md",
+"title": "Release assets with an explicit base",
+"url": "https://example.org/fixtures/release-assets-base/"
+},
+{
+"description": "Pinned release facts remain visible without exposing download actions.",
+"id": "/fixtures/download-pending/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/download-pending/index.md",
+"title": "Unpublished download demo",
+"url": "https://example.org/fixtures/download-pending/"
+}
+],
+"description": "Narrow pages that pin theme behaviour for the check scripts and the output goldens.",
+"id": "/fixtures/",
+"kind": "section",
+"markdown": "https://example.org/fixtures/index.md",
+"title": "Fixtures",
+"url": "https://example.org/fixtures/"
+},
+{
+"description": "A non-home landing shell driven by localized data.",
+"id": "/landing-demo/",
+"kind": "page",
+"markdown": "https://example.org/landing-demo/index.md",
+"title": "Landing page fixture",
+"url": "https://example.org/landing-demo/"
+}
+],
+"description": "Every block on this landing page comes from one YAML file.",
+"id": "/",
+"kind": "home",
+"title": "Oink Example",
+"url": "https://example.org/"
+},
+"schemaVersion": 1
+}

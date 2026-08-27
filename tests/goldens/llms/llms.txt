@@ -2,6 +2,7 @@
 > Every block on this landing page comes from one YAML file.
 ## Site index
 - [Home page](https://example.org/)
+- [navigation.json](https://example.org/navigation.json)
 - [Docs](https://example.org/docs/index.md): Markdown Component Examples
 - [Blog](https://example.org/blog/index.md): Real OINK release notes and engineering posts, wired to every blog feature.
 - [Book](https://example.org/book/index.md): Book Press Kit

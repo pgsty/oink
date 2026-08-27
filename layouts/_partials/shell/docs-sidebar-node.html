@@ -15,7 +15,9 @@
   {{- $activePath := and (not $shouldDelayActive) (in $activeURLs $node.url) -}}
   {{- $forceExpanded := $s.Params.sidebar_expanded | default false -}}
   {{- $shouldExpand := or $activePath $forceExpanded -}}
-  {{- $withChild := gt (len $node.children) 0 -}}
+  {{- /* A tree node may omit children entirely; nil must not crash the
+       build -- authored data degrades, it does not error. */ -}}
+  {{- $withChild := gt (len ($node.children | default (slice))) 0 -}}
   {{- $foldable := and (partial "validate.html" (dict
       "value" (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) "kind" "bool"
       "fallback" true "key" "params.ui.sidebar_menu_foldable"

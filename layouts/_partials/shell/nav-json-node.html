@@ -1,0 +1,44 @@
+{{- /* Walk one content-tree page into navigation-JSON nodes. Returns a slice
+       because a page can contribute zero nodes (a divider is presentation
+       only and hoists nothing but its children) or one. Child selection and
+       ordering come from shell/nav-children.html -- the same rule the
+       flattened reading chain consumes -- so the JSON cannot invent a second
+       authority. Manual-link placeholders stay in the tree the way the
+       sidebar shows them: an external node for manual_link, an internal link
+       node for manual_link_relref, both without page identity. */ -}}
+{{- $s := .page -}}
+{{- $childNodes := slice -}}
+{{- range partial "shell/nav-children.html" (dict "section" $s) -}}
+  {{- range partial "shell/nav-json-node.html" (dict "page" .) -}}
+    {{- $childNodes = $childNodes | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- $nodes := slice -}}
+{{- if $s.Params.sidebar_divider | default false -}}
+  {{- $nodes = $childNodes -}}
+{{- else if isset $s.Params "manual_link" -}}
+  {{- $node := dict
+      "title" ($s.LinkTitle | default $s.Title | strings.TrimSpace)
+      "url" $s.Params.manual_link
+      "kind" "external"
+  -}}
+  {{- with $childNodes }}{{ $node = merge $node (dict "children" .) }}{{ end -}}
+  {{- $nodes = slice $node -}}
+{{- else if isset $s.Params "manual_link_relref" -}}
+  {{- $node := dict
+      "title" ($s.LinkTitle | default $s.Title | strings.TrimSpace)
+      "url" (relref $s $s.Params.manual_link_relref)
+      "kind" "link"
+  -}}
+  {{- with $childNodes }}{{ $node = merge $node (dict "children" .) }}{{ end -}}
+  {{- $nodes = slice $node -}}
+{{- else if not $s.Permalink -}}
+  {{- /* A page Hugo never renders (build.render: never) has no permalink and
+       must not become a dead node; its children stay. */ -}}
+  {{- $nodes = $childNodes -}}
+{{- else -}}
+  {{- $node := partial "shell/nav-json-page.html" (dict "page" $s) -}}
+  {{- with $childNodes }}{{ $node = merge $node (dict "children" .) }}{{ end -}}
+  {{- $nodes = slice $node -}}
+{{- end -}}
+{{- return $nodes -}}

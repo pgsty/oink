@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pgsty/oink/schema/nav.v1.schema.json",
+  "title": "OINK navigation JSON, schema version 1",
+  "description": "The opt-in machine-readable navigation tree the NAVJSON home output publishes, one file per language. Hand-authored, versioned contract artifact -- unlike the generated site-params and front-matter schemas, this file is edited deliberately and only together with the templates and checker that own the format. Array order is the contract; weights are never serialized. Presentation-only sidebar rows (dividers) are omitted.",
+  "type": "object",
+  "required": ["schemaVersion", "language", "baseURL", "root"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "language": { "type": "string", "minLength": 1 },
+    "baseURL": { "type": "string", "minLength": 1 },
+    "root": { "$ref": "#/$defs/pageNode" }
+  },
+  "$defs": {
+    "node": {
+      "oneOf": [
+        { "$ref": "#/$defs/pageNode" },
+        { "$ref": "#/$defs/linkNode" }
+      ]
+    },
+    "pageNode": {
+      "type": "object",
+      "description": "A navigable page in this language. id is the in-language permalink path, stable across languages for correlation; url is absolute; markdown appears only when the page publishes a Markdown output.",
+      "required": ["id", "title", "url", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "url": { "type": "string", "minLength": 1 },
+        "markdown": { "type": "string" },
+        "description": { "type": "string" },
+        "kind": { "enum": ["home", "section", "page"] },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/node" }
+        }
+      }
+    },
+    "linkNode": {
+      "type": "object",
+      "description": "A navigation placeholder without page identity: kind external carries a manual_link URL as authored, kind link carries a resolved manual_link_relref target.",
+      "required": ["title", "url", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["external", "link"] },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/node" }
+        }
+      }
+    }
+  }
+}

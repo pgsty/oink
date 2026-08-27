@@ -1,0 +1,39 @@
+{{- /* Walk one explicit data/docs_nav.json node into navigation-JSON nodes.
+       The explicit tree is the same authority the docs sidebar and the
+       flattened reading chain already read; every node resolves through
+       Site.GetPage exactly as they resolve it, and an unresolvable entry
+       warns and is skipped rather than invented. Returns a slice for the
+       same hoisting reasons as the content-tree walker. */ -}}
+{{- $p := .page -}}
+{{- $node := .node -}}
+{{- $nodes := slice -}}
+{{- $target := $p.Site.GetPage $node.page -}}
+{{- if not $target -}}
+  {{- warnf "docs navigation: page %s was not found; skipping the entry" $node.page -}}
+{{- else -}}
+  {{- $childNodes := slice -}}
+  {{- range ($node.children | default (slice)) -}}
+    {{- range partial "shell/nav-json-data-node.html" (dict "page" $p "node" .) -}}
+      {{- $childNodes = $childNodes | append . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $target.Params.sidebar_divider | default false -}}
+    {{- $nodes = $childNodes -}}
+  {{- else if isset $target.Params "manual_link" -}}
+    {{- $entry := dict
+        "title" ($target.LinkTitle | default $target.Title | strings.TrimSpace)
+        "url" $target.Params.manual_link
+        "kind" "external"
+    -}}
+    {{- with $childNodes }}{{ $entry = merge $entry (dict "children" .) }}{{ end -}}
+    {{- $nodes = slice $entry -}}
+  {{- else if not $target.Permalink -}}
+    {{- /* Never-rendered pages have no permalink; keep their children. */ -}}
+    {{- $nodes = $childNodes -}}
+  {{- else -}}
+    {{- $entry := partial "shell/nav-json-page.html" (dict "page" $target) -}}
+    {{- with $childNodes }}{{ $entry = merge $entry (dict "children" .) }}{{ end -}}
+    {{- $nodes = slice $entry -}}
+  {{- end -}}
+{{- end -}}
+{{- return $nodes -}}

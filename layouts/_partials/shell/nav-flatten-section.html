@@ -6,21 +6,7 @@
   {{- $pages = $pages | append $section -}}
 {{- end -}}
 
-{{- $children := union $section.Pages $section.Sections -}}
-{{- if eq $section.Type "blog" -}}
-  {{- $children = partial "shell/blog-pages.html" $children -}}
-{{- else -}}
-  {{- $children = $children.ByWeight -}}
-{{- end -}}
-{{- $children = where $children ".Params.toc_hide" "!=" true -}}
-{{- $truncate := partial "validate.html" (dict
-    "value" $section.Site.Params.ui.sidebar_menu_truncate "kind" "int"
-    "min" 1 "fallback" 2000 "key" "params.ui.sidebar_menu_truncate") -}}
-{{- $children = $children | first $truncate -}}
-{{- range $children -}}
-  {{- if and (eq $section $section.Site.Home) (eq .Params.toc_root true) -}}
-    {{- continue -}}
-  {{- end -}}
+{{- range partial "shell/nav-children.html" (dict "section" $section) -}}
   {{- $branch := partial "shell/nav-flatten-section.html" (dict
       "section" .
       "includeSelf" true

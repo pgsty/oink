@@ -7,6 +7,23 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Opt-in `NAVJSON` output format: a machine-readable navigation tree
+  (`navigation.json`), one file per language at the language root, enabled
+  through the site's `outputs.home`. The tree serializes the same authority
+  chain the sidebar and pager read — the explicit `data/docs_nav.json` tree
+  for docs/book sections when it exists, the weighted content tree
+  everywhere else — with child selection shared through the new
+  `shell/nav-children.html` partial the flattened reading chain also
+  consumes. Array order is the contract; `weight` is never serialized.
+  Manual-link placeholders appear as `external`/`link` nodes the way the
+  sidebar shows them; dividers and never-rendered pages are omitted with
+  their children kept. The format owns `schema/nav.v1.schema.json` (a
+  hand-authored, versioned contract artifact outside the generated
+  configuration schemas' drift gate), and `llms.txt` lists the file for its
+  own language. `bin/check-agent-indexes.py` validates schema compliance,
+  URL resolution, language isolation, determinism, the explicit-tree order
+  (manual links included), and that the docs subtree flattens to exactly the
+  LLMSFULL bundle's page sequence — two template paths, one authority.
 - Opt-in `LLMSFULL` output format: a per-top-level-section full-text bundle
   (`llms-full.txt`) for agents, concatenating the same semantic Markdown as
   the per-page output in sidebar reading order, one file per language. A
@@ -20,6 +37,13 @@ All notable changes to OINK are documented here. The project follows
   Markdown body moved into the shared `content/markdown-document.md` partial
   (byte-identical output, proven by the unchanged markdown goldens) so the
   two outputs cannot drift apart.
+
+### Fixed
+
+- A `data/docs_nav.json` node without a `children` key crashed the build
+  with a reflection error from inside the sidebar walker. Authored data
+  degrades instead of erroring: a childless node now renders as the leaf it
+  is.
 
 ## [0.7.1] - 2026-08-26
 

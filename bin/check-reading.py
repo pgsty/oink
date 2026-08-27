@@ -607,9 +607,13 @@ def check_pager_sources() -> list[str]:
     styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
     nav_flatten = (ROOT / "layouts/_partials/shell/nav-flatten-section.html").read_text()
+    nav_children = (ROOT / "layouts/_partials/shell/nav-children.html").read_text()
     require('partialCached "shell/nav-flatten.html"' in state, "pager does not cache its flattened tree", errors)
+    # Child selection lives in one shared partial so the reading chain and
+    # the navigation JSON cannot order blogs differently from the sidebar.
     require(
-        'partial "shell/blog-pages.html"' in nav_flatten,
+        'partial "shell/nav-children.html"' in nav_flatten
+        and 'partial "shell/blog-pages.html"' in nav_children,
         "blog pager no longer shares the rendered sidebar order",
         errors,
     )

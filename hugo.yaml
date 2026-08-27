@@ -244,6 +244,15 @@ outputFormats:
     isPlainText: true
     mediaType: text/plain
     notAlternative: true
+  # Opt-in machine-readable navigation tree for agents, one file per language
+  # at the language root, serializing the same authority chain the sidebar and
+  # pager read. Enabled through the site's outputs.home; the theme never adds
+  # it. Schema: schema/nav.v1.schema.json.
+  NAVJSON:
+    baseName: navigation
+    isPlainText: true
+    mediaType: application/json
+    notAlternative: true
   print:
     baseName: index
     # isHTML stays unset (i.e. false) on purpose. The original blocker --

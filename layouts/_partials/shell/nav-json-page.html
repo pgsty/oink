@@ -1,0 +1,21 @@
+{{- /* Map one navigable page to its navigation-JSON node, without children.
+       The id is the in-language permalink path so agents can correlate the
+       same page across languages; weight is never serialized because array
+       order is the contract and weight is the private mechanism deriving it.
+       See the agent-indexes proposal. */ -}}
+{{- $s := .page -}}
+{{- $id := $s.RelPermalink -}}
+{{- with $s.Site.LanguagePrefix }}{{ $id = strings.TrimPrefix . $id }}{{ end -}}
+{{- $node := dict
+    "id" $id
+    "title" ($s.LinkTitle | default $s.Title | strings.TrimSpace)
+    "kind" $s.Kind
+    "url" $s.Permalink
+-}}
+{{- with $s.OutputFormats.Get "markdown" -}}
+  {{- $node = merge $node (dict "markdown" .Permalink) -}}
+{{- end -}}
+{{- with $s.Description | strings.TrimSpace | replaceRE `\s+` " " -}}
+  {{- $node = merge $node (dict "description" .) -}}
+{{- end -}}
+{{- return $node -}}

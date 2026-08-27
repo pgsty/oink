@@ -26,6 +26,10 @@
     - [AGENTS.md]( {{- $url -}} ) {{- "\n" -}}
   {{- end -}}
 {{ end -}}
+{{ with .Site.Home.OutputFormats.Get "navjson" -}}
+  {{- /* The machine navigation tree, when this language publishes one. */ -}}
+  - [navigation.json]( {{- .Permalink -}} ) {{- "\n" -}}
+{{ end -}}
 
 {{/* llms.txt indexes this site's own content. Menus routinely carry off-site
 navigation (repository, issue tracker, chat); those are chrome, not content, and

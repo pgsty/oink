@@ -30,7 +30,7 @@ markup:
 
 # Markdown output activates the corresponding page-action fixtures.
 outputs:
-  home: [HTML, LLMS]
+  home: [HTML, LLMS, NAVJSON]
   section: [HTML, print, RSS, markdown]
   page: [HTML, markdown]
 

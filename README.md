@@ -101,7 +101,10 @@ python3 path/to/oink/bin/check-site-markup.py --site .
 `print` enables section print views. A top-level section that lists `LLMSFULL`
 in its own front matter `outputs` additionally publishes `llms-full.txt` — the
 whole section's semantic Markdown in reading order, one file per language,
-linked from `llms.txt` for agents that want the full text in one fetch. Offline search, assistant handoff links,
+linked from `llms.txt` for agents that want the full text in one fetch. A site
+that adds `NAVJSON` to `outputs.home` also publishes `navigation.json` per
+language: the sidebar's tree as versioned JSON (`schema/nav.v1.schema.json`),
+in which array order is the contract and weights never appear. Offline search, assistant handoff links,
 the theme menu, and native image previews are opt-in; the theme supplies their
 implementation but does not silently enable site policy. A page can override
 Image Zoom with the front matter key `image_zoom` — every `params.ui.*` switch

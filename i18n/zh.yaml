@@ -100,6 +100,7 @@ ui_shortcut_theme: 切换主题
 ui_shortcut_route: 切换顶层页面
 ui_page_annotation: 页面信息
 ui_backlinks: 反向链接
+ui_backlinks_more: "再显示 {{ . }} 条"
 ui_field_required: 必填
 ui_action_unavailable: 暂不可用
 ui_image_zoom_dialog: 图片预览

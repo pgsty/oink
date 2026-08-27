@@ -638,6 +638,76 @@
 "markdown": "https://example.org/fixtures/backlinks/quiet/index.md",
 "title": "Quiet",
 "url": "https://example.org/fixtures/backlinks/quiet/"
+},
+{
+"id": "/fixtures/backlinks/hub/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/hub/index.md",
+"title": "Hub",
+"url": "https://example.org/fixtures/backlinks/hub/"
+},
+{
+"id": "/fixtures/backlinks/link1/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link1/index.md",
+"title": "Link 1",
+"url": "https://example.org/fixtures/backlinks/link1/"
+},
+{
+"id": "/fixtures/backlinks/link2/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link2/index.md",
+"title": "Link 2",
+"url": "https://example.org/fixtures/backlinks/link2/"
+},
+{
+"id": "/fixtures/backlinks/link3/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link3/index.md",
+"title": "Link 3",
+"url": "https://example.org/fixtures/backlinks/link3/"
+},
+{
+"id": "/fixtures/backlinks/link4/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link4/index.md",
+"title": "Link 4",
+"url": "https://example.org/fixtures/backlinks/link4/"
+},
+{
+"id": "/fixtures/backlinks/link5/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link5/index.md",
+"title": "Link 5",
+"url": "https://example.org/fixtures/backlinks/link5/"
+},
+{
+"id": "/fixtures/backlinks/link6/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link6/index.md",
+"title": "Link 6",
+"url": "https://example.org/fixtures/backlinks/link6/"
+},
+{
+"id": "/fixtures/backlinks/link7/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link7/index.md",
+"title": "Link 7",
+"url": "https://example.org/fixtures/backlinks/link7/"
+},
+{
+"id": "/fixtures/backlinks/link8/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link8/index.md",
+"title": "Link 8",
+"url": "https://example.org/fixtures/backlinks/link8/"
+},
+{
+"id": "/fixtures/backlinks/link9/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/backlinks/link9/index.md",
+"title": "Link 9",
+"url": "https://example.org/fixtures/backlinks/link9/"
 }
 ],
 "description": "Reverse navigation derived from ordinary links.",

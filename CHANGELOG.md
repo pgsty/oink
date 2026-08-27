@@ -10,18 +10,25 @@ All notable changes to OINK are documented here. The project follows
 - Opt-in static backlinks (knowledge-graph proposal, stage G1): with
   `params.ui.backlinks: true` — or the prefix-free front matter key
   `backlinks`, which a section can cascade — every page lists the pages
-  that link to it, between the page annotation and the pager. The
-  per-language reverse index derives at build time from ordinary Markdown
-  links and `ref`/`relref` in raw source: fenced and inline code are
-  stripped first, duplicate references merge into one edge, self links,
-  external links, and same-page anchors never count, fragments drop for
-  page identity, and languages stay isolated. No runtime, no new syntax;
-  the block renders only when pages actually link in, sorted by stable
-  page path. The per-page Markdown output carries the same list through
-  the same partial; RSS omits it. Unresolvable destinations are dropped
-  silently — a documented gap, not a link checker. An invalid value warns,
-  falls back to off, and fails `--panicOnWarning`.
-  `bin/check-backlinks.py` owns the contract.
+  that link to it as an aside group in the right rail, beside the table of
+  contents and the taxonomy clouds: what is on this page, what points at
+  this page. The group wears the rail family's head, icon, and metrics, is
+  expanded by default, shows the first eight entries, and folds the rest
+  behind a native details disclosure so a heavily referenced page cannot
+  swallow the rail; each entry carries its source's description as a hover
+  title, and below the `xl` breakpoint the group moves into the sidebar
+  drawer with its siblings. The per-language reverse index derives at
+  build time from ordinary Markdown links and `ref`/`relref` in raw
+  source: fenced and inline code are stripped first, duplicate references
+  merge into one edge, self links, external links, and same-page anchors
+  never count, fragments drop for page identity, and languages stay
+  isolated. No runtime, no new syntax; the group renders only when pages
+  actually link in, sorted by stable page path. The per-page Markdown
+  output carries the same list through the same shared resolver; RSS and
+  the print output format omit it like the rest of the rail. Unresolvable
+  destinations are dropped silently — a documented gap, not a link
+  checker. An invalid value warns, falls back to off, and fails
+  `--panicOnWarning`. `bin/check-backlinks.py` owns the contract.
 - Opt-in `NAVJSON` output format: a machine-readable navigation tree
   (`navigation.json`), one file per language at the language root, enabled
   through the site's `outputs.home`. The tree serializes the same authority

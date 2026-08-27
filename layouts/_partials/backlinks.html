@@ -1,16 +1,55 @@
-{{- /* Static reverse navigation: the pages that link here, as ordinary
-       links. No runtime, no disclosure-only content; omitted entirely when
-       nothing links in or the feature is off. aria-label instead of a
-       labelled heading id, because section print aggregates concatenate
-       pages and must not repeat ids. */ -}}
-{{- $sources := partial "backlinks-sources.html" . -}}
+{{- /* The backlinks aside group: the pages that link here, as a sibling of
+       the TOC and taxonomy groups in the right rail -- what is on this page,
+       what points at this page. Input: dict "page" . "sources" (the slice
+       backlinks-sources.html returned; the caller resolves it once for its
+       own render gate). Expanded by default like its siblings; the first
+       eight entries are visible and the rest sit behind a native details
+       disclosure, so a heavily referenced page cannot swallow the rail.
+       Every entry carries the source page's description as its title
+       attribute -- a hover preview with no runtime. */ -}}
+{{- $p := .page -}}
+{{- $sources := .sources -}}
 {{- with $sources -}}
-<nav class="td-backlinks" aria-label="{{ T "ui_backlinks" }}">
-  <h2 class="td-backlinks__title">{{ T "ui_backlinks" }}</h2>
-  <ul class="td-backlinks__list">
-    {{- range . }}
-    <li class="td-backlinks__item"><a href="{{ .RelPermalink }}">{{ .LinkTitle | default .Title }}</a></li>
-    {{- end }}
-  </ul>
-</nav>
+{{- $shown := first 8 . -}}
+{{- $rest := after 8 . -}}
+<div class="td-shell-aside-group td-shell-backlinks">
+  <button type="button" class="td-shell-tree__row td-shell-aside-group__head" data-td-shell-tree-toggle
+    aria-expanded="true" aria-controls="td-shell-backlinks-children"
+    aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ T "ui_backlinks" }}"
+    data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ T "ui_backlinks" }}"
+    data-td-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ T "ui_backlinks" }}">
+    <span class="td-shell-aside-group__icon" aria-hidden="true">
+      {{- partialCached "shell/icon.html" "link" "link" -}}
+    </span>
+    <span class="td-shell-aside-group__title">{{ T "ui_backlinks" }}</span>
+    <span class="td-shell-tree__chevron" aria-hidden="true">
+      {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+    </span>
+  </button>
+  <div id="td-shell-backlinks-children" class="td-shell-tree__children td-is-open">
+    <div class="td-shell-tree__children-inner">
+      <ul class="td-shell-backlinks__list">
+        {{- range $shown }}
+        <li class="td-shell-backlinks__item"><a href="{{ .RelPermalink }}"
+          {{- with .Description | plainify | strings.TrimSpace }} title="{{ . }}"{{ end }}>
+          {{- .LinkTitle | default .Title -}}
+        </a></li>
+        {{- end }}
+      </ul>
+      {{- with $rest }}
+      <details class="td-shell-backlinks__more">
+        <summary>{{ T "ui_backlinks_more" (len .) }}</summary>
+        <ul class="td-shell-backlinks__list">
+          {{- range . }}
+          <li class="td-shell-backlinks__item"><a href="{{ .RelPermalink }}"
+            {{- with .Description | plainify | strings.TrimSpace }} title="{{ . }}"{{ end }}>
+            {{- .LinkTitle | default .Title -}}
+          </a></li>
+          {{- end }}
+        </ul>
+      </details>
+      {{- end }}
+    </div>
+  </div>
+</div>
 {{- end -}}

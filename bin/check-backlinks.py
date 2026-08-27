@@ -12,8 +12,11 @@ rendering contract on the fixture's fixtures/backlinks subtree:
 - languages stay isolated: the zh list holds zh pages with zh URLs only;
 - policy: the site default is off (no block outside the opted-in subtree),
   a section cascade turns it on, and a page's own `backlinks: false` wins;
+- presentation: the block is an aside group in the right rail beside the
+  TOC, expanded by default, with the first eight entries visible and the
+  rest behind a native details disclosure;
 - outputs: HTML and the per-page Markdown carry the list; RSS does not, and
-  the print output format omits the page-end family as it always has;
+  the print output format omits the rail as it always has;
 - invalid input: a non-boolean params.ui.backlinks warns and falls back on a
   plain build and fails --panicOnWarning.
 
@@ -47,12 +50,13 @@ EXPECTED = {
 ABSENT = (
     "fixtures/backlinks/delta/index.html",   # linked only from code samples
     "fixtures/backlinks/quiet/index.html",   # page-level backlinks: false
+    "fixtures/backlinks/link1/index.html",   # outgoing links only
     "zh/fixtures/backlinks/gamma/index.html",  # no zh inbound links
     "docs/callout/index.html",               # site default stays off
 )
 
 ITEM = re.compile(
-    r'<li class="td-backlinks__item"><a href="([^"]+)">([^<]+)</a></li>')
+    r'<li class="td-shell-backlinks__item"><a href="([^"]+)"[^>]*>([^<]+)</a></li>')
 
 
 def require(condition: bool, message: str, errors: list[str]) -> None:
@@ -71,22 +75,35 @@ def check_rendering(public: Path, errors: list[str]) -> None:
         require(entries == expected,
                 f"{rel_path} backlinks diverge:\n"
                 f"    got:      {entries}\n    expected: {expected}", errors)
-        require('class="td-backlinks" aria-label=' in text,
-                f"{rel_path} backlink block lacks its accessible name", errors)
+        group = text.split('td-shell-backlinks"', 1)
+        require(len(group) == 2 and 'aria-expanded="true"' in group[1][:600],
+                f"{rel_path} backlink group is not expanded by default", errors)
+        require("fa-link" in text,
+                f"{rel_path} backlink group head lacks its icon", errors)
     for rel_path in ABSENT:
         page = public / rel_path
         require(page.exists(), f"{rel_path} was not built", errors)
         if page.exists():
-            require("td-backlinks" not in page.read_text(encoding="utf-8"),
+            require("td-shell-backlinks" not in page.read_text(encoding="utf-8"),
                     f"{rel_path} renders a backlink block it must not have",
                     errors)
 
-    # The block lives on exactly the five expected pages, nowhere else.
+    # A heavily referenced page shows eight entries and folds the rest
+    # behind the native disclosure.
+    hub = (public / "fixtures/backlinks/hub/index.html").read_text(encoding="utf-8")
+    visible, _, folded = hub.partition('<details class="td-shell-backlinks__more">')
+    require(len(ITEM.findall(visible)) == 8 and len(ITEM.findall(folded)) == 1,
+            "hub does not fold its ninth backlink behind the disclosure", errors)
+    require("<summary>" in folded and " 1 " in folded.split("</summary>")[0],
+            "the disclosure summary does not count the folded entries", errors)
+
+    # The block lives on exactly the expected pages, nowhere else.
+    expected_carriers = sorted(list(EXPECTED) + ["fixtures/backlinks/hub/index.html"])
     carriers = sorted(
         str(path.relative_to(public))
         for path in public.rglob("*.html")
-        if "td-backlinks" in path.read_text(encoding="utf-8", errors="replace"))
-    require(carriers == sorted(EXPECTED),
+        if "td-shell-backlinks" in path.read_text(encoding="utf-8", errors="replace"))
+    require(carriers == expected_carriers,
             f"backlink blocks appear on unexpected pages: {carriers}", errors)
 
 
@@ -104,12 +121,11 @@ def check_outputs(public: Path, errors: list[str]) -> None:
             "a default-off page's Markdown output carries a backlink list",
             errors)
     rss = (public / "fixtures/index.xml").read_text(encoding="utf-8")
-    require("td-backlinks" not in rss and "Linked from:" not in rss,
+    require("td-shell-backlinks" not in rss and "Linked from:" not in rss,
             "the section RSS carries backlink markup", errors)
     print_page = (public / "_print/fixtures/index.html").read_text(encoding="utf-8")
-    require("td-backlinks" not in print_page,
-            "the print output format renders the page-end backlink block",
-            errors)
+    require("td-shell-backlinks" not in print_page,
+            "the print output format renders the rail backlink group", errors)
 
 
 def check_invalid_config(hugo: str, errors: list[str]) -> None:

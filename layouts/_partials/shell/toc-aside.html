@@ -1,12 +1,13 @@
-{{- /* Right rail for the TOC and root-scoped taxonomy clouds.
-       Input: dict "page" . "hasToc" bool. */ -}}
+{{- /* Right rail for the TOC, the backlinks group, and root-scoped taxonomy
+       clouds. Input: dict "page" . "hasToc" bool. */ -}}
 {{- $p := .page -}}
 {{- $hasToc := .hasToc -}}
 {{- $clouds := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" $p "key" "toc_taxonomies")) "kind" "bool"
     "fallback" true
     "key" "params.ui.toc_taxonomies" "where" (cond (isset $p.Params "toc_taxonomies") $p.Path "")) -}}
-{{- if or $hasToc $clouds -}}
+{{- $backlinkSources := partial "backlinks-sources.html" $p -}}
+{{- if or $hasToc $clouds $backlinkSources -}}
 <aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
   <div class="td-shell-toc__panel">
     {{- if not $hasToc }}
@@ -47,6 +48,9 @@
           </div>
         </div>
       </div>
+      {{- end }}
+      {{ with $backlinkSources -}}
+      {{ partial "backlinks.html" (dict "page" $p "sources" .) }}
       {{- end }}
       {{ if $clouds -}}
         {{- $root := partial "shell/taxonomy-root.html" $p -}}

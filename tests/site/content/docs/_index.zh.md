@@ -4,6 +4,9 @@ linkTitle: 文档
 description: Markdown 组件样例
 icon: fa-solid fa-cubes
 weight: 10
+# LLMSFULL 是可选的全文包；front matter 的 outputs 会整体覆盖站点级 section
+# 列表，所以这里重复常规格式。
+outputs: [HTML, print, RSS, markdown, LLMSFULL]
 search_keywords: [组件, components, 速查, cheatsheet, Markdown 语法, shortcode, 原生形态]
 cascade:
   type: docs

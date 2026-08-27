@@ -27,6 +27,8 @@
 - [Keys](https://example.org/docs/kbd/index.md): Write shortcuts with `kbd` — one shortcode, a list of key names, a semantic key sequence that stays readable in print and in Markdown output.
 - [Include](https://example.org/docs/include/index.md): Pull an external file in with include, print a site parameter with param, and write a note that reaches no output at all with comment.
 - [Asciinema](https://example.org/docs/asciinema/index.md): Put a .cast terminal recording on the page — the text stays selectable text, and the player ships with the theme rather than coming from a CDN.
+## Full-text bundles
+- [Docs](https://example.org/docs/llms-full.txt)
 ## Site locales
 - [English](https://example.org/)
 - [简体中文](https://example.org/zh/)

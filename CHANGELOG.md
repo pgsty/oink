@@ -3,6 +3,24 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [Unreleased]
+
+### Added
+
+- Opt-in `LLMSFULL` output format: a per-top-level-section full-text bundle
+  (`llms-full.txt`) for agents, concatenating the same semantic Markdown as
+  the per-page output in sidebar reading order, one file per language. A
+  section enables it in its `_index` front matter `outputs`; the theme never
+  adds it to a site's output set. Enabling it below the top level warns and
+  emits nothing, so ordinary preview keeps working while `--panicOnWarning`
+  blocks publication. `llms.txt` lists the enabled bundles for its own
+  language. `bin/check-agent-indexes.py` owns the contract: language
+  isolation, source integrity, weight order, per-page equivalence,
+  determinism, discovery, and the nested-section negative case. The per-page
+  Markdown body moved into the shared `content/markdown-document.md` partial
+  (byte-identical output, proven by the unchanged markdown goldens) so the
+  two outputs cannot drift apart.
+
 ## [0.7.1] - 2026-08-26
 
 ### Security

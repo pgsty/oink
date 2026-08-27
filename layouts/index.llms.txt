@@ -81,6 +81,27 @@ section level tells an agent nothing about what the site actually documents. */ 
   {{ end -}}
 {{ end -}}
 
+{{/* Full-text bundles -------------------------------------------------- */ -}}
+
+{{/* Discovery belongs in the index file: list every top-level section that
+opted into the LLMSFULL bundle in this language. Sites without bundles emit
+nothing here. */ -}}
+{{ $bundleLines := slice -}}
+{{ range $section := .Site.Home.Sections -}}
+  {{ with $section.OutputFormats.Get "llmsfull" -}}
+    {{ $bundleLines = $bundleLines | append (printf "- [%s](%s)"
+        ($section.LinkTitle | default $section.Title | strings.TrimSpace) .Permalink) -}}
+  {{ end -}}
+{{ end -}}
+{{ with $bundleLines -}}
+  {{ "\n" -}}
+
+  ## Full-text bundles
+
+  {{- "\n\n" -}}
+  {{ range . }}{{ . }}{{ "\n" }}{{ end -}}
+{{ end -}}
+
 {{/* Multilingual sites ------------------------------------------------------- */ -}}
 
 {{ with hugo.Sites -}}

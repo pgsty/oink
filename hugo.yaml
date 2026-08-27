@@ -235,6 +235,15 @@ outputFormats:
     isPlainText: true
     mediaType: text/plain
     notAlternative: true
+  # Opt-in per-top-level-section full-text bundle for agents: the same
+  # semantic Markdown as the per-page output, concatenated in sidebar reading
+  # order. A section enables it in its _index front matter outputs; the theme
+  # never adds it to a site's output set.
+  LLMSFULL:
+    baseName: llms-full
+    isPlainText: true
+    mediaType: text/plain
+    notAlternative: true
   print:
     baseName: index
     # isHTML stays unset (i.e. false) on purpose. The original blocker --

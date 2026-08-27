@@ -1,0 +1,23 @@
+{{- /* Opt-in per-top-level-section full-text bundle for agents: the section's
+     reading sequence -- the same order the sidebar and pager present, via
+     shell/nav-flatten.html -- with every page rendered through the shared
+     semantic Markdown partial that owns the per-page markdown output. Pages
+     hidden from navigation stay out of the bundle. Enabling the format
+     anywhere but a top-level section warns and emits nothing, so ordinary
+     preview keeps working while --panicOnWarning blocks publication. */ -}}
+{{- $root := . -}}
+{{- if or (ne $root.Kind "section") (ne $root.Parent $root.Site.Home) -}}
+  {{- warnf "LLMSFULL output requires a top-level section at %s; emitting nothing" $root.Path -}}
+{{- else -}}
+  {{- $pages := partial "shell/nav-flatten.html" (dict "page" $root "root" $root) -}}
+  {{- range $page := $pages -}}
+    {{- /* The source pointer prefers the per-page Markdown output and falls
+         back to the HTML page for pages that do not publish one. */ -}}
+    {{- $source := $page.Permalink -}}
+    {{- with $page.OutputFormats.Get "markdown" }}{{ $source = .Permalink }}{{ end -}}
+    {{- printf "================\nSource: %s\n================\n\n" $source -}}
+    {{- $page.Store.Set "tdOutputFormat" "markdown" -}}
+    {{- partial "content/markdown-document.md" $page -}}
+    {{- printf "\n\n" -}}
+  {{- end -}}
+{{- end -}}

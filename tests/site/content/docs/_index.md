@@ -4,6 +4,9 @@ linkTitle: Docs
 description: Markdown Component Examples
 icon: fa-solid fa-cubes
 weight: 10
+# LLMSFULL is the opt-in full-text bundle; front matter outputs replace the
+# site-level section list, so the ordinary formats are repeated here.
+outputs: [HTML, print, RSS, markdown, LLMSFULL]
 search_keywords: [components, cheatsheet, Markdown syntax, shortcode, native form]
 cascade:
   type: docs

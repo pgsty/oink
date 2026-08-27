@@ -319,6 +319,9 @@ jobs:
       - name: Check consuming-site Goldmark prerequisites
         run: python3 bin/check-site-markup.py --site tests/site
 
+      - name: Check agent indexes
+        run: python3 bin/check-agent-indexes.py
+
       - name: Check four-state goldens
         run: python3 bin/check-goldens.py
 

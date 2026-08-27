@@ -98,7 +98,10 @@ python3 path/to/oink/bin/check-site-markup.py --site .
 ```
 
 `markdown` enables Copy text and View source, `LLMS` emits `llms.txt`, and
-`print` enables section print views. Offline search, assistant handoff links,
+`print` enables section print views. A top-level section that lists `LLMSFULL`
+in its own front matter `outputs` additionally publishes `llms-full.txt` — the
+whole section's semantic Markdown in reading order, one file per language,
+linked from `llms.txt` for agents that want the full text in one fetch. Offline search, assistant handoff links,
 the theme menu, and native image previews are opt-in; the theme supplies their
 implementation but does not silently enable site policy. A page can override
 Image Zoom with the front matter key `image_zoom` — every `params.ui.*` switch

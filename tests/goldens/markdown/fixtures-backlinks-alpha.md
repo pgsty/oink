@@ -16,5 +16,5 @@ Nor does inline code such as `[Delta](delta)`.
 ## A heading {#part}
 The fragment above resolves here.
 ---
-Linked from:
+Backlinks:
 - [Beta](/fixtures/backlinks/beta/)

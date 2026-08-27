@@ -292,8 +292,8 @@ ui_openapi_spec: OpenAPI specification
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
-ui_backlinks: Linked from
-markdown_backlinks: "Linked from:"
+ui_backlinks: Backlinks
+markdown_backlinks: "Backlinks:"
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.

@@ -109,19 +109,19 @@ def check_rendering(public: Path, errors: list[str]) -> None:
 
 def check_outputs(public: Path, errors: list[str]) -> None:
     alpha_md = (public / "fixtures/backlinks/alpha/index.md").read_text(encoding="utf-8")
-    require("Linked from:" in alpha_md
+    require("Backlinks:" in alpha_md
             and "- [Beta](/fixtures/backlinks/beta/)" in alpha_md,
             "alpha's Markdown output lacks its backlink list", errors)
     quiet_md = (public / "fixtures/backlinks/quiet/index.md").read_text(encoding="utf-8")
-    require("Linked from:" not in quiet_md,
+    require("Backlinks:" not in quiet_md,
             "quiet's Markdown output carries a list its front matter disabled",
             errors)
     docs_md = (public / "docs/callout/index.md").read_text(encoding="utf-8")
-    require("Linked from:" not in docs_md,
+    require("Backlinks:" not in docs_md,
             "a default-off page's Markdown output carries a backlink list",
             errors)
     rss = (public / "fixtures/index.xml").read_text(encoding="utf-8")
-    require("td-shell-backlinks" not in rss and "Linked from:" not in rss,
+    require("td-shell-backlinks" not in rss and "Backlinks:" not in rss,
             "the section RSS carries backlink markup", errors)
     print_page = (public / "_print/fixtures/index.html").read_text(encoding="utf-8")
     require("td-shell-backlinks" not in print_page,

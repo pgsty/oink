@@ -13,7 +13,8 @@
 {{- $shown := first 8 . -}}
 {{- $rest := after 8 . -}}
 <div class="td-shell-aside-group td-shell-backlinks">
-  <button type="button" class="td-shell-tree__row td-shell-aside-group__head" data-td-shell-tree-toggle
+  <button type="button" class="td-shell-tree__row td-shell-aside-group__head"
+    data-td-shell-tree-toggle data-td-shell-aside-keep-open
     aria-expanded="true" aria-controls="td-shell-backlinks-children"
     aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ T "ui_backlinks" }}"
     data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ T "ui_backlinks" }}"

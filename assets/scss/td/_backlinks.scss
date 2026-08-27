@@ -11,21 +11,28 @@
     list-style: none;
   }
 
+  // Entries indent to the TOC's first level (docs-shell.js writes 20px on
+  // those) and highlight as full rows on hover and focus, the way the
+  // navigation rows do -- not as bare text links.
   &__list > .td-shell-backlinks__item {
     margin: 0;
 
     > a {
       display: block;
       padding-block: 6px;
-      padding-inline: 0 6px;
+      padding-inline: 20px 6px;
+      border-radius: 6px;
       font-size: 14px;
       line-height: 20px;
       color: var(--td-shell-muted-fg);
       overflow-wrap: anywhere;
-      transition: color var(--td-motion-duration) ease;
+      transition:
+        color var(--td-motion-duration) ease,
+        background-color var(--td-motion-duration) ease;
 
       &:hover,
       &:focus-visible {
+        background: var(--td-shell-accent);
         color: var(--bs-body-color);
         text-decoration: none;
       }
@@ -38,13 +45,16 @@
     > summary {
       display: block;
       padding-block: 6px;
-      padding-inline: 0 6px;
+      padding-inline: 20px 6px;
+      border-radius: 6px;
       font-size: 13px;
       line-height: 20px;
       color: var(--td-shell-muted-fg);
       cursor: pointer;
       list-style: none;
-      transition: color var(--td-motion-duration) ease;
+      transition:
+        color var(--td-motion-duration) ease,
+        background-color var(--td-motion-duration) ease;
 
       &::-webkit-details-marker {
         display: none;
@@ -56,6 +66,7 @@
 
       &:hover,
       &:focus-visible {
+        background: var(--td-shell-accent);
         color: var(--bs-body-color);
       }
     }

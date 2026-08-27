@@ -99,7 +99,7 @@ ui_shortcut_language: Switch language
 ui_shortcut_theme: Switch theme
 ui_shortcut_route: Cycle top-level pages
 ui_page_annotation: Page information
-ui_backlinks: Linked from
+ui_backlinks: Backlinks
 ui_backlinks_more: "Show {{ . }} more"
 ui_field_required: required
 ui_action_unavailable: unavailable
@@ -225,4 +225,4 @@ ui_series_part: Part {{ .Part }} of {{ .Total }}
 # Markdown output
 markdown_llms_index: "LLMS index:"
 markdown_section_pages: "Section pages:"
-markdown_backlinks: "Linked from:"
+markdown_backlinks: "Backlinks:"

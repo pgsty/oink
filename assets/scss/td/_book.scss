@@ -34,15 +34,19 @@
   max-width: none;
 }
 
-// The generic tree rule makes every child span flexible. Book numbers are a
-// compact, right-aligned column; the following title owns the remaining row.
+// The generic tree rule makes every child span flexible. Book numbers are an
+// atomic, right-aligned column; the following title owns the remaining row.
 body.td-book .td-shell-tree__link {
   text-align: start;
 
   > .td-book-number {
-    flex: 0 0 1.75rem;
+    flex: 0 0 auto;
     min-width: 1.75rem;
+    overflow: visible;
+    overflow-wrap: normal;
     text-align: end;
+    text-overflow: clip;
+    white-space: nowrap;
   }
 
   > .td-book-number + span {

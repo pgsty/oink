@@ -1060,6 +1060,21 @@ def check_sources() -> list[str]:
         source = path.read_text(encoding="utf-8")
         for marker in markers:
             require(marker in source, f"{relative} lacks {marker}", errors)
+    book_styles = (ROOT / "assets/scss/td/_book.scss").read_text(encoding="utf-8")
+    sidebar_number = re.search(
+        r">\s*\.td-book-number\s*\{([^}]*)\}", book_styles, re.DOTALL
+    )
+    require(sidebar_number is not None, "Book sidebar number rule is missing", errors)
+    if sidebar_number is not None:
+        rule = sidebar_number.group(1)
+        for marker in (
+            "flex: 0 0 auto",
+            "overflow: visible",
+            "overflow-wrap: normal",
+            "text-overflow: clip",
+            "white-space: nowrap",
+        ):
+            require(marker in rule, f"Book sidebar number rule lacks {marker}", errors)
     i18n = (ROOT / "i18n/en.yaml").read_text(encoding="utf-8")
     for key in ("book_figure", "book_table", "book_equation", "book_example", "book_toc", "book_draft", "book_draft_notice", "contributors_count"):
         require(re.search(rf"^{key}:", i18n, re.M) is not None, f"English i18n lacks {key}", errors)

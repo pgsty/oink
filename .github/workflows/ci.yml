@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  HUGO_VERSION: 0.165.0
+
 jobs:
   scripts:
     name: Browser runtime tests
@@ -43,7 +46,7 @@ jobs:
           java-version: '21'
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: '0.164.0'
+          hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
       - name: Install PDF inspection tools
@@ -163,16 +166,12 @@ jobs:
             --manifest "$subpath_public/book/book.json"
 
   build:
-    name: Hugo ${{ matrix.hugo-version }}
+    name: Hugo 0.165.0
     runs-on: ubuntu-latest
-    # The longest matrix leg finishes in well under an hour; a leg that
-    # reaches this ceiling is hung infrastructure, and a cancelled six-hour
-    # job must never again stand in for a release verdict.
+    # CI intentionally uses one pinned Hugo toolchain. A run that reaches this
+    # ceiling is hung infrastructure, and a cancelled six-hour job must never
+    # again stand in for a release verdict.
     timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        hugo-version: ['0.160.1', '0.164.0', '0.165.0']
 
     steps:
       - uses: actions/checkout@v7
@@ -181,7 +180,7 @@ jobs:
           python-version: '3.x'
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: ${{ matrix.hugo-version }}
+          hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
 
       - name: Check translation key parity

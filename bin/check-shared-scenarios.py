@@ -63,7 +63,7 @@ def run_build(
     plain build of the same site. For that build the deadlock is the panic
     path seizing -- a process that cannot exit certainly did not publish --
     so a wedge is returned as the failure it is instead of retried, and the
-    run on 0.164.0 no longer spends four minutes re-proving it.
+    expected-failure case no longer spends four minutes re-proving it.
     """
 
     attempt = partial(

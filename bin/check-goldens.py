@@ -11,7 +11,7 @@ per surface: html, print, markdown, rss, llms.
   bin/check-goldens.py --hugo PATH    # build with another Hugo binary
   bin/check-goldens.py --public DIR   # reuse an existing private-fixture build
 
-Goldens are shared between the CI Hugo versions; a version-specific difference
+Goldens are intentionally Hugo-version-neutral; a version-specific difference
 must be normalised here (never by keeping two copies silently). Update goldens
 in the same commit as the behaviour change and say why in the message.
 """
@@ -54,9 +54,9 @@ NORMALISERS = [
 def normalise(text: str) -> str:
     for pattern, replacement in NORMALISERS:
         text = pattern.sub(replacement, text)
-    # Hugo's embedded templates and Goldmark indent output differently between
-    # 0.160.1 and 0.164.0 (tabs vs spaces, blank lines); compare structure, not
-    # indentation: strip leading whitespace per line and drop empty lines.
+    # Hugo releases can indent embedded-template and Goldmark output differently
+    # (observed between 0.160.1 and 0.164.0); compare structure, not indentation:
+    # strip leading whitespace per line and drop empty lines.
     lines = [line.strip() for line in text.splitlines()]
     return "\n".join(line for line in lines if line) + "\n"
 

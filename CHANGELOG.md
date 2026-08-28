@@ -3,6 +3,15 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## Unreleased
+
+### Changed
+
+- Continuous integration now installs one pinned Hugo Extended toolchain,
+  0.165.0, for theme, publication, site, and browser checks instead of running
+  the theme suite across a Hugo version matrix. The declared 0.160.1 consumer
+  compatibility floor is unchanged.
+
 ## [0.8.0] - 2026-08-27
 
 ### Added

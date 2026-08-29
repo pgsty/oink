@@ -11,230 +11,219 @@
 
 <p align="center">
   <a href="https://oink.pgsty.com/"><img alt="Website" src="https://img.shields.io/badge/website-oink.pgsty.com-17385c?style=flat-square"></a>
-  <a href="https://github.com/pgsty/oink/tags"><img alt="Version" src="https://img.shields.io/github/v/tag/pgsty/oink?sort=semver&amp;label=version&amp;style=flat-square"></a>
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/pgsty/oink?label=license&amp;style=flat-square"></a>
+  <a href="https://github.com/pgsty/oink/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/pgsty/oink?display_name=tag&amp;sort=semver&amp;style=flat-square"></a>
+  <a href="https://github.com/pgsty/oink/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/pgsty/oink/ci.yml?branch=main&amp;label=CI&amp;style=flat-square"></a>
+  <a href="https://gohugo.io/"><img alt="Hugo Extended 0.160.1 or newer" src="https://img.shields.io/badge/Hugo_Extended-%E2%89%A50.160.1-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
+  <a href="https://github.com/pgsty/oink/blob/main/LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/github/license/pgsty/oink?label=license&amp;style=flat-square"></a>
 </p>
 
-OINK gives engineering teams a complete documentation system without making
-consumer sites maintain a frontend toolchain. The theme bundles its assets and
-feature runtimes locally; Hugo Extended turns Markdown into a deployable static
-site with no Node.js, npm, PostCSS, or CDN dependency.
+<p align="center">
+  <a href="https://oink.pgsty.com/docs/start/"><strong>Get started</strong></a> ·
+  <a href="https://github.com/pgsty/oink-starter"><strong>OINK Starter</strong></a> ·
+  <a href="https://oink.pgsty.com/docs/components/">Components</a> ·
+  <a href="https://oink.pgsty.com/case/">Live cases</a> ·
+  <a href="https://oink.pgsty.com/docs/design/">Design</a>
+</p>
+
+<a href="https://oink.pgsty.com/">
+  <img src="https://raw.githubusercontent.com/pgsty/oink/main/images/screenshot.png" alt="OINK documentation landing page in dark mode">
+</a>
+
+OINK turns native Markdown into a complete knowledge-publishing site with one
+Hugo Extended build. Its fonts, icons, search, diagrams, and feature runtimes
+ship locally and load only where they are used. Consumer sites need no Node.js,
+npm, PostCSS, bundler, or CDN.
+
+The same content can serve people and tools: responsive HTML for readers,
+print and RSS for publication, semantic Markdown for reuse, and optional
+`llms.txt`, `llms-full.txt`, and `navigation.json` indexes for agents.
 
 ## Why OINK
 
-- **Local-first delivery.** One Hugo build produces an auditable, portable site
-  whose core assets work without third-party networks.
-- **Documentation at scale.** Responsive docs and blog shells, navigation,
-  full-text search, table of contents, dark mode, RSS, SEO, and print views are
-  built in.
-- **Multilingual by design.** Language-aware routing, translated-page fallback,
-  RTL support, and alternate-language metadata support serious international
-  documentation.
-- **Engineering-native content.** Diagrams, formulae, API references, terminal
-  recordings, charts, file trees, galleries, cards, and tabs load only when a
-  page needs them.
-- **Proven foundation.** OINK evolves Docsy's mature content model with a
-  focused interface and site-owned extension points.
+- **One deterministic toolchain.** Resolve the Hugo Module once, then build and
+  preview with one `hugo` binary.
+- **Complete publishing surfaces.** Docs, Blog, Book, OpenAPI, releases,
+  downloads, and data-driven landing pages share one navigation and visual
+  system.
+- **Native Markdown authoring.** Tables, fenced code, lists, and attributes
+  become tabs, steps, cards, fields, galleries, diagrams, mathematics, charts,
+  and API references without introducing MDX.
+- **Local-first delivery.** Search, fonts, icons, syntax highlighting, and
+  interactive runtimes are vendored; a normal build performs no remote asset
+  fetch.
+- **Multilingual by design.** Language-aware routing, translated-page peers,
+  RTL support, alternate-site links, and localized search work across large
+  documentation trees.
+- **Progressive by default.** Server-rendered content remains useful without
+  JavaScript; interaction, accessibility, responsive behavior, print, and
+  machine-readable outputs are tested as separate contracts.
 
-## Quick start
+## Start a site
 
-Requires Git, Go, and **Hugo Extended 0.160.1 or newer**.
+### Use OINK Starter
+
+The recommended path is the public
+[`pgsty/oink-starter`](https://github.com/pgsty/oink-starter) template. It is a
+small production baseline with Docs, Blog, Book, English/Chinese/French
+profiles, and GitHub Pages and Cloudflare Pages workflows—without this theme
+repository's internal fixtures.
+
+[**Use this template on GitHub**](https://github.com/new?template_name=oink-starter&template_owner=pgsty)
+· [Live starter](https://pgsty.github.io/oink-starter/)
+· [Setup guide](https://oink.pgsty.com/docs/start/)
+
+The current starter expects Git, Go 1.27 or newer, and Hugo Extended 0.165.0
+or newer; it does not require Node.js. To evaluate the neutral template locally:
+
+```sh
+git clone https://github.com/pgsty/oink-starter.git
+cd oink-starter
+hugo server
+```
+
+Open <http://localhost:1313/>. Replace the site identity, home-page data, and
+sample content in that order; the starter already pins a tested OINK release
+and includes a warning-strict production build.
+
+### Add OINK to an existing Hugo site
+
+OINK is a Hugo Module. A site that does not already use modules can initialize
+one and resolve the latest release with:
 
 ```sh
 hugo mod init github.com/example/docs
 hugo mod get github.com/pgsty/oink@latest
 ```
 
-Add OINK to `hugo.yaml`. Hugo leaves output selection to the consuming site, so
-enable the formats and interactive features you want explicitly:
+Import the module in the site's root `hugo.yaml`:
 
 ```yaml
 module:
   imports:
     - path: github.com/pgsty/oink
 
-outputs:
-  home: [HTML, RSS, markdown, LLMS]
-  page: [HTML, markdown]
-  section: [HTML, RSS, print, markdown]
-
-# Hugo does not merge a theme module's Goldmark configuration into the site.
-# These three settings are required by OINK's native component forms.
+# Hugo does not merge a theme module's Goldmark settings into the site.
 markup:
   goldmark:
     renderer:
-      unsafe: true # `%` container shortcodes emit HTML that Goldmark must keep
+      unsafe: true
     parser:
-      wrapStandAloneImageWithinParagraph: false # block images carry attributes
+      wrapStandAloneImageWithinParagraph: false
       attribute:
-        block: true # {.steps}, {.fields}, captions, numbered Book targets
-
-params:
-  # Book reading measure: slim | normal | wide (default: normal).
-  reading_width: normal
-  copyright:
-    authors: '[Example Documentation](https://example.org/)'
-    from_year: 2026
-  # footer_center_info defaults to Powered by Oink and accepts inline Markdown.
-  offline_search: true
-  # `hugo server` builds the search index too (default); set false to skip it.
-  offline_search_on_serve: true
-  ui:
-    dark_mode:
-      show_menu: true
-    # Hide the 50px navbar until a mouse reaches the top edge; touch stays visible.
-    navbar_autohide: false
-    # Optional one-click docs feedback; records structured gtag events only.
-    feedback:
-      enable: false
-      reasons: true
-    image_zoom: true
+        block: true
 ```
 
-Before migrating content, verify the consuming site's resolved configuration:
+Those Goldmark settings enable OINK's native container shortcodes, block-image
+attributes, steps, fields, captions, and numbered Book targets. Select the
+HTML, RSS, Print, Markdown, LLMS, LLMSFULL, and NAVJSON outputs the site needs;
+the [configuration reference](https://oink.pgsty.com/docs/customize/config/)
+documents their defaults and scope.
+
+For production, commit `go.mod` and `go.sum`, build with warnings promoted to
+errors, and inspect representative routes:
 
 ```sh
-python3 path/to/oink/bin/check-site-markup.py --site .
+hugo --cleanDestinationDir --gc --minify --environment production \
+  --printPathWarnings --panicOnWarning
 ```
 
-`markdown` enables Copy text and View source, `LLMS` emits `llms.txt`, and
-`print` enables section print views. A top-level section that lists `LLMSFULL`
-in its own front matter `outputs` additionally publishes `llms-full.txt` — the
-whole section's semantic Markdown in reading order, one file per language,
-linked from `llms.txt` for agents that want the full text in one fetch. A site
-that adds `NAVJSON` to `outputs.home` also publishes `navigation.json` per
-language: the sidebar's tree as versioned JSON (`schema/nav.v1.schema.json`),
-in which array order is the contract and weights never appear.
-Set `params.ui.backlinks: true` (or the front matter key `backlinks`, which a
-section can cascade) and every page lists the pages that link to it — derived
-at build time from the links authors already write, with no runtime and no new
-syntax. Offline search, assistant handoff links,
-the theme menu, and native image previews are opt-in; the theme supplies their
-implementation but does not silently enable site policy. A page can override
-Image Zoom with the front matter key `image_zoom` — every `params.ui.*` switch
-that a page may override uses the site key without its `ui.` prefix. Book pages
-can likewise override `reading_width`; this controls the inner reading measure
-while `page_width` continues to control the surrounding shell.
-Set `params.ui.navbar_autohide: true` to tuck the navbar above the viewport on
-mouse-driven devices at the `md` breakpoint (768px) and above and reveal it
-from the center of the top edge. The two 64px corners stay inactive for
-collapsed-rail controls, while touch pointers and every drawer-width viewport
-keep the sticky navbar visible. The home page is exempt: a landing page shows
-its navbar even when the site-wide setting is on (its own front matter can
-still set `navbar_autohide: true`). A section cascade or page can override the
-policy with the top-level `navbar_autohide` front-matter key. This differs from
-`navbar_enabled: false`, which omits the navbar completely.
+See [Get started](https://oink.pgsty.com/docs/start/) for repository structure,
+language profiles, customization, and deployment. Existing Docsy sites should
+also read the [upgrade and migration guide](https://oink.pgsty.com/docs/admin/upgrade/).
 
-`params.ui.feedback.enable: true` adds a “Yes / No” prompt. A click
-immediately emits a `docs_feedback` event through an existing `gtag` function;
-an optional reason emits a refining event with `refinement: true`. OINK does
-not send free text and needs no endpoint. When Giscus comments are active, the
-result also links readers to the comments section for a detailed report. Use a
-Docs/Book/Swagger section cascade to enable it only where it is useful.
-When upgrading an older feedback configuration, remove `yes`, `no`,
-`max_value`, `endpoint`, and `max_length`; the one-click model does not use a
-Worker or a submission endpoint.
+## What ships with the theme
 
-Then preview the site. When `offline_search` is enabled, `hugo server` builds
-the local index by default so preview matches production. Large sites can skip
-that work for an edit loop with the parameter override below (the `x` is Hugo's
-alternate key delimiter because the key contains underscores):
+| Area | Included capabilities |
+| --- | --- |
+| Reading shells | Docs, Blog, Book, Swagger/Redoc, releases, downloads, Print |
+| Navigation | Sidebars, breadcrumbs, TOC rail, pager, version and language menus |
+| Discovery | Local full-text search, command palette, taxonomies, backlinks |
+| Authoring | Code, tabs, steps, cards, fields, images, galleries, callouts, includes |
+| Technical content | Mermaid, PlantUML, Draw.io, Markmap, ECharts, KaTeX, Asciinema |
+| Landing pages | 22 server-rendered sections with progressive enhancement |
+| Outputs | HTML, RSS, Print, Markdown, LLMS, LLMSFULL, NAVJSON, Book manifest |
+| Operations | SEO, analytics hooks, Giscus, feedback events, sharing, deployment-safe URLs |
 
-```sh
-hugo server
-HUGOxPARAMSxOFFLINE_SEARCH_ON_SERVE=false hugo server
-```
+Interactive features remain opt-in where they express site policy. The theme
+provides the implementation; the consuming site decides which outputs,
+analytics, comments, feedback, assistant links, and image behavior to enable.
 
-### Delimiter-style mathematics
+## Live sites
 
-OINK renders fenced `math` code blocks out of the box. To author inline
-`\( ... \)` or block `\[ ... \]` / `$$ ... $$` formulae, the consuming site
-must also enable Hugo's Goldmark passthrough extension:
+OINK is exercised by fifteen real sites, from a two-page utility to large
+documentation estates and multi-edition books. These are representative:
 
-```yaml
-markup:
-  goldmark:
-    extensions:
-      passthrough:
-        enable: true
-        delimiters:
-          block: [['\[', '\]'], ['$$', '$$']]
-          inline: [['\(', '\)']]
-```
+| Site | Shape | Case study |
+| --- | --- | --- |
+| [pigsty.io](https://pigsty.io/) / [pigsty.cc](https://pigsty.cc/) | Large English and Chinese documentation, blog, catalogue, and landing pages | [EN](https://oink.pgsty.com/case/pigsty-io/) · [ZH](https://oink.pgsty.com/case/pigsty-cc/) |
+| [silo.pgsty.com](https://silo.pgsty.com/) | Large bilingual migration with manifest-generated navigation | [SILO](https://oink.pgsty.com/case/silo/) |
+| [pgsty.com](https://pgsty.com/) | Compact bilingual corporate and landing-page site | [PGSTY](https://oink.pgsty.com/case/pgsty-com/) |
+| [ddia.vonng.com](https://ddia.vonng.com/) | Multi-edition, multilingual Book with numbering and cross-references | [DDIA](https://oink.pgsty.com/case/ddia/) |
+| [tpme.vonng.com](https://tpme.vonng.com/) | Focused bilingual Book publication | [TPME](https://oink.pgsty.com/case/tpme/) |
+| [ext.pgsty.com](https://ext.pgsty.com/) | Data-driven PostgreSQL extension catalogue | [PGEXT](https://oink.pgsty.com/case/pgext-cloud/) |
+| [exp.pgsty.com](https://exp.pgsty.com/) | Bilingual product docs with a structured metrics catalogue | [PG Exporter](https://oink.pgsty.com/case/pg-exporter/) |
+| [caps.vonng.com](https://caps.vonng.com/) | Two-page bilingual project with an interactive configurator | [CapsLock](https://oink.pgsty.com/case/capslock/) |
 
-Hugo does not merge a theme module's `markup` configuration into the consumer,
-so OINK cannot enable this on a site's behalf. A passthrough configuration with
-no matching render hook silently leaves delimiter text such as `$$` in the
-page; OINK supplies that hook and renders KaTeX locally at build time. The
-legacy Hextra front matter key `math: true` has no meaning in OINK and is not a
-substitute for the Goldmark configuration above.
-
-For an isolated display formula on a site that cannot enable passthrough yet,
-use `{{< eq >}}E = mc^2{{< /eq >}}`. This parameter-free escape hatch is
-unnumbered; the Book form adds an explicit `num`.
-
-For production, pin a release tag in `go.mod`. See the
-[getting-started guide](https://oink.pgsty.com/docs/tutorial/) for site
-structure, configuration, and deployment.
-
-The shell defaults to content whose Hugo type is `docs`, `book`, `blog`, or `swagger`.
-Sites with a different docs path can set `params.ui.docs_section` (for example,
-`guide`) and use a front matter cascade with `type: docs`; additional types can
-be added through `params.ui.shell_types`.
-
-## Typography presets
-
-OINK keeps font choices behind semantic CSS custom properties. The default
-`technical` preset preserves the OINK display and monospace faces. A site that
-wants the platform font stack, with no OINK brand-font requests, can select:
-
-```yaml
-params:
-  ui:
-    typography: system
-```
-
-Both presets are compiled by Hugo into the same static stylesheet. They add no
-JavaScript, package-manager step, remote font service, or runtime stylesheet.
-Sites can locally host their own faces and override the documented
-`--td-*-font-family` roles in `assets/scss/_styles_project.scss`; see the
-[architecture contract](https://oink.pgsty.com/docs/design/architecture/#trust-css-and-accessibility).
-
-## Documentation and fixtures
-
-- [oink.pgsty.com](https://oink.pgsty.com/) —
-  [source](https://github.com/pgsty/oink.pgsty.com) — the bilingual
-  documentation, tutorial, case-study, feature-showcase, and regression site.
-- [`tests/site/`](tests/site/) — the self-contained internal fixture used by
-  theme checkers and output goldens. It is test input, not public documentation.
+[Browse all case studies](https://oink.pgsty.com/case/).
 
 ## Documentation
 
-[Get started](https://oink.pgsty.com/docs/start/) ·
-[Components](https://oink.pgsty.com/docs/components/) ·
-[Cases](https://oink.pgsty.com/case/) ·
-[Book](https://oink.pgsty.com/book/) ·
-[Administration](https://oink.pgsty.com/docs/admin/)
+| Guide | Purpose |
+| --- | --- |
+| [Get started](https://oink.pgsty.com/docs/start/) | Install, understand the repository, and establish a working baseline |
+| [Authoring](https://oink.pgsty.com/docs/write/) | Write Docs, Blog, Book, release, and OpenAPI content |
+| [Components](https://oink.pgsty.com/docs/components/) | Source-first examples and parameter references |
+| [Customization](https://oink.pgsty.com/docs/customize/) | Brand, navigation, layout, languages, search, outputs, and integrations |
+| [Operations](https://oink.pgsty.com/docs/admin/) | Preview, deploy, upgrade, troubleshoot, analytics, and SEO |
+| [Design](https://oink.pgsty.com/docs/design/) | Maintainer contracts, decisions, research, and active proposals |
+| [Write Beautiful Docs](https://oink.pgsty.com/book/) | End-to-end tutorial in OINK's Book shell |
 
-Theme maintainer Design:
-[index](https://oink.pgsty.com/docs/design/) ·
-[architecture](https://oink.pgsty.com/docs/design/architecture/) ·
-[components](https://oink.pgsty.com/docs/design/components/) ·
-[shell, navigation, and actions](https://oink.pgsty.com/docs/design/shell/) ·
-[Landing](https://oink.pgsty.com/docs/design/landing/) ·
-[Migration boundaries](https://oink.pgsty.com/docs/design/migration/) ·
-[proposals](https://oink.pgsty.com/docs/design/proposals/).
+The public documentation and regression site lives in
+[`pgsty/oink.pgsty.com`](https://github.com/pgsty/oink.pgsty.com). This theme
+repository owns implementation, defaults, vendored assets, focused checkers,
+and the narrow internal fixture under
+[`tests/site/`](https://github.com/pgsty/oink/tree/main/tests/site/).
 
-## Localization status
+## OINK and Docsy
 
-English, Simplified Chinese (`zh-cn` and generic `zh`), and Traditional Chinese
-(`zh-tw`) have complete reviewed OINK interface text. Every other bundled locale
-has the same key schema and keeps its inherited Docsy translations; new
-OINK-only labels currently use explicit English fallback text pending community
-translation.
+OINK began from Docsy's mature Hugo content model and remains Apache-2.0 with
+explicit upstream attribution. It is now a separate theme rather than a Docsy
+skin: OINK owns its Docs, Blog, Book, Swagger, and Landing shells; local search
+and command palette; native-Markdown component model; responsive and
+accessibility behavior; and reader, print, Markdown, and agent-facing outputs.
+
+That difference is architectural as well as visual. OINK consumer sites do not
+run Docsy's Node/PostCSS pipeline, and OINK changes navigation, configuration,
+front matter, and extension contracts deliberately. Use the
+[migration guide](https://oink.pgsty.com/docs/admin/upgrade/) instead of
+assuming drop-in compatibility.
+
+## Compatibility
+
+| Dependency | Policy |
+| --- | --- |
+| Hugo | **Extended 0.160.1 or newer**; CI currently pins 0.165.0 |
+| Go | 1.27 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
+| Node.js | Not required to build or run an OINK site |
+| Locales | Reviewed OINK interface text for English, Simplified Chinese, and Traditional Chinese; inherited Docsy locales retain English fallback for newer labels |
+
+## Community and releases
+
+[Releases](https://github.com/pgsty/oink/releases) ·
+[Changelog](https://github.com/pgsty/oink/blob/main/CHANGELOG.md) ·
+[Issues](https://github.com/pgsty/oink/issues) ·
+[Discussions](https://github.com/pgsty/oink/discussions)
+
+A local build, a committed change, a public tag, a consumer dependency update,
+and a deployed site are separate release states. Pin a release tag for
+production and verify the public routes after deployment.
 
 ## License
 
-OINK is licensed under the [Apache License 2.0](LICENSE) and derived from
-[Docsy](https://github.com/google/docsy). See [NOTICE](NOTICE) for upstream
-attribution and [VENDOR.json](VENDOR.json) for bundled third-party components.
+OINK is licensed under the
+[Apache License 2.0](https://github.com/pgsty/oink/blob/main/LICENSE) and
+derived from [Docsy](https://github.com/google/docsy). See
+[NOTICE](https://github.com/pgsty/oink/blob/main/NOTICE) for upstream
+attribution and
+[VENDOR.json](https://github.com/pgsty/oink/blob/main/VENDOR.json) for bundled
+third-party components.

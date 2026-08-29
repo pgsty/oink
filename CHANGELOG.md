@@ -5,12 +5,27 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Fixed
+
+- Single-page Print keeps the same page-local heading and footnote IDs as the
+  regular page. Only multi-page section and whole-Book aggregates add a source
+  page namespace to avoid collisions between repeated anchors.
+- Book sidebar numbers stay atomic when the title wraps: the fixed number cell
+  no longer shrinks, clips, or inherits overflow wrapping from a long title.
+
 ### Changed
 
 - Continuous integration now installs one pinned Hugo Extended toolchain,
   0.165.0, for theme, publication, site, and browser checks instead of running
   the theme suite across a Hugo version matrix. The declared 0.160.1 consumer
   compatibility floor is unchanged.
+- The project README now leads with OINK Starter, the current capability and
+  compatibility matrices, representative production sites, and the explicit
+  architectural differences from Docsy. Hugo Themes gallery media now shows
+  the 0.8 landing page at the required 3:2 sizes with a smaller indexed-PNG
+  footprint.
+- Theme metadata uses the OINK wordmark, expands its discoverability tags and
+  feature list, and records Docsy as the original Apache-2.0 theme.
 
 ## [0.8.0] - 2026-08-27
 

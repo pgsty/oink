@@ -1,14 +1,19 @@
 # cSpell:ignore demosite licenselink
-name = "Oink"
+name = "OINK"
 license = "Apache 2.0"
 licenselink = "https://github.com/pgsty/oink/blob/main/LICENSE"
-description = "A local-first Hugo theme for engineering documentation"
+description = "A local-first Hugo theme for engineering documentation and knowledge publishing"
 homepage = "https://github.com/pgsty/oink"
 demosite = "https://oink.pgsty.com/"
-tags = ["documentation", "multilingual", "local-first", "responsive", "docs"]
-features = ["offline search", "dark mode", "diagrams", "API documentation", "GitHub Discussions comments"]
+tags = ["documentation", "multilingual", "local-first", "responsive", "docs", "book", "blog"]
+features = ["offline search", "command palette", "dark mode", "Book publishing", "diagrams", "API documentation", "agent-friendly outputs"]
 min_version = "0.160.1"
 
 [author]
   name = "PGSTY contributors"
   homepage = "https://pgsty.com"
+
+[original]
+  author = "The Docsy Authors"
+  homepage = "https://docsy.dev"
+  repo = "https://github.com/google/docsy"

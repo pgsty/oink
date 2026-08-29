@@ -617,6 +617,18 @@ def check_example(public: Path) -> list[str]:
         'class="td-book-figure td-book-figure--eg"',
     ):
         require(marker in source["one_print"], f"chapter print lost {marker}", errors)
+    for marker in ('id="describe-system"', 'id="fn:1"', 'href="#fn:1"'):
+        require(marker in source["one_print"], f"single-page Print changed page-local anchor {marker}", errors)
+    require(
+        re.search(r'id="pg-[^"]+--describe-system"', source["one_print"]) is None,
+        "single-page Print namespaced an ordinary heading anchor",
+        errors,
+    )
+    require(
+        'id="fn:pg-' not in source["one_print"],
+        "single-page Print namespaced a page-local footnote anchor",
+        errors,
+    )
     aggregate = parse_html(source["book_print"])
     require(
         aggregate.book_pages
@@ -639,6 +651,11 @@ def check_example(public: Path) -> list[str]:
     )
     # Footnotes are numbered per page, so the aggregate must namespace them the
     # way it namespaces heading IDs; chapters one to four all carry references.
+    require(
+        re.search(r'id="pg-[^"]+--describe-system"', source["book_print"]) is not None,
+        "whole-Book print did not namespace heading IDs",
+        errors,
+    )
     require('id="fn:pg-' in source["book_print"], "whole-Book print did not namespace footnote IDs", errors)
     require('id="fn:1"' not in source["book_print"], "whole-Book print kept a page-local footnote ID", errors)
     for element_id in (
@@ -1039,12 +1056,14 @@ def check_sources() -> list[str]:
         "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
         "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-td-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
         "layouts/_partials/book/pages.html": ("nav-flatten.html", "IsDescendant"),
-        "layouts/_partials/book/print.html": ("book/pages.html", "no_print", 'partialCached "print/page-content.html"', '"book" true', 'Store.Get "hasMath"', "data-td-book-page"),
+        "layouts/_partials/book/print.html": ("book/pages.html", "no_print", 'partialCached "print/page-content.html"', "namespace-print-headings.html", '"book" true', 'Store.Get "hasMath"', "data-td-book-page"),
         "layouts/_partials/book/manifest.json": ("schemaVersion", "baseURL", "aggregateId", "book/pages.html", "tdBookTargetOrder", "tdBookXrefs", "OutputFormats.Get"),
         "layouts/index.bookmanifest.json": ("book/manifest.json",),
         "layouts/book/list.bookmanifest.json": ("book/manifest.json",),
         "layouts/_partials/book/toc-headings.html": ("htmlUnescape",),
-        "layouts/_partials/print/page-content.html": ("tdBookAggregate", "namespace-print-headings.html", "static-image-output.html"),
+        "layouts/_partials/print/page-content.html": ("tdBookAggregate", "static-image-output.html"),
+        "layouts/_partials/print/content.html": ('partialCached "print/page-content.html"', "namespace-print-headings.html"),
+        "layouts/_partials/print/render.html": ('partialCached "print/page-content.html"', "namespace-print-headings.html"),
         "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink", "fnref[0-9]*|fn"),
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
@@ -1060,6 +1079,23 @@ def check_sources() -> list[str]:
         source = path.read_text(encoding="utf-8")
         for marker in markers:
             require(marker in source, f"{relative} lacks {marker}", errors)
+    page_content = (ROOT / "layouts/_partials/print/page-content.html").read_text(encoding="utf-8")
+    require(
+        "namespace-print-headings.html" not in page_content,
+        "single-page Print content still namespaces page-local anchors",
+        errors,
+    )
+    for relative in (
+        "layouts/book/single.print.html",
+        "layouts/docs/single.print.html",
+        "layouts/blog/single.print.html",
+    ):
+        source = (ROOT / relative).read_text(encoding="utf-8")
+        require(
+            "namespace-print-headings.html" not in source,
+            f"{relative} namespaces single-page Print anchors",
+            errors,
+        )
     book_styles = (ROOT / "assets/scss/td/_book.scss").read_text(encoding="utf-8")
     sidebar_number = re.search(
         r">\s*\.td-book-number\s*\{([^}]*)\}", book_styles, re.DOTALL

@@ -3,8 +3,6 @@
 {{- if .book }}{{ $page.Store.Set "tdBookAggregate" true }}{{ end -}}
 {{- $content := $page.RenderString (dict "display" "block") $page.RawContent -}}
 {{- $content = partial "content/static-image-output.html" $content -}}
-{{- /* Namespace IDs only when a caller marks an aggregate. */ -}}
-{{- $content = partial "book/namespace-print-headings.html" (dict "page" $page "content" $content) -}}
 {{- partial "code/register-rendered-ids.html" (dict "page" $page "content" $content) -}}
 {{- if .book }}{{ $page.Store.Delete "tdBookAggregate" }}{{ end -}}
 {{- return $content -}}

@@ -3,6 +3,37 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [1.0.0] - 2026-08-29
+
+OINK 1.0.0 declares the current component, configuration, content, output, and
+maintainer contracts stable. This entry rolls up every theme change after
+0.8.0; upgrading from 0.8.0 requires no content or configuration migration.
+
+### Fixed
+
+- Single-page Print keeps the same page-local heading and footnote IDs as the
+  ordinary HTML page. Multi-page section and whole-Book Print continue to add
+  source-page namespaces, so repeated anchors remain unique in aggregates.
+- Book sidebar numbers no longer shrink, clip, or wrap when a long title uses
+  the remaining row width. The owning checker now guards both the layout rule
+  and its compiled CSS.
+
+### Changed
+
+- The Hugo Module and its module-mode CI fixture now use Go 1.27, matching the
+  official Hugo Themes update workflow. The intervening 0.8.2 release lowered
+  the directive to Go 1.26 for the previous upstream builder; moving it back to
+  1.27 changes module admission only, not templates, assets, or rendered output.
+- CI uses one pinned Hugo Extended 0.165.0 toolchain for theme, publication,
+  site, and browser checks. Hugo Extended 0.160.1 remains the declared consumer
+  compatibility floor rather than a second CI matrix leg.
+- The project README now leads with OINK Starter, records the capability and
+  compatibility boundaries, links representative production sites, and
+  explains the architectural boundary from Docsy.
+- Hugo Themes gallery media now uses optimized 3:2 landing-page captures. Theme
+  metadata uses the OINK wordmark, expands discovery tags and features, and
+  records Docsy as the Apache-2.0 original.
+
 ## [0.8.2] - 2026-08-29
 
 ### Fixed
@@ -1931,7 +1962,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.8.2...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0
 [0.8.2]: https://github.com/pgsty/oink/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/pgsty/oink/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/pgsty/oink/compare/v0.7.1...v0.8.0

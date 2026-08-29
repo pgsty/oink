@@ -3,7 +3,7 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
-## Unreleased
+## [0.8.2] - 2026-08-29
 
 ### Fixed
 
@@ -1931,7 +1931,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.8.2...HEAD
+[0.8.2]: https://github.com/pgsty/oink/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/pgsty/oink/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/pgsty/oink/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/pgsty/oink/compare/v0.7.0...v0.7.1

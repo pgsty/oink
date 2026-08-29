@@ -3,6 +3,16 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## Unreleased
+
+### Fixed
+
+- The Hugo Module now declares Go 1.26 instead of 1.27. OINK contains no Go
+  source and needs no 1.27 language or module feature; the lower directive lets
+  the official Hugo Themes builder import the release under its pinned Go 1.26
+  toolchain with `GOTOOLCHAIN=local`, without changing theme behavior or the
+  Hugo Extended 0.160.1 compatibility floor.
+
 ## [0.8.1] - 2026-08-29
 
 ### Fixed

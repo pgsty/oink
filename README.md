@@ -72,7 +72,7 @@ repository's internal fixtures.
 · [Live starter](https://pgsty.github.io/oink-starter/)
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
-The current starter expects Git, Go 1.27 or newer, and Hugo Extended 0.165.0
+The current starter expects Git, Go 1.26 or newer, and Hugo Extended 0.165.0
 or newer; it does not require Node.js. To evaluate the neutral template locally:
 
 ```sh
@@ -203,7 +203,7 @@ assuming drop-in compatibility.
 | Dependency | Policy |
 | --- | --- |
 | Hugo | **Extended 0.160.1 or newer**; CI currently pins 0.165.0 |
-| Go | 1.27 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
+| Go | 1.26 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Reviewed OINK interface text for English, Simplified Chinese, and Traditional Chinese; inherited Docsy locales retain English fallback for newer labels |
 

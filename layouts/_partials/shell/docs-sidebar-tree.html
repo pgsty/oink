@@ -7,6 +7,8 @@
 {{ $sidebarRootID := .sidebarRootID -}}
 {{ $cacheSidebar := .cacheSidebar -}}
 {{ $iconPolicy := .iconPolicy -}}
+{{ $foldable := .foldable -}}
+{{ $overflow := .overflow -}}
 
 {{ with $context -}}
 {{ $shouldDelayActive := $cacheSidebar -}}
@@ -22,7 +24,7 @@
   {{ $sidebarRootURL = strings.TrimPrefix . $sidebarRootURL -}}
 {{ end -}}
 
-<div id="td-sidebar-menu" class="td-shell-tree-wrap{{ if $shouldDelayActive }} d-none{{ end }}">
+<div id="td-sidebar-menu" class="td-shell-tree-wrap"{{ if $shouldDelayActive }} data-td-sidebar-hydrate-active{{ end }}>
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       data-td-sidebar-icon-policy="{{ $iconPolicy }}"
       {{- if .Site.Params.ui.sidebar_root_enabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
@@ -44,6 +46,8 @@
             "shouldDelayActive" $shouldDelayActive
             "ulNr" 1
             "iconPolicy" $iconPolicy
+            "foldable" $foldable
+            "overflow" $overflow
         ) -}}
       {{- end -}}
       {{ range . -}}
@@ -55,6 +59,8 @@
             "shouldDelayActive" $shouldDelayActive
             "ulNr" 1
             "iconPolicy" $iconPolicy
+            "foldable" $foldable
+            "overflow" $overflow
         ) }}
       {{ end -}}
     </ul>

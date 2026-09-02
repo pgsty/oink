@@ -324,7 +324,7 @@
               "default": false
             },
             "sidebar_cache_limit": {
-              "description": "Cache section trees once a site reaches this many pages. Active state is restored client-side when the cached tree is used.",
+              "description": "Cache neutral section trees once a site reaches this many pages. Variants keep page-effective layout settings; JS adds active state without hiding it.",
               "type": "integer",
               "default": 500
             },

@@ -29,7 +29,11 @@ def check_sources() -> list[str]:
     root_menu = (ROOT / "layouts/_partials/shell/root-menu.html").read_text()
     generic_tree = (ROOT / "layouts/_partials/shell/sidebar-tree.html").read_text()
     docs_tree = (ROOT / "layouts/_partials/shell/docs-sidebar-tree.html").read_text()
+    sidebar = (ROOT / "layouts/_partials/shell/sidebar.html").read_text()
+    generic_node = (ROOT / "layouts/_partials/shell/sidebar-tree-node.html").read_text()
+    docs_node = (ROOT / "layouts/_partials/shell/docs-sidebar-node.html").read_text()
     sidebar_node = (ROOT / "layouts/_partials/shell/sidebar-node.html").read_text()
+    sidebar_nav = (ROOT / "assets/js/sidebar-nav.js").read_text()
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
     annotation = (ROOT / "layouts/_partials/page-annotation.html").read_text()
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
@@ -87,6 +91,23 @@ def check_sources() -> list[str]:
             "explicit docs sidebar does not prepend a missing root row", errors)
     require("continue" not in docs_tree.split('index $docsNav "sections"', 1)[1].split("partial", 1)[0],
             "docs sidebar still skips its root row", errors)
+    require(all('data-td-sidebar-hydrate-active' in source and "d-none" not in source
+                for source in (generic_tree, docs_tree)),
+            "a cached sidebar is hidden until JavaScript instead of exposing a hydration marker", errors)
+    require('$sidebarRoot.RelPermalink $language $compact $foldable $expandLevels $overflow' in sidebar
+            and '$sidebarRoot.RelPermalink $language $foldable $overflow' in sidebar,
+            "sidebar cache variants omit an output-affecting page setting", errors)
+    require('$pageSpecific' in sidebar and '(not $pageSpecific)' in sidebar
+            and 'eq .Type "book"' in sidebar and '"sidebar_headings"' in sidebar,
+            "page-specific Book headings do not bypass the shared sidebar cache", errors)
+    require(all('ui-param.html' not in source for source in
+                (generic_tree, generic_node, docs_tree, docs_node, sidebar_node)),
+            "a cached sidebar walker still resolves a page-effective setting per node", errors)
+    require("hasAttribute('data-td-sidebar-hydrate-active')" in sidebar_nav
+            and "removeAttribute('data-td-sidebar-hydrate-active')" in sidebar_nav
+            and "classList.remove('td-shell-tree__item--hidden')" in sidebar_nav
+            and "classList.contains('d-none')" not in sidebar_nav,
+            "cached-sidebar hydration does not use its marker or reveal the active path", errors)
 
     require('partial "page-meta-lastmod.html"' in annotation,
             "annotation lost the legacy consumer override", errors)

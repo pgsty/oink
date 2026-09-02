@@ -179,8 +179,8 @@ params:
     pager_types: [docs, book, blog]
     # Book pages may opt into an h2-h4 branch beneath the active sidebar row.
     sidebar_headings: false
-    # Cache section trees once a site reaches this many pages. Active state is
-    # restored client-side when the cached tree is used.
+    # Cache neutral section trees once a site reaches this many pages. Variants
+    # keep page-effective layout settings; JS adds active state without hiding it.
     sidebar_cache_limit: 500
     # Draft state is always labeled in the sidebar; this optional banner adds
     # an explicit notice at the start of draft book pages.

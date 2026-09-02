@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Structural output checks for the theme fixture.
 
-Over the built regression fixture (--public, default tests/site/public):
+Over a fresh strict regression fixture by default, or an existing build passed
+explicitly with ``--public``:
   1. HTML structure — every strict container element (div, section, nav, ul/ol, table
      parts, a, button, span, main, aside, header, footer, details, summary, figure,
      form, svg, dialog, template, headings, pre, code, blockquote) closes in order;
@@ -35,6 +36,8 @@ import sys
 import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
+
+from test_site import checker_fixture_public
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
@@ -722,17 +725,22 @@ def check_merge_markers(public: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--public", type=Path, default=FIXTURE / "public")
+    parser.add_argument("--public", type=Path)
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
+    public, result = checker_fixture_public(args.public, args.hugo)
+    if result is not None and result.returncode != 0:
+        print("Strict regression fixture failed to build:")
+        print(result.stdout + result.stderr)
+        return 1
     errors = self_test()
-    html_errors, chunks = check_html(args.public)
+    html_errors, chunks = check_html(public)
     errors += html_errors
-    errors += check_merge_markers(args.public)
-    errors += check_security(args.public)
-    errors += check_social_cards(args.public)
-    errors += check_language_links(args.public)
-    errors += check_markdown_localization(args.public)
+    errors += check_merge_markers(public)
+    errors += check_security(public)
+    errors += check_social_cards(public)
+    errors += check_language_links(public)
+    errors += check_markdown_localization(public)
     errors += check_featured_image_contract(args.hugo)
     errors += check_theme_color_contract(args.hugo)
     errors += check_config_image_policy(args.hugo)

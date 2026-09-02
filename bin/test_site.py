@@ -64,3 +64,14 @@ def build_fixture_public(
         check=False,
     )
     return destination, result
+
+
+def checker_fixture_public(
+    public: Path | None,
+    hugo: str,
+) -> tuple[Path, subprocess.CompletedProcess[str] | None]:
+    """Reuse an explicit build, otherwise create a fresh strict fixture."""
+
+    if public is not None:
+        return public, None
+    return build_fixture_public(hugo, "--printPathWarnings", "--panicOnWarning")

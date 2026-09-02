@@ -400,14 +400,16 @@ def check_invalid(hugo: str) -> list[str]:
             # the page survives; only --panicOnWarning turns that into failure.
             require(expected in output, f"invalid landing case {name} did not report {expected!r}", errors)
             page = site / "public/test/index.html"
-            # A non-string Preview source reaches Hugo's render operation and
-            # is the one distinct hard-failure path in this matrix.
-            if name != "bad-preview-source":
-                require(result.returncode == 0,
-                        f"invalid landing case {name} stopped the ordinary build", errors)
-                require(page.is_file(), f"invalid landing case {name} emitted no safe page output", errors)
+            require(result.returncode == 0,
+                    f"invalid landing case {name} stopped the ordinary build", errors)
+            require(page.is_file(), f"invalid landing case {name} emitted no safe page output", errors)
             if page.is_file():
                 rendered = page.read_text(encoding="utf-8")
+                if name == "bad-preview-source":
+                    require("td-landing-preview-section" not in rendered,
+                            "non-string preview.source still rendered its section", errors)
+                    require("preview.source must not be empty" not in output,
+                            "non-string preview.source fell through to the empty validator", errors)
                 require("background-image: url(https://example.invalid/x)" not in rendered
                         and "240px; color: red" not in rendered,
                         f"invalid landing case {name} leaked unsafe CSS", errors)

@@ -168,7 +168,7 @@ feedback_thanks: "Teşekkürler—geri bildiriminiz bu sayfayı iyileştirmemize
 feedback_reason_prompt: "Ne engelledi? (isteğe bağlı)"
 feedback_reason_missing: "Eksik bilgi"
 feedback_reason_outdated: "Yanlış veya güncelliğini yitirmiş"
-feedback_reason_failed: "Adımlar çalışmazdı"
+feedback_reason_failed: "Adımlar çalışmadı"
 feedback_reason_unclear: "Anlaşılmaz"
 feedback_details: "Açıklamalarda detay ekleyin"
 feedback_change: "Cevabı değiştir"

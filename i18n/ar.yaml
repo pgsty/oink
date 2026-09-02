@@ -127,7 +127,7 @@ ui_download_channels: "قنوات التنزيل"
 ui_download_unpublished: "بانتظار الإصدار"
 # Used in sentences such as "All Tags"
 ui_all: "الكل"
-ui_list_separator: ", "
+ui_list_separator: "، "
 ui_blog_index_toggle: "تبديل التخطيط"
 # Footer text
 footer_all_rights_reserved: "جميع الحقوق محفوظة"

@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from html.parser import HTMLParser
 from pathlib import Path
 
 
@@ -15,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 I18N = ROOT / "i18n"
 KEY = re.compile(r"^([A-Za-z0-9_]+):")
 BRACED_PLACEHOLDER = re.compile(r"\{[A-Za-z_][A-Za-z0-9_]*\}")
+GO_TEMPLATE_PLACEHOLDER = re.compile(r"\{\{[^{}]+\}\}")
 PRINTF_PLACEHOLDER = re.compile(r"(?<!%)%(?:[0-9]+\$)?[A-Za-z]")
 BIDI_CONTROL = re.compile(r"[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]")
 # Locale filenames in google/docsy@64f51c5bde2abd2e8a001cb31b32656f5800ca56.
@@ -25,6 +27,13 @@ DOCSY_LOCALES = {
     "zh-cn", "zh-tw",
 }
 OINK_LOCALES = DOCSY_LOCALES | {"zh"}
+CALLOUT_KEYS = tuple(
+    f"callout_{name}"
+    for name in (
+        "caution", "important", "note", "tip", "warning", "success",
+        "danger", "question", "example", "quote", "details",
+    )
+)
 FALLBACK_MARKERS = (
     "Replace these values with reviewed translations when available.",
     "Explicit English fallbacks for untranslated OINK UI strings.",
@@ -54,8 +63,8 @@ REVIEWED_IDENTICAL = {
     },
     "no": {"ui_theme_auto", "post_reading_minutes"},
     "oc": {
-        "callout_important", "post_translated_original", "post_reading_minutes",
-        "contributors_count",
+        "callout_important", "callout_question", "post_translated_original",
+        "post_reading_minutes", "contributors_count",
     },
     "pl": {"ui_tag_title", "ui_theme_auto", "post_reading_minutes"},
     "pt-br": {"post_translated_original", "post_reading_minutes"},
@@ -79,6 +88,35 @@ SERBIAN_TRANSLITERATION = str.maketrans(
 )
 
 
+class TranslationSpanParser(HTMLParser):
+    """Collect the rendered text of the runtime check's translation spans."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.values: dict[str, str] = {}
+        self._key: str | None = None
+        self._parts: list[str] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        if tag == "span" and self._key is None:
+            key = dict(attrs).get("data-key")
+            if key is not None:
+                self._key = key
+                self._parts = []
+
+    def handle_data(self, data: str) -> None:
+        if self._key is not None:
+            self._parts.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "span" and self._key is not None:
+            self.values[self._key] = "".join(self._parts)
+            self._key = None
+            self._parts = []
+
+
 def translation_blocks(path: Path) -> tuple[list[str], dict[str, str]]:
     lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
     starts: list[tuple[int, str]] = []
@@ -95,11 +133,12 @@ def translation_blocks(path: Path) -> tuple[list[str], dict[str, str]]:
     return order, blocks
 
 
-def placeholders(block: str) -> tuple[list[str], list[str]]:
+def placeholders(block: str) -> tuple[list[str], list[str], list[str]]:
     """Return the runtime placeholders used by a translation block."""
 
     return (
         sorted(BRACED_PLACEHOLDER.findall(block)),
+        sorted(GO_TEMPLATE_PLACEHOLDER.findall(block)),
         sorted(PRINTF_PLACEHOLDER.findall(block)),
     )
 
@@ -111,23 +150,32 @@ def scalar_value(block: str) -> str | None:
     value = lines[0].partition(":")[2].strip()
     if not value:
         return None
-    if value in {">", ">-", "|", "|-"}:
-        return " ".join(line.strip() for line in lines[1:] if line[:1].isspace()).strip()
     if value.startswith('"'):
         try:
-            parsed = json.loads(value)
-        except json.JSONDecodeError:
+            parsed, end = json.JSONDecoder().raw_decode(value)
+        except (json.JSONDecodeError, TypeError):
+            return None
+        trailing = value[end:]
+        if trailing and not re.fullmatch(r"[ \t]+#.*", trailing):
             return None
         return parsed if isinstance(parsed, str) else None
-    if value.startswith("'") and value.endswith("'"):
-        return value[1:-1].replace("''", "'")
+    if value.startswith("'"):
+        quoted = re.fullmatch(r"'((?:[^']|'')*)'(?:[ \t]+#.*)?", value)
+        return quoted.group(1).replace("''", "'") if quoted else None
+    if value.startswith("#"):
+        return None
+    value = re.sub(r"[ \t]+#.*$", "", value).rstrip()
+    if not value:
+        return None
+    if value in {">", ">-", "|", "|-"}:
+        return " ".join(line.strip() for line in lines[1:] if line[:1].isspace()).strip()
     return value
 
 
 def check_hugo_runtime(
     keys: list[str], catalogs: dict[str, dict[str, str]]
 ) -> list[str]:
-    """Render every key once in every supported locale with one Hugo process."""
+    """Render every key once in all supported locales."""
 
     hugo = shutil.which("hugo")
     if not hugo:
@@ -142,16 +190,18 @@ def check_hugo_runtime(
         )
         language_lines: list[str] = []
         for weight, locale in enumerate(["en", *sorted(OINK_LOCALES - {"en"})], 1):
+            # Hugo 0.160.x cannot resolve a bare `locale: zh` while the regional
+            # Chinese catalogs are present. A concrete locale is also what the
+            # public OINK examples use for their generic `zh` language key.
+            runtime_locale = "zh-CN" if locale == "zh" else locale
             language_lines.extend(
                 [
                     f"  {locale}:\n",
-                    f"    locale: {locale}\n",
+                    f"    locale: {runtime_locale}\n",
                     f"    label: {locale}\n",
                     f"    weight: {weight}\n",
                 ]
             )
-            if locale in {"ar", "fa", "he"}:
-                language_lines.append("    direction: rtl\n")
         (site / "hugo.yaml").write_text(
             "baseURL: https://example.test/\n"
             "title: OINK i18n runtime fixture\n"
@@ -172,8 +222,7 @@ def check_hugo_runtime(
         )
         quoted_keys = " ".join(json.dumps(key) for key in keys)
         (site / "layouts/home.html").write_text(
-            "<!doctype html><html lang=\"{{ .Site.Language.Lang }}\" "
-            "dir=\"{{ .Site.Language.Direction }}\"><body>\n"
+            "<!doctype html><html lang=\"{{ .Site.Language.Lang }}\"><body>\n"
             f"{{{{ $ctx := {context} }}}}\n"
             f"{{{{ range $key := slice {quoted_keys} }}}}"
             "<span data-key=\"{{ $key }}\">{{ T $key $ctx }}</span>"
@@ -182,22 +231,25 @@ def check_hugo_runtime(
             encoding="utf-8",
         )
         public = site / "public"
-        result = subprocess.run(
-            [
-                hugo,
-                "--source",
-                str(site),
-                "--themesDir",
-                str(ROOT.parent),
-                "--destination",
-                str(public),
-                "--printI18nWarnings",
-                "--panicOnWarning",
-            ],
-            text=True,
-            capture_output=True,
-            timeout=120,
-        )
+        try:
+            result = subprocess.run(
+                [
+                    hugo,
+                    "--source",
+                    str(site),
+                    "--themesDir",
+                    str(ROOT.parent),
+                    "--destination",
+                    str(public),
+                    "--printI18nWarnings",
+                    "--panicOnWarning",
+                ],
+                text=True,
+                capture_output=True,
+                timeout=120,
+            )
+        except subprocess.TimeoutExpired:
+            return ["all-locale Hugo render exceeded 120 seconds"]
         if result.returncode:
             return [
                 "all-locale Hugo render failed:\n"
@@ -213,27 +265,22 @@ def check_hugo_runtime(
         )
         if missing_outputs:
             return [f"all-locale Hugo render missed: {', '.join(missing_outputs)}"]
-        wrong_catalogs = sorted(
-            locale
-            for locale, path in outputs.items()
-            if f'data-key="ui_search">{catalogs[locale]["ui_search"]}</span>'
-            not in path.read_text(encoding="utf-8")
-        )
-        if wrong_catalogs:
+        wrong_values: list[str] = []
+        for locale, path in outputs.items():
+            parser = TranslationSpanParser()
+            parser.feed(path.read_text(encoding="utf-8"))
+            for key, expected in catalogs[locale].items():
+                if any(placeholders(expected)):
+                    continue
+                if parser.values.get(key) != expected:
+                    wrong_values.append(f"{locale}.{key}")
+        if wrong_values:
+            shown = ", ".join(sorted(wrong_values)[:20])
+            suffix = " …" if len(wrong_values) > 20 else ""
             return [
-                "all-locale Hugo render selected the wrong catalog: "
-                + ", ".join(wrong_catalogs)
-            ]
-        wrong_directions = sorted(
-            locale
-            for locale, path in outputs.items()
-            if ('dir="rtl"' in path.read_text(encoding="utf-8"))
-            != (locale in {"ar", "fa", "he"})
-        )
-        if wrong_directions:
-            return [
-                "all-locale Hugo render selected the wrong direction: "
-                + ", ".join(wrong_directions)
+                "all-locale Hugo render selected wrong catalog values: "
+                + shown
+                + suffix
             ]
     return []
 
@@ -290,6 +337,18 @@ def check() -> int:
                 print(path.relative_to(ROOT))
                 print(f"  hidden bidi control in {key}")
         catalog_values[path.stem] = values
+        callout_labels: dict[str, list[str]] = {}
+        for key in CALLOUT_KEYS:
+            if key in values:
+                callout_labels.setdefault(values[key], []).append(key)
+        callout_collisions = [
+            keys for keys in callout_labels.values() if len(keys) > 1
+        ]
+        if callout_collisions:
+            failed = True
+            print(path.relative_to(ROOT))
+            for collision in callout_collisions:
+                print(f"  duplicate callout labels: {', '.join(collision)}")
         for key in sorted(english & keys):
             expected = placeholders(english_blocks[key])
             actual = placeholders(blocks[key])

@@ -80,7 +80,7 @@ ui_tabs_label: "Lapok"
 ui_pricing_featured: "Ajánlott"
 ui_pricing_included: "Beleértve"
 ui_pricing_excluded: "Nem tartalmazza"
-ui_marquee_pause: "Pálya szüneteltetése"
+ui_marquee_pause: "Mozgás szüneteltetése"
 ui_kbd_with: "együttesen"
 ui_keyboard_shortcuts: "Gyorsbillentyűk"
 ui_shortcut_tree_move: "Navigálás az oldalsávban"
@@ -180,13 +180,13 @@ error_404_body: "Sajnáljuk, ez az oldal nem létezik. Próbálja újra a kezdő
 error_404_home: "Ugrás a kezdőlapra"
 # Version banner
 version_banner_archived: "A dokumentáció {{ .Version }} verzióját már nem tartják karban aktívan. A jelenleg megtekintett webhely archivált másolat."
-version_banner_latest: "A legfrissebb dokumentációért lásd a {{ .Link }}."
+version_banner_latest: "Naprakész dokumentáció: {{ .Link }}."
 version_banner_latest_link: "legfrissebb verzió"
 # Comments
 comments_noscript: "A megjegyzések betöltéséhez JavaScript szükséges."
 comments_noscript_link: "Megtekintés a GitHub-on."
 # LLM page actions
-ui_open_in_prompt_label: "Kérdés feltevése ezen az oldalon"
+ui_open_in_prompt_label: "Kérdezzen erről az oldalról"
 ui_view_history: "Szerkesztési előzmények megtekintése"
 ui_table_scroll: "Görgethető táblázat"
 ui_filetree_divider: "A fájlfa melletti megjegyzésoszlop átméretezése"
@@ -200,7 +200,7 @@ book_draft_notice: "Ez a fejezet továbbra is módosítás alatt van."
 contributors_count: "közreműködő"
 # Article series
 ui_series_title: "Sorozat"
-ui_series_part: "{{ .Part }} rész a {{ .Total }}-ből"
+ui_series_part: "{{ .Part }}. rész / {{ .Total }}"
 # Markdown output
 markdown_llms_index: "LLMS-index:"
 markdown_section_pages: "Szakasz oldalak:"

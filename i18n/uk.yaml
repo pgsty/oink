@@ -180,7 +180,7 @@ error_404_body: "На жаль, цієї сторінки не існує. Сп�
 error_404_home: "Перейти на головну сторінку"
 # Version banner
 version_banner_archived: "Версія {{ .Version }} документації більше не підтримується. Сайт, який ви бачите, є архівною копією."
-version_banner_latest: "Для оновленої документації дивіться {{ .Link }}."
+version_banner_latest: "Актуальна документація: {{ .Link }}."
 version_banner_latest_link: "остання версія"
 # Comments
 comments_noscript: "Для завантаження коментарів потрібен JavaScript."

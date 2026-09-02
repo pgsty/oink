@@ -168,7 +168,7 @@ feedback_thanks: "धन्यवाद—आपकी प्रतिक्र�
 feedback_reason_prompt: "क्या बाधा बनी? (वैकल्पिक)"
 feedback_reason_missing: "जानकारी की कमी"
 feedback_reason_outdated: "गलत या पुराना"
-feedback_reason_failed: "चरण काम नहीं किए"
+feedback_reason_failed: "चरण सफल नहीं हुए"
 feedback_reason_unclear: "समझने में कठिनाई"
 feedback_details: "टिप्पणियों में विवरण जोड़ें"
 feedback_change: "प्रतिक्रिया बदलें"
@@ -179,7 +179,7 @@ error_404_title: "पृष्ठ नहीं मिला"
 error_404_body: "क्षमा करें, यह पृष्ठ उपलब्ध नहीं है। होम पृष्ठ से फिर से शुरू करने का प्रयास करें।"
 error_404_home: "होम पृष्ठ पर जाएँ"
 # Version banner
-version_banner_archived: "दस्तावेज़ीकरण का संस्करण {{ .Version }} अब सक्रिय रूप से बनाए नहीं जा रहा है। आप जिस साइट को देख रहे हैं, वह एक संग्रहीत प्रति है।"
+version_banner_archived: "दस्तावेज़ीकरण का संस्करण {{ .Version }} अब सक्रिय रूप से बनाए नहीं रखा जा रहा है। आप जिस साइट को देख रहे हैं, वह एक संग्रहीत प्रति है।"
 version_banner_latest: "अद्यतन दस्तावेज़ीकरण के लिए, {{ .Link }} देखें।"
 version_banner_latest_link: "नवीनतम संस्करण"
 # Comments

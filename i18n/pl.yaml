@@ -1,5 +1,5 @@
 # Alert labels
-callout_caution: "Uwaga"
+callout_caution: "Przestroga"
 callout_important: "Ważne"
 callout_note: "Uwaga"
 callout_tip: "Porada"
@@ -138,7 +138,7 @@ post_last_mod: "Ostatnia modyfikacja"
 post_upstream: "{{ .work }}, {{ .copyright }}, pod licencją {{ .license }}. Zobacz {{ .notice }}."
 post_upstream_adapted: "Przepisane z {{ .work }}, {{ .copyright }}, pod licencją {{ .license }}. Zobacz {{ .notice }} i {{ .history }}."
 post_upstream_adapted_plain: "Przepisane z {{ .work }}, {{ .copyright }}, pod licencją {{ .license }}. Zobacz {{ .notice }}."
-post_upstream_notice: "przypisywanie"
+post_upstream_notice: "uznanie autorstwa"
 post_upstream_history: "historia zmian"
 post_translated: "Ta strona jest tłumaczeniem; wiążący jest {{ .original }}."
 post_translated_original: "oryginał"
@@ -180,8 +180,8 @@ error_404_body: "Przepraszamy, ta strona nie istnieje. Spróbuj ponownie od stro
 error_404_home: "Przejdź na stronę główną"
 # Version banner
 version_banner_archived: "Wersja {{ .Version }} dokumentacji nie jest już aktywnie utrzymywana. Strona, którą przeglądasz, to archiwalna kopia."
-version_banner_latest: "Aby uzyskać aktualne dokumenty, zobacz {{ .Link }}."
-version_banner_latest_link: "najnowszą wersję"
+version_banner_latest: "Aktualna dokumentacja: {{ .Link }}."
+version_banner_latest_link: "najnowsza wersja"
 # Comments
 comments_noscript: "Aby załadować komentarze, wymagany jest JavaScript."
 comments_noscript_link: "Zobacz dyskusje na GitHubie."

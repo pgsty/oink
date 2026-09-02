@@ -213,7 +213,7 @@ ui_list_separator: 、
 post_meta_by_in: "{{ .Authors }} 發佈於 {{ .Section }}"
 post_meta_in: "發佈於 {{ .Section }}"
 
-ui_blog_index_toggle: 切换布局
+ui_blog_index_toggle: 切換版面配置
 
 # Markdown output
 markdown_llms_index: "LLMS 索引："

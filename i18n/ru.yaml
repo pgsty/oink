@@ -180,7 +180,7 @@ error_404_body: "Извините, такой страницы не сущест
 error_404_home: "Перейти на главную страницу"
 # Version banner
 version_banner_archived: "Версия {{ .Version }} документации больше не поддерживается. Текущий сайт — архивная копия."
-version_banner_latest: "Для актуальной документации см. {{ .Link }}."
+version_banner_latest: "Актуальная документация: {{ .Link }}."
 version_banner_latest_link: "последняя версия"
 # Comments
 comments_noscript: "Для загрузки комментариев требуется JavaScript."

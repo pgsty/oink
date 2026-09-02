@@ -22,7 +22,7 @@ ui_search_open: "Отвори"
 ui_search_close: "Затвори"
 ui_palette_actions: "Акције"
 ui_palette_page_actions: "Акције стране"
-ui_palette_preferences: "Предности"
+ui_palette_preferences: "Подешавања"
 ui_palette_commands: "Команде"
 ui_palette_quick_links: "Брзе везе"
 ui_palette_no_commands: "Нема поклапајућих команда"
@@ -180,7 +180,7 @@ error_404_body: "Жао нам је, ова страница не постоји
 error_404_home: "Иди на Почетну страницу"
 # Version banner
 version_banner_archived: "Верзија {{ .Version }} документације више се не одржава активно. Сајт који тренутно прегледате је архивирана копија."
-version_banner_latest: "За актуелну документацију, видите {{ .Link }}."
+version_banner_latest: "Ажурна документација: {{ .Link }}."
 version_banner_latest_link: "најновија верзија"
 # Comments
 comments_noscript: "За учитавање коментара потребан је JavaScript."
@@ -200,7 +200,7 @@ book_draft_notice: "Ова глава је још у току уређивања
 contributors_count: "сарадника"
 # Article series
 ui_series_title: "Серија"
-ui_series_part: "Дела {{ .Part }} од {{ .Total }}"
+ui_series_part: "Део {{ .Part }} од {{ .Total }}"
 # Markdown output
 markdown_llms_index: "LLMS индекс:"
 markdown_section_pages: "Странице секције:"

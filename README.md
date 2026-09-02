@@ -207,6 +207,11 @@ assuming drop-in compatibility.
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 192-key schema with no English placeholder blocks |
 
+On Hugo 0.160.x, when generic `zh` is a non-default language and the regional
+Chinese catalogs are present, configure it with the concrete `locale: zh-CN`,
+as OINK's examples do. Hugo 0.161.0 and newer also resolve bare `locale: zh`
+in that configuration.
+
 ## Community and releases
 
 [Releases](https://github.com/pgsty/oink/releases) ·

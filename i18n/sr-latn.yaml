@@ -22,7 +22,7 @@ ui_search_open: "Otvori"
 ui_search_close: "Zatvori"
 ui_palette_actions: "Akcije"
 ui_palette_page_actions: "Akcije strane"
-ui_palette_preferences: "Prednosti"
+ui_palette_preferences: "Podešavanja"
 ui_palette_commands: "Komande"
 ui_palette_quick_links: "Brze veze"
 ui_palette_no_commands: "Nema poklapajućih komanda"
@@ -180,7 +180,7 @@ error_404_body: "Žao nam je, ova stranica ne postoji. Pokušajte ponovo sa Poč
 error_404_home: "Idi na Početnu stranicu"
 # Version banner
 version_banner_archived: "Verzija {{ .Version }} dokumentacije više se ne održava aktivno. Sajt koji trenutno pregledate je arhivirana kopija."
-version_banner_latest: "Za aktuelnu dokumentaciju, vidite {{ .Link }}."
+version_banner_latest: "Ažurna dokumentacija: {{ .Link }}."
 version_banner_latest_link: "najnovija verzija"
 # Comments
 comments_noscript: "Za učitavanje komentara potreban je JavaScript."
@@ -200,7 +200,7 @@ book_draft_notice: "Ova glava je još u toku uređivanja."
 contributors_count: "saradnika"
 # Article series
 ui_series_title: "Serija"
-ui_series_part: "Dela {{ .Part }} od {{ .Total }}"
+ui_series_part: "Deo {{ .Part }} od {{ .Total }}"
 # Markdown output
 markdown_llms_index: "LLMS indeks:"
 markdown_section_pages: "Stranice sekcije:"

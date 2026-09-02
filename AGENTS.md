@@ -46,7 +46,9 @@ make -C ../oink.pgsty.com dev
 
 ## Theme contracts
 
-- Hugo Extended 0.160.1 is the compatibility floor.
+- Hugo Extended 0.160.1 is the compatibility floor. On 0.160.x, configure a
+  non-default generic `zh` language alongside the regional Chinese catalogs
+  with `locale: zh-CN`; bare `locale: zh` works there from 0.161 onward.
 - Run checkers with `--panicOnWarning` when they build Hugo output. Ordinary
   editing may warn and fall back; publishing gates turn warnings into failures.
 - Keep generated `public/`, `resources/`, locks, and caches out of Git.

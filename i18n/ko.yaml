@@ -180,7 +180,7 @@ error_404_body: "죄송합니다. 해당 페이지는 존재하지 않습니다.
 error_404_home: "홈 페이지로 이동"
 # Version banner
 version_banner_archived: "문서 버전 {{ .Version }}은 더 이상 유지되지 않습니다. 현재 보고 있는 사이트는 보관된 사본입니다."
-version_banner_latest: "최신 문서를 보려면 {{ .Link }}를 참조하세요."
+version_banner_latest: "최신 문서: {{ .Link }}."
 version_banner_latest_link: "최신 버전"
 # Comments
 comments_noscript: "댓글을 로드하려면 JavaScript가 필요합니다."

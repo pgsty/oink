@@ -1,294 +1,207 @@
+# Alert labels
+callout_caution: "Vigyázat"
+callout_important: "Fontos"
+callout_note: "Megjegyzés"
+callout_tip: "Tanács"
+callout_warning: "Figyelmeztetés"
+callout_success: "Siker"
+callout_danger: "Veszély"
+callout_question: "Kérdés"
+callout_example: "Példa"
+callout_quote: "Idézet"
+callout_details: "Részletek"
 # UI strings. Buttons and similar.
-ui_pager_prev: Előző
-ui_pager_next: Következő
-ui_search: Keresés ezen az oldalon…
-
-# Footer text
-footer_all_rights_reserved: Minden jog fenntartva
-
-# Post (blog, article, etc.)
-post_last_mod: Utolsó módosítás
-post_edit_this: Oldal szerkesztése
-post_create_child_page: Aloldal létrehozása
-post_view_markdown: Markdown megtekintése
-post_create_issue: Dokumentáció issue létrehozása
-post_create_project_issue: Projekt issue létrehozása
-# so I left it as is
-post_reading_time: minute read
-post_less_than_a_minute_read: less than a minute
-
-# Print support
-print_printable_section: This is the multi-page printable view of this section.
-print_click_to_print: Click here to print
-print_show_regular: Return to the regular view of this page
-print_entire_section: Print entire section
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-ui_all: all
-
-# Footer text
-feedback_question: Was this page helpful?
-feedback_positive: Yes
-feedback_negative: No
-
-# Table of contents
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_pager_prev: "Előző"
+ui_pager_next: "Következő"
+ui_search: "Keresés…"
+ui_search_empty: "Nem található eredmény"
+ui_search_loading: "Keresési index betöltése…"
+ui_search_results: "{count} találat található"
+ui_search_nav: "Navigálás"
+ui_search_open: "Megnyitás"
+ui_search_close: "Bezárás"
+ui_palette_actions: "Műveletek"
+ui_palette_page_actions: "Oldal műveletek"
+ui_palette_preferences: "Beállítások"
+ui_palette_commands: "Parancsok"
+ui_palette_quick_links: "Gyorslink"
+ui_palette_no_commands: "Nincs megfelelő parancs"
+ui_palette_choose: "Válasszon egy lehetőséget"
+ui_palette_action_failed: "A művelet nem hajtható végre"
+ui_palette_pages: "Oldalak"
+ui_palette_index_unavailable: "Az oldalindex nem érhető el; a műveletek továbbra is működnek"
+ui_sidebar_nav: "Szakasz navigáció"
+ui_heading_self_link: "Hivatkozás erre a fejlécre"
+ui_field_self_link: "Hivatkozás erre a mezőre"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Megjelenített"
+ui_main_nav: "Fő navigáció"
+ui_home: "Kezdőlap"
+ui_sidebar_expand: "Oldalsáv kibontása"
+ui_sidebar_collapse: "Oldalsáv összecsukása"
+ui_drawer_open: "Navigáció megnyitása"
+ui_drawer_close: "Navigáció bezárása"
+ui_root_menu_label: "Szakasz választása"
+ui_tags_title: "Címkék"
+ui_tag_title: "Címke"
+ui_categories_title: "Kategóriák"
+ui_category_title: "Kategória"
+ui_modules_title: "Modulok"
+ui_module_title: "Modul"
+ui_authors_title: "Szerzők"
+ui_author_title: "Szerző"
+ui_theme_toggle: "Színtéma váltása"
+ui_theme_auto: "Rendszer"
+ui_theme_light: "Világos"
+ui_theme_dark: "Sötét"
+ui_toc_hide: "Tartalomjegyzék elrejtése"
+ui_toc_show: "Tartalomjegyzék megjelenítése"
+ui_language_select: "Nyelv választása"
+ui_language_switch: "Nyelv váltása"
+ui_skip_to_content: "Ugrás a tartalomra"
+ui_page_actions: "Műveletek"
+ui_open_in_chatgpt: "Megnyitás ChatGPT-ben"
+ui_open_in_claude: "Megnyitás Claude-ban"
+ui_open_in_prompt: "%s elolvasása, hogy kérdéseket tehessek fel róla."
+ui_copy_markdown: "Markdown másolása"
+ui_copy_success: "Markdown másolva"
+ui_copy_error: "Nem sikerült másolni a Markdownot"
+ui_share: "Megosztás"
+ui_share_email: "E-mail"
+ui_copy_link: "Hivatkozás másolása"
+ui_copy_link_success: "Hivatkozás másolva"
+ui_copy_link_error: "Nem sikerült másolni a hivatkozást"
+ui_code_copy_label: "Kód másolása"
+ui_code_copied: "Másolva"
+ui_code_copy_error: "A másolás sikertelen"
+ui_code_show_all: "Összes {{ .Count }} sor megjelenítése"
+ui_code_collapse: "Kód összecsukása"
+ui_tabs_label: "Lapok"
+ui_pricing_featured: "Ajánlott"
+ui_pricing_included: "Beleértve"
+ui_pricing_excluded: "Nem tartalmazza"
+ui_marquee_pause: "Pálya szüneteltetése"
+ui_kbd_with: "együttesen"
+ui_keyboard_shortcuts: "Gyorsbillentyűk"
+ui_shortcut_tree_move: "Navigálás az oldalsávban"
+ui_shortcut_tree_toggle: "Szakasz kibontása vagy összecsukása"
+ui_shortcut_tree_open: "Fókuszban lévő oldal megnyitása"
+ui_shortcut_heading_move: "Előző vagy következő fejléc"
+ui_shortcut_page_move: "Előző vagy következő oldal"
+ui_shortcut_search: "Keresés"
+ui_shortcut_commands: "Parancs paletta"
+ui_shortcut_reading_mode: "Olvasó mód"
+ui_shortcut_language: "Nyelv váltása"
+ui_shortcut_theme: "Téma váltása"
+ui_shortcut_route: "Váltás a legfelső szintű oldalak között"
+ui_page_annotation: "Oldal információ"
+ui_backlinks: "Visszahivatkozások"
+ui_backlinks_more: "{{ . }} további megjelenítése"
+ui_field_required: "kötelező"
+ui_action_unavailable: "elérhetetlen"
+ui_image_zoom_dialog: "Kép előnézete"
+ui_image_zoom_open: "Kép előnézet megnyitása"
+ui_image_zoom_close: "Kép előnézet bezárása"
+ui_diagram_expand: "Diagram nagyítása"
+ui_diagram_zoom_dialog: "Diagram előnézete"
+ui_diagram_zoom_close: "Diagram előnézet bezárása"
+ui_diagram_zoom_in: "Nagyítás"
+ui_diagram_zoom_out: "Kicsinyítés"
+ui_diagram_zoom_reset: "Nézet visszaállítása"
+ui_diagram_error: "A diagram nem jeleníthető meg"
+ui_print_page: "Oldal nyomtatása"
+ui_sidebar_expand_section: "Szakasz kibontása"
+ui_sidebar_collapse_section: "Szakasz összecsukása"
+ui_asciinema_timer: "Lejátszási idő"
+ui_openapi_spec: "OpenAPI specifikáció"
+ui_release_view: "Kiadás megtekintése"
+ui_release_source: "Forrás"
+ui_release_released: "Kiadva"
+ui_assets_file: "Fájl"
+ui_assets_checksum: "Ellenőrzőösszeg"
+ui_assets_copy: "Ellenőrzőösszeg másolása"
+ui_assets_copied: "Másolva"
+ui_assets_copy_all: "Összes ellenőrzőösszeg másolása"
+ui_assets_download: "Fájl letöltése"
+ui_download_channels: "Letöltési csatornák"
+ui_download_unpublished: "Kiadás előtt"
+# Used in sentences such as "All Tags"
+ui_all: "összes"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Elrendezés váltása"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Minden jog fenntartva"
+ui_footer_collapse: "Lábléc hivatkozások elrejtése"
+ui_footer_expand: "Lábléc hivatkozások megjelenítése"
+# Post (blog, article, etc.)
+post_last_mod: "Utolsó módosítás"
+post_upstream: "{{ .work }}, {{ .copyright }}, {{ .license }} licenc alatt. Lásd: {{ .notice }}."
+post_upstream_adapted: "Átdolgozva ebből: {{ .work }}; {{ .copyright }}, {{ .license }} licenc alatt. Lásd: {{ .notice }} és {{ .history }}."
+post_upstream_adapted_plain: "Átdolgozva ebből: {{ .work }}; {{ .copyright }}, {{ .license }} licenc alatt. Lásd: {{ .notice }}."
+post_upstream_notice: "hivatkozás"
+post_upstream_history: "változások története"
+post_translated: "Ez az oldal fordítás; az {{ .original }} az irányadó."
+post_translated_original: "eredeti"
+post_edit_this: "Oldal szerkesztése"
+post_view_markdown: "Markdown megtekintése"
+post_create_child_page: "Aloldal létrehozása"
+post_create_issue: "Dokumentációs hibajegy létrehozása"
+post_create_project_issue: "Projekt-hibajegy létrehozása"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "Szerző: {{ .Authors }} · Szakasz: {{ .Section }}"
+post_meta_in: "Szakasz: {{ .Section }}"
+post_reading_time: "perc olvasási idő"
+post_less_than_a_minute_read: "kevesebb, mint egy perc"
+post_word_count: "{{ .Count }} szó"
+post_reading_minutes: "{{ .Minutes }} perc"
+post_read_original: "További olvasás"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Ez a szakasz többoldalas nyomtatható verziója."
+print_click_to_print: "Kattintson ide a nyomtatáshoz"
+print_show_regular: "Visszatérés a szokásos nézethez"
+print_entire_section: "Teljes szakasz nyomtatása"
+# Feedback
+feedback_question: "Hasznos volt ez az oldal?"
+feedback_positive: "Igen"
+feedback_negative: "Nem"
+feedback_thanks: "Köszönjük—visszajelzése segít javítani ezt az oldalt."
+feedback_reason_prompt: "Mi akadályozta? (nem kötelező)"
+feedback_reason_missing: "Hiányzó információ"
+feedback_reason_outdated: "Hibás vagy elavult"
+feedback_reason_failed: "A lépések nem működtek"
+feedback_reason_unclear: "Nehezen érthető"
+feedback_details: "Részletek a megjegyzésekben"
+feedback_change: "Válasz módosítása"
+# Table of contents
+toc_on_this_page: "Tartalom"
+# Error pages
+error_404_title: "Oldal nem található"
+error_404_body: "Sajnáljuk, ez az oldal nem létezik. Próbálja újra a kezdőlapról."
+error_404_home: "Ugrás a kezdőlapra"
+# Version banner
+version_banner_archived: "A dokumentáció {{ .Version }} verzióját már nem tartják karban aktívan. A jelenleg megtekintett webhely archivált másolat."
+version_banner_latest: "A legfrissebb dokumentációért lásd a {{ .Link }}."
+version_banner_latest_link: "legfrissebb verzió"
+# Comments
+comments_noscript: "A megjegyzések betöltéséhez JavaScript szükséges."
+comments_noscript_link: "Megtekintés a GitHub-on."
+# LLM page actions
+ui_open_in_prompt_label: "Kérdés feltevése ezen az oldalon"
+ui_view_history: "Szerkesztési előzmények megtekintése"
+ui_table_scroll: "Görgethető táblázat"
+ui_filetree_divider: "A fájlfa melletti megjegyzésoszlop átméretezése"
+book_figure: "Ábra"
+book_table: "Táblázat"
+book_equation: "Egyenlet"
+book_example: "Példa"
+book_toc: "A könyv tartalomjegyzéke"
+book_draft: "Piszkozat"
+book_draft_notice: "Ez a fejezet továbbra is módosítás alatt van."
+contributors_count: "közreműködő"
+# Article series
+ui_series_title: "Sorozat"
+ui_series_part: "{{ .Part }} rész a {{ .Total }}-ből"
+# Markdown output
+markdown_llms_index: "LLMS-index:"
+markdown_section_pages: "Szakasz oldalak:"
+markdown_backlinks: "Visszahivatkozások:"

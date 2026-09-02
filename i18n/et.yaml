@@ -1,295 +1,207 @@
+# Alert labels
+callout_caution: "Ettevaatust"
+callout_important: "Oluline"
+callout_note: "Märkus"
+callout_tip: "Nõuanne"
+callout_warning: "Hoiatus"
+callout_success: "Edukas"
+callout_danger: "Oht"
+callout_question: "Küsimus"
+callout_example: "Näide"
+callout_quote: "Tsitaat"
+callout_details: "Lisainfo"
 # UI strings. Buttons and similar.
-ui_pager_prev: Eelmine
-ui_pager_next: Järgmine
-ui_search: Otsi lehelt…
-
-# Footer text
-footer_all_rights_reserved: Kõik õigused kaitstud
-
-# not perfect. In Estonian this idea is represented by a suffix, not a separate word.
-post_last_mod: Viimati muudetud
-post_edit_this: Täienda lehte
-post_view_markdown: Vaata Markdowni
-post_create_child_page: Loo alamleht
-# perhaps there is a better translation for "issue"...
-post_create_issue: Tõstata dokumentatsiooni kohta ülesanne
-post_create_project_issue: Tõstata projekti kohta ülesanne
-# in Estonian this "in" should be the suffix of the next word, cannot include it to that phrase.
-post_reading_time: minute read
-post_less_than_a_minute_read: less than a minute
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-ui_all: all
-
-# Footer text
-print_printable_section: This is the multi-page printable view of this section.
-print_click_to_print: Click here to print
-print_show_regular: Return to the regular view of this page
-print_entire_section: Print entire section
-
-# Community
-feedback_question: Was this page helpful?
-feedback_positive: Yes
-feedback_negative: No
-
-# Table of contents
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_pager_prev: "Eelmine"
+ui_pager_next: "Järgmine"
+ui_search: "Otsi…"
+ui_search_empty: "Tulemusi ei leitud"
+ui_search_loading: "Laeb otsinguvormi…"
+ui_search_results: "{count} tulemust leitud"
+ui_search_nav: "Navigeeri"
+ui_search_open: "Ava"
+ui_search_close: "Sulge"
+ui_palette_actions: "Tegevused"
+ui_palette_page_actions: "Lehe tegevused"
+ui_palette_preferences: "Eelistused"
+ui_palette_commands: "Käsud"
+ui_palette_quick_links: "Kiirviited"
+ui_palette_no_commands: "Ühtegi sobivat käsku ei leitud"
+ui_palette_choose: "Vali valik"
+ui_palette_action_failed: "Tegevust ei õnnestunud lõpule viia"
+ui_palette_pages: "Lehed"
+ui_palette_index_unavailable: "Lehe indeks pole saadaval; tegevused töötavad"
+ui_sidebar_nav: "Jaotise navigeerimine"
+ui_heading_self_link: "Link selle pealkirja juurde"
+ui_field_self_link: "Link selle välja juurde"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Kuva"
+ui_main_nav: "Pea navigeerimine"
+ui_home: "Avaleht"
+ui_sidebar_expand: "Laienda külgriba"
+ui_sidebar_collapse: "Ahenda külgriba"
+ui_drawer_open: "Ava navigeerimine"
+ui_drawer_close: "Sulge navigeerimine"
+ui_root_menu_label: "Vali jaotis"
+ui_tags_title: "Sildid"
+ui_tag_title: "Silt"
+ui_categories_title: "Kategooriad"
+ui_category_title: "Kategooria"
+ui_modules_title: "Moodulid"
+ui_module_title: "Moodul"
+ui_authors_title: "Autorid"
+ui_author_title: "Autor"
+ui_theme_toggle: "Vaheta värviteemat"
+ui_theme_auto: "Süsteem"
+ui_theme_light: "Hele"
+ui_theme_dark: "Tume"
+ui_toc_hide: "Peida sisukord"
+ui_toc_show: "Näita sisukorda"
+ui_language_select: "Vali keel"
+ui_language_switch: "Vaheta keel"
+ui_skip_to_content: "Hüppa sisu juurde"
+ui_page_actions: "Tegevused"
+ui_open_in_chatgpt: "Ava ChatGPT-s"
+ui_open_in_claude: "Ava Claude-s"
+ui_open_in_prompt: "Loe %s, et saaksin selle kohta küsimusi esitada."
+ui_copy_markdown: "Kopeeri Markdown"
+ui_copy_success: "Markdown kopeeritud"
+ui_copy_error: "Markdowni kopeerimine ebaõnnestus"
+ui_share: "Jaga"
+ui_share_email: "E-post"
+ui_copy_link: "Kopeeri link"
+ui_copy_link_success: "Link kopeeritud"
+ui_copy_link_error: "Linki ei õnnestunud kopeerida"
+ui_code_copy_label: "Kopeeri kood"
+ui_code_copied: "Kopeeritud"
+ui_code_copy_error: "Kopeerimine ebaõnnestus"
+ui_code_show_all: "Näita kõiki {{ .Count }} rida"
+ui_code_collapse: "Ahenda kood"
+ui_tabs_label: "Tabid"
+ui_pricing_featured: "Soovitatud"
+ui_pricing_included: "Sisaldatud"
+ui_pricing_excluded: "Puudub"
+ui_marquee_pause: "Peata liikumine"
+ui_kbd_with: "koos"
+ui_keyboard_shortcuts: "Klaviatuuri käsud"
+ui_shortcut_tree_move: "Liigu küljeside läbi"
+ui_shortcut_tree_toggle: "Ahenda või laienda jaotis"
+ui_shortcut_tree_open: "Ava fookuses leht"
+ui_shortcut_heading_move: "Eelmine või järgmine pealkiri"
+ui_shortcut_page_move: "Eelmine või järgmine leht"
+ui_shortcut_search: "Otsi"
+ui_shortcut_commands: "Käsukast"
+ui_shortcut_reading_mode: "Loetav režiim"
+ui_shortcut_language: "Vaheta keel"
+ui_shortcut_theme: "Vaheta teema"
+ui_shortcut_route: "Liigu ülataseme lehtede vahel"
+ui_page_annotation: "Lehe teave"
+ui_backlinks: "Tagasisideviited"
+ui_backlinks_more: "Näita {{ . }} veel"
+ui_field_required: "nõutud"
+ui_action_unavailable: "saadaval ei ole"
+ui_image_zoom_dialog: "Pildi eelvaade"
+ui_image_zoom_open: "Ava pildi eelvaade"
+ui_image_zoom_close: "Sulge pildi eelvaade"
+ui_diagram_expand: "Suurenda diagrammi"
+ui_diagram_zoom_dialog: "Diagrammi eelvaade"
+ui_diagram_zoom_close: "Sulge diagrammi eelvaade"
+ui_diagram_zoom_in: "Lähenda"
+ui_diagram_zoom_out: "Eemalda"
+ui_diagram_zoom_reset: "Lähtesta vaade"
+ui_diagram_error: "Diagrammi ei õnnestunud kuvada"
+ui_print_page: "Prindi see leht"
+ui_sidebar_expand_section: "Laienda jaotis"
+ui_sidebar_collapse_section: "Ahenda jaotis"
+ui_asciinema_timer: "Esitluse aeg"
+ui_openapi_spec: "OpenAPI spetsifikatsioon"
+ui_release_view: "Vaata väljalaset"
+ui_release_source: "Allikas"
+ui_release_released: "Välja antud"
+ui_assets_file: "Fail"
+ui_assets_checksum: "Kontrollsumma"
+ui_assets_copy: "Kopeeri kontrollsumma"
+ui_assets_copied: "Kopeeritud"
+ui_assets_copy_all: "Kopeeri kõik kontrollsummad"
+ui_assets_download: "Laadi fail alla"
+ui_download_channels: "Allalaadimiskanalid"
+ui_download_unpublished: "Ootab väljalaskmist"
+# Used in sentences such as "All Tags"
+ui_all: "kõik"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Vaheta paigutus"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Kõik õigused kaitstud"
+ui_footer_collapse: "Peida jaluse lingid"
+ui_footer_expand: "Näita jaluse lingid"
+# Post (blog, article, etc.)
+post_last_mod: "Viimati muudetud"
+post_upstream: "{{ .work }}, {{ .copyright }}, litsentsi {{ .license }} alusel. Vaata {{ .notice }}."
+post_upstream_adapted: "Kohandatud teosest {{ .work }}, {{ .copyright }}, litsentsi {{ .license }} alusel. Vaata {{ .notice }} ja {{ .history }}."
+post_upstream_adapted_plain: "Kohandatud teosest {{ .work }}, {{ .copyright }}, litsentsi {{ .license }} alusel. Vaata {{ .notice }}."
+post_upstream_notice: "tähid"
+post_upstream_history: "muudatuste ajalugu"
+post_translated: "See leht on tõlge; määrav on {{ .original }}."
+post_translated_original: "algvorm"
+post_edit_this: "Täienda lehte"
+post_view_markdown: "Vaata Markdowni"
+post_create_child_page: "Loo alamleht"
+post_create_issue: "Loo dokumentatsiooni probleem"
+post_create_project_issue: "Loo projekti probleem"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "Autor: {{ .Authors }} · Jaotis: {{ .Section }}"
+post_meta_in: "Jaotis: {{ .Section }}"
+post_reading_time: "minutit lugemiseks"
+post_less_than_a_minute_read: "vähem kui minut"
+post_word_count: "{{ .Count }} sõna"
+post_reading_minutes: "{{ .Minutes }} min"
+post_read_original: "Loe rohkem"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "See on selle jaotise mitmeleheküljeline prinditav vaade."
+print_click_to_print: "Printimiseks klõpsa siia"
+print_show_regular: "Tagasi selle lehe tavavaatesse"
+print_entire_section: "Prindi kogu jaotis"
+# Feedback
+feedback_question: "Kas sellest lehest oli abi?"
+feedback_positive: "Jah"
+feedback_negative: "Ei"
+feedback_thanks: "Aitäh—sinu tagasiside aitab meil seda lehte parandada."
+feedback_reason_prompt: "Mis takistas? (valikuline)"
+feedback_reason_missing: "Puuduv informatsioon"
+feedback_reason_outdated: "Vigane või aegunud"
+feedback_reason_failed: "Sammud ei toiminud"
+feedback_reason_unclear: "Raskelt mõistetav"
+feedback_details: "Lisa detailid kommentaaridesse"
+feedback_change: "Muuda vastust"
+# Table of contents
+toc_on_this_page: "Sisu"
+# Error pages
+error_404_title: "Lehte ei leitud"
+error_404_body: "Vabandust, seda lehte ei eksisteeri. Proovi algatada avalehelt uuesti."
+error_404_home: "Mine avalehele"
+# Version banner
+version_banner_archived: "Dokumentatsiooni versiooni {{ .Version }} ei hooldata enam aktiivselt. Praegu vaadatav sait on arhiveeritud koopia."
+version_banner_latest: "Uuendatud dokumentatsiooni nägemiseks vaata {{ .Link }}."
+version_banner_latest_link: "viimane versioon"
+# Comments
+comments_noscript: "Kommentaaride laadimiseks on vajalik JavaScript."
+comments_noscript_link: "Vaata arutlusi GitHubis."
+# LLM page actions
+ui_open_in_prompt_label: "Küsi selle lehe kohta"
+ui_view_history: "Vaata muudatuste ajalugu"
+ui_table_scroll: "Keritav tabel"
+ui_filetree_divider: "Muuda failipuu kõrval oleva kommentaariveeru laiust"
+book_figure: "Pilt"
+book_table: "Tabel"
+book_equation: "Võrrand"
+book_example: "Näide"
+book_toc: "Raamatu sisukord"
+book_draft: "Mustand"
+book_draft_notice: "See peatükk on veel parandamisel."
+contributors_count: "kaasautorit"
+# Article series
+ui_series_title: "Sarja"
+ui_series_part: "Osana {{ .Part }}/{{ .Total }}"
+# Markdown output
+markdown_llms_index: "LLMS indeks:"
+markdown_section_pages: "Jaotise lehed:"
+markdown_backlinks: "Tagasisideviited:"

@@ -1,293 +1,207 @@
 # Alert labels
-callout_caution: Опрез
-callout_important: Важно
-callout_note: Белешка
-callout_tip: Савет
-callout_warning: Упозорење
-
+callout_caution: "Опрез"
+callout_important: "Важно"
+callout_note: "Белешка"
+callout_tip: "Савет"
+callout_warning: "Упозорење"
+callout_success: "Успех"
+callout_danger: "Опасност"
+callout_question: "Питање"
+callout_example: "Пример"
+callout_quote: "Цитат"
+callout_details: "Детаљи"
 # UI strings. Buttons and similar.
-ui_pager_prev: Претходно
-ui_pager_next: Наредно
-ui_search: Претражите сајт…
-
+ui_pager_prev: "Претходно"
+ui_pager_next: "Наредно"
+ui_search: "Претражите сајт…"
+ui_search_empty: "Ниједан резултат није пронађен"
+ui_search_loading: "Учитавање индекса претраге…"
+ui_search_results: "{count} резултата пронађено"
+ui_search_nav: "Навигација"
+ui_search_open: "Отвори"
+ui_search_close: "Затвори"
+ui_palette_actions: "Акције"
+ui_palette_page_actions: "Акције стране"
+ui_palette_preferences: "Предности"
+ui_palette_commands: "Команде"
+ui_palette_quick_links: "Брзе везе"
+ui_palette_no_commands: "Нема поклапајућих команда"
+ui_palette_choose: "Изаберите опцију"
+ui_palette_action_failed: "Акција није могла бити завршена"
+ui_palette_pages: "Странице"
+ui_palette_index_unavailable: "Индекс стране није доступан; акције и даље функционишу"
+ui_sidebar_nav: "Навигација секције"
+ui_heading_self_link: "Веза на овај наслов"
+ui_field_self_link: "Веза на ово поље"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Приказ"
+ui_main_nav: "Главна навигација"
+ui_home: "Почетна"
+ui_sidebar_expand: "Прошири бочну траку"
+ui_sidebar_collapse: "Скупи бочну траку"
+ui_drawer_open: "Отвори навигацију"
+ui_drawer_close: "Затвори навигацију"
+ui_root_menu_label: "Изаберите секцију"
+ui_tags_title: "Ознаке"
+ui_tag_title: "Ознака"
+ui_categories_title: "Категорије"
+ui_category_title: "Категорија"
+ui_modules_title: "Модули"
+ui_module_title: "Модул"
+ui_authors_title: "Аутори"
+ui_author_title: "Аутор"
+ui_theme_toggle: "Промени тему боја"
+ui_theme_auto: "Систем"
+ui_theme_light: "Светла"
+ui_theme_dark: "Тамна"
+ui_toc_hide: "Сакриј садржај"
+ui_toc_show: "Прикажи садржај"
+ui_language_select: "Изаберите језик"
+ui_language_switch: "Промени језик"
+ui_skip_to_content: "Прескочи на садржај"
+ui_page_actions: "Акције"
+ui_open_in_chatgpt: "Отвори у ChatGPT"
+ui_open_in_claude: "Отвори у Claude"
+ui_open_in_prompt: "Прочитајте %s да бих могао да постављам питања о томе."
+ui_copy_markdown: "Копирај Markdown"
+ui_copy_success: "Markdown је копиран"
+ui_copy_error: "Није могуће копирати Markdown"
+ui_share: "Подели"
+ui_share_email: "Е-пошта"
+ui_copy_link: "Копирај везу"
+ui_copy_link_success: "Веза је копирана"
+ui_copy_link_error: "Није могуће копирати везу"
+ui_code_copy_label: "Копирај код"
+ui_code_copied: "Копирано"
+ui_code_copy_error: "Копирање није успело"
+ui_code_show_all: "Прикажи све {{ .Count }} линије"
+ui_code_collapse: "Скупи код"
+ui_tabs_label: "Картице"
+ui_pricing_featured: "Препоручено"
+ui_pricing_included: "Укључено"
+ui_pricing_excluded: "Није укључено"
+ui_marquee_pause: "Паузирај кретање"
+ui_kbd_with: "са"
+ui_keyboard_shortcuts: "Пречице на тастатури"
+ui_shortcut_tree_move: "Кретање кроз бочну траку"
+ui_shortcut_tree_toggle: "Скупи или прошири секцију"
+ui_shortcut_tree_open: "Отвори фокусирану страницу"
+ui_shortcut_heading_move: "Претходни или следећи наслов"
+ui_shortcut_page_move: "Претходна или следећа страница"
+ui_shortcut_search: "Претражи"
+ui_shortcut_commands: "Палета команди"
+ui_shortcut_reading_mode: "Режим читања"
+ui_shortcut_language: "Промени језик"
+ui_shortcut_theme: "Промени тему"
+ui_shortcut_route: "Пређи између страница највишег нивоа"
+ui_page_annotation: "Информације о страници"
+ui_backlinks: "Повратне везе"
+ui_backlinks_more: "Прикажи још {{ . }}"
+ui_field_required: "обавезно"
+ui_action_unavailable: "недоступно"
+ui_image_zoom_dialog: "Преглед слике"
+ui_image_zoom_open: "Отвори преглед слике"
+ui_image_zoom_close: "Затвори преглед слике"
+ui_diagram_expand: "Увећај дијаграм"
+ui_diagram_zoom_dialog: "Преглед дијаграма"
+ui_diagram_zoom_close: "Затвори преглед дијаграма"
+ui_diagram_zoom_in: "Увећај"
+ui_diagram_zoom_out: "Умањи"
+ui_diagram_zoom_reset: "Ресетуј приказ"
+ui_diagram_error: "Дијаграм није могао бити приказан"
+ui_print_page: "Штампај ову страницу"
+ui_sidebar_expand_section: "Прошири секцију"
+ui_sidebar_collapse_section: "Скупи секцију"
+ui_asciinema_timer: "Време плејбека"
+ui_openapi_spec: "OpenAPI спецификација"
+ui_release_view: "Погледај издање"
+ui_release_source: "Извор"
+ui_release_released: "Објављено"
+ui_assets_file: "Датотека"
+ui_assets_checksum: "Контролни збир"
+ui_assets_copy: "Копирај контролни збир"
+ui_assets_copied: "Копирано"
+ui_assets_copy_all: "Копирај све контролне збирове"
+ui_assets_download: "Преузми датотеку"
+ui_download_channels: "Канали преузимања"
+ui_download_unpublished: "Чека на издање"
 # Used in sentences such as "All Tags"
-ui_all: све
-
-# Footer text
-footer_all_rights_reserved: Сва права задржана
-
-# Post (blog, article, etc.)
-post_last_mod: Последњи пут измењено
-post_edit_this: Уредите ову страницу
-post_view_markdown: Погледајте Markdown
-post_create_child_page: Креирајте подстраницу
-post_create_issue: Креирајте issue за документацију
-post_create_project_issue: Креирајте issue за пројекат
-post_reading_time: минута за читање
-post_less_than_a_minute_read: мање од минута за читање
-
-# Print support
-print_printable_section: Ово је вишестрани преглед за штампање ове секције.
-print_click_to_print: Кликните овде за штампање
-print_show_regular: Повратак на обичан преглед ове странице
-print_entire_section: Одштампајте читаву секцију
-
-# Feedback
-feedback_question: Да ли вам је ова страница била од помоћи?
-feedback_positive: Да
-feedback_negative: Не
-
-# Table of contents
-toc_on_this_page: На овој страници
-
-# Replace these values with reviewed translations when available.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_all: "све"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Промени распоред"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Сва права задржана"
+ui_footer_collapse: "Сакриј везе у подножју"
+ui_footer_expand: "Прикажи везе у подножју"
+# Post (blog, article, etc.)
+post_last_mod: "Последњи пут измењено"
+post_upstream: "{{ .work }}, {{ .copyright }}, под лиценцом {{ .license }}. Види {{ .notice }}."
+post_upstream_adapted: "Прилагођено из {{ .work }}, {{ .copyright }}, под лиценцом {{ .license }}. Види {{ .notice }} и {{ .history }}."
+post_upstream_adapted_plain: "Прилагођено из {{ .work }}, {{ .copyright }}, под лиценцом {{ .license }}. Види {{ .notice }}."
+post_upstream_notice: "ауторство"
+post_upstream_history: "историја промена"
+post_translated: "Ова страница је превод; {{ .original }} је меродаван."
+post_translated_original: "оригинал"
+post_edit_this: "Уредите ову страницу"
+post_view_markdown: "Погледајте Markdown"
+post_create_child_page: "Креирајте подстраницу"
+post_create_issue: "Направи пријаву за документацију"
+post_create_project_issue: "Направи пријаву за пројекат"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "Аутор: {{ .Authors }} · Одељак: {{ .Section }}"
+post_meta_in: "У: {{ .Section }}"
+post_reading_time: "минута за читање"
+post_less_than_a_minute_read: "мање од минута за читање"
+post_word_count: "{{ .Count }} речи"
+post_reading_minutes: "{{ .Minutes }} мин"
+post_read_original: "Прочитајте више"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Ово је вишестранични приказ за штампу овог одељка."
+print_click_to_print: "Кликните овде за штампање"
+print_show_regular: "Повратак на обичан преглед ове странице"
+print_entire_section: "Одштампај цео одељак"
+# Feedback
+feedback_question: "Да ли вам је ова страница била од помоћи?"
+feedback_positive: "Да"
+feedback_negative: "Не"
+feedback_thanks: "Хвала — ваша повратна информација помаже у побољшању ове странице."
+feedback_reason_prompt: "Шта је представљало проблем? (необавезно)"
+feedback_reason_missing: "Недостаје информација"
+feedback_reason_outdated: "Нетачно или застарело"
+feedback_reason_failed: "Кораци нису функционисали"
+feedback_reason_unclear: "Тешко разумљиво"
+feedback_details: "Додајте детаље у коментарима"
+feedback_change: "Промени одговор"
+# Table of contents
+toc_on_this_page: "На овој страници"
+# Error pages
+error_404_title: "Страница није пронађена"
+error_404_body: "Жао нам је, ова страница не постоји. Покушајте поново са Почетне странице."
+error_404_home: "Иди на Почетну страницу"
+# Version banner
+version_banner_archived: "Верзија {{ .Version }} документације више се не одржава активно. Сајт који тренутно прегледате је архивирана копија."
+version_banner_latest: "За актуелну документацију, видите {{ .Link }}."
+version_banner_latest_link: "најновија верзија"
+# Comments
+comments_noscript: "За учитавање коментара потребан је JavaScript."
+comments_noscript_link: "Погледајте дискусије на GitHub-у."
+# LLM page actions
+ui_open_in_prompt_label: "Питајте о овој страници"
+ui_view_history: "Погледајте историју измена"
+ui_table_scroll: "Табела са померањем"
+ui_filetree_divider: "Промени ширину колоне за коментаре поред стабла датотека"
+book_figure: "Слика"
+book_table: "Табела"
+book_equation: "Једначина"
+book_example: "Пример"
+book_toc: "Садржај књиге"
+book_draft: "Нацрт"
+book_draft_notice: "Ова глава је још у току уређивања."
+contributors_count: "сарадника"
+# Article series
+ui_series_title: "Серија"
+ui_series_part: "Дела {{ .Part }} од {{ .Total }}"
+# Markdown output
+markdown_llms_index: "LLMS индекс:"
+markdown_section_pages: "Странице секције:"
+markdown_backlinks: "Повратне везе:"

@@ -123,8 +123,9 @@ Use Hugo Extended 0.160.1 for the compatibility floor. Output checkers accept
 - CSS uses `td-` classes, `data-td-*`, `--td-*`, logical properties, and covers
   RTL, print, forced colors, reduced motion, narrow screens, and long tokens.
   Author markers such as `.steps` and `.cards` remain unprefixed.
-- Keep all 32 locale files schema-identical. Add user-visible strings to every
-  locale; `bin/check-i18n.py --sync` may add mechanical English fallbacks.
+- Keep all 32 locale files schema-identical and natively translated. Add every
+  user-visible string to every locale, preserve its runtime placeholders, and
+  run `bin/check-i18n.py`; the checker never manufactures English fallbacks.
 - Override the narrowest partial. Do not merge base templates when that changes
   Hugo lookup precedence or copy a full shell for one feature.
 - `public/` and `resources/` are generated and ignored. Never commit them.

@@ -5,6 +5,15 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Every locale name shipped by Docsy now has a complete native OINK interface
+  catalog at the same level as English and Chinese: 31 upstream-compatible
+  locale files plus generic `zh`, with the same 192 keys in each. The owning
+  checker pins that locale set and rejects missing, extra, duplicate, nested,
+  placeholder-drifted, hidden-bidi, and unreviewed English-fallback values;
+  the old mechanical `--sync` fallback path is gone.
+
 ### Fixed
 
 - Cached sidebars now key reusable markup by language, navigation root, and the

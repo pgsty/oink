@@ -1,288 +1,207 @@
 # Alert labels
-callout_caution: 注意
-callout_important: 重要
-callout_note: 注記
-callout_tip: ヒント
-callout_warning: 警告
-
+callout_caution: "注意"
+callout_important: "重要"
+callout_note: "注記"
+callout_tip: "ヒント"
+callout_warning: "警告"
+callout_success: "成功"
+callout_danger: "危険"
+callout_question: "質問"
+callout_example: "例"
+callout_quote: "引用"
+callout_details: "詳細"
 # UI strings. Buttons and similar.
-ui_pager_prev: 前へ
-ui_pager_next: 次へ
-ui_search: サイトを検索...
-
+ui_pager_prev: "前へ"
+ui_pager_next: "次へ"
+ui_search: "検索…"
+ui_search_empty: "該当する結果がありません"
+ui_search_loading: "検索インデックスを読み込み中…"
+ui_search_results: "{count} 件の結果が見つかりました"
+ui_search_nav: "移動"
+ui_search_open: "開く"
+ui_search_close: "閉じる"
+ui_palette_actions: "操作"
+ui_palette_page_actions: "ページ操作"
+ui_palette_preferences: "設定"
+ui_palette_commands: "コマンド"
+ui_palette_quick_links: "クイックリンク"
+ui_palette_no_commands: "一致するコマンドがありません"
+ui_palette_choose: "オプションを選択"
+ui_palette_action_failed: "操作を完了できませんでした"
+ui_palette_pages: "ページ"
+ui_palette_index_unavailable: "ページインデックスが利用できませんが、操作は可能です"
+ui_sidebar_nav: "セクションナビゲーション"
+ui_heading_self_link: "この見出しへのリンク"
+ui_field_self_link: "このフィールドへのリンク"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "レンダリング済み"
+ui_main_nav: "メインナビゲーション"
+ui_home: "ホーム"
+ui_sidebar_expand: "サイドバーを展開"
+ui_sidebar_collapse: "サイドバーを折りたたみ"
+ui_drawer_open: "ナビゲーションを開く"
+ui_drawer_close: "ナビゲーションを閉じる"
+ui_root_menu_label: "セクションを選択"
+ui_tags_title: "タグ"
+ui_tag_title: "タグ"
+ui_categories_title: "カテゴリ"
+ui_category_title: "カテゴリ"
+ui_modules_title: "モジュール"
+ui_module_title: "モジュール"
+ui_authors_title: "著者"
+ui_author_title: "著者"
+ui_theme_toggle: "色テーマを切り替え"
+ui_theme_auto: "システム"
+ui_theme_light: "ライト"
+ui_theme_dark: "ダーク"
+ui_toc_hide: "目次を非表示"
+ui_toc_show: "目次を表示"
+ui_language_select: "言語を選択"
+ui_language_switch: "言語を切り替え"
+ui_skip_to_content: "本文へスキップ"
+ui_page_actions: "操作"
+ui_open_in_chatgpt: "ChatGPTで開く"
+ui_open_in_claude: "Claudeで開く"
+ui_open_in_prompt: "%s を読んで、内容について質問できるようにしてください。"
+ui_copy_markdown: "Markdownをコピー"
+ui_copy_success: "Markdownをコピーしました"
+ui_copy_error: "Markdownのコピーに失敗しました"
+ui_share: "共有"
+ui_share_email: "メール"
+ui_copy_link: "リンクをコピー"
+ui_copy_link_success: "リンクをコピーしました"
+ui_copy_link_error: "リンクのコピーに失敗しました"
+ui_code_copy_label: "コードをコピー"
+ui_code_copied: "コピー済み"
+ui_code_copy_error: "コピーに失敗しました"
+ui_code_show_all: "{{ .Count }} 行すべてを表示"
+ui_code_collapse: "コードを折りたたみ"
+ui_tabs_label: "タブ"
+ui_pricing_featured: "おすすめ"
+ui_pricing_included: "含まれる"
+ui_pricing_excluded: "含まれない"
+ui_marquee_pause: "動きを一時停止"
+ui_kbd_with: "と"
+ui_keyboard_shortcuts: "キーボードショートカット"
+ui_shortcut_tree_move: "サイドバーを移動"
+ui_shortcut_tree_toggle: "セクションの折りたたみ/展開"
+ui_shortcut_tree_open: "フォーカス中のページを開く"
+ui_shortcut_heading_move: "前の見出しまたは次の見出しへ"
+ui_shortcut_page_move: "前のページまたは次のページへ"
+ui_shortcut_search: "検索"
+ui_shortcut_commands: "コマンドパレット"
+ui_shortcut_reading_mode: "リーディングモード"
+ui_shortcut_language: "言語を切り替え"
+ui_shortcut_theme: "テーマを切り替え"
+ui_shortcut_route: "トップレベルページを切り替え"
+ui_page_annotation: "ページ情報"
+ui_backlinks: "逆リンク"
+ui_backlinks_more: "{{ . }} 件さらに表示"
+ui_field_required: "必須"
+ui_action_unavailable: "利用不可"
+ui_image_zoom_dialog: "画像プレビュー"
+ui_image_zoom_open: "画像プレビューを開く"
+ui_image_zoom_close: "画像プレビューを閉じる"
+ui_diagram_expand: "図を拡大"
+ui_diagram_zoom_dialog: "図プレビュー"
+ui_diagram_zoom_close: "図プレビューを閉じる"
+ui_diagram_zoom_in: "拡大"
+ui_diagram_zoom_out: "縮小"
+ui_diagram_zoom_reset: "表示をリセット"
+ui_diagram_error: "図のレンダリングに失敗しました"
+ui_print_page: "このページを印刷"
+ui_sidebar_expand_section: "セクションを展開"
+ui_sidebar_collapse_section: "セクションを折りたたみ"
+ui_asciinema_timer: "再生時間"
+ui_openapi_spec: "OpenAPI仕様"
+ui_release_view: "リリースを表示"
+ui_release_source: "ソース"
+ui_release_released: "リリース済み"
+ui_assets_file: "ファイル"
+ui_assets_checksum: "チェックサム"
+ui_assets_copy: "チェックサムをコピー"
+ui_assets_copied: "コピー済み"
+ui_assets_copy_all: "すべてのチェックサムをコピー"
+ui_assets_download: "ファイルをダウンロード"
+ui_download_channels: "ダウンロードチャンネル"
+ui_download_unpublished: "リリース待ち"
+# Used in sentences such as "All Tags"
+ui_all: "すべて"
+ui_list_separator: "、 "
+ui_blog_index_toggle: "レイアウトを切り替え"
 # Footer text
-footer_all_rights_reserved: All Rights Reserved
-
+footer_all_rights_reserved: "すべての権利を保有します"
+ui_footer_collapse: "フッターのリンクを非表示"
+ui_footer_expand: "フッターのリンクを表示"
 # Post (blog, article, etc.)
-post_last_mod: 最終更新
-post_edit_this: ページの編集
-post_view_markdown: Markdownを表示
-post_create_child_page: 子ページを作成
-post_create_issue: ドキュメントのissueを作成
-post_create_project_issue: プロジェクトのissueを作成
-post_reading_time: minute read
-post_less_than_a_minute_read: less than a minute
-post_word_count: '{{ .Count }} 文字'
-post_reading_minutes: '{{ .Minutes }} 分'
-post_read_original: 原文を読む
-
+post_last_mod: "最終更新"
+post_upstream: "{{ .work }}（{{ .copyright }}）は {{ .license }} の下で提供されています。{{ .notice }} を参照してください。"
+post_upstream_adapted: "{{ .work }}（{{ .copyright }}）を改変したもので、{{ .license }} の下で提供されています。{{ .notice }} と {{ .history }} を参照してください。"
+post_upstream_adapted_plain: "{{ .work }}（{{ .copyright }}）を改変したもので、{{ .license }} の下で提供されています。{{ .notice }} を参照してください。"
+post_upstream_notice: "出典"
+post_upstream_history: "変更履歴"
+post_translated: "このページは翻訳です。内容が異なる場合は {{ .original }} が優先されます。"
+post_translated_original: "オリジナル"
+post_edit_this: "ページの編集"
+post_view_markdown: "Markdownを表示"
+post_create_child_page: "子ページを作成"
+post_create_issue: "ドキュメントに関する Issue を作成"
+post_create_project_issue: "プロジェクトに関する Issue を作成"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "著者: {{ .Authors }} · セクション: {{ .Section }}"
+post_meta_in: "セクション: {{ .Section }}"
+post_reading_time: "分で読めます"
+post_less_than_a_minute_read: "1分未満"
+post_word_count: "{{ .Count }} 文字"
+post_reading_minutes: "{{ .Minutes }} 分"
+post_read_original: "原文を読む"
 # Print support
-print_printable_section: これは、このセクションの複数ページの印刷可能なビューです。
-print_click_to_print: 印刷するには、ここをクリックしてください
-print_show_regular: このページの通常のビューに戻る
-print_entire_section: セクション全体を印刷
-
+print_printable_section: "これはセクションの複数ページ印刷用ビューです。"
+print_click_to_print: "印刷するには、ここをクリックしてください"
+print_show_regular: "このページの通常のビューに戻る"
+print_entire_section: "セクション全体を印刷"
 # Feedback
-feedback_question: このページは役に立ちましたか?
-feedback_positive: 役に立った
-feedback_negative: 役に立たなかった
-
-# Replace these values with reviewed translations when available.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-ui_all: all
-
-# Footer text
-toc_on_this_page: Content
-
+feedback_question: "このページは役に立ちましたか?"
+feedback_positive: "役に立った"
+feedback_negative: "役に立たなかった"
+feedback_thanks: "ご協力ありがとうございます。フィードバックはこのページの改善に役立ちます。"
+feedback_reason_prompt: "何が問題でしたか？（任意）"
+feedback_reason_missing: "情報が不足している"
+feedback_reason_outdated: "誤りまたは古くなっている"
+feedback_reason_failed: "手順が機能しなかった"
+feedback_reason_unclear: "理解しにくい"
+feedback_details: "コメントに詳細を追加"
+feedback_change: "回答を変更"
+# Table of contents
+toc_on_this_page: "コンテンツ"
 # Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
+error_404_title: "ページが見つかりません"
+error_404_body: "申し訳ありませんが、このページは存在しません。ホームページから再試行してください。"
+error_404_home: "ホームページへ移動"
+# Version banner
+version_banner_archived: "ドキュメントのバージョン {{ .Version }} は現在メンテナンスされていません。表示中のサイトはアーカイブされたコピーです。"
+version_banner_latest: "最新のドキュメントについては、{{ .Link }} をご確認ください。"
+version_banner_latest_link: "最新バージョン"
 # Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
-ui_list_separator: ", "
-
-# Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+comments_noscript: "コメントを読み込むにはJavaScriptが必要です。"
+comments_noscript_link: "GitHubでの議論を表示。"
+# LLM page actions
+ui_open_in_prompt_label: "このページについて質問"
+ui_view_history: "編集履歴を表示"
+ui_table_scroll: "スクロール可能なテーブル"
+ui_filetree_divider: "ファイルツリー横のコメント列の幅を変更"
+book_figure: "図"
+book_table: "表"
+book_equation: "式"
+book_example: "例"
+book_toc: "書籍の目次"
+book_draft: "下書き"
+book_draft_notice: "この章はまだ修正中です。"
+contributors_count: "貢献者"
+# Article series
+ui_series_title: "シリーズ"
+ui_series_part: "第 {{ .Part }} 部 (全 {{ .Total }} 部中)"
+# Markdown output
+markdown_llms_index: "LLMSインデックス:"
+markdown_section_pages: "セクションページ:"
+markdown_backlinks: "逆リンク:"

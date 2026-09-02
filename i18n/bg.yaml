@@ -1,293 +1,207 @@
+# Alert labels
+callout_caution: "Внимание"
+callout_important: "Важно"
+callout_note: "Забележка"
+callout_tip: "Съвет"
+callout_warning: "Предупреждение"
+callout_success: "Успех"
+callout_danger: "Опасност"
+callout_question: "Въпрос"
+callout_example: "Пример"
+callout_quote: "Цитат"
+callout_details: "Детайли"
 # UI strings. Buttons and similar.
-ui_pager_prev: Предишен
-ui_pager_next: Следващ
-ui_search: Търси в тази страница…
-
-# Footer text
-footer_all_rights_reserved: Всички права запазени!
-
-# Post (blog, article, etc.)
-post_last_mod: Последна промяна
-post_edit_this: Промени тази страница
-post_create_child_page: Създай дъщерна страница
-post_view_markdown: Преглед на Markdown
-post_create_issue: Създаване на издаване на документ
-post_create_project_issue: Създаване на издаване на проект
-post_reading_time: minute read
-post_less_than_a_minute_read: less than a minute
-
-# Print support
-print_printable_section: Изглед за печат на този раздел, в режим много страници
-print_click_to_print: Натисни тук за отпечатване
-print_show_regular: Върнете се към обичайния изглед на тази страница
-print_entire_section: Отпечатайте цялата секция
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-ui_all: all
-
-# Footer text
-feedback_question: Was this page helpful?
-feedback_positive: Yes
-feedback_negative: No
-
-# Table of contents
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_pager_prev: "Предишен"
+ui_pager_next: "Следващ"
+ui_search: "Търси…"
+ui_search_empty: "Няма намерени резултати"
+ui_search_loading: "Зареждане на индекса за търсене…"
+ui_search_results: "Намерени резултати: {count}"
+ui_search_nav: "Навигирай"
+ui_search_open: "Отвори"
+ui_search_close: "Затвори"
+ui_palette_actions: "Действия"
+ui_palette_page_actions: "Действия на страницата"
+ui_palette_preferences: "Настройки"
+ui_palette_commands: "Команди"
+ui_palette_quick_links: "Бързи връзки"
+ui_palette_no_commands: "Няма съвпадащи команди"
+ui_palette_choose: "Изберете опция"
+ui_palette_action_failed: "Действието не можа да бъде изпълнено"
+ui_palette_pages: "Страници"
+ui_palette_index_unavailable: "Индексът на страниците недостъпен; действията все още работят"
+ui_sidebar_nav: "Навигация в раздела"
+ui_heading_self_link: "Връзка към това заглавие"
+ui_field_self_link: "Връзка към това поле"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Предварителен преглед"
+ui_main_nav: "Главно навигационно меню"
+ui_home: "Начало"
+ui_sidebar_expand: "Разшири страничната лента"
+ui_sidebar_collapse: "Свий страничната лента"
+ui_drawer_open: "Отвори навигацията"
+ui_drawer_close: "Затвори навигацията"
+ui_root_menu_label: "Изберете секция"
+ui_tags_title: "Етикети"
+ui_tag_title: "Етикет"
+ui_categories_title: "Категории"
+ui_category_title: "Категория"
+ui_modules_title: "Модули"
+ui_module_title: "Модул"
+ui_authors_title: "Автори"
+ui_author_title: "Автор"
+ui_theme_toggle: "Превключи темата"
+ui_theme_auto: "Системна"
+ui_theme_light: "Светла"
+ui_theme_dark: "Тъмна"
+ui_toc_hide: "Скрий съдържанието"
+ui_toc_show: "Покажи съдържанието"
+ui_language_select: "Изберете език"
+ui_language_switch: "Промени езика"
+ui_skip_to_content: "Прескочи към съдържанието"
+ui_page_actions: "Действия"
+ui_open_in_chatgpt: "Отвори в ChatGPT"
+ui_open_in_claude: "Отвори в Claude"
+ui_open_in_prompt: "Прочети от %s, за да мога да задам въпроси за него."
+ui_copy_markdown: "Копирай Markdown"
+ui_copy_success: "Markdown копиран"
+ui_copy_error: "Не може да се копира Markdown"
+ui_share: "Сподели"
+ui_share_email: "Имейл"
+ui_copy_link: "Копирай връзката"
+ui_copy_link_success: "Връзката копирана"
+ui_copy_link_error: "Не може да се копира връзката"
+ui_code_copy_label: "Копирай кода"
+ui_code_copied: "Копирано"
+ui_code_copy_error: "Копирането не успя"
+ui_code_show_all: "Покажи всички {{ .Count }} реда"
+ui_code_collapse: "Свий кода"
+ui_tabs_label: "Раздели"
+ui_pricing_featured: "Препоръчано"
+ui_pricing_included: "Включено"
+ui_pricing_excluded: "Не е включено"
+ui_marquee_pause: "Пауза на движението"
+ui_kbd_with: "с"
+ui_keyboard_shortcuts: "Бързи клавиши"
+ui_shortcut_tree_move: "Навигация в страничната лента"
+ui_shortcut_tree_toggle: "Свий или разшири секция"
+ui_shortcut_tree_open: "Отвори фокусираната страница"
+ui_shortcut_heading_move: "Предишно или следващо заглавие"
+ui_shortcut_page_move: "Предишна или следваща страница"
+ui_shortcut_search: "Търсене"
+ui_shortcut_commands: "Палета с команди"
+ui_shortcut_reading_mode: "Режим на четене"
+ui_shortcut_language: "Промени езика"
+ui_shortcut_theme: "Промени темата"
+ui_shortcut_route: "Превключи между страниците от най-горно ниво"
+ui_page_annotation: "Информация за страницата"
+ui_backlinks: "Обратни връзки"
+ui_backlinks_more: "Покажи още {{ . }}"
+ui_field_required: "задължително"
+ui_action_unavailable: "недостъпно"
+ui_image_zoom_dialog: "Преглед на изображението"
+ui_image_zoom_open: "Отвори преглед на изображението"
+ui_image_zoom_close: "Затвори преглед на изображението"
+ui_diagram_expand: "Увеличи диаграмата"
+ui_diagram_zoom_dialog: "Преглед на диаграмата"
+ui_diagram_zoom_close: "Затвори прегледа на диаграмата"
+ui_diagram_zoom_in: "Увеличи"
+ui_diagram_zoom_out: "Намали"
+ui_diagram_zoom_reset: "Възстанови виждането"
+ui_diagram_error: "Диаграмата не може да бъде отобразена"
+ui_print_page: "Печат на тази страница"
+ui_sidebar_expand_section: "Разшири секцията"
+ui_sidebar_collapse_section: "Свий секцията"
+ui_asciinema_timer: "Време за възпроизвеждане"
+ui_openapi_spec: "OpenAPI спецификация"
+ui_release_view: "Преглед на изданието"
+ui_release_source: "Източник"
+ui_release_released: "Публикувано"
+ui_assets_file: "Файл"
+ui_assets_checksum: "Контролна сума"
+ui_assets_copy: "Копирай контролната сума"
+ui_assets_copied: "Копирано"
+ui_assets_copy_all: "Копирай всички контролни суми"
+ui_assets_download: "Изтегли файл"
+ui_download_channels: "Канали за изтегляне"
+ui_download_unpublished: "Очаква публикуване"
+# Used in sentences such as "All Tags"
+ui_all: "всички"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Промени оформлението"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Всички права запазени"
+ui_footer_collapse: "Скрий връзките в подножието"
+ui_footer_expand: "Покажи връзките в подножието"
+# Post (blog, article, etc.)
+post_last_mod: "Последна промяна"
+post_upstream: "{{ .work }}, {{ .copyright }}, съгласно {{ .license }}. Вижте {{ .notice }}."
+post_upstream_adapted: "Адаптирано от {{ .work }}, {{ .copyright }}, съгласно {{ .license }}. Вижте {{ .notice }} и {{ .history }}."
+post_upstream_adapted_plain: "Адаптирано от {{ .work }}, {{ .copyright }}, съгласно {{ .license }}. Вижте {{ .notice }}."
+post_upstream_notice: "авторство"
+post_upstream_history: "история на промените"
+post_translated: "Тази страница е превод; {{ .original }} има предимство."
+post_translated_original: "оригинал"
+post_edit_this: "Промени тази страница"
+post_view_markdown: "Преглед на Markdown"
+post_create_child_page: "Създай дъщерна страница"
+post_create_issue: "Създай проблем в документацията"
+post_create_project_issue: "Създай проблем в проекта"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "От {{ .Authors }} · В {{ .Section }}"
+post_meta_in: "В {{ .Section }}"
+post_reading_time: "минути четене"
+post_less_than_a_minute_read: "по-малко от минута"
+post_word_count: "{{ .Count }} думи"
+post_reading_minutes: "{{ .Minutes }} мин"
+post_read_original: "Прочети повече"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Това е многостраничният изглед за печат на този раздел."
+print_click_to_print: "Натисни тук за отпечатване"
+print_show_regular: "Върнете се към обичайния изглед на тази страница"
+print_entire_section: "Отпечатай целия раздел"
+# Feedback
+feedback_question: "Беше ли полезна тази страница?"
+feedback_positive: "Да"
+feedback_negative: "Не"
+feedback_thanks: "Благодарим — обратната връзка ни помага да подобрим тази страница."
+feedback_reason_prompt: "Какво пречеше? (по избор)"
+feedback_reason_missing: "Липсваща информация"
+feedback_reason_outdated: "Неточна или остаряла"
+feedback_reason_failed: "Стъпките не работиха"
+feedback_reason_unclear: "Трудно за разбиране"
+feedback_details: "Добавете подробности в коментарите"
+feedback_change: "Промени отговора"
+# Table of contents
+toc_on_this_page: "Съдържание"
+# Error pages
+error_404_title: "Страницата не е намерена"
+error_404_body: "Съжаляваме, тази страница не съществува. Опитайте отново от началната страница."
+error_404_home: "Отиди на началната страница"
+# Version banner
+version_banner_archived: "Версия {{ .Version }} на документацията вече не се поддържа активно. Сайтът, който виждате, е архивно копие."
+version_banner_latest: "За актуална документация, вижте {{ .Link }}."
+version_banner_latest_link: "най-новата версия"
+# Comments
+comments_noscript: "За зареждане на коментарите е необходим JavaScript."
+comments_noscript_link: "Вижте дискусии на GitHub."
+# LLM page actions
+ui_open_in_prompt_label: "Задай въпрос за тази страница"
+ui_view_history: "Преглед на историята на промените"
+ui_table_scroll: "Таблица с превъртане"
+ui_filetree_divider: "Промени размера на колоната за коментари до дървото на файловете"
+book_figure: "Фигура"
+book_table: "Таблица"
+book_equation: "Уравнение"
+book_example: "Пример"
+book_toc: "Съдържание на книгата"
+book_draft: "Чернова"
+book_draft_notice: "Тази глава все още се преработва."
+contributors_count: "сътрудници"
+# Article series
+ui_series_title: "Серия"
+ui_series_part: "Част {{ .Part }} от {{ .Total }}"
+# Markdown output
+markdown_llms_index: "Индекс на LLMS:"
+markdown_section_pages: "Страници на секцията:"
+markdown_backlinks: "Обратни връзки:"

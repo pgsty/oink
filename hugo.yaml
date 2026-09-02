@@ -218,8 +218,8 @@ params:
       # {markdown_url}. No custom links are enabled by default.
       links: []
     sidebar_expand_levels: 2
-    # Bootstrap's scroll spy for the in-page outline. Off by default: the
-    # theme's own outline runtime already tracks the active heading.
+    # Compatibility no-op in 1.x. The normal shell runtime always tracks the
+    # active outline heading; keep this key quiet until a breaking release.
     scroll_spy: false
     # Copy control on code blocks. `false` sets the site-wide default only; a
     # fence that names `copy` explicitly still wins.

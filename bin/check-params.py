@@ -119,6 +119,10 @@ LEGACY_PAGE_DETECTORS = {
     "downstream_modified": {"layouts/_partials/annotation-items.html"},
 }
 
+# Retained through 1.x so existing site and page configuration stays quiet,
+# even though no template reads the value and no runtime is emitted.
+COMPATIBILITY_NOOP_PAGE_KEYS = {"scroll_spy"}
+
 
 # The converged shapes must build; the bare-boolean shorthand of every kept
 # on/off map is part of the contract.
@@ -134,7 +138,7 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  fonts:\n    ui: \"'Source Han Sans SC', 'PingFang SC', sans-serif\"\n    code: \"'Sarasa Mono SC', monospace\"\n    display: -apple-system\n    meta: 苹方",
 ]
 ACCEPTED_PAGE_CASES = [
-    "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false",
+    "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false\nscroll_spy: true",
     "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
     "body_class: product-td-no-left-sidebar-preview",
     "blog_index: cards\nblog_index_columns: 4",
@@ -354,6 +358,17 @@ def check_page_parity(site: dict[str, set[str]], page: dict[str, set[str]], para
     return errors
 
 
+def check_compatibility_noops(site: dict[str, set[str]], page: dict[str, set[str]]) -> list[str]:
+    errors: list[str] = []
+    values = hugo_yaml_values()
+    for key in COMPATIBILITY_NOOP_PAGE_KEYS:
+        require(key not in page and f"ui.{key}" not in site,
+                f"compatibility no-op {key} regained a template read", errors)
+        require(f"params.ui.{key}" in values,
+                f"compatibility no-op {key} is no longer accepted in hugo.yaml", errors)
+    return errors
+
+
 def hugo_yaml_values() -> dict[str, str]:
     """Dotted key -> scalar/inline-list text of the theme's hugo.yaml (params only).
 
@@ -463,6 +478,9 @@ def check_builds(hugo: str) -> list[str]:
             label = (params or front).replace("\n", " ")
             if expected is None:
                 require(code == 0, f"accepted shape failed to build ({label}): {output[-400:]}", errors)
+                if "scroll_spy" in label:
+                    require("WARN" not in output,
+                            f"scroll_spy compatibility input emitted a warning: {output[-400:]}", errors)
                 continue
             if name.startswith("invalid-"):
                 require(code == 0,
@@ -614,6 +632,7 @@ def main() -> int:
         check_no_errorf()
         + check_shapes(site, page)
         + check_page_parity(site, page, param_reads)
+        + check_compatibility_noops(site, page)
         + check_documented_defaults()
     )
     if not args.source_only:

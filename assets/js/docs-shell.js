@@ -443,7 +443,7 @@
   /*
    * Below xl the TOC rail is hidden, which used to take the table of contents
    * and the taxonomy clouds with it. Rather than render a second copy —
-   * duplicate ids would break the scrollspy and the disclosure wiring — the
+   * duplicate ids would break the outline tracker and the disclosure wiring — the
    * single block is moved into a slot in the sidebar drawer and moved back on
    * the way up.
    *

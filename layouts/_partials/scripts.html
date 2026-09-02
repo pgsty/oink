@@ -318,10 +318,6 @@ window.markmap = {
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/authored-a11y.js" "members" (slice (resources.Get "js/authored-a11y.js"))) -}}
 {{ end -}}
 
-{{ if and $interactiveOutput (eq (partial "ui-param.html" (dict "page" . "key" "scroll_spy")) true) -}}
-  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/scrollspy.js" "members" (slice (resources.Get "js/scrollspy-patch.js"))) -}}
-{{ end -}}
-
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ if $hasMermaid }}{{ partial "content/diagram-zoom-dialog.html" . }}{{ end -}}
 {{ range $jsChunks -}}

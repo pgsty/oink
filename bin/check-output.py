@@ -62,11 +62,22 @@ class Structure(HTMLParser):
         self.manifest_lines: list[int] = []
         self.remote: list[str] = []
         self.in_template = 0
+        self.print_chrome: set[str] = set()
+        self.theme_init = False
 
     def handle_starttag(self, tag: str, attrs_list) -> None:
         attrs = dict(attrs_list)
+        classes = set((attrs.get("class") or "").split())
         if tag == "template":
             self.in_template += 1
+        if tag == "html" and "data-td-theme-init" in attrs:
+            self.theme_init = True
+        if tag == "header" and "td-site-header" in classes:
+            self.print_chrome.add("site header")
+        if tag == "nav" and "td-site-nav" in classes:
+            self.print_chrome.add("site navigation")
+        if attrs.get("id") == "td-shell-search" or "data-td-shell-search-open" in attrs:
+            self.print_chrome.add("search")
         if tag in STRICT and tag not in VOID:
             self.stack.append((tag, self.getpos()[0]))
         ident = attrs.get("id")
@@ -141,6 +152,11 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         parser.feed(text)
         parser.close_all()
         errors += parser.problems[:20]
+        is_print = "/_print/" in f"/{rel}"
+        if is_print and parser.print_chrome:
+            errors.append(f"{rel}: print output contains shell chrome: {', '.join(sorted(parser.print_chrome))}")
+        if is_print and parser.theme_init:
+            errors.append(f"{rel}: print output retains the interactive theme-init marker")
         for ident, n in parser.ids.items():
             if n > 1:
                 errors.append(f"{rel}: duplicate id {ident!r} ({n}×)")
@@ -154,7 +170,7 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
                 f"{rel}: action manifest line {parser.manifest_lines[0]} must precede "
                 f"the actions bundle at line {parser.action_lines[0]}"
             )
-        expected_cores = 0 if "/_print/" in f"/{rel}" else 1
+        expected_cores = 0 if is_print else 1
         if len(parser.cores) != expected_cores:
             errors.append(f"{rel}: expected {expected_cores} core bundle(s), found {len(parser.cores)}: {parser.cores[:3]}")
         if parser.legacy_bundles:
@@ -525,6 +541,11 @@ outputs:
         for relative in ("docs/index.html", "solo/optout/index.html", "_print/solo/index.html"):
             if "--td-accent:#" in (public / relative).read_text(encoding="utf-8"):
                 errors.append(f"{relative}: emitted theme-color tokens it must not carry")
+        generic_print = (public / "_print/solo/index.html").read_text(encoding="utf-8")
+        parsed_print = Structure("_print/solo/index.html")
+        parsed_print.feed(generic_print)
+        if parsed_print.print_chrome or parsed_print.theme_init:
+            errors.append("generic print output contains shell chrome or theme initialization")
 
         # An invalid value warns, builds, and emits nothing -- never a
         # repaired or partial style block. A low-contrast value warns too,

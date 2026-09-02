@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 from runtime_assets import chunk, combined_source, referenced_chunks
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,7 +40,7 @@ def run(
         command.extend(["--destination", str(destination)])
     if panic_on_warning:
         command.append("--panicOnWarning")
-    return subprocess.run(
+    return run_hugo_process(
         command, cwd=ROOT, capture_output=True, text=True, check=False
     )
 
@@ -370,6 +370,23 @@ INVALID_CASES = (
     ("bad-marquee-rows", "sections:\n  - type: logo-wall\n    data:\n      layout: marquee\n      rows: nope\n      items: [{title: Logo}]\n", 'marquee rows "nope" is not a whole number'),
 )
 
+STRICT_INVALID_CANARIES = {
+    "missing-data",                # data lookup
+    "unknown-section",             # section dispatch
+    "bad-visual",                  # media kind
+    "missing-alt",                 # media accessibility
+    "bad-faq",                     # section enum
+    "bad-hero-title-size",         # CSS length
+    "centered-hero-image",         # cross-field layout rule
+    "missing-preview-source",      # required field
+    "bad-preview-source",          # field type
+    "bad-compare",                 # cross-field cardinality
+    "bad-bar",                     # numeric value
+    "bad-hero-media",              # map shape
+    "bad-hero-ratio",              # track grammar
+    "bad-capabilities-rules",      # array shape
+}
+
 
 def check_invalid(hugo: str) -> list[str]:
     errors: list[str] = []
@@ -382,8 +399,21 @@ def check_invalid(hugo: str) -> list[str]:
             # A malformed section warns and renders nothing while the rest of
             # the page survives; only --panicOnWarning turns that into failure.
             require(expected in output, f"invalid landing case {name} did not report {expected!r}", errors)
-            require(run(hugo, site, panic_on_warning=True).returncode != 0,
-                    f"invalid landing case {name} survived --panicOnWarning", errors)
+            page = site / "public/test/index.html"
+            # A non-string Preview source reaches Hugo's render operation and
+            # is the one distinct hard-failure path in this matrix.
+            if name != "bad-preview-source":
+                require(result.returncode == 0,
+                        f"invalid landing case {name} stopped the ordinary build", errors)
+                require(page.is_file(), f"invalid landing case {name} emitted no safe page output", errors)
+            if page.is_file():
+                rendered = page.read_text(encoding="utf-8")
+                require("background-image: url(https://example.invalid/x)" not in rendered
+                        and "240px; color: red" not in rendered,
+                        f"invalid landing case {name} leaked unsafe CSS", errors)
+            if name in STRICT_INVALID_CANARIES:
+                require(run(hugo, site, panic_on_warning=True).returncode != 0,
+                        f"invalid landing case {name} survived --panicOnWarning", errors)
     return errors
 
 

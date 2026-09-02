@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 from runtime_assets import chunk
-from test_site import build_fixture_public, fixture_config
+from test_site import build_fixture_public, fixture_config, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +25,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 
 
 def run_hugo(hugo: str, *args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([hugo, *args], cwd=ROOT, capture_output=True, text=True, check=False)
+    return run_hugo_process([hugo, *args], cwd=ROOT, capture_output=True, text=True, check=False)
 
 
 def bundle_path(public: Path, page: str) -> tuple[Path | None, str]:
@@ -193,12 +193,16 @@ def check_invalid_cases(hugo: str) -> list[str]:
         ("malformed-attribute", fence(f"![Alt]({VALID_IMAGE}) {{link}}"), "malformed attributes"),
         ("empty-fence", "```gallery\n```\n", "requires at least one image"),
     )
+    strict_canaries = {"no-image", "unknown-attribute", "empty-fence"}
     for name, body, expected in cases:
-        result, _, _ = temp_page_build(hugo, body)
+        result, html, _ = temp_page_build(hugo, body)
         output = f"{result.stdout}{result.stderr}"
+        require(result.returncode == 0, f"Gallery invalid case {name} stopped the ordinary build", errors)
         require(expected in output, f"Gallery invalid case {name} lacks {expected!r}: {output[:400]}", errors)
-        strict, _, _ = temp_page_build(hugo, body, panic_on_warning=True)
-        require(strict.returncode != 0, f"Gallery invalid case {name} survived --panicOnWarning", errors)
+        require(bool(html), f"Gallery invalid case {name} emitted no safe page output", errors)
+        if name in strict_canaries:
+            strict, _, _ = temp_page_build(hugo, body, panic_on_warning=True)
+            require(strict.returncode != 0, f"Gallery invalid case {name} survived --panicOnWarning", errors)
     return errors
 
 

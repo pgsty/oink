@@ -22,6 +22,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
+from test_site import run_hugo_process
+
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_ROOT = ROOT / "tests" / "fixtures" / "navigation"
@@ -430,7 +432,7 @@ def run_hugo(site: Path, output: Path, cache: Path) -> str:
     ]
     environment = dict(os.environ)
     environment["HUGO_ENVIRONMENT"] = "development"
-    result = subprocess.run(
+    result = run_hugo_process(
         command,
         cwd=site,
         env=environment,

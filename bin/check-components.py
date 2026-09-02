@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 
 from runtime_assets import combined_source, referenced_chunks
-from test_site import build_fixture_public
+from test_site import build_fixture_public, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,7 +65,7 @@ def build_site(hugo: str, pages: dict[str, str], *, prefix: str, base_url: str =
     command = [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"]
     if panic_on_warning:
         command.append("--panicOnWarning")
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+    result = run_hugo_process(command, cwd=ROOT, capture_output=True, text=True, check=False)
     return result, destination, temp
 
 
@@ -277,14 +277,30 @@ def check_data_fences(hugo: str) -> list[str]:
         ("checksums-empty", '```checksums {base="https://example.org/dl/"}\n\n```\n', "requires checksum lines"),
         ("checksums-scheme", '```checksums {base="ftp://example.org/dl/"}\n' + "a" * 64 + "  file.rpm\n```\n", "must use http or https"),
     )
+    strict_canaries = {
+        "echarts-invalid-yaml",   # data parsing
+        "echarts-not-a-map",      # parsed shape
+        "echarts-unknown-attr",   # attribute policy
+        "echarts-height",         # CSS length
+        "echarts-full",           # boolean option
+        "infographic-empty",      # infographic content
+        "infographic-height",     # infographic CSS fallback
+        "checksums-no-base",      # source selection
+        "checksums-bad-algo",     # checksum enum
+        "checksums-empty",        # checksum content
+        "checksums-scheme",       # URL policy
+    }
     for name, body, expected in invalid:
         result, destination, temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-")
         with temp:
             output = result.stdout + result.stderr
+            require(result.returncode == 0, f"invalid data fence {name} stopped the ordinary build: {output.strip()[-400:]}", errors)
             require(expected in output, f"invalid data fence {name} did not report {expected!r}: {output.strip()[-400:]}", errors)
-            strict, _strict_destination, strict_temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-strict-", panic_on_warning=True)
-            with strict_temp:
-                require(strict.returncode != 0, f"invalid data fence {name} survived --panicOnWarning", errors)
+            require((destination / "docs/bad/index.html").is_file(), f"invalid data fence {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                strict, _strict_destination, strict_temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}"}, prefix=f"oink-components-{name}-strict-", panic_on_warning=True)
+                with strict_temp:
+                    require(strict.returncode != 0, f"invalid data fence {name} survived --panicOnWarning", errors)
     return errors
 
 
@@ -422,23 +438,35 @@ def check_openapi(hugo: str) -> list[str]:
         ("asciinema-bad-marker", '{{< asciinema file="x.cast" markers="abc:Nope" >}}', "needs a numeric time"),
         ("asciinema-unsafe-file", '{{< asciinema file="javascript:alert(1)" >}}', "unsupported file scheme"),
     )
+    strict_canaries = {
+        "swagger-missing-src",    # Swagger parameters
+        "swagger-unsafe-src",     # Swagger URL policy
+        "redoc-extra-options",    # Redoc parameters
+        "redoc-unsafe-spec",      # Redoc URL policy
+        "asciinema-bad-speed",    # numeric options
+        "asciinema-bad-marker",   # marker parser
+        "asciinema-unsafe-file",  # Asciinema URL policy
+    }
     for name, body, expected in invalid:
-        result, _destination, temp = build_site(
+        result, destination, temp = build_site(
             hugo,
             {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}\n"},
             prefix=f"oink-components-{name}-",
         )
         with temp:
             output = result.stdout + result.stderr
+            require(result.returncode == 0, f"invalid OpenAPI case {name} stopped the ordinary build: {output[-400:]}", errors)
             require(expected in output, f"invalid OpenAPI case {name} did not report {expected!r}: {output[-400:]}", errors)
-            strict, _strict_destination, strict_temp = build_site(
-                hugo,
-                {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}\n"},
-                prefix=f"oink-components-{name}-strict-",
-                panic_on_warning=True,
-            )
-            with strict_temp:
-                require(strict.returncode != 0, f"invalid OpenAPI case {name} survived --panicOnWarning", errors)
+            require((destination / "docs/bad/index.html").is_file(), f"invalid OpenAPI case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                strict, _strict_destination, strict_temp = build_site(
+                    hugo,
+                    {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/bad.md": f"---\ntitle: {name}\n---\n\n{body}\n"},
+                    prefix=f"oink-components-{name}-strict-",
+                    panic_on_warning=True,
+                )
+                with strict_temp:
+                    require(strict.returncode != 0, f"invalid OpenAPI case {name} survived --panicOnWarning", errors)
     return errors
 
 

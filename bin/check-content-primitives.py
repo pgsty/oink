@@ -12,11 +12,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import re
-import subprocess
 import tempfile
 
 from runtime_assets import combined_source, referenced_chunks
-from test_site import build_fixture_public, fixture_config
+from test_site import build_fixture_public, fixture_config, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -251,7 +250,7 @@ def check_subpath(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-primitives-subpath-") as temp:
         destination = Path(temp) / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(FIXTURE), "--destination", str(destination), "--baseURL", "https://example.org/manual/", "--config", fixture_config(), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
@@ -296,7 +295,7 @@ def check_rss_output(hugo: str) -> list[str]:
         override = temp_path / "rss.yaml"
         override.write_text("disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML]\n  page: [RSS]\n")
         destination = temp_path / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--layoutDir", str(temp_path / "layouts"), "--destination", str(destination), "--config", f"{FIXTURE / 'hugo.yaml'},{override}", "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
@@ -359,7 +358,7 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             "markup:\n  goldmark:\n    renderer:\n      unsafe: true\n    parser:\n      attribute:\n        block: true\n"
         )
         destination = site / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
@@ -432,7 +431,7 @@ def check_rss_summary_contract(hugo: str) -> list[str]:
             "disableKinds: [sitemap, taxonomy, term]\noutputs:\n  home: [HTML]\n  section: [HTML, RSS]\n  page: [HTML]\n"
         )
         destination = site / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
@@ -617,7 +616,7 @@ def check_table_family(hugo: str) -> list[str]:
             encoding="utf-8",
         )
         destination = site / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
@@ -747,7 +746,7 @@ def check_invalid_cases(hugo: str) -> list[str]:
             (content / f"{name}.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
         (content / "param-map.md").write_text("---\ntitle: Param map\nparams:\n  fixture_map:\n    a: 1\n---\n\n{{< param fixture_map >}}\n")
         command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn"]
-        result = subprocess.run(
+        result = run_hugo_process(
             [*command, "--destination", str(temp_path / "public")],
             cwd=ROOT, capture_output=True, text=True, check=False,
         )
@@ -763,7 +762,7 @@ def check_invalid_cases(hugo: str) -> list[str]:
         require(param_page.is_file(), "param map lost its safe output", errors)
         if param_page.is_file():
             require("fixture_map" not in param_page.read_text(), "param map value reached the rendered page", errors)
-        strict = subprocess.run(
+        strict = run_hugo_process(
             [*command, "--destination", str(temp_path / "public-strict"), "--panicOnWarning"],
             cwd=ROOT, capture_output=True, text=True, check=False,
         )
@@ -778,7 +777,7 @@ def check_invalid_cases(hugo: str) -> list[str]:
             content.mkdir(parents=True)
             (content / "invalid.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
             command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn"]
-            result = subprocess.run(
+            result = run_hugo_process(
                 [*command, "--destination", str(temp_path / "public")],
                 cwd=ROOT, capture_output=True, text=True, check=False,
             )
@@ -787,7 +786,7 @@ def check_invalid_cases(hugo: str) -> list[str]:
             require(expected in case_output, f"invalid case {name} did not report {expected!r} at its position: {case_output or output.strip()}", errors)
             page = temp_path / "public/docs/invalid/index.html"
             require(page.is_file() == (result.returncode == 0), f"invalid case {name} left partial output", errors)
-            strict = subprocess.run(
+            strict = run_hugo_process(
                 [*command, "--destination", str(temp_path / "public-strict"), "--panicOnWarning"],
                 cwd=ROOT, capture_output=True, text=True, check=False,
             )

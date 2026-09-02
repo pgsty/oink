@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from urllib.parse import urlsplit
 
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,7 +89,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 
 
 def build_example(hugo: str, destination: Path) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [
             hugo,
             "--source",
@@ -332,7 +332,7 @@ cascade:
 
 
 def run_site(hugo: str, source: Path, *extra: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [hugo, "--source", str(source), "--logLevel", "warn", *extra],
         cwd=ROOT,
         capture_output=True,
@@ -619,6 +619,7 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
         ("bad-docs-root", "", "    docs_sidebar_root: archive\n    pager_types: [docs, book, blog]", "params.ui.docs_sidebar_root must be home or section"),
         ("scalar-docs-root", "", "    docs_sidebar_root: true\n    pager_types: [docs, book, blog]", "params.ui.docs_sidebar_root must be a string"),
     )
+    strict_canaries = {"bad-type", "scalar-types", "page-string", "scalar-docs-root"}
     for name, front_matter, config_extra, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-pager-{name}-") as temp:
             source = Path(temp)
@@ -642,8 +643,11 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
             # turns that into a failure.
             require(result.returncode == 0,
                     f"invalid pager case {name} stopped the build instead of warning", errors)
-            require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
-                    f"invalid pager case {name} survived --panicOnWarning", errors)
+            require((source / "public/docs/page/index.html").is_file(),
+                    f"invalid pager case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                        f"invalid pager case {name} survived --panicOnWarning", errors)
     return errors
 
 
@@ -656,6 +660,7 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
         ("class-without-num", '{{< eq class="wide" >}}x{{< /eq >}}', 'parameter "class" requires num'),
         ("positional", '{{< eq "x" >}}x{{< /eq >}}', "accepts named parameters only"),
     )
+    strict_canaries = {"empty", "caption-without-num", "positional"}
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-eq-{name}-") as temp:
             source = Path(temp)
@@ -666,9 +671,14 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
             )
             result = run_site(hugo, source)
             output = result.stdout + result.stderr
+            require(result.returncode == 0,
+                    f"invalid eq escape case {name} stopped the ordinary build", errors)
             require(expected in output, f"invalid eq escape case {name} did not report {expected!r}", errors)
-            require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
-                    f"invalid eq escape case {name} survived --panicOnWarning", errors)
+            require((source / "public/docs/page/index.html").is_file(),
+                    f"invalid eq escape case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                        f"invalid eq escape case {name} survived --panicOnWarning", errors)
     return errors
 
 

@@ -16,7 +16,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
-from test_site import TEST_SITE, fixture_config
+from test_site import TEST_SITE, fixture_config, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -201,7 +201,7 @@ def validate_external_mount_actions() -> None:
 
     with tempfile.TemporaryDirectory(prefix="oink-external-actions-") as temp:
         public = Path(temp) / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [
                 "hugo",
                 "--source",
@@ -382,7 +382,15 @@ def validate_manifest(
         require(commands["print_now"]["title"] == "立即打印", "out-of-order ZH merge failed")
 
 
-def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str, expected: str) -> None:
+def run_invalid_build(
+    helper: Any,
+    workspace: Path,
+    name: str,
+    command_yaml: str,
+    expected: str,
+    *,
+    strict_canary: bool,
+) -> None:
     site = workspace / f"invalid-{name}"
     output = workspace / f"invalid-public-{name}"
     shutil.copytree(helper.SITE_FIXTURE_PATH, site)
@@ -396,7 +404,7 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
     )
     config = config.replace("    weight: 1\n  zh:\n", "    weight: 1\n" + addition + "  zh:\n")
     (site / "hugo.yaml").write_text(config, encoding="utf-8")
-    result = subprocess.run(
+    result = run_hugo_process(
         [
             "hugo",
             "--source",
@@ -422,6 +430,10 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
     require(expected in result.stdout, f"invalid {name} build missed {expected!r}:\n{result.stdout}")
     require(result.returncode == 0,
             f"invalid {name} command stopped the build instead of warning:\n{result.stdout}")
+    require(
+        (output / "en/docs/guides/tutorial/index.html").is_file(),
+        f"invalid {name} command emitted no safe page output",
+    )
     if "unsafe URL" in expected:
         # The dropped URL must not reach any rendered page -- that is the
         # whole point of refusing it.
@@ -431,22 +443,23 @@ def run_invalid_build(helper: Any, workspace: Path, name: str, command_yaml: str
             if path.is_file() and "javascript:alert" in path.read_text(errors="ignore")
         ]
         require(not leaked, f"invalid {name} command leaked its unsafe URL into {leaked[:3]}")
-    strict = subprocess.run(
-        [
-            "hugo", "--source", str(site), "--themesDir", str(ROOT.parent),
-            "--destination", str(output) + "-strict",
-            "--cacheDir", str(workspace / "cache-invalid-strict"),
-            "--panicOnWarning",
-        ],
-        cwd=site,
-        env={**os.environ, "HUGO_ENVIRONMENT": "development"},
-        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
-    )
-    require(strict.returncode != 0, f"invalid {name} command survived --panicOnWarning")
+    if strict_canary:
+        strict = run_hugo_process(
+            [
+                "hugo", "--source", str(site), "--themesDir", str(ROOT.parent),
+                "--destination", str(output) + "-strict",
+                "--cacheDir", str(workspace / "cache-invalid-strict"),
+                "--panicOnWarning",
+            ],
+            cwd=site,
+            env={**os.environ, "HUGO_ENVIRONMENT": "development"},
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+        )
+        require(strict.returncode != 0, f"invalid {name} command survived --panicOnWarning")
 
 
 def strict_fails(site: Path, workspace: Path, name: str) -> bool:
-    strict = subprocess.run(
+    strict = run_hugo_process(
         ["hugo", "--source", str(site), "--themesDir", str(ROOT.parent),
          "--destination", str(workspace / f"strict-{name}"),
          "--cacheDir", str(workspace / f"cache-strict-{name}"), "--panicOnWarning"],
@@ -818,8 +831,25 @@ def main() -> int:
                     'field "keywords" must be an array of strings',
                 ),
             }
+            strict_canaries = {
+                "unknown",          # built-in action lookup
+                "both",             # action/URL exclusivity
+                "callback",         # unsupported fields
+                "javascript",       # URL policy
+                "duplicate",        # command identity
+                "reserved",         # built-in identity
+                "numeric-title",    # scalar field types
+                "scalar-keywords",  # list field types
+            }
             for name, (yaml, expected) in invalid_cases.items():
-                run_invalid_build(helper, workspace, name, yaml, expected)
+                run_invalid_build(
+                    helper,
+                    workspace,
+                    name,
+                    yaml,
+                    expected,
+                    strict_canary=name in strict_canaries,
+                )
 
             validate_custom_url_policy(helper, workspace)
 

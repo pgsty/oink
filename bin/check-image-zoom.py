@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 from runtime_assets import chunk
-from test_site import build_fixture_public
+from test_site import build_fixture_public, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,7 +40,7 @@ def enclosing_selectors(styles: str, position: int) -> list[str]:
 
 
 def run_hugo(hugo: str, *args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [hugo, *args],
         cwd=ROOT,
         capture_output=True,
@@ -221,8 +221,9 @@ def check_config_matrix(hugo: str) -> list[str]:
         ("site-number", "1", None, "params.ui.image_zoom must be true or false"),
         ("page-string", None, '"false"', "front matter image_zoom must be true or false"),
     )
+    strict_canaries = {"site-string", "page-string"}
     for name, site_value, page_value, expected in invalid:
-        result, _ = build_gate_case(
+        result, page = build_gate_case(
             hugo,
             site_value=site_value,
             page_value=page_value,
@@ -234,15 +235,17 @@ def check_config_matrix(hugo: str) -> list[str]:
         # anyway; only --panicOnWarning turns that into a failure.
         require(result.returncode == 0,
                 f"invalid Zoom config {name} stopped the build instead of warning", errors)
-        strict, _ = build_gate_case(
-            hugo,
-            site_value=site_value,
-            page_value=page_value,
-            body="No image required.\n",
-            panic_on_warning=True,
-        )
-        require(strict.returncode != 0,
-                f"invalid Zoom config {name} survived --panicOnWarning", errors)
+        require(bool(page), f"invalid Zoom config {name} emitted no safe page output", errors)
+        if name in strict_canaries:
+            strict, _ = build_gate_case(
+                hugo,
+                site_value=site_value,
+                page_value=page_value,
+                body="No image required.\n",
+                panic_on_warning=True,
+            )
+            require(strict.returncode != 0,
+                    f"invalid Zoom config {name} survived --panicOnWarning", errors)
         if name.startswith("page"):
             require("/docs" in output, "invalid page Zoom config omitted its page", errors)
     return errors

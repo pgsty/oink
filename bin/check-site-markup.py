@@ -13,8 +13,9 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-import subprocess
 import sys
+
+from test_site import run_hugo_process
 
 
 def nested(config: dict, *keys: str):
@@ -37,7 +38,7 @@ def main() -> int:
         print(f"site directory not found: {site}", file=sys.stderr)
         return 2
 
-    result = subprocess.run(
+    result = run_hugo_process(
         [
             args.hugo,
             "config",

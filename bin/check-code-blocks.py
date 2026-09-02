@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 
 from runtime_assets import combined_source
-from test_site import build_fixture_public
+from test_site import build_fixture_public, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,7 +85,7 @@ def temp_build(hugo: str, pages: dict[str, str], *, prefix: str, extra_config: s
         override = temp_path / "override.yaml"
         override.write_text(extra_config, encoding="utf-8")
         command.extend(["--config", f"{FIXTURE / 'hugo.yaml'},{override}"])
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+    result = run_hugo_process(command, cwd=ROOT, capture_output=True, text=True, check=False)
     return result, destination, temp
 
 
@@ -329,7 +329,7 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             "        block: true\n"
         )
         destination = site / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(site), "--themesDir", str(ROOT.parent), "--destination", str(destination), "--logLevel", "warn"],
             cwd=ROOT,
             capture_output=True,
@@ -532,6 +532,20 @@ INVALID_CASES = (
     ("tab-unknown", '{{< tabs >}}{{< tab label="A" lang="sh" >}}a{{< /tab >}}{{< /tabs >}}\n', "unsupported parameter"),
 )
 
+# One strict canary per warning family; every case below still proves its own
+# diagnostic and safe ordinary-build output.
+STRICT_INVALID_CANARIES = {
+    "filename-title",            # code option validation
+    "duplicate-code-ids",        # page-scoped ID registry
+    "reserved-data",             # shared attribute policy
+    "tab-group-without-value",   # adjacent-fence tab metadata
+    "eg-caption-without-num",    # numbered example fence
+    "tabs-positional",           # tabs container parameters
+    "tabs-empty",                # tabs child structure
+    "tab-outside",               # tab parent requirement
+    "tab-missing-label",         # tab parameters
+}
+
 
 def check_invalid_cases(hugo: str) -> list[str]:
     errors: list[str] = []
@@ -543,13 +557,18 @@ def check_invalid_cases(hugo: str) -> list[str]:
             (content / "invalid.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
             destination = temp_path / "public"
             command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(destination), "--logLevel", "warn"]
-            result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
+            result = run_hugo_process(command, cwd=ROOT, capture_output=True, text=True, check=False)
             output = result.stdout + result.stderr
+            if result.returncode != 0:
+                errors.append(f"invalid case {name} stopped the ordinary build: {output.strip()}")
             if expected not in output:
                 errors.append(f"invalid case {name} did not report {expected!r}: {output.strip()}")
-            strict = subprocess.run(command + ["--panicOnWarning"], cwd=ROOT, capture_output=True, text=True, check=False)
-            if strict.returncode == 0:
-                errors.append(f"invalid case {name} survived --panicOnWarning")
+            if not (destination / "docs/invalid/index.html").is_file():
+                errors.append(f"invalid case {name} emitted no safe page output")
+            if name in STRICT_INVALID_CANARIES:
+                strict = run_hugo_process(command + ["--panicOnWarning"], cwd=ROOT, capture_output=True, text=True, check=False)
+                if strict.returncode == 0:
+                    errors.append(f"invalid case {name} survived --panicOnWarning")
     return errors
 
 

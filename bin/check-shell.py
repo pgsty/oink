@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 from pathlib import Path
 
 
@@ -818,7 +818,7 @@ def build_example(hugo: str) -> list[str]:
             # the override flips that scalar.
             "HUGO_PARAMS_UI_FEEDBACK": "true",
         })
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
              "--destination", str(public), *fixture_config_args(), "--panicOnWarning"],
             cwd=ROOT,
@@ -1043,7 +1043,7 @@ languages:
             "---\ntitle: 文档\ntype: docs\n---\n\n正文。\n", encoding="utf-8"
         )
 
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,
@@ -1255,7 +1255,7 @@ params:
             encoding="utf-8",
         )
 
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,
@@ -1318,7 +1318,7 @@ params:
             "---\ntitle: Post\ndate: 2026-01-01\n---\n\nPost.\n",
             encoding="utf-8",
         )
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public"), "--logLevel", "warn"],
             cwd=ROOT,
@@ -1326,7 +1326,7 @@ params:
             capture_output=True,
         )
         output = result.stdout + result.stderr
-        strict = subprocess.run(
+        strict = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "strict"), "--logLevel", "warn", "--panicOnWarning"],
             cwd=ROOT, text=True, capture_output=True,
@@ -1379,7 +1379,7 @@ menus:
             "---\ntitle: Docs\n---\n", encoding="utf-8")
         (source / "content/docs/child.md").write_text(
             "---\ntitle: Child\ndate: 2026-01-01\n---\n\nChild.\n", encoding="utf-8")
-        strict = subprocess.run(
+        strict = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public"), "--panicOnWarning"],
             cwd=ROOT, text=True, capture_output=True,
@@ -1388,7 +1388,7 @@ menus:
         require(strict.returncode != 0
                 and "the columns parameter is retired" in output,
                 f"retired menu columns survived --panicOnWarning: {output[-400:]}", errors)
-        loose = subprocess.run(
+        loose = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public")],
             cwd=ROOT, text=True, capture_output=True,
@@ -1441,7 +1441,7 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         for name, extra in (("rows", (rows_overlay,)), ("cards", (overlay,)),
                             ("table", (table_overlay,)), ("toggle", (toggle_overlay,))):
             public = root / name
-            result = subprocess.run(
+            result = run_hugo_process(
                 [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
                  "--destination", str(public), *fixture_config_args(*extra), "--panicOnWarning"],
                 cwd=ROOT,
@@ -1581,7 +1581,7 @@ params:
             "---\ntitle: Opted out\ndate: 2026-08-10\nimages: []\n---\n\nA post that turned its inherited image off.\n",
             encoding="utf-8")
 
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,
@@ -1703,7 +1703,7 @@ params:
             "images: [/images/pin.png]\nshare: [pinterest]\n---\n\nBody.\n",
             encoding="utf-8",
         )
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,

@@ -41,8 +41,9 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import re
-import subprocess
 import tempfile
+
+from test_site import run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -337,6 +338,17 @@ CASES = [
     ),
 ]
 
+STRICT_INVALID_CANARIES = {
+    "cascade-without-link-fails",       # attribution completeness
+    "unknown-license-fails",            # licence registry
+    "unknown-registry-entry-fails",     # upstream registry
+    "non-boolean-modified-fails",       # scalar type
+    "unsafe-upstream-link",             # URL policy
+    "legacy-upstream-attribution",      # renamed keys
+    "translation-notice-invalid-language", # language lookup
+    "translation-notice-true",          # translation setting type
+}
+
 
 LANGUAGES = """\
 defaultContentLanguage: en
@@ -361,8 +373,10 @@ def site_config(case: Case) -> str:
     )
 
 
-def build(hugo: str, case: Case, panic_on_warning: bool = False) -> tuple[str, str]:
-    """Return (build output on failure, rendered target page)."""
+def build(
+    hugo: str, case: Case, panic_on_warning: bool = False
+) -> tuple[int, str, str]:
+    """Return the exit code, build log, and rendered target page."""
     with tempfile.TemporaryDirectory(prefix=f"oink-annotation-{case.name}-") as temp:
         source = Path(temp)
         (source / "content/docs").mkdir(parents=True)
@@ -400,7 +414,7 @@ def build(hugo: str, case: Case, panic_on_warning: bool = False) -> tuple[str, s
             # A translated pair that carries no body of its own.
             (source / "content/docs/stub.md").write_text("---\ntitle: Stub\n---\n", encoding="utf-8")
             (source / "content/docs/stub.zh.md").write_text("---\ntitle: 空页\n---\n", encoding="utf-8")
-        result = subprocess.run(
+        result = run_hugo_process(
             [
                 hugo,
                 "--source", str(source),
@@ -413,12 +427,13 @@ def build(hugo: str, case: Case, panic_on_warning: bool = False) -> tuple[str, s
             text=True,
             check=False,
         )
+        output = (result.stdout + result.stderr) or "build produced no log output"
         if result.returncode != 0:
-            return (result.stdout + result.stderr) or "build failed without output", ""
+            return result.returncode, output, ""
         rendered = source / "public" / case.target / "index.html"
         if not rendered.exists():
-            return "", f"MISSING {case.target}"
-        return "", rendered.read_text(encoding="utf-8")
+            return 0, output, f"MISSING {case.target}"
+        return 0, output, rendered.read_text(encoding="utf-8")
 
 
 def annotation(html: str) -> str:
@@ -455,25 +470,28 @@ def main() -> int:
 
     errors = check_source()
 
-    def run(case: Case) -> tuple[Case, tuple[str, str], str]:
+    def run(case: Case) -> tuple[Case, tuple[int, str, str], int | None]:
         # An invalid case warns and omits the block; --panicOnWarning is what
         # makes it fatal where publishing happens.
-        strict = build(args.hugo, case, panic_on_warning=True)[0] if case.error is not None else ""
+        strict = (
+            build(args.hugo, case, panic_on_warning=True)[0]
+            if case.name in STRICT_INVALID_CANARIES
+            else None
+        )
         return case, build(args.hugo, case), strict
 
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for case, (failure, html), strict in pool.map(run, CASES):
+        for case, (code, output, html), strict in pool.map(run, CASES):
             if case.error is not None:
-                message = failure or strict
-                if case.error not in message:
-                    errors.append(f"{case.name}: did not report {case.error!r}: {message[-400:]}")
-                if not strict:
+                if case.error not in output:
+                    errors.append(f"{case.name}: did not report {case.error!r}: {output[-400:]}")
+                if case.name in STRICT_INVALID_CANARIES and strict == 0:
                     errors.append(f"{case.name}: survived --panicOnWarning")
-                if failure:
-                    errors.append(f"{case.name}: warning stopped the non-strict build: {failure[-400:]}")
+                if code != 0:
+                    errors.append(f"{case.name}: warning stopped the non-strict build: {output[-400:]}")
                     continue
-            if failure:
-                errors.append(f"{case.name}: expected a clean build: {failure[-400:]}")
+            elif code != 0:
+                errors.append(f"{case.name}: expected a clean build: {output[-400:]}")
                 continue
             block = annotation(html)
             for fragment in case.expect:

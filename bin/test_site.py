@@ -3,14 +3,30 @@
 from __future__ import annotations
 
 import atexit
+import shlex
 import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_SITE = ROOT / "tests/site"
+HUGO_BUILD_TIMEOUT = 120
+
+
+def run_hugo_process(
+    command: list[str], **kwargs: Any
+) -> subprocess.CompletedProcess[str]:
+    """Run one Hugo build with the shared finite ceiling."""
+
+    try:
+        return subprocess.run(command, timeout=HUGO_BUILD_TIMEOUT, **kwargs)
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(
+            f"Hugo build timed out after {HUGO_BUILD_TIMEOUT}s: {shlex.join(command)}"
+        ) from exc
 
 
 def fixture_config(*extra: Path) -> str:
@@ -44,7 +60,7 @@ def build_fixture_public(
     temp = Path(tempfile.mkdtemp(prefix="oink-private-fixtures-"))
     atexit.register(shutil.rmtree, temp, ignore_errors=True)
     destination = temp / "public"
-    result = subprocess.run(
+    result = run_hugo_process(
         [
             hugo,
             "--source",

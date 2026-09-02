@@ -9,6 +9,8 @@ import re
 import subprocess
 import tempfile
 
+from test_site import run_hugo_process
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -118,7 +120,7 @@ params:
 
 
 def build(hugo: str, source: Path, destination: Path) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [
             hugo,
             "--source",

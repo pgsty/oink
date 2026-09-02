@@ -2,6 +2,7 @@
 """Self-tests for fresh and explicitly reused checker input modes."""
 
 from pathlib import Path
+import subprocess
 import sys
 import unittest
 from unittest import mock
@@ -14,6 +15,23 @@ import test_site  # noqa: E402
 
 
 class CheckerFixtureInputTests(unittest.TestCase):
+    def test_shared_hugo_runner_sets_a_finite_timeout(self) -> None:
+        completed = subprocess.CompletedProcess(["hugo", "version"], 0)
+        with mock.patch.object(
+            test_site.subprocess, "run", return_value=completed
+        ) as run:
+            result = test_site.run_hugo_process(
+                ["hugo", "version"], capture_output=True, text=True
+            )
+
+        self.assertIs(result, completed)
+        run.assert_called_once_with(
+            ["hugo", "version"],
+            timeout=test_site.HUGO_BUILD_TIMEOUT,
+            capture_output=True,
+            text=True,
+        )
+
     def test_default_builds_a_fresh_strict_fixture(self) -> None:
         built = object()
         with mock.patch.object(

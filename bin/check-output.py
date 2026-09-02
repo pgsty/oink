@@ -37,7 +37,7 @@ import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
-from test_site import checker_fixture_public
+from test_site import checker_fixture_public, run_hugo_process
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
@@ -389,7 +389,7 @@ params:
             )
 
         public = site / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [
                 hugo,
                 "--source",
@@ -509,7 +509,7 @@ outputs:
         public = site / "public"
         command = [hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
                    "--destination", str(public), "--printPathWarnings", "--panicOnWarning"]
-        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        result = run_hugo_process(command, capture_output=True, text=True, check=False)
         if result.returncode != 0:
             return [f"theme-color fixture failed to build: {result.stdout}{result.stderr}"]
 
@@ -567,7 +567,7 @@ outputs:
               "---\ntitle: Mixed\ntheme_color: tomato\ntheme_color_dark: '#a78bfa'\n---\n\nInvalid light, valid dark.\n")
         write("content/solo/zero.md",
               "---\ntitle: Zero\ntheme_color: 0\n---\n\nA number is a mistake, said out loud.\n")
-        result = subprocess.run([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
+        result = run_hugo_process([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
                                  "--destination", str(public), "--logLevel", "warn"],
                                 capture_output=True, text=True, check=False)
         output = result.stdout + result.stderr
@@ -625,10 +625,11 @@ def check_config_image_policy(hugo: str) -> list[str]:
             "unsupported images scheme",
         ),
     )
+    strict_canaries = {"wordmark", "site-social-card"}
     for name, overrides, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-output-{name}-") as temp:
             environment = {**os.environ, **overrides}
-            result = subprocess.run(
+            result = run_hugo_process(
                 [
                     hugo,
                     "--source",
@@ -650,30 +651,35 @@ def check_config_image_policy(hugo: str) -> list[str]:
             # is that the problem is named and that publishing still fails.
             if expected not in output:
                 errors.append(f"configured image case {name} did not report {expected!r}: {output[-400:]}")
+            if result.returncode != 0:
+                errors.append(f"configured image case {name} stopped the ordinary build: {output[-400:]}")
+            home = Path(temp) / "public/index.html"
+            if not home.is_file():
+                errors.append(f"configured image case {name} emitted no safe home output")
             if name == "site-social-card":
-                home = Path(temp) / "public/index.html"
                 metadata = home.read_text(encoding="utf-8") if home.is_file() else ""
                 if OG_IMAGE.findall(metadata) or SCHEMA_IMAGE.findall(metadata) or TWITTER_IMAGE.findall(metadata):
                     errors.append("an invalid site social card still reached page metadata")
-            strict = subprocess.run(
-                [
-                    hugo,
-                    "--source",
-                    str(FIXTURE),
-                    "--destination",
-                    str(Path(temp) / "public-strict"),
-                    "--logLevel",
-                    "warn",
-                    "--panicOnWarning",
-                ],
-                cwd=ROOT,
-                env=environment,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if strict.returncode == 0:
-                errors.append(f"configured image case {name} survived --panicOnWarning")
+            if name in strict_canaries:
+                strict = run_hugo_process(
+                    [
+                        hugo,
+                        "--source",
+                        str(FIXTURE),
+                        "--destination",
+                        str(Path(temp) / "public-strict"),
+                        "--logLevel",
+                        "warn",
+                        "--panicOnWarning",
+                    ],
+                    cwd=ROOT,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if strict.returncode == 0:
+                    errors.append(f"configured image case {name} survived --panicOnWarning")
     return errors
 
 

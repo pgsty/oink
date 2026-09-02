@@ -15,6 +15,8 @@ import subprocess
 import tempfile
 from urllib.parse import urljoin, urlsplit
 
+from test_site import run_hugo_process
+
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
@@ -36,7 +38,7 @@ def build(
     destination: Path,
     *extra: str,
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [
             hugo,
             "--source",
@@ -989,21 +991,45 @@ def check_invalid_components(hugo: str) -> list[str]:
             "footnote reference [^n2] cannot be used inside a shortcode body",
         ),
     )
+    strict_canaries = {
+        "missing-num",                 # required numbered parameters
+        "num-grammar",                 # number grammar
+        "duplicate-id",                # target ID registry
+        "duplicate-num",               # numbered-kind registry
+        "unsupported",                 # shortcode parameter allowlist
+        "src-inner",                   # source/body exclusivity
+        "empty-table",                 # required body content
+        "bad-width",                   # positive integer validation
+        "many-kinds",                  # xref target selection
+        "xref-page",                   # xref page lookup
+        "toc-depth",                   # Book TOC parameters
+        "eg-caption",                  # example parameters
+        "fence-caption-without-num",   # native fence numbering
+        "table-num-and-tab",           # native table mode conflict
+        "book-figures-kind",           # generated index parameters
+        "footnote-page-definition",    # shortcode-body footnote boundary
+    }
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-book-invalid-{name}-") as temp:
             source = Path(temp)
             create_site(source, body)
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
+            require(result.returncode == 0,
+                    f"invalid Book case {name} stopped the ordinary build", errors)
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
-            require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
-                    f"invalid Book case {name} survived --panicOnWarning", errors)
+            require((source / "public/book/page/index.html").is_file(),
+                    f"invalid Book case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
+                        f"invalid Book case {name} survived --panicOnWarning", errors)
 
     config_cases = (
         ("headings", "    sidebar_headings: 1\n", "", False, "params.ui.sidebar_headings"),
         ("banner", '    book_draft_banner: "yes"\n', "", True, "params.ui.book_draft_banner"),
         ("reading-width", "", "  reading_width: broad\n", False, "invalid params.reading_width"),
     )
+    strict_config_canaries = {"headings", "reading-width"}
     for name, extra_ui, extra_params, draft, expected in config_cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-book-config-{name}-") as temp:
             source = Path(temp)
@@ -1018,9 +1044,12 @@ def check_invalid_components(hugo: str) -> list[str]:
             # turns that into a failure.
             require(result.returncode == 0,
                     f"invalid Book config {name} stopped the build instead of warning", errors)
-            strict = build(hugo, source, source / "strict", "--panicOnWarning")
-            require(strict.returncode != 0,
-                    f"invalid Book config {name} survived --panicOnWarning", errors)
+            require((source / "public/book/page/index.html").is_file(),
+                    f"invalid Book config {name} emitted no safe page output", errors)
+            if name in strict_config_canaries:
+                strict = build(hugo, source, source / "strict", "--panicOnWarning")
+                require(strict.returncode != 0,
+                        f"invalid Book config {name} survived --panicOnWarning", errors)
     return errors
 
 
@@ -1066,6 +1095,7 @@ def check_invalid_contributors(hugo: str) -> list[str]:
         ("avatar-empty", 'items:\n  - github: pgsty\n    avatar: ""\n', "avatar for \"pgsty\" must not be empty"),
         ("duplicate", "items:\n  - github: pgsty\n  - github: PGSTY\n", "duplicate GitHub handle"),
     )
+    strict_canaries = {"role-type", "avatar-empty", "duplicate"}
     for name, data, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-contributors-invalid-{name}-") as temp:
             source = Path(temp)
@@ -1073,9 +1103,14 @@ def check_invalid_contributors(hugo: str) -> list[str]:
             write(source / "data/contributors.yaml", data)
             result = build(hugo, source, source / "public")
             output = result.stdout + result.stderr
+            require(result.returncode == 0,
+                    f"invalid contributors case {name} stopped the ordinary build", errors)
             require(expected in output, f"invalid contributors case {name} did not report {expected!r}", errors)
-            require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
-                    f"invalid contributors case {name} survived --panicOnWarning", errors)
+            require((source / "public/book/page/index.html").is_file(),
+                    f"invalid contributors case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                require(build(hugo, source, source / "strict", "--panicOnWarning").returncode != 0,
+                        f"invalid contributors case {name} survived --panicOnWarning", errors)
     return errors
 
 

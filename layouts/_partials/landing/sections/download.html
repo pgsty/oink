@@ -13,7 +13,6 @@
     <article class="td-landing-download-product" data-td-download-key="{{ $key }}">
       {{- if gt (len $seen) 1 }}<h3>{{ $key }}</h3>{{ end }}
       {{- if eq $format "html" }}
-        {{- $page.Store.Set "hasTabpane" true -}}
         {{- $enabledSet := false -}}
       <div class="td-landing-download-tabs">
         <div class="nav nav-tabs" role="tablist">{{ range $index, $channel := $data.channels }}{{ $enabled := or $data.published (eq $channel.kind "rolling") }}{{ $active := and $enabled (not $enabledSet) }}{{ if $active }}{{ $enabledSet = true }}{{ end }}<button class="nav-link{{ if $active }} active{{ end }}{{ if not $enabled }} disabled{{ end }}" id="download-{{ $productIndex }}-{{ $channel.id }}-tab" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#download-{{ $productIndex }}-{{ $channel.id }}" aria-controls="download-{{ $productIndex }}-{{ $channel.id }}" aria-selected="{{ $active }}"{{ if not $enabled }} disabled aria-disabled="true"{{ end }}>{{ with $channel.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ $channel.title }}</button>{{ end }}</div>

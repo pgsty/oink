@@ -51,8 +51,6 @@ ui_module_title: 模組
 ui_authors_title: 作者
 ui_author_title: 作者
 ui_theme_toggle: 切換配色
-ui_language: 語言切換
-ui_theme: 主題顏色
 ui_theme_auto: 跟隨系統
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
@@ -133,7 +131,6 @@ ui_share_email: 郵件
 ui_copy_link: 複製連結
 ui_copy_link_success: 已複製連結
 ui_copy_link_error: 無法複製連結
-ui_code_copy: 複製
 ui_code_copy_label: 複製程式碼
 ui_code_copied: 已複製
 ui_code_copy_error: 複製失敗
@@ -172,9 +169,7 @@ ui_asciinema_timer: 播放時間
 ui_openapi_spec: OpenAPI 規格檔案
 ui_release_view: 檢視發布
 ui_release_source: 原始碼
-ui_release_compare: 比較變更
 ui_release_released: 發布於
-ui_release_checksums: 校驗和
 ui_assets_file: 檔案
 ui_assets_checksum: 校驗和
 ui_assets_copy: 複製校驗和

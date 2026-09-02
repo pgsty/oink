@@ -513,6 +513,7 @@ def check_i18n() -> list[str]:
         for key in keys:
             require(re.search(rf"^{re.escape(key)}:", source, re.M) is not None, f"{path.name} lacks i18n key {key}", errors)
         for removed in ("ui_code_group_label", "ui_doc_carousel", "ui_carousel_previous", "ui_carousel_next",
+                        "ui_language", "ui_theme", "ui_code_copy", "ui_release_compare", "ui_release_checksums",
                         "note", "tip", "important", "warning", "caution", "success", "danger",
                         "question", "example", "quote", "details"):
             require(re.search(rf"^{re.escape(removed)}:", source, re.M) is None, f"{path.name} keeps removed i18n key {removed}", errors)

@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 from pathlib import Path
 
 
@@ -29,7 +29,11 @@ def check_sources() -> list[str]:
     root_menu = (ROOT / "layouts/_partials/shell/root-menu.html").read_text()
     generic_tree = (ROOT / "layouts/_partials/shell/sidebar-tree.html").read_text()
     docs_tree = (ROOT / "layouts/_partials/shell/docs-sidebar-tree.html").read_text()
+    sidebar = (ROOT / "layouts/_partials/shell/sidebar.html").read_text()
+    generic_node = (ROOT / "layouts/_partials/shell/sidebar-tree-node.html").read_text()
+    docs_node = (ROOT / "layouts/_partials/shell/docs-sidebar-node.html").read_text()
     sidebar_node = (ROOT / "layouts/_partials/shell/sidebar-node.html").read_text()
+    sidebar_nav = (ROOT / "assets/js/sidebar-nav.js").read_text()
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
     annotation = (ROOT / "layouts/_partials/page-annotation.html").read_text()
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
@@ -87,14 +91,24 @@ def check_sources() -> list[str]:
             "explicit docs sidebar does not prepend a missing root row", errors)
     require("continue" not in docs_tree.split('index $docsNav "sections"', 1)[1].split("partial", 1)[0],
             "docs sidebar still skips its root row", errors)
+    require(all('data-td-sidebar-hydrate-active' in source and "d-none" not in source
+                for source in (generic_tree, docs_tree)),
+            "a cached sidebar is hidden until JavaScript instead of exposing a hydration marker", errors)
+    require('$sidebarRoot.RelPermalink $language $compact $foldable $expandLevels $overflow' in sidebar
+            and '$sidebarRoot.RelPermalink $language $foldable $overflow' in sidebar,
+            "sidebar cache variants omit an output-affecting page setting", errors)
+    require('$pageSpecific' in sidebar and '(not $pageSpecific)' in sidebar
+            and 'eq .Type "book"' in sidebar and '"sidebar_headings"' in sidebar,
+            "page-specific Book headings do not bypass the shared sidebar cache", errors)
+    require(all('ui-param.html' not in source for source in
+                (generic_tree, generic_node, docs_tree, docs_node, sidebar_node)),
+            "a cached sidebar walker still resolves a page-effective setting per node", errors)
+    require("hasAttribute('data-td-sidebar-hydrate-active')" in sidebar_nav
+            and "removeAttribute('data-td-sidebar-hydrate-active')" in sidebar_nav
+            and "classList.remove('td-shell-tree__item--hidden')" in sidebar_nav
+            and "classList.contains('d-none')" not in sidebar_nav,
+            "cached-sidebar hydration does not use its marker or reveal the active path", errors)
 
-    order = [
-        page_end.index('partial "feedback.html"'),
-        page_end.index('partial "page-annotation.html"'),
-        page_end.index('partial "pager.html"'),
-        page_end.index('partial "comments.html"'),
-    ]
-    require(order == sorted(order), "page-end component order drifted", errors)
     require('partial "page-meta-lastmod.html"' in annotation,
             "annotation lost the legacy consumer override", errors)
     for template in (
@@ -483,59 +497,6 @@ def check_sources() -> list[str]:
     share_items = (ROOT / "layouts/_partials/share/items.html").read_text()
     share_bar = (ROOT / "layouts/_partials/share/bar.html").read_text()
     share_styles = (ROOT / "assets/scss/td/_share.scss").read_text()
-    annotation = (ROOT / "layouts/_partials/page-annotation.html").read_text()
-    pager = (ROOT / "layouts/_partials/pager.html").read_text()
-    pager_styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
-    content_styles = (ROOT / "assets/scss/td/_content.scss").read_text()
-    comments_styles = (ROOT / "assets/scss/td/_giscus.scss").read_text()
-    blog_styles = (ROOT / "assets/scss/td/shell/_blog.scss").read_text()
-    page_context_styles = (ROOT / "assets/scss/td/shell/_page-context.scss").read_text()
-    breadcrumb_state = (ROOT / "layouts/_partials/shell/breadcrumb-enabled.html").read_text()
-    sidebar_panel = (ROOT / "layouts/_partials/shell/sidebar-panel.html").read_text()
-    keyboard_help = (ROOT / "layouts/_partials/shell/keyboard-help.html").read_text()
-    subnav = (ROOT / "layouts/_partials/shell/subnav.html").read_text()
-    sidebar_styles = (ROOT / "assets/scss/td/shell/_sidebar.scss").read_text()
-    keyboard_styles = (ROOT / "assets/scss/td/shell/_kbd-nav.scss").read_text()
-    language_styles = (ROOT / "assets/scss/td/_language-selector.scss").read_text()
-    layout_styles = (ROOT / "assets/scss/td/shell/_layout.scss").read_text()
-    toc_styles = (ROOT / "assets/scss/td/shell/_toc.scss").read_text()
-    toc_aside = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text()
-    navbar_styles = (ROOT / "assets/scss/td/_site-navbar.scss").read_text()
-    footer_styles = (ROOT / "assets/scss/td/_footer.scss").read_text()
-    navbar_item = (ROOT / "layouts/_partials/navbar-item.html").read_text()
-    taxonomy = (ROOT / "layouts/_partials/navbar-taxonomy-tags.html").read_text()
-    feedback = (ROOT / "layouts/_partials/feedback.html").read_text()
-    feedback_js = (ROOT / "assets/js/feedback.js").read_text()
-    giscus = (ROOT / "layouts/_partials/giscus.html").read_text()
-    keyboard = (ROOT / "assets/js/keyboard-nav.js").read_text()
-    base_js = (ROOT / "assets/js/base.js").read_text()
-    navbar = (ROOT / "layouts/_partials/navbar.html").read_text()
-    version = (ROOT / "layouts/_partials/navbar-version-selector.html").read_text()
-    icons = (ROOT / "layouts/_partials/shell/icon.html").read_text()
-    actions_context = (ROOT / "layouts/_partials/actions/context.html").read_text()
-    shell_tokens = (ROOT / "assets/scss/td/shell/_tokens.scss").read_text()
-    title_menu = (ROOT / "layouts/_partials/actions/title-menu.html").read_text()
-    docs_layout = (ROOT / "layouts/docs/baseof.html").read_text()
-    blog_layout = (ROOT / "layouts/blog/baseof.html").read_text()
-
-    for marker in ("Home.Sections.ByWeight", 'Params.sidebar_root_for', "sidebar_root_menu"):
-        require(marker in root_roots, f"root set lost {marker}", errors)
-    require('partial "shell/sidebar-root.html"' in root_entries
-            and 'partialCached "shell/root-menu-roots.html"' in root_entries,
-            "root set lost page resolution or site-level caching", errors)
-    require('eq (len $entries) 1' in root_menu and "td-shell-root--static" in root_menu,
-            "one-root switcher is not a static link", errors)
-    require("td-shell-tree__item--rootless" not in sidebar_node,
-            "generic sidebar still removes its root row", errors)
-    require('isset $s.Params "sidebar_root_link_self"' in sidebar_node
-            and '"front matter sidebar_root_link_self must be a boolean' in sidebar_node
-            and "$rootLinkSelf := true" in sidebar_node,
-            "self-root links do not default to their own landing with an explicit legacy escape", errors)
-    require('"node" (dict "page" $sidebarRootURL' in docs_tree,
-            "explicit docs sidebar does not prepend a missing root row", errors)
-    require("continue" not in docs_tree.split('index $docsNav "sections"', 1)[1].split("partial", 1)[0],
-            "docs sidebar still skips its root row", errors)
-
     order = [
         page_end.index('partial "share/bar.html"'),
         page_end.index('partial "feedback.html"'),
@@ -857,7 +818,7 @@ def build_example(hugo: str) -> list[str]:
             # the override flips that scalar.
             "HUGO_PARAMS_UI_FEEDBACK": "true",
         })
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
              "--destination", str(public), *fixture_config_args(), "--panicOnWarning"],
             cwd=ROOT,
@@ -1082,7 +1043,7 @@ languages:
             "---\ntitle: 文档\ntype: docs\n---\n\n正文。\n", encoding="utf-8"
         )
 
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,
@@ -1294,7 +1255,7 @@ params:
             encoding="utf-8",
         )
 
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,
@@ -1357,7 +1318,7 @@ params:
             "---\ntitle: Post\ndate: 2026-01-01\n---\n\nPost.\n",
             encoding="utf-8",
         )
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public"), "--logLevel", "warn"],
             cwd=ROOT,
@@ -1365,7 +1326,7 @@ params:
             capture_output=True,
         )
         output = result.stdout + result.stderr
-        strict = subprocess.run(
+        strict = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "strict"), "--logLevel", "warn", "--panicOnWarning"],
             cwd=ROOT, text=True, capture_output=True,
@@ -1418,7 +1379,7 @@ menus:
             "---\ntitle: Docs\n---\n", encoding="utf-8")
         (source / "content/docs/child.md").write_text(
             "---\ntitle: Child\ndate: 2026-01-01\n---\n\nChild.\n", encoding="utf-8")
-        strict = subprocess.run(
+        strict = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public"), "--panicOnWarning"],
             cwd=ROOT, text=True, capture_output=True,
@@ -1427,7 +1388,7 @@ menus:
         require(strict.returncode != 0
                 and "the columns parameter is retired" in output,
                 f"retired menu columns survived --panicOnWarning: {output[-400:]}", errors)
-        loose = subprocess.run(
+        loose = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(root / "public")],
             cwd=ROOT, text=True, capture_output=True,
@@ -1480,7 +1441,7 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         for name, extra in (("rows", (rows_overlay,)), ("cards", (overlay,)),
                             ("table", (table_overlay,)), ("toggle", (toggle_overlay,))):
             public = root / name
-            result = subprocess.run(
+            result = run_hugo_process(
                 [hugo, "--source", str(ROOT / "tests/site"), "--themesDir", str(ROOT.parent),
                  "--destination", str(public), *fixture_config_args(*extra), "--panicOnWarning"],
                 cwd=ROOT,
@@ -1620,7 +1581,7 @@ params:
             "---\ntitle: Opted out\ndate: 2026-08-10\nimages: []\n---\n\nA post that turned its inherited image off.\n",
             encoding="utf-8")
 
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,
@@ -1742,7 +1703,7 @@ params:
             "images: [/images/pin.png]\nshare: [pinterest]\n---\n\nBody.\n",
             encoding="utf-8",
         )
-        result = subprocess.run(
+        result = run_hugo_process(
             [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
              "--destination", str(public), "--panicOnWarning"],
             cwd=ROOT,

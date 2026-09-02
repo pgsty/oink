@@ -7,12 +7,11 @@ import html
 import json
 from pathlib import Path
 import re
-import subprocess
 import sys
 import tempfile
 from urllib.parse import urlparse
 
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,7 +30,7 @@ def read(public: Path, relative: str) -> str:
 
 
 def build(base_url: str, public: Path) -> None:
-    result = subprocess.run(
+    result = run_hugo_process(
         [
             "hugo",
             "--source",

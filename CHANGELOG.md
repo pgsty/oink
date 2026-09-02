@@ -3,6 +3,18 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [Unreleased]
+
+### Fixed
+
+- `params.ui.scroll_spy` and the page-level `scroll_spy` override no longer
+  emit an unused patch runtime. OINK's normal shell runtime already tracks the
+  active outline heading. Both keys remain accepted as quiet compatibility
+  no-ops throughout 1.x and may be removed only in a future breaking release.
+- Plain page Print and overlapping Book Print aggregates no longer race on the
+  page's `tdBookAggregate` Store flag. One per-page cached coordinator now
+  renders and exposes the distinct plain and Book variants in a fixed order.
+
 ## [1.0.0] - 2026-08-29
 
 OINK 1.0.0 declares the current component, configuration, content, output, and

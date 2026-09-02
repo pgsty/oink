@@ -29,13 +29,13 @@ accepted decisions, dated research, and active proposals.
 - Put accepted rationale under `content/docs/design/decisions/` in the site
   repository and dated, non-normative evidence under `research/`. Preserve
   retired drafts in Git history and `CHANGELOG.md`, not a local planning tree.
-- Run the smallest owning checker here first. Then validate the real site from
-  `../oink.pgsty.com` with the sibling theme replacement:
+- Run the smallest owning checker here first. Then validate the real site
+  through its sibling-checkout Make targets:
 
 ```sh
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' npm test
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' npm run test:browser
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' hugo server -DFE
+make -C ../oink.pgsty.com check
+make -C ../oink.pgsty.com browser
+make -C ../oink.pgsty.com dev
 ```
 
 - Use the documentation site for rendered EN/ZH, desktop/mobile, light/dark,

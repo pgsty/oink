@@ -4,7 +4,7 @@
   {{ partial $tpl . }}
 {{ else -}}
 {{- $content := partialCached "print/page-content.html" (dict "page" .Page) .Page.RelPermalink -}}
-{{- $content = partial "book/namespace-print-headings.html" (dict "page" .Page "content" $content) -}}
+{{- $content = partial "book/namespace-print-headings.html" (dict "page" .Page "content" $content.plain) -}}
 {{ $break := cond .DoPageBreak "page-break-before: always" "" -}}
 <div class="td-content" style="{{ $break }}">
     {{ $break := cond .DoPageBreak "page-break-before: always" "" }}

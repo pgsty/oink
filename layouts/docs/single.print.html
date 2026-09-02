@@ -3,6 +3,6 @@
   {{- partial "print/page-heading.html" . -}}
   {{- with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end -}}
   {{ $content := partialCached "print/page-content.html" (dict "page" .) .RelPermalink -}}
-  {{ $content }}
+  {{ $content.plain }}
 </div>
 {{- end }}

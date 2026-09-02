@@ -8,6 +8,9 @@
 {{- $ulNr := .ulNr -}}
 {{- $ulShow := .ulShow -}}
 {{- $iconPolicy := .iconPolicy -}}
+{{- $compact := .compact -}}
+{{- $foldableEnabled := .foldable -}}
+{{- $overflow := .overflow -}}
 {{- $active := and (not $shouldDelayActive) (eq $s $p) -}}
 {{- $activePath := and (not $shouldDelayActive) (or (eq $p $s) ($p.IsDescendant $s)) -}}
 {{/* Blog sections start expanded; sidebar_expanded: false collapses one.
@@ -23,7 +26,7 @@
         $activePath
         (and (not $shouldDelayActive) (eq $s.Parent $p.Parent))
         (and (not $shouldDelayActive) (eq $s.Parent $p))
-        (not (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_compact")))
+        (not $compact)
         (and (not $shouldDelayActive) ($p.IsDescendant $s.Parent))
       )
       true false
@@ -42,10 +45,7 @@
 {{- end -}}
 
 {{- $withChild := gt (len $pages) 0 -}}
-{{- $foldable := and (partial "validate.html" (dict
-    "value" (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) "kind" "bool"
-    "fallback" true "key" "params.ui.sidebar_menu_foldable"
-    "where" (cond (isset $p.Params "sidebar_menu_foldable") $p.Path ""))) (ge $ulNr 1) $withChild -}}
+{{- $foldable := and $foldableEnabled (ge $ulNr 1) $withChild -}}
 
 {{- $childMarkup := "" -}}
 {{- if $withChild -}}
@@ -53,7 +53,7 @@
   {{- $rows := "" -}}
   {{- range $pages -}}
     {{- if (not (and (eq $s $p.Site.Home) (eq .Params.toc_root true))) -}}
-      {{- $rows = printf "%s%s" $rows (partial "shell/sidebar-tree-node.html" (dict "page" $p "section" . "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $childUlNr "ulShow" $ulShow "iconPolicy" $iconPolicy)) -}}
+      {{- $rows = printf "%s%s" $rows (partial "shell/sidebar-tree-node.html" (dict "page" $p "section" . "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $childUlNr "ulShow" $ulShow "iconPolicy" $iconPolicy "compact" $compact "foldable" $foldableEnabled "overflow" $overflow)) -}}
     {{- end -}}
   {{- end -}}
   {{- $childMarkup = printf "<ul class=\"td-shell-tree__list td-shell-tree__list--%d\">%s</ul>" $childUlNr $rows | safeHTML -}}
@@ -71,5 +71,6 @@
   "shouldExpand" $shouldExpand
   "hidden" (not (or $show $foldable))
   "iconPolicy" $iconPolicy
+  "overflow" $overflow
   "children" $childMarkup
 ) -}}

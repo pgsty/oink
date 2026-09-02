@@ -310,10 +310,12 @@ jobs:
         run: python3 -m unittest discover -s tests/migrations -t .
 
       - name: Check output structure and security
-        run: python3 bin/check-output.py
+        run: |
+          python3 tests/test_checker_inputs.py
+          python3 bin/check-output.py --public tests/site/public
 
       - name: Check the naming namespace
-        run: python3 bin/check-namespace.py
+        run: python3 bin/check-namespace.py --public tests/site/public
 
       - name: Check the parameter contract and legacy-key errors
         run: python3 bin/check-params.py

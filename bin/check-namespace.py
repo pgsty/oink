@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Freeze the theme's public naming surface.
 
-Over the built regression fixture (--public, default tests/site/public):
+Over a fresh strict regression fixture by default, or an existing build passed
+explicitly with ``--public``:
 
   1. every class the theme generates starts with `td-`;
   2. every data attribute the theme generates starts with `data-td-`;
@@ -23,6 +24,8 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+
+from test_site import checker_fixture_public
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -305,10 +308,16 @@ def check_sources() -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--public", type=Path, default=ROOT / "tests/site/public")
+    parser.add_argument("--public", type=Path)
+    parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
+    public, result = checker_fixture_public(args.public, args.hugo)
+    if result is not None and result.returncode != 0:
+        print("Strict regression fixture failed to build:")
+        print(result.stdout + result.stderr)
+        return 1
 
-    errors = check_html(args.public) + check_css(args.public) + check_sources()
+    errors = check_html(public) + check_css(public) + check_sources()
     if errors:
         print("Namespace checks failed:")
         for error in errors:

@@ -1,9 +1,27 @@
 {{- $sidebarCacheLimit := partial "validate.html" (dict
     "value" .Site.Params.ui.sidebar_cache_limit "kind" "int"
     "min" 1 "fallback" 500 "key" "params.ui.sidebar_cache_limit") -}}
-{{- $cacheSidebar := ge (len .Site.Pages) $sidebarCacheLimit -}}
 {{- $sidebarRoot := partial "shell/sidebar-root.html" . -}}
 {{- $iconPolicy := partial "shell/sidebar-icon-policy.html" . -}}
+{{- $language := .Site.Language.Lang -}}
+{{- $compactValue := partial "ui-param.html" (dict "page" . "key" "sidebar_menu_compact") -}}
+{{- $compact := not (not $compactValue) -}}
+{{- $foldable := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "sidebar_menu_foldable")) "kind" "bool"
+    "fallback" true "key" "params.ui.sidebar_menu_foldable"
+    "where" (cond (isset .Params "sidebar_menu_foldable") .Path "")) -}}
+{{- $expandLevels := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "sidebar_expand_levels")) "kind" "int"
+    "min" 0 "fallback" 2 "key" "params.ui.sidebar_expand_levels"
+    "where" (cond (isset .Params "sidebar_expand_levels") .Path "")) -}}
+{{- $overflow := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "sidebar_item_overflow")) "kind" "enum"
+    "allowed" (slice "ellipsis" "wrap") "fallback" "ellipsis" "key" "params.ui.sidebar_item_overflow"
+    "where" (cond (isset .Params "sidebar_item_overflow") .Path "")) -}}
+{{- $sidebarHeadings := partial "ui-param.html" (dict "page" . "key" "sidebar_headings") -}}
+{{- $sidebarHeadingsType := printf "%T" $sidebarHeadings -}}
+{{- $pageSpecific := and (eq .Type "book") (ne $sidebarHeadingsType "<nil>") (or (ne $sidebarHeadingsType "bool") $sidebarHeadings) -}}
+{{- $cacheSidebar := and (ge (len .Site.Pages) $sidebarCacheLimit) (not $pageSpecific) -}}
 
 {{- $args := dict
   "context" .
@@ -11,6 +29,10 @@
   "sidebarRoot" $sidebarRoot
   "sidebarRootID" $sidebarRoot.RelPermalink
   "iconPolicy" $iconPolicy
+  "compact" $compact
+  "foldable" $foldable
+  "expandLevels" $expandLevels
+  "overflow" $overflow
 -}}
 {{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{- $tree := "shell/sidebar-tree.html" -}}
@@ -22,7 +44,11 @@
   {{- $tree = "shell/docs-sidebar-tree.html" -}}
 {{- end -}}
 {{- if $cacheSidebar -}}
-  {{- partialCached $tree $args $sidebarRoot.RelPermalink -}}
+  {{- if eq $tree "shell/docs-sidebar-tree.html" -}}
+    {{- partialCached $tree $args $sidebarRoot.RelPermalink $language $foldable $overflow -}}
+  {{- else -}}
+    {{- partialCached $tree $args $sidebarRoot.RelPermalink $language $compact $foldable $expandLevels $overflow -}}
+  {{- end -}}
 {{- else -}}
   {{- partial $tree $args -}}
 {{- end -}}

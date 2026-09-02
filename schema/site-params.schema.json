@@ -324,7 +324,7 @@
               "default": false
             },
             "sidebar_cache_limit": {
-              "description": "Cache section trees once a site reaches this many pages. Active state is restored client-side when the cached tree is used.",
+              "description": "Cache neutral section trees once a site reaches this many pages. Variants keep page-effective layout settings; JS adds active state without hiding it.",
               "type": "integer",
               "default": 500
             },
@@ -416,7 +416,7 @@
               "default": 2
             },
             "scroll_spy": {
-              "description": "Bootstrap's scroll spy for the in-page outline. Off by default: the theme's own outline runtime already tracks the active heading.",
+              "description": "Compatibility no-op in 1.x. The normal shell runtime always tracks the active outline heading; keep this key quiet until a breaking release.",
               "type": "boolean",
               "default": false
             },

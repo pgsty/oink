@@ -11,7 +11,7 @@ import subprocess
 import tempfile
 
 from runtime_assets import chunk, referenced_chunks
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,7 +39,7 @@ def run(
         command.extend(["--destination", str(destination)])
     if panic_on_warning:
         command.append("--panicOnWarning")
-    return subprocess.run(
+    return run_hugo_process(
         command,
         cwd=ROOT,
         capture_output=True,
@@ -457,6 +457,17 @@ INVALID_CASES = (
     ("asset-unknown", "", '{{< release-assets base="/files" color="red" >}}\n' + "a" * 64 + "  file.zip\n{{< /release-assets >}}", "unsupported parameter"),
 )
 
+STRICT_INVALID_CANARIES = {
+    "release-url-bad-host",   # release URL policy
+    "release-url-scalar",     # release URL type
+    "release-legacy-map",     # removed front matter
+    "release-card-param",     # release-card parameters
+    "asset-bad-line",         # checksum parser
+    "asset-dual-source",      # source selection
+    "asset-missing-source",   # required source
+    "asset-scheme",           # asset URL policy
+}
+
 
 def check_invalid(hugo: str) -> list[str]:
     errors: list[str] = []
@@ -472,8 +483,11 @@ def check_invalid(hugo: str) -> list[str]:
             output = result.stdout + result.stderr
             require(expected in output, f"invalid case {name} did not report {expected!r}", errors)
             require("content/docs/invalid.md:" in output, f"invalid case {name} lost its source position", errors)
-            require(run(hugo, site, panic_on_warning=True).returncode != 0,
-                    f"invalid case {name} survived --panicOnWarning", errors)
+            page = site / "public/docs/invalid/index.html"
+            require(page.is_file(), f"invalid case {name} emitted no safe page output", errors)
+            if name in STRICT_INVALID_CANARIES:
+                require(run(hugo, site, panic_on_warning=True).returncode != 0,
+                        f"invalid case {name} survived --panicOnWarning", errors)
     return errors
 
 

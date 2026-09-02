@@ -16,7 +16,6 @@
 {{- if isset $params "drafts" -}}
   {{- $value := .Get "drafts" -}}
   {{- if ne (printf "%T" $value) "bool" }}{{ warnf "shortcode %q: drafts must be boolean at %s; keeping the default" .Name .Position }}{{ else }}{{ $includeDraft = $value }}{{ end -}}
-  {{- $includeDraft = $value -}}
 {{- end -}}
 {{- $root := partial "shell/sidebar-root.html" .Page -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}

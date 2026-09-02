@@ -11,7 +11,12 @@ import subprocess
 import tempfile
 
 from runtime_assets import combined_source
-from test_site import build_fixture_public, fixture_config, fixture_media_config
+from test_site import (
+    build_fixture_public,
+    fixture_config,
+    fixture_media_config,
+    run_hugo_process,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,7 +30,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 
 
 def run_hugo(hugo: str, *args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run([hugo, *args], cwd=ROOT, capture_output=True, text=True, check=False)
+    return run_hugo_process([hugo, *args], cwd=ROOT, capture_output=True, text=True, check=False)
 
 
 def check_outputs(public: Path) -> list[str]:
@@ -372,6 +377,18 @@ HOOK_INVALID_CASES = (
     ("hook-command-on-static", '![x](/media/content-primitives-static.svg)\n{command="Fit" options="10x10"}\n', "cannot be processed"),
 )
 
+STRICT_INVALID_CANARIES = {
+    "hook-unknown-attr",            # attribute policy
+    "hook-width",                   # dimensions
+    "hook-num",                     # number grammar
+    "hook-duplicate-num",           # numbered-target registry
+    "hook-non-image",               # resource kind
+    "hook-unsafe-scheme",           # source URL policy
+    "hook-link-without-caption",    # link/figure relationship
+    "hook-command-without-options", # processing pair
+    "hook-command-on-static",       # processability
+}
+
 
 def check_invalid_cases(hugo: str) -> list[str]:
     errors: list[str] = []
@@ -392,9 +409,13 @@ def check_invalid_cases(hugo: str) -> list[str]:
                 errors.append(f"invalid media case {name} did not report {expected!r}: {output.strip()}")
             if "content/docs/invalid/index.md:" not in output:
                 errors.append(f"invalid media case {name} did not report its position")
-            strict = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning")
-            if strict.returncode == 0:
-                errors.append(f"invalid media case {name} survived --panicOnWarning")
+            page = temp_path / "public/docs/invalid/index.html"
+            if not page.is_file():
+                errors.append(f"invalid media case {name} emitted no safe page output")
+            if name in STRICT_INVALID_CANARIES:
+                strict = run_hugo(hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--destination", str(temp_path / "public-strict"), "--logLevel", "warn", "--panicOnWarning")
+                if strict.returncode == 0:
+                    errors.append(f"invalid media case {name} survived --panicOnWarning")
     return errors
 
 

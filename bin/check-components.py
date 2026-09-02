@@ -35,7 +35,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
         errors.append(message)
 
 
-def build_site(hugo: str, pages: dict[str, str], *, prefix: str, extra_files: dict[str, str] | None = None, config: str = "", panic_on_warning: bool = False) -> tuple[subprocess.CompletedProcess[str], Path, tempfile.TemporaryDirectory]:
+def build_site(hugo: str, pages: dict[str, str], *, prefix: str, base_url: str = "https://example.org/", extra_files: dict[str, str] | None = None, config: str = "", panic_on_warning: bool = False) -> tuple[subprocess.CompletedProcess[str], Path, tempfile.TemporaryDirectory]:
     """Build a self-contained temp site against this theme; keep the temp handle alive."""
     temp = tempfile.TemporaryDirectory(prefix=prefix)
     site = Path(temp.name)
@@ -48,7 +48,7 @@ def build_site(hugo: str, pages: dict[str, str], *, prefix: str, extra_files: di
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(body, encoding="utf-8")
     (site / "hugo.yaml").write_text(
-        "baseURL: https://example.org/\n"
+        f"baseURL: {base_url}\n"
         "title: Component fixture\n"
         f"theme: {ROOT.name}\n"
         "disableKinds: [sitemap, taxonomy, term]\n"
@@ -336,11 +336,13 @@ def check_openapi(hugo: str) -> list[str]:
                 "---\ntitle: OpenAPI\n---\n\n"
                 '{{< swagger src="/spec-a.yaml" >}}\n'
                 '{{< swagger src="/spec-b.yaml" >}}\n'
-                '{{< redoc "/spec-a.yaml" >}}\n'
-                '{{< redoc "/spec-b.yaml" >}}\n'
+                '{{< redoc "openapi/spec.yaml" >}}\n'
+                '{{< redoc "/openapi/spec.yaml" >}}\n'
+                '{{< redoc "https://spec.example.org/openapi.yaml" >}}\n'
             ),
         },
         prefix="oink-components-openapi-",
+        extra_files={"static/openapi/spec.yaml": "openapi: 3.1.0\n"},
     )
     with temp:
         if result.returncode != 0:
@@ -348,7 +350,7 @@ def check_openapi(hugo: str) -> list[str]:
         else:
             html = (destination / "docs/openapi/index.html").read_text()
             ids = re.findall(r'id="(td-(?:swagger|redoc)-[^"]+)"', html)
-            require(len(ids) == 4 and len(set(ids)) == 4, f"OpenAPI instance IDs are not unique: {ids}", errors)
+            require(len(ids) == 5 and len(set(ids)) == 5, f"OpenAPI instance IDs are not unique: {ids}", errors)
             require("window.onload" not in html and "window.ui" not in html, "Swagger replaces global page state", errors)
             require("SwaggerUIBundle({" not in html,
                     "Swagger still initializes through an inline shortcode script instead of the chunk", errors)
@@ -363,6 +365,52 @@ def check_openapi(hugo: str) -> list[str]:
                     "the ReDoc overrides are still inlined in the shortcode instead of the standalone stylesheet", errors)
             require(re.search(r'href="[^"]*redoc[^"]*\.css[^"]*"', html) is not None,
                     "the ReDoc standalone stylesheet is not loaded beside the runtime", errors)
+            require(html.count('spec-url="https://example.org/openapi/spec.yaml"') == 2,
+                    "leading and non-leading Redoc paths differ at the site root", errors)
+            require('spec-url="https://spec.example.org/openapi.yaml"' in html,
+                    "Redoc rewrote a valid remote specification URL", errors)
+
+    subpath_page = (
+        "---\ntitle: Redoc paths\noutputs: [HTML, print, markdown, RSS]\n---\n\n"
+        '{{< redoc "openapi/spec.yaml" >}}\n\n'
+        '{{< redoc "/openapi/spec.yaml" >}}\n'
+    )
+    result, destination, temp = build_site(
+        hugo,
+        {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/redoc.md": subpath_page},
+        prefix="oink-components-redoc-subpath-",
+        base_url="https://example.org/preview/",
+        extra_files={"static/openapi/spec.yaml": "openapi: 3.1.0\n"},
+        panic_on_warning=True,
+    )
+    with temp:
+        if result.returncode != 0:
+            errors.append(f"Redoc subpath fixture failed to build: {result.stdout}{result.stderr}")
+        else:
+            expected = "https://example.org/preview/openapi/spec.yaml"
+            outputs = {
+                "HTML": (destination / "docs/redoc/index.html").read_text(),
+                "Print": (destination / "_print/docs/redoc/index.html").read_text(),
+                "Markdown": (destination / "docs/redoc/index.md").read_text(),
+                "RSS": (destination / "docs/redoc/index.xml").read_text(),
+            }
+            require(outputs["HTML"].count(f'spec-url="{expected}"') == 2,
+                    "leading and non-leading Redoc paths differ under a subpath", errors)
+            require(outputs["Print"].count(f'href="{expected}"') == 2,
+                    "Redoc Print fallback lost the normalized subpath URL", errors)
+            require(outputs["Markdown"].count(f"]({expected})") == 2,
+                    "Redoc Markdown fallback lost the normalized subpath URL", errors)
+            require(outputs["RSS"].count(f"]({expected})") == 2,
+                    "Redoc RSS fallback lost the normalized subpath URL", errors)
+            for name in ("Print", "Markdown", "RSS"):
+                require("<redoc" not in outputs[name] and "redoc.standalone" not in outputs[name],
+                        f"Redoc {name} fallback regained an interactive runtime", errors)
+            require((destination / "openapi/spec.yaml").is_file(),
+                    "the static-root Redoc specification was not published", errors)
+
+    redoc_source = (ROOT / "layouts/_shortcodes/redoc.html").read_text()
+    require("fileExists" not in redoc_source, "Redoc retained its ineffective content-file branch", errors)
+    require("urls.JoinPath" in redoc_source, "Redoc does not join local paths with the site base URL", errors)
 
     invalid = (
         ("swagger-missing-src", "{{< swagger >}}", "requires named parameter src"),

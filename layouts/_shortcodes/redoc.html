@@ -8,23 +8,17 @@
   {{- warnf "shortcode %q requires exactly one positional spec path or URL at %s; rendering nothing" .Name .Position -}}
   {{- $ok = false -}}
 {{- end -}}
-{{- $file := "" -}}
+{{- $validated := dict "valid" false -}}
 {{- if $ok -}}
-  {{- $file = .Get 0 -}}
-  {{- $validated := partial "content/url.html" (dict
-    "name" .Name "parameter" "spec" "position" .Position "value" $file "kind" "image"
+  {{- $validated = partial "content/url.html" (dict
+    "name" .Name "parameter" "spec" "position" .Position "value" (.Get 0) "kind" "image"
   ) -}}
   {{- $ok = $validated.valid -}}
-  {{- if $ok }}{{ $file = $validated.raw }}{{ end -}}
 {{- end -}}
 {{- if $ok -}}
-{{- $url := "" -}}
-{{- if hasPrefix $file "http" -}}
-  {{- $url = $file -}}
-{{- else if fileExists (print .Page.File.Dir $file) -}}
-  {{- $url = print .Page.Site.BaseURL .Page.File.Dir $file -}}
-{{- else -}}
-  {{- $url = print .Page.Site.BaseURL $file -}}
+{{- $url := $validated.raw -}}
+{{- if not $validated.external -}}
+  {{- $url = urls.JoinPath .Page.Site.BaseURL (strings.TrimPrefix "/" $validated.raw) -}}
 {{- end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if in (slice "markdown" "rss") $format -}}

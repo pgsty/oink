@@ -62,13 +62,13 @@ Both rendered-output checkers build into a temporary directory when invoked as
 shown. Pass `--public tests/site/public` only to reuse an intentionally fresh
 fixture that was built separately; this mode does not rebuild that fixture.
 
-From `../oink.pgsty.com`, validate and preview the real bilingual site with the
-current theme checkout:
+Validate and preview the real bilingual site with the current sibling theme
+checkout:
 
 ```sh
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' npm test
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' npm run test:browser
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' hugo server -DFE
+make -C ../oink.pgsty.com check
+make -C ../oink.pgsty.com browser
+make -C ../oink.pgsty.com dev
 ```
 
 Migration is dry-run unless `--write` is explicit:

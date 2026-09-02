@@ -172,7 +172,8 @@ def check_hugo_runtime(
         )
         quoted_keys = " ".join(json.dumps(key) for key in keys)
         (site / "layouts/home.html").write_text(
-            "<!doctype html><html lang=\"{{ .Site.Language.Lang }}\"><body>\n"
+            "<!doctype html><html lang=\"{{ .Site.Language.Lang }}\" "
+            "dir=\"{{ .Site.Language.Direction }}\"><body>\n"
             f"{{{{ $ctx := {context} }}}}\n"
             f"{{{{ range $key := slice {quoted_keys} }}}}"
             "<span data-key=\"{{ $key }}\">{{ T $key $ctx }}</span>"
@@ -222,6 +223,17 @@ def check_hugo_runtime(
             return [
                 "all-locale Hugo render selected the wrong catalog: "
                 + ", ".join(wrong_catalogs)
+            ]
+        wrong_directions = sorted(
+            locale
+            for locale, path in outputs.items()
+            if ('dir="rtl"' in path.read_text(encoding="utf-8"))
+            != (locale in {"ar", "fa", "he"})
+        )
+        if wrong_directions:
+            return [
+                "all-locale Hugo render selected the wrong direction: "
+                + ", ".join(wrong_directions)
             ]
     return []
 

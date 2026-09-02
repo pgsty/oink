@@ -7,13 +7,45 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Cached sidebars now key reusable markup by language, navigation root, and the
+  page-effective layout settings that change their output. A Book page with
+  page-specific headings bypasses the shared cache, while every cached tree
+  remains visible without JavaScript. Initial active-path hydration also
+  suppresses its own transitions, so accessibility checks never sample a
+  low-contrast intermediate state.
+- Dedicated Docs and Blog Print output no longer renders the site navbar or
+  interactive theme initialization. All dedicated Print surfaces now contain
+  only the static document and the runtimes that static content requires.
+- Plain page Print and overlapping Book Print aggregates no longer race on the
+  page's `tdBookAggregate` Store flag. One per-page cached coordinator now
+  renders and exposes the distinct plain and Book variants in a fixed order;
+  page-local and aggregate tabs keep their original IDs as well.
+- Invalid `book-toc drafts` input now keeps the documented default after its
+  warning instead of assigning the rejected value back to the renderer.
+- Redoc local specification paths are consistently rooted under `static/`.
+  Leading and non-leading slash forms resolve to the same URL under both root
+  and subpath deployments; valid remote HTTP(S) URLs remain unchanged.
+- A non-string Landing `preview.source` now warns and omits only that section
+  instead of continuing into a string operation and aborting an ordinary
+  preview build.
 - `params.ui.scroll_spy` and the page-level `scroll_spy` override no longer
   emit an unused patch runtime. OINK's normal shell runtime already tracks the
   active outline heading. Both keys remain accepted as quiet compatibility
   no-ops throughout 1.x and may be removed only in a future breaking release.
-- Plain page Print and overlapping Book Print aggregates no longer race on the
-  page's `tdBookAggregate` Store flag. One per-page cached coordinator now
-  renders and exposes the distinct plain and Book variants in a fixed order.
+
+### Changed
+
+- Rendered-output and namespace checkers build a fresh strict fixture by
+  default; an explicit `--public` is now the only reuse path. Every
+  checker-owned Hugo subprocess has a 120-second ceiling, while duplicate
+  warning-fatal builds were reduced from one per invalid row to one named
+  canary per validation family. The measured suite fell from 735 Hugo calls
+  (305 strict) to 614 (184 strict) without dropping per-case diagnostics or
+  fallback/output assertions.
+- Maintainer validation uses path-independent sibling Make targets. Confirmed
+  unused Store flags, translation keys, and duplicate checker code were removed
+  without shrinking compatibility partials, search providers, or migration
+  tooling.
 
 ## [1.0.0] - 2026-08-29
 

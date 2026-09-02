@@ -823,6 +823,114 @@ def check_toc_drafts(hugo: str) -> list[str]:
     return errors
 
 
+def check_print_store_isolation(hugo: str) -> list[str]:
+    """Plain and aggregate Print may render one Book page concurrently."""
+
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-book-print-store-") as temp:
+        source = Path(temp)
+        write(
+            source / "hugo.yaml",
+            f"""baseURL: https://example.org/
+title: Book Print store fixture
+theme: {ROOT.name}
+defaultContentLanguage: en
+disableKinds: [home, RSS, sitemap, taxonomy, term]
+outputs:
+  page: [HTML, print]
+  section: [HTML, print]
+params:
+  offline_search: false
+  ui:
+    shell_types: [book]
+    sidebar_root_enabled: true
+    sidebar_root_menu: false
+""",
+        )
+        write(
+            source / "layouts/_shortcodes/aggregate-probe.html",
+            """{{- $before := .Page.Store.Get "tdBookAggregate" | default false -}}
+{{- $sink := 0 -}}
+{{- range seq 1 2000 -}}{{- $sink = add $sink . -}}{{- end -}}
+<span data-aggregate-probe="{{ $before }}-{{ .Page.Store.Get "tdBookAggregate" | default false }}-{{ $sink }}"></span>
+""",
+        )
+        write(
+            source / "content/book/_index.md",
+            "---\ntitle: Book\ntype: book\ncascade:\n  type: book\n  outputs: [HTML, print]\n---\n",
+        )
+        calls = "\n".join("{{< aggregate-probe >}}" for _ in range(6))
+        for section in range(2):
+            write(
+                source / f"content/book/s{section}/_index.md",
+                f"---\ntitle: Section {section}\nweight: {section}\n---\n",
+            )
+            for page in range(3):
+                target = (page + 1) % 3
+                write(
+                    source / f"content/book/s{section}/p{page}.md",
+                    f"---\ntitle: Page {section}-{page}\nweight: {page}\n---\n\n"
+                    "## Topic {#topic}\n\n"
+                    "{{< xref anchor=\"topic\" >}}Self{{< /xref >}}\n\n"
+                    f"{{{{< xref page=\"/book/s{section}/p{target}\" anchor=\"topic\" >}}}}Cross{{{{< /xref >}}}}\n\n"
+                    f"{{{{< tabs group=\"probe-{section}-{page}\" >}}}}\n"
+                    "{{< tab label=\"One\" value=\"one\" >}}One{{< /tab >}}\n"
+                    "{{< tab label=\"Two\" value=\"two\" >}}Two{{< /tab >}}\n"
+                    "{{< /tabs >}}\n\n"
+                    f"{calls}\n",
+                )
+
+        baseline: tuple[str, ...] | None = None
+        for run in range(2):
+            public = source / f"public-{run}"
+            result = build(hugo, source, public, "--panicOnWarning")
+            if result.returncode != 0:
+                return [f"Book Print store fixture failed on run {run + 1}: {result.stdout}{result.stderr}"]
+
+            rendered: list[str] = []
+            for section in range(2):
+                for page in range(3):
+                    plain = (public / f"_print/book/s{section}/p{page}/index.html").read_text()
+                    rendered.append(plain)
+                    require(plain.count('data-aggregate-probe="false-false-') == 6,
+                            f"plain Print observed aggregate state on run {run + 1}, page {section}-{page}", errors)
+                    require('id="topic"' in plain and 'href="#topic"' in plain
+                            and f'href="/book/s{section}/p{(page + 1) % 3}/#topic"' in plain,
+                            f"plain Print xref or heading semantics changed on page {section}-{page}", errors)
+                    require(f'id="probe-{section}-{page}-one"' in plain
+                            and f'id="probe-{section}-{page}-2-one"' not in plain,
+                            f"plain Print tab anchors changed on page {section}-{page}", errors)
+
+                aggregate = (public / f"_print/book/s{section}/index.html").read_text()
+                rendered.append(aggregate)
+                require(aggregate.count('data-aggregate-probe="true-true-') == 18,
+                        f"nested Book Print lost aggregate state on run {run + 1}, section {section}", errors)
+                require('id="topic"' not in aggregate and 'href="/book/' not in aggregate
+                        and re.search(r'id="pg-[^"]+--topic"', aggregate) is not None,
+                        f"nested Book Print xref or heading semantics changed in section {section}", errors)
+                require(all(f'id="probe-{section}-{page}-one"' in aggregate
+                            and f'id="probe-{section}-{page}-2-one"' not in aggregate
+                            for page in range(3)),
+                        f"nested Book Print tab anchors changed in section {section}", errors)
+
+            whole = (public / "_print/book/index.html").read_text()
+            rendered.append(whole)
+            require(whole.count('data-aggregate-probe="true-true-') == 36,
+                    f"whole-Book Print lost aggregate state on run {run + 1}", errors)
+            require('id="topic"' not in whole and 'href="/book/' not in whole
+                    and len(re.findall(r'id="pg-[^"]+--topic"', whole)) == 6,
+                    "whole-Book Print xref or heading semantics changed", errors)
+            require(all(f'id="probe-{section}-{page}-one"' in whole
+                        and f'id="probe-{section}-{page}-2-one"' not in whole
+                        for section in range(2) for page in range(3)),
+                    "whole-Book Print tab anchors changed", errors)
+            signature = tuple(rendered)
+            require(baseline is None or signature == baseline,
+                    f"Book Print stress output changed between repeated builds on run {run + 1}", errors)
+            baseline = signature
+    return errors
+
+
 def check_reading_time(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-components-book-reading-time-") as temp:
@@ -1085,6 +1193,7 @@ def check_sources() -> list[str]:
         "layouts/_shortcodes/eq.html": ("scripts/math.html", "data-td-book-kind"),
         "layouts/_shortcodes/xref.html": ("targetPage.RelPermalink", "tdBookAggregate", "data-td-book-num"),
         "layouts/_shortcodes/book-toc.html": ("depth", "drafts", "toc-tree.html", "toc-markdown.html"),
+        "layouts/_shortcodes/tabs.html": ("tdTabsGroupSeen", "tdBookAggregate", "$printVariant"),
         "layouts/_shortcodes/eg.html": ("register-target.html", "render-block.html", "data-td-book-kind", "markdown"),
         "layouts/_shortcodes/book-tables.html": ('"kind" "tbl"',),
         "layouts/_shortcodes/book-equations.html": ('"kind" "eq"',),
@@ -1097,12 +1206,12 @@ def check_sources() -> list[str]:
         "layouts/_partials/contributors/items.html": ("github", "duplicate GitHub handle", "avatar"),
         "layouts/_partials/contributors/wall.html": ("td-contributor-wall", "data-td-contributor-count", "loading=\"lazy\"", "avatar--placeholder"),
         "layouts/_partials/book/pages.html": ("nav-flatten.html", "IsDescendant"),
-        "layouts/_partials/book/print.html": ("book/pages.html", "no_print", 'partialCached "print/page-content.html"', "namespace-print-headings.html", '"book" true', 'Store.Get "hasMath"', "data-td-book-page"),
+        "layouts/_partials/book/print.html": ("book/pages.html", "no_print", 'partialCached "print/page-content.html"', "$content.book", "namespace-print-headings.html", 'Store.Get "hasMath"', "data-td-book-page"),
         "layouts/_partials/book/manifest.json": ("schemaVersion", "baseURL", "aggregateId", "book/pages.html", "tdBookTargetOrder", "tdBookXrefs", "OutputFormats.Get"),
         "layouts/index.bookmanifest.json": ("book/manifest.json",),
         "layouts/book/list.bookmanifest.json": ("book/manifest.json",),
         "layouts/_partials/book/toc-headings.html": ("htmlUnescape",),
-        "layouts/_partials/print/page-content.html": ("tdBookAggregate", "static-image-output.html"),
+        "layouts/_partials/print/page-content.html": ("tdBookAggregate", "static-image-output.html", 'dict "plain" $plain "book" $book'),
         "layouts/_partials/print/content.html": ('partialCached "print/page-content.html"', "namespace-print-headings.html"),
         "layouts/_partials/print/render.html": ('partialCached "print/page-content.html"', "namespace-print-headings.html"),
         "layouts/_partials/book/namespace-print-headings.html": ("Fragments.Identifiers", "aggregate-heading-anchor.html", "RelPermalink", "fnref[0-9]*|fn"),
@@ -1137,6 +1246,25 @@ def check_sources() -> list[str]:
             f"{relative} namespaces single-page Print anchors",
             errors,
         )
+    for relative, variant in (
+        ("layouts/book/single.print.html", "plain"),
+        ("layouts/docs/single.print.html", "plain"),
+        ("layouts/blog/single.print.html", "plain"),
+        ("layouts/_partials/print/content.html", "plain"),
+        ("layouts/_partials/print/render.html", "plain"),
+        ("layouts/_partials/book/print.html", "book"),
+    ):
+        source = (ROOT / relative).read_text(encoding="utf-8")
+        require(f"$content.{variant}" in source
+                and '.RelPermalink "book"' not in source
+                and '"book" true' not in source,
+                f"{relative} does not select {variant} from the shared per-page Print cache", errors)
+    require(page_content.count("$page.RenderString") == 2
+            and page_content.index('$page.Store.Delete "tdBookAggregate"')
+            < page_content.index("$plain := $page.RenderString")
+            < page_content.index('$page.Store.Set "tdBookAggregate" true')
+            < page_content.index("$book = $page.RenderString"),
+            "print/page-content.html does not serialize plain then Book variants", errors)
     book_styles = (ROOT / "assets/scss/td/_book.scss").read_text(encoding="utf-8")
     sidebar_number = re.search(
         r">\s*\.td-book-number\s*\{([^}]*)\}", book_styles, re.DOTALL
@@ -1285,6 +1413,7 @@ def main() -> int:
     errors += (
         check_toc_heading_entities(args.hugo)
         + check_toc_drafts(args.hugo)
+        + check_print_store_isolation(args.hugo)
         + check_home_manifest(args.hugo)
         + check_reading_time(args.hugo)
         + check_invalid_components(args.hugo)

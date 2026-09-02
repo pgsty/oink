@@ -45,10 +45,12 @@
 {{- else -}}
   {{- $base := printf "td-tabs-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
   {{- /* Peer sets of one group on the same page: the first keeps `<group>-<value>`
-         (deep-link target), later ones get a `-2`, `-3` … suffix so ids stay unique. */ -}}
+         (deep-link target), later ones get a `-2`, `-3` … suffix so ids stay unique.
+         Plain and Book Print are separate documents and count independently. */ -}}
   {{- $idPrefix := $base -}}
   {{- if $group -}}
-    {{- $seenKey := printf "tdTabsGroupSeen:%s:%s" $format $group -}}
+    {{- $printVariant := cond (and (eq $format "print") (.Page.Store.Get "tdBookAggregate")) "book" "plain" -}}
+    {{- $seenKey := printf "tdTabsGroupSeen:%s:%s:%s" $format $printVariant $group -}}
     {{- $seen := .Page.Store.Get $seenKey | default 0 -}}
     {{- $seen = add $seen 1 -}}
     {{- .Page.Store.Set $seenKey $seen -}}

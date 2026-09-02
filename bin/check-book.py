@@ -781,6 +781,48 @@ book_number: 1
     return errors
 
 
+def check_toc_drafts(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-components-book-toc-drafts-") as temp:
+        source = Path(temp)
+        write(source / "hugo.yaml", base_config())
+        cases = (
+            ("true", "true", True),
+            ("false", "false", False),
+            ("invalid", '""', True),
+        )
+        for name, value, _ in cases:
+            write(
+                source / f"content/{name}/_index.md",
+                f"---\ntitle: {name}\ntype: book\ncascade:\n  type: book\n---\n\n{{{{< book-toc drafts={value} >}}}}\n",
+            )
+            write(
+                source / f"content/{name}/draft.md",
+                f"---\ntitle: Draft {name}\nbook_status: draft\n---\n",
+            )
+
+        result = build(hugo, source, source / "public")
+        output = result.stdout + result.stderr
+        require(result.returncode == 0, "invalid book-toc drafts stopped the ordinary build", errors)
+        require("drafts must be boolean" in output, "invalid book-toc drafts emitted no warning", errors)
+        if result.returncode == 0:
+            for name, _, includes_draft in cases:
+                page = source / f"public/{name}/index.html"
+                toc = re.search(r'<nav class="td-book-toc[\s\S]*?</nav>', page.read_text(encoding="utf-8"))
+                require(toc is not None, f"book-toc drafts={name} output is missing", errors)
+                if toc is not None:
+                    present = f"Draft {name}" in toc.group(0)
+                    require(
+                        present == includes_draft,
+                        f"book-toc drafts={name} used the wrong draft visibility",
+                        errors,
+                    )
+
+        strict = build(hugo, source, source / "strict", "--panicOnWarning")
+        require(strict.returncode != 0, "invalid book-toc drafts survived --panicOnWarning", errors)
+    return errors
+
+
 def check_reading_time(hugo: str) -> list[str]:
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-components-book-reading-time-") as temp:
@@ -816,7 +858,6 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("xref-anchor-text", '{{< xref anchor="heading" />}}', "requires inner link text"),
         ("xref-page", '{{< xref page="missing" anchor="heading" >}}text{{< /xref >}}', "was not found"),
         ("toc-depth", '{{< book-toc depth=4 >}}', "depth must be an integer from 1 through 3"),
-        ("toc-drafts", '{{< book-toc drafts="false" >}}', "drafts must be boolean"),
         ("eg-caption", '{{< eg num="1" >}}```sql\nSELECT 1;\n```{{< /eg >}}', "requires parameter caption"),
         ("eg-num", '{{< eg num="1/2" caption="Bad" >}}x{{< /eg >}}', "num must match"),
         ("eg-empty", '{{< eg num="1" caption="Empty" >}}{{< /eg >}}', "requires inner content"),
@@ -1243,6 +1284,7 @@ def main() -> int:
 
     errors += (
         check_toc_heading_entities(args.hugo)
+        + check_toc_drafts(args.hugo)
         + check_home_manifest(args.hugo)
         + check_reading_time(args.hugo)
         + check_invalid_components(args.hugo)

@@ -12,7 +12,7 @@ import subprocess
 import tempfile
 from urllib.parse import urlsplit
 
-from test_site import fixture_config_args
+from test_site import fixture_config_args, run_hugo_process
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -77,13 +77,19 @@ def page_path(public: Path, url: str) -> Path:
     return public / relative / "index.html"
 
 
+def sidebar_markup(source: str) -> str:
+    start = source.find('<div id="td-sidebar-menu"')
+    end = source.find("</nav>", start)
+    return source[start:end + len("</nav>")] if start >= 0 and end >= 0 else ""
+
+
 def require(condition: bool, message: str, errors: list[str]) -> None:
     if not condition:
         errors.append(message)
 
 
 def build_example(hugo: str, destination: Path) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [
             hugo,
             "--source",
@@ -326,7 +332,7 @@ cascade:
 
 
 def run_site(hugo: str, source: Path, *extra: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
+    return run_hugo_process(
         [hugo, "--source", str(source), "--logLevel", "warn", *extra],
         cwd=ROOT,
         capture_output=True,
@@ -340,10 +346,25 @@ def check_explicit_navigation(hugo: str) -> list[str]:
     with tempfile.TemporaryDirectory(prefix="oink-components-explicit-nav-") as temp:
         source = Path(temp)
         create_theme_site(source)
+        config_path = source / "hugo.yaml"
+        config_path.write_text(
+            config_path.read_text().replace(
+                "    sidebar_menu_foldable: true\n",
+                "    sidebar_menu_foldable: true\n"
+                "    sidebar_menu_compact: true\n"
+                "    sidebar_expand_levels: 1\n"
+                "    sidebar_item_overflow: ellipsis\n"
+                "    sidebar_cache_limit: 1\n",
+            )
+        )
         for name, weight in (("alpha", 10), ("beta", 20), ("gamma", 30)):
+            overrides = (
+                "sidebar_menu_foldable: false\nsidebar_item_overflow: wrap\n"
+                if name == "alpha" else ""
+            )
             write_file(
                 source / f"content/docs/{name}.md",
-                f"---\ntitle: {name.title()}\nweight: {weight}\n---\n\n{name}\n",
+                f"---\ntitle: {name.title()}\nweight: {weight}\n{overrides}---\n\n{name}\n",
             )
         write_file(
             source / "content/docs/ghost.md",
@@ -386,6 +407,17 @@ build:
                 "explicit sidebar no longer follows docs_nav.json",
                 errors,
             )
+        alpha_sidebar = sidebar_markup((source / "public/docs/alpha/index.html").read_text())
+        gamma_sidebar = sidebar_markup((source / "public/docs/gamma/index.html").read_text())
+        for name, markup in (("alpha", alpha_sidebar), ("gamma", gamma_sidebar)):
+            require(markup and "data-td-sidebar-hydrate-active" in markup and "d-none" not in markup,
+                    f"cached docs_nav sidebar for {name} is not visible before JavaScript", errors)
+        require("data-td-shell-tree-toggle" not in alpha_sidebar
+                and 'href="/docs/beta/" title=' not in alpha_sidebar,
+                "docs_nav ignored the page foldable/wrap overrides", errors)
+        require("data-td-shell-tree-toggle" in gamma_sidebar
+                and 'href="/docs/beta/" title="Beta"' in gamma_sidebar,
+                "docs_nav default foldable/ellipsis variant was polluted by another page", errors)
         for index, url in enumerate(expected):
             path = page_path(source / "public", url)
             require(path.exists(), f"explicit navigation output is missing: {url}", errors)
@@ -406,6 +438,80 @@ build:
                     f"explicit navigation points at link-only ghost from {url}",
                     errors,
                 )
+    return errors
+
+
+def check_cached_content_navigation(hugo: str) -> list[str]:
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-components-cached-content-nav-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config_path = source / "hugo.yaml"
+        config_path.write_text(
+            config_path.read_text().replace(
+                "    sidebar_menu_foldable: true\n",
+                "    sidebar_menu_foldable: true\n"
+                "    sidebar_cache_limit: 1\n",
+            )
+        )
+        write_file(
+            source / "content/book/_index.md",
+            "---\ntitle: Book\ntype: book\ncascade:\n  type: book\n"
+            "  sidebar_menu_compact: true\n  sidebar_menu_foldable: true\n"
+            "  sidebar_expand_levels: 1\n  sidebar_item_overflow: ellipsis\n"
+            "  sidebar_headings: false\n---\n",
+        )
+        write_file(
+            source / "content/book/part/_index.md",
+            "---\ntitle: Part\nweight: 10\n---\n",
+        )
+        write_file(
+            source / "content/book/part/expanded.md",
+            "---\ntitle: Expanded\nweight: 10\nsidebar_menu_compact: false\n"
+            "sidebar_menu_foldable: false\nsidebar_expand_levels: 0\n"
+            "sidebar_item_overflow: wrap\n---\n\nExpanded.\n",
+        )
+        write_file(
+            source / "content/book/part/compact.md",
+            "---\ntitle: Compact\nweight: 20\n---\n\nCompact.\n",
+        )
+        write_file(
+            source / "content/book/part/headings.md",
+            "---\ntitle: Headings\nweight: 30\nsidebar_headings: 3\n---\n\n"
+            "## First heading {#first-heading}\n\n### Nested heading {#nested-heading}\n",
+        )
+
+        result = run_site(hugo, source, "--panicOnWarning")
+        if result.returncode != 0:
+            return [f"cached content sidebar fixture failed: {result.stdout}{result.stderr}"]
+
+        expanded = sidebar_markup(
+            (source / "public/book/part/expanded/index.html").read_text()
+        )
+        compact = sidebar_markup(
+            (source / "public/book/part/compact/index.html").read_text()
+        )
+        headings = sidebar_markup(
+            (source / "public/book/part/headings/index.html").read_text()
+        )
+        for name, markup in (("expanded", expanded), ("compact", compact)):
+            require(markup and "data-td-sidebar-hydrate-active" in markup and "d-none" not in markup,
+                    f"cached content sidebar for {name} is not visible before JavaScript", errors)
+            require('href="/book/"' in markup and 'href="/book/part/"' in markup,
+                    f"cached content sidebar for {name} has no usable neutral links", errors)
+        require("data-td-shell-tree-toggle" not in expanded
+                and "td-shell-tree__item--hidden" not in expanded
+                and 'href="/book/part/" title=' not in expanded,
+                "content tree ignored compact/foldable/expand/overflow overrides", errors)
+        require("data-td-shell-tree-toggle" in compact
+                and "td-shell-tree__item--hidden" in compact
+                and 'href="/book/part/" title="Part"' in compact,
+                "content-tree default cache variant was polluted by another page", errors)
+        require("data-td-sidebar-hydrate-active" not in headings
+                and "data-td-book-headings" in headings
+                and 'href="#first-heading"' in headings
+                and 'href="#nested-heading"' in headings,
+                "Book sidebar headings were cached or omitted instead of rendering per page", errors)
     return errors
 
 
@@ -513,6 +619,7 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
         ("bad-docs-root", "", "    docs_sidebar_root: archive\n    pager_types: [docs, book, blog]", "params.ui.docs_sidebar_root must be home or section"),
         ("scalar-docs-root", "", "    docs_sidebar_root: true\n    pager_types: [docs, book, blog]", "params.ui.docs_sidebar_root must be a string"),
     )
+    strict_canaries = {"bad-type", "scalar-types", "page-string", "scalar-docs-root"}
     for name, front_matter, config_extra, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-pager-{name}-") as temp:
             source = Path(temp)
@@ -536,8 +643,11 @@ def check_invalid_pager_config(hugo: str) -> list[str]:
             # turns that into a failure.
             require(result.returncode == 0,
                     f"invalid pager case {name} stopped the build instead of warning", errors)
-            require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
-                    f"invalid pager case {name} survived --panicOnWarning", errors)
+            require((source / "public/docs/page/index.html").is_file(),
+                    f"invalid pager case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                        f"invalid pager case {name} survived --panicOnWarning", errors)
     return errors
 
 
@@ -550,6 +660,7 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
         ("class-without-num", '{{< eq class="wide" >}}x{{< /eq >}}', 'parameter "class" requires num'),
         ("positional", '{{< eq "x" >}}x{{< /eq >}}', "accepts named parameters only"),
     )
+    strict_canaries = {"empty", "caption-without-num", "positional"}
     for name, body, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-components-eq-{name}-") as temp:
             source = Path(temp)
@@ -560,9 +671,14 @@ def check_invalid_eq_escape(hugo: str) -> list[str]:
             )
             result = run_site(hugo, source)
             output = result.stdout + result.stderr
+            require(result.returncode == 0,
+                    f"invalid eq escape case {name} stopped the ordinary build", errors)
             require(expected in output, f"invalid eq escape case {name} did not report {expected!r}", errors)
-            require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
-                    f"invalid eq escape case {name} survived --panicOnWarning", errors)
+            require((source / "public/docs/page/index.html").is_file(),
+                    f"invalid eq escape case {name} emitted no safe page output", errors)
+            if name in strict_canaries:
+                require(run_site(hugo, source, "--panicOnWarning").returncode != 0,
+                        f"invalid eq escape case {name} survived --panicOnWarning", errors)
     return errors
 
 
@@ -668,6 +784,7 @@ def main() -> int:
 
     errors += (
         check_explicit_navigation(args.hugo)
+        + check_cached_content_navigation(args.hugo)
         + check_home_root_navigation(args.hugo)
         + check_invalid_pager_config(args.hugo)
         + check_invalid_eq_escape(args.hugo)

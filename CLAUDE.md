@@ -49,7 +49,8 @@ responsive, and visual validation against the sibling documentation site.
 ```sh
 python3 bin/check-shell.py               # shell, blog, page-end contracts
 python3 bin/check-components.py          # component and render-hook contracts
-python3 bin/check-output.py              # rendered structure/runtime/security
+python3 bin/check-output.py              # fresh strict fixture + output checks
+python3 bin/check-namespace.py           # fresh strict fixture + namespace checks
 python3 bin/check-goldens.py             # HTML/print/Markdown/RSS/LLMS goldens
 python3 bin/check-params.py              # config shapes and warning fallbacks
 python3 bin/check-i18n.py                 # locale schema parity
@@ -57,13 +58,17 @@ node --test 'tests/js/**/*.test.js'       # browser-runtime units
 hugo --source tests/site --printPathWarnings --panicOnWarning
 ```
 
-From `../oink.pgsty.com`, validate and preview the real bilingual site with the
-current theme checkout:
+Both rendered-output checkers build into a temporary directory when invoked as
+shown. Pass `--public tests/site/public` only to reuse an intentionally fresh
+fixture that was built separately; this mode does not rebuild that fixture.
+
+Validate and preview the real bilingual site with the current sibling theme
+checkout:
 
 ```sh
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' npm test
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' npm run test:browser
-HUGO_MODULE_REPLACEMENTS='github.com/pgsty/oink -> /Users/vonng/pgsty/oink' hugo server -DFE
+make -C ../oink.pgsty.com check
+make -C ../oink.pgsty.com browser
+make -C ../oink.pgsty.com dev
 ```
 
 Migration is dry-run unless `--write` is explicit:

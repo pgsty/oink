@@ -1,20 +1,24 @@
 {{/* Sidebar tree walked from Hugo's content tree — the default source for
-     docs, book, blog, and any other shell type. Page-level .Param lookups let
-     section cascades control foldable, compact, and expand levels. The row markup
-     itself lives in shell/sidebar-node.html, shared with the explicit
-     data/docs_nav.json walker. */ -}}
+     docs, book, blog, and any other shell type. sidebar.html passes the
+     page-effective tree settings once. The row markup lives in
+     shell/sidebar-node.html, shared with the explicit data/docs_nav.json
+     walker. */ -}}
 {{ $context := .context -}}
 {{ $sidebarRoot := .sidebarRoot -}}
 {{ $sidebarRootID := .sidebarRootID -}}
 {{ $cacheSidebar := .cacheSidebar -}}
 {{ $iconPolicy := .iconPolicy -}}
+{{ $compact := .compact -}}
+{{ $foldable := .foldable -}}
+{{ $expandLevels := .expandLevels -}}
+{{ $overflow := .overflow -}}
 
 {{ with $context -}}
 
 {{/* When the sidebar is cached, "active" class is set client side. */ -}}
 {{ $shouldDelayActive := $cacheSidebar -}}
 
-<div id="td-sidebar-menu" class="td-shell-tree-wrap{{ if $shouldDelayActive }} d-none{{ end }}">
+<div id="td-sidebar-menu" class="td-shell-tree-wrap"{{ if $shouldDelayActive }} data-td-sidebar-hydrate-active{{ end }}>
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       data-td-sidebar-icon-policy="{{ $iconPolicy }}"
       {{- if .Site.Params.ui.sidebar_root_enabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
@@ -23,15 +27,12 @@
       {{ $navRoot = $sidebarRoot -}}
     {{ end -}}
     {{ $ulNr := 0 -}}
-    {{ $ulShow := partial "validate.html" (dict
-        "value" (partial "ui-param.html" (dict "page" . "key" "sidebar_expand_levels")) "kind" "int"
-        "min" 0 "fallback" 2 "key" "params.ui.sidebar_expand_levels"
-        "where" (cond (isset .Params "sidebar_expand_levels") .Path "")) -}}
+    {{ $ulShow := add $expandLevels 1 -}}
     {{ $sidebarMenuTruncate := partial "validate.html" (dict
         "value" .Site.Params.ui.sidebar_menu_truncate "kind" "int"
         "min" 1 "fallback" 2000 "key" "params.ui.sidebar_menu_truncate") -}}
     <ul class="td-shell-tree__list td-shell-tree__list--{{ $ulNr }}">
-      {{ partial "shell/sidebar-tree-node.html" (dict "page" . "section" $navRoot "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $ulNr "ulShow" (add $ulShow 1) "iconPolicy" $iconPolicy) }}
+      {{ partial "shell/sidebar-tree-node.html" (dict "page" . "section" $navRoot "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $ulNr "ulShow" $ulShow "iconPolicy" $iconPolicy "compact" $compact "foldable" $foldable "overflow" $overflow) }}
     </ul>
   </nav>
 </div>

@@ -7,6 +7,8 @@
 {{- $shouldDelayActive := .shouldDelayActive -}}
 {{- $ulNr := .ulNr -}}
 {{- $iconPolicy := .iconPolicy -}}
+{{- $foldableEnabled := .foldable -}}
+{{- $overflow := .overflow -}}
 {{- $s := $p.Site.GetPage $node.page -}}
 {{- if not $s -}}
   {{- warnf "docs navigation: page %s was not found; skipping the entry" $node.page -}}
@@ -18,10 +20,7 @@
   {{- /* A tree node may omit children entirely; nil must not crash the
        build -- authored data degrades, it does not error. */ -}}
   {{- $withChild := gt (len ($node.children | default (slice))) 0 -}}
-  {{- $foldable := and (partial "validate.html" (dict
-      "value" (partial "ui-param.html" (dict "page" $p "key" "sidebar_menu_foldable")) "kind" "bool"
-      "fallback" true "key" "params.ui.sidebar_menu_foldable"
-      "where" (cond (isset $p.Params "sidebar_menu_foldable") $p.Path ""))) $withChild -}}
+  {{- $foldable := and $foldableEnabled $withChild -}}
 
   {{- $childMarkup := "" -}}
   {{- if $withChild -}}
@@ -36,6 +35,8 @@
           "shouldDelayActive" $shouldDelayActive
           "ulNr" $childUlNr
           "iconPolicy" $iconPolicy
+          "foldable" $foldableEnabled
+          "overflow" $overflow
       )) -}}
     {{- end -}}
     {{- $childMarkup = printf "<ul class=\"td-shell-tree__list td-shell-tree__list--%d\">%s</ul>" $childUlNr $rows | safeHTML -}}
@@ -53,6 +54,7 @@
     "shouldExpand" $shouldExpand
     "hidden" false
     "iconPolicy" $iconPolicy
+    "overflow" $overflow
     "children" $childMarkup
   ) -}}
 {{- end -}}

@@ -582,8 +582,7 @@
           return true;
         }
       }
-      var fallback = doc.querySelector('[data-td-theme-toggle]') ||
-        doc.querySelector('[data-td-theme-toggle]');
+      var fallback = doc.querySelector('[data-td-theme-toggle]');
       if (!fallback || typeof fallback.click !== 'function') return false;
       fallback.click();
       return true;

@@ -72,8 +72,6 @@ ui_tag_title: Tag
 ui_categories_title: Categories
 ui_category_title: Category
 ui_theme_toggle: Toggle color theme
-ui_language: Language
-ui_theme: Theme
 ui_theme_auto: Follow system
 ui_theme_light: Light
 ui_theme_dark: Dark
@@ -98,7 +96,6 @@ error_404_body: >-
 error_404_home: Go to the home page
 
 # Replace these values with reviewed translations when available.
-ui_code_copy: Copy
 ui_code_copy_label: Copy code
 ui_code_copied: Copied
 ui_code_copy_error: Copy failed
@@ -140,9 +137,7 @@ ui_footer_expand: Show footer links
 # Replace these values with reviewed translations when available.
 ui_release_view: View release
 ui_release_source: Source
-ui_release_compare: Compare changes
 ui_release_released: Released
-ui_release_checksums: Checksums
 
 # Replace these values with reviewed translations when available.
 ui_assets_file: File

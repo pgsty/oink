@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Structural output checks for the theme fixture.
 
-Over the built regression fixture (--public, default tests/site/public):
+Over a fresh strict regression fixture by default, or an existing build passed
+explicitly with ``--public``:
   1. HTML structure — every strict container element (div, section, nav, ul/ol, table
      parts, a, button, span, main, aside, header, footer, details, summary, figure,
      form, svg, dialog, template, headings, pre, code, blockquote) closes in order;
@@ -36,6 +37,8 @@ import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 
+from test_site import checker_fixture_public, run_hugo_process
+
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/site"
 STRICT = {"div", "section", "article", "nav", "ul", "ol", "table", "thead", "tbody", "tfoot", "a", "button", "span",
@@ -62,11 +65,22 @@ class Structure(HTMLParser):
         self.manifest_lines: list[int] = []
         self.remote: list[str] = []
         self.in_template = 0
+        self.print_chrome: set[str] = set()
+        self.theme_init = False
 
     def handle_starttag(self, tag: str, attrs_list) -> None:
         attrs = dict(attrs_list)
+        classes = set((attrs.get("class") or "").split())
         if tag == "template":
             self.in_template += 1
+        if tag == "html" and "data-td-theme-init" in attrs:
+            self.theme_init = True
+        if tag == "header" and "td-site-header" in classes:
+            self.print_chrome.add("site header")
+        if tag == "nav" and "td-site-nav" in classes:
+            self.print_chrome.add("site navigation")
+        if attrs.get("id") == "td-shell-search" or "data-td-shell-search-open" in attrs:
+            self.print_chrome.add("search")
         if tag in STRICT and tag not in VOID:
             self.stack.append((tag, self.getpos()[0]))
         ident = attrs.get("id")
@@ -141,6 +155,11 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         parser.feed(text)
         parser.close_all()
         errors += parser.problems[:20]
+        is_print = "/_print/" in f"/{rel}"
+        if is_print and parser.print_chrome:
+            errors.append(f"{rel}: print output contains shell chrome: {', '.join(sorted(parser.print_chrome))}")
+        if is_print and parser.theme_init:
+            errors.append(f"{rel}: print output retains the interactive theme-init marker")
         for ident, n in parser.ids.items():
             if n > 1:
                 errors.append(f"{rel}: duplicate id {ident!r} ({n}×)")
@@ -154,7 +173,7 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
                 f"{rel}: action manifest line {parser.manifest_lines[0]} must precede "
                 f"the actions bundle at line {parser.action_lines[0]}"
             )
-        expected_cores = 0 if "/_print/" in f"/{rel}" else 1
+        expected_cores = 0 if is_print else 1
         if len(parser.cores) != expected_cores:
             errors.append(f"{rel}: expected {expected_cores} core bundle(s), found {len(parser.cores)}: {parser.cores[:3]}")
         if parser.legacy_bundles:
@@ -370,7 +389,7 @@ params:
             )
 
         public = site / "public"
-        result = subprocess.run(
+        result = run_hugo_process(
             [
                 hugo,
                 "--source",
@@ -490,7 +509,7 @@ outputs:
         public = site / "public"
         command = [hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
                    "--destination", str(public), "--printPathWarnings", "--panicOnWarning"]
-        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        result = run_hugo_process(command, capture_output=True, text=True, check=False)
         if result.returncode != 0:
             return [f"theme-color fixture failed to build: {result.stdout}{result.stderr}"]
 
@@ -525,6 +544,11 @@ outputs:
         for relative in ("docs/index.html", "solo/optout/index.html", "_print/solo/index.html"):
             if "--td-accent:#" in (public / relative).read_text(encoding="utf-8"):
                 errors.append(f"{relative}: emitted theme-color tokens it must not carry")
+        generic_print = (public / "_print/solo/index.html").read_text(encoding="utf-8")
+        parsed_print = Structure("_print/solo/index.html")
+        parsed_print.feed(generic_print)
+        if parsed_print.print_chrome or parsed_print.theme_init:
+            errors.append("generic print output contains shell chrome or theme initialization")
 
         # An invalid value warns, builds, and emits nothing -- never a
         # repaired or partial style block. A low-contrast value warns too,
@@ -543,7 +567,7 @@ outputs:
               "---\ntitle: Mixed\ntheme_color: tomato\ntheme_color_dark: '#a78bfa'\n---\n\nInvalid light, valid dark.\n")
         write("content/solo/zero.md",
               "---\ntitle: Zero\ntheme_color: 0\n---\n\nA number is a mistake, said out loud.\n")
-        result = subprocess.run([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
+        result = run_hugo_process([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
                                  "--destination", str(public), "--logLevel", "warn"],
                                 capture_output=True, text=True, check=False)
         output = result.stdout + result.stderr
@@ -601,10 +625,11 @@ def check_config_image_policy(hugo: str) -> list[str]:
             "unsupported images scheme",
         ),
     )
+    strict_canaries = {"wordmark", "site-social-card"}
     for name, overrides, expected in cases:
         with tempfile.TemporaryDirectory(prefix=f"oink-output-{name}-") as temp:
             environment = {**os.environ, **overrides}
-            result = subprocess.run(
+            result = run_hugo_process(
                 [
                     hugo,
                     "--source",
@@ -626,30 +651,35 @@ def check_config_image_policy(hugo: str) -> list[str]:
             # is that the problem is named and that publishing still fails.
             if expected not in output:
                 errors.append(f"configured image case {name} did not report {expected!r}: {output[-400:]}")
+            if result.returncode != 0:
+                errors.append(f"configured image case {name} stopped the ordinary build: {output[-400:]}")
+            home = Path(temp) / "public/index.html"
+            if not home.is_file():
+                errors.append(f"configured image case {name} emitted no safe home output")
             if name == "site-social-card":
-                home = Path(temp) / "public/index.html"
                 metadata = home.read_text(encoding="utf-8") if home.is_file() else ""
                 if OG_IMAGE.findall(metadata) or SCHEMA_IMAGE.findall(metadata) or TWITTER_IMAGE.findall(metadata):
                     errors.append("an invalid site social card still reached page metadata")
-            strict = subprocess.run(
-                [
-                    hugo,
-                    "--source",
-                    str(FIXTURE),
-                    "--destination",
-                    str(Path(temp) / "public-strict"),
-                    "--logLevel",
-                    "warn",
-                    "--panicOnWarning",
-                ],
-                cwd=ROOT,
-                env=environment,
-                capture_output=True,
-                text=True,
-                check=False,
-            )
-            if strict.returncode == 0:
-                errors.append(f"configured image case {name} survived --panicOnWarning")
+            if name in strict_canaries:
+                strict = run_hugo_process(
+                    [
+                        hugo,
+                        "--source",
+                        str(FIXTURE),
+                        "--destination",
+                        str(Path(temp) / "public-strict"),
+                        "--logLevel",
+                        "warn",
+                        "--panicOnWarning",
+                    ],
+                    cwd=ROOT,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if strict.returncode == 0:
+                    errors.append(f"configured image case {name} survived --panicOnWarning")
     return errors
 
 
@@ -701,17 +731,22 @@ def check_merge_markers(public: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--public", type=Path, default=FIXTURE / "public")
+    parser.add_argument("--public", type=Path)
     parser.add_argument("--hugo", default="hugo")
     args = parser.parse_args()
+    public, result = checker_fixture_public(args.public, args.hugo)
+    if result is not None and result.returncode != 0:
+        print("Strict regression fixture failed to build:")
+        print(result.stdout + result.stderr)
+        return 1
     errors = self_test()
-    html_errors, chunks = check_html(args.public)
+    html_errors, chunks = check_html(public)
     errors += html_errors
-    errors += check_merge_markers(args.public)
-    errors += check_security(args.public)
-    errors += check_social_cards(args.public)
-    errors += check_language_links(args.public)
-    errors += check_markdown_localization(args.public)
+    errors += check_merge_markers(public)
+    errors += check_security(public)
+    errors += check_social_cards(public)
+    errors += check_language_links(public)
+    errors += check_markdown_localization(public)
     errors += check_featured_image_contract(args.hugo)
     errors += check_theme_color_contract(args.hugo)
     errors += check_config_image_policy(args.hugo)

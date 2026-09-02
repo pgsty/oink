@@ -88,6 +88,18 @@ def main() -> int:
             "legacy offline-search runtime remains in the shared bundle",
         )
         require(
+            "scroll_spy" not in scripts
+            and "scrollspy" not in scripts
+            and not (ROOT / "assets/js/scrollspy-patch.js").exists(),
+            "the scroll_spy compatibility no-op still emits a runtime",
+        )
+        require(
+            "function initToc()" in docs_shell
+            and "new IntersectionObserver(" in docs_shell
+            and "trackCursor()" in docs_shell,
+            "the normal shell runtime no longer owns active-outline tracking",
+        )
+        require(
             'partial "content/register-derived.html"' in content
             and '.Store.Set "hasAuthoredA11y" true' in derived
             and 'type="checkbox"' in derived

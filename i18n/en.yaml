@@ -52,8 +52,6 @@ ui_module_title: Module
 ui_authors_title: Authors
 ui_author_title: Author
 ui_theme_toggle: Toggle color theme
-ui_language: Language
-ui_theme: Theme
 ui_theme_auto: System
 ui_theme_light: Light
 ui_theme_dark: Dark
@@ -74,7 +72,6 @@ ui_share_email: Email
 ui_copy_link: Copy link
 ui_copy_link_success: Link copied
 ui_copy_link_error: Could not copy the link
-ui_code_copy: Copy
 ui_code_copy_label: Copy code
 ui_code_copied: Copied
 ui_code_copy_error: Copy failed
@@ -120,9 +117,7 @@ ui_asciinema_timer: Playback time
 ui_openapi_spec: OpenAPI specification
 ui_release_view: View release
 ui_release_source: Source
-ui_release_compare: Compare changes
 ui_release_released: Released
-ui_release_checksums: Checksums
 ui_assets_file: File
 ui_assets_checksum: Checksum
 ui_assets_copy: Copy checksum

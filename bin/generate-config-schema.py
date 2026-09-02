@@ -8,7 +8,9 @@ Their authorities are:
    block becoming its description; and
 2. ``check-params.py``'s read-point scan -- the keys the templates actually
    consume, which is what keeps the schema honest about keys that carry no
-   declared default.
+   declared default; and
+3. its explicit 1.x compatibility no-op list, whose keys remain accepted but
+   deliberately have no template read point.
 
 ``--check`` regenerates in memory and fails when the committed files drift,
 which is what keeps this a projection of the existing authorities rather than
@@ -245,7 +247,8 @@ def build(check_params) -> dict[str, str]:
                 f"drop it ({reason})")
 
     front_properties = {}
-    for key in sorted(k for k in page_keys if k not in FRONT_SCHEMA_EXCLUDES):
+    page_schema_keys = set(page_keys) | check_params.COMPATIBILITY_NOOP_PAGE_KEYS
+    for key in sorted(k for k in page_schema_keys if k not in FRONT_SCHEMA_EXCLUDES):
         entry: dict = {}
         site_node = lookup(tree, f"ui.{key}") or lookup(tree, key)
         if site_node is not None:

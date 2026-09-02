@@ -413,6 +413,16 @@
     visibility 0s;
 }
 
+// A cached tree discovers its active branch after the first paint. Apply that
+// initial state without fading readable text through a sub-AA opacity; once
+// hydration removes the marker, reader-triggered disclosure transitions keep
+// their normal motion.
+[data-td-sidebar-hydrate-active] .td-shell-tree__children,
+[data-td-sidebar-hydrate-active] .td-shell-tree__row,
+[data-td-sidebar-hydrate-active] .td-shell-tree__link {
+  transition: none;
+}
+
 .td-shell-tree__children-inner {
   overflow: hidden;
   min-height: 0;

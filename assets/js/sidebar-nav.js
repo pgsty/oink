@@ -62,6 +62,9 @@
       }
     }
 
+    // Resolve the marker-scoped transition suppression before restoring the
+    // ordinary disclosure motion used after hydration.
+    menu.getBoundingClientRect();
     menu.removeAttribute('data-td-sidebar-hydrate-active');
   }
 

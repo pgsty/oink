@@ -207,23 +207,19 @@ contributors_count: 位貢獻者
 ui_series_title: 系列
 ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
 
-# Replace these values with reviewed translations when available.
 ui_list_separator: 、
 
 # Footer text
 post_meta_by_in: "{{ .Authors }} 發佈於 {{ .Section }}"
 post_meta_in: "發佈於 {{ .Section }}"
 
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: 切换布局
+ui_blog_index_toggle: 切換版面配置
 
 # Markdown output
 markdown_llms_index: "LLMS 索引："
 markdown_backlinks: "反向連結："
 markdown_section_pages: "本節頁面："
 
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
 ui_diagram_expand: 放大圖表
 ui_diagram_zoom_dialog: 圖表預覽
 ui_diagram_zoom_close: 關閉圖表預覽

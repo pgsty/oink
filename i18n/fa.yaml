@@ -1,293 +1,207 @@
+# Alert labels
+callout_caution: "احتیاط"
+callout_important: "مهم"
+callout_note: "یادداشت"
+callout_tip: "نکته"
+callout_warning: "هشدار"
+callout_success: "موفقیت"
+callout_danger: "خطر"
+callout_question: "سؤال"
+callout_example: "مثال"
+callout_quote: "نقل قول"
+callout_details: "جزئیات"
 # UI strings. Buttons and similar.
-ui_pager_prev: قبلی
-ui_pager_next: بعدی
-ui_search: در این سایت جستجو کنید...
-
+ui_pager_prev: "قبلی"
+ui_pager_next: "بعدی"
+ui_search: "جستجو…"
+ui_search_empty: "هیچ نتیجه‌ای یافت نشد"
+ui_search_loading: "در حال بارگذاری فهرست جستجو…"
+ui_search_results: "{count} نتیجه یافت شد"
+ui_search_nav: "مرور"
+ui_search_open: "باز کردن"
+ui_search_close: "بستن"
+ui_palette_actions: "اقدامات"
+ui_palette_page_actions: "اقدامات صفحه"
+ui_palette_preferences: "ترجیحات"
+ui_palette_commands: "دستورات"
+ui_palette_quick_links: "لینک‌های سریع"
+ui_palette_no_commands: "دستورات مطابقی یافت نشد"
+ui_palette_choose: "یک گزینه انتخاب کنید"
+ui_palette_action_failed: "اقدام انجام نشد"
+ui_palette_pages: "صفحات"
+ui_palette_index_unavailable: "فهرست صفحات در دسترس نیست؛ اقدامات همچنان قابل اجرا هستند"
+ui_sidebar_nav: "مرور بخش"
+ui_heading_self_link: "لینک به این عنوان"
+ui_field_self_link: "لینک به این فیلد"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "نمایش شده"
+ui_main_nav: "مرور اصلی"
+ui_home: "خانه"
+ui_sidebar_expand: "باز کردن نوار کناری"
+ui_sidebar_collapse: "بستن نوار کناری"
+ui_drawer_open: "باز کردن ناوبری"
+ui_drawer_close: "بستن ناوبری"
+ui_root_menu_label: "انتخاب بخش"
+ui_tags_title: "برچسب‌ها"
+ui_tag_title: "برچسب"
+ui_categories_title: "دسته‌بندی‌ها"
+ui_category_title: "دسته‌بندی"
+ui_modules_title: "ماژول‌ها"
+ui_module_title: "ماژول"
+ui_authors_title: "نویسندگان"
+ui_author_title: "نویسنده"
+ui_theme_toggle: "تغییر تم رنگی"
+ui_theme_auto: "سیستم"
+ui_theme_light: "روشن"
+ui_theme_dark: "تاریک"
+ui_toc_hide: "مخفی کردن جدول مطالب"
+ui_toc_show: "نمایش جدول مطالب"
+ui_language_select: "انتخاب زبان"
+ui_language_switch: "تعویض زبان"
+ui_skip_to_content: "پرش به محتوا"
+ui_page_actions: "اقدامات"
+ui_open_in_chatgpt: "در ChatGPT باز کنید"
+ui_open_in_claude: "در Claude باز کنید"
+ui_open_in_prompt: "از %s بخوان تا بتوانم درباره آن سوال بپرسم."
+ui_copy_markdown: "کپی Markdown"
+ui_copy_success: "Markdown کپی شد"
+ui_copy_error: "امکان کپی Markdown وجود ندارد"
+ui_share: "اشتراک‌گذاری"
+ui_share_email: "ایمیل"
+ui_copy_link: "کپی لینک"
+ui_copy_link_success: "لینک کپی شد"
+ui_copy_link_error: "امکان کپی لینک وجود ندارد"
+ui_code_copy_label: "کپی کد"
+ui_code_copied: "کپی شد"
+ui_code_copy_error: "کپی ناموفق بود"
+ui_code_show_all: "نمایش تمام {{ .Count }} خط"
+ui_code_collapse: "جمع کردن کد"
+ui_tabs_label: "تب‌ها"
+ui_pricing_featured: "پیشنهادی"
+ui_pricing_included: "شامل"
+ui_pricing_excluded: "شامل نیست"
+ui_marquee_pause: "توقف حرکت"
+ui_kbd_with: "با"
+ui_keyboard_shortcuts: "میانبرهای کیبورد"
+ui_shortcut_tree_move: "حرکت در نوار کناری"
+ui_shortcut_tree_toggle: "بسته یا باز کردن بخش"
+ui_shortcut_tree_open: "باز کردن صفحهٔ دارای تمرکز"
+ui_shortcut_heading_move: "عنوان قبلی یا بعدی"
+ui_shortcut_page_move: "صفحه قبلی یا بعدی"
+ui_shortcut_search: "جستجو"
+ui_shortcut_commands: "پالت دستورات"
+ui_shortcut_reading_mode: "حالت خواندن"
+ui_shortcut_language: "تعویض زبان"
+ui_shortcut_theme: "تعویض تم"
+ui_shortcut_route: "جابجایی میان صفحه‌های سطح بالا"
+ui_page_annotation: "اطلاعات صفحه"
+ui_backlinks: "لینک‌های بازگشتی"
+ui_backlinks_more: "نمایش {{ . }} مورد بیشتر"
+ui_field_required: "ضروری"
+ui_action_unavailable: "در دسترس نیست"
+ui_image_zoom_dialog: "پیش‌نمایش تصویر"
+ui_image_zoom_open: "باز کردن پیش‌نمایش تصویر"
+ui_image_zoom_close: "بستن پیش‌نمایش تصویر"
+ui_diagram_expand: "بزرگنمایی نمودار"
+ui_diagram_zoom_dialog: "پیش‌نمایش نمودار"
+ui_diagram_zoom_close: "بستن پیش‌نمایش نمودار"
+ui_diagram_zoom_in: "بزرگنمایی"
+ui_diagram_zoom_out: "کوچکنمایی"
+ui_diagram_zoom_reset: "بازنشانی نمایش"
+ui_diagram_error: "نمودار قابل نمایش نیست"
+ui_print_page: "چاپ این صفحه"
+ui_sidebar_expand_section: "باز کردن بخش"
+ui_sidebar_collapse_section: "بستن بخش"
+ui_asciinema_timer: "زمان پخش"
+ui_openapi_spec: "مشخصات OpenAPI"
+ui_release_view: "مشاهده انتشار"
+ui_release_source: "منبع"
+ui_release_released: "منتشرشده"
+ui_assets_file: "فایل"
+ui_assets_checksum: "چک‌سام"
+ui_assets_copy: "کپی چک‌سام"
+ui_assets_copied: "کپی شد"
+ui_assets_copy_all: "کپی تمام چک‌سام‌ها"
+ui_assets_download: "دانلود فایل"
+ui_download_channels: "کانال‌های دانلود"
+ui_download_unpublished: "در انتظار انتشار"
+# Used in sentences such as "All Tags"
+ui_all: "همه"
+ui_list_separator: "، "
+ui_blog_index_toggle: "تعویض چیدمان"
 # Footer text
-footer_all_rights_reserved: تمام حقوق محفوظ است.
-
+footer_all_rights_reserved: "تمام حقوق محفوظ است."
+ui_footer_collapse: "پنهان کردن پیوندهای پاورقی"
+ui_footer_expand: "نمایش پیوندهای پاورقی"
 # Post (blog, article, etc.)
-post_last_mod: آخرین تغییرات
-post_edit_this: این صفحه را ویرایش کنید
-post_view_markdown: مشاهدهٔ Markdown
-post_create_child_page: ایجاد زیر صفحه در این صفحه
-post_create_issue: ساخت ایشو
-post_create_project_issue: ساخت ایشو برای پوسته
-post_reading_time: دقیقه برای خواندن
-post_less_than_a_minute_read: کمتر از یک دقیقه
-
+post_last_mod: "آخرین تغییرات"
+post_upstream: "{{ .work }}، {{ .copyright }}، تحت مجوز {{ .license }}. {{ .notice }} را ببینید."
+post_upstream_adapted: "اقتباس‌شده از {{ .work }}، {{ .copyright }}، تحت مجوز {{ .license }}. {{ .notice }} و {{ .history }} را ببینید."
+post_upstream_adapted_plain: "اقتباس‌شده از {{ .work }}، {{ .copyright }}، تحت مجوز {{ .license }}. {{ .notice }} را ببینید."
+post_upstream_notice: "ذکر منبع"
+post_upstream_history: "تاریخچه تغییرات"
+post_translated: "این صفحه ترجمه است؛ {{ .original }} ملاک است."
+post_translated_original: "اصلی"
+post_edit_this: "این صفحه را ویرایش کنید"
+post_view_markdown: "مشاهدهٔ Markdown"
+post_create_child_page: "ایجاد زیرصفحه"
+post_create_issue: "ایجاد مسئلهٔ مستندات"
+post_create_project_issue: "ایجاد مسئلهٔ پروژه"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "توسط {{ .Authors }} · در {{ .Section }}"
+post_meta_in: "در {{ .Section }}"
+post_reading_time: "دقیقه مطالعه"
+post_less_than_a_minute_read: "کمتر از یک دقیقه"
+post_word_count: "{{ .Count }} کلمه"
+post_reading_minutes: "{{ .Minutes }} دقیقه"
+post_read_original: "بیشتر بخوانید"
 # Print support
-print_printable_section: این حالت نمایش چند صفحه ای قابل پرینت این قسمت می‌باشد.
-print_click_to_print: برای پرینت کلیک کنید.
-print_show_regular: بازگشت به حالت نمایش عادی این قسمت
-print_entire_section: پرینت کامل قسمت
-
+print_printable_section: "این حالت چندصفحه‌ای قابل چاپ این بخش است."
+print_click_to_print: "برای پرینت کلیک کنید."
+print_show_regular: "بازگشت به نمای معمول این صفحه"
+print_entire_section: "چاپ کامل بخش"
 # Feedback
-feedback_question: این صفحه به شما کمک کرد؟
-feedback_positive: آره
-feedback_negative: نه
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-ui_all: all
-
-# Footer text
-toc_on_this_page: Content
-
+feedback_question: "این صفحه به شما کمک کرد؟"
+feedback_positive: "بله"
+feedback_negative: "نه"
+feedback_thanks: "سپاسگزاریم—بازخورد شما به بهبود این صفحه کمک می‌کند."
+feedback_reason_prompt: "چه چیزی مانع شد؟ (اختیاری)"
+feedback_reason_missing: "اطلاعات ناقص"
+feedback_reason_outdated: "نادرست یا قدیمی"
+feedback_reason_failed: "مراحل کار نکردند"
+feedback_reason_unclear: "درک آن دشوار است"
+feedback_details: "جزئیات را در نظرات اضافه کنید"
+feedback_change: "تغییر پاسخ"
+# Table of contents
+toc_on_this_page: "محتوا"
 # Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
+error_404_title: "صفحه یافت نشد"
+error_404_body: "متاسفانه این صفحه وجود ندارد. از صفحه اصلی دوباره شروع کنید."
+error_404_home: "به صفحهٔ اصلی بروید"
+# Version banner
+version_banner_archived: "نسخهٔ {{ .Version }} مستندات دیگر به‌طور فعال نگهداری نمی‌شود. سایتی که اکنون می‌بینید یک نسخهٔ بایگانی‌شده است."
+version_banner_latest: "برای مستندات به‌روز، به {{ .Link }} مراجعه کنید."
+version_banner_latest_link: "آخرین نسخه"
 # Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
-ui_list_separator: ", "
-
-# Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
-# Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+comments_noscript: "برای بارگذاری نظرات، JavaScript لازم است."
+comments_noscript_link: "بحث‌ها را در GitHub مشاهده کنید."
+# LLM page actions
+ui_open_in_prompt_label: "دربارهٔ این صفحه بپرسید"
+ui_view_history: "مشاهده تاریخچه ویرایش"
+ui_table_scroll: "جدول قابل پیمایش"
+ui_filetree_divider: "تغییر عرض ستون توضیحات کنار درخت فایل‌ها"
+book_figure: "شکل"
+book_table: "جدول"
+book_equation: "معادله"
+book_example: "مثال"
+book_toc: "فهرست کتاب"
+book_draft: "پیش‌نویس"
+book_draft_notice: "این فصل هنوز در حال بازنگری است."
+contributors_count: "مشارکت‌کنندگان"
+# Article series
+ui_series_title: "سری"
+ui_series_part: "قسمت {{ .Part }} از {{ .Total }}"
+# Markdown output
+markdown_llms_index: "فهرست LLMS:"
+markdown_section_pages: "صفحات بخش:"
+markdown_backlinks: "لینک‌های بازگشتی:"

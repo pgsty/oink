@@ -1,293 +1,207 @@
 # Alert labels
-callout_caution: Forsiktig
-callout_important: Viktig
-callout_note: Merknad
-callout_tip: Tips
-callout_warning: Advarsel
-
+callout_caution: "Forsiktig"
+callout_important: "Viktig"
+callout_note: "Merknad"
+callout_tip: "Tips"
+callout_warning: "Advarsel"
+callout_success: "Suksess"
+callout_danger: "Farlig"
+callout_question: "Spørsmål"
+callout_example: "Eksempel"
+callout_quote: "Sitat"
+callout_details: "Detaljer"
 # UI strings. Buttons and similar.
-ui_pager_prev: Forrige
-ui_pager_next: Neste
-ui_search: Søk på nettstedet…
-
+ui_pager_prev: "Forrige"
+ui_pager_next: "Neste"
+ui_search: "Søk…"
+ui_search_empty: "Ingen resultater funnet"
+ui_search_loading: "Laster søkeindeks…"
+ui_search_results: "{count} resultater funnet"
+ui_search_nav: "Naviger"
+ui_search_open: "Åpne"
+ui_search_close: "Lukk"
+ui_palette_actions: "Handlinger"
+ui_palette_page_actions: "Sidehandlinger"
+ui_palette_preferences: "Innstillinger"
+ui_palette_commands: "Kommandoer"
+ui_palette_quick_links: "Hurtiglenker"
+ui_palette_no_commands: "Ingen kommandoer matcher"
+ui_palette_choose: "Velg et alternativ"
+ui_palette_action_failed: "Handlingen kunne ikke fullføres"
+ui_palette_pages: "Sider"
+ui_palette_index_unavailable: "Sideindeks ikke tilgjengelig; handlinger fungerer fremdeles"
+ui_sidebar_nav: "Seksjonsnavigasjon"
+ui_heading_self_link: "Lenke til denne overskriften"
+ui_field_self_link: "Lenke til dette feltet"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Rendret"
+ui_main_nav: "Hovednavigasjon"
+ui_home: "Hjem"
+ui_sidebar_expand: "Utvid sidefeltet"
+ui_sidebar_collapse: "Fold sammen sidefeltet"
+ui_drawer_open: "Åpne navigasjon"
+ui_drawer_close: "Lukk navigasjon"
+ui_root_menu_label: "Velg seksjon"
+ui_tags_title: "Tagger"
+ui_tag_title: "Tagg"
+ui_categories_title: "Kategorier"
+ui_category_title: "Kategori"
+ui_modules_title: "Moduler"
+ui_module_title: "Modul"
+ui_authors_title: "Forfattere"
+ui_author_title: "Forfatter"
+ui_theme_toggle: "Bytt fargetema"
+ui_theme_auto: "System"
+ui_theme_light: "Lyst"
+ui_theme_dark: "Mørkt"
+ui_toc_hide: "Skjul innholdsfortegnelse"
+ui_toc_show: "Vis innholdsfortegnelse"
+ui_language_select: "Velg språk"
+ui_language_switch: "Bytt språk"
+ui_skip_to_content: "Hopp til innhold"
+ui_page_actions: "Handlinger"
+ui_open_in_chatgpt: "Åpne i ChatGPT"
+ui_open_in_claude: "Åpne i Claude"
+ui_open_in_prompt: "Les fra %s slik at jeg kan stille spørsmål om det."
+ui_copy_markdown: "Kopier Markdown"
+ui_copy_success: "Markdown kopiert"
+ui_copy_error: "Kunne ikke kopiere Markdown"
+ui_share: "Del"
+ui_share_email: "E-post"
+ui_copy_link: "Kopier lenke"
+ui_copy_link_success: "Lenke kopiert"
+ui_copy_link_error: "Kunne ikke kopiere lenken"
+ui_code_copy_label: "Kopier kode"
+ui_code_copied: "Kopiert"
+ui_code_copy_error: "Kopiering mislyktes"
+ui_code_show_all: "Vis alle {{ .Count }} linjer"
+ui_code_collapse: "Skjul kode"
+ui_tabs_label: "Faner"
+ui_pricing_featured: "Anbefalt"
+ui_pricing_included: "Inkludert"
+ui_pricing_excluded: "Ikke inkludert"
+ui_marquee_pause: "Pause bevegelse"
+ui_kbd_with: "med"
+ui_keyboard_shortcuts: "Tastaturgenveier"
+ui_shortcut_tree_move: "Beveg deg gjennom sidefeltet"
+ui_shortcut_tree_toggle: "Skjul eller vis seksjon"
+ui_shortcut_tree_open: "Åpne siden som har fokus"
+ui_shortcut_heading_move: "Forrige eller neste overskrift"
+ui_shortcut_page_move: "Forrige eller neste side"
+ui_shortcut_search: "Søk"
+ui_shortcut_commands: "Kommandopalette"
+ui_shortcut_reading_mode: "Lesemodus"
+ui_shortcut_language: "Bytt språk"
+ui_shortcut_theme: "Bytt tema"
+ui_shortcut_route: "Bytt mellom hovedsider"
+ui_page_annotation: "Sideinformasjon"
+ui_backlinks: "Tilbakekoblinger"
+ui_backlinks_more: "Vis {{ . }} til"
+ui_field_required: "obligatorisk"
+ui_action_unavailable: "ikke tilgjengelig"
+ui_image_zoom_dialog: "Bildeforhåndvisning"
+ui_image_zoom_open: "Åpne bildeforhåndvisning"
+ui_image_zoom_close: "Lukk bildeforhåndvisning"
+ui_diagram_expand: "Forstør diagram"
+ui_diagram_zoom_dialog: "Diagramforhåndvisning"
+ui_diagram_zoom_close: "Lukk diagramforhåndvisning"
+ui_diagram_zoom_in: "Zoom inn"
+ui_diagram_zoom_out: "Zoom ut"
+ui_diagram_zoom_reset: "Tilbakestill visning"
+ui_diagram_error: "Diagrammet kunne ikke vises"
+ui_print_page: "Skriv ut denne siden"
+ui_sidebar_expand_section: "Utvid seksjon"
+ui_sidebar_collapse_section: "Skjul seksjon"
+ui_asciinema_timer: "Avspillingstid"
+ui_openapi_spec: "OpenAPI-spesifikasjon"
+ui_release_view: "Vis utgivelse"
+ui_release_source: "Kilde"
+ui_release_released: "Utgitt"
+ui_assets_file: "Fil"
+ui_assets_checksum: "Kontrollsum"
+ui_assets_copy: "Kopier kontrollsum"
+ui_assets_copied: "Kopiert"
+ui_assets_copy_all: "Kopier alle kontrollsummer"
+ui_assets_download: "Last ned fil"
+ui_download_channels: "Nedlastingskanaler"
+ui_download_unpublished: "Venter på utgivelse"
 # Used in sentences such as "All Tags"
-ui_all: alle
-
-# Footer text
-footer_all_rights_reserved: Alle rettigheter er reservert
-
-# Post (blog, article, etc.)
-post_last_mod: Sist endret
-post_edit_this: Endre denne siden
-post_view_markdown: Vis Markdown
-post_create_child_page: Lag underside
-post_create_issue: Opprett dokumentasjon sak
-post_create_project_issue: Opprett prosjekt sak
-post_reading_time: minute read
-post_less_than_a_minute_read: less than a minute
-
-# Print support
-print_printable_section: Dette er flersidevisningen av denne seksjonen.
-print_click_to_print: Klikk her for å skrive ut
-print_show_regular: Gå tilbake til vanlig sidevisning
-print_entire_section: Skriv ut hele seksjonen
-
-# Feedback
-feedback_question: Var denne siden nyttig?
-feedback_positive: Ja
-feedback_negative: Nei
-
-# Table of contents
-toc_on_this_page: På denne siden
-
-# Replace these values with reviewed translations when available.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_all: "alle"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Bytt layout"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Alle rettigheter er reservert"
+ui_footer_collapse: "Skjul footer-lenker"
+ui_footer_expand: "Vis footer-lenker"
+# Post (blog, article, etc.)
+post_last_mod: "Sist endret"
+post_upstream: "{{ .work }}, {{ .copyright }}, lisensiert under {{ .license }}. Se {{ .notice }}."
+post_upstream_adapted: "Tilpasset fra {{ .work }}, {{ .copyright }}, lisensiert under {{ .license }}. Se {{ .notice }} og {{ .history }}."
+post_upstream_adapted_plain: "Tilpasset fra {{ .work }}, {{ .copyright }}, lisensiert under {{ .license }}. Se {{ .notice }}."
+post_upstream_notice: "navngivelse"
+post_upstream_history: "endringshistorikk"
+post_translated: "Denne siden er en oversettelse; {{ .original }} er autoritativ."
+post_translated_original: "originalen"
+post_edit_this: "Endre denne siden"
+post_view_markdown: "Vis Markdown"
+post_create_child_page: "Lag underside"
+post_create_issue: "Opprett dokumentasjonssak"
+post_create_project_issue: "Opprett prosjektsak"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "Av {{ .Authors }} · I {{ .Section }}"
+post_meta_in: "I {{ .Section }}"
+post_reading_time: "minutters lesetid"
+post_less_than_a_minute_read: "mindre enn et minutt"
+post_word_count: "{{ .Count }} ord"
+post_reading_minutes: "{{ .Minutes }} min"
+post_read_original: "Les mer"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Dette er flersiders utskriftsvisning av denne seksjonen."
+print_click_to_print: "Klikk her for å skrive ut"
+print_show_regular: "Gå tilbake til vanlig sidevisning"
+print_entire_section: "Skriv ut hele seksjonen"
+# Feedback
+feedback_question: "Var denne siden nyttig?"
+feedback_positive: "Ja"
+feedback_negative: "Nei"
+feedback_thanks: "Takk—din tilbakemelding hjelper oss med å forbedre denne siden."
+feedback_reason_prompt: "Hva hindret deg? (valgfritt)"
+feedback_reason_missing: "Mangler informasjon"
+feedback_reason_outdated: "Feil eller utdatert"
+feedback_reason_failed: "Stegene fungerte ikke"
+feedback_reason_unclear: "Vanskelig å forstå"
+feedback_details: "Legg til detaljer i kommentarene"
+feedback_change: "Endre svar"
+# Table of contents
+toc_on_this_page: "På denne siden"
+# Error pages
+error_404_title: "Siden ble ikke funnet"
+error_404_body: "Beklager, denne siden finnes ikke. Prøv igjen fra forsiden."
+error_404_home: "Gå til forsiden"
+# Version banner
+version_banner_archived: "Versjon {{ .Version }} av dokumentasjonen blir ikke lenger aktivt vedlikeholdt. Nettstedet du ser nå er en arkivert kopi."
+version_banner_latest: "Oppdatert dokumentasjon: {{ .Link }}."
+version_banner_latest_link: "siste versjon"
+# Comments
+comments_noscript: "JavaScript er nødvendig for å laste inn kommentarer."
+comments_noscript_link: "Vis diskusjoner på GitHub."
+# LLM page actions
+ui_open_in_prompt_label: "Spør om denne siden"
+ui_view_history: "Vis redigeringshistorikk"
+ui_table_scroll: "Rullbar tabell"
+ui_filetree_divider: "Endre bredden på kommentarkolonnen ved siden av filtreet"
+book_figure: "Figur"
+book_table: "Tabell"
+book_equation: "Likning"
+book_example: "Eksempel"
+book_toc: "Bokinnhold"
+book_draft: "Kladd"
+book_draft_notice: "Dette kapittelet blir fortsatt revidert."
+contributors_count: "bidragsytere"
+# Article series
+ui_series_title: "Serie"
+ui_series_part: "Del {{ .Part }} av {{ .Total }}"
+# Markdown output
+markdown_llms_index: "LLMS-indeks:"
+markdown_section_pages: "Seksjonssider:"
+markdown_backlinks: "Tilbakekoblinger:"

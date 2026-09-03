@@ -1,288 +1,207 @@
+# Alert labels
+callout_caution: "주의"
+callout_important: "중요"
+callout_note: "참고"
+callout_tip: "팁"
+callout_warning: "경고"
+callout_success: "성공"
+callout_danger: "위험"
+callout_question: "질문"
+callout_example: "예시"
+callout_quote: "인용"
+callout_details: "세부 정보"
 # UI strings. Buttons and similar.
-ui_pager_prev: 이전
-ui_pager_next: 다음
-ui_search: 사이트에서 검색…
-
-# Footer text
-footer_all_rights_reserved: All Rights Reserved
-
-# Post (blog, article, etc.)
-post_last_mod: 최종 수정
-post_edit_this: 페이지 편집
-post_create_child_page: 하부 페이지 생성
-post_view_markdown: Markdown 보기
-post_create_issue: 문서에 이슈 생성
-post_create_project_issue: 프로젝트에 이슈 생성
-post_reading_time: minute read
-post_less_than_a_minute_read: less than a minute
-post_word_count: '{{ .Count }} 단어'
-post_reading_minutes: '{{ .Minutes }}분'
-post_read_original: 원문 보기
-
-# Print support
-print_printable_section: 이 섹션의 다중 페이지 출력 화면임.
-print_click_to_print: 여기를 클릭하여 프린트
-print_show_regular: 이 페이지의 일반 화면으로 돌아가기
-print_entire_section: 전체 섹션 프린트
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-ui_all: all
-
-# Footer text
-feedback_question: Was this page helpful?
-feedback_positive: Yes
-feedback_negative: No
-
-# Table of contents
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_pager_prev: "이전"
+ui_pager_next: "다음"
+ui_search: "검색…"
+ui_search_empty: "결과가 없습니다"
+ui_search_loading: "검색 인덱스를 로딩 중입니다…"
+ui_search_results: "{count}개의 결과가 발견되었습니다"
+ui_search_nav: "이동"
+ui_search_open: "열기"
+ui_search_close: "닫기"
+ui_palette_actions: "작업"
+ui_palette_page_actions: "페이지 작업"
+ui_palette_preferences: "설정"
+ui_palette_commands: "명령"
+ui_palette_quick_links: "빠른 링크"
+ui_palette_no_commands: "일치하는 명령이 없습니다"
+ui_palette_choose: "옵션 선택"
+ui_palette_action_failed: "작업을 완료할 수 없습니다"
+ui_palette_pages: "페이지"
+ui_palette_index_unavailable: "페이지 인덱스를 사용할 수 없습니다; 작업은 여전히 가능합니다"
+ui_sidebar_nav: "섹션 탐색"
+ui_heading_self_link: "이 제목에 대한 링크"
+ui_field_self_link: "이 필드로 연결"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "렌더링 보기"
+ui_main_nav: "메인 탐색"
+ui_home: "홈"
+ui_sidebar_expand: "사이드바 확장"
+ui_sidebar_collapse: "사이드바 축소"
+ui_drawer_open: "탐색 열기"
+ui_drawer_close: "탐색 닫기"
+ui_root_menu_label: "섹션 선택"
+ui_tags_title: "태그"
+ui_tag_title: "태그"
+ui_categories_title: "카테고리"
+ui_category_title: "카테고리"
+ui_modules_title: "모듈"
+ui_module_title: "모듈"
+ui_authors_title: "저자"
+ui_author_title: "저자"
+ui_theme_toggle: "색 테마 전환"
+ui_theme_auto: "시스템"
+ui_theme_light: "라이트"
+ui_theme_dark: "다크"
+ui_toc_hide: "목차 숨기기"
+ui_toc_show: "목차 보이기"
+ui_language_select: "언어 선택"
+ui_language_switch: "언어 전환"
+ui_skip_to_content: "콘텐츠로 건너뛰기"
+ui_page_actions: "작업"
+ui_open_in_chatgpt: "ChatGPT에서 열기"
+ui_open_in_claude: "Claude에서 열기"
+ui_open_in_prompt: "%s의 내용을 읽어 주세요. 그러면 이에 대해 질문할 수 있습니다."
+ui_copy_markdown: "Markdown 복사"
+ui_copy_success: "Markdown 복사됨"
+ui_copy_error: "Markdown을 복사할 수 없습니다"
+ui_share: "공유"
+ui_share_email: "이메일"
+ui_copy_link: "링크 복사"
+ui_copy_link_success: "링크 복사됨"
+ui_copy_link_error: "링크를 복사할 수 없습니다"
+ui_code_copy_label: "코드 복사"
+ui_code_copied: "복사됨"
+ui_code_copy_error: "복사 실패"
+ui_code_show_all: "{{ .Count }}줄 모두 보기"
+ui_code_collapse: "코드 축소"
+ui_tabs_label: "탭"
+ui_pricing_featured: "추천"
+ui_pricing_included: "포함됨"
+ui_pricing_excluded: "포함되지 않음"
+ui_marquee_pause: "움직임 일시정지"
+ui_kbd_with: "와"
+ui_keyboard_shortcuts: "키보드 단축키"
+ui_shortcut_tree_move: "사이드바 탐색"
+ui_shortcut_tree_toggle: "섹션 접기 또는 펼치기"
+ui_shortcut_tree_open: "키보드 포커스가 있는 페이지 열기"
+ui_shortcut_heading_move: "이전 또는 다음 제목 이동"
+ui_shortcut_page_move: "이전 또는 다음 페이지 이동"
+ui_shortcut_search: "검색"
+ui_shortcut_commands: "명령 팔레트"
+ui_shortcut_reading_mode: "읽기 모드"
+ui_shortcut_language: "언어 전환"
+ui_shortcut_theme: "테마 전환"
+ui_shortcut_route: "최상위 페이지 간 전환"
+ui_page_annotation: "페이지 정보"
+ui_backlinks: "역링크"
+ui_backlinks_more: "{{ . }}개 더 보기"
+ui_field_required: "필수"
+ui_action_unavailable: "사용 불가"
+ui_image_zoom_dialog: "이미지 미리보기"
+ui_image_zoom_open: "이미지 미리보기 열기"
+ui_image_zoom_close: "이미지 미리보기 닫기"
+ui_diagram_expand: "다이어그램 확대"
+ui_diagram_zoom_dialog: "다이어그램 미리보기"
+ui_diagram_zoom_close: "다이어그램 미리보기 닫기"
+ui_diagram_zoom_in: "확대"
+ui_diagram_zoom_out: "축소"
+ui_diagram_zoom_reset: "보기 재설정"
+ui_diagram_error: "다이어그램을 렌더링할 수 없습니다"
+ui_print_page: "이 페이지 인쇄"
+ui_sidebar_expand_section: "섹션 확장"
+ui_sidebar_collapse_section: "섹션 축소"
+ui_asciinema_timer: "재생 시간"
+ui_openapi_spec: "OpenAPI 사양"
+ui_release_view: "릴리스 보기"
+ui_release_source: "소스"
+ui_release_released: "릴리스됨"
+ui_assets_file: "파일"
+ui_assets_checksum: "체크섬"
+ui_assets_copy: "체크섬 복사"
+ui_assets_copied: "복사됨"
+ui_assets_copy_all: "모든 체크섬 복사"
+ui_assets_download: "파일 다운로드"
+ui_download_channels: "다운로드 채널"
+ui_download_unpublished: "릴리스 대기 중"
+# Used in sentences such as "All Tags"
+ui_all: "모든"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "레이아웃 전환"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+footer_all_rights_reserved: "모든 권리 보유"
+ui_footer_collapse: "푸터 링크 숨기기"
+ui_footer_expand: "푸터 링크 보이기"
+# Post (blog, article, etc.)
+post_last_mod: "최종 수정"
+post_upstream: "{{ .work }}(저작권: {{ .copyright }})는 {{ .license }}에 따라 제공됩니다. {{ .notice }}를 참조하세요."
+post_upstream_adapted: "{{ .work }}(저작권: {{ .copyright }})를 수정한 것으로, {{ .license }}에 따라 제공됩니다. {{ .notice }}와 {{ .history }}를 참조하세요."
+post_upstream_adapted_plain: "{{ .work }}(저작권: {{ .copyright }})를 수정한 것으로, {{ .license }}에 따라 제공됩니다. {{ .notice }}를 참조하세요."
+post_upstream_notice: "저작권 표시"
+post_upstream_history: "변경 이력"
+post_translated: "이 페이지는 번역본이며, {{ .original }}이 우선합니다."
+post_translated_original: "원본"
+post_edit_this: "페이지 편집"
+post_view_markdown: "Markdown 보기"
+post_create_child_page: "하위 페이지 만들기"
+post_create_issue: "문서 이슈 생성"
+post_create_project_issue: "프로젝트 이슈 생성"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "{{ .Authors }} 작성 · {{ .Section }}"
+post_meta_in: "섹션: {{ .Section }}"
+post_reading_time: "분 소요"
+post_less_than_a_minute_read: "1분 미만"
+post_word_count: "{{ .Count }} 단어"
+post_reading_minutes: "{{ .Minutes }}분"
+post_read_original: "원문 보기"
+# Print support
+print_printable_section: "이것은 이 섹션의 여러 페이지 인쇄 보기입니다."
+print_click_to_print: "여기를 클릭하여 프린트"
+print_show_regular: "이 페이지의 일반 화면으로 돌아가기"
+print_entire_section: "전체 섹션 인쇄"
+# Feedback
+feedback_question: "이 페이지가 도움이 되었나요?"
+feedback_positive: "예"
+feedback_negative: "아니요"
+feedback_thanks: "감사합니다—피드백은 이 페이지 개선에 도움이 됩니다."
+feedback_reason_prompt: "어떤 점이 방해되었나요? (선택 사항)"
+feedback_reason_missing: "정보 부족"
+feedback_reason_outdated: "부정확하거나 오래됨"
+feedback_reason_failed: "단계가 작동하지 않음"
+feedback_reason_unclear: "이해하기 어려움"
+feedback_details: "댓글에 세부 정보 추가"
+feedback_change: "응답 변경"
+# Table of contents
+toc_on_this_page: "내용"
+# Error pages
+error_404_title: "페이지를 찾을 수 없습니다"
+error_404_body: "죄송합니다. 해당 페이지는 존재하지 않습니다. 홈 페이지에서 다시 시작해 보세요."
+error_404_home: "홈 페이지로 이동"
+# Version banner
+version_banner_archived: "문서 버전 {{ .Version }}은 더 이상 유지되지 않습니다. 현재 보고 있는 사이트는 보관된 사본입니다."
+version_banner_latest: "최신 문서: {{ .Link }}."
+version_banner_latest_link: "최신 버전"
+# Comments
+comments_noscript: "댓글을 로드하려면 JavaScript가 필요합니다."
+comments_noscript_link: "GitHub에서 토론 보기."
+# LLM page actions
+ui_open_in_prompt_label: "이 페이지에 대해 질문하기"
+ui_view_history: "편집 이력 보기"
+ui_table_scroll: "스크롤 가능한 테이블"
+ui_filetree_divider: "파일 트리 옆 주석 열 너비 조정"
+book_figure: "그림"
+book_table: "표"
+book_equation: "식"
+book_example: "예시"
+book_toc: "책 목차"
+book_draft: "초안"
+book_draft_notice: "이 장은 여전히 수정 중입니다."
+contributors_count: "기여자"
+# Article series
+ui_series_title: "시리즈"
+ui_series_part: "{{ .Total }} 중 {{ .Part }}부"
+# Markdown output
+markdown_llms_index: "LLMS 인덱스:"
+markdown_section_pages: "섹션 페이지:"
+markdown_backlinks: "역링크:"

@@ -1,293 +1,207 @@
+# Alert labels
+callout_caution: "Atencion"
+callout_important: "Important"
+callout_note: "Nota"
+callout_tip: "Consell"
+callout_warning: "Avertiment"
+callout_success: "Capitada"
+callout_danger: "Perill"
+callout_question: "Question"
+callout_example: "Exemple"
+callout_quote: "Cita"
+callout_details: "Detalhs"
 # UI strings. Buttons and similar.
-ui_pager_prev: Precedent
-ui_pager_next: Seguent
-ui_search: Cercar dins lo site…
-
+ui_pager_prev: "Precedent"
+ui_pager_next: "Seguent"
+ui_search: "Cercar…"
+ui_search_empty: "Cap de resultat trobat"
+ui_search_loading: "Cargament de l’indèx de recèrca…"
+ui_search_results: "{count} resultats trobats"
+ui_search_nav: "Navegar"
+ui_search_open: "Dobrir"
+ui_search_close: "Tancar"
+ui_palette_actions: "Accions"
+ui_palette_page_actions: "Accions de la pagina"
+ui_palette_preferences: "Preferéncias"
+ui_palette_commands: "Comandas"
+ui_palette_quick_links: "Ligams rapids"
+ui_palette_no_commands: "Cap de comanda compatible"
+ui_palette_choose: "Seleccionar una opcion"
+ui_palette_action_failed: "L'accion a pas poguda èsser completada"
+ui_palette_pages: "Paginas"
+ui_palette_index_unavailable: "L'index de las paginas es pas disponible; las accions son encara disponibles"
+ui_sidebar_nav: "Navigacion de la seccion"
+ui_heading_self_link: "Ligam cap a aqueste títol"
+ui_field_self_link: "Ligam a aqueste camp"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Rendut"
+ui_main_nav: "Navigacion principala"
+ui_home: "Acuèlh"
+ui_sidebar_expand: "Espandir la barra laterala"
+ui_sidebar_collapse: "Replegar la barra laterala"
+ui_drawer_open: "Dobrir la navigacion"
+ui_drawer_close: "Tancar la navigacion"
+ui_root_menu_label: "Seleccionar una seccion"
+ui_tags_title: "Etiquetas"
+ui_tag_title: "Etiqueta"
+ui_categories_title: "Categorias"
+ui_category_title: "Categoria"
+ui_modules_title: "Moduls"
+ui_module_title: "Modul"
+ui_authors_title: "Autors"
+ui_author_title: "Autor"
+ui_theme_toggle: "Alternar lo tèma cromatic"
+ui_theme_auto: "Sistema"
+ui_theme_light: "Clar"
+ui_theme_dark: "Escur"
+ui_toc_hide: "Amagar lo somari"
+ui_toc_show: "Mostrar lo somari"
+ui_language_select: "Seleccionar una lenga"
+ui_language_switch: "Cambiar de lenga"
+ui_skip_to_content: "Anar al contengut"
+ui_page_actions: "Accions"
+ui_open_in_chatgpt: "Dobrir dins ChatGPT"
+ui_open_in_claude: "Dobrir dins Claude"
+ui_open_in_prompt: "Legissètz %s per que li pòsca pausar de questions."
+ui_copy_markdown: "Copiar lo Markdown"
+ui_copy_success: "Markdown copiat"
+ui_copy_error: "Impossible de copiar lo Markdown"
+ui_share: "Partejar"
+ui_share_email: "Corrièl"
+ui_copy_link: "Copiar lo ligam"
+ui_copy_link_success: "Ligam copiat"
+ui_copy_link_error: "Impossible de copiar lo ligam"
+ui_code_copy_label: "Copiar lo còdi"
+ui_code_copied: "Copiat"
+ui_code_copy_error: "La copia a fallit"
+ui_code_show_all: "Mostrar totas las {{ .Count }} linhas"
+ui_code_collapse: "Replegar lo còdi"
+ui_tabs_label: "Onglets"
+ui_pricing_featured: "Recomandat"
+ui_pricing_included: "Inclòs"
+ui_pricing_excluded: "Pas inclòs"
+ui_marquee_pause: "Pausar lo moviment"
+ui_kbd_with: "amb"
+ui_keyboard_shortcuts: "Acorchis de clavièr"
+ui_shortcut_tree_move: "Navigar dins la barra laterala"
+ui_shortcut_tree_toggle: "Reduire o agrandir una seccion"
+ui_shortcut_tree_open: "Dobrir la pagina qu’a lo focus"
+ui_shortcut_heading_move: "Titol precedent o seguent"
+ui_shortcut_page_move: "Pagina precedenta o seguenta"
+ui_shortcut_search: "Cercar"
+ui_shortcut_commands: "Paleta de comandas"
+ui_shortcut_reading_mode: "Mode lectura"
+ui_shortcut_language: "Cambiar de lenga"
+ui_shortcut_theme: "Cambiar de teme"
+ui_shortcut_route: "Passar d’una pagina de nivèl superior a l’autra"
+ui_page_annotation: "Informacions de la pagina"
+ui_backlinks: "Ligams retro"
+ui_backlinks_more: "Mostrar {{ . }} de plus"
+ui_field_required: "obligatòri"
+ui_action_unavailable: "pas disponible"
+ui_image_zoom_dialog: "Vista previsuala de l'imatge"
+ui_image_zoom_open: "Dobrir la vista previsuala de l’imatge"
+ui_image_zoom_close: "Tancar la vista previsuala de l'imatge"
+ui_diagram_expand: "Agrandir lo diagrama"
+ui_diagram_zoom_dialog: "Vista previsuala del diagrama"
+ui_diagram_zoom_close: "Tancar la vista previsuala del diagrama"
+ui_diagram_zoom_in: "Agrandir"
+ui_diagram_zoom_out: "Redusir"
+ui_diagram_zoom_reset: "Reiniciar la vista"
+ui_diagram_error: "Lo diagrama a pas pogut èsser visualizat"
+ui_print_page: "Imprimir aquesta pagina"
+ui_sidebar_expand_section: "Agrandir la seccion"
+ui_sidebar_collapse_section: "Replegar la seccion"
+ui_asciinema_timer: "Temps de reproduccion"
+ui_openapi_spec: "Specificacion OpenAPI"
+ui_release_view: "Veire la publicacion"
+ui_release_source: "Font"
+ui_release_released: "Publicat"
+ui_assets_file: "Fichièr"
+ui_assets_checksum: "Suma de control"
+ui_assets_copy: "Copiar la suma de control"
+ui_assets_copied: "Copiat"
+ui_assets_copy_all: "Copiar totas las sumas de control"
+ui_assets_download: "Telecargar lo fichièr"
+ui_download_channels: "Canals de telecargament"
+ui_download_unpublished: "En espera de lançament"
 # Used in sentences such as "All Tags"
-ui_all: Totas
-
-# Footer text
-footer_all_rights_reserved: Tot drech reservat
-
-# Post (blog, article, etc.)
-post_last_mod: Darrièra modificacion
-post_edit_this: Modificar aquesta pagina
-post_view_markdown: Veire Markdown
-post_create_child_page: Crear una pagina enfant
-post_create_issue: Crear una anomalia de documentacion
-post_create_project_issue: Crear una anomalia de projècte
-post_reading_time: minutas de lectura
-post_less_than_a_minute_read: "mens d'una minuta de lectura"
-
-# Print support
-print_printable_section: Aquò es una vista multipagina imprimibla de la seccion.
-print_click_to_print: Clicar aquí per imprimir
-print_show_regular: "Tornar a la vista normala d'aquesta pagina"
-print_entire_section: Imprimir la seccion complèta
-
-# Feedback
-feedback_question: Èra utila aquesta pagina ?
-feedback_positive: Oc
-feedback_negative: Non
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_all: "Totas"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Cambiar de disposicion"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Totes los dreches reservats"
+ui_footer_collapse: "Amagar los ligams del peu"
+ui_footer_expand: "Mostrar los ligams del peu"
+# Post (blog, article, etc.)
+post_last_mod: "Darrièra modificacion"
+post_upstream: "{{ .work }}, {{ .copyright }}, jos licéncia {{ .license }}. Vejatz {{ .notice }}."
+post_upstream_adapted: "Adaptat de {{ .work }}, {{ .copyright }}, jos licéncia {{ .license }}. Vejatz {{ .notice }} e {{ .history }}."
+post_upstream_adapted_plain: "Adaptat de {{ .work }}, {{ .copyright }}, jos licéncia {{ .license }}. Vejatz {{ .notice }}."
+post_upstream_notice: "atribucion"
+post_upstream_history: "istoric de las modificacions"
+post_translated: "Aquesta pagina es una traduccion; l’{{ .original }} fa fe."
+post_translated_original: "original"
+post_edit_this: "Modificar aquesta pagina"
+post_view_markdown: "Veire lo Markdown"
+post_create_child_page: "Crear una pagina filha"
+post_create_issue: "Crear un problèma de documentacion"
+post_create_project_issue: "Crear un problèma de projècte"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "Per {{ .Authors }} · Dins {{ .Section }}"
+post_meta_in: "Dins {{ .Section }}"
+post_reading_time: "minutas de lectura"
+post_less_than_a_minute_read: "mens d'una minuta de lectura"
+post_word_count: "{{ .Count }} mots"
+post_reading_minutes: "{{ .Minutes }} min"
+post_read_original: "Lègir mai"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Aquò es la vista imprimibla multipagina d’aquesta seccion."
+print_click_to_print: "Clicar aquí per imprimir"
+print_show_regular: "Tornar a la vista normala d'aquesta pagina"
+print_entire_section: "Imprimir tota la seccion"
+# Feedback
+feedback_question: "Èra utila aquesta pagina ?"
+feedback_positive: "Oc"
+feedback_negative: "Non"
+feedback_thanks: "Mercés—vòstre retorn nos ajuda a melhorar aquesta pagina."
+feedback_reason_prompt: "Qué vos a empachat? (opcional)"
+feedback_reason_missing: "Informacion mancanta"
+feedback_reason_outdated: "Incorrècta o obsolèta"
+feedback_reason_failed: "Las etapas an pas foncionat"
+feedback_reason_unclear: "Dificil de comprendre"
+feedback_details: "Apondre de detalhs dins los comentaris"
+feedback_change: "Modificar la resposta"
+# Table of contents
+toc_on_this_page: "Contengut"
+# Error pages
+error_404_title: "Pagina pas trobada"
+error_404_body: "O plan, aquesta pagina existís pas. Tornatz començar a partir de la pagina d’acuèlh."
+error_404_home: "Anar a la pagina d’acuèlh"
+# Version banner
+version_banner_archived: "La version {{ .Version }} de la documentacion es pas mai mantenguda activament. Lo site que consultatz es una còpia archivada."
+version_banner_latest: "Per una documentacion actualizada, vejatz la {{ .Link }}."
+version_banner_latest_link: "version actualizada"
+# Comments
+comments_noscript: "JavaScript es necessari per cargar los comentaris."
+comments_noscript_link: "Veire las discussions sus GitHub."
+# LLM page actions
+ui_open_in_prompt_label: "Preguntar a prepaus d'aquesta pagina"
+ui_view_history: "Veire l’istoric de las modificacions"
+ui_table_scroll: "Taula amb desfilament"
+ui_filetree_divider: "Redimensionar la colomna de comentaris al costat de l’arbre de fichièrs"
+book_figure: "Figura"
+book_table: "Taula"
+book_equation: "Equacion"
+book_example: "Exemple"
+book_toc: "Contengut del libre"
+book_draft: "Borrolhon"
+book_draft_notice: "Aqueste capítol es encara en revision."
+contributors_count: "contributors"
+# Article series
+ui_series_title: "Sèrie"
+ui_series_part: "Part {{ .Part }} de {{ .Total }}"
+# Markdown output
+markdown_llms_index: "Index LLMS:"
+markdown_section_pages: "Paginas de la seccion:"
+markdown_backlinks: "Ligams retro:"

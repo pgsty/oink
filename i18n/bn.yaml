@@ -1,293 +1,207 @@
 # Alert labels
-callout_caution: সাবধানতা
-callout_important: গুরুত্বপূর্ণ
-callout_note: নোট
-callout_tip: টিপ
-callout_warning: সতর্কতা
-
-# ইউআই স্ট্রিং বাটন এবং অনুরূপ।
-ui_pager_prev: পূর্ববর্তী
-ui_pager_next: পরবর্তী
-ui_search: এই সাইটে খোঁজ করুন…
-
+callout_caution: "সাবধানতা"
+callout_important: "গুরুত্বপূর্ণ"
+callout_note: "নোট"
+callout_tip: "টিপ"
+callout_warning: "সতর্কবার্তা"
+callout_success: "সফলতা"
+callout_danger: "বিপদ"
+callout_question: "প্রশ্ন"
+callout_example: "উদাহরণ"
+callout_quote: "উদ্ধৃতি"
+callout_details: "বিস্তারিত"
+# UI strings. Buttons and similar.
+ui_pager_prev: "পূর্ববর্তী"
+ui_pager_next: "পরবর্তী"
+ui_search: "খুঁজুন…"
+ui_search_empty: "কোনো ফলাফল পাওয়া যায়নি"
+ui_search_loading: "খোঁজ সূচী লোড হচ্ছে…"
+ui_search_results: "{count}টি ফলাফল পাওয়া গেছে"
+ui_search_nav: "নেভিগেট করুন"
+ui_search_open: "খুলুন"
+ui_search_close: "বন্ধ করুন"
+ui_palette_actions: "ক্রিয়াকলাপ"
+ui_palette_page_actions: "পৃষ্ঠা ক্রিয়াকলাপ"
+ui_palette_preferences: "পছন্দ"
+ui_palette_commands: "কমান্ড"
+ui_palette_quick_links: "দ্রুত লিঙ্ক"
+ui_palette_no_commands: "মিল করা কমান্ড নেই"
+ui_palette_choose: "একটি বিকল্প নির্বাচন করুন"
+ui_palette_action_failed: "ক্রিয়াকলাপ সম্পন্ন করা যায়নি"
+ui_palette_pages: "পৃষ্ঠা"
+ui_palette_index_unavailable: "পৃষ্ঠা সূচী অনুপলব্ধ; ক্রিয়াকলাপগুলি এখনও কাজ করে"
+ui_sidebar_nav: "বিভাগ নেভিগেশন"
+ui_heading_self_link: "এই শিরোনামের লিঙ্ক"
+ui_field_self_link: "এই ফিল্ডের লিঙ্ক"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "প্রদর্শিত"
+ui_main_nav: "মূল নেভিগেশন"
+ui_home: "হোম"
+ui_sidebar_expand: "সাইডবার প্রসারিত করুন"
+ui_sidebar_collapse: "সাইডবার সংকুচিত করুন"
+ui_drawer_open: "নেভিগেশন খুলুন"
+ui_drawer_close: "নেভিগেশন বন্ধ করুন"
+ui_root_menu_label: "বিভাগ নির্বাচন করুন"
+ui_tags_title: "ট্যাগ"
+ui_tag_title: "ট্যাগ"
+ui_categories_title: "বিভাগ"
+ui_category_title: "বিভাগ"
+ui_modules_title: "মডিউল"
+ui_module_title: "মডিউল"
+ui_authors_title: "লেখক"
+ui_author_title: "লেখক"
+ui_theme_toggle: "রঙের থিম পরিবর্তন করুন"
+ui_theme_auto: "সিস্টেম"
+ui_theme_light: "হালকা"
+ui_theme_dark: "গাঢ়"
+ui_toc_hide: "সূচিপত্র লুকান"
+ui_toc_show: "সূচিপত্র দেখান"
+ui_language_select: "ভাষা নির্বাচন করুন"
+ui_language_switch: "ভাষা স্যুইচ করুন"
+ui_skip_to_content: "কনটেন্টে সরাসরি যান"
+ui_page_actions: "ক্রিয়াকলাপ"
+ui_open_in_chatgpt: "ChatGPT-এ খুলুন"
+ui_open_in_claude: "Claude-এ খুলুন"
+ui_open_in_prompt: "%s থেকে পড়ুন যাতে আমি এর সম্পর্কে প্রশ্ন করতে পারি।"
+ui_copy_markdown: "Markdown কপি করুন"
+ui_copy_success: "Markdown কপি করা হয়েছে"
+ui_copy_error: "Markdown কপি করা যায়নি"
+ui_share: "শেয়ার করুন"
+ui_share_email: "ইমেইল"
+ui_copy_link: "লিঙ্ক কপি করুন"
+ui_copy_link_success: "লিঙ্ক কপি করা হয়েছে"
+ui_copy_link_error: "লিঙ্ক কপি করা যায়নি"
+ui_code_copy_label: "কোড কপি করুন"
+ui_code_copied: "কপি করা হয়েছে"
+ui_code_copy_error: "কপি ব্যর্থ হয়েছে"
+ui_code_show_all: "সব {{ .Count }}টি লাইন দেখান"
+ui_code_collapse: "কোড সংকুচিত করুন"
+ui_tabs_label: "ট্যাব"
+ui_pricing_featured: "প্রস্তাবিত"
+ui_pricing_included: "অন্তর্ভুক্ত"
+ui_pricing_excluded: "অন্তর্ভুক্ত নয়"
+ui_marquee_pause: "গতি বন্ধ করুন"
+ui_kbd_with: "সঙ্গে"
+ui_keyboard_shortcuts: "কীবোর্ড শর্টকাট"
+ui_shortcut_tree_move: "সাইডবারের মধ্যে চলুন"
+ui_shortcut_tree_toggle: "বিভাগ সংকুচিত বা প্রসারিত করুন"
+ui_shortcut_tree_open: "ফোকাসকৃত পৃষ্ঠা খুলুন"
+ui_shortcut_heading_move: "আগের বা পরবর্তী শিরোনাম"
+ui_shortcut_page_move: "আগের বা পরবর্তী পৃষ্ঠা"
+ui_shortcut_search: "খুঁজুন"
+ui_shortcut_commands: "কমান্ড প্যালেট"
+ui_shortcut_reading_mode: "পড়ার মোড"
+ui_shortcut_language: "ভাষা স্যুইচ করুন"
+ui_shortcut_theme: "থিম স্যুইচ করুন"
+ui_shortcut_route: "শীর্ষ-স্তরের পৃষ্ঠাগুলোর মধ্যে পরিবর্তন করুন"
+ui_page_annotation: "পৃষ্ঠা তথ্য"
+ui_backlinks: "ব্যাকলিঙ্ক"
+ui_backlinks_more: "{{ . }} আরও দেখান"
+ui_field_required: "প্রয়োজন"
+ui_action_unavailable: "অনুপলব্ধ"
+ui_image_zoom_dialog: "ছবি প্রিভিউ"
+ui_image_zoom_open: "ছবি প্রিভিউ খুলুন"
+ui_image_zoom_close: "ছবি প্রিভিউ বন্ধ করুন"
+ui_diagram_expand: "ডায়াগ্রাম বড় করুন"
+ui_diagram_zoom_dialog: "ডায়াগ্রাম প্রিভিউ"
+ui_diagram_zoom_close: "ডায়াগ্রাম প্রিভিউ বন্ধ করুন"
+ui_diagram_zoom_in: "জুম ইন"
+ui_diagram_zoom_out: "জুম আউট"
+ui_diagram_zoom_reset: "দৃশ্য রিসেট করুন"
+ui_diagram_error: "ডায়াগ্রাম প্রদর্শন করা যায়নি"
+ui_print_page: "এই পৃষ্ঠা মুদ্রণ করুন"
+ui_sidebar_expand_section: "বিভাগ প্রসারিত করুন"
+ui_sidebar_collapse_section: "বিভাগ সংকুচিত করুন"
+ui_asciinema_timer: "প্লেব্যাক সময়"
+ui_openapi_spec: "OpenAPI স্পেসিফিকেশন"
+ui_release_view: "রিলিজ দেখুন"
+ui_release_source: "উৎস"
+ui_release_released: "রিলিজ করা হয়েছে"
+ui_assets_file: "ফাইল"
+ui_assets_checksum: "চেকসাম"
+ui_assets_copy: "চেকসাম কপি করুন"
+ui_assets_copied: "কপি করা হয়েছে"
+ui_assets_copy_all: "সব চেকসাম কপি করুন"
+ui_assets_download: "ফাইল ডাউনলোড করুন"
+ui_download_channels: "ডাউনলোড চ্যানেল"
+ui_download_unpublished: "প্রকাশের জন্য অপেক্ষা"
 # Used in sentences such as "All Tags"
-ui_all: সব
-
-# পাদচরণ
-footer_all_rights_reserved: সমস্ত অধিকার সংরক্ষিত
-
-# পোস্ট (ব্লগ, নিবন্ধ ইত্যাদি)
-post_last_mod: সর্বশেষ পরিবর্তিত
-post_edit_this: এই পৃষ্ঠাটি সম্পাদনা করুন
-post_view_markdown: Markdown দেখুন
-post_create_child_page: শাখা পৃষ্ঠা তৈরি করুন
-post_create_issue: ডকুমেন্টেশন ইস্যু তৈরি করুন
-post_create_project_issue: প্রকল্পের সমস্যা তৈরি করুন
-post_reading_time: পড়তে এক মিনিট
-post_less_than_a_minute_read: পড়তে এক মিনিটেরও কম সময় লাগবে
-
-# মুদ্রণ সমর্থন
-print_printable_section: এটি এই বিভাগটির বহু পৃষ্ঠার মুদ্রণযোগ্য দর্শন।
-print_click_to_print: মুদ্রণ করতে এখানে ক্লিক করুন
-print_show_regular: এই পৃষ্ঠার নিয়মিত দৃশ্যে ফিরে আসুন
-print_entire_section: পুরো বিভাগ মুদ্রণ করুন
-
-# Feedback
-feedback_question: এই পৃষ্ঠাটি কি সহায়ক ছিল?
-feedback_positive: হ্যাঁ
-feedback_negative: না
-
-# Table of contents
-toc_on_this_page: এই পৃষ্ঠায়
-
-# Replace these values with reviewed translations when available.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_all: "সব"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "লেআউট স্যুইচ করুন"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "সমস্ত অধিকার সংরক্ষিত"
+ui_footer_collapse: "ফুটার লিঙ্ক লুকান"
+ui_footer_expand: "ফুটার লিঙ্ক দেখান"
+# Post (blog, article, etc.)
+post_last_mod: "সর্বশেষ পরিবর্তিত"
+post_upstream: "{{ .work }}, {{ .copyright }}, {{ .license }} লাইসেন্সের অধীনে। {{ .notice }} দেখুন।"
+post_upstream_adapted: "{{ .work }} থেকে অভিযোজিত, {{ .copyright }}, {{ .license }} লাইসেন্সের অধীনে। {{ .notice }} এবং {{ .history }} দেখুন।"
+post_upstream_adapted_plain: "{{ .work }} থেকে অভিযোজিত, {{ .copyright }}, {{ .license }} লাইসেন্সের অধীনে। {{ .notice }} দেখুন।"
+post_upstream_notice: "উৎস উল্লেখ"
+post_upstream_history: "পরিবর্তন ইতিহাস"
+post_translated: "এই পৃষ্ঠাটি একটি অনুবাদ; {{ .original }}-ই প্রামাণ্য।"
+post_translated_original: "মূল"
+post_edit_this: "এই পৃষ্ঠাটি সম্পাদনা করুন"
+post_view_markdown: "Markdown দেখুন"
+post_create_child_page: "উপপৃষ্ঠা তৈরি করুন"
+post_create_issue: "ডকুমেন্টেশন ইস্যু তৈরি করুন"
+post_create_project_issue: "প্রকল্প ইস্যু তৈরি করুন"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "{{ .Authors }} দ্বারা · {{ .Section }}-এ"
+post_meta_in: "{{ .Section }}-এ"
+post_reading_time: "মিনিট পড়া"
+post_less_than_a_minute_read: "পড়তে এক মিনিটেরও কম সময় লাগবে"
+post_word_count: "{{ .Count }} শব্দ"
+post_reading_minutes: "{{ .Minutes }} মিনিট"
+post_read_original: "আরও পড়ুন"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "এটি এই বিভাগের বহু-পৃষ্ঠার মুদ্রণযোগ্য দৃশ্য।"
+print_click_to_print: "মুদ্রণ করতে এখানে ক্লিক করুন"
+print_show_regular: "এই পৃষ্ঠার নিয়মিত দৃশ্যে ফিরে আসুন"
+print_entire_section: "পুরো বিভাগ মুদ্রণ করুন"
+# Feedback
+feedback_question: "এই পৃষ্ঠাটি কি সহায়ক ছিল?"
+feedback_positive: "হ্যাঁ"
+feedback_negative: "না"
+feedback_thanks: "ধন্যবাদ—আপনার প্রতিক্রিয়া এই পৃষ্ঠাটি উন্নত করতে আমাদের সাহায্য করে।"
+feedback_reason_prompt: "কী বাধা হয়েছিল? (ঐচ্ছিক)"
+feedback_reason_missing: "অনুপস্থিত তথ্য"
+feedback_reason_outdated: "ভুল বা পুরোনো"
+feedback_reason_failed: "ধাপগুলি কাজ করেনি"
+feedback_reason_unclear: "বোঝা কঠিন"
+feedback_details: "মন্তব্যে বিস্তারিত যোগ করুন"
+feedback_change: "প্রতিক্রিয়া পরিবর্তন করুন"
+# Table of contents
+toc_on_this_page: "এই পৃষ্ঠায়"
+# Error pages
+error_404_title: "পৃষ্ঠা পাওয়া যায়নি"
+error_404_body: "দুঃখিত, এই পৃষ্ঠাটি বিদ্যমান নেই। হোম পৃষ্ঠা থেকে আবার শুরু করুন।"
+error_404_home: "হোম পৃষ্ঠায় যান"
+# Version banner
+version_banner_archived: "ডকুমেন্টেশনের সংস্করণ {{ .Version }} আর সক্রিয়ভাবে রক্ষণাবেক্ষণ করা হয় না। আপনি যে সাইটটি দেখছেন তা একটি আর্কাইভ করা অনুলিপি।"
+version_banner_latest: "আপডেটেড ডকুমেন্টেশনের জন্য, {{ .Link }} দেখুন।"
+version_banner_latest_link: "সর্বশেষ সংস্করণ"
+# Comments
+comments_noscript: "মন্তব্য লোড করতে JavaScript প্রয়োজন।"
+comments_noscript_link: "GitHub-এ আলোচনা দেখুন।"
+# LLM page actions
+ui_open_in_prompt_label: "এই পৃষ্ঠার সম্পর্কে জিজ্ঞাসা করুন"
+ui_view_history: "সম্পাদনা ইতিহাস দেখুন"
+ui_table_scroll: "স্ক্রোলযোগ্য টেবিল"
+ui_filetree_divider: "ফাইল ট্রির পাশের মন্তব্য কলামের আকার পরিবর্তন করুন"
+book_figure: "চিত্র"
+book_table: "টেবিল"
+book_equation: "সমীকরণ"
+book_example: "উদাহরণ"
+book_toc: "বইয়ের সূচিপত্র"
+book_draft: "খসড়া"
+book_draft_notice: "এই অধ্যায়টি এখনও সংশোধন করা হচ্ছে।"
+contributors_count: "অবদানকারী"
+# Article series
+ui_series_title: "সিরিজ"
+ui_series_part: "{{ .Total }}-এর মধ্যে {{ .Part }} অংশ"
+# Markdown output
+markdown_llms_index: "LLMS সূচী:"
+markdown_section_pages: "বিভাগের পৃষ্ঠা:"
+markdown_backlinks: "ব্যাকলিঙ্ক:"

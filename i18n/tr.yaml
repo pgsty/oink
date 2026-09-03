@@ -1,293 +1,207 @@
+# Alert labels
+callout_caution: "Dikkat"
+callout_important: "Önemli"
+callout_note: "Not"
+callout_tip: "İpucu"
+callout_warning: "Uyarı"
+callout_success: "Başarı"
+callout_danger: "Tehlike"
+callout_question: "Soru"
+callout_example: "Örnek"
+callout_quote: "Alıntı"
+callout_details: "Ayrıntılar"
 # UI strings. Buttons and similar.
-ui_pager_prev: Önceki
-ui_pager_next: Sonraki
-ui_search: Bu sitede arayın…
-
+ui_pager_prev: "Önceki"
+ui_pager_next: "Sonraki"
+ui_search: "Ara…"
+ui_search_empty: "Sonuç bulunamadı"
+ui_search_loading: "Arama dizini yükleniyor…"
+ui_search_results: "{count} sonuç bulundu"
+ui_search_nav: "Gezin"
+ui_search_open: "Aç"
+ui_search_close: "Kapat"
+ui_palette_actions: "Eylemler"
+ui_palette_page_actions: "Sayfa eylemleri"
+ui_palette_preferences: "Tercihler"
+ui_palette_commands: "Komutlar"
+ui_palette_quick_links: "Hızlı bağlantılar"
+ui_palette_no_commands: "Uyumlu komut bulunamadı"
+ui_palette_choose: "Bir seçenek seçin"
+ui_palette_action_failed: "Eylem tamamlanamadı"
+ui_palette_pages: "Sayfalar"
+ui_palette_index_unavailable: "Sayfa dizini kullanılamıyor; eylemler hâlâ çalışır"
+ui_sidebar_nav: "Bölüm gezinmesi"
+ui_heading_self_link: "Bu başlığa bağlantı"
+ui_field_self_link: "Bu alana bağlantı"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Görüntülenen"
+ui_main_nav: "Ana gezinme"
+ui_home: "Ana sayfa"
+ui_sidebar_expand: "Kenar çubuğunu genişlet"
+ui_sidebar_collapse: "Kenar çubuğunu daralt"
+ui_drawer_open: "Gezinmeyi aç"
+ui_drawer_close: "Gezinmeyi kapat"
+ui_root_menu_label: "Bölüm seçin"
+ui_tags_title: "Etiketler"
+ui_tag_title: "Etiket"
+ui_categories_title: "Kategoriler"
+ui_category_title: "Kategori"
+ui_modules_title: "Modüller"
+ui_module_title: "Modül"
+ui_authors_title: "Yazarlar"
+ui_author_title: "Yazar"
+ui_theme_toggle: "Renk temasını değiştir"
+ui_theme_auto: "Sistem"
+ui_theme_light: "Açık"
+ui_theme_dark: "Koyu"
+ui_toc_hide: "İçindekileri gizle"
+ui_toc_show: "İçindekileri göster"
+ui_language_select: "Dil seçin"
+ui_language_switch: "Dili değiştir"
+ui_skip_to_content: "İçeriğe geç"
+ui_page_actions: "Eylemler"
+ui_open_in_chatgpt: "ChatGPT'de aç"
+ui_open_in_claude: "Claude'de aç"
+ui_open_in_prompt: "%s'den oku ki bu konu hakkında sorular sorabileyim."
+ui_copy_markdown: "Markdown kopyala"
+ui_copy_success: "Markdown kopyalandı"
+ui_copy_error: "Markdown kopyalanamadı"
+ui_share: "Paylaş"
+ui_share_email: "E-posta"
+ui_copy_link: "Bağlantıyı kopyala"
+ui_copy_link_success: "Bağlantı kopyalandı"
+ui_copy_link_error: "Bağlantı kopyalanamadı"
+ui_code_copy_label: "Kodu kopyala"
+ui_code_copied: "Kopyalandı"
+ui_code_copy_error: "Kopyalama başarısız oldu"
+ui_code_show_all: "{{ .Count }} satırı göster"
+ui_code_collapse: "Kodu daralt"
+ui_tabs_label: "Sekmeler"
+ui_pricing_featured: "Tavsiye edilen"
+ui_pricing_included: "Dahil"
+ui_pricing_excluded: "Dahil değil"
+ui_marquee_pause: "Hareketi duraklat"
+ui_kbd_with: "ile"
+ui_keyboard_shortcuts: "Klavye kısayolları"
+ui_shortcut_tree_move: "Kenar çubuğunda gezin"
+ui_shortcut_tree_toggle: "Bölümü daralt veya genişlet"
+ui_shortcut_tree_open: "Odaktaki sayfayı aç"
+ui_shortcut_heading_move: "Önceki veya sonraki başlık"
+ui_shortcut_page_move: "Önceki veya sonraki sayfa"
+ui_shortcut_search: "Ara"
+ui_shortcut_commands: "Komut paleti"
+ui_shortcut_reading_mode: "Okuma modu"
+ui_shortcut_language: "Dili değiştir"
+ui_shortcut_theme: "Temayı değiştir"
+ui_shortcut_route: "Üst düzey sayfalar arasında geçiş yap"
+ui_page_annotation: "Sayfa bilgisi"
+ui_backlinks: "Geri bağlantılar"
+ui_backlinks_more: "{{ . }} daha göster"
+ui_field_required: "gerekli"
+ui_action_unavailable: "kullanılamaz"
+ui_image_zoom_dialog: "Resim önizlemesi"
+ui_image_zoom_open: "Resim önizlemesini aç"
+ui_image_zoom_close: "Resim önizlemesini kapat"
+ui_diagram_expand: "Şemayı büyüt"
+ui_diagram_zoom_dialog: "Şema önizlemesi"
+ui_diagram_zoom_close: "Şema önizlemesini kapat"
+ui_diagram_zoom_in: "Yakınlaştır"
+ui_diagram_zoom_out: "Uzaklaştır"
+ui_diagram_zoom_reset: "Görünümü sıfırla"
+ui_diagram_error: "Şema görüntülenemedi"
+ui_print_page: "Bu sayfayı yazdır"
+ui_sidebar_expand_section: "Bölümü aç"
+ui_sidebar_collapse_section: "Bölümü kapat"
+ui_asciinema_timer: "Oynatma süresi"
+ui_openapi_spec: "OpenAPI belirtimi"
+ui_release_view: "Sürümü görüntüle"
+ui_release_source: "Kaynak"
+ui_release_released: "Yayınlandı"
+ui_assets_file: "Dosya"
+ui_assets_checksum: "Kontrol toplamı"
+ui_assets_copy: "Kontrol toplamını kopyala"
+ui_assets_copied: "Kopyalandı"
+ui_assets_copy_all: "Tüm kontrol toplamlarını kopyala"
+ui_assets_download: "Dosyayı indir"
+ui_download_channels: "İndirme kanalları"
+ui_download_unpublished: "Yayın bekleniyor"
 # Used in sentences such as "All Tags"
-ui_all: tüm
-
-# Footer text
-footer_all_rights_reserved: Tüm Hakları Saklıdır
-
-# Post (blog, article, etc.)
-post_last_mod: Son düzenleme
-post_edit_this: Bu sayfayı düzenle
-post_view_markdown: Markdown'ı Görüntüle
-post_create_child_page: Çocuk sayfası oluştur
-post_create_issue: Belge konusu oluştur
-post_create_project_issue: Proje konusu oluştur
-post_reading_time: minute read
-post_less_than_a_minute_read: 1 dakikadan az
-
-# Print support
-print_printable_section: Bu bölümün görüntüsü yazdırılabilir.
-print_click_to_print: Yazdırmak için tıklayın
-print_show_regular: Bu sayfanın normal görüntüsüne dönün
-print_entire_section: Bütün bölümü yazıdırın
-
-# Feedback
-feedback_question: Bu sayfa yararlı oldu mu?
-feedback_positive: Evet
-feedback_negative: Hayır
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_all: "tüm"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Düzeni değiştir"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
-post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+footer_all_rights_reserved: "Tüm Hakları Saklıdır"
+ui_footer_collapse: "Alt bilgi bağlantılarını gizle"
+ui_footer_expand: "Alt bilgi bağlantılarını göster"
+# Post (blog, article, etc.)
+post_last_mod: "Son düzenleme"
+post_upstream: "{{ .work }}, {{ .copyright }}, {{ .license }} lisansı altında. {{ .notice }} belgesine bakın."
+post_upstream_adapted: "{{ .work }} eserinden uyarlanmıştır, {{ .copyright }}, {{ .license }} lisansı altında. {{ .notice }} ve {{ .history }} belgelerine bakın."
+post_upstream_adapted_plain: "{{ .work }} eserinden uyarlanmıştır, {{ .copyright }}, {{ .license }} lisansı altında. {{ .notice }} belgesine bakın."
+post_upstream_notice: "kaynak gösterimi"
+post_upstream_history: "değişiklik geçmişi"
+post_translated: "Bu sayfa bir çeviridir; {{ .original }} esas alınır."
+post_translated_original: "orijinal"
+post_edit_this: "Bu sayfayı düzenle"
+post_view_markdown: "Markdown'ı Görüntüle"
+post_create_child_page: "Alt sayfa oluştur"
+post_create_issue: "Belgelendirme sorunu oluştur"
+post_create_project_issue: "Proje sorunu oluştur"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "{{ .Authors }} tarafından · {{ .Section }} bölümünde"
+post_meta_in: "{{ .Section }} içinde"
+post_reading_time: "dakikalık okuma"
+post_less_than_a_minute_read: "1 dakikadan az okuma"
+post_word_count: "{{ .Count }} kelime"
+post_reading_minutes: "{{ .Minutes }} dakika"
+post_read_original: "Daha fazla oku"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Bu, bölümün çok sayfalı yazdırma görünümüdür."
+print_click_to_print: "Yazdırmak için tıklayın"
+print_show_regular: "Bu sayfanın normal görüntüsüne dönün"
+print_entire_section: "Bölümün tamamını yazdır"
+# Feedback
+feedback_question: "Bu sayfa yararlı oldu mu?"
+feedback_positive: "Evet"
+feedback_negative: "Hayır"
+feedback_thanks: "Teşekkürler—geri bildiriminiz bu sayfayı iyileştirmemize yardımcı olur."
+feedback_reason_prompt: "Ne engelledi? (isteğe bağlı)"
+feedback_reason_missing: "Eksik bilgi"
+feedback_reason_outdated: "Yanlış veya güncelliğini yitirmiş"
+feedback_reason_failed: "Adımlar çalışmadı"
+feedback_reason_unclear: "Anlaşılmaz"
+feedback_details: "Açıklamalarda detay ekleyin"
+feedback_change: "Cevabı değiştir"
+# Table of contents
+toc_on_this_page: "İçerik"
+# Error pages
+error_404_title: "Sayfa bulunamadı"
+error_404_body: "Üzgünüz, bu sayfa mevcut değil. Ana sayfadan yeniden başlamayı deneyin."
+error_404_home: "Ana sayfaya git"
+# Version banner
+version_banner_archived: "Belgelerin {{ .Version }} sürümü artık etkin olarak bakım görmüyor. Şu anda görüntülediğiniz site arşivlenmiş bir kopyadır."
+version_banner_latest: "Güncel belgeler için {{ .Link }}'e bakın."
+version_banner_latest_link: "en son sürüm"
+# Comments
+comments_noscript: "Yorumları yüklemek için JavaScript gerekir."
+comments_noscript_link: "GitHub'da tartışmalara bakın."
+# LLM page actions
+ui_open_in_prompt_label: "Bu sayfa hakkında soru sor"
+ui_view_history: "Düzenleme geçmişi görüntüle"
+ui_table_scroll: "Kaydırılabilir tablo"
+ui_filetree_divider: "Dosya ağacı yorum sütununu yeniden boyutlandır"
+book_figure: "Şekil"
+book_table: "Tablo"
+book_equation: "Denklem"
+book_example: "Örnek"
+book_toc: "Kitap içeriği"
+book_draft: "Taslak"
+book_draft_notice: "Bu bölüm hâlâ güncelleniyor."
+contributors_count: "katkıda bulunan"
+# Article series
+ui_series_title: "Seri"
+ui_series_part: "{{ .Total }} içinde {{ .Part }}. kısım"
+# Markdown output
+markdown_llms_index: "LLMS dizini:"
+markdown_section_pages: "Bölüm sayfaları:"
+markdown_backlinks: "Geri bağlantılar:"

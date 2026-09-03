@@ -1,294 +1,207 @@
+# Alert labels
+callout_caution: "Let op"
+callout_important: "Belangrijk"
+callout_note: "Opmerking"
+callout_tip: "Tip"
+callout_warning: "Waarschuwing"
+callout_success: "Succes"
+callout_danger: "Gevaar"
+callout_question: "Vraag"
+callout_example: "Voorbeeld"
+callout_quote: "Citaat"
+callout_details: "Details"
 # UI strings. Buttons and similar.
-ui_pager_prev: Vorige
-ui_pager_next: Volgende
-ui_search: Doorzoek deze site
-
-# Used in sentences such as "Posted in News"
-
-ui_all: alle
-
-# Footer text
-footer_all_rights_reserved: Alle rechten voorbehouden
-
-# Post (blog, article, etc.)
-post_last_mod: Laatst gewijzigd
-post_edit_this: Bewerk deze pagina
-post_view_markdown: Bekijk Markdown
-post_create_child_page: Maak sub pagina
-post_create_issue: Maak documentatie issue
-post_create_project_issue: Maak project issue
-post_reading_time: minuten leestijd
-post_less_than_a_minute_read: minder dan een minuut
-
-# Print support
-print_printable_section: Dit is de multi-page printable view van deze sectie.
-print_click_to_print: Klik hier om te printen
-print_show_regular: Terug naar normale view van deze pagina
-print_entire_section: Print volledige sectie
-
-# Replace these values with reviewed translations when available.
-callout_caution: Caution
-callout_important: Important
-callout_note: Note
-callout_tip: Tip
-callout_warning: Warning
-
-# UI strings. Buttons and similar.
-ui_search_empty: No results found
-ui_search_loading: Loading search index…
-ui_search_results: '{count} results found'
-ui_search_nav: Navigate
-ui_search_open: Open
-ui_search_close: Close
-ui_palette_pages: Pages
-ui_palette_index_unavailable: Page index unavailable; actions still work
-ui_palette_action_failed: Action could not be completed
-ui_palette_choose: Choose an option
-ui_palette_no_commands: No matching commands
-ui_palette_quick_links: Quick links
-ui_palette_actions: Actions
-ui_palette_commands: Commands
-ui_palette_preferences: Preferences
-ui_palette_page_actions: Page actions
-ui_sidebar_nav: Section navigation
-ui_heading_self_link: Link to this heading
-ui_main_nav: Main navigation
-ui_home: Home
-ui_sidebar_expand: Expand sidebar
-ui_sidebar_collapse: Collapse sidebar
-ui_drawer_open: Open navigation
-ui_drawer_close: Close navigation
-ui_root_menu_label: Choose section
-ui_tags_title: Tags
-ui_tag_title: Tag
-ui_categories_title: Categories
-ui_category_title: Category
-ui_theme_toggle: Toggle color theme
-ui_theme_auto: Follow system
-ui_theme_light: Light
-ui_theme_dark: Dark
-ui_toc_hide: Hide table of contents
-ui_toc_show: Show table of contents
-ui_language_select: Choose language
-ui_language_switch: Switch language
-ui_skip_to_content: Skip to content
-ui_page_actions: Actions
-ui_copy_markdown: Copy Markdown
-ui_copy_success: Markdown copied
-ui_copy_error: Could not copy Markdown
-ui_print_page: Print this page
-ui_sidebar_expand_section: Expand section
-ui_sidebar_collapse_section: Collapse section
-ui_asciinema_timer: Playback time
-
-# Used in sentences such as "Posted in News"
-feedback_question: Was this page helpful?
-feedback_positive: Yes
-feedback_negative: No
-
-# Table of contents
-toc_on_this_page: Content
-
-# Error pages
-error_404_title: Page not found
-error_404_body: >-
-  Sorry, this page does not exist. Try starting again from the home page.
-error_404_home: Go to the home page
-
-# Replace these values with reviewed translations when available.
-ui_code_copy_label: Copy code
-ui_code_copied: Copied
-ui_code_copy_error: Copy failed
-ui_code_show_all: Show all {{ .Count }} lines
-ui_code_collapse: Collapse code
-ui_kbd_with: with
-ui_field_required: required
-ui_action_unavailable: unavailable
-
-# Replace these values with reviewed translations when available.
-ui_open_in_chatgpt: Open in ChatGPT
-ui_open_in_claude: Open in Claude
-ui_open_in_prompt: Read from %s so I can ask questions about it.
-
-# Replace these values with reviewed translations when available.
-ui_image_zoom_dialog: Image preview
-ui_image_zoom_open: Open image preview
-ui_image_zoom_close: Close image preview
-
-# Replace these values with reviewed translations when available.
-version_banner_archived: >-
-  Version {{ .Version }} of the documentation is no longer actively maintained.
-  The site that you are currently viewing is an archived snapshot.
-version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
-version_banner_latest_link: latest version
-
-# Comments
-comments_noscript: JavaScript is required to load comments.
-comments_noscript_link: View discussions on GitHub.
-
-# Replace these values with reviewed translations when available.
-ui_open_in_prompt_label: Ask about this page
-ui_view_history: View edit history
-
-# Replace these values with reviewed translations when available.
-ui_footer_collapse: Hide footer links
-ui_footer_expand: Show footer links
-
-# Replace these values with reviewed translations when available.
-ui_release_view: View release
-ui_release_source: Source
-ui_release_released: Released
-
-# Replace these values with reviewed translations when available.
-ui_assets_file: File
-ui_assets_checksum: Checksum
-ui_assets_copy: Copy checksum
-ui_assets_copied: Copied
-ui_assets_copy_all: Copy all checksums
-ui_assets_download: Download asset
-
-# Replace these values with reviewed translations when available.
-ui_download_channels: Download channels
-ui_download_unpublished: Pending release
-
-# Replace these values with reviewed translations when available.
-ui_pricing_featured: Recommended
-ui_pricing_included: Included
-ui_pricing_excluded: Not included
-
-# Replace these values with reviewed translations when available.
-ui_table_scroll: "Scrollable table"
-
-# Replace these values with reviewed translations when available.
-book_figure: Figure
-book_table: Table
-book_equation: Equation
-book_toc: Book contents
-book_draft: Draft
-book_draft_notice: This chapter is still being revised.
-
-# Replace these values with reviewed translations when available.
-ui_marquee_pause: Pause motion
-
-# Replace these values with reviewed translations when available.
-book_example: Example
-contributors_count: contributors
-
-# Replace these values with reviewed translations when available.
-ui_modules_title: Modules
-ui_module_title: Module
-
-# Replace these values with reviewed translations when available.
-feedback_thanks: Thanks for your feedback.
-
-# Replace these values with reviewed translations when available.
-ui_keyboard_shortcuts: Keyboard shortcuts
-ui_shortcut_tree_move: Move through sidebar
-ui_shortcut_tree_toggle: Collapse or expand section
-ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_move: Previous or next heading
-ui_shortcut_page_move: Previous or next page
-ui_shortcut_search: Search
-ui_shortcut_commands: Command palette
-ui_shortcut_reading_mode: Reading mode
-ui_shortcut_language: Switch language
-ui_shortcut_theme: Switch theme
-ui_shortcut_route: Cycle top-level pages
-
-# Replace these values with reviewed translations when available.
-feedback_reason_prompt: What got in the way? (optional)
-feedback_reason_missing: Missing information
-feedback_reason_outdated: Incorrect or outdated
-feedback_reason_failed: Steps did not work
-feedback_reason_unclear: Hard to understand
-feedback_details: Add details in the comments
-feedback_change: Change response
-
-# Replace these values with reviewed translations when available.
-ui_page_annotation: Page information
-
-# Replace these values with reviewed translations when available.
-callout_success: Success
-callout_danger: Danger
-callout_question: Question
-callout_example: Example
-callout_quote: Quote
-callout_details: Details
-
-# Replace these values with reviewed translations when available.
-ui_tabs_label: Tabs
-
-# Replace these values with reviewed translations when available.
-ui_filetree_divider: "Resize the file tree comment column"
-
-# Replace these values with reviewed translations when available.
-ui_field_self_link: Link to this field
-
-# Replace these values with reviewed translations when available.
-ui_preview_source: Markdown
-ui_preview_rendered: Rendered
-
-# Replace these values with reviewed translations when available.
-post_upstream: "{{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}."
-post_upstream_adapted: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }} and {{ .history }}.
-post_upstream_adapted_plain: Adapted from {{ .work }}, {{ .copyright }}, under {{ .license }}. See {{ .notice }}.
-post_upstream_notice: attribution
-post_upstream_history: change history
-post_translated: This page is a translation; the {{ .original }} governs.
-post_translated_original: original
-
-# Replace these values with reviewed translations when available.
-ui_authors_title: Authors
-ui_author_title: Author
-ui_series_title: Series
-ui_series_part: Part {{ .Part }} of {{ .Total }}
-ui_share: Share
-ui_share_email: Email
-ui_copy_link: Copy link
-ui_copy_link_success: Link copied
-ui_copy_link_error: Could not copy the link
-
-# Replace these values with reviewed translations when available.
+ui_pager_prev: "Vorige"
+ui_pager_next: "Volgende"
+ui_search: "Zoeken…"
+ui_search_empty: "Geen resultaten gevonden"
+ui_search_loading: "Zoekindex aan het laden…"
+ui_search_results: "{count} resultaten gevonden"
+ui_search_nav: "Navigeer"
+ui_search_open: "Openen"
+ui_search_close: "Sluiten"
+ui_palette_actions: "Acties"
+ui_palette_page_actions: "Pagina-acties"
+ui_palette_preferences: "Voorkeuren"
+ui_palette_commands: "Opdrachten"
+ui_palette_quick_links: "Snelkoppelingen"
+ui_palette_no_commands: "Geen overeenkomstige opdrachten"
+ui_palette_choose: "Kies een optie"
+ui_palette_action_failed: "Actie kon niet worden voltooid"
+ui_palette_pages: "Pagina's"
+ui_palette_index_unavailable: "Pagina-index niet beschikbaar; acties werken nog steeds"
+ui_sidebar_nav: "Sectie-navigatie"
+ui_heading_self_link: "Koppeling naar deze kop"
+ui_field_self_link: "Link naar dit veld"
+ui_preview_source: "Markdown"
+ui_preview_rendered: "Weergegeven"
+ui_main_nav: "Hoofdnavigatie"
+ui_home: "Home"
+ui_sidebar_expand: "Zijbalk uitvouwen"
+ui_sidebar_collapse: "Zijbalk inklappen"
+ui_drawer_open: "Navigatie openen"
+ui_drawer_close: "Navigatie sluiten"
+ui_root_menu_label: "Kies sectie"
+ui_tags_title: "Tags"
+ui_tag_title: "Tag"
+ui_categories_title: "Categorieën"
+ui_category_title: "Categorie"
+ui_modules_title: "Modules"
+ui_module_title: "Module"
+ui_authors_title: "Auteurs"
+ui_author_title: "Auteur"
+ui_theme_toggle: "Wissel kleurenthema"
+ui_theme_auto: "Systeem"
+ui_theme_light: "Licht"
+ui_theme_dark: "Donker"
+ui_toc_hide: "Inhoudsopgave verbergen"
+ui_toc_show: "Inhoudsopgave tonen"
+ui_language_select: "Kies taal"
+ui_language_switch: "Wissel taal"
+ui_skip_to_content: "Naar inhoud springen"
+ui_page_actions: "Acties"
+ui_open_in_chatgpt: "Open in ChatGPT"
+ui_open_in_claude: "Open in Claude"
+ui_open_in_prompt: "Lees %s zodat ik er vragen over kan stellen."
+ui_copy_markdown: "Kopieer Markdown"
+ui_copy_success: "Markdown gekopieerd"
+ui_copy_error: "Kon Markdown niet kopiëren"
+ui_share: "Deel"
+ui_share_email: "E-mail"
+ui_copy_link: "Kopieer link"
+ui_copy_link_success: "Link gekopieerd"
+ui_copy_link_error: "Kon de link niet kopiëren"
+ui_code_copy_label: "Kopieer code"
+ui_code_copied: "Kopieer succesvol"
+ui_code_copy_error: "Kopiëren mislukt"
+ui_code_show_all: "Toon alle {{ .Count }} regels"
+ui_code_collapse: "Code inklappen"
+ui_tabs_label: "Tabs"
+ui_pricing_featured: "Aanbevolen"
+ui_pricing_included: "Inbegrepen"
+ui_pricing_excluded: "Niet inbegrepen"
+ui_marquee_pause: "Beweging pauzeren"
+ui_kbd_with: "met"
+ui_keyboard_shortcuts: "Toetsenbordtoetsen"
+ui_shortcut_tree_move: "Navigeer door zijbalk"
+ui_shortcut_tree_toggle: "Sectie inklappen of uitvouwen"
+ui_shortcut_tree_open: "Open de pagina met toetsenbordfocus"
+ui_shortcut_heading_move: "Vorige of volgende kop"
+ui_shortcut_page_move: "Vorige of volgende pagina"
+ui_shortcut_search: "Zoeken"
+ui_shortcut_commands: "Opdrachtpalet"
+ui_shortcut_reading_mode: "Leesmodus"
+ui_shortcut_language: "Wissel taal"
+ui_shortcut_theme: "Wissel thema"
+ui_shortcut_route: "Wissel tussen hoofdpagina’s"
+ui_page_annotation: "Pagina-informatie"
+ui_backlinks: "Terugverwijzingen"
+ui_backlinks_more: "Toon {{ . }} meer"
+ui_field_required: "verplicht"
+ui_action_unavailable: "niet beschikbaar"
+ui_image_zoom_dialog: "Afbeelding voorbeeld"
+ui_image_zoom_open: "Afbeelding voorbeeld openen"
+ui_image_zoom_close: "Afbeelding voorbeeld sluiten"
+ui_diagram_expand: "Vergroot diagram"
+ui_diagram_zoom_dialog: "Diagram voorbeeld"
+ui_diagram_zoom_close: "Diagram voorbeeld sluiten"
+ui_diagram_zoom_in: "Inzoomen"
+ui_diagram_zoom_out: "Uitzoomen"
+ui_diagram_zoom_reset: "Weergave resetten"
+ui_diagram_error: "Het diagram kon niet worden weergegeven"
+ui_print_page: "Druk deze pagina af"
+ui_sidebar_expand_section: "Sectie uitvouwen"
+ui_sidebar_collapse_section: "Sectie inklappen"
+ui_asciinema_timer: "Afspeltijd"
+ui_openapi_spec: "OpenAPI specificatie"
+ui_release_view: "Bekijk release"
+ui_release_source: "Bron"
+ui_release_released: "Uitgegeven"
+ui_assets_file: "Bestand"
+ui_assets_checksum: "Controlesom"
+ui_assets_copy: "Controlesom kopiëren"
+ui_assets_copied: "Kopieer succesvol"
+ui_assets_copy_all: "Alle controlesommen kopiëren"
+ui_assets_download: "Download bestand"
+ui_download_channels: "Downloadkanalen"
+ui_download_unpublished: "In afwachting van release"
+# Used in sentences such as "All Tags"
+ui_all: "alle"
 ui_list_separator: ", "
-
+ui_blog_index_toggle: "Wissel lay-out"
 # Footer text
-post_meta_by_in: "By {{ .Authors }} · In {{ .Section }}"
+footer_all_rights_reserved: "Alle rechten voorbehouden"
+ui_footer_collapse: "Voettekst koppelingen verbergen"
+ui_footer_expand: "Voettekst koppelingen tonen"
+# Post (blog, article, etc.)
+post_last_mod: "Laatst gewijzigd"
+post_upstream: "{{ .work }}, {{ .copyright }}, onder {{ .license }}. Zie {{ .notice }}."
+post_upstream_adapted: "Aangepast van {{ .work }}, {{ .copyright }}, onder {{ .license }}. Zie {{ .notice }} en {{ .history }}."
+post_upstream_adapted_plain: "Aangepast van {{ .work }}, {{ .copyright }}, onder {{ .license }}. Zie {{ .notice }}."
+post_upstream_notice: "bronvermelding"
+post_upstream_history: "wijzigingsgeschiedenis"
+post_translated: "Deze pagina is een vertaling; het {{ .original }} is leidend."
+post_translated_original: "origineel"
+post_edit_this: "Bewerk deze pagina"
+post_view_markdown: "Bekijk Markdown"
+post_create_child_page: "Maak subpagina"
+post_create_issue: "Meld een probleem met de documentatie"
+post_create_project_issue: "Meld een probleem met het project"
+# One sentence per language rather than fragments joined in a template.
+post_meta_by_in: "Door {{ .Authors }} · In {{ .Section }}"
 post_meta_in: "In {{ .Section }}"
-
-# Replace these values with reviewed translations when available.
-ui_blog_index_toggle: Switch layout
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-post_word_count: '{{ .Count }} words'
-post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
-
+post_reading_time: "minuten leestijd"
+post_less_than_a_minute_read: "minder dan een minuut"
+post_word_count: "{{ .Count }} woorden"
+post_reading_minutes: "{{ .Minutes }} min"
+post_read_original: "Lees meer"
 # Print support
-
-# Markdown output (explicit English fallbacks)
-markdown_llms_index: "LLMS index:"
-markdown_section_pages: "Section pages:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_diagram_expand: Enlarge diagram
-ui_diagram_zoom_dialog: Diagram preview
-ui_diagram_zoom_close: Close diagram preview
-ui_diagram_zoom_in: Zoom in
-ui_diagram_zoom_out: Zoom out
-ui_diagram_zoom_reset: Reset view
-ui_diagram_error: The diagram could not be rendered
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_openapi_spec: OpenAPI specification
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks: Backlinks
-markdown_backlinks: "Backlinks:"
-
-# Explicit English fallbacks for untranslated OINK UI strings.
-# Replace these values with reviewed translations when available.
-ui_backlinks_more: "Show {{ . }} more"
+print_printable_section: "Dit is de meerpagina-afdrukweergave van deze sectie."
+print_click_to_print: "Klik hier om te printen"
+print_show_regular: "Terug naar normale view van deze pagina"
+print_entire_section: "Druk de volledige sectie af"
+# Feedback
+feedback_question: "Was deze pagina nuttig?"
+feedback_positive: "Ja"
+feedback_negative: "Nee"
+feedback_thanks: "Bedankt—je reactie helpt ons deze pagina te verbeteren."
+feedback_reason_prompt: "Wat ging fout? (optioneel)"
+feedback_reason_missing: "Ontbrekende informatie"
+feedback_reason_outdated: "Onjuist of verouderd"
+feedback_reason_failed: "Stappen hebben niet gewerkt"
+feedback_reason_unclear: "Moeilijk te begrijpen"
+feedback_details: "Voeg details toe in de opmerkingen"
+feedback_change: "Wijzig antwoord"
+# Table of contents
+toc_on_this_page: "Inhoud"
+# Error pages
+error_404_title: "Pagina niet gevonden"
+error_404_body: "Sorry, deze pagina bestaat niet. Probeer het opnieuw vanaf de startpagina."
+error_404_home: "Ga naar de startpagina"
+# Version banner
+version_banner_archived: "Versie {{ .Version }} van de documentatie wordt niet langer actief onderhouden. De site die je nu bekijkt is een gearchiveerde kopie."
+version_banner_latest: "Voor up-to-date documentatie, zie de {{ .Link }}."
+version_banner_latest_link: "laatste versie"
+# Comments
+comments_noscript: "JavaScript is vereist om reacties te laden."
+comments_noscript_link: "Bekijk discussies op GitHub."
+# LLM page actions
+ui_open_in_prompt_label: "Vraag over deze pagina"
+ui_view_history: "Bekijk bewerkingsgeschiedenis"
+ui_table_scroll: "Scrollbare tabel"
+ui_filetree_divider: "Pas de breedte van de opmerkingenkolom naast de bestandsstructuur aan"
+book_figure: "Afbeelding"
+book_table: "Tabel"
+book_equation: "Vergelijking"
+book_example: "Voorbeeld"
+book_toc: "Boekinhoud"
+book_draft: "Concept"
+book_draft_notice: "Dit hoofdstuk wordt nog herzien."
+contributors_count: "bijdragers"
+# Article series
+ui_series_title: "Reeks"
+ui_series_part: "Deel {{ .Part }} van {{ .Total }}"
+# Markdown output
+markdown_llms_index: "LLMS-index:"
+markdown_section_pages: "Sectiepagina's:"
+markdown_backlinks: "Terugverwijzingen:"

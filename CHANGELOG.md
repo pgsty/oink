@@ -5,6 +5,18 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Every locale name shipped by Docsy now has a complete native OINK interface
+  catalog at the same level as English and Chinese: 31 upstream-compatible
+  locale files plus generic `zh`, with the same 192 keys in each. The owning
+  checker pins that locale set and rejects missing, extra, duplicate, nested,
+  placeholder-drifted, hidden-bidi, and unreviewed English-fallback values;
+  the old mechanical `--sync` fallback path is gone. The runtime check uses
+  the concrete `zh-CN` locale for non-default generic `zh`, preserving the
+  0.160.1 floor; Hugo 0.160.x cannot resolve bare `locale: zh` in that
+  base-plus-regional-catalog configuration, while 0.161.0 and newer can.
+
 ### Fixed
 
 - Cached sidebars now key reusable markup by language, navigation root, and the

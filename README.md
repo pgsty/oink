@@ -205,7 +205,12 @@ assuming drop-in compatibility.
 | Hugo | **Extended 0.160.1 or newer**; CI currently pins 0.165.0 |
 | Go | 1.27 or newer for Hugo Module resolution; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Reviewed OINK interface text for English, Simplified Chinese, and Traditional Chinese; inherited Docsy locales retain English fallback for newer labels |
+| Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle owns the same 192-key schema with no English placeholder blocks |
+
+On Hugo 0.160.x, when generic `zh` is a non-default language and the regional
+Chinese catalogs are present, configure it with the concrete `locale: zh-CN`,
+as OINK's examples do. Hugo 0.161.0 and newer also resolve bare `locale: zh`
+in that configuration.
 
 ## Community and releases
 

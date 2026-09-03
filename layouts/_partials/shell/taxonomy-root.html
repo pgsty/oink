@@ -2,7 +2,10 @@
 {{- with .Site.GetPage (printf "/%s" .Type) -}}
   {{- if .IsSection }}{{ $root = . }}{{ end -}}
 {{- end -}}
-{{- if eq .Kind "term" -}}
+{{- if eq .Kind "taxonomy" -}}
+  {{- /* An index of every term on the site scopes its clouds to the site. */ -}}
+  {{- $root = false -}}
+{{- else if eq .Kind "term" -}}
   {{- $tops := slice -}}
   {{- range .Pages }}{{ with .FirstSection }}{{ $tops = $tops | append . }}{{ end }}{{ end -}}
   {{- $tops = $tops | uniq -}}

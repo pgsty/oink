@@ -1,0 +1,30 @@
+{{- /* The taxonomy page's grid: one card per term, most-used first, ties
+     alphabetical (Hugo's ByCount order, the same the rail cloud uses). A
+     card is one line -- the taxonomy's term glyph, the term, its page count
+     -- and the whole card is the link. Authors alone lead with the small
+     portrait the byline uses, through the same avatar partial. No card
+     carries a description or a newest page: a term has nothing to say that
+     its page count and title do not, and the extra line only blurred the
+     grid. */ -}}
+{{- $plural := .Data.Plural -}}
+{{- $isAuthors := eq $plural "authors" -}}
+{{- $icon := partial "taxonomy-icon.html" (dict "page" . "plural" $plural "kind" "term") -}}
+{{- with index .Site.Taxonomies $plural -}}
+<ul class="td-taxonomy-cards">
+  {{- range .ByCount }}
+  {{- $term := .Page -}}
+  {{- $count := .Count -}}
+  <li class="td-taxonomy-cards__item">
+    <a class="td-content-card td-taxonomy-card" href="{{ $term.RelPermalink }}">
+      {{- if $isAuthors }}
+      {{ partial "authors-avatar.html" (dict "author" (dict "name" $term.LinkTitle "avatar" (partialCached "featured-image-resolve.html" $term $term.RelPermalink)) "size" 24 "class" "td-taxonomy-card__avatar") }}
+      {{- else }}
+      <span class="td-taxonomy-card__icon" aria-hidden="true"><i class="{{ $icon }}"></i></span>
+      {{- end }}
+      <span class="td-taxonomy-card__title">{{ $term.LinkTitle }}</span>
+      <span class="td-taxonomy-card__count">{{ T "ui_taxonomy_pages" $count }}</span>
+    </a>
+  </li>
+  {{- end }}
+</ul>
+{{- end -}}

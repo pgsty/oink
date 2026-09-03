@@ -1,7 +1,7 @@
 {{ define "main" -}}
 <div class="td-content td-shell-blog-index">
-  <h1>{{ partial "taxonomy-label.html" (dict "page" . "key" .Data.Plural) }}</h1>
+  {{ partial "shell/taxonomy-head.html" . }}
   {{ with partial "content/render.html" . }}<div class="td-shell-term-summary">{{ . }}</div>{{ end }}
 </div>
-{{ partial "shell/taxonomy-filter.html" . }}
+{{ partial "shell/taxonomy-cards.html" . }}
 {{ end -}}

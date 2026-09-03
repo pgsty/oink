@@ -50,6 +50,10 @@ ui_modules_title: "Moduls"
 ui_module_title: "Modul"
 ui_authors_title: "Autors"
 ui_author_title: "Autor"
+ui_taxonomy_pages:
+  one: '{{ . }} pagina'
+  other: '{{ . }} paginas'
+ui_taxonomies_title: 'Taxonomias'
 ui_theme_toggle: "Alternar lo tèma cromatic"
 ui_theme_auto: "Sistema"
 ui_theme_light: "Clar"

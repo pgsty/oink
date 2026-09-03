@@ -50,6 +50,10 @@ ui_modules_title: "Modullar"
 ui_module_title: "Modul"
 ui_authors_title: "Müəlliflər"
 ui_author_title: "Müəllif"
+ui_taxonomy_pages:
+  one: '{{ . }} səhifə'
+  other: '{{ . }} səhifə'
+ui_taxonomies_title: 'Taksonomiyalar'
 ui_theme_toggle: "Rəng mövzusunu dəyiş"
 ui_theme_auto: "Sistem"
 ui_theme_light: "Açıq"

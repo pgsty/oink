@@ -53,12 +53,18 @@
       {{ partial "backlinks.html" (dict "page" $p "sources" .) }}
       {{- end }}
       {{ if $clouds -}}
+        {{- /* Taxonomy and term pages lead with the switcher between
+             taxonomies; a taxonomy page then omits its own cloud, whose
+             terms are already the cards beside it. */ -}}
+        {{- if in (slice "taxonomy" "term") $p.Kind }}{{ partial "shell/taxonomy-switcher.html" $p }}{{ end -}}
         {{- $root := partial "shell/taxonomy-root.html" $p -}}
         {{- $rootKey := "all" -}}
         {{- with $root }}{{ $rootKey = .RelPermalink | default "all" }}{{ end -}}
+        {{- $exclude := "" -}}
+        {{- if eq $p.Kind "taxonomy" }}{{ $exclude = $p.Data.Plural }}{{ end -}}
         {{- partialCached "shell/taxonomy-terms-clouds.html"
-              (dict "site" $p.Site "root" $root)
-              $rootKey -}}
+              (dict "site" $p.Site "root" $root "exclude" $exclude)
+              $p.Site.Language.Lang $rootKey $exclude -}}
       {{- end }}
     </div>
   </div>

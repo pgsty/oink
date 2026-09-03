@@ -1,0 +1,55 @@
+{{- /* Rail group on taxonomy and term pages: every taxonomy the site
+     declares, one row each -- the whole-taxonomy glyph, the localized name,
+     the term count -- linking to its index page, the current one on the
+     selected ground. It is the way from one taxonomy's pages to another's;
+     the clouds below jump to terms, and their heads only collapse. A site
+     with one taxonomy has nothing to switch to and renders no group.
+     Input: the page. */ -}}
+{{- $page := . -}}
+{{- $current := .Data.Plural -}}
+{{- $items := slice -}}
+{{- range $plural, $taxonomy := .Site.Taxonomies -}}
+  {{- if gt (len $taxonomy) 0 -}}
+    {{- with $page.Site.GetPage (printf "/%s" $plural) -}}
+      {{- $items = $items | append (dict
+          "plural" $plural
+          "url" .RelPermalink
+          "count" (len $taxonomy)
+          "label" (partial "taxonomy-label.html" (dict "page" $page "key" $plural))
+          "icon" (partial "taxonomy-icon.html" (dict "page" $page "plural" $plural "kind" "taxonomy"))) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if gt (len $items) 1 -}}
+{{- $title := T "ui_taxonomies_title" -}}
+{{- $id := "td-shell-taxonomies" -}}
+{{- $currentState := cond (eq .Kind "taxonomy") "page" "true" -}}
+<div class="td-shell-aside-group td-shell-taxonomies">
+  <button type="button" class="td-shell-tree__row td-shell-aside-group__head td-shell-taxonomies__head" data-td-shell-tree-toggle
+    aria-expanded="true" aria-controls="{{ $id }}-children"
+    aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}"
+    data-td-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $title }}"
+    data-td-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}">
+    <span class="td-shell-aside-group__icon"><i class="fa-solid fa-shapes" aria-hidden="true"></i></span>
+    <span class="td-shell-aside-group__title">{{ $title }}</span>
+    <span class="td-shell-tree__chevron" aria-hidden="true">
+      {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+    </span>
+  </button>
+  <div id="{{ $id }}-children" class="td-shell-tree__children td-is-open">
+    <div class="td-shell-tree__children-inner">
+      <ul class="td-shell-taxonomies__list">
+        {{- range $items }}
+        <li class="td-shell-taxonomies__item">
+          <a class="td-shell-tree__row td-shell-taxonomies__link{{ if eq .plural $current }} td-shell-active{{ end }}" href="{{ .url }}"{{ if eq .plural $current }} aria-current="{{ $currentState }}"{{ end }}>
+            <span class="td-shell-aside-group__icon"><i class="{{ .icon }}" aria-hidden="true"></i></span>
+            <span class="td-shell-taxonomies__label">{{ .label }}</span>
+            <span class="td-shell-taxonomies__count">{{ .count }}</span>
+          </a>
+        </li>
+        {{- end }}
+      </ul>
+    </div>
+  </div>
+</div>
+{{- end -}}

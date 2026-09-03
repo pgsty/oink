@@ -50,6 +50,10 @@ ui_modules_title: "Modulok"
 ui_module_title: "Modul"
 ui_authors_title: "Szerzők"
 ui_author_title: "Szerző"
+ui_taxonomy_pages:
+  one: '{{ . }} oldal'
+  other: '{{ . }} oldal'
+ui_taxonomies_title: 'Taxonómiák'
 ui_theme_toggle: "Színtéma váltása"
 ui_theme_auto: "Rendszer"
 ui_theme_light: "Világos"

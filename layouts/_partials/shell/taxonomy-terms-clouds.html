@@ -5,7 +5,9 @@
 {{- $global := or (not $root) (eq $root $site.Home) -}}
 {{- $settingsPage := $site.Home -}}
 {{- with $root }}{{ $settingsPage = . }}{{ end -}}
+{{- $exclude := .exclude | default "" -}}
 {{- range $plural, $taxonomy := $site.Taxonomies -}}
+  {{- if eq $plural $exclude }}{{ continue }}{{ end -}}
   {{- $items := slice -}}
   {{- range $taxonomy.ByCount -}}
     {{- $count := 0 -}}

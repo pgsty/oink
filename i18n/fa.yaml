@@ -50,6 +50,10 @@ ui_modules_title: "ماژول‌ها"
 ui_module_title: "ماژول"
 ui_authors_title: "نویسندگان"
 ui_author_title: "نویسنده"
+ui_taxonomy_pages:
+  one: '{{ . }} صفحه'
+  other: '{{ . }} صفحه'
+ui_taxonomies_title: 'رده‌بندی‌ها'
 ui_theme_toggle: "تغییر تم رنگی"
 ui_theme_auto: "سیستم"
 ui_theme_light: "روشن"

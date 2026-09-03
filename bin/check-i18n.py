@@ -19,6 +19,7 @@ BRACED_PLACEHOLDER = re.compile(r"\{[A-Za-z_][A-Za-z0-9_]*\}")
 GO_TEMPLATE_PLACEHOLDER = re.compile(r"\{\{[^{}]+\}\}")
 PRINTF_PLACEHOLDER = re.compile(r"(?<!%)%(?:[0-9]+\$)?[A-Za-z]")
 BIDI_CONTROL = re.compile(r"[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]")
+PLURAL_FORMS = ("zero", "one", "two", "few", "many", "other")
 # Locale filenames in google/docsy@64f51c5bde2abd2e8a001cb31b32656f5800ca56.
 DOCSY_LOCALES = {
     "ar", "az", "bg", "bn", "de", "en", "es", "et", "fa", "fi", "fr",
@@ -27,6 +28,40 @@ DOCSY_LOCALES = {
     "zh-cn", "zh-tw",
 }
 OINK_LOCALES = DOCSY_LOCALES | {"zh"}
+CLDR_CARDINAL_FORMS = {
+    "ar": {"zero", "one", "two", "few", "many", "other"},
+    "az": {"one", "other"},
+    "bg": {"one", "other"},
+    "bn": {"one", "other"},
+    "de": {"one", "other"},
+    "en": {"one", "other"},
+    "es": {"one", "many", "other"},
+    "et": {"one", "other"},
+    "fa": {"one", "other"},
+    "fi": {"one", "other"},
+    "fr": {"one", "many", "other"},
+    "he": {"one", "two", "other"},
+    "hi": {"one", "other"},
+    "hu": {"one", "other"},
+    "it": {"one", "many", "other"},
+    "ja": {"other"},
+    "ko": {"other"},
+    "nl": {"one", "other"},
+    "no": {"one", "other"},
+    "oc": {"one", "other"},
+    "pl": {"one", "few", "many", "other"},
+    "pt-br": {"one", "many", "other"},
+    "ro": {"one", "few", "other"},
+    "ru": {"one", "few", "many", "other"},
+    "sr-cyrl": {"one", "few", "other"},
+    "sr-latn": {"one", "few", "other"},
+    "sv": {"one", "other"},
+    "tr": {"one", "other"},
+    "uk": {"one", "few", "many", "other"},
+    "zh": {"other"},
+    "zh-cn": {"other"},
+    "zh-tw": {"other"},
+}
 CALLOUT_KEYS = tuple(
     f"callout_{name}"
     for name in (
@@ -49,7 +84,7 @@ REVIEWED_IDENTICAL = {
         "ui_palette_actions", "ui_palette_pages", "ui_modules_title",
         "ui_module_title", "ui_page_actions", "ui_release_source",
         "post_upstream_notice", "post_translated_original", "post_reading_minutes",
-        "book_figure",
+        "book_figure", "ui_taxonomies_title",
     },
     "it": {
         "ui_home", "ui_tag_title", "ui_share_email", "ui_assets_file",
@@ -172,8 +207,77 @@ def scalar_value(block: str) -> str | None:
     return value
 
 
+def translation_value(block: str) -> str | dict[str, str] | None:
+    """Read an OINK scalar or a Hugo plural-message map.
+
+    Plural messages are the only supported nested shape. Each category stays a
+    simple scalar so placeholder, fallback, bidi, and runtime checks still see
+    the exact text Hugo will render.
+    """
+
+    value = scalar_value(block)
+    if value is not None:
+        return value
+
+    lines = block.splitlines()
+    if not lines or lines[0].partition(":")[2].strip():
+        return None
+    forms: dict[str, str] = {}
+    for line in lines[1:]:
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        match = re.match(r"^  (zero|one|two|few|many|other):(.*)$", line)
+        if not match or match.group(1) in forms:
+            return None
+        parsed = scalar_value(f"{match.group(1)}:{match.group(2)}")
+        if parsed is None:
+            return None
+        forms[match.group(1)] = parsed
+    if "other" not in forms:
+        return None
+    return forms
+
+
+def leaf_values(value: str | dict[str, str]) -> list[str]:
+    return [value] if isinstance(value, str) else list(value.values())
+
+
+def placeholder_mismatch(
+    expected: str | dict[str, str], actual: str | dict[str, str]
+) -> str | None:
+    """Return a useful mismatch description for scalar/plural placeholders."""
+
+    if isinstance(expected, str) != isinstance(actual, str):
+        return "scalar/plural shape differs"
+    if isinstance(expected, str):
+        expected_placeholders = placeholders(expected)
+        actual_placeholders = placeholders(actual)
+        if actual_placeholders != expected_placeholders:
+            return f"expected {expected_placeholders}, found {actual_placeholders}"
+        return None
+
+    assert isinstance(actual, dict)
+    fallback = expected.get("other", "")
+    for form, text in actual.items():
+        baseline = expected.get(form, fallback)
+        expected_placeholders = placeholders(baseline)
+        actual_placeholders = placeholders(text)
+        if actual_placeholders != expected_placeholders:
+            return (
+                f"{form}: expected {expected_placeholders}, "
+                f"found {actual_placeholders}"
+            )
+    return None
+
+
+def transliterate(value: str | dict[str, str]) -> str | dict[str, str]:
+    if isinstance(value, str):
+        return value.translate(SERBIAN_TRANSLITERATION)
+    return {form: text.translate(SERBIAN_TRANSLITERATION) for form, text in value.items()}
+
+
 def check_hugo_runtime(
-    keys: list[str], catalogs: dict[str, dict[str, str]]
+    keys: list[str], catalogs: dict[str, dict[str, str | dict[str, str]]]
 ) -> list[str]:
     """Render every key once in all supported locales."""
 
@@ -220,13 +324,25 @@ def check_hugo_runtime(
             '"license" "License" "notice" "Notice" "history" "History" '
             '"original" "Original"'
         )
-        quoted_keys = " ".join(json.dumps(key) for key in keys)
+        scalar_keys = [
+            key for key in keys if isinstance(catalogs["en"].get(key), str)
+        ]
+        plural_keys = [
+            key for key in keys if isinstance(catalogs["en"].get(key), dict)
+        ]
+        quoted_keys = " ".join(json.dumps(key) for key in scalar_keys)
+        quoted_plural_keys = " ".join(json.dumps(key) for key in plural_keys)
         (site / "layouts/home.html").write_text(
             "<!doctype html><html lang=\"{{ .Site.Language.Lang }}\"><body>\n"
             f"{{{{ $ctx := {context} }}}}\n"
             f"{{{{ range $key := slice {quoted_keys} }}}}"
             "<span data-key=\"{{ $key }}\">{{ T $key $ctx }}</span>"
             "{{ end }}\n"
+            f"{{{{ range $key := slice {quoted_plural_keys} }}}}"
+            "{{ range $count := slice 0 1 2 3 5 11 21 22 25 100 1000000 }}"
+            "<span data-key=\"{{ $key }}@{{ $count }}\">"
+            "{{ T $key $count }}</span>"
+            "{{ end }}{{ end }}\n"
             "</body></html>\n",
             encoding="utf-8",
         )
@@ -270,6 +386,12 @@ def check_hugo_runtime(
             parser = TranslationSpanParser()
             parser.feed(path.read_text(encoding="utf-8"))
             for key, expected in catalogs[locale].items():
+                if isinstance(expected, dict):
+                    for count in (0, 1, 2, 3, 5, 11, 21, 22, 25, 100, 1000000):
+                        rendered = parser.values.get(f"{key}@{count}", "")
+                        if not rendered or str(count) not in rendered:
+                            wrong_values.append(f"{locale}.{key}@{count}")
+                    continue
                 if any(placeholders(expected)):
                     continue
                 if parser.values.get(key) != expected:
@@ -288,7 +410,9 @@ def check_hugo_runtime(
 def check() -> int:
     english_order, english_blocks = translation_blocks(I18N / "en.yaml")
     english = set(english_order)
-    english_values = {key: scalar_value(block) for key, block in english_blocks.items()}
+    english_values = {
+        key: translation_value(block) for key, block in english_blocks.items()
+    }
     failed = False
     paths = sorted(I18N.glob("*.yaml"))
     locales = {path.stem for path in paths}
@@ -301,7 +425,7 @@ def check() -> int:
             print(f"  missing: {', '.join(missing_locales)}")
         if extra_locales:
             print(f"  extra: {', '.join(extra_locales)}")
-    catalog_values: dict[str, dict[str, str]] = {}
+    catalog_values: dict[str, dict[str, str | dict[str, str]]] = {}
     for path in paths:
         source = path.read_text(encoding="utf-8")
         order, blocks = translation_blocks(path)
@@ -323,23 +447,35 @@ def check() -> int:
             failed = True
             print(path.relative_to(ROOT))
             print(f"  placeholder fallback markers: {', '.join(markers)}")
-        values: dict[str, str] = {}
+        values: dict[str, str | dict[str, str]] = {}
         for key, block in blocks.items():
-            value = scalar_value(block)
+            value = translation_value(block)
             if value is None:
                 failed = True
                 print(path.relative_to(ROOT))
-                print(f"  non-scalar or unsupported value for {key}")
+                print(f"  unsupported scalar or plural value for {key}")
                 continue
             values[key] = value
-            if BIDI_CONTROL.search(value):
+            for text in leaf_values(value):
+                if BIDI_CONTROL.search(text):
+                    failed = True
+                    print(path.relative_to(ROOT))
+                    print(f"  hidden bidi control in {key}")
+                    break
+        catalog_values[path.stem] = values
+        expected_forms = CLDR_CARDINAL_FORMS[path.stem]
+        for key, value in values.items():
+            if isinstance(value, dict) and set(value) != expected_forms:
                 failed = True
                 print(path.relative_to(ROOT))
-                print(f"  hidden bidi control in {key}")
-        catalog_values[path.stem] = values
+                print(
+                    f"  plural forms for {key}: expected "
+                    f"{', '.join(sorted(expected_forms))}; found "
+                    f"{', '.join(sorted(value))}"
+                )
         callout_labels: dict[str, list[str]] = {}
         for key in CALLOUT_KEYS:
-            if key in values:
+            if key in values and isinstance(values[key], str):
                 callout_labels.setdefault(values[key], []).append(key)
         callout_collisions = [
             keys for keys in callout_labels.values() if len(keys) > 1
@@ -350,15 +486,15 @@ def check() -> int:
             for collision in callout_collisions:
                 print(f"  duplicate callout labels: {', '.join(collision)}")
         for key in sorted(english & keys):
-            expected = placeholders(english_blocks[key])
-            actual = placeholders(blocks[key])
-            if actual != expected:
+            expected = english_values.get(key)
+            actual = values.get(key)
+            if expected is None or actual is None:
+                continue
+            mismatch = placeholder_mismatch(expected, actual)
+            if mismatch:
                 failed = True
                 print(path.relative_to(ROOT))
-                print(
-                    f"  placeholder mismatch for {key}: "
-                    f"expected {expected}, found {actual}"
-                )
+                print(f"  placeholder mismatch for {key}: {mismatch}")
         if path.stem != "en":
             identical = {
                 key for key, value in values.items()
@@ -377,7 +513,7 @@ def check() -> int:
     if "sr-cyrl" in catalog_values and "sr-latn" in catalog_values:
         mismatched = sorted(
             key for key, value in catalog_values["sr-cyrl"].items()
-            if value.translate(SERBIAN_TRANSLITERATION)
+            if transliterate(value)
             != catalog_values["sr-latn"].get(key)
         )
         if mismatched:

@@ -50,6 +50,10 @@ ui_modules_title: "Modüller"
 ui_module_title: "Modül"
 ui_authors_title: "Yazarlar"
 ui_author_title: "Yazar"
+ui_taxonomy_pages:
+  one: '{{ . }} sayfa'
+  other: '{{ . }} sayfa'
+ui_taxonomies_title: 'Taksonomiler'
 ui_theme_toggle: "Renk temasını değiştir"
 ui_theme_auto: "Sistem"
 ui_theme_light: "Açık"

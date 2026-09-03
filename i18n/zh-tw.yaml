@@ -50,6 +50,9 @@ ui_modules_title: 模組
 ui_module_title: 模組
 ui_authors_title: 作者
 ui_author_title: 作者
+ui_taxonomy_pages:
+  other: '{{ . }} 篇'
+ui_taxonomies_title: '分類法'
 ui_theme_toggle: 切換配色
 ui_theme_auto: 跟隨系統
 ui_theme_light: 亮色

@@ -50,6 +50,14 @@ ui_modules_title: "الوحدات"
 ui_module_title: "وحدة"
 ui_authors_title: "المؤلفون"
 ui_author_title: "مؤلف"
+ui_taxonomy_pages:
+  zero: '{{ . }} صفحة'
+  one: '{{ . }} صفحة'
+  two: '{{ . }} صفحتان'
+  few: '{{ . }} صفحات'
+  many: '{{ . }} صفحة'
+  other: '{{ . }} صفحة'
+ui_taxonomies_title: 'التصنيفات'
 ui_theme_toggle: "تبديل سمة الألوان"
 ui_theme_auto: "النظام"
 ui_theme_light: "فاتح"

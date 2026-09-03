@@ -50,6 +50,9 @@ ui_modules_title: "モジュール"
 ui_module_title: "モジュール"
 ui_authors_title: "著者"
 ui_author_title: "著者"
+ui_taxonomy_pages:
+  other: '{{ . }} ページ'
+ui_taxonomies_title: '分類'
 ui_theme_toggle: "色テーマを切り替え"
 ui_theme_auto: "システム"
 ui_theme_light: "ライト"

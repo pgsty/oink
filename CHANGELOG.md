@@ -9,9 +9,9 @@ All notable changes to OINK are documented here. The project follows
 
 - Every locale name shipped by Docsy now has a complete native OINK interface
   catalog at the same level as English and Chinese: 31 upstream-compatible
-  locale files plus generic `zh`, with the same 192 keys in each. The owning
-  checker pins that locale set and rejects missing, extra, duplicate, nested,
-  placeholder-drifted, hidden-bidi, and unreviewed English-fallback values;
+  locale files plus generic `zh`, with the same 194 messages in each. The owning
+  checker pins that locale set and rejects missing, extra, duplicate, malformed
+  plural, placeholder-drifted, hidden-bidi, and unreviewed English-fallback values;
   the old mechanical `--sync` fallback path is gone. The runtime check uses
   the concrete `zh-CN` locale for non-default generic `zh`, preserving the
   0.160.1 floor; Hugo 0.160.x cannot resolve bare `locale: zh` in that
@@ -19,6 +19,9 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- A breadcrumb crumb standing for a generated taxonomy page now shows the same
+  localized label the taxonomy head renders (`标签`, `作者`) instead of Hugo's
+  English plural title.
 - Cached sidebars now key reusable markup by language, navigation root, and the
   page-effective layout settings that change their output. A Book page with
   page-specific headings bypasses the shared cache, while every cached tree
@@ -47,6 +50,21 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Taxonomy pages (`/tags/`, `/categories/`, `/authors/`, `/series/`) are no
+  longer a row of filter chips. Both levels share one head: the taxonomy page
+  opens with the whole-taxonomy glyph in a tinted tile, the localized name,
+  and a term count; a term page opens with the term's title and its localized
+  page count (`ui_taxonomy_pages`, using each locale's CLDR plural forms), plus
+  a kicker back to the taxonomy where no breadcrumb renders. Under the head
+  the taxonomy page lays its terms out as a grid of one-line cards, most-used
+  first: the term glyph (an author's small portrait), the term, its page
+  count, the whole card a link. The rail on taxonomy and term pages now leads
+  with a taxonomy switcher (`ui_taxonomies_title`): one row per declared
+  taxonomy with glyph, name, and term count, linking to its index page, the
+  current one marked. A taxonomy page scopes its clouds to the whole site and
+  omits its own; before, its rail was empty because the clouds counted only
+  descendants of the taxonomy page itself. The "All" chip and
+  `shell/taxonomy-filter.html` are gone; term pages stay row lists.
 - Rendered-output and namespace checkers build a fresh strict fixture by
   default; an explicit `--public` is now the only reuse path. Every
   checker-owned Hugo subprocess has a 120-second ceiling, while duplicate

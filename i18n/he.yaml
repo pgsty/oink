@@ -50,6 +50,11 @@ ui_modules_title: "מודולים"
 ui_module_title: "מודול"
 ui_authors_title: "מחברים"
 ui_author_title: "מחבר"
+ui_taxonomy_pages:
+  one: '{{ . }} עמוד'
+  two: '{{ . }} עמודים'
+  other: '{{ . }} עמודים'
+ui_taxonomies_title: 'טקסונומיות'
 ui_theme_toggle: "החלף ערכת צבעים"
 ui_theme_auto: "מערכת"
 ui_theme_light: "בהיר"

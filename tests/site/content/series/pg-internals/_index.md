@@ -1,6 +1,8 @@
 ---
 title: Postgres internals
 description: A four-part regression series whose dates and weights disagree on purpose.
+# The trail is off here, so this term head carries the kicker back to /series/.
+breadcrumb: false
 ---
 
 The series introduction is the term page: a title, a sentence, and this body.

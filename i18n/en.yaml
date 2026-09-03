@@ -51,6 +51,10 @@ ui_modules_title: Modules
 ui_module_title: Module
 ui_authors_title: Authors
 ui_author_title: Author
+ui_taxonomy_pages:
+  one: '{{ . }} page'
+  other: '{{ . }} pages'
+ui_taxonomies_title: 'Taxonomies'
 ui_theme_toggle: Toggle color theme
 ui_theme_auto: System
 ui_theme_light: Light

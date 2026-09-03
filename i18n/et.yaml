@@ -50,6 +50,10 @@ ui_modules_title: "Moodulid"
 ui_module_title: "Moodul"
 ui_authors_title: "Autorid"
 ui_author_title: "Autor"
+ui_taxonomy_pages:
+  one: '{{ . }} leht'
+  other: '{{ . }} lehte'
+ui_taxonomies_title: 'Taksonoomiad'
 ui_theme_toggle: "Vaheta värviteemat"
 ui_theme_auto: "Süsteem"
 ui_theme_light: "Hele"

@@ -50,6 +50,10 @@ ui_modules_title: "Moduulit"
 ui_module_title: "Moduuli"
 ui_authors_title: "Kirjoittajat"
 ui_author_title: "Kirjoittaja"
+ui_taxonomy_pages:
+  one: '{{ . }} sivu'
+  other: '{{ . }} sivua'
+ui_taxonomies_title: 'Taksonomiat'
 ui_theme_toggle: "Vaihda väriteemaa"
 ui_theme_auto: "Järjestelmä"
 ui_theme_light: "Vaalea"

@@ -50,6 +50,10 @@ ui_modules_title: "মডিউল"
 ui_module_title: "মডিউল"
 ui_authors_title: "লেখক"
 ui_author_title: "লেখক"
+ui_taxonomy_pages:
+  one: '{{ . }}টি পৃষ্ঠা'
+  other: '{{ . }}টি পৃষ্ঠা'
+ui_taxonomies_title: 'শ্রেণীবিন্যাস'
 ui_theme_toggle: "রঙের থিম পরিবর্তন করুন"
 ui_theme_auto: "সিস্টেম"
 ui_theme_light: "হালকা"

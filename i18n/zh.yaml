@@ -51,6 +51,9 @@ ui_modules_title: 模块
 ui_module_title: 模块
 ui_authors_title: 作者
 ui_author_title: 作者
+ui_taxonomy_pages:
+  other: '{{ . }} 篇'
+ui_taxonomies_title: '分类法'
 ui_theme_toggle: 切换配色
 ui_theme_auto: 跟随系统
 ui_theme_light: 亮色

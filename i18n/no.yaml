@@ -50,6 +50,10 @@ ui_modules_title: "Moduler"
 ui_module_title: "Modul"
 ui_authors_title: "Forfattere"
 ui_author_title: "Forfatter"
+ui_taxonomy_pages:
+  one: '{{ . }} side'
+  other: '{{ . }} sider'
+ui_taxonomies_title: 'Taksonomier'
 ui_theme_toggle: "Bytt fargetema"
 ui_theme_auto: "System"
 ui_theme_light: "Lyst"

@@ -50,6 +50,11 @@ ui_modules_title: "Moduli"
 ui_module_title: "Modul"
 ui_authors_title: "Autori"
 ui_author_title: "Autor"
+ui_taxonomy_pages:
+  one: '{{ . }} stranica'
+  few: '{{ . }} stranice'
+  other: '{{ . }} stranice'
+ui_taxonomies_title: 'Taksonomije'
 ui_theme_toggle: "Promeni temu boja"
 ui_theme_auto: "Sistem"
 ui_theme_light: "Svetla"

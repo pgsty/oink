@@ -20,6 +20,14 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
         errors.append(message)
 
 
+def taxonomy_link(href: str, label: str) -> re.Pattern[str]:
+    """A localized link back to the taxonomy page: a breadcrumb crumb, or the
+    term head's kicker, whose glyph sits between the tag and the label."""
+    return re.compile(
+        rf'href="{re.escape(href)}"[^>]*>(?:<i [^>]*></i>)?{re.escape(label)}</a>'
+    )
+
+
 def write_site(source: Path, plural: str | None) -> None:
     taxonomy = ""
     english_menu = ""
@@ -171,10 +179,12 @@ def check_shell_cloud_scope(public: Path, plural: str) -> list[str]:
     require(
         re.search(
             r'partialCached\s+"shell/taxonomy-terms-clouds\.html"\s+'
-            r'\(dict\s+"site"\s+\$p\.Site\s+"root"\s+\$root\)\s+\$rootKey',
+            r'\(dict\s+"site"\s+\$p\.Site\s+"root"\s+\$root\s+"exclude"\s+\$exclude\)\s+'
+            r'\$p\.Site\.Language\.Lang\s+\$rootKey\s+\$exclude',
             aside,
         ) is not None,
-        "shell taxonomy clouds are not cached solely by their effective root",
+        "shell taxonomy clouds are not cached by language, effective root, and the "
+        "excluded taxonomy alone",
         errors,
     )
     for language in ("", "zh-cn"):
@@ -288,20 +298,36 @@ def check_enabled(hugo: str, root: Path, plural: str) -> list[str]:
         return errors
 
     english_plural = "Module" if plural == "module" else "Modules"
+    # The taxonomy page heads with its localized name; a term page heads with
+    # the bare term and names the taxonomy in a localized link back to it --
+    # the breadcrumb where that trail renders, the head's kicker otherwise.
     pages = {
-        public / plural / "index.html": f"<h1>{english_plural}</h1>",
-        public / plural / "core/index.html": "<h1>Module: CORE</h1>",
-        public / "zh-cn" / plural / "index.html": "<h1>模块</h1>",
-        public / "zh-cn" / plural / "core/index.html": "<h1>模块: CORE</h1>",
+        public / plural / "index.html": [
+            f'<h1 class="td-taxonomy-head__title">{english_plural}</h1>',
+        ],
+        public / plural / "core/index.html": [
+            '<h1 class="td-taxonomy-head__title">CORE</h1>',
+            taxonomy_link(f"/{plural}/", english_plural),
+        ],
+        public / "zh-cn" / plural / "index.html": [
+            '<h1 class="td-taxonomy-head__title">模块</h1>',
+        ],
+        public / "zh-cn" / plural / "core/index.html": [
+            '<h1 class="td-taxonomy-head__title">CORE</h1>',
+            taxonomy_link(f"/zh-cn/{plural}/", "模块"),
+        ],
     }
-    for path, marker in pages.items():
+    for path, markers in pages.items():
         require(path.exists(), f"missing rendered taxonomy page {path}", errors)
         if path.exists():
-            require(
-                marker in path.read_text(encoding="utf-8"),
-                f"{path} did not contain localized heading {marker}",
-                errors,
-            )
+            html = path.read_text(encoding="utf-8")
+            for marker in markers:
+                found = marker.search(html) if hasattr(marker, "search") else marker in html
+                require(
+                    bool(found),
+                    f"{path} did not contain localized heading {getattr(marker, 'pattern', marker)}",
+                    errors,
+                )
 
     navbar_pages = {
         public / plural / "index.html": f'href="/{plural}/core/"',
@@ -511,8 +537,8 @@ def check_authors(hugo: str, root: Path) -> list[str]:
         )
 
     listings = {
-        public / "authors/index.html": "<h1>Authors</h1>",
-        public / "zh-cn/authors/index.html": "<h1>作者</h1>",
+        public / "authors/index.html": '<h1 class="td-taxonomy-head__title">Authors</h1>',
+        public / "zh-cn/authors/index.html": '<h1 class="td-taxonomy-head__title">作者</h1>',
     }
     for path, heading in listings.items():
         require(path.is_file(), f"missing author listing page {path}", errors)
@@ -639,8 +665,9 @@ def check_series_declared(hugo: str, root: Path) -> list[str]:
                 f"series term page order is {found}, expected reading order {SERIES_READING_ORDER}",
                 errors,
             )
-        require("<h1>Series: Postgres internals</h1>" in html,
-                "series term page lost its localized taxonomy label", errors)
+        require('<h1 class="td-taxonomy-head__title">Postgres internals</h1>' in html
+                and taxonomy_link("/series/", "Series").search(html) is not None,
+                "series term page lost its title or its localized taxonomy label", errors)
 
     # The fixture is only worth building while reading order disagrees with
     # every order something else could have produced: newest first, oldest

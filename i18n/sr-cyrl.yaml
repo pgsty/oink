@@ -50,6 +50,11 @@ ui_modules_title: "Модули"
 ui_module_title: "Модул"
 ui_authors_title: "Аутори"
 ui_author_title: "Аутор"
+ui_taxonomy_pages:
+  one: '{{ . }} страница'
+  few: '{{ . }} странице'
+  other: '{{ . }} странице'
+ui_taxonomies_title: 'Таксономије'
 ui_theme_toggle: "Промени тему боја"
 ui_theme_auto: "Систем"
 ui_theme_light: "Светла"

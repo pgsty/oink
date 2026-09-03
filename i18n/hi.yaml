@@ -50,6 +50,10 @@ ui_modules_title: "मॉड्यूल"
 ui_module_title: "मॉड्यूल"
 ui_authors_title: "लेखक"
 ui_author_title: "लेखक"
+ui_taxonomy_pages:
+  one: '{{ . }} पृष्ठ'
+  other: '{{ . }} पृष्ठ'
+ui_taxonomies_title: 'वर्गीकरण'
 ui_theme_toggle: "रंग थीम टॉगल करें"
 ui_theme_auto: "सिस्टम"
 ui_theme_light: "हल्का"

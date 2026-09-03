@@ -1,0 +1,42 @@
+{{- /* One head for both levels of a taxonomy, so `/tags/` and `/tags/oink/`
+     read as one surface. A taxonomy page opens with the whole-taxonomy glyph
+     in a tinted tile, the localized taxonomy name, and a count of its terms.
+     A term page trades the tile for a kicker that names the taxonomy and
+     links back to it (only where no breadcrumb already does), then carries
+     the term's title and its own page count.
+     The rendered body of a taxonomy or term `_index.md` follows in the
+     layout, not here. Author profiles keep `authors-profile.html`. */ -}}
+{{- $plural := .Data.Plural -}}
+{{- $label := partial "taxonomy-label.html" (dict "page" . "key" $plural) -}}
+{{- $icon := partial "taxonomy-icon.html" (dict "page" . "plural" $plural "kind" "taxonomy") -}}
+{{- if eq .Kind "term" -}}
+{{- $count := len .Pages -}}
+<header class="td-taxonomy-head td-taxonomy-head--term">
+  {{- /* An enabled breadcrumb already names the taxonomy and links back to
+       it one line above, so the kicker only appears where the trail is off
+       (a blog-typed term, or `breadcrumb: false`). */ -}}
+  {{- if not (partial "shell/breadcrumb-enabled.html" .) }}
+  {{- with .Site.GetPage (printf "/%s" $plural) }}
+  <a class="td-taxonomy-head__kicker" href="{{ .RelPermalink }}"><i class="{{ $icon }}" aria-hidden="true"></i>{{ $label }}</a>
+  {{- else }}
+  <span class="td-taxonomy-head__kicker"><i class="{{ $icon }}" aria-hidden="true"></i>{{ $label }}</span>
+  {{- end }}
+  {{- end }}
+  <div class="td-taxonomy-head__row">
+    <h1 class="td-taxonomy-head__title">{{ .Title }}</h1>
+    <span class="td-taxonomy-head__count">{{ T "ui_taxonomy_pages" $count }}</span>
+  </div>
+</header>
+{{- else -}}
+{{- $count := 0 -}}
+{{- with index .Site.Taxonomies $plural }}{{ $count = len . }}{{ end -}}
+<header class="td-taxonomy-head">
+  <div class="td-taxonomy-head__row">
+    <span class="td-taxonomy-head__icon" aria-hidden="true"><i class="{{ $icon }}"></i></span>
+    <h1 class="td-taxonomy-head__title">{{ $label }}</h1>
+    {{- if $count }}
+    <span class="td-taxonomy-head__count">{{ $count }}</span>
+    {{- end }}
+  </div>
+</header>
+{{- end -}}

@@ -50,6 +50,9 @@ ui_modules_title: "모듈"
 ui_module_title: "모듈"
 ui_authors_title: "저자"
 ui_author_title: "저자"
+ui_taxonomy_pages:
+  other: '페이지 {{ . }}개'
+ui_taxonomies_title: '분류'
 ui_theme_toggle: "색 테마 전환"
 ui_theme_auto: "시스템"
 ui_theme_light: "라이트"

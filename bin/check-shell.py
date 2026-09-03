@@ -490,6 +490,80 @@ def check_sources() -> list[str]:
             errors)
     require('"author" "ui_author_title"' in label and '"authors" "ui_authors_title"' in label,
             "the taxonomy label dictionary lost its author entries", errors)
+    # Taxonomy pages: both levels share one head, and the taxonomy page lays
+    # its terms out as one-line cards -- glyph (an author's portrait), term,
+    # page count -- with no description or newest-page line.
+    tax_head = (ROOT / "layouts/_partials/shell/taxonomy-head.html").read_text()
+    tax_cards = (ROOT / "layouts/_partials/shell/taxonomy-cards.html").read_text()
+    for name in ("layouts/taxonomy.html", "layouts/blog/taxonomy.html"):
+        tax = (ROOT / name).read_text()
+        require('partial "shell/taxonomy-head.html" .' in tax
+                and 'partial "shell/taxonomy-cards.html" .' in tax
+                and tax.index("shell/taxonomy-head.html")
+                < tax.index("content/render.html")
+                < tax.index("shell/taxonomy-cards.html"),
+                f"{name} lost the head, summary, term-cards order", errors)
+        require("taxonomy-filter" not in tax and "td-shell-tags-filter" not in tax,
+                f"{name} brought the filter chip row back", errors)
+    for name in ("layouts/term.html", "layouts/blog/term.html"):
+        term = (ROOT / name).read_text()
+        require('partial "shell/taxonomy-head.html" .' in term
+                and 'partial "authors-profile.html" .' in term
+                and "td-blog-posts-list" in term,
+                f"{name} lost the shared head, the author profile, or the row list", errors)
+    require('"kind" "taxonomy"' in tax_head
+            and "td-taxonomy-head__kicker" in tax_head
+            and "td-taxonomy-head__icon" in tax_head
+            and 'eq .Kind "term"' in tax_head
+            and 'partial "shell/breadcrumb-enabled.html"' in tax_head,
+            "the taxonomy head no longer distinguishes the taxonomy tile from the "
+            "breadcrumb-gated term kicker", errors)
+    require(".ByCount" in tax_cards
+            and '<a class="td-content-card td-taxonomy-card"' in tax_cards
+            and '"kind" "term"' in tax_cards
+            and "td-taxonomy-card__count" in tax_cards,
+            "term cards are not most-used first, whole-card links with the term glyph "
+            "and a page count", errors)
+    require("Description" not in tax_cards and "ByDate" not in tax_cards
+            and "Summary" not in tax_cards,
+            "term cards grew a description or a newest-page line again", errors)
+    require('if $isAuthors' in tax_cards and 'partial "authors-avatar.html"' in tax_cards
+            and tax_cards.index("if $isAuthors") < tax_cards.index("authors-avatar.html"),
+            "author cards no longer lead with the byline's portrait", errors)
+    for name in ("layouts/_partials/shell/taxonomy-head.html", "layouts/_partials/shell/taxonomy-cards.html"):
+        text = (ROOT / name).read_text()
+        require('T "ui_taxonomy_pages" $count' in text,
+                f"{name} does not localize the page count through Hugo plural rules", errors)
+    # The rail on taxonomy and term pages leads with the switcher between
+    # taxonomies; a taxonomy page scopes its clouds to the site and omits its
+    # own, whose terms are the cards beside it.
+    switcher = (ROOT / "layouts/_partials/shell/taxonomy-switcher.html").read_text()
+    toc_aside = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text()
+    tax_root = (ROOT / "layouts/_partials/shell/taxonomy-root.html").read_text()
+    clouds = (ROOT / "layouts/_partials/shell/taxonomy-terms-clouds.html").read_text()
+    require('in (slice "taxonomy" "term") $p.Kind' in toc_aside
+            and 'partial "shell/taxonomy-switcher.html" $p' in toc_aside
+            and toc_aside.index("if $clouds") < toc_aside.index("taxonomy-switcher.html")
+            < toc_aside.index("taxonomy-terms-clouds.html"),
+            "the rail no longer leads taxonomy and term pages with the taxonomy switcher "
+            "behind the toc_taxonomies switch", errors)
+    require('"exclude" $exclude' in toc_aside and "$p.Site.Language.Lang $rootKey $exclude" in toc_aside
+            and '$exclude := .exclude | default ""' in clouds
+            and "if eq $plural $exclude" in clouds,
+            "a taxonomy page's own cloud is no longer excluded, or the cache key lost "
+            "language or exclusion", errors)
+    require('if eq .Kind "taxonomy"' in tax_root and "$root = false" in tax_root,
+            "taxonomy pages no longer scope their clouds to the whole site", errors)
+    require("ui_taxonomies_title" in switcher and "td-shell-active" in switcher
+            and 'gt (len $items) 1' in switcher and "td-shell-taxonomies__count" in switcher
+            and "data-td-shell-tree-toggle" in switcher,
+            "the taxonomy switcher lost its localized head, current marker, count, "
+            "collapse, or single-taxonomy omission", errors)
+    require("td-taxonomy-cards" in blog_styles and "auto-fill" in blog_styles
+            and "&__kicker" in blog_styles and ".td-shell-taxonomies" in blog_styles
+            and "td-taxonomy-card__latest" not in blog_styles,
+            "taxonomy page styles lost the auto-fill grid, the term kicker, or the "
+            "switcher, or kept the retired newest-page line", errors)
     require('xmlns:dc="http://purl.org/dc/elements/1.1/"' in rss
             and "<dc:creator>" in rss
             and "managingEditor" in rss,

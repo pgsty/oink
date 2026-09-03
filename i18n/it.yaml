@@ -50,6 +50,11 @@ ui_modules_title: "Moduli"
 ui_module_title: "Modulo"
 ui_authors_title: "Autori"
 ui_author_title: "Autore"
+ui_taxonomy_pages:
+  one: '{{ . }} pagina'
+  many: '{{ . }} di pagine'
+  other: '{{ . }} pagine'
+ui_taxonomies_title: 'Tassonomie'
 ui_theme_toggle: "Cambia tema colore"
 ui_theme_auto: "Sistema"
 ui_theme_light: "Chiaro"

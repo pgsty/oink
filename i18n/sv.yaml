@@ -50,6 +50,10 @@ ui_modules_title: "Moduler"
 ui_module_title: "Modul"
 ui_authors_title: "Författare"
 ui_author_title: "Författare"
+ui_taxonomy_pages:
+  one: '{{ . }} sida'
+  other: '{{ . }} sidor'
+ui_taxonomies_title: 'Taxonomier'
 ui_theme_toggle: "Växla färgtema"
 ui_theme_auto: "System"
 ui_theme_light: "Ljust"

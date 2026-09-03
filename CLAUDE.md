@@ -22,10 +22,10 @@ public example, integration-test authority, or visual approval surface. The
 public site pins a released OINK tag; local cross-repo validation uses an inline
 `HUGO_MODULE_REPLACEMENTS` for that command. Never commit a filesystem replace.
 
-`main` is the next-release branch; `release` tracks current stable and is
-fast-forwarded to each stable tag as a release step. Immutable `vX.Y.Z` tags
-are the authority and count as published only after push and Go-proxy
-verification.
+`main` is the sole long-lived branch and carries the next release. Immutable
+`vX.Y.Z` tags are the stable-release authority and count as published only
+after push and Go-proxy verification; do not maintain a second `release`
+branch that merely duplicates a tag.
 
 ## PRDs and design changes
 

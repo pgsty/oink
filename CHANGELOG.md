@@ -15,6 +15,9 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Image Zoom no longer inserts hidden preview instructions into copied article
+  text or rich-text fragments. Buttons retain the image description and localized
+  action in their accessible names; authored images and captions are unchanged.
 - Explicit root-menu exclusions now apply to self-root sections as well as
   top-level sections; the current linkable root remains a location marker (#43).
 - Hidden sidebar content is isolated from focus and assistive technology,

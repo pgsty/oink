@@ -367,6 +367,10 @@ def check_template_contracts() -> list[str]:
         require(marker in runtime, f"Zoom runtime lacks {marker}", errors)
     require("role === 'none'" in runtime, "Zoom runtime does not exclude role=none", errors)
     require("alt?.trim()" in runtime, "Zoom runtime does not exclude empty-alt images", errors)
+    require("button.setAttribute('aria-label'," in runtime and "image.alt" in runtime,
+            "Zoom trigger must name the image and localized action through ARIA", errors)
+    require("visually-hidden" not in runtime,
+            "Zoom trigger injects hidden UI text into copied article content", errors)
     require("style.inlineSize" not in runtime, "Zoom runtime freezes trigger width in pixels", errors)
     for forbidden in ("eval(", "new Function", ".innerHTML"):
         require(forbidden not in runtime, f"Zoom runtime contains {forbidden}", errors)

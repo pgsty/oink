@@ -93,16 +93,15 @@
     if (!isEligible(image)) return;
 
     const button = document.createElement('button');
-    const action = document.createElement('span');
     button.type = 'button';
     button.className = 'td-image-zoom__trigger';
     button.setAttribute('aria-haspopup', 'dialog');
-    action.className = 'visually-hidden';
-    action.textContent = openLabel;
+    // Keep the image description and action in the accessible name without
+    // adding hidden article text that leaks into plain or rich-text copies.
+    button.setAttribute('aria-label', `${image.alt} ${openLabel}`);
     image.setAttribute('data-td-image-zoom-ready', '');
     image.before(button);
     button.append(image);
-    button.append(action);
     button.addEventListener('click', () => open(button, image));
   });
 

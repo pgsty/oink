@@ -42,7 +42,7 @@ function fixture() {
   const regions = [branch, aside, foreign];
   document.querySelectorAll = () => regions.map(r => r.button);
   document.getElementById = id => regions.find(r => r.id === id)?.target;
-  const context = vm.createContext({ window: {}, document, Promise, Map,
+  const context = vm.createContext({ window: {}, document, Promise, Map, setTimeout,
     CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options?.detail; } },
   });
   vm.runInContext(source, context);
@@ -97,6 +97,10 @@ test('readiness is safe for late consumers and duplicate initialization adds no 
   assert.equal(f.branch.handlers.length, 1);
   assert.equal(f.api.isReady, false);
   f.listeners.DOMContentLoaded();
+  // Browsers drain microtasks between DOMContentLoaded listeners. A later
+  // hydration listener must still be able to commit the initial active path.
+  await Promise.resolve();
+  assert.equal(f.api.isReady, false);
   f.api.setExpanded('branch', true, { source: 'active-path' });
   await f.api.ready;
   assert.equal(f.api.isReady, true);

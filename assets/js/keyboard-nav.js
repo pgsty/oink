@@ -37,25 +37,39 @@
     return null;
   }
 
-  // The flattened sequence of tree links the reader can currently see. The
-  // same list drives w/s focus movement and q/e paging, so the focus order
-  // and the page order can never disagree.
+  function visibleTreeTarget(target, menu) {
+    if (!target) return false;
+    for (var node = target.parentNode; node && node !== menu; node = node.parentNode) {
+      var list = node.classList;
+      if (!list) continue;
+      if (list.contains('td-shell-tree__item--hidden')) return false;
+      if (
+        list.contains('td-shell-tree__children') &&
+        !list.contains('td-is-open') &&
+        !list.contains('td-shell-tree__children--static')
+      ) return false;
+    }
+    return true;
+  }
+
+  // Paging visits only links. Focus navigation shares their order and also
+  // stops at the disclosure button of a group without a landing page.
   function visibleTreeLinks(menu) {
     if (!menu || (menu.classList && menu.classList.contains('d-none'))) return [];
-    var links = menu.querySelectorAll('a.td-shell-tree__link');
-    return Array.prototype.filter.call(links, function (link) {
-      for (var node = link.parentNode; node && node !== menu; node = node.parentNode) {
-        var list = node.classList;
-        if (!list) continue;
-        if (list.contains('td-shell-tree__item--hidden')) return false;
-        if (
-          list.contains('td-shell-tree__children') &&
-          !list.contains('td-is-open') &&
-          !list.contains('td-shell-tree__children--static')
-        ) return false;
-      }
-      return true;
+    return Array.prototype.filter.call(menu.querySelectorAll('a.td-shell-tree__link'), function (link) {
+      return visibleTreeTarget(link, menu);
     });
+  }
+
+  function treeRowTarget(row) {
+    return row && (row.querySelector('a.td-shell-tree__link') ||
+      row.querySelector('[data-td-shell-tree-toggle]'));
+  }
+
+  function visibleTreeTargets(menu) {
+    if (!menu || (menu.classList && menu.classList.contains('d-none'))) return [];
+    return Array.prototype.map.call(menu.querySelectorAll('.td-shell-tree__row'), treeRowTarget)
+      .filter(function (target) { return visibleTreeTarget(target, menu); });
   }
 
   function pathOf(url, base) {
@@ -291,18 +305,22 @@
     // focus, so the first press already moves relative to it instead of
     // spending a keystroke on entering the tree.
     function treeMove(delta) {
-      var links = visibleTreeLinks(menu());
-      if (!links.length) return;
-      var index = links.indexOf(doc.activeElement);
-      if (index < 0) index = currentTreeIndex(links, doc, win);
+      var targets = visibleTreeTargets(menu());
+      if (!targets.length) return;
+      var current = treeRowTarget(closestByClass(doc.activeElement, 'td-shell-tree__row'));
+      var index = targets.indexOf(current);
+      if (index < 0) {
+        var links = visibleTreeLinks(menu());
+        index = targets.indexOf(links[currentTreeIndex(links, doc, win)]);
+      }
       var next;
       if (index < 0) {
-        next = delta > 0 ? 0 : links.length - 1;
+        next = delta > 0 ? 0 : targets.length - 1;
       } else {
         // Dwell at the edges instead of wrapping.
-        next = Math.min(Math.max(index + delta, 0), links.length - 1);
+        next = Math.min(Math.max(index + delta, 0), targets.length - 1);
       }
-      focusLink(links[next]);
+      focusLink(targets[next]);
     }
 
     function chevronOf(link) {
@@ -318,8 +336,9 @@
       }
       // Expanded already (or statically open): step into the first child.
       var item = closestByClass(link, 'td-shell-tree__item');
-      var links = visibleTreeLinks(menu());
-      var next = links[links.indexOf(link) + 1];
+      var targets = visibleTreeTargets(menu());
+      var current = treeRowTarget(closestByClass(link, 'td-shell-tree__row'));
+      var next = targets[targets.indexOf(current) + 1];
       if (next && item && item.contains(next)) focusLink(next);
     }
 
@@ -329,12 +348,18 @@
         chevron.click();
         return;
       }
-      // Collapsed or a leaf: move to the parent item's link.
+      // Collapsed or a leaf: use only the parent's own row. A recursive link
+      // query would pick the first child of a non-link group, possibly itself.
       var item = closestByClass(link, 'td-shell-tree__item');
       var parentItem = item && closestByClass(item.parentNode, 'td-shell-tree__item');
-      var parentLink = parentItem &&
-        parentItem.querySelector('a.td-shell-tree__link');
-      if (parentLink) focusLink(parentLink);
+      while (parentItem) {
+        var row = Array.prototype.find.call(parentItem.children, function (child) {
+          return child.classList && child.classList.contains('td-shell-tree__row');
+        });
+        var target = treeRowTarget(row);
+        if (target) return focusLink(target);
+        parentItem = closestByClass(parentItem.parentNode, 'td-shell-tree__item');
+      }
     }
 
     function treeExit(link) {

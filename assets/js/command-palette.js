@@ -625,6 +625,7 @@
     function activate(index) {
       var row = rows[index];
       if (!row) return;
+      if (pendingKey) return;
       if (!row.available) {
         announce(row.disabledReason || root.dataset.tdTActionFailed || 'Unavailable');
         return;
@@ -643,7 +644,6 @@
         announce(root.dataset.tdTChoice || 'Choose an option');
         return;
       }
-      if (pendingKey) return;
       var activationSession = session;
       var activation = ++activationSerial;
       pendingKey = row.id;

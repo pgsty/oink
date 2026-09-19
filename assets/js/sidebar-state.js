@@ -52,12 +52,13 @@
   });
 
   function finish() {
-    // Hydration's DOMContentLoaded listener and shell relocation finish first.
-    Promise.resolve().then(function () {
+    // A task boundary also waits for later DOMContentLoaded listeners;
+    // microtasks can run between those listeners before hydration finishes.
+    setTimeout(function () {
       api.isReady = true;
       resolveReady(api);
       document.dispatchEvent(new CustomEvent('oink:sidebar-ready'));
-    });
+    }, 0);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', finish, { once: true });
   else finish();

@@ -5,6 +5,9 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+The changes below are the OINK 1.1.0 candidate. The latest published release is
+1.0.0; the release date and immutable tag will be recorded at publication.
+
 ### Added
 
 - A committed `OinkSidebar` disclosure API with late-consumer readiness and
@@ -12,9 +15,29 @@ All notable changes to OINK are documented here. The project follows
   and responsive aside relocation (#41).
 - A query-aware `OinkCommandPalette.registerSearchTail` hook for trusted site
   scripts, with native rendering, cancellation, and explicit focus handoff (#40).
+- Every locale name shipped by Docsy now has a complete native OINK interface
+  catalog at the same level as English and Chinese: 31 upstream-compatible
+  locale files plus generic `zh`, with the same 194 messages in each. The owning
+  checker pins that locale set and rejects missing, extra, duplicate, malformed
+  plural, placeholder-drifted, hidden-bidi, and unreviewed English-fallback values;
+  the old mechanical `--sync` fallback path is gone. The runtime check uses
+  the concrete `zh-CN` locale for non-default generic `zh`, preserving the
+  0.160.1 floor; Hugo 0.160.x cannot resolve bare `locale: zh` in that
+  base-plus-regional-catalog configuration, while 0.161.0 and newer can.
 
 ### Fixed
 
+- Sidebar readiness now waits for cached-path hydration and shell relocation,
+  including DOMContentLoaded listeners registered after the disclosure API.
+- Pending Palette actions block entry into native choice menus until they
+  settle, preventing a stale action from closing an unusable choice view.
+- Collapsed right-side TOC panels leave the focus order and accessibility tree;
+  focus transfers between the hide and restore controls, while relocated aside
+  contents remain usable in the mobile sidebar.
+- Group-only navigation supports parent, fold, and child keyboard movement;
+  previous/next page shortcuts continue to skip non-link group labels.
+- Mobile drawer focus trapping excludes inert and hidden descendants, so a
+  folded final group cannot let Tab escape into the document.
 - Image Zoom no longer inserts hidden preview instructions into copied article
   text or rich-text fragments. Buttons retain the image description and localized
   action in their accessible names; authored images and captions are unchanged.
@@ -28,23 +51,6 @@ All notable changes to OINK are documented here. The project follows
   dead links for unpublished group indexes. Cached group navigation remains
   usable without JavaScript, and explicit trees resolve under bilingual
   subpath deployments (#42).
-
-## [1.1.0] - 2026-09-04
-
-### Added
-
-- Every locale name shipped by Docsy now has a complete native OINK interface
-  catalog at the same level as English and Chinese: 31 upstream-compatible
-  locale files plus generic `zh`, with the same 194 messages in each. The owning
-  checker pins that locale set and rejects missing, extra, duplicate, malformed
-  plural, placeholder-drifted, hidden-bidi, and unreviewed English-fallback values;
-  the old mechanical `--sync` fallback path is gone. The runtime check uses
-  the concrete `zh-CN` locale for non-default generic `zh`, preserving the
-  0.160.1 floor; Hugo 0.160.x cannot resolve bare `locale: zh` in that
-  base-plus-regional-catalog configuration, while 0.161.0 and newer can.
-
-### Fixed
-
 - A breadcrumb crumb standing for a generated taxonomy page now shows the same
   localized label the taxonomy head renders (`标签`, `作者`) instead of Hugo's
   English plural title.
@@ -2062,8 +2068,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0
 [0.8.2]: https://github.com/pgsty/oink/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/pgsty/oink/compare/v0.8.0...v0.8.1

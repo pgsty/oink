@@ -668,6 +668,33 @@ function setup({ controlledAnimationFrame = false } = {}) {
   await tick();
   assert.equal(extension.controller.isOpen(), false, 'extension fulfillment value was interpreted as a native action');
 
+  const pendingChoice = setup();
+  let finishPendingChoice;
+  let pendingChoiceContext;
+  pendingChoice.paletteModule.registerSearchTail({ id: 'helper',
+    rows: () => [{ id: 'ask', title: 'Ask helper' }],
+    activate(row, context) {
+      pendingChoiceContext = context;
+      return new Promise(resolve => { finishPendingChoice = resolve; });
+    },
+  });
+  pendingChoice.input.value = 'dark';
+  pendingChoice.controller.open();
+  await tick();
+  pendingChoice.controller.activate(pendingChoice.controller.rows().findIndex(row => row.type === 'extension'));
+  const themeChoiceIndex = pendingChoice.controller.rows().findIndex(row => row.sourceId === 'switch_theme');
+  assert.ok(themeChoiceIndex >= 0);
+  pendingChoice.controller.activate(themeChoiceIndex);
+  assert.equal(pendingChoice.controller.rows().some(row => row.type === 'choice'), false,
+    'a pending extension allowed a native choice menu to replace its rows');
+  assert.equal(pendingChoiceContext.signal.aborted, false);
+  finishPendingChoice();
+  await tick();
+  pendingChoice.controller.open();
+  pendingChoice.controller.activate(pendingChoice.controller.rows().findIndex(row => row.sourceId === 'switch_theme'));
+  assert.ok(pendingChoice.controller.rows().some(row => row.type === 'choice'),
+    'completed activation left native choices locked');
+
   const extensionFailure = setup();
   const failedContexts = [];
   extensionFailure.root.dataset.tdTIndexUnavailable = 'Index unavailable';

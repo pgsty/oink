@@ -45,6 +45,21 @@
     else panel.removeAttribute('aria-hidden');
   }
 
+  // Isolate the rail panel, not the aside that moves into the mobile drawer.
+  function syncTocIsolation() {
+    var panel = document.querySelector('.td-shell-toc__panel');
+    if (!panel) return;
+    var hidden = html.getAttribute('data-td-shell-toc') === 'collapsed';
+    if (hidden && panel.contains(document.activeElement)) {
+      var target = document.querySelector('.td-shell-toc-float [data-td-shell-right-toggle]');
+      if (!target || target.offsetParent === null) target = document.getElementById('td-main-content');
+      if (target) target.focus();
+    }
+    panel.inert = hidden;
+    if (hidden) panel.setAttribute('aria-hidden', 'true');
+    else panel.removeAttribute('aria-hidden');
+  }
+
   /* ----------------------------------------------------------- focus trap */
 
   var FOCUSABLE =
@@ -56,6 +71,9 @@
     return Array.prototype.filter.call(
       container.querySelectorAll(FOCUSABLE),
       function (el) {
+        if (el.closest('[inert], [hidden]')) return false;
+        var visibility = window.getComputedStyle(el).visibility;
+        if (visibility === 'hidden' || visibility === 'collapse') return false;
         return el.offsetParent !== null || el === document.activeElement;
       },
     );
@@ -99,6 +117,11 @@
         } else {
           html.removeAttribute('data-td-shell-toc');
         }
+        syncTocIsolation();
+        if (!next && document.activeElement === btn && btn.offsetParent === null) {
+          var target = document.querySelector('.td-shell-toc__panel [data-td-shell-right-toggle]');
+          if (target && target.offsetParent !== null) target.focus();
+        }
         try {
           localStorage.setItem('td-shell-toc-collapsed', next ? '1' : '0');
         } catch (e) {
@@ -106,6 +129,7 @@
         }
       });
     });
+    syncTocIsolation();
   }
 
   /* --------------------------------------------------------- footerOffset */
@@ -493,6 +517,7 @@
       if (aside.parentElement !== parent) parent.appendChild(aside);
       slot.hidden = isWide;
       setGroups(isWide);
+      syncTocIsolation();
     }
 
     place(wide.matches);

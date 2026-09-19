@@ -50,15 +50,10 @@
       var toggle = item.querySelector(
         ':scope > .td-shell-tree__row [data-td-shell-tree-toggle]',
       );
-      if (toggle) {
-        toggle.setAttribute('aria-expanded', 'true');
-        if (toggle.dataset.tdLabelCollapse) {
-          toggle.setAttribute('aria-label', toggle.dataset.tdLabelCollapse);
-        }
-        var target = document.getElementById(
-          toggle.getAttribute('aria-controls'),
-        );
-        if (target) target.classList.add('td-is-open');
+      if (toggle && window.OinkSidebar) {
+        window.OinkSidebar.setExpanded(toggle.getAttribute('aria-controls'), true, {
+          source: 'active-path',
+        });
       }
     }
 

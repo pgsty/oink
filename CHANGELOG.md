@@ -3,6 +3,29 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [Unreleased]
+
+### Added
+
+- A committed `OinkSidebar` disclosure API with late-consumer readiness and
+  optional site-owned persistence, shared by clicks, cached-path hydration,
+  and responsive aside relocation (#41).
+- A query-aware `OinkCommandPalette.registerSearchTail` hook for trusted site
+  scripts, with native rendering, cancellation, and explicit focus handoff (#40).
+
+### Fixed
+
+- Explicit root-menu exclusions now apply to self-root sections as well as
+  top-level sections; the current linkable root remains a location marker (#43).
+- Hidden sidebar content is isolated from focus and assistive technology,
+  while desktop hover restore and mobile drawer transitions remain usable (#41).
+- Pointer-focused reading containers stay quiet after unrelated keys; keyboard
+  focus and the skip-link destination retain visible indicators (#44).
+- Divider sections retain their child navigation and Print content, with no
+  dead links for unpublished group indexes. Cached group navigation remains
+  usable without JavaScript, and explicit trees resolve under bilingual
+  subpath deployments (#42).
+
 ## [1.1.0] - 2026-09-04
 
 ### Added

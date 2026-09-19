@@ -27,7 +27,7 @@
   {{- end }}
   <li class="breadcrumb-item{{ if $isActive }} active{{ end }}"
       {{- if $isActive }} aria-current="page"{{ end }}>
-    {{ if $isActive -}}
+    {{ if or $isActive (not .p1.RelPermalink) (.p1.Params.sidebar_divider | default false) -}}
       {{ $title -}}
     {{ else -}}
       <a href="{{ .p1.RelPermalink }}">{{ $title }}</a>

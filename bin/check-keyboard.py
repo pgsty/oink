@@ -52,6 +52,13 @@ def referenced_bundles(output: Path, html: str) -> list[str]:
 
 
 def check_sources() -> None:
+    reading_focus = (ROOT / "assets/js/base.js").read_text(encoding="utf-8")
+    reading_styles = (ROOT / "assets/scss/td/_content.scss").read_text(encoding="utf-8")
+    require("function initReadingFocus()" in reading_focus
+            and "data-td-pointer-focus" in reading_focus
+            and "event.key === 'Tab'" in reading_focus
+            and "#td-main-content:focus-visible:not([data-td-pointer-focus]):has(h1)" in reading_styles,
+            "reading focus lost pointer scoping or the keyboard skip-link indicator")
     scripts = (ROOT / "layouts" / "_partials" / "scripts.html").read_text(encoding="utf-8")
     require(
         'resources.Get "js/keyboard-nav.js"' in scripts,

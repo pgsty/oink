@@ -413,6 +413,17 @@
     visibility 0s;
 }
 
+// A non-link group has no landing page to use as a no-script escape hatch.
+// Cached markup likewise cannot discover its active path without the runtime.
+html:not([data-td-shell-initialized]) {
+  .td-shell-tree__item--group > .td-shell-tree__children,
+  [data-td-sidebar-hydrate-active] .td-shell-tree__children {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
 // A cached tree discovers its active branch after the first paint. Apply that
 // initial state without fading readable text through a sub-AA opacity; once
 // hydration removes the marker, reader-triggered disclosure transitions keep

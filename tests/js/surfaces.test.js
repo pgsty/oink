@@ -364,6 +364,7 @@ function testHoverTriggerClickAfterFocus() {
     },
   });
   global.document = {
+    addEventListener() {},
     querySelector() { return null; },
     querySelectorAll(selector) {
       return selector === '[data-td-nav-hover]' ? [menu] : [];
@@ -418,6 +419,7 @@ function testBootstrapVersionTriggerAfterFocus() {
     hide() { trigger.setAttribute('aria-expanded', 'false'); },
   };
   global.document = {
+    addEventListener() {},
     querySelector() { return null; },
     querySelectorAll(selector) {
       return selector === '[data-td-version-menu]' ? [menu] : [];

@@ -1,9 +1,7 @@
 {{ define "recurse-toc" }}
   {{ $s := .section }}
   {{ $psid := .psid }}
-  {{ $pages := (union $s.Pages $s.Sections).ByWeight }}
-  {{ $pages = where $pages ".Params.no_print" "!=" true }}
-  {{ $pages = where $pages ".Params.sidebar_divider" "!=" true }}
+  {{ $pages := partial "print/children.html" $s }}
   {{ $subSection := 1 }}
 
   {{ range $pages }}
@@ -23,9 +21,7 @@
 {{ define "recurse-content" }}
   {{ $s := .section }}
   {{ $psid := .psid }}
-  {{ $pages := (union $s.Pages $s.Sections).ByWeight }}
-  {{ $pages = where $pages ".Params.no_print" "!=" true }}
-  {{ $pages = where $pages ".Params.sidebar_divider" "!=" true }}
+  {{ $pages := partial "print/children.html" $s }}
   {{ $subSection := 1 }}
 
   {{ $breakOnWordCount := partial "validate.html" (dict

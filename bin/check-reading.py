@@ -764,6 +764,119 @@ def check_pager_sources() -> list[str]:
     return errors
 
 
+def check_group_only_sections(hugo: str) -> list[str]:
+    """Both navigation authorities keep group children without dead destinations."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-group-sections-") as temp:
+        source = Path(temp)
+        write_file(source / "hugo.yaml", f"""baseURL: https://example.org/sub/
+title: Groups
+theme: {ROOT.name}
+themesDir: {ROOT.parent}
+defaultContentLanguage: en
+languages:
+  en:
+    locale: en-US
+  zh:
+    locale: zh-CN
+outputs:
+  home: [HTML, NAVJSON]
+  section: [HTML, PRINT, MARKDOWN]
+params:
+  offline_search: true
+  ui:
+    sidebar_menu_compact: false
+    sidebar_menu_foldable: true
+    sidebar_root_menu: true
+""")
+        pages = {
+            "_index": "title: Docs\ntype: docs\ncascade:\n  type: docs",
+            "before": "title: Before\nweight: 1",
+            "group/_index": "title: Group only\nweight: 2\nsidebar_divider: true\nbuild:\n  render: never",
+            "group/a": "title: Child A\nweight: 1",
+            "group/b": "title: Child B\nweight: 2",
+            "after": "title: After\nweight: 3",
+            "divider": "title: Leaf divider\nweight: 4\nsidebar_divider: true\nbuild:\n  render: never",
+        }
+        for name, frontmatter in pages.items():
+            for suffix in (".md", ".zh.md"):
+                write_file(source / "content/docs" / (name + suffix),
+                           f"---\n{frontmatter}\n---\n\nBody {name}.\n"
+                           + ("\n## Unpublished group heading\n" if name == "group/_index" else ""))
+        for explicit in (False, True):
+            if explicit:
+                def node(name, children=None):
+                    return {"page": "/docs/" + name, "url": "/docs/" + name + "/",
+                            "children": children or []}
+                write_file(source / "data/docs_nav.json", json.dumps({
+                    "sections": [node("before"), node("group", [node("group/a"), node("group/b")]),
+                                 node("after"), node("divider")],
+                    "active_path_by_url": {"/docs/group/a/": ["/docs/group/", "/docs/group/a/"]},
+                }))
+            result = run_site(hugo, source, "--panicOnWarning")
+            if result.returncode:
+                return [f"group fixture ({explicit=}) failed: {result.stdout}{result.stderr}"]
+            public = source / "public"
+            for language in ("", "zh/"):
+                prefix = "/sub/" + language
+                html = (public / language / "docs/group/a/index.html").read_text()
+                sidebar = sidebar_markup(html)
+                require('td-shell-tree__group' in sidebar and 'Group only' in sidebar,
+                        f"{language} {explicit=} lost the non-link group", errors)
+                require(f'href="{prefix}docs/group/"' not in html and 'href=""' not in html,
+                        f"{language} {explicit=} links to an unpublished group", errors)
+                parsed = parse_navigation(html)
+                require('aria-expanded="true"' in sidebar,
+                        f"{language} {explicit=} current group path is not expanded", errors)
+                for child in ("a", "b"):
+                    require(prefix + "docs/group/" + child + "/" in parsed.sidebar_links,
+                            f"{language} {explicit=} drops child {child}", errors)
+                require(parsed.pager_links == {"prev": prefix + "docs/before/", "next": prefix + "docs/group/b/"},
+                        f"{language} {explicit=} pager does not traverse group children", errors)
+                require('td-shell-tree__heading-label' in sidebar and 'Leaf divider' in sidebar,
+                        "leaf divider compatibility changed", errors)
+                require(not (public / language / "docs/group/index.html").exists(),
+                        "never-rendered group acquired an HTML page", errors)
+                printable = (public / language / "_print/docs/index.html").read_text()
+                require('Body group/a.' in printable and 'Body group/b.' in printable
+                        and 'Body group/_index.' not in printable,
+                        f"{language} {explicit=} Print loses grouped pages or includes the hidden index", errors)
+                nav = json.loads((public / language / "navigation.json").read_text())
+                def urls(node):
+                    return [node.get("url")] + [url for child in node.get("children", []) for url in urls(child)]
+                destinations = [urlsplit(url).path for url in urls(nav["root"]) if url]
+                require(prefix + "docs/group/" not in destinations and prefix + "docs/group/a/" in destinations,
+                        f"{language} {explicit=} machine navigation loses children or links the group", errors)
+            for index in public.glob("offline-search-index.*.json"):
+                docs = json.loads(index.read_text())
+                require(all(doc.get("ref") and not doc["ref"].endswith("/docs/group/") for doc in docs),
+                        "search indexes an unpublished group", errors)
+                require(any(doc["ref"].endswith("/docs/group/a/") for doc in docs),
+                        "search loses group children", errors)
+        # The same group must retain Book TOC/Markdown and aggregate Print.
+        for path in (source / "content/docs").glob("_index*.md"):
+            path.write_text(path.read_text().replace("type: docs", "type: book")
+                            + '\n{{< book-toc depth=3 >}}\n', encoding="utf-8")
+        result = run_site(hugo, source, "--panicOnWarning")
+        if result.returncode:
+            return errors + [f"group Book fixture failed: {result.stdout}{result.stderr}"]
+        for language in ("", "zh/"):
+            prefix = "/sub/" + language
+            html = (public / language / "docs/index.html").read_text()
+            markdown = (public / language / "docs/index.md").read_text()
+            printable = (public / language / "_print/docs/index.html").read_text()
+            require('Group only' in html and f'href="{prefix}docs/group/a/"' in html
+                    and f'href="{prefix}docs/group/"' not in html,
+                    f"{language} Book TOC drops grouped children or links the group", errors)
+            require('Group only' in markdown and prefix + "docs/group/a/" in markdown,
+                    f"{language} Book Markdown drops grouped children", errors)
+            require('Body group/a.' in printable and 'Body group/b.' in printable,
+                    f"{language} Book Print drops grouped children", errors)
+            require(all('Unpublished group heading' not in output for output in (html, markdown, printable)),
+                    f"{language} Book TOC links to unpublished group headings", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--public", type=Path)
@@ -790,6 +903,7 @@ def main() -> int:
         + check_invalid_eq_escape(args.hugo)
         + check_rss_pager_output(args.hugo)
         + check_pager_sources()
+        + check_group_only_sections(args.hugo)
     )
 
     if errors:

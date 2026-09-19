@@ -17,10 +17,7 @@
          node that is the section root itself contributes its children
          rather than nesting the root inside itself -- the same root
          handling the sidebar applies. */ -}}
-    {{- $rootURL := $section.RelPermalink -}}
-    {{- with $home.Site.LanguagePrefix -}}
-      {{- $rootURL = strings.TrimPrefix . $rootURL -}}
-    {{- end -}}
+    {{- $rootURL := printf "/%s" (strings.TrimPrefix $home.RelPermalink $section.RelPermalink) -}}
     {{- $subChildren := slice -}}
     {{- range $explicitSections -}}
       {{- if eq (strings.TrimSuffix "/" (.url | default "")) (strings.TrimSuffix "/" $rootURL) -}}

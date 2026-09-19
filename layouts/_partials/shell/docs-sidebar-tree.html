@@ -5,6 +5,7 @@
      content-tree walker, so the two sources cannot drift apart visually. */ -}}
 {{ $context := .context -}}
 {{ $sidebarRootID := .sidebarRootID -}}
+{{ $sidebarRootPage := .sidebarRoot.Path -}}
 {{ $cacheSidebar := .cacheSidebar -}}
 {{ $iconPolicy := .iconPolicy -}}
 {{ $foldable := .foldable -}}
@@ -12,17 +13,11 @@
 
 {{ with $context -}}
 {{ $shouldDelayActive := $cacheSidebar -}}
-{{ $currentURL := .RelPermalink -}}
-{{ with .Site.LanguagePrefix -}}
-  {{ $currentURL = strings.TrimPrefix . $currentURL -}}
-{{ end -}}
+{{ $currentURL := printf "/%s" (strings.TrimPrefix .Site.Home.RelPermalink .RelPermalink) -}}
 {{ $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{ $activeByURL := index $docsNav "active_path_by_url" | default dict -}}
 {{ $activeURLs := index $activeByURL $currentURL | default (slice) -}}
-{{ $sidebarRootURL := $sidebarRootID -}}
-{{ with .Site.LanguagePrefix -}}
-  {{ $sidebarRootURL = strings.TrimPrefix . $sidebarRootURL -}}
-{{ end -}}
+{{ $sidebarRootURL := printf "/%s" (strings.TrimPrefix .Site.Home.RelPermalink $sidebarRootID) -}}
 
 <div id="td-sidebar-menu" class="td-shell-tree-wrap"{{ if $shouldDelayActive }} data-td-sidebar-hydrate-active{{ end }}>
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
@@ -40,7 +35,7 @@
       {{- if not $hasRoot -}}
         {{- partial "shell/docs-sidebar-node.html" (dict
             "page" $context
-            "node" (dict "page" $sidebarRootURL "url" $sidebarRootURL "children" (slice))
+            "node" (dict "page" $sidebarRootPage "url" $sidebarRootURL "children" (slice))
             "currentURL" $currentURL
             "activeURLs" $activeURLs
             "shouldDelayActive" $shouldDelayActive

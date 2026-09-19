@@ -5,7 +5,7 @@
 {{- $seen := newScratch -}}
 
 {{- range $site.Home.Sections.ByWeight -}}
-  {{- if ne .Params.sidebar_root_menu false -}}
+  {{- if and .RelPermalink (not .Params.sidebar_divider) (ne .Params.sidebar_root_menu false) -}}
     {{- $key := .RelPermalink -}}
     {{- if not ($seen.Get $key) -}}
       {{- $entries = $entries | append . -}}
@@ -16,7 +16,7 @@
 
 {{- $selfRoots := where $site.Pages "Params.sidebar_root_for" "self" -}}
 {{- range $selfRoots.ByWeight -}}
-  {{- if and .IsSection (ne .Params.sidebar_root_menu false) -}}
+  {{- if and .IsSection .RelPermalink (not .Params.sidebar_divider) (ne .Params.sidebar_root_menu false) -}}
     {{- $key := .RelPermalink -}}
     {{- if not ($seen.Get $key) -}}
       {{- $entries = $entries | append . -}}

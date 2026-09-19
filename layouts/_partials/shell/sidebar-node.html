@@ -46,18 +46,25 @@
   {{- end -}}
 {{- end -}}
 {{- $isDivider := $s.Params.sidebar_divider | default false -}}
-{{- if $isDivider -}}
+{{- if and $isDivider (not $withChild) -}}
   <li class="td-shell-tree__item td-shell-tree__heading" id="{{ $mid }}-li">
     <span class="td-shell-tree__heading-label" id="{{ $mid }}"><span>{{ $s.LinkTitle }}</span></span>
   </li>
   {{- else -}}
   <li class="td-shell-tree__item
+        {{- if $isDivider }} td-shell-tree__item--group{{ end -}}
         {{- if $withChild }} td-has-child{{ else }} td-leaf{{ end -}}
         {{- if $activePath }} td-active-path{{ end -}}
         {{- if $treeRoot }} td-shell-tree__item--root{{ end -}}
         {{- if $hidden }} td-shell-tree__item--hidden{{ end }}"
       id="{{ $mid }}-li">
     <div class="td-shell-tree__row{{ if $active }} td-shell-active{{ end }}{{ if $treeRoot }} td-shell-tree__row--root{{ end }}">
+      {{ if $isDivider -}}
+      <span class="td-shell-tree__link td-shell-tree__group" id="{{ $mid }}">
+        {{- if $showIcon }}{{ with $s.Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ end -}}
+        <span>{{ $s.LinkTitle }}</span>
+      </span>
+      {{- else -}}
       <a href="{{ $manualLink }}"
         {{- if $active }} aria-current="page"{{ end -}}
         {{- if ne $s.LinkTitle $manualLinkTitle }} title="{{ $manualLinkTitle }}"
@@ -68,6 +75,7 @@
         {{- if $showIcon }}{{ with $s.Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ end -}}
           {{- if eq $s.Type "book" }}{{ partial "book/sidebar-label.html" $s }}{{ else }}<span>{{ $s.LinkTitle }}</span>{{ end -}}
         </a>
+      {{ end -}}
       {{ if $foldable -}}
       <button type="button" class="td-shell-tree__chevron" data-td-shell-tree-toggle
         aria-expanded="{{ $shouldExpand }}" aria-controls="{{ $mid }}-children"

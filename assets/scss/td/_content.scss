@@ -221,6 +221,29 @@
   }
 }
 
+// Keep the skip-link destination visible without framing the whole article.
+#td-main-content:focus-visible:not([data-td-pointer-focus]):has(h1) {
+  outline: none;
+
+  h1:first-of-type {
+    outline: 2px solid var(--bs-link-color);
+    outline-offset: 4px;
+  }
+}
+
+.td-content pre[tabindex]:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 3px;
+}
+
+// Only a pointer-origin focus on these reading containers suppresses the
+// browser's later keyboard heuristic. Controls and Tab focus are unaffected.
+#td-main-content[data-td-pointer-focus]:focus,
+.td-content .td-table-scroll[data-td-pointer-focus]:focus,
+.td-content pre[tabindex][data-td-pointer-focus]:focus {
+  outline: none;
+}
+
 @media print {
   .td-content .katex-display,
   .td-content .td-table-scroll {
@@ -230,6 +253,8 @@
 }
 
 @media (forced-colors: active) {
+  #td-main-content:focus-visible:not([data-td-pointer-focus]) h1:first-of-type,
+  .td-content pre[tabindex]:focus-visible,
   .td-content .katex-display:focus-visible,
   .td-content .td-table-scroll:focus-visible {
     outline-color: Highlight;

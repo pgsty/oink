@@ -1,0 +1,13 @@
+{{- /* Group-only sections contribute their children, never an empty page. */ -}}
+{{- $pages := slice -}}
+{{- range (union .Pages .Sections).ByWeight -}}
+  {{- if .Params.no_print }}{{ continue }}{{ end -}}
+  {{- if or .Params.sidebar_divider (not .RelPermalink) -}}
+    {{- range partial "print/children.html" . -}}
+      {{- $pages = $pages | append . -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $pages = $pages | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- return $pages -}}

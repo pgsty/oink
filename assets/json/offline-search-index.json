@@ -10,6 +10,7 @@
 {{- $pages := where .Site.Pages "Kind" "in" (slice "page" "section") -}}
 {{- range $pages -}}
 {{- if .Params.search_exclude }}{{ continue }}{{ end -}}
+{{- if or (not .RelPermalink) .Params.sidebar_divider }}{{ continue }}{{ end -}}
 {{- if not .RawContent }}{{ continue }}{{ end -}}
 {{- /* We have to apply `htmlUnescape` again after `truncate` because `truncate` applies `html.EscapeString` if the argument is not HTML. */ -}}
 {{- /* Individual taxonomies can be added in the next line by add '"taxonomy-name" (.Params.taxonomy-name | default "")' to the dict (as seen for categories and tags). */ -}}

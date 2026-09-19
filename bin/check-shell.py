@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from html.parser import HTMLParser
 
 from test_site import fixture_config_args, run_hugo_process
 from pathlib import Path
@@ -34,6 +35,15 @@ def check_sources() -> list[str]:
     docs_node = (ROOT / "layouts/_partials/shell/docs-sidebar-node.html").read_text()
     sidebar_node = (ROOT / "layouts/_partials/shell/sidebar-node.html").read_text()
     sidebar_nav = (ROOT / "assets/js/sidebar-nav.js").read_text()
+    sidebar_state = (ROOT / "assets/js/sidebar-state.js").read_text()
+    shell_js = (ROOT / "assets/js/docs-shell.js").read_text()
+    scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
+    require(scripts.index('js/sidebar-state.js') < scripts.index('js/sidebar-nav.js'),
+            "disclosure controller must load before cached-path hydration", errors)
+    require("OinkSidebar.setExpanded" in sidebar_nav and "OinkSidebar.setExpanded" in shell_js
+            and "oink:sidebar-disclosure" in sidebar_state
+            and "function initTreeToggles" not in shell_js,
+            "sidebar disclosure writers bypass their committed-state controller", errors)
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
     annotation = (ROOT / "layouts/_partials/page-annotation.html").read_text()
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
@@ -87,7 +97,7 @@ def check_sources() -> list[str]:
             and '"front matter sidebar_root_link_self must be a boolean' in sidebar_node
             and "$rootLinkSelf := true" in sidebar_node,
             "self-root links do not default to their own landing with an explicit legacy escape", errors)
-    require('"node" (dict "page" $sidebarRootURL' in docs_tree,
+    require('"node" (dict "page" $sidebarRootPage' in docs_tree,
             "explicit docs sidebar does not prepend a missing root row", errors)
     require("continue" not in docs_tree.split('index $docsNav "sections"', 1)[1].split("partial", 1)[0],
             "docs sidebar still skips its root row", errors)
@@ -1364,6 +1374,95 @@ params:
     return errors
 
 
+def build_root_menu_visibility(hugo: str) -> list[str]:
+    """Explicit false applies to both root sources, with a current-root fallback."""
+    errors: list[str] = []
+
+    class RootLinks(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.links: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            classes = attrs.get("class", "").split()
+            if tag == "a" and any(name in classes for name in
+                                  ("td-shell-root__item", "td-shell-root__trigger")):
+                self.links.append(attrs.get("href", ""))
+
+    with tempfile.TemporaryDirectory(prefix="oink-root-menu-") as temporary:
+        source = Path(temporary) / "site"
+        public = Path(temporary) / "public"
+        source.mkdir()
+        (source / "hugo.yaml").write_text(f"""baseURL: https://example.org/sub/
+title: Root menu visibility
+theme: {ROOT.name}
+defaultContentLanguage: en
+languages:
+  en:
+    locale: en-US
+  zh:
+    locale: zh-CN
+disableKinds: [RSS, sitemap, taxonomy, term]
+params:
+  offline_search: false
+  ui:
+    sidebar_root_menu: true
+""", encoding="utf-8")
+        (source / "layouts").mkdir()
+        (source / "layouts/home.html").write_text(
+            '<html><body>{{ partial "shell/root-menu.html" . }}</body></html>', encoding="utf-8")
+        pages = {
+            "docs/_index": "title: Docs\ntype: docs\nweight: 1\ncascade:\n  type: docs",
+            "docs/page": "title: Page",
+            "hidden/_index": "title: Hidden\ntype: docs\nsidebar_root_for: self\nsidebar_root_menu: false",
+            "hidden/page": "title: Hidden page\ntype: docs",
+            "docs/nested/_index": "title: Nested\nsidebar_root_for: self\nsidebar_root_menu: false",
+            "docs/nested/page": "title: Nested page",
+            "visible/_index": "title: Visible\ntype: docs\nweight: 2\nsidebar_root_for: self\nsidebar_root_menu: true",
+            "docs/default/_index": "title: Default\nsidebar_root_for: self",
+        }
+        for name, frontmatter in pages.items():
+            for suffix in (".md", ".zh.md"):
+                path = source / "content" / (name + suffix)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"---\n{frontmatter}\n---\n\nContent.\n", encoding="utf-8")
+
+        for all_hidden in (False, True):
+            if all_hidden:
+                for path in (source / "content").rglob("_index*.md"):
+                    frontmatter = path.read_text().replace("sidebar_root_menu: true", "sidebar_root_menu: false")
+                    if "sidebar_root_menu:" not in frontmatter:
+                        frontmatter = frontmatter.replace("---\n", "---\nsidebar_root_menu: false\n", 1)
+                    path.write_text(frontmatter, encoding="utf-8")
+            result = run_hugo_process(
+                [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+                 "--destination", str(public), "--panicOnWarning"],
+                cwd=ROOT, text=True, capture_output=True)
+            if result.returncode:
+                return ["root visibility fixture failed:\n" + result.stdout + result.stderr]
+            for language in ("", "zh/"):
+                prefix = "/sub/" + language
+                for page, current in (("docs/page", "docs/"), ("hidden/page", "hidden/"),
+                                      ("docs/nested/page", "docs/nested/")):
+                    html = (public / language / page / "index.html").read_text()
+                    parser = RootLinks()
+                    parser.feed(html)
+                    expected = ([prefix + current] if all_hidden else
+                                [prefix + name for name in ("docs/", "visible/", "docs/default/")])
+                    if not all_hidden and prefix + current not in expected:
+                        expected.append(prefix + current)
+                    require(parser.links == expected,
+                            f"{language}{page} roots {parser.links} != {expected}", errors)
+                    require(('td-shell-root--static' in html) == all_hidden,
+                            f"{language}{page} one-root switcher did not become a static link", errors)
+                if all_hidden:
+                    home = (public / language / "index.html").read_text()
+                    require('td-shell-root' not in home,
+                            f"{language} zero-entry root switcher emitted a control", errors)
+    return errors
+
+
 def build_featured_image_rejection(hugo: str) -> list[str]:
     """An unknown mode warns, uses `none`, and fails strict publication."""
     errors: list[str] = []
@@ -1864,6 +1963,7 @@ def main() -> int:
     args = parser.parse_args()
     errors = (check_sources() + build_example(args.hugo) + build_footer_utilities_fixture(args.hugo)
               + build_self_root_fixture(args.hugo)
+              + build_root_menu_visibility(args.hugo)
               + build_featured_image_rejection(args.hugo)
               + build_navbar_menu_columns(args.hugo)
               + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo)

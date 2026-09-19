@@ -37,6 +37,14 @@ class Element {
     return this._text + this.children.map((child) => child.textContent || '').join('');
   }
   appendChild(child) { child.parentNode = this; this.children.push(child); return child; }
+  get firstChild() { return this.children[0] || null; }
+  insertBefore(child, before) {
+    child.parentNode = this;
+    const index = this.children.indexOf(before);
+    if (index < 0) this.children.push(child);
+    else this.children.splice(index, 0, child);
+    return child;
+  }
   addEventListener(name, callback) {
     const callbacks = this.listeners.get(name) || [];
     callbacks.push(callback);
@@ -244,7 +252,7 @@ function setup({ controlledAnimationFrame = false } = {}) {
   const controller = paletteModule.init({ root, registry, model: window.OinkPaletteModel, searchApi });
 
   return {
-    controller, root, input, list, status, opener, mobileOpener, mobileToggle,
+    controller, paletteModule, html, root, input, list, status, opener, mobileOpener, mobileToggle,
     fetches, assigned, opened, calls, listeners, animationFrames,
     setFetch(value) { fetchBehavior = value; },
     setPending(value) { pendingAction = value; },
@@ -530,6 +538,155 @@ function setup({ controlledAnimationFrame = false } = {}) {
     slash.input.value, 'already typing',
     'shortcut reset a query while the Palette was already open',
   );
+
+  const extension = setup();
+  extension.html.lang = 'zh';
+  const contexts = [];
+  let activationContext;
+  let activationCount = 0;
+  let finishActivation;
+  const descriptor = { id: 'ask', title: 'Array<T> <script>', description: 'Literal <b>text</b>' };
+  const provider = {
+    id: 'ask-ai',
+    rows(context) { contexts.push(context); return [descriptor]; },
+    activate(row, context) {
+      activationContext = context;
+      activationCount += 1;
+      assert.equal(row.title, 'Array<T> <script>');
+      return new Promise(resolve => { finishActivation = resolve; });
+    },
+  };
+  const unregister = extension.paletteModule.registerSearchTail(provider);
+  assert.throws(() => extension.paletteModule.registerSearchTail(provider), /Duplicate/);
+  assert.throws(() => extension.paletteModule.registerSearchTail({ ...provider, id: 'bad:id' }), /Invalid/);
+  extension.controller.open();
+  extension.input.value = '> theme';
+  extension.controller.render(extension.input.value);
+  assert.equal(contexts.length, 0, 'empty or command mode called a provider');
+  const choice = extension.controller.rows().findIndex(row => row.sourceId === 'switch_theme');
+  extension.controller.activate(choice);
+  assert.equal(contexts.length, 0, 'choice mode called a provider');
+  extension.input.value = ' postgresql ';
+  extension.input.dispatch('input');
+  assert.equal(contexts.length, 0, 'loading index called a provider');
+  await tick();
+  assert.equal(contexts.at(-1).query, 'postgresql');
+  assert.equal(contexts.at(-1).locale, 'zh');
+  assert.equal(contexts.at(-1).phase, 'results');
+  assert.equal(contexts.at(-1).pageResultCount, 1);
+  assert.ok(Object.isFrozen(contexts.at(-1)));
+  assert.equal(extension.controller.rows()[0].type, 'page');
+  assert.equal(extension.controller.rows().at(-1).type, 'extension');
+  assert.ok(extension.list.textContent.includes('Array<T> <script>'));
+  extension.controller.render(extension.input.value);
+  assert.equal(extension.controller.rows().filter(row => row.type === 'extension').length, 1);
+  descriptor.title = 'Mutated after rendering';
+  extension.input.value = 'newer input before debounce';
+  const tailIndex = extension.controller.rows().findIndex(row => row.type === 'extension');
+  extension.controller.activate(tailIndex);
+  extension.controller.activate(tailIndex);
+  assert.equal(activationCount, 1);
+  assert.equal(activationContext.query, 'postgresql', 'activation rebuilt the query instead of keeping the rendered snapshot');
+  assert.equal(extension.list.getAttribute('aria-busy'), 'true');
+  unregister();
+  assert.equal(activationContext.signal.aborted, true);
+  assert.equal(extension.list.getAttribute('aria-busy'), null);
+  finishActivation({ requiresChoice: true });
+  await tick();
+  assert.equal(extension.controller.isOpen(), true, 'unregistered settlement closed the Palette');
+  descriptor.title = 'Array<T> <script>';
+  const unregisterNew = extension.paletteModule.registerSearchTail(provider);
+  unregister();
+  extension.input.value = 'absent';
+  extension.controller.render(extension.input.value);
+  assert.equal(extension.controller.rows().filter(row => row.type === 'extension').length, 1, 'old unregister removed a newer registration');
+  assert.equal(contexts.at(-1).phase, 'empty');
+  assert.equal(contexts.at(-1).pageResultCount, 0);
+  assert.ok(extension.list.textContent.startsWith('No results'), 'extension replaced native empty-state text');
+  unregisterNew();
+  for (const rows of [
+    () => { throw new Error('broken'); },
+    () => Promise.resolve([]),
+    () => [{ id: 'a', title: 'A' }, { id: 'a', title: 'Duplicate' }],
+    () => [{ id: 'unsafe:id', title: 'Unsafe' }],
+    () => [{ id: 'a', title: 'A', available: 'yes' }],
+    () => [{ id: 'a', title: 'A', description: {} }],
+  ]) {
+    const remove = extension.paletteModule.registerSearchTail({ id: 'invalid', rows, activate() {} });
+    extension.controller.render('absent');
+    assert.equal(extension.controller.rows().length, 0, 'invalid provider emitted partial rows');
+    remove();
+  }
+  let action = () => { throw new Error('Private provider failure'); };
+  extension.paletteModule.registerSearchTail({ id: 'valid', rows: () => [{ id: 'a', title: 'Valid' }],
+    activate(row, context) { activationContext = context; return action(context); } });
+  await tick();
+  assert.equal(extension.controller.rows().length, 1);
+  extension.controller.activate(0);
+  await tick();
+  assert.equal(extension.status.textContent, 'Failed', 'provider errors bypassed the localized failure message');
+  assert.equal(extension.controller.isOpen(), true);
+  assert.equal(extension.list.getAttribute('aria-busy'), null);
+  action = () => Promise.reject(new Error('Rejected'));
+  extension.controller.activate(0);
+  await tick();
+  assert.equal(extension.list.getAttribute('aria-busy'), null);
+
+  action = () => new Promise(resolve => { finishActivation = resolve; });
+  extension.controller.activate(0);
+  const oldSignal = activationContext.signal;
+  extension.controller.close();
+  assert.equal(oldSignal.aborted, true);
+  extension.controller.open();
+  finishActivation();
+  await tick();
+  assert.equal(extension.controller.isOpen(), true, 'old-session completion closed the new session');
+  extension.controller.activate(0);
+  const querySignal = activationContext.signal;
+  extension.input.value = 'changed query';
+  extension.input.dispatch('input');
+  assert.equal(querySignal.aborted, true);
+  finishActivation();
+  await tick();
+
+  const externalFocus = new Element('button');
+  action = context => {
+    assert.equal(context.handoff(), true);
+    externalFocus.focus();
+    return new Promise(resolve => { finishActivation = resolve; });
+  };
+  extension.controller.activate(0);
+  assert.equal(extension.controller.isOpen(), false);
+  assert.equal(activationContext.signal.aborted, false, 'successful handoff aborted itself');
+  finishActivation({ requiresChoice: true });
+  await tick();
+  assert.equal(activationContext.signal.aborted, false);
+  assert.equal(document.activeElement, externalFocus);
+  extension.controller.open();
+  action = () => ({ requiresChoice: true, action: {} });
+  extension.controller.activate(0);
+  await tick();
+  assert.equal(extension.controller.isOpen(), false, 'extension fulfillment value was interpreted as a native action');
+
+  const extensionFailure = setup();
+  const failedContexts = [];
+  extensionFailure.root.dataset.tdTIndexUnavailable = 'Index unavailable';
+  extensionFailure.setFetch(() => Promise.reject(new Error('offline')));
+  extensionFailure.paletteModule.registerSearchTail({ id: 'fallback',
+    rows(context) { failedContexts.push(context); return [{ id: 'a', title: 'Fallback' }]; }, activate() {} });
+  extensionFailure.input.value = 'postgresql';
+  extensionFailure.controller.open();
+  await tick();
+  assert.equal(failedContexts.at(-1).phase, 'error');
+  assert.equal(failedContexts.at(-1).pageResultCount, 0);
+  assert.ok(extensionFailure.list.textContent.startsWith('Index unavailable'));
+  extensionFailure.setFetch(() => Promise.resolve({ ok: true, json: () => Promise.resolve([
+    { ref: '/docs/page/', title: 'PostgreSQL Page', root: 'docs' },
+  ]) }));
+  extensionFailure.input.dispatch('input');
+  await tick();
+  assert.equal(extensionFailure.fetches.length, 2, 'extension disabled native retry');
+  assert.equal(failedContexts.at(-1).phase, 'results');
 
   console.log('Command Palette controller checks passed');
 })().catch((error) => {

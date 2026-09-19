@@ -4,6 +4,7 @@
 {{- $page := . -}}
 {{- $enabled := not ($page.Params.toc_hide | default false) -}}
 {{- if or
+      (not $page.RelPermalink)
       ($page.Params.sidebar_divider | default false)
       (isset $page.Params "manual_link")
       (isset $page.Params "manual_link_relref")

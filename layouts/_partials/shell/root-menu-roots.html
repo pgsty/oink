@@ -16,7 +16,7 @@
 
 {{- $selfRoots := where $site.Pages "Params.sidebar_root_for" "self" -}}
 {{- range $selfRoots.ByWeight -}}
-  {{- if .IsSection -}}
+  {{- if and .IsSection (ne .Params.sidebar_root_menu false) -}}
     {{- $key := .RelPermalink -}}
     {{- if not ($seen.Get $key) -}}
       {{- $entries = $entries | append . -}}

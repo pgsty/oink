@@ -5,8 +5,10 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
-The changes below are the OINK 1.1.0 candidate. The latest published release is
-1.0.0; the release date and immutable tag will be recorded at publication.
+## [1.1.0] - 2026-09-20
+
+OINK 1.1.0 adds native interface catalogs, reliable navigation state, and
+site-owned search extensions, with no required migration from 1.0.0.
 
 ### Added
 
@@ -2068,7 +2070,8 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/pgsty/oink/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/pgsty/oink/compare/v0.8.0...v1.0.0
 [0.8.2]: https://github.com/pgsty/oink/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/pgsty/oink/compare/v0.8.0...v0.8.1

@@ -246,3 +246,13 @@ ui_expo_play: "Esita animatsioonid"
 ui_expo_pause: "Peata animatsioonid"
 ui_expo_prev: "Eelmine pilt"
 ui_expo_next: "Järgmine pilt"
+
+# Translation comparison reader
+ui_compare: "Võrdle tõlkeid"
+ui_compare_action: "Topeltvaade"
+ui_compare_view: 'Kakskeelne vaade'
+ui_compare_sync: 'Sünkroonne kerimine'
+ui_compare_sync_approximate: 'Pealkirjad ei ühti täielikult; sünkroonimine kasutab dokumendi ligikaudset edenemist.'
+ui_compare_sync_unavailable: 'Sünkroonimine pole saadaval, sest pealkirjad korduvad või on vales järjekorras.'
+ui_shortcut_compare: 'Ava kakskeelne vaade'
+ui_compare_error: "Seda lehte ei saanud laadida."

@@ -4,6 +4,7 @@
 {{- if $readingSurface -}}
 <script>
   (function () {
+    if (window.OinkComparePane) return;
     var html = document.documentElement;
     {{ if $shell -}}
     html.setAttribute('data-td-shell-no-anim', '');

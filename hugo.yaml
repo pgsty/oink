@@ -119,6 +119,9 @@ params:
     # and ref/relref at build time; no runtime. Pages override with the front
     # matter key `backlinks`.
     backlinks: false
+    # Compare the current HTML page with an existing same-origin translation.
+    # The reader loads on demand; no additional output formats are needed.
+    compare: false
     # Language code of the authoritative version, so a translated page can say
     # so and link to it; false disables the line. Front matter
     # `translation_notice: false` opts out a page written natively in this

@@ -9,6 +9,7 @@
   'use strict';
 
   var BUILTINS = new Set([
+    'compare_translations',
     'copy_markdown',
     'copy_link',
     'open_chatgpt',

@@ -247,3 +247,13 @@ ui_expo_play: "Reproducir animaciones"
 ui_expo_pause: "Pausar animaciones"
 ui_expo_prev: "Imagen anterior"
 ui_expo_next: "Imagen siguiente"
+
+# Translation comparison reader
+ui_compare: "Comparar traducciones"
+ui_compare_action: "Vista dual"
+ui_compare_view: 'Vista bilingüe'
+ui_compare_sync: 'Sincronizar desplazamiento'
+ui_compare_sync_approximate: 'Los encabezados no coinciden por completo; la sincronización usa un progreso aproximado del documento.'
+ui_compare_sync_unavailable: 'La sincronización no está disponible porque los encabezados están duplicados o fuera de orden.'
+ui_shortcut_compare: 'Abrir vista bilingüe'
+ui_compare_error: "No se pudo cargar esta página."

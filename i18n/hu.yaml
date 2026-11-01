@@ -246,3 +246,13 @@ ui_expo_play: "Animációk lejátszása"
 ui_expo_pause: "Animációk szüneteltetése"
 ui_expo_prev: "Előző kép"
 ui_expo_next: "Következő kép"
+
+# Translation comparison reader
+ui_compare: "Fordítások összehasonlítása"
+ui_compare_action: "Kettős nézet"
+ui_compare_view: 'Kétnyelvű nézet'
+ui_compare_sync: 'Görgetés szinkronizálása'
+ui_compare_sync_approximate: 'A címsorok nem egyeznek teljesen; a szinkronizálás a dokumentum hozzávetőleges előrehaladását használja.'
+ui_compare_sync_unavailable: 'A szinkronizálás nem érhető el, mert a címsorok ismétlődnek vagy rossz sorrendben vannak.'
+ui_shortcut_compare: 'Kétnyelvű nézet megnyitása'
+ui_compare_error: "Az oldal nem tölthető be."

@@ -246,3 +246,13 @@ ui_expo_play: "Animaties afspelen"
 ui_expo_pause: "Animaties pauzeren"
 ui_expo_prev: "Vorige afbeelding"
 ui_expo_next: "Volgende afbeelding"
+
+# Translation comparison reader
+ui_compare: "Vertalingen vergelijken"
+ui_compare_action: "Dubbele weergave"
+ui_compare_view: 'Tweetalige weergave'
+ui_compare_sync: 'Scrollen synchroniseren'
+ui_compare_sync_approximate: 'De koppen komen niet volledig overeen; de synchronisatie gebruikt de geschatte voortgang in het document.'
+ui_compare_sync_unavailable: 'Synchronisatie is niet beschikbaar omdat koppen dubbel voorkomen of in de verkeerde volgorde staan.'
+ui_shortcut_compare: 'Tweetalige weergave openen'
+ui_compare_error: "Deze pagina kon niet worden geladen."

@@ -1,0 +1,25 @@
+{{- /* Preserve Hugo's GA4/Do-Not-Track policy, but initialize only the host
+     document. Query pane views must not count as additional visits. */ -}}
+{{- if not .Site.Config.Privacy.GoogleAnalytics.Disable -}}
+{{- with .Site.Config.Services.GoogleAnalytics.ID -}}
+  {{- if strings.HasPrefix (lower .) "ua-" -}}
+    {{- warnf "Google Analytics 4 replaced Universal Analytics; configure a GA4 measurement ID" -}}
+  {{- else -}}
+<script>
+  (function () {
+    if (window.OinkComparePane) return;
+    var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+    if ({{ $.Site.Config.Privacy.GoogleAnalytics.RespectDoNotTrack }} && (dnt === '1' || dnt === 'yes')) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', {{ . }});
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent({{ . }});
+    document.head.appendChild(script);
+  })();
+</script>
+  {{- end -}}
+{{- end -}}
+{{- end -}}

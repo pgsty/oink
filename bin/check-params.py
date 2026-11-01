@@ -280,6 +280,8 @@ def check_schema_contract() -> list[str]:
     errors: list[str] = []
     site = json.loads((ROOT / 'schema/site-params.schema.json').read_text())
     params = site['properties']['params']
+    require(params['properties']['ui']['properties']['compare']['type'] == 'boolean',
+            'translation comparison must remain one boolean site setting', errors)
     for dotted in BOOLEAN_SHORTHAND_MAPS | {'print', 'ui.expo'}:
         node = params
         for part in dotted.split('.'):

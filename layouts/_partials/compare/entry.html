@@ -1,0 +1,8 @@
+{{- $targets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if $targets -}}
+<button type="button" class="td-compare-entry d-print-none" data-td-compare-open hidden
+  title="{{ T "ui_compare" }}" aria-label="{{ T "ui_compare" }}" aria-keyshortcuts="B" aria-haspopup="dialog">
+  <i class="fa-solid fa-columns" aria-hidden="true"></i>
+</button>
+<span class="visually-hidden" role="status" data-td-compare-error></span>
+{{- end -}}

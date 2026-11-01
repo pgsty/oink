@@ -248,3 +248,13 @@ ui_expo_play: "Воспроизвести анимации"
 ui_expo_pause: "Приостановить анимации"
 ui_expo_prev: "Предыдущее изображение"
 ui_expo_next: "Следующее изображение"
+
+# Translation comparison reader
+ui_compare: "Сравнить переводы"
+ui_compare_action: "Двойной вид"
+ui_compare_view: 'Двуязычный вид'
+ui_compare_sync: 'Синхронная прокрутка'
+ui_compare_sync_approximate: 'Заголовки совпадают не полностью; синхронизация использует приблизительный прогресс документа.'
+ui_compare_sync_unavailable: 'Синхронизация недоступна: заголовки повторяются или расположены в неправильном порядке.'
+ui_shortcut_compare: 'Открыть двуязычный вид'
+ui_compare_error: "Не удалось загрузить эту страницу."

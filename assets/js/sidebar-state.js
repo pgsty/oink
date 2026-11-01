@@ -1,6 +1,7 @@
 /** One committed state for OINK's tree and movable aside disclosures. */
 (function () {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
   if (window.OinkSidebar) return;
 
   var records = new Map();

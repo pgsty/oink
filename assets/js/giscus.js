@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   const origin = 'https://giscus.app';
   const frameTimeoutMs = 15000;

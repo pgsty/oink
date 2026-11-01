@@ -247,3 +247,13 @@ ui_expo_play: "Пусти анимације"
 ui_expo_pause: "Паузирај анимације"
 ui_expo_prev: "Претходна слика"
 ui_expo_next: "Следећа слика"
+
+# Translation comparison reader
+ui_compare: "Поређење превода"
+ui_compare_action: "Двоструки приказ"
+ui_compare_view: 'Двојезични приказ'
+ui_compare_sync: 'Усклади померање'
+ui_compare_sync_approximate: 'Наслови се не поклапају у потпуности; синхронизација користи приближни напредак кроз документ.'
+ui_compare_sync_unavailable: 'Синхронизација није доступна јер се наслови понављају или су погрешно поређани.'
+ui_shortcut_compare: 'Отвори двојезични приказ'
+ui_compare_error: "Није могуће учитати ову страницу."

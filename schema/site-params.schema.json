@@ -255,6 +255,11 @@
               "type": "boolean",
               "default": false
             },
+            "compare": {
+              "description": "Compare the current HTML page with an existing same-origin translation. The reader loads on demand; no additional output formats are needed.",
+              "type": "boolean",
+              "default": false
+            },
             "translation_notice": {
               "description": "Language code of the authoritative version, so a translated page can say so and link to it; false disables the line. Front matter `translation_notice: false` opts out a page written natively in this language.",
               "type": "boolean",

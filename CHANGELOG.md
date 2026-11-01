@@ -3,6 +3,15 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## Unreleased
+
+- Add opt-in translation comparison with `params.ui.compare`: discover actual
+  same-origin translations and load two existing HTML pages in a full-window
+  reader. Shared heading IDs drive optional synchronized scrolling; each pane
+  retains its own content components. Support language selection, narrow-screen
+  pane switching, keyboard exit, reading-position restoration and load failures.
+  No new content layout, output format or language-pair build is required.
+
 ## [1.4.0] — 2026-10-26
 
 ### Added

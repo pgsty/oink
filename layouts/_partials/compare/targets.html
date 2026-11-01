@@ -1,0 +1,22 @@
+{{- /* Only actual HTML translations participate. Navigation's home fallback
+     is deliberately not a translation. URLs retain the deployment subpath. */ -}}
+{{- $targets := slice -}}
+{{- $format := lower (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if and (partialCached "compare/enabled.html" . .Site.Language.Lang .Site.BaseURL) (eq $format "html") .File (in (slice "docs" "book" "blog") .Type) (not .Draft) -}}
+  {{- $origin := urls.Parse .Permalink -}}
+  {{- range .Translations -}}
+    {{- $page := . -}}
+    {{- $targetOrigin := urls.Parse .Permalink -}}
+    {{- if and (not .Draft) (in (slice "docs" "book" "blog") .Type) (eq $origin.Scheme $targetOrigin.Scheme) (eq $origin.Host $targetOrigin.Host) -}}
+      {{- with .OutputFormats.Get "html" -}}
+        {{- $targets = $targets | append (dict
+          "url" .RelPermalink
+          "code" ($page.Language.Locale | default $page.Language.Lang | replaceRE "_" "-")
+          "direction" ($page.Language.Direction | default "ltr")
+          "label" ($page.Language.Label | default $page.Language.Lang)
+        ) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $targets -}}

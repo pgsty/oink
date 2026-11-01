@@ -2,6 +2,7 @@
 // the site's existing Google Analytics integration and never sends free text.
 (function (global) {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   function data(element, key) {
     if (!element) return '';

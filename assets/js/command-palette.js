@@ -4,6 +4,7 @@
  */
 (function (global) {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var html = document.documentElement;
   // Typing this prefix, or pressing "\\" outside a field, restricts the

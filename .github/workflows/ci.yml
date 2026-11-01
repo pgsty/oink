@@ -229,6 +229,9 @@ jobs:
       - name: Check runtime isolation
         run: python3 bin/check-runtime-isolation.py
 
+      - name: Check translation comparison discovery and outputs
+        run: python3 bin/check-compare.py
+
       - name: Check sidebar icon density policies
         run: python3 bin/check-sidebar-icons.py
 

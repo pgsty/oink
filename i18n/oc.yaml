@@ -246,3 +246,13 @@ ui_expo_play: "Legir las animacions"
 ui_expo_pause: "Metre las animacions en pausa"
 ui_expo_prev: "Imatge precedenta"
 ui_expo_next: "Imatge seguenta"
+
+# Translation comparison reader
+ui_compare: "Comparar las traduccions"
+ui_compare_action: "Vista dobla"
+ui_compare_view: 'Vista bilingua'
+ui_compare_sync: 'Sincronizar lo desfilament'
+ui_compare_sync_approximate: 'Los títols correspondon pas completament; la sincronizacion utiliza una progression aproximativa dins lo document.'
+ui_compare_sync_unavailable: 'La sincronizacion es pas disponibla perque los títols son duplicats o dins un òrdre incorrècte.'
+ui_shortcut_compare: 'Dobrir la vista bilingua'
+ui_compare_error: "Impossible de cargar aquesta pagina."

@@ -250,3 +250,13 @@ ui_expo_play: "تشغيل الصور المتحركة"
 ui_expo_pause: "إيقاف الصور المتحركة مؤقتًا"
 ui_expo_prev: "الصورة السابقة"
 ui_expo_next: "الصورة التالية"
+
+# Translation comparison reader
+ui_compare: "مقارنة الترجمات"
+ui_compare_action: "عرض مزدوج"
+ui_compare_view: 'عرض ثنائي اللغة'
+ui_compare_sync: 'مزامنة التمرير'
+ui_compare_sync_approximate: 'العناوين لا تتطابق بالكامل؛ تستخدم المزامنة تقدّمًا تقريبيًا في المستند.'
+ui_compare_sync_unavailable: 'المزامنة غير متاحة لأن العناوين مكررة أو غير مرتبة.'
+ui_shortcut_compare: 'فتح العرض ثنائي اللغة'
+ui_compare_error: "تعذر تحميل هذه الصفحة."

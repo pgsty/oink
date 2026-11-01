@@ -247,3 +247,13 @@ ui_expo_play: "Redă animațiile"
 ui_expo_pause: "Pune animațiile pe pauză"
 ui_expo_prev: "Imaginea anterioară"
 ui_expo_next: "Imaginea următoare"
+
+# Translation comparison reader
+ui_compare: "Compară traducerile"
+ui_compare_action: "Vizualizare dublă"
+ui_compare_view: 'Vizualizare bilingvă'
+ui_compare_sync: 'Sincronizează derularea'
+ui_compare_sync_approximate: 'Titlurile nu corespund complet; sincronizarea folosește progresul aproximativ al documentului.'
+ui_compare_sync_unavailable: 'Sincronizarea nu este disponibilă deoarece titlurile sunt duplicate sau în ordine greșită.'
+ui_shortcut_compare: 'Deschide vizualizarea bilingvă'
+ui_compare_error: "Această pagină nu a putut fi încărcată."

@@ -246,3 +246,13 @@ ui_expo_play: "Animasyonları oynat"
 ui_expo_pause: "Animasyonları duraklat"
 ui_expo_prev: "Önceki görsel"
 ui_expo_next: "Sonraki görsel"
+
+# Translation comparison reader
+ui_compare: "Çevirileri karşılaştır"
+ui_compare_action: "Çift Görünüm"
+ui_compare_view: 'İki dilli görünüm'
+ui_compare_sync: 'Kaydırmayı eşitle'
+ui_compare_sync_approximate: 'Başlıklar tamamen eşleşmiyor; eşitleme belgede yaklaşık ilerleme kullanır.'
+ui_compare_sync_unavailable: 'Başlıklar yinelendiği veya sıra dışı olduğu için eşitleme kullanılamıyor.'
+ui_shortcut_compare: 'İki dilli görünümü aç'
+ui_compare_error: "Bu sayfa yüklenemedi."

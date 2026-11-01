@@ -16,6 +16,7 @@ limitations under the License.
 
 (function () {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var searchPage = '{{ "search/" | absURL }}';
 

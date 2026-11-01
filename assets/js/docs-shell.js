@@ -14,6 +14,7 @@
  */
 (function () {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var html = document.documentElement;
   if (html.hasAttribute('data-td-shell-initialized')) return;

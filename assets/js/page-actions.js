@@ -2,6 +2,7 @@
  *  its menu, the share bar's copy control -- to the shared action registry. */
 (function () {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
   if (!window.OinkActions) return;
 
   function announce(root, text) {

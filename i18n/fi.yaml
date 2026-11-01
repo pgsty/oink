@@ -246,3 +246,13 @@ ui_expo_play: "Toista animaatiot"
 ui_expo_pause: "Keskeytä animaatiot"
 ui_expo_prev: "Edellinen kuva"
 ui_expo_next: "Seuraava kuva"
+
+# Translation comparison reader
+ui_compare: "Vertaa käännöksiä"
+ui_compare_action: "Kaksoisnäkymä"
+ui_compare_view: 'Kaksikielinen näkymä'
+ui_compare_sync: 'Synkronoi vieritys'
+ui_compare_sync_approximate: 'Otsikot eivät täsmää täysin; synkronointi käyttää asiakirjan likimääräistä etenemistä.'
+ui_compare_sync_unavailable: 'Synkronointi ei ole käytettävissä, koska otsikot ovat päällekkäisiä tai väärässä järjestyksessä.'
+ui_shortcut_compare: 'Avaa kaksikielinen näkymä'
+ui_compare_error: "Sivua ei voitu ladata."

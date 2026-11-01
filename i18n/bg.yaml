@@ -246,3 +246,13 @@ ui_expo_play: "Пускане на анимациите"
 ui_expo_pause: "Пауза на анимациите"
 ui_expo_prev: "Предишно изображение"
 ui_expo_next: "Следващо изображение"
+
+# Translation comparison reader
+ui_compare: "Сравняване на преводите"
+ui_compare_action: "Двоен изглед"
+ui_compare_view: 'Двуезичен изглед'
+ui_compare_sync: 'Синхронно превъртане'
+ui_compare_sync_approximate: 'Заглавията не съвпадат напълно; синхронизацията използва приблизителен напредък в документа.'
+ui_compare_sync_unavailable: 'Синхронизацията не е налична, защото заглавията се повтарят или са в различен ред.'
+ui_shortcut_compare: 'Отвори двуезичен изглед'
+ui_compare_error: "Страницата не може да се зареди."

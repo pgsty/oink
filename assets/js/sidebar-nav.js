@@ -1,6 +1,7 @@
 // Hydrate the active path of a visible cached sidebar without fetching fragments.
 (function () {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   function pathOf(url) {
     try {

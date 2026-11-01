@@ -246,3 +246,13 @@ ui_expo_play: "Spela animationer"
 ui_expo_pause: "Pausa animationer"
 ui_expo_prev: "Föregående bild"
 ui_expo_next: "Nästa bild"
+
+# Translation comparison reader
+ui_compare: "Jämför översättningar"
+ui_compare_action: "Delad vy"
+ui_compare_view: 'Tvåspråkig vy'
+ui_compare_sync: 'Synkronisera rullning'
+ui_compare_sync_approximate: 'Rubrikerna matchar inte helt; synkroniseringen använder dokumentets ungefärliga framsteg.'
+ui_compare_sync_unavailable: 'Synkronisering är inte tillgänglig eftersom rubrikerna är duplicerade eller ligger i fel ordning.'
+ui_shortcut_compare: 'Öppna tvåspråkig vy'
+ui_compare_error: "Det gick inte att läsa in sidan."

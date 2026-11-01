@@ -247,3 +247,13 @@ ui_expo_play: "הפעלת הנפשות"
 ui_expo_pause: "השהיית הנפשות"
 ui_expo_prev: "התמונה הקודמת"
 ui_expo_next: "התמונה הבאה"
+
+# Translation comparison reader
+ui_compare: "השוואת תרגומים"
+ui_compare_action: "תצוגה כפולה"
+ui_compare_view: 'תצוגה דו-לשונית'
+ui_compare_sync: 'גלילה מסונכרנת'
+ui_compare_sync_approximate: 'הכותרות אינן תואמות לחלוטין; הסנכרון משתמש בהתקדמות משוערת במסמך.'
+ui_compare_sync_unavailable: 'הסנכרון אינו זמין כי הכותרות כפולות או מסודרות בסדר שגוי.'
+ui_shortcut_compare: 'פתיחת תצוגה דו-לשונית'
+ui_compare_error: "לא ניתן לטעון דף זה."

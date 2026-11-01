@@ -245,3 +245,13 @@ ui_expo_play: "애니메이션 재생"
 ui_expo_pause: "애니메이션 일시 정지"
 ui_expo_prev: "이전 이미지"
 ui_expo_next: "다음 이미지"
+
+# Translation comparison reader
+ui_compare: "번역 비교"
+ui_compare_action: "이중 보기"
+ui_compare_view: '이중 언어 보기'
+ui_compare_sync: '스크롤 동기화'
+ui_compare_sync_approximate: '제목이 완전히 일치하지 않아 문서의 대략적인 진행률로 동기화합니다.'
+ui_compare_sync_unavailable: '제목이 중복되었거나 순서가 달라 동기화를 사용할 수 없습니다.'
+ui_shortcut_compare: '이중 언어 보기 열기'
+ui_compare_error: "이 페이지를 불러올 수 없습니다."

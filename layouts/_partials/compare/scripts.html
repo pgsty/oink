@@ -1,0 +1,17 @@
+{{- $targets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if $targets -}}
+{{- $runtime := slice (resources.Get "js/compare-scroll.js") (resources.Get "js/document-compare.js") | resources.Concat "js/chunks/document-compare.js" -}}
+{{- if hugo.IsProduction }}{{ $runtime = $runtime | minify | fingerprint }}{{ end -}}
+{{- $labels := dict
+  "title" (T "ui_compare_view") "sync" (T "ui_compare_sync")
+  "approximate" (T "ui_compare_sync_approximate")
+  "unavailable" (T "ui_compare_sync_unavailable") "error" (T "ui_compare_error")
+  "close" (T "ui_search_close") "open" (T "ui_search_open")
+  "language" (T "ui_language_select")
+-}}
+<script type="application/json" id="td-compare-config">{{ dict
+  "src" $runtime.RelPermalink "integrity" ($runtime.Data.Integrity | default "")
+  "current" (dict "url" .RelPermalink "label" (.Language.Label | default .Language.Lang))
+  "targets" $targets "labels" $labels | jsonify | safeJS }}</script>
+{{- partialCached "script-resource.html" (dict "target" "js/chunks/compare-entry.js" "members" (slice (resources.Get "js/compare-entry.js"))) "js/chunks/compare-entry.js" -}}
+{{- end -}}

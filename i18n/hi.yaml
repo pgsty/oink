@@ -246,3 +246,13 @@ ui_expo_play: "एनिमेशन चलाएँ"
 ui_expo_pause: "एनिमेशन रोकें"
 ui_expo_prev: "पिछली छवि"
 ui_expo_next: "अगली छवि"
+
+# Translation comparison reader
+ui_compare: "अनुवादों की तुलना करें"
+ui_compare_action: "दोहरा दृश्य"
+ui_compare_view: 'द्विभाषी दृश्य'
+ui_compare_sync: 'समकालिक स्क्रॉलिंग'
+ui_compare_sync_approximate: 'शीर्षक पूरी तरह मेल नहीं खाते; सिंक दस्तावेज़ की अनुमानित प्रगति का उपयोग करता है।'
+ui_compare_sync_unavailable: 'शीर्षक दोहराए गए हैं या गलत क्रम में हैं, इसलिए सिंक उपलब्ध नहीं है।'
+ui_shortcut_compare: 'द्विभाषी दृश्य खोलें'
+ui_compare_error: "यह पृष्ठ लोड नहीं हो सका।"

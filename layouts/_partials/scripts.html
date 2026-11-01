@@ -361,6 +361,7 @@ window.markmap = {
 {{ if partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}
   {{ template "algolia/scripts" .Site.Params.search.algolia -}}
 {{ end -}}
+{{ partial "compare/scripts.html" . -}}
 {{ partial "hooks/body-end.html" . -}}
 
 {{ define "algolia/scripts" -}}
@@ -369,7 +370,7 @@ window.markmap = {
 <script src="{{ $docsearchJS.RelPermalink }}"
   {{- with $docsearchJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 <script type="text/javascript">
-if (document.getElementById('td-docsearch')) {
+if (!window.OinkComparePane && document.getElementById('td-docsearch')) {
   docsearch({
     container: '#td-docsearch',
     appId: {{ .appId | jsonify | safeJS }},

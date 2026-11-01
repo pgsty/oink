@@ -5,6 +5,7 @@
  */
 (function (global) {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var KEY = 'td-footer-collapsed';
 

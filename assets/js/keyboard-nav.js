@@ -1,7 +1,8 @@
 /**
  * Keyboard navigation. WASD and arrow keys drive the sidebar tree,
  * q/e page through the visible sidebar order, j/k jump between the page
- * outline's sections, h toggles a chrome-free reading mode, l/y cycle
+ * outline's sections, h toggles a chrome-free reading mode, b opens the
+ * bilingual view, l/y cycle
  * languages, t flips light/dark, r cycles the internal top-level navbar
  * routes, and f/c open the Command Palette in search or command mode. The
  * homepage shares j/k section jumps and h focus mode with shell pages, and n
@@ -13,6 +14,7 @@
  */
 (function (global) {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var SCROLL_STEP = 300; // px per fallback scroll press
   var SCROLL_DURATION = 100; // ms: a short cue, not a leisurely page scroll
@@ -597,6 +599,14 @@
       return true;
     }
 
+    function openCompare(event) {
+      var button = doc.querySelector('[data-td-compare-open]');
+      if (!button || button.hidden || button.disabled || typeof button.click !== 'function') return false;
+      event.preventDefault();
+      button.click();
+      return true;
+    }
+
     function cycleTheme() {
       var actions = registry();
       if (actions && actions.get && actions.run) {
@@ -773,6 +783,7 @@
         event.preventDefault();
         return setZen(!html.hasAttribute('data-td-kbd-zen'));
       }
+      if (key === 'b') return openCompare(event);
       if (key === 'l' || key === 'y') return cycleLanguage();
       if (key === 't') return cycleTheme();
       if (key === 'r') {

@@ -9,6 +9,7 @@
  */
 (function () {
   'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   function setDisclosure(toggle, panel, owner, open) {
     panel.hidden = !open;

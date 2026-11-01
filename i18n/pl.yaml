@@ -248,3 +248,13 @@ ui_expo_play: "Odtwórz animacje"
 ui_expo_pause: "Wstrzymaj animacje"
 ui_expo_prev: "Poprzedni obraz"
 ui_expo_next: "Następny obraz"
+
+# Translation comparison reader
+ui_compare: "Porównaj tłumaczenia"
+ui_compare_action: "Widok podwójny"
+ui_compare_view: 'Widok dwujęzyczny'
+ui_compare_sync: 'Synchronizuj przewijanie'
+ui_compare_sync_approximate: 'Nagłówki nie pasują w pełni; synchronizacja używa przybliżonego postępu dokumentu.'
+ui_compare_sync_unavailable: 'Synchronizacja jest niedostępna, ponieważ nagłówki się powtarzają lub są w niewłaściwej kolejności.'
+ui_shortcut_compare: 'Otwórz widok dwujęzyczny'
+ui_compare_error: "Nie udało się wczytać tej strony."

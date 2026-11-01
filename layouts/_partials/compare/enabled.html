@@ -1,0 +1,7 @@
+{{- $enabled := false -}}
+{{- if isset .Site.Params.ui "compare" }}{{ $enabled = .Site.Params.ui.compare }}{{ end -}}
+{{- if ne (printf "%T" $enabled) "bool" -}}
+  {{- warnf "params.ui.compare must be a boolean; got %v; using false" $enabled -}}
+  {{- $enabled = false -}}
+{{- end -}}
+{{- return $enabled -}}

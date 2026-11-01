@@ -247,3 +247,13 @@ ui_expo_play: "Lire les animations"
 ui_expo_pause: "Mettre les animations en pause"
 ui_expo_prev: "Image précédente"
 ui_expo_next: "Image suivante"
+
+# Translation comparison reader
+ui_compare: "Comparer les traductions"
+ui_compare_action: "Vue double"
+ui_compare_view: 'Vue bilingue'
+ui_compare_sync: 'Synchroniser le défilement'
+ui_compare_sync_approximate: 'Les titres ne correspondent pas entièrement ; la synchronisation utilise une progression approximative dans le document.'
+ui_compare_sync_unavailable: 'La synchronisation est indisponible, car les titres sont dupliqués ou dans le mauvais ordre.'
+ui_shortcut_compare: 'Ouvrir la vue bilingue'
+ui_compare_error: "Impossible de charger cette page."

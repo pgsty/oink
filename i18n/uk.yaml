@@ -248,3 +248,13 @@ ui_expo_play: "Відтворити анімації"
 ui_expo_pause: "Призупинити анімації"
 ui_expo_prev: "Попереднє зображення"
 ui_expo_next: "Наступне зображення"
+
+# Translation comparison reader
+ui_compare: "Порівняти переклади"
+ui_compare_action: "Подвійний перегляд"
+ui_compare_view: 'Двомовний перегляд'
+ui_compare_sync: 'Синхронне прокручування'
+ui_compare_sync_approximate: 'Заголовки збігаються не повністю; синхронізація використовує приблизний поступ документа.'
+ui_compare_sync_unavailable: 'Синхронізація недоступна, бо заголовки повторюються або мають неправильний порядок.'
+ui_shortcut_compare: 'Відкрити двомовний перегляд'
+ui_compare_error: "Не вдалося завантажити цю сторінку."

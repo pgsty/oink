@@ -248,8 +248,6 @@ ui_expo_prev: "Föregående bild"
 ui_expo_next: "Nästa bild"
 
 # Translation comparison reader
-ui_compare: "Jämför översättningar"
-ui_compare_action: "Delad vy"
 ui_compare_view: 'Tvåspråkig vy'
 ui_compare_sync: 'Synkronisera rullning'
 ui_compare_sync_approximate: 'Rubrikerna matchar inte helt; synkroniseringen använder dokumentets ungefärliga framsteg.'

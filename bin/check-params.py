@@ -454,10 +454,10 @@ DOCUMENTED_DEFAULT = re.compile(r"`params\.([a-z0-9_.]+)`\s*\(default:?\s*`([^`]
 
 
 def check_documented_defaults() -> list[str]:
-    """`params.X` (default `V`) in CLAUDE.md / README.md must match hugo.yaml."""
+    """`params.X` (default `V`) in AGENTS.md / README.md must match hugo.yaml."""
     errors: list[str] = []
     values = hugo_yaml_values()
-    for name in ("CLAUDE.md", "README.md"):
+    for name in ("AGENTS.md", "README.md"):
         text = (ROOT / name).read_text(encoding="utf-8")
         for key, documented in DOCUMENTED_DEFAULT.findall(text):
             declared = values.get(f"params.{key}")

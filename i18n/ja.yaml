@@ -247,8 +247,6 @@ ui_expo_prev: "前の画像"
 ui_expo_next: "次の画像"
 
 # Translation comparison reader
-ui_compare: "翻訳を比較"
-ui_compare_action: "デュアルビュー"
 ui_compare_view: 'バイリンガル表示'
 ui_compare_sync: 'スクロールを同期'
 ui_compare_sync_approximate: '見出しが完全には一致しないため、同期では文書全体の位置を近似します。'

@@ -248,8 +248,6 @@ ui_expo_prev: "আগের ছবি"
 ui_expo_next: "পরের ছবি"
 
 # Translation comparison reader
-ui_compare: "অনুবাদ তুলনা করুন"
-ui_compare_action: "দ্বৈত দৃশ্য"
 ui_compare_view: 'দ্বিভাষিক দৃশ্য'
 ui_compare_sync: 'স্ক্রল সিঙ্ক করুন'
 ui_compare_sync_approximate: 'শিরোনামগুলি পুরোপুরি মেলে না; সিঙ্ক্রোনাইজেশন নথির আনুমানিক অগ্রগতি ব্যবহার করছে।'

@@ -1,5 +1,7 @@
 {{- /* Only actual HTML translations participate. Navigation's home fallback
-     is deliberately not a translation. URLs retain the deployment subpath. */ -}}
+     is deliberately not a translation. URLs retain the deployment subpath.
+     A target language must enable comparison too: only then does its page
+     carry the pane bootstrap the reader waits for. */ -}}
 {{- $targets := slice -}}
 {{- $format := lower (.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if and (partialCached "compare/enabled.html" . .Site.Language.Lang .Site.BaseURL) (eq $format "html") .File (in (slice "docs" "book" "blog") .Type) (not .Draft) -}}
@@ -7,7 +9,7 @@
   {{- range .Translations -}}
     {{- $page := . -}}
     {{- $targetOrigin := urls.Parse .Permalink -}}
-    {{- if and (not .Draft) (in (slice "docs" "book" "blog") .Type) (eq $origin.Scheme $targetOrigin.Scheme) (eq $origin.Host $targetOrigin.Host) -}}
+    {{- if and (not .Draft) (in (slice "docs" "book" "blog") .Type) (eq $origin.Scheme $targetOrigin.Scheme) (eq $origin.Host $targetOrigin.Host) (partialCached "compare/enabled.html" $page $page.Site.Language.Lang $page.Site.BaseURL) -}}
       {{- with .OutputFormats.Get "html" -}}
         {{- $targets = $targets | append (dict
           "url" .RelPermalink

@@ -250,8 +250,6 @@ ui_expo_prev: "Попереднє зображення"
 ui_expo_next: "Наступне зображення"
 
 # Translation comparison reader
-ui_compare: "Порівняти переклади"
-ui_compare_action: "Подвійний перегляд"
 ui_compare_view: 'Двомовний перегляд'
 ui_compare_sync: 'Синхронне прокручування'
 ui_compare_sync_approximate: 'Заголовки збігаються не повністю; синхронізація використовує приблизний поступ документа.'

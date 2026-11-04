@@ -264,8 +264,6 @@ ui_expo_prev: "Previous image"
 ui_expo_next: "Next image"
 
 # Translation comparison reader
-ui_compare: "Compare translations"
-ui_compare_action: "Dual View"
 ui_compare_view: 'Bilingual View'
 ui_compare_sync: 'Sync Scroll'
 ui_compare_sync_approximate: 'Headings do not fully match; sync uses approximate document progress.'

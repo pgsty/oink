@@ -248,8 +248,6 @@ ui_expo_prev: "Vorige afbeelding"
 ui_expo_next: "Volgende afbeelding"
 
 # Translation comparison reader
-ui_compare: "Vertalingen vergelijken"
-ui_compare_action: "Dubbele weergave"
 ui_compare_view: 'Tweetalige weergave'
 ui_compare_sync: 'Scrollen synchroniseren'
 ui_compare_sync_approximate: 'De koppen komen niet volledig overeen; de synchronisatie gebruikt de geschatte voortgang in het document.'

@@ -249,8 +249,6 @@ ui_expo_prev: "Претходна слика"
 ui_expo_next: "Следећа слика"
 
 # Translation comparison reader
-ui_compare: "Поређење превода"
-ui_compare_action: "Двоструки приказ"
 ui_compare_view: 'Двојезични приказ'
 ui_compare_sync: 'Усклади померање'
 ui_compare_sync_approximate: 'Наслови се не поклапају у потпуности; синхронизација користи приближни напредак кроз документ.'

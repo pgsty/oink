@@ -82,10 +82,12 @@
     }
   }
 
-  function open(config, trigger) {
+  // options.resume reuses a reader history entry left by a reload or a
+  // back/forward restore instead of pushing a second one.
+  function open(config, trigger, options = {}) {
     if (active) return;
     if (leavingHistory) {
-      queuedOpen = { config, trigger };
+      queuedOpen = { config, trigger, options };
       return;
     }
     const currentURL = pageURL(config.current.url);
@@ -364,9 +366,15 @@
       const tab = element('button', 'td-compare__tab', label);
       tab.type = 'button'; tab.setAttribute('aria-pressed', String(index === 0));
       mobile.append(tab);
-      state.panes.push({ panel, body, tab, index, ready: false, expected: null, following: false });
+      state.panes.push({ panel, header, body, tab, index, ready: false, expected: null, following: false });
     });
     const narrow = matchMedia('(max-width: 899px)');
+    // Narrow screens hide the pane headings, so the target-language menu moves
+    // into the pane switcher row; wide screens keep it above its own pane.
+    function placeLanguageMenu() {
+      const host = narrow.matches ? mobile : state.panes[1].header;
+      if (languageMenu.parentNode !== host) host.append(languageMenu);
+    }
     let visibleSide = 0;
     function showSide(index) {
       visibleSide = index;
@@ -379,7 +387,7 @@
       });
     }
     state.panes.forEach(pane => pane.tab.addEventListener('click', () => showSide(pane.index), { signal }));
-    narrow.addEventListener('change', () => { showSide(visibleSide); scheduleMeasure(); }, { signal });
+    narrow.addEventListener('change', () => { placeLanguageMenu(); showSide(visibleSide); scheduleMeasure(); }, { signal });
     window.addEventListener('resize', scheduleMeasure, { signal });
     function chooseLanguage(index) {
       const descriptor = targets[index];
@@ -465,7 +473,10 @@
     document.documentElement.classList.add('td-compare-open');
     dialog.showModal();
     title.focus({ preventScroll: true });
-    history.pushState({ ...history.state, oinkCompareReader: state.token }, '', location.href);
+    const entry = { ...history.state, oinkCompareReader: state.token };
+    if (options.resume && history.state?.oinkCompareReader) history.replaceState(entry, '', location.href);
+    else history.pushState(entry, '', location.href);
+    placeLanguageMenu();
     showSide(0);
     load(state.panes[0], { ...config.current, parsed: currentURL }, sourceMark);
     load(state.panes[1], targets[0], sourceMark);
@@ -476,10 +487,10 @@
     if (active && history.state?.oinkCompareReader !== active.token) close(true, true);
     const next = queuedOpen;
     queuedOpen = null;
-    if (next && !active) queueMicrotask(() => open(next.config, next.trigger));
+    if (next && !active) queueMicrotask(() => open(next.config, next.trigger, next.options));
   });
   window.addEventListener('beforeprint', () => close(false));
   window.addEventListener('pagehide', () => { queuedOpen = null; close(false, true); });
   window.OinkSurfaceCoordinator?.register('document-compare', close);
-  window.OinkCompare = { open, close };
+  window.OinkCompare = { open, close, isOpen: () => Boolean(active) };
 })();

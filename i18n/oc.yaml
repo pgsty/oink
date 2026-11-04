@@ -248,8 +248,6 @@ ui_expo_prev: "Imatge precedenta"
 ui_expo_next: "Imatge seguenta"
 
 # Translation comparison reader
-ui_compare: "Comparar las traduccions"
-ui_compare_action: "Vista dobla"
 ui_compare_view: 'Vista bilingua'
 ui_compare_sync: 'Sincronizar lo desfilament'
 ui_compare_sync_approximate: 'Los títols correspondon pas completament; la sincronizacion utiliza una progression aproximativa dins lo document.'

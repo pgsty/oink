@@ -247,8 +247,6 @@ ui_expo_prev: "이전 이미지"
 ui_expo_next: "다음 이미지"
 
 # Translation comparison reader
-ui_compare: "번역 비교"
-ui_compare_action: "이중 보기"
 ui_compare_view: '이중 언어 보기'
 ui_compare_sync: '스크롤 동기화'
 ui_compare_sync_approximate: '제목이 완전히 일치하지 않아 문서의 대략적인 진행률로 동기화합니다.'

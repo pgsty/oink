@@ -269,8 +269,6 @@ ui_expo_prev: "上一張"
 ui_expo_next: "下一張"
 
 # Translation comparison reader
-ui_compare: "對照譯文"
-ui_compare_action: "語言對照"
 ui_compare_view: '雙語檢視'
 ui_compare_sync: '同步捲動'
 ui_compare_sync_approximate: '標題錨點未完全對應，將按全文閱讀進度估算同步位置。'

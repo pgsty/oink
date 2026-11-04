@@ -5,12 +5,36 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
-- Add opt-in translation comparison with `params.ui.compare`: discover actual
-  same-origin translations and load two existing HTML pages in a full-window
-  reader. Shared heading IDs drive optional synchronized scrolling; each pane
-  retains its own content components. Support language selection, narrow-screen
-  pane switching, keyboard exit, reading-position restoration and load failures.
-  No new content layout, output format or language-pair build is required.
+### Added
+
+- Add an opt-in Bilingual View with `params.ui.compare`: discover actual
+  same-origin HTML translations of Docs, Book and blog pages and load two
+  existing pages in a full-window reader. Shared heading IDs drive optional
+  synchronized scrolling; each pane retains its own content components. Support
+  language selection, keyboard exit, reading-position restoration and load
+  failures. No new content layout, output format or language-pair build is
+  required. A language can set `params.ui.compare: false` to opt out; it is then
+  neither a host nor a target.
+- Open the reader from an icon entry beside the page actions, the Command Palette
+  action `compare_translations`, or `B` when keyboard navigation is enabled.
+  One label is used throughout: "Bilingual View", with "Open bilingual view" on
+  the entry, in all 32 interface catalogs.
+- Keep the reading area dominant below 900 CSS pixels: one toolbar row and one
+  pane switcher that also holds the target-language menu, leaving at least
+  160 CSS pixels of text at 400% zoom. Right-to-left hosts mirror the pane order;
+  forced-colors mode marks the selected pane by border.
+- Reopen the reader after a reload or back/forward restore onto its history
+  entry, so Back still closes it.
+
+### Changed
+
+- With `params.ui.compare` enabled, production builds render Google Analytics
+  through a theme template that initializes only the host page, so comparison
+  panes are not counted. Such sites no longer use an override of Hugo's
+  `google_analytics.html` partial. Scripts in `hooks/head-end.html` run in panes
+  and can test `window.OinkComparePane`. Sites without the setting are unchanged.
+- `bin/check-compare.py` classifies every browser runtime by its behavior in
+  comparison panes; a new runtime must declare it.
 
 ## [1.4.0] — 2026-10-26
 

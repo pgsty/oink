@@ -248,8 +248,6 @@ ui_expo_prev: "Əvvəlki şəkil"
 ui_expo_next: "Növbəti şəkil"
 
 # Translation comparison reader
-ui_compare: "Tərcümələri müqayisə et"
-ui_compare_action: "İkili görünüş"
 ui_compare_view: 'İkidilli görünüş'
 ui_compare_sync: 'Sürüşdürməni sinxronlaşdır'
 ui_compare_sync_approximate: 'Başlıqlar tam uyğun gəlmir; sinxronlaşdırma sənəd üzrə təxmini irəliləyişdən istifadə edir.'

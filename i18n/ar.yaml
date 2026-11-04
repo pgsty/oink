@@ -252,8 +252,6 @@ ui_expo_prev: "الصورة السابقة"
 ui_expo_next: "الصورة التالية"
 
 # Translation comparison reader
-ui_compare: "مقارنة الترجمات"
-ui_compare_action: "عرض مزدوج"
 ui_compare_view: 'عرض ثنائي اللغة'
 ui_compare_sync: 'مزامنة التمرير'
 ui_compare_sync_approximate: 'العناوين لا تتطابق بالكامل؛ تستخدم المزامنة تقدّمًا تقريبيًا في المستند.'

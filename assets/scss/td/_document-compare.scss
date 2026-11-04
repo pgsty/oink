@@ -68,9 +68,11 @@ html.td-compare-open { overflow: hidden; }
     display: inline-flex; align-items: center; justify-content: center;
     width: 2rem; height: 2rem; padding: 0; border: 0; font-size: 1.05rem;
   }
-  &__panes { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); direction: ltr; }
+  // Pane order follows the host's reading direction: the current page sits on
+  // the reading-start side in both LTR and RTL documents.
+  &__panes { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   &__pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-  &__pane + &__pane { border-left: 1px solid var(--bs-border-color); }
+  &__pane + &__pane { border-inline-start: 1px solid var(--bs-border-color); }
   &__pane-heading {
     display: flex; align-items: center; justify-content: center; min-height: 3rem;
     padding: .35rem 1rem; border-bottom: 1px solid var(--bs-border-color);
@@ -132,17 +134,42 @@ html.td-compare-open { overflow: hidden; }
   button:focus-visible, input:focus-visible {
     outline: 2px solid var(--bs-link-color); outline-offset: 3px;
   }
+  // Narrow screens and high zoom keep the reading area dominant: one toolbar
+  // row (title truncates; Sync and Close stay at the end) and one switcher
+  // row that also hosts the target-language menu. The language tabs already
+  // name each pane, so the per-pane headings are not repeated.
   @media (max-width: 899px) {
-    &__toolbar { flex-wrap: wrap; gap: .65rem; padding: .65rem .8rem; }
-    &__title { flex-basis: 100%; }
-    &__sync { margin-inline-end: auto; }
-    &__mobile { display: flex; gap: .5rem; padding: .5rem .8rem; }
+    &__toolbar { gap: .75rem; padding: .45rem .8rem; }
+    &__title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    &__sync { white-space: nowrap; }
+    &__mobile {
+      display: flex; align-items: center; gap: .5rem; padding: .4rem .8rem;
+      border-bottom: 1px solid var(--bs-border-color);
+      > .td-compare__language-menu { margin-inline-start: auto; }
+      .td-compare__language-trigger > span {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip-path: inset(50%); white-space: nowrap;
+      }
+    }
+    &__tab { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     &__tab[aria-pressed='true'] { background: var(--td-shell-primary-dim); border-color: var(--bs-link-color); }
+    &__pane-heading { display: none; }
     &__panes { position: relative; display: block; }
     &__pane { position: absolute; inset: 0; }
     &__pane + &__pane { border: 0; }
     // Keep a measured viewport for both documents while showing only one.
     &__pane--hidden { visibility: hidden; pointer-events: none; }
+  }
+  // Short viewports (landscape phones, 200–400% zoom) tighten the chrome.
+  @media (max-height: 520px) {
+    &__toolbar { padding-block: .25rem; }
+    &__mobile { padding-block: .25rem; }
+    &__tab { padding-block: .2rem; }
+    &__pane-heading { min-height: 2.25rem; padding-block: .1rem; }
+  }
+  // Forced colors drop backgrounds; keep the selected pane visible by border.
+  @media (forced-colors: active) {
+    &__tab[aria-pressed='true'] { border: 2px solid Highlight; }
   }
 }
 

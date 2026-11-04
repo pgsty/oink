@@ -23,7 +23,7 @@ ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
 KEYMAP = [
     "'w'", "'s'", "'a'", "'d'",
     "'j'", "'k'", "'n'", "'q'", "'e'",
-    "'h'", "'l'", "'y'", "'t'", "'r'", "'f'",
+    "'h'", "'l'", "'y'", "'t'", "'r'", "'f'", "'b'",
     "'g'", "'c'", "' '", "'Escape'",
     "'ArrowUp'", "'ArrowDown'",
 ]

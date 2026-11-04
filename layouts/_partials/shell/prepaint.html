@@ -1,10 +1,13 @@
 {{- $shell := partial "shell/chrome-enabled.html" . -}}
 {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) false -}}
+{{- $compareEnabled := partialCached "compare/enabled.html" . .Site.Language.Lang .Site.BaseURL -}}
 {{- $readingSurface := or $shell (and .IsHome $keyboardNav) -}}
 {{- if $readingSurface -}}
 <script>
   (function () {
+    {{- if $compareEnabled }}
     if (window.OinkComparePane) return;
+    {{- end }}
     var html = document.documentElement;
     {{ if $shell -}}
     html.setAttribute('data-td-shell-no-anim', '');

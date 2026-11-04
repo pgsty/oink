@@ -1,5 +1,7 @@
 # OINK theme guide
 
+`CLAUDE.md` is a symbolic link to this file. Edit `AGENTS.md` only.
+
 Start with the canonical bilingual Design section in the sibling documentation
 site at `../oink.pgsty.com/content/docs/design/`. It owns maintainer contracts,
 accepted decisions, dated research, and active proposals.
@@ -7,14 +9,17 @@ accepted decisions, dated research, and active proposals.
 ## Current baseline
 
 The current release is `v1.4.0`, dated 2026-10-26 in `CHANGELOG.md`. The sibling
-site's `v1.4.0` Design contracts describe this release. Refresh Git state,
-public tags, and consumer pins before making claims about later releases or
-downstream adoption.
+site's `v1.4.0` Design contracts describe this release. Work merged after the
+latest tag accumulates under `## Unreleased` in `CHANGELOG.md` until the next
+release. Refresh Git state, public tags, and consumer pins before making claims
+about later releases or downstream adoption.
 
 ## Repository boundary
 
 - This repository is the OINK Hugo Module: theme implementation, defaults,
   vendored assets, migration tools, focused checkers, and synthetic fixtures.
+  The root is the module; there is no site, npm workspace, or generated build
+  input. Hugo Extended is the build tool.
 - Public bilingual documentation, tutorials, examples, case studies,
   integration/browser regression tests, visual review, and deployment belong
   to `../oink.pgsty.com`.
@@ -34,11 +39,12 @@ downstream adoption.
 
 - When public behavior changes, update the implementation, its owning checker,
   and both language versions of the affected contract under
-  `../oink.pgsty.com/content/docs/design/`.
+  `../oink.pgsty.com/content/docs/design/` in the same delivery.
 - Put every new PRD, RFC, or design proposal in
   `../oink.pgsty.com/content/docs/design/proposals/<slug>.md` with a matching
   `<slug>.zh.md`. Follow that section's published lifecycle and template;
-  publication is not proof of implementation.
+  publication is not proof of implementation, and a proposal stays
+  non-normative until it is implemented and accepted.
 - Put accepted rationale under `content/docs/design/decisions/` in the site
   repository and dated, non-normative evidence under `research/`. Preserve
   retired drafts in Git history and `CHANGELOG.md`, not a local planning tree.
@@ -51,22 +57,67 @@ make -C ../oink.pgsty.com browser
 make -C ../oink.pgsty.com dev
 ```
 
-- Runtime changes also use `node --test 'tests/js/**/*.test.js'`. Schema changes
-  use `python3 bin/generate-config-schema.py --check`. The theme Makefile's
-  `c` and `clean` targets delete generated files; they are not check targets.
 - Owning output checkers normally build fresh fixtures. Use `--public` only
   when deliberately reusing output whose theme/configuration is identified.
   `bin/test_site.py` owns the 120-second limit for its Hugo subprocesses.
 - Use the documentation site for rendered EN/ZH, desktop/mobile, light/dark,
   accessibility, and interaction review. Never commit a filesystem module
   replacement.
-- The site's `check`, `browser`, and `dev` targets use this local theme;
-  `build` and `serve` use its published pin by default. Published-pin checks
-  must disable inherited replacements and both workspaces. Local regression
-  success does not establish that the public module or hosted site contains
-  these changes.
+- The site's `check`, `browser`, and `dev` targets use this local theme through
+  an inline `HUGO_MODULE_REPLACEMENTS`; `build` and `serve` use its published
+  pin by default. Published-pin checks must disable inherited replacements and
+  both workspaces. Local regression success does not establish that the public
+  module or hosted site contains these changes.
 - A local replacement build, a committed change, a public tag, a consumer pin,
   and a deployment are separate completion states.
+
+## Focused theme checks
+
+Run the checker that owns a change. `.github/workflows/ci.yml` is the complete
+ordered theme-unit suite and pins the toolchain.
+
+```sh
+python3 bin/check-shell.py                    # shell, blog, page-end contracts
+python3 bin/check-components.py               # component and render-hook contracts
+python3 bin/check-output.py                   # fresh fixture + output structure/security
+python3 bin/check-namespace.py                # fresh fixture + naming namespace
+python3 bin/check-goldens.py                  # HTML/print/Markdown/RSS/LLMS goldens
+python3 bin/check-params.py                   # config shapes and warning fallbacks
+python3 bin/check-i18n.py                     # locale schema parity
+python3 bin/generate-config-schema.py --check # generated schemas match their sources
+node --test 'tests/js/**/*.test.js'           # browser-runtime units
+hugo --source tests/site --printPathWarnings  # regression fixture with diagnostics
+```
+
+- Output checkers build into a temporary directory when invoked as shown and
+  accept `--hugo`. Pass `--public` only to reuse a fixture that was built
+  separately and is known to be fresh; that mode does not rebuild it.
+- `check-goldens.py --update` records an intentional behavior change; it is
+  never cleanup.
+- The theme Makefile's `c` and `clean` targets delete generated files; they are
+  not check targets.
+
+Migration is dry-run unless `--write` is explicit. The toolkit rewrites only
+content Markdown and supported YAML front matter; it does not edit site
+configuration, data, layouts, assets, or modules.
+
+```sh
+python3 bin/migrations/oink06.py report --sites <dir>...
+python3 bin/migrations/oink06.py migrate --site <dir> [--write]
+python3 bin/migrations/oink06.py check --site <dir>
+python3 -m unittest discover -s tests/migrations -t .
+```
+
+## Releases
+
+- `main` is the sole long-lived branch and carries the next release. Immutable
+  `vX.Y.Z` tags are the stable-release authority and count as published only
+  after push and Go-proxy verification. Never move a tag; a published mistake
+  receives a new patch release. Do not keep a `release` branch that merely
+  duplicates a tag.
+- Report release state precisely: source complete → locally validated →
+  committed → tagged → pushed/proxy verified → consumer pinned → deployed →
+  production-identical. A green local build proves only local validation.
 
 ## After a theme release
 
@@ -94,10 +145,13 @@ make -C ../oink.pgsty.com dev
 
 ## Theme contracts
 
+### Toolchain and diagnostics
+
 - Use OINK v1.4.0 and Hugo Extended 0.168.0 for maintained consumer sites,
-  development, CI, and release checks. Keep this baseline pinned. Update
-  requirements, checkers, and current bilingual contracts together.
-  Keep the upstream LibSass deprecation warning visible and accepted.
+  development, CI, and release checks. Keep this baseline pinned; `theme.toml`
+  declares it as `min_version`. Update requirements, checkers, and current
+  bilingual contracts together. Keep the upstream LibSass deprecation warning
+  visible and accepted.
 - SCSS uses Hugo Extended's built-in LibSass, including main and ReDoc styles.
   Ordinary consumers must not install Dart Sass or another Sass executable.
   Preserve project-variable/style hooks. Future Hugo upgrades must preserve
@@ -111,6 +165,49 @@ make -C ../oink.pgsty.com dev
 - Keep generated `public/`, `resources/`, locks, and caches out of Git.
 - Preserve pre-existing changes in this shared worktree and edit only the
   owning implementation, checker, and public Design contract for a change.
+
+### Implementation contracts
+
+- Reading shells are `docs`, `book`, `blog`, and `swagger`; `type: expo` reuses
+  the shell. `params.ui.shell_types` (default `[docs, book, blog, swagger, expo]`)
+  lists the content types that receive it. Landing is a layout. Immersive
+  reading is the ordinary blog shell with hero/TOC-flow/clouds/sidebar keys,
+  never an `article` type or second shell. The blog shell defaults its
+  breadcrumb off; `breadcrumb` stays an ordinary key.
+- Render content once through `content/render.html` before `scripts.html`.
+  Shortcodes and hooks set Page Store capability flags; script selection reads
+  them afterwards. Give each new runtime a stable `js/chunks/` target, and put
+  language/config identity in that target whenever its generated bytes vary.
+- HTML is semantic-first and progressively enhanced. Print is static and
+  expanded; Markdown/LLMS contains no component markup; RSS is safe static
+  output or explicit omission. Consumers opt into expensive custom outputs.
+- Invalid author/config input warns, uses a documented safe fallback or emits
+  nothing, and keeps ordinary `hugo server` usable. Never call `errorf` or add
+  speculative validation for unreachable internal states.
+- Theme policy lives under `params.ui.*`; page overrides drop `ui.`. Boolean
+  switches are bare booleans unless a multi-setting feature also accepts a
+  boolean shorthand. Public renames get a targeted owning-resolver warning, a
+  migration note, and a negative test—not a global compatibility registry.
+- Theme-owned network features are off until explicitly and completely
+  configured. A normal build downloads nothing. Vendored artifact, license,
+  version, and checksum change together in `VENDOR.json`. Do not prune vendored
+  fonts or Font Awesome by apparent template usage; the complete supported
+  distribution is public authoring surface.
+- Shortcode and component labels are plain text; Landing narrative fields may
+  render Markdown. Icons are one Font Awesome class pair. Shared attribute and
+  URL policies drop unsafe output rather than repairing it in the browser.
+- CSS uses `td-` classes, `data-td-*`, `--td-*`, logical properties, and covers
+  RTL, print, forced colors, reduced motion, narrow screens, and long tokens.
+  Author markers such as `.steps` and `.cards` remain unprefixed.
+- Keep all 32 locale files schema-identical and natively translated. Add every
+  user-visible string to every locale, preserve its runtime placeholders, and
+  run `bin/check-i18n.py`; the checker never manufactures English fallbacks.
+- Override the narrowest partial. Do not merge base templates when that changes
+  Hugo lookup precedence or copy a full shell for one feature.
+- The public surface is 29 shortcodes, 22 Landing sections, shared output and
+  security rules, and the blog hero/index/authors/series/share contracts. Their
+  bilingual maintainer references are published under
+  `../oink.pgsty.com/content/docs/design/`.
 
 ## Git 内容与大文件规则
 

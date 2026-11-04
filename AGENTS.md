@@ -8,8 +8,8 @@ accepted decisions, dated research, and active proposals.
 
 ## Current baseline
 
-The current release is `v1.4.0`, dated 2026-10-26 in `CHANGELOG.md`. The sibling
-site's `v1.4.0` Design contracts describe this release. Work merged after the
+The current release is `v1.5.0`, dated 2026-11-04 in `CHANGELOG.md`. The sibling
+site's `v1.5.0` Design contracts describe this release. Work merged after the
 latest tag accumulates under `## Unreleased` in `CHANGELOG.md` until the next
 release. Refresh Git state, public tags, and consumer pins before making claims
 about later releases or downstream adoption.
@@ -147,7 +147,7 @@ python3 -m unittest discover -s tests/migrations -t .
 
 ### Toolchain and diagnostics
 
-- Use OINK v1.4.0 and Hugo Extended 0.168.0 for maintained consumer sites,
+- Use OINK v1.5.0 and Hugo Extended 0.168.0 for maintained consumer sites,
   development, CI, and release checks. Keep this baseline pinned; `theme.toml`
   declares it as `min_version`. Update requirements, checkers, and current
   bilingual contracts together. Keep the upstream LibSass deprecation warning

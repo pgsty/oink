@@ -82,12 +82,16 @@
     }
   }
 
-  // options.resume reuses a reader history entry left by a reload or a
-  // back/forward restore instead of pushing a second one.
+  // A restore belongs to one existing history token, including after a lazy
+  // load or a queued open. It must never create a new entry after Back.
   function open(config, trigger, options = {}) {
+    const resumeToken = options.resumeToken;
+    if (resumeToken && history.state?.oinkCompareReader !== resumeToken) return;
     if (active) return;
     if (leavingHistory) {
-      queuedOpen = { config, trigger, options };
+      // An explicit close is already leaving this entry. Automatic restore
+      // must not replace a user's queued reopen while that traversal finishes.
+      if (!resumeToken) queuedOpen = { config, trigger, options };
       return;
     }
     const currentURL = pageURL(config.current.url);
@@ -153,7 +157,7 @@
     const signal = controller.signal;
     const state = {
       controller, dialog, trigger, x: scrollX, y: scrollY,
-      token: `${Date.now()}-${Math.random()}`, panes: [], owner: 0,
+      token: resumeToken || `${Date.now()}-${Math.random()}`, panes: [], owner: 0,
       map: null, pendingScroll: 0, pendingMeasure: 0, syncWanted: true, targetIndex: 0,
     };
     active = state;
@@ -371,9 +375,25 @@
     const narrow = matchMedia('(max-width: 899px)');
     // Narrow screens hide the pane headings, so the target-language menu moves
     // into the pane switcher row; wide screens keep it above its own pane.
-    function placeLanguageMenu() {
+    function updateLayout() {
       const host = narrow.matches ? mobile : state.panes[1].header;
-      if (languageMenu.parentNode !== host) host.append(languageMenu);
+      const focused = languageMenu.contains(document.activeElement) ? document.activeElement : null;
+      const wasOpen = languageMenu.classList.contains('td-is-open');
+      const wasActivated = languageOpenedByActivation;
+      // Capture focus before hiding a pane, and make the destination usable
+      // before restoring it. Moving a focused subtree otherwise blurs to body.
+      showSide(visibleSide);
+      if (languageMenu.parentNode === host) return;
+      host.append(languageMenu);
+      if (focused) {
+        suppressLanguageOpen = true;
+        focused.focus({ preventScroll: true });
+        suppressLanguageOpen = false;
+      }
+      window.clearTimeout(languageCloseTimer);
+      languageMenu.classList.toggle('td-is-open', wasOpen);
+      languageTrigger.setAttribute('aria-expanded', String(wasOpen));
+      languageOpenedByActivation = wasActivated;
     }
     let visibleSide = 0;
     function showSide(index) {
@@ -387,7 +407,7 @@
       });
     }
     state.panes.forEach(pane => pane.tab.addEventListener('click', () => showSide(pane.index), { signal }));
-    narrow.addEventListener('change', () => { placeLanguageMenu(); showSide(visibleSide); scheduleMeasure(); }, { signal });
+    narrow.addEventListener('change', () => { updateLayout(); scheduleMeasure(); }, { signal });
     window.addEventListener('resize', scheduleMeasure, { signal });
     function chooseLanguage(index) {
       const descriptor = targets[index];
@@ -473,11 +493,8 @@
     document.documentElement.classList.add('td-compare-open');
     dialog.showModal();
     title.focus({ preventScroll: true });
-    const entry = { ...history.state, oinkCompareReader: state.token };
-    if (options.resume && history.state?.oinkCompareReader) history.replaceState(entry, '', location.href);
-    else history.pushState(entry, '', location.href);
-    placeLanguageMenu();
-    showSide(0);
+    if (!resumeToken) history.pushState({ ...history.state, oinkCompareReader: state.token }, '', location.href);
+    updateLayout();
     load(state.panes[0], { ...config.current, parsed: currentURL }, sourceMark);
     load(state.panes[1], targets[0], sourceMark);
   }

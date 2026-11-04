@@ -54,7 +54,7 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 - **Four visual styles.** Paper is the warm, reading-focused default; Slate
   preserves the original look. Ink and Terminal are explicit opt-ins. Style
   and light/dark mode can be selected independently, with local fonts and saved
-  reader preferences. See [what's new in 1.3](https://oink.pgsty.com/blog/release/1.3.0/).
+  reader preferences. See the [appearance guide](https://oink.pgsty.com/docs/customize/brand/#visual-presets).
 - **Multilingual by design.** Language-aware routing, translated-page peers,
   RTL support, alternate-site links, and localized search work across large
   documentation trees.
@@ -62,10 +62,12 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.4.0 keeps the Hugo-only build boundary and adds local PlantUML rendering,
-unified diagram reading, richer local search, an opt-in table reader, and a
-fourth blog gallery layout. Hugo Extended 0.168.0 is the minimum and default
-validation version. See the [changelog](CHANGELOG.md) for the complete list.
+OINK 1.5.0 keeps the Hugo-only build boundary and adds an opt-in Bilingual View
+for reading a page beside one of its translations. It also preserves the local
+PlantUML and diagram reading, richer local search, table reader, blog gallery,
+and component refinements introduced in 1.4.0. Hugo Extended 0.168.0 is the
+minimum and default validation version. See the [release notes](https://oink.pgsty.com/blog/release/1.5.0/)
+and [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site
 
@@ -158,7 +160,14 @@ Interactive features remain opt-in where they express site policy. The theme
 provides the implementation; the consuming site decides which outputs,
 analytics, comments, feedback, assistant links, and image behavior to enable.
 
-In OINK 1.4.0, `params.plantuml: true` renders UML in the browser with two
+In OINK 1.5.0, `params.ui.compare: true` adds a Bilingual View to Docs, Book,
+and blog pages that have a same-origin HTML translation. The reader loads both
+existing pages on demand, supports shared-heading scroll sync, RTL pane order,
+responsive mobile switching, and keyboard navigation. It is off by default;
+print, Markdown, RSS, and sites that leave it disabled are unchanged. See the
+[Bilingual View guide](https://oink.pgsty.com/docs/customize/i18n/#bilingual-view).
+
+Since OINK 1.4.0, `params.plantuml: true` renders UML in the browser with two
 bundled scripts, loaded only on pages with PlantUML fences. No Java, Graphviz
 executable, npm installation, CDN or rendering service is needed. Explicit
 server endpoints remain supported. See the [PlantUML guide](https://oink.pgsty.com/docs/components/plantuml/)

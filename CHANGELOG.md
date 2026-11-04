@@ -5,6 +5,8 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+## [1.5.0] — 2026-11-04
+
 ### Added
 
 - Add an opt-in Bilingual View with `params.ui.compare`: discover actual
@@ -35,6 +37,14 @@ All notable changes to OINK are documented here. The project follows
   and can test `window.OinkComparePane`. Sites without the setting are unchanged.
 - `bin/check-compare.py` classifies every browser runtime by its behavior in
   comparison panes; a new runtime must declare it.
+
+### Fixed
+
+- Bind reader restoration to its existing history entry. Back cancels a pending
+  reload restore, Forward reopens the reader without adding a history stop, and
+  an automatic restore cannot replace a queued user reopen.
+- Preserve language-menu focus, open state and the selected pane when crossing
+  the 900px layout boundary, including right-to-left hosts.
 
 ## [1.4.0] — 2026-10-26
 
@@ -2427,6 +2437,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[1.5.0]: https://github.com/pgsty/oink/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/pgsty/oink/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/pgsty/oink/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/pgsty/oink/compare/v1.3.0...v1.3.1

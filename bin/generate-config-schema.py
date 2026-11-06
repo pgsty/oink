@@ -39,8 +39,8 @@ KEY_LINE = re.compile(r"^(\s*)([A-Za-z_][A-Za-z0-9_]*):(?:\s+(.*?))?\s*$")
 
 # Keys the read-point scan reports that are NOT part of the page authoring
 # surface: three removed keys read only by their migration-warning resolvers,
-# and one navbar menu-entry parameter the page-context regex cannot tell
-# apart from front matter. Excluding them keeps editor completion from
+# one navbar menu-entry parameter the page-context regex cannot tell apart
+# from front matter, and Hugo's own `build` options, which the theme only reads. Excluding them keeps editor completion from
 # advertising keys that only ever warn; ``build`` asserts each entry is still
 # observed so this list cannot outlive the resolvers that justify it.
 FRONT_SCHEMA_EXCLUDES = {
@@ -48,6 +48,7 @@ FRONT_SCHEMA_EXCLUDES = {
     "upstream_attribution": "renamed to the upstream_link companions; read only by the annotation-items.html migration warning",
     "downstream_modified": "renamed to upstream_modified; read only by the annotation-items.html migration warning",
     "columns": "navbar menu-entry parameter (navbar-item.html), not page front matter",
+    "build": "Hugo's own build options; compare/targets.html only reads render to skip link-only translations",
 }
 
 

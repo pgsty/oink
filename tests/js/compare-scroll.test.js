@@ -29,8 +29,11 @@ test('unrelated, duplicate and reordered headings do not silently become a perce
   assert.equal(reordered.reason, 'out-of-order-headings');
   const one = create(rows([100]), rows([200]), 1000, 1000);
   assert.equal(one.syncable, true);
-  assert.equal(one.approximate, true);
+  assert.equal(one.approximate, false);
   assert.equal(project(one, 500), 555.5555555555555);
+  const partial = create(rows([100, 500]), rows([100], ['intro']), 1000, 1000);
+  assert.equal(partial.approximate, true);
+  assert.equal(partial.reason, 'partial-headings');
   assert.equal(create(rows([100, 500]), rows([100, 500]), 0, 1000), null);
 });
 test('heading-less documents use bounded whole-document progress interpolation', () => {
@@ -50,4 +53,18 @@ test('unreachable bottom anchors are clipped without backwards intervals, NaN or
     previous = projected;
   }
   assert.deepEqual(map.knots[map.knots.length - 1], [1000, 1100]);
+});
+test('matched headings beyond the reading line do not report an approximate match', () => {
+  // A tall viewport: three of four identical headings cannot reach the top.
+  const ids = ['outcome', 'prerequisite', 'preview', 'baseline'];
+  const map = create(rows([273, 837, 1193, 1576], ids), rows([217, 731, 1060, 1416], ids), 887, 673);
+  assert.equal(map.syncable, true);
+  assert.equal(map.approximate, false);
+  assert.equal(map.reason, '');
+  // When every common heading is clipped, the map is overall progress and says so.
+  const none = create(rows([900], ['outcome']), rows([900], ['outcome']), 500, 500);
+  assert.equal(none.approximate, true);
+  assert.equal(none.reason, 'no-usable-headings');
+  assert.deepEqual(none.knots, [[0, 0], [500, 500]]);
+  assert.equal(project(none, 250), 250);
 });

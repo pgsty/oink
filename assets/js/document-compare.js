@@ -7,6 +7,21 @@
   let leavingHistory = false;
   let queuedOpen = null;
 
+  // The last explicit target and Sync choice, per viewer and per site. Storage
+  // can be unavailable (private windows, blocked site data): use defaults then.
+  const preferenceKey = 'td-compare-reader';
+  function readPreference() {
+    try {
+      const value = JSON.parse(localStorage.getItem(preferenceKey) || 'null');
+      return value && typeof value === 'object' ? value : {};
+    } catch (_) { return {}; }
+  }
+  function writePreference(update) {
+    try { localStorage.setItem(preferenceKey, JSON.stringify({ ...readPreference(), ...update })); } catch (_) {}
+  }
+  const validMark = mark => Boolean(mark) && typeof mark === 'object' && Number.isFinite(mark.fraction) &&
+    typeof mark.before === 'string' && typeof mark.after === 'string';
+
   function element(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -71,11 +86,19 @@
     state.panes.forEach(pane => pane.dispose?.());
     cancelAnimationFrame(state.pendingScroll);
     cancelAnimationFrame(state.pendingMeasure);
+    clearTimeout(state.saveTimer);
     state.dialog.close();
     state.dialog.remove();
     document.documentElement.classList.remove('td-compare-open');
     window.scrollTo({ top: state.y, left: state.x, behavior: 'instant' });
-    if (restoreFocus && state.trigger?.isConnected) state.trigger.focus({ preventScroll: true });
+    if (restoreFocus) {
+      // Return to where the reader was invoked (a reading link for B, the page
+      // after a palette closes); the entry is the fallback when that is gone.
+      const origin = state.returnFocus;
+      const target = origin?.isConnected && origin.getClientRects().length && !origin.closest('[inert], dialog:not([open])')
+        ? origin : state.trigger;
+      if (target?.isConnected) target.focus({ preventScroll: true });
+    }
     if (!fromHistory && history.state?.oinkCompareReader === state.token) {
       leavingHistory = true;
       history.back();
@@ -100,7 +123,20 @@
     if (!currentURL || !targets.length) return;
     const labels = config.labels;
     const sourceMark = bookmark(window);
+    // A restored history entry brings back its own session; otherwise the last
+    // explicit choices pick the target and Sync. Unknown targets fall back.
+    const saved = resumeToken && history.state?.oinkCompareSession?.token === resumeToken
+      ? history.state.oinkCompareSession : null;
+    const preference = readPreference();
+    const wanted = saved?.target || preference.target;
+    const exact = wanted ? targets.findIndex(target => target.code === wanted.code && target.label === wanted.label) : -1;
+    const sameCode = wanted ? targets.findIndex(target => target.code === wanted.code) : -1;
+    const initialIndex = Math.max(0, exact >= 0 ? exact : sameCode);
+    const savedSync = saved ? saved.sync : preference.sync;
+    const initialMarks = (saved?.marks || []).map(mark => validMark(mark) ? mark : null);
     window.OinkSurfaceCoordinator?.closeOthers('document-compare');
+    // B clicks the entry without moving focus, so this is still the reader's place.
+    const returnFocus = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
     const dialog = element('dialog', 'td-compare');
     dialog.setAttribute('data-td-compare', '');
     dialog.setAttribute('aria-labelledby', 'td-compare-title');
@@ -108,21 +144,36 @@
     const title = element('h2', 'td-compare__title', labels.title);
     title.id = 'td-compare-title'; title.tabIndex = -1;
     const syncControl = element('div', 'td-compare__sync-control');
-    const syncLabel = element('label', 'td-compare__sync');
-    const sync = element('input'); sync.type = 'checkbox'; sync.checked = true; sync.disabled = true;
+    // A labelled switch: the setting is binary and applies immediately.
+    const sync = element('button', 'td-compare__sync');
+    sync.type = 'button'; sync.disabled = true;
+    sync.setAttribute('role', 'switch');
+    sync.setAttribute('aria-checked', 'true');
     sync.setAttribute('data-td-compare-sync', '');
-    syncLabel.append(sync, element('span', '', labels.sync));
-    const syncWarning = element('span', 'td-compare__sync-warning', '!');
-    syncWarning.setAttribute('role', 'img');
-    syncWarning.setAttribute('tabindex', '0');
-    syncWarning.hidden = true;
+    const syncTrack = element('span', 'td-compare__switch');
+    syncTrack.setAttribute('aria-hidden', 'true');
+    sync.append(element('span', 'td-compare__sync-label', labels.sync), syncTrack);
+    // The note explains reduced sync quality. Its text is the button's name
+    // and appears on hover, keyboard focus or a tap.
+    const syncNote = element('span', 'td-compare__sync-note');
+    syncNote.hidden = true;
+    const syncWarning = element('button', 'td-compare__sync-warning');
+    syncWarning.type = 'button';
+    syncWarning.append(element('i', 'fa-solid fa-exclamation'));
+    syncWarning.firstChild.setAttribute('aria-hidden', 'true');
+    const syncTip = element('span', 'td-compare__sync-tip');
+    syncTip.id = `td-compare-sync-tip-${Date.now()}`;
+    syncTip.setAttribute('role', 'tooltip');
+    syncWarning.setAttribute('aria-labelledby', syncTip.id);
+    syncNote.append(syncWarning, syncTip);
+    const shortcut = typeof config.shortcut === 'string' ? config.shortcut.toLowerCase() : '';
     const exit = element('button', 'td-compare__close');
     exit.type = 'button'; exit.setAttribute('data-td-compare-close', '');
     exit.setAttribute('aria-label', labels.close);
-    exit.setAttribute('aria-keyshortcuts', 'Escape');
+    exit.setAttribute('aria-keyshortcuts', shortcut ? `Escape ${config.shortcut}` : 'Escape');
     exit.title = labels.close;
     exit.append(element('i', 'fa-solid fa-xmark', ''));
-    syncControl.append(syncLabel, syncWarning);
+    syncControl.append(sync, syncNote);
     toolbar.append(title, syncControl, exit);
     const mobile = element('div', 'td-compare__mobile');
     const panesRoot = element('div', 'td-compare__panes');
@@ -156,9 +207,10 @@
     const controller = new AbortController();
     const signal = controller.signal;
     const state = {
-      controller, dialog, trigger, x: scrollX, y: scrollY,
+      controller, dialog, trigger, returnFocus, x: scrollX, y: scrollY,
       token: resumeToken || `${Date.now()}-${Math.random()}`, panes: [], owner: 0,
-      map: null, pendingScroll: 0, pendingMeasure: 0, syncWanted: true, targetIndex: 0,
+      map: null, pendingScroll: 0, pendingMeasure: 0, lastFollow: 0, saveTimer: 0,
+      syncWanted: typeof savedSync === 'boolean' ? savedSync : true, targetIndex: initialIndex,
     };
     active = state;
     const alive = () => active === state;
@@ -205,31 +257,99 @@
       languageCloseTimer = window.setTimeout(() => closeLanguageMenu(), 140);
     }
 
+    // With keyboard navigation on, the key that opened the reader closes it,
+    // under the same guards as the page shortcut: no modifiers, composition
+    // or editable target.
+    function isToggleKey(event) {
+      const target = event.target;
+      return Boolean(shortcut) && typeof event.key === 'string' && event.key.toLowerCase() === shortcut &&
+        !event.defaultPrevented && !event.isComposing && event.keyCode !== 229 &&
+        !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey &&
+        !target?.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
+    }
+
+    // The session lives on the reader's own history entry, so a reload or a
+    // Back/Forward restore reopens it as it was. Writes are coalesced shortly
+    // after scrolling settles (browsers throttle replaceState, and history
+    // writes during pagehide are not reliably kept) and never touch another entry.
+    function saveSession() {
+      clearTimeout(state.saveTimer);
+      if (history.state?.oinkCompareReader !== state.token) return;
+      const target = targets[state.targetIndex];
+      try {
+        history.replaceState({ ...history.state, oinkCompareSession: {
+          token: state.token, target: { code: target.code, label: target.label }, sync: state.syncWanted,
+          side: visibleSide, marks: state.panes.map(pane => validMark(pane.mark) ? pane.mark : null),
+        } }, '', location.href);
+      } catch (_) {}
+    }
+    function scheduleSave(delay = 300) {
+      clearTimeout(state.saveTimer);
+      state.saveTimer = setTimeout(saveSession, delay);
+    }
+    state.save = saveSession;
+
+    // Focus starts on the title so the dialog is announced. Until the reader
+    // Tabs into a pane, scroll keys pressed there scroll the reading pane (the
+    // visible one on narrow screens), as they would on the page, and sync follows.
+    function forwardScroll(event) {
+      if (event.defaultPrevented || event.isComposing || event.metaKey || event.ctrlKey || event.altKey) return false;
+      const pages = { PageDown: 1, PageUp: -1, ' ': event.shiftKey ? -1 : 1 };
+      const lines = { ArrowDown: 1, ArrowUp: -1 };
+      const edges = { Home: 0, End: 1 };
+      if (!(event.key in pages || event.key in lines || event.key in edges) || (event.shiftKey && event.key !== ' ')) return false;
+      const pane = state.panes[narrow.matches ? visibleSide : state.owner];
+      if (!pane?.ready) return false;
+      const win = pane.frame.contentWindow;
+      state.owner = pane.index;
+      pane.following = false;
+      pane.expected = null;
+      const behavior = motionBehavior();
+      if (event.key in edges) win.scrollTo({ top: edges[event.key] * maxScroll(win), behavior });
+      else if (event.key in lines) win.scrollBy({ top: lines[event.key] * 40, behavior });
+      else win.scrollBy({ top: pages[event.key] * Math.max(40, win.innerHeight * 0.875), behavior });
+      return true;
+    }
+
+    // A stream of owner frames (trackpad, momentum, a held key, the browser's
+    // own smooth wheel scrolling) is mirrored instantly each frame: restarting
+    // an eased scroll on every frame would leave the follower stalled behind.
+    // A single discrete jump, such as a fragment link, still eases when motion
+    // is allowed.
     function follow() {
       if (!state.map || !state.map.syncable || !state.syncWanted || !alive()) return;
       const source = state.panes[state.owner], target = state.panes[1 - state.owner];
       if (!source.ready || !target.ready) return;
-      scroll(target, geometry.project(state.map, source.frame.contentWindow.scrollY, state.owner), motionBehavior());
+      const now = performance.now();
+      const continuous = now - state.lastFollow < 150;
+      state.lastFollow = now;
+      scroll(target, geometry.project(state.map, source.frame.contentWindow.scrollY, state.owner),
+        continuous ? 'instant' : motionBehavior());
       target.mark = bookmark(target.frame.contentWindow);
+      scheduleSave();
     }
 
+    // While both panes load, the switch keeps the reader's preference and is
+    // only disabled; it turns off when the pair cannot be synced or a pane failed.
     function updateSyncState() {
       const map = state.map;
-      const usable = Boolean(map?.syncable);
-      sync.disabled = !usable;
-      sync.checked = usable && state.syncWanted;
-      const warning = map && (map.approximate || !map.syncable)
-        ? (map.syncable ? labels.approximate : labels.unavailable)
-        : '';
-      syncWarning.hidden = !warning;
-      syncWarning.setAttribute('aria-hidden', String(!warning));
-      if (warning) {
-        syncWarning.title = warning;
-        syncWarning.setAttribute('aria-label', warning);
-      } else {
-        syncWarning.removeAttribute('title');
-        syncWarning.removeAttribute('aria-label');
-      }
+      const loading = !map && !state.panes.some(pane => pane.failed);
+      sync.disabled = !map?.syncable;
+      sync.setAttribute('aria-checked', String(state.syncWanted && (map ? map.syncable : loading)));
+      // A partial match with at least one interior anchor interpolates between
+      // headings; an endpoint-only map is overall reading progress.
+      const anchored = map?.knots.length > 2;
+      const warning = !map ? '' : !map.syncable ? labels.unavailable
+        : map.approximate ? (anchored && map.reason === 'partial-headings' ? labels.approximate : labels.progress)
+          : '';
+      syncNote.hidden = !warning;
+      syncTip.textContent = warning;
+      if (!warning) syncNote.classList.remove('td-is-open', 'td-is-dismissed');
+    }
+    function syncTipVisible() {
+      return !syncNote.hidden && !syncNote.classList.contains('td-is-dismissed') &&
+        (syncNote.classList.contains('td-is-open') || syncNote.matches(':hover') ||
+          syncWarning.matches(':focus-visible'));
     }
 
     function measure(preserve = false) {
@@ -248,6 +368,7 @@
 
     function load(pane, descriptor, mark) {
       pane.dispose?.();
+      pane.failed = false;
       state.map = null; updateSyncState();
       const paneController = new AbortController();
       const paneSignal = paneController.signal;
@@ -260,9 +381,12 @@
       frame.title = descriptor.label;
       frame.setAttribute('data-td-compare-frame', String(pane.index));
       pane.frame = frame;
+      // A quiet note covers the pane until its article is readable.
+      const loading = element('div', 'td-compare__loading', labels.loading);
+      loading.setAttribute('role', 'status');
       pane.dispose = () => {
         paneController.abort(); clearTimeout(timeout); observer?.disconnect();
-        pane.ready = false; frame.remove();
+        pane.ready = false; frame.remove(); loading.remove();
       };
       function fail() {
         if (!alive() || paneSignal.aborted) return;
@@ -270,24 +394,38 @@
         pane.body.removeAttribute('aria-busy');
         const failure = element('div', 'td-compare__failure');
         failure.append(element('p', '', labels.error));
+        const actions = element('p', 'td-compare__failure-actions');
+        const retry = element('button', 'td-compare__retry', labels.retry);
+        retry.type = 'button';
+        retry.addEventListener('click', () => load(pane, descriptor, pane.mark || mark), { signal });
         const link = element('a', '', `${labels.open} · ${descriptor.label}`);
         link.href = descriptor.parsed.href; link.target = '_blank'; link.rel = 'noopener';
-        failure.append(link); pane.body.replaceChildren(failure);
+        actions.append(retry, link);
+        failure.append(actions); pane.body.replaceChildren(failure);
+        pane.failed = true;
         state.map = null; updateSyncState();
       }
-      frame.addEventListener('load', () => {
-        if (!alive() || paneSignal.aborted) return;
+      function valid(win) {
+        return win.location.origin === location.origin && win.location.pathname === descriptor.parsed.pathname &&
+          Boolean(win.OinkComparePane) && win.document.querySelector('meta[name="oink-compare-page"]')?.content === descriptor.parsed.pathname &&
+          Boolean(article(win));
+      }
+      // Readiness is the pane's DOMContentLoaded, announced by its bootstrap,
+      // not the load event, which also waits for images and embeds. `final`
+      // marks the load event or the timeout: only then is an invalid document
+      // a failure, and a readable one is never discarded for a slow resource.
+      function ready(final) {
+        if (!alive() || paneSignal.aborted || pane.ready) return;
         const win = frame.contentWindow;
         try {
           if (win.location.href === 'about:blank') return;
+          if (!valid(win)) { if (final) fail(); return; }
           const doc = win.document;
-          if (win.location.origin !== location.origin || win.location.pathname !== descriptor.parsed.pathname ||
-              !win.OinkComparePane || doc.querySelector('meta[name="oink-compare-page"]')?.content !== descriptor.parsed.pathname || !article(win)) {
-            fail(); return;
-          }
           clearTimeout(timeout);
           pane.ready = true;
+          pane.document = doc;
           pane.body.removeAttribute('aria-busy');
+          loading.remove();
           restore(pane, mark); pane.mark = bookmark(win);
           const own = () => {
             state.owner = pane.index;
@@ -297,9 +435,11 @@
           for (const type of ['wheel', 'touchstart', 'pointerdown']) {
             doc.addEventListener(type, own, { passive: true, capture: true, signal: paneSignal });
           }
+          // Frame input never reaches the host dialog, so a pinned note closes here.
+          doc.addEventListener('pointerdown', () => syncNote.classList.remove('td-is-open'), { capture: true, signal: paneSignal });
           doc.addEventListener('keydown', event => {
             if (event.defaultPrevented || doc.querySelector('dialog[open]')) return;
-            if (event.key === 'Escape') { event.preventDefault(); close(); }
+            if (event.key === 'Escape' || isToggleKey(event)) { event.preventDefault(); close(); return; }
             if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) own();
           }, { signal: paneSignal });
           win.addEventListener('scroll', () => {
@@ -315,6 +455,7 @@
             }
             pane.expected = null;
             pane.mark = bookmark(win);
+            scheduleSave();
             if (state.owner !== pane.index) return;
             cancelAnimationFrame(state.pendingScroll);
             state.pendingScroll = requestAnimationFrame(follow);
@@ -330,9 +471,14 @@
               try { target = doc.getElementById(decodeURIComponent(url.hash.slice(1))); } catch (_) { return; }
               if (!target) return;
               event.preventDefault(); own();
-              target.scrollIntoView({ behavior: 'instant', block: 'start' });
-              // replaceState avoids child entries in the joint session history.
+              // replaceState avoids child entries in the joint session history,
+              // but fires no hashchange. Dispatch it so hash-driven components
+              // (tabs revealing a hidden panel, line highlights) react as they
+              // would to a native fragment jump, then scroll the revealed target.
+              const oldURL = win.location.href;
               win.history.replaceState(null, '', win.location.pathname + win.location.search + url.hash);
+              win.dispatchEvent(new win.HashChangeEvent('hashchange', { oldURL, newURL: win.location.href }));
+              target.scrollIntoView({ behavior: 'instant', block: 'start' });
             } else if (url.origin !== location.origin || link.target === '_blank') {
               event.preventDefault(); window.open(url.href, '_blank', 'noopener');
             } else {
@@ -346,24 +492,39 @@
           observer.observe(article(win));
           doc.addEventListener('load', scheduleMeasure, { capture: true, signal: paneSignal });
           doc.addEventListener('toggle', scheduleMeasure, { capture: true, signal: paneSignal });
+          // OINK tabs announce td:tab-shown; equal-height panels change the
+          // visible headings without resizing the article.
+          doc.addEventListener('td:tab-shown', scheduleMeasure, { signal: paneSignal });
           doc.addEventListener('shown.bs.tab', scheduleMeasure, { signal: paneSignal });
           doc.fonts?.ready.then(() => { if (!paneSignal.aborted) scheduleMeasure(); });
           measure();
         } catch (_) { fail(); }
+      }
+      frame.addEventListener('td:compare-pane-ready', () => ready(false), { signal: paneSignal });
+      // Late images and embeds change geometry once the pane is ready. A load of
+      // a different document (script or form navigation) is not this pane any
+      // more: like any invalid document it fails to a direct link and Retry.
+      frame.addEventListener('load', () => {
+        if (!pane.ready) ready(true);
+        else if (frame.contentDocument !== pane.document) fail();
+        else scheduleMeasure();
       }, { signal: paneSignal });
-      pane.body.append(frame);
+      pane.body.append(frame, loading);
       const url = new URL(descriptor.parsed);
       url.searchParams.set(paneFlag, '1');
       // Both initial loading and language changes replace the frame entry.
       frame.contentWindow.location.replace(url.href);
-      timeout = setTimeout(fail, 15000);
+      timeout = setTimeout(() => ready(true), 15000);
     }
 
-    [config.current.label, targets[0].label].forEach((label, index) => {
+    // A single target needs no chooser: both headings and the narrow switcher
+    // show plain language labels instead of a one-option menu.
+    const choosable = targets.length > 1;
+    [config.current.label, targets[initialIndex].label].forEach((label, index) => {
       const panel = element('section', 'td-compare__pane');
       panel.setAttribute('data-td-compare-side', String(index));
       const header = element('div', 'td-compare__pane-heading');
-      if (index) header.append(languageMenu);
+      if (index && choosable) header.append(languageMenu);
       else header.append(element('span', '', label));
       const body = element('div', 'td-compare__body');
       panel.append(header, body); panesRoot.append(panel);
@@ -383,7 +544,7 @@
       // Capture focus before hiding a pane, and make the destination usable
       // before restoring it. Moving a focused subtree otherwise blurs to body.
       showSide(visibleSide);
-      if (languageMenu.parentNode === host) return;
+      if (!choosable || languageMenu.parentNode === host) return;
       host.append(languageMenu);
       if (focused) {
         suppressLanguageOpen = true;
@@ -395,8 +556,9 @@
       languageTrigger.setAttribute('aria-expanded', String(wasOpen));
       languageOpenedByActivation = wasActivated;
     }
-    let visibleSide = 0;
+    let visibleSide = saved?.side === 1 ? 1 : 0;
     function showSide(index) {
+      if (index !== visibleSide) scheduleSave(0);
       visibleSide = index;
       state.panes.forEach(pane => {
         const hidden = narrow.matches && pane.index !== index;
@@ -411,11 +573,14 @@
     window.addEventListener('resize', scheduleMeasure, { signal });
     function chooseLanguage(index) {
       const descriptor = targets[index];
-      if (!descriptor || index === state.targetIndex) {
+      // Choosing the current language again retries it after a failed load.
+      if (!descriptor || (index === state.targetIndex && !state.panes[1].failed)) {
         closeLanguageMenu(true);
         return;
       }
       updateLanguageMenu(index);
+      writePreference({ target: { code: descriptor.code, label: descriptor.label } });
+      scheduleSave(0);
       state.panes[1].tab.textContent = descriptor.label;
       const mark = state.panes[0].ready ? bookmark(state.panes[0].frame.contentWindow) : sourceMark;
       state.owner = 0;
@@ -443,7 +608,8 @@
       if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         openLanguageMenu(event.key === 'ArrowUp' ? languageOptions.length - 1 : state.targetIndex, true);
-      } else if (event.key === 'Escape') {
+      } else if (event.key === 'Escape' && languageMenu.classList.contains('td-is-open')) {
+        // Only an open menu consumes Escape; on a closed trigger it closes the reader.
         event.preventDefault();
         closeLanguageMenu();
       }
@@ -482,9 +648,36 @@
     }, { signal });
     dialog.addEventListener('pointerdown', event => {
       if (!languageMenu.contains(event.target)) closeLanguageMenu();
+      if (!syncNote.contains(event.target)) syncNote.classList.remove('td-is-open');
     }, { signal });
-    updateLanguageMenu(0);
-    sync.addEventListener('change', () => { state.syncWanted = sync.checked; follow(); }, { signal });
+    updateLanguageMenu(initialIndex);
+    sync.addEventListener('click', () => {
+      if (sync.disabled) return;
+      state.syncWanted = !state.syncWanted;
+      writePreference({ sync: state.syncWanted });
+      scheduleSave(0);
+      updateSyncState();
+      follow();
+    }, { signal });
+    // A tap or click pins the note; hover and keyboard focus show it too.
+    syncWarning.addEventListener('click', () => {
+      syncNote.classList.remove('td-is-dismissed');
+      syncNote.classList.toggle('td-is-open');
+    }, { signal });
+    syncWarning.addEventListener('blur', () => syncNote.classList.remove('td-is-open', 'td-is-dismissed'), { signal });
+    syncNote.addEventListener('pointerleave', () => syncNote.classList.remove('td-is-dismissed'), { signal });
+    dialog.addEventListener('keydown', event => {
+      // Escape first dismisses a visible note (WCAG 1.4.13); the next one closes.
+      if (event.key === 'Escape' && syncTipVisible()) {
+        event.preventDefault();
+        event.stopPropagation();
+        syncNote.classList.remove('td-is-open');
+        syncNote.classList.add('td-is-dismissed');
+        return;
+      }
+      if (isToggleKey(event)) { event.preventDefault(); close(); return; }
+      if ((document.activeElement === title || document.activeElement === dialog) && forwardScroll(event)) event.preventDefault();
+    }, { capture: true, signal });
     exit.addEventListener('click', () => close(), { signal });
     dialog.addEventListener('cancel', event => { event.preventDefault(); close(); }, { signal });
     dialog.addEventListener('close', () => { if (!dialog.open) close(); }, { signal });
@@ -495,8 +688,8 @@
     title.focus({ preventScroll: true });
     if (!resumeToken) history.pushState({ ...history.state, oinkCompareReader: state.token }, '', location.href);
     updateLayout();
-    load(state.panes[0], { ...config.current, parsed: currentURL }, sourceMark);
-    load(state.panes[1], targets[0], sourceMark);
+    load(state.panes[0], { ...config.current, parsed: currentURL }, initialMarks[0] || sourceMark);
+    load(state.panes[1], targets[initialIndex], initialMarks[1] || sourceMark);
   }
 
   window.addEventListener('popstate', () => {
@@ -507,7 +700,8 @@
     if (next && !active) queueMicrotask(() => open(next.config, next.trigger, next.options));
   });
   window.addEventListener('beforeprint', () => close(false));
-  window.addEventListener('pagehide', () => { queuedOpen = null; close(false, true); });
+  // Record the session on the reader's own entry before a reload or bfcache stop.
+  window.addEventListener('pagehide', () => { queuedOpen = null; active?.save(); close(false, true); });
   window.OinkSurfaceCoordinator?.register('document-compare', close);
   window.OinkCompare = { open, close, isOpen: () => Boolean(active) };
 })();

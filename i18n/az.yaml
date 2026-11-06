@@ -248,12 +248,15 @@ ui_expo_prev: "Əvvəlki şəkil"
 ui_expo_next: "Növbəti şəkil"
 
 # Translation comparison reader
-ui_compare_view: 'İkidilli görünüş'
+ui_compare_view: 'İkili görünüş'
 ui_compare_sync: 'Sürüşdürməni sinxronlaşdır'
-ui_compare_sync_approximate: 'Başlıqlar tam uyğun gəlmir; sinxronlaşdırma sənəd üzrə təxmini irəliləyişdən istifadə edir.'
+ui_compare_sync_approximate: 'Bəzi başlıqlar iki səhifə arasında fərqlənir, ona görə də uyğun başlıqlar arasındakı mövqelər təxminidir.'
+ui_compare_sync_progress: 'Səhifələri uyğunlaşdıra biləcək ortaq başlıq yoxdur, ona görə də sinxronlaşdırma bütün sənəd üzrə oxuma irəliləyişini izləyir.'
 ui_compare_sync_unavailable: 'Başlıqlar təkrarlandığı və ya ardıcıllığı pozulduğu üçün sinxronlaşdırma əlçatan deyil.'
-ui_shortcut_compare: 'İkidilli görünüşü aç'
+ui_shortcut_compare: 'İkili görünüşü aç'
 ui_compare_error: "Bu səhifəni yükləmək mümkün olmadı."
+ui_compare_loading: 'Yüklənir…'
+ui_compare_retry: 'Yenidən cəhd et'
 
 ui_pagination: Səhifələr üzrə naviqasiya
 ui_breadcrumb: Naviqasiya yolu

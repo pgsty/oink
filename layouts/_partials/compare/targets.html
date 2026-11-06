@@ -4,12 +4,21 @@
      carry the pane bootstrap the reader waits for. */ -}}
 {{- $targets := slice -}}
 {{- $format := lower (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if and (partialCached "compare/enabled.html" . .Site.Language.Lang .Site.BaseURL) (eq $format "html") .File (in (slice "docs" "book" "blog") .Type) (not .Draft) -}}
+{{- /* Archive pages after the first have no counterpart in another language
+     (hreflang omits them for the same reason); comparing would silently swap
+     the page being read for page 1. */ -}}
+{{- $archivePage := 1 -}}
+{{- if and (eq $format "html") (.Store.Get "tdBlogPaginated") }}{{ $archivePage = .Paginator.PageNumber }}{{ end -}}
+{{- if and (partialCached "compare/enabled.html" . .Site.Language.Lang .Site.BaseURL) (eq $format "html") .File (in (slice "docs" "book" "blog") .Type) (not .Draft) (le $archivePage 1) -}}
   {{- $origin := urls.Parse .Permalink -}}
   {{- range .Translations -}}
     {{- $page := . -}}
     {{- $targetOrigin := urls.Parse .Permalink -}}
-    {{- if and (not .Draft) (in (slice "docs" "book" "blog") .Type) (eq $origin.Scheme $targetOrigin.Scheme) (eq $origin.Host $targetOrigin.Host) (partialCached "compare/enabled.html" $page $page.Site.Language.Lang $page.Site.BaseURL) -}}
+    {{- /* build.render link/never pages keep a permalink but write no HTML;
+         Params carries the effective value, including cascaded policy. */ -}}
+    {{- $render := "" -}}
+    {{- with $page.Params.build }}{{ if reflect.IsMap . }}{{ $render = lower (printf "%v" (index . "render" | default "")) }}{{ end }}{{ end -}}
+    {{- if and (not .Draft) (in (slice "docs" "book" "blog") .Type) (eq $origin.Scheme $targetOrigin.Scheme) (eq $origin.Host $targetOrigin.Host) (not (in (slice "link" "never" "false") $render)) (partialCached "compare/enabled.html" $page $page.Site.Language.Lang $page.Site.BaseURL) -}}
       {{- with .OutputFormats.Get "html" -}}
         {{- $targets = $targets | append (dict
           "url" .RelPermalink

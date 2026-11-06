@@ -47,20 +47,20 @@
       if (pair[0] > prev[0] && pair[1] > prev[1]) knots.push(pair);
     }
     const usablePairs = knots.length - 1;
+    // Identity and usable geometry are separate facts. Unmatched headings lower
+    // confidence. Matched headings that cannot reach the reading line (a short
+    // final section, a tall viewport) add no knot without being a mismatch, so
+    // one usable common anchor keeps the map exact. With no usable anchor at
+    // all, the map is overall progress and says so.
     const reason = pairs.length === 0
       ? (left.length === 0 && right.length === 0 ? 'no-headings' : 'no-common-headings')
-      : usablePairs === 0
-        ? 'no-usable-headings'
-        : pairs.length !== left.length || pairs.length !== right.length
-          ? 'partial-headings'
-          : usablePairs < 2
-            ? 'few-headings'
-            : '';
+      : pairs.length !== left.length || pairs.length !== right.length
+        ? 'partial-headings'
+        : '';
 
-    // A page without headings still has a useful, bounded reading progress.
-    // Keep a single common heading when one exists, but mark the estimate so
-    // the reader can explain the lower confidence beside the Sync control.
-    if (usablePairs === 0) return progressMap(leftMax, rightMax, { reason });
+    // A page without headings still has a useful, bounded reading progress,
+    // and the reader explains that estimate beside the Sync control.
+    if (usablePairs === 0) return progressMap(leftMax, rightMax, { reason: reason || 'no-usable-headings' });
     knots.push([leftMax, rightMax]);
     return result(knots, { approximate: Boolean(reason), reason });
   }

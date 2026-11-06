@@ -248,12 +248,15 @@ ui_expo_prev: "Vorheriges Bild"
 ui_expo_next: "Nächstes Bild"
 
 # Translation comparison reader
-ui_compare_view: 'Zweisprachige Ansicht'
+ui_compare_view: 'Doppelansicht'
 ui_compare_sync: 'Scrollen synchronisieren'
-ui_compare_sync_approximate: 'Die Überschriften stimmen nicht vollständig überein; die Synchronisierung verwendet einen ungefähren Dokumentfortschritt.'
+ui_compare_sync_approximate: 'Einige Überschriften unterscheiden sich zwischen den Seiten; Positionen zwischen übereinstimmenden Überschriften werden geschätzt.'
+ui_compare_sync_progress: 'Keine gemeinsame Überschrift kann die Seiten ausrichten; die Synchronisierung folgt dem Lesefortschritt im gesamten Dokument.'
 ui_compare_sync_unavailable: 'Die Synchronisierung ist nicht verfügbar, weil Überschriften doppelt oder in falscher Reihenfolge vorkommen.'
-ui_shortcut_compare: 'Zweisprachige Ansicht öffnen'
+ui_shortcut_compare: 'Doppelansicht öffnen'
 ui_compare_error: "Diese Seite konnte nicht geladen werden."
+ui_compare_loading: 'Wird geladen …'
+ui_compare_retry: 'Erneut versuchen'
 
 ui_pagination: Seitennavigation
 ui_breadcrumb: Navigationspfad

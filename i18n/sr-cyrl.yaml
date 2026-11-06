@@ -249,12 +249,15 @@ ui_expo_prev: "Претходна слика"
 ui_expo_next: "Следећа слика"
 
 # Translation comparison reader
-ui_compare_view: 'Двојезични приказ'
+ui_compare_view: 'Двоструки приказ'
 ui_compare_sync: 'Усклади померање'
-ui_compare_sync_approximate: 'Наслови се не поклапају у потпуности; синхронизација користи приближни напредак кроз документ.'
+ui_compare_sync_approximate: 'Неки наслови се разликују између две странице, па су положаји између одговарајућих наслова процењени.'
+ui_compare_sync_progress: 'Ниједан заједнички наслов не може да поравна странице, па синхронизација прати укупни напредак читања документа.'
 ui_compare_sync_unavailable: 'Синхронизација није доступна јер се наслови понављају или су погрешно поређани.'
-ui_shortcut_compare: 'Отвори двојезични приказ'
+ui_shortcut_compare: 'Отвори двоструки приказ'
 ui_compare_error: "Није могуће учитати ову страницу."
+ui_compare_loading: 'Учитавање…'
+ui_compare_retry: 'Покушај поново'
 
 ui_pagination: Навигација по страницама
 ui_breadcrumb: Путања навигације

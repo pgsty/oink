@@ -5,7 +5,7 @@
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- if or $keyboardNav $localSearch -}}
 {{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
-{{- $compareTargets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $compareTargets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang (partial "compare/page-key.html" .) (.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
@@ -68,7 +68,7 @@
         {{- if gt (len $compareTargets) 0 }}
         <div class="td-shell-keyboard-help__row">
           <dt><span class="td-kbd-sequence"><kbd>B</kbd></span></dt>
-          <dd>{{ T "ui_shortcut_compare" }}</dd>
+          <dd>{{ T "ui_compare_view" }}</dd>
         </div>
         {{- end }}
         {{- if gt (len $targets) 1 }}

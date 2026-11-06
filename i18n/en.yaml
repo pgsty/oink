@@ -264,12 +264,15 @@ ui_expo_prev: "Previous image"
 ui_expo_next: "Next image"
 
 # Translation comparison reader
-ui_compare_view: 'Bilingual View'
+ui_compare_view: 'Duo View'
 ui_compare_sync: 'Sync Scroll'
-ui_compare_sync_approximate: 'Headings do not fully match; sync uses approximate document progress.'
+ui_compare_sync_approximate: 'Some headings differ between the two pages, so positions between matching headings are estimated.'
+ui_compare_sync_progress: 'No usable shared heading can align these pages, so sync follows overall reading progress.'
 ui_compare_sync_unavailable: 'Sync is unavailable because the headings are duplicated or out of order.'
-ui_shortcut_compare: 'Open bilingual view'
+ui_shortcut_compare: 'Open duo view'
 ui_compare_error: "Could not load this page."
+ui_compare_loading: 'Loading…'
+ui_compare_retry: 'Retry'
 
 ui_pagination: Pagination
 ui_breadcrumb: Breadcrumb

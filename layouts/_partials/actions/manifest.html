@@ -1,5 +1,5 @@
 {{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $context := partialCached "actions/context.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink $outputFormat -}}
+{{- $context := partialCached "actions/context.html" . .Site.BaseURL .Site.Language.Lang (partial "compare/page-key.html" .) $outputFormat -}}
 {{- return (dict
   "version" 1
   "language" .Site.Language.Lang

@@ -38,23 +38,66 @@ html.td-compare-open { overflow: hidden; }
   background: var(--bs-body-bg);
   overflow: hidden;
   &[open] { display: flex; flex-direction: column; }
+  // Orange that keeps at least 3:1 against the page in both modes.
+  --td-compare-warning: #c2410c;
   &__toolbar {
+    // The sync note floats over the panes below.
+    position: relative; z-index: 2;
     display: flex; align-items: center; gap: 1.25rem;
     padding: .75rem 1.25rem;
     border-bottom: 1px solid var(--bs-border-color);
   }
-  &__title { margin: 0; margin-inline-end: auto; font-size: 1rem; font-weight: 600; }
-  &__sync-control { display: flex; align-items: center; gap: .4rem; }
-  &__sync { display: flex; align-items: center; gap: .5rem; font-size: .875rem; }
-  &__sync input { width: 1.05rem; height: 1.05rem; accent-color: var(--bs-link-color); }
+  // A programmatic focus target for the dialog, not a control.
+  &__title { margin: 0; margin-inline-end: auto; font-size: 1rem; font-weight: 600; &:focus { outline: none; } }
+  &__sync-control { display: flex; align-items: center; gap: .25rem; }
+  &__sync {
+    display: inline-flex; align-items: center; gap: .55rem;
+    margin: 0; padding: .3rem .5rem;
+    border: 0; border-radius: var(--td-control-radius);
+    background: transparent; color: var(--bs-secondary-color);
+    font: inherit; font-size: .875rem; line-height: 1.2; cursor: pointer;
+    &[aria-checked='true'] { color: var(--bs-body-color); }
+    &:hover:not(:disabled) { background: var(--td-shell-primary-wash); color: var(--bs-body-color); }
+    &:disabled { cursor: default; opacity: .55; }
+  }
+  // The switch track and thumb; logical insets mirror it in RTL.
+  &__switch {
+    position: relative; flex: none;
+    inline-size: 1.75rem; block-size: 1rem; border-radius: 1rem;
+    background: color-mix(in srgb, var(--bs-body-color) 24%, var(--bs-body-bg));
+    transition: background-color .15s ease;
+    &::after {
+      content: ''; position: absolute; inset-block-start: .125rem; inset-inline-start: .125rem;
+      inline-size: .75rem; block-size: .75rem; border-radius: 50%;
+      background: var(--bs-body-bg); box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+      transition: inset-inline-start .15s ease;
+    }
+  }
+  &__sync-note {
+    position: relative; display: inline-flex;
+    &[hidden] { display: none; }
+  }
   &__sync-warning {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 1.1rem; height: 1.1rem; border-radius: 50%;
-    color: var(--bs-warning-text-emphasis); background: var(--bs-warning-bg-subtle);
-    border: 1px solid var(--bs-warning-border-subtle);
-    font-size: .75rem; font-weight: 700; line-height: 1; cursor: help;
-    &:focus-visible { outline: 2px solid var(--bs-link-color); outline-offset: 3px; }
-    &[hidden] { display: none; }
+    inline-size: 1.25rem; block-size: 1.75rem; margin: 0; padding: 0;
+    border: 0; border-radius: var(--td-control-radius);
+    background: transparent; color: var(--td-compare-warning);
+    font-size: .95rem; line-height: 1; cursor: help;
+  }
+  &__sync-tip {
+    position: absolute; z-index: 3;
+    inset-block-start: calc(100% + .5rem); inset-inline-end: -.75rem;
+    inline-size: max-content; max-inline-size: #{'min(20rem, calc(100vw - 2rem))'};
+    padding: .55rem .75rem;
+    border: 1px solid var(--bs-border-color); border-radius: .6rem;
+    background: var(--bs-body-bg); color: var(--bs-body-color);
+    box-shadow: var(--td-brand-shadow-md, var(--bs-box-shadow));
+    font-size: .8125rem; font-weight: 400; line-height: 1.45; text-align: start; white-space: normal;
+    overflow-wrap: anywhere;
+    opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-2px);
+    transition: opacity .12s ease, visibility .12s, transform .12s ease;
+    // Bridge the gap so the pointer can move onto the note without losing it.
+    &::before { content: ''; position: absolute; inset-inline: 0; inset-block-end: 100%; block-size: .5rem; }
   }
   &__close, &__tab {
     padding: .4rem .75rem;
@@ -117,6 +160,8 @@ html.td-compare-open { overflow: hidden; }
       overflow-y: auto;
     }
 
+    // Options are buttons: reset the button chrome, then restore the shared
+    // language bar's selected and hover states that the reset would hide.
     .td-language-selector__item {
       width: 100%;
       border: 0;
@@ -125,11 +170,43 @@ html.td-compare-open { overflow: hidden; }
       font: inherit;
       text-align: start;
       cursor: pointer;
+
+      &.active {
+        background: var(--bs-primary-bg-subtle);
+        color: var(--bs-primary-text-emphasis);
+        font-weight: 600;
+      }
+
+      &:not(.active):hover,
+      &:not(.active):focus-visible {
+        background: var(--bs-tertiary-bg);
+        color: var(--bs-body-color);
+      }
+
+      @media (forced-colors: active) {
+        &.active { outline: 2px solid Highlight; outline-offset: -2px; }
+      }
     }
   }
   &__body { flex: 1; min-height: 0; position: relative; }
   &__frame { display: block; width: 100%; height: 100%; border: 0; }
   &__failure { padding: 2rem; }
+  &__failure-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; }
+  &__retry {
+    padding: .35rem .8rem;
+    border: 1px solid var(--bs-border-color); border-radius: var(--td-control-radius);
+    background: var(--bs-body-bg); color: var(--bs-body-color);
+    font: inherit; font-size: .875rem; cursor: pointer;
+    &:hover { background: var(--td-shell-primary-wash); }
+  }
+  // Fades in only when loading is slow enough to notice.
+  &__loading {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bs-body-bg); color: var(--bs-secondary-color);
+    font-size: .875rem;
+    animation: td-compare-loading .2s ease .3s both;
+  }
   &__mobile { display: none; }
   button:focus-visible, input:focus-visible {
     outline: 2px solid var(--bs-link-color); outline-offset: 3px;
@@ -170,7 +247,35 @@ html.td-compare-open { overflow: hidden; }
   // Forced colors drop backgrounds; keep the selected pane visible by border.
   @media (forced-colors: active) {
     &__tab[aria-pressed='true'] { border: 2px solid Highlight; }
+    &__switch { forced-color-adjust: none; border: 1px solid ButtonText; background: Canvas; }
+    &__switch::after { background: ButtonText; box-shadow: none; }
+    &__sync:disabled .td-compare__switch { border-color: GrayText; }
+    &__sync:disabled .td-compare__switch::after { background: GrayText; }
+    &__sync-tip { border-color: CanvasText; }
   }
+}
+// Compound states written out in full: they pair two element classes.
+.td-compare__sync[aria-checked='true'] .td-compare__switch {
+  background: var(--bs-link-color);
+  &::after { inset-inline-start: calc(100% - .875rem); }
+  @media (forced-colors: active) {
+    border-color: Highlight; background: Highlight;
+    &::after { background: HighlightText; }
+  }
+}
+.td-compare__sync-note:hover > .td-compare__sync-tip,
+.td-compare__sync-warning:focus-visible + .td-compare__sync-tip,
+.td-compare__sync-note.td-is-open > .td-compare__sync-tip {
+  opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+}
+.td-compare__sync-note.td-is-dismissed > .td-compare__sync-tip {
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+[data-bs-theme='dark'] .td-compare { --td-compare-warning: #fb923c; }
+@keyframes td-compare-loading { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .td-compare__switch, .td-compare__switch::after, .td-compare__sync-tip { transition: none; }
+  .td-compare__loading { animation: none; }
 }
 
 // Only an owned child frame gets this attribute. Flagged top-level URLs keep

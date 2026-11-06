@@ -190,10 +190,10 @@
     "kind" "url" "available" (ne $projectRepo "") "disabledReason" (cond (ne $projectRepo "") "" (printf "%s: %s" $githubTitle $unavailable)) "url" $projectRepo
     "target" "blank" "placements" $paletteOnly "options" (slice))
 -}}
-{{- $compareTargets := partialCached "compare/targets.html" $p $p.Site.BaseURL $p.Site.Language.Lang $p.RelPermalink ($p.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $compareTargets := partialCached "compare/targets.html" $p $p.Site.BaseURL $p.Site.Language.Lang (partial "compare/page-key.html" $p) ($p.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if $compareTargets -}}
   {{- $actions = $actions | append (dict "id" "compare_translations" "title" (T "ui_compare_view") "description" (T "ui_shortcut_compare")
-    "icon" "fa-solid fa-columns" "keywords" (slice (T "ui_compare_view") (T "ui_shortcut_compare") "bilingual" "compare" "translation" "language")
+    "icon" "fa-solid fa-code-compare" "keywords" (slice (T "ui_compare_view") (T "ui_shortcut_compare") "duo" "bilingual" "compare" "side by side" "translation" "language")
     "kind" "invoke" "available" true "disabledReason" "" "url" ""
     "target" "self" "placements" $paletteOnly "options" (slice)) -}}
 {{- end -}}

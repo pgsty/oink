@@ -265,12 +265,15 @@ ui_expo_prev: "上一张"
 ui_expo_next: "下一张"
 
 # Translation comparison reader
-ui_compare_view: '双语视图'
+ui_compare_view: '双列视图'
 ui_compare_sync: '同步滚动'
-ui_compare_sync_approximate: '标题锚点未完全匹配，将按全文阅读进度估算同步位置。'
+ui_compare_sync_approximate: '两页的部分标题锚点不一致，匹配标题之间的位置为估算。'
+ui_compare_sync_progress: '没有可用于对齐两页的共同标题锚点，将按全文阅读进度同步。'
 ui_compare_sync_unavailable: '标题锚点重复或顺序不一致，无法进行同步。'
-ui_shortcut_compare: '打开双语视图'
+ui_shortcut_compare: '打开双列视图'
 ui_compare_error: "无法加载此页面。"
+ui_compare_loading: '正在加载…'
+ui_compare_retry: '重试'
 
 ui_pagination: 分页导航
 ui_breadcrumb: 面包屑导航

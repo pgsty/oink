@@ -5,8 +5,40 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Changed
+
+- Rename the translation reader to Duo View (双列视图) in all 32 locales, including
+  its entry, Command Palette action and keyboard help; `params.ui.compare` and
+  `compare_translations` are unchanged. With keyboard navigation, `B` now also
+  closes the reader from its toolbar or either pane.
+- Present Sync Scroll as a labelled switch, and explain reduced sync quality
+  with an orange exclamation mark whose note opens on hover, focus or tap and
+  distinguishes a partial heading match from pages without common headings.
+
 ### Fixed
 
+- Show the approximate-sync note only when headings actually differ: matched
+  headings that cannot scroll to the reading line no longer raise it on tall
+  viewports, and a map no shared heading can anchor says it follows overall
+  reading progress.
+- Let Escape close Duo View from a closed language menu, and return focus to the
+  element that had it when the view opened instead of the header entry.
+- Reveal hidden tab panels for fragment links inside a pane, and remeasure sync
+  on OINK tab changes.
+- Stop offering Duo View on blog archive pages after the first and for
+  translations whose build policy writes no HTML (`build.render: link`).
+- Keep the selected and hover states of the Duo View language menu options.
+- Treat a pane as ready once its article is parsed, with a loading note until
+  then, so slow images no longer delay or discard it; failed panes offer Retry.
+- Keep the follower pane in step during continuous trackpad or momentum
+  scrolling instead of trailing until the owner stops; discrete jumps still ease.
+- Give the Duo View entry its own icon instead of the sidebar toggle's glyph,
+  and show a plain label instead of a one-option menu for a single translation.
+- Let scroll keys move the reading pane right after Duo View opens, before
+  focus enters a pane.
+- Remember the last chosen target language and Sync setting for later openings,
+  and restore the visible pane and both reading positions on reload or
+  back/forward return to the view.
 - Keep ordinary builds usable for positional shortcode arguments, invalid Book
   numbers, missing manual-link references, and malformed Landing records.
 - Namespace nested shortcode and Markdown component IDs together with their

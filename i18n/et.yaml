@@ -248,12 +248,15 @@ ui_expo_prev: "Eelmine pilt"
 ui_expo_next: "Järgmine pilt"
 
 # Translation comparison reader
-ui_compare_view: 'Kakskeelne vaade'
+ui_compare_view: 'Kõrvutivaade'
 ui_compare_sync: 'Sünkroonne kerimine'
-ui_compare_sync_approximate: 'Pealkirjad ei ühti täielikult; sünkroonimine kasutab dokumendi ligikaudset edenemist.'
+ui_compare_sync_approximate: 'Mõned pealkirjad erinevad lehtede vahel, seega on kokkulangevate pealkirjade vahelised kohad hinnangulised.'
+ui_compare_sync_progress: 'Ükski ühine pealkiri ei saa lehti joondada, seega järgib sünkroonimine kogu dokumendi lugemise edenemist.'
 ui_compare_sync_unavailable: 'Sünkroonimine pole saadaval, sest pealkirjad korduvad või on vales järjekorras.'
-ui_shortcut_compare: 'Ava kakskeelne vaade'
+ui_shortcut_compare: 'Ava kõrvutivaade'
 ui_compare_error: "Seda lehte ei saanud laadida."
+ui_compare_loading: 'Laadimine…'
+ui_compare_retry: 'Proovi uuesti'
 
 ui_pagination: Lehekülgede navigeerimine
 ui_breadcrumb: Asukoharada

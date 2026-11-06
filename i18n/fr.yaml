@@ -249,12 +249,15 @@ ui_expo_prev: "Image précédente"
 ui_expo_next: "Image suivante"
 
 # Translation comparison reader
-ui_compare_view: 'Vue bilingue'
+ui_compare_view: 'Vue duo'
 ui_compare_sync: 'Synchroniser le défilement'
-ui_compare_sync_approximate: 'Les titres ne correspondent pas entièrement ; la synchronisation utilise une progression approximative dans le document.'
+ui_compare_sync_approximate: 'Certains titres diffèrent entre les deux pages ; les positions entre les titres correspondants sont estimées.'
+ui_compare_sync_progress: 'Aucun titre commun ne permet d’aligner ces pages ; la synchronisation suit la progression de lecture dans l’ensemble du document.'
 ui_compare_sync_unavailable: 'La synchronisation est indisponible, car les titres sont dupliqués ou dans le mauvais ordre.'
-ui_shortcut_compare: 'Ouvrir la vue bilingue'
+ui_shortcut_compare: 'Ouvrir la vue duo'
 ui_compare_error: "Impossible de charger cette page."
+ui_compare_loading: 'Chargement…'
+ui_compare_retry: 'Réessayer'
 
 ui_pagination: Navigation des pages
 ui_breadcrumb: Fil d’Ariane

@@ -9,6 +9,10 @@
           frame.closest('dialog[data-td-compare][open]')) {
         window.OinkComparePane = true;
         document.documentElement.setAttribute('data-td-compare-pane', '');
+        // The parsed article is readable now; images and embeds may still load.
+        document.addEventListener('DOMContentLoaded', function () {
+          try { frame.dispatchEvent(new Event('td:compare-pane-ready')); } catch (_) {}
+        });
       }
     } catch (_) {}
   })();

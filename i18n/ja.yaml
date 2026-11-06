@@ -247,12 +247,15 @@ ui_expo_prev: "前の画像"
 ui_expo_next: "次の画像"
 
 # Translation comparison reader
-ui_compare_view: 'バイリンガル表示'
+ui_compare_view: '並列表示'
 ui_compare_sync: 'スクロールを同期'
-ui_compare_sync_approximate: '見出しが完全には一致しないため、同期では文書全体の位置を近似します。'
+ui_compare_sync_approximate: '一部の見出しが両ページで一致しないため、一致する見出しの間の位置は推定です。'
+ui_compare_sync_progress: '両ページを揃えられる共通の見出しがないため、文書全体の読み進み具合に合わせて同期します。'
 ui_compare_sync_unavailable: '見出しが重複しているか順序が異なるため、同期は利用できません。'
-ui_shortcut_compare: 'バイリンガル表示を開く'
+ui_shortcut_compare: '並列表示を開く'
 ui_compare_error: "このページを読み込めませんでした。"
+ui_compare_loading: '読み込み中…'
+ui_compare_retry: '再試行'
 
 ui_pagination: ページ送り
 ui_breadcrumb: パンくずリスト

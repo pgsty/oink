@@ -11,7 +11,7 @@
 {{ if $p.File -}}
 {{ if not (in (slice "term" "taxonomy") $p.Kind) -}}
 {{ $outputFormat := lower ($p.Store.Get "tdOutputFormat" | default "html") -}}
-{{ $actionContext := partialCached "actions/context.html" $p $p.Site.BaseURL $p.Site.Language.Lang $p.RelPermalink $outputFormat -}}
+{{ $actionContext := partialCached "actions/context.html" $p $p.Site.BaseURL $p.Site.Language.Lang (partial "compare/page-key.html" $p) $outputFormat -}}
 {{ partial "compare/entry.html" $p -}}
 {{ if $actionContext.pagePlacement -}}
 {{ $assistantLinks := $actionContext.assistantLinks -}}

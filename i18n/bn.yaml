@@ -248,12 +248,15 @@ ui_expo_prev: "আগের ছবি"
 ui_expo_next: "পরের ছবি"
 
 # Translation comparison reader
-ui_compare_view: 'দ্বিভাষিক দৃশ্য'
+ui_compare_view: 'যুগল দৃশ্য'
 ui_compare_sync: 'স্ক্রল সিঙ্ক করুন'
-ui_compare_sync_approximate: 'শিরোনামগুলি পুরোপুরি মেলে না; সিঙ্ক্রোনাইজেশন নথির আনুমানিক অগ্রগতি ব্যবহার করছে।'
+ui_compare_sync_approximate: 'দুই পৃষ্ঠার কিছু শিরোনাম আলাদা, তাই মিলে যাওয়া শিরোনামগুলির মধ্যবর্তী অবস্থান আনুমানিক।'
+ui_compare_sync_progress: 'কোনো সাধারণ শিরোনাম দিয়ে এই পৃষ্ঠাগুলি মেলানো যায় না, তাই সিঙ্ক পুরো নথির পড়ার অগ্রগতি অনুসরণ করে।'
 ui_compare_sync_unavailable: 'শিরোনামগুলি পুনরাবৃত্ত বা ক্রমবহির্ভূত হওয়ায় সিঙ্ক্রোনাইজেশন উপলভ্য নয়।'
-ui_shortcut_compare: 'দ্বিভাষিক দৃশ্য খুলুন'
+ui_shortcut_compare: 'যুগল দৃশ্য খুলুন'
 ui_compare_error: "এই পৃষ্ঠাটি লোড করা যায়নি।"
+ui_compare_loading: 'লোড হচ্ছে…'
+ui_compare_retry: 'আবার চেষ্টা করুন'
 
 ui_pagination: পৃষ্ঠা নেভিগেশন
 ui_breadcrumb: অবস্থান নির্দেশক

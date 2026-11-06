@@ -28,6 +28,8 @@ PANE_RUNS = {
     'table-reader', 'tabs',
 }
 HOST_ONLY = {'compare-scroll', 'document-compare'}
+# Every visible reader string is localized in Hugo and handed to the runtime.
+READER_LABELS = {'title', 'sync', 'approximate', 'progress', 'unavailable', 'error', 'loading', 'retry', 'close', 'open', 'language'}
 PANE_GUARD = re.compile(r"if \((?:typeof window !== 'undefined' && )?window\.OinkComparePane[^)]*\) return;")
 
 
@@ -48,6 +50,25 @@ def check_pane_guards(errors: list[str]) -> None:
         errors.append(f'assets/js/{name}.js is not classified for comparison panes in bin/check-compare.py')
     for name in sorted(classified - set(runtimes)):
         errors.append(f'bin/check-compare.py classifies missing runtime assets/js/{name}.js')
+    # The entry's glyph must differ from every shell control's: Font Awesome
+    # aliases (fa-columns is fa-table-columns) otherwise put two identical
+    # icons with different actions on one screen.
+    css = (ROOT / 'assets/third_party/Font-Awesome/css/fontawesome.css').read_text(encoding='utf-8')
+    glyphs = dict(re.findall(r'\.fa-([a-z0-9-]+) \{\s*--fa: "([^"]+)"', css))
+    entry_icons = re.findall(r'fa-solid fa-([a-z0-9-]+)', (ROOT / 'layouts/_partials/compare/entry.html').read_text(encoding='utf-8'))
+    shell_icons = re.findall(r'fa-(?:solid|regular|brands) fa-([a-z0-9-]+)', (ROOT / 'layouts/_partials/shell/icon.html').read_text(encoding='utf-8'))
+    require(bool(entry_icons), 'layouts/_partials/compare/entry.html has no Font Awesome icon', errors)
+    for icon in entry_icons:
+        clashes = sorted(name for name in shell_icons if glyphs.get(name) and glyphs.get(name) == glyphs.get(icon))
+        require(icon in glyphs, f'compare entry icon fa-{icon} is not in the vendored Font Awesome', errors)
+        require(not clashes, f'compare entry icon fa-{icon} draws the same glyph as shell icon(s) {clashes}', errors)
+    # The reader must remeasure on the event OINK tabs actually dispatch:
+    # equal-height panels change visible headings without resizing the article.
+    tab_events = set(re.findall(r"new CustomEvent\('(td:tab-[a-z-]+)'", runtimes.get('tabs', '')))
+    for event in sorted(tab_events):
+        require(f"'{event}'" in runtimes.get('document-compare', ''),
+                f'assets/js/document-compare.js must remeasure on {event} from assets/js/tabs.js', errors)
+    require(bool(tab_events), 'assets/js/tabs.js no longer announces a td:tab-* event the reader can follow', errors)
     for name, source in runtimes.items():
         guarded = bool(PANE_GUARD.search(source))
         if name in PANE_SUPPRESSED:
@@ -71,7 +92,8 @@ def build(hugo: str, directory: Path, setting: str, *, cross_origin=False, zh_of
             config.append(f'    baseURL: https://{"foreign.example.org" if lang == "de" else "example.org"}/{lang}/')
         if zh_off and lang == 'zh':
             config += ['    params:', '      ui:', '        compare: false']
-    params = []
+    # One post per archive page, so the blog index paginates.
+    params = ['    blog_index_size: 1']
     if setting:
         params.append(f'    compare: {setting}')
     if not keyboard:
@@ -88,6 +110,12 @@ def build(hugo: str, directory: Path, setting: str, *, cross_origin=False, zh_of
         (root / 'docs/chapter.md').write_text('---\ntitle: Chapter\n---' + body)
         (root / 'book/chapter.md').write_text('---\ntitle: Book chapter\n---' + body)
         (root / 'blog/post.md').write_text('---\ntitle: Post\ndate: 2026-10-01\n---' + body)
+        (root / 'blog/second.md').write_text('---\ntitle: Second post\ndate: 2026-09-01\n---' + body)
+        # A link-only peer keeps a permalink but writes no HTML, directly or by cascade.
+        (root / 'docs/link-peer.md').write_text('---\ntitle: Link peer\n' + ('build:\n  render: link\n' if lang == 'zh' else '') + '---\nText.\n')
+        (root / 'docs/linked').mkdir()
+        (root / 'docs/linked/_index.md').write_text('---\ntitle: Linked\n' + ('cascade:\n  build:\n    render: link\n' if lang == 'zh' else '') + '---\n')
+        (root / 'docs/linked/child.md').write_text('---\ntitle: Linked child\n---\nText.\n')
         if lang == 'en':
             (root / 'docs/alone.md').write_text('---\ntitle: No translation\n---\n\nOnly English.\n')
             (root / 'docs/draft-peer.md').write_text('---\ntitle: Draft peer\n---\nText.\n')
@@ -142,6 +170,11 @@ def check_case(hugo: str, name: str, setting: str, enabled: bool, options: dict,
             require(not re.search(r'<script[^>]+src="[^"]*document-compare', html), f'{label}: the reader runtime loads eagerly', errors)
             require('compare-entry' in html and 'data-td-compare-open' in html, f'{label}: entry or entry runtime missing', errors)
             keyboard = options.get('keyboard', True)
+            # The reader closes on the key that opened it, only where that key exists.
+            require(data.get('shortcut') == ('B' if keyboard else ''), f'{label}: reader toggle shortcut should follow keyboard navigation', errors)
+            labels = data.get('labels', {})
+            require(READER_LABELS <= set(labels) and all(labels[key] for key in READER_LABELS),
+                    f'{label}: reader labels must all come from the catalog: {sorted(READER_LABELS - set(labels))}', errors)
             require(('aria-keyshortcuts="B"' in html) == keyboard, f'{label}: aria-keyshortcuts should follow keyboard navigation', errors)
             require(('<kbd>B</kbd>' in html) == keyboard, f'{label}: keyboard help B row should follow keyboard navigation', errors)
             # Production builds keep Hugo's GA policy but skip pane documents.
@@ -150,6 +183,15 @@ def check_case(hugo: str, name: str, setting: str, enabled: bool, options: dict,
             html = (public / prefix / 'docs/chapter/index.html').read_text()
             require(f'gtag/js?id={GA_ID}' in html and 'OinkComparePane' not in html, f'{name}: disabled sites must keep Hugo\'s analytics template', errors)
         if enabled:
+            for page in ['link-peer', 'linked/child']:
+                peer = manifest((public / prefix / f'docs/{page}/index.html').read_text())
+                require(peer is not None and not any('/zh/' in target['url'] for target in peer['targets']),
+                        f'{name}: docs/{page} offers a link-only (build.render: link) translation', errors)
+            first = (public / prefix / 'blog/index.html').read_text()
+            later = (public / prefix / 'blog/page/2/index.html').read_text()
+            require(manifest(first) is not None, f'{name}: the first blog archive page lost its comparison', errors)
+            require(manifest(later) is None and 'data-td-compare-open' not in later and 'compare_translations' not in later and '<kbd>B</kbd>' not in later,
+                    f'{name}: blog archive page 2 must not offer comparison of page 1', errors)
             for page in ['alone', 'draft-peer', 'machine-peer']:
                 require(manifest((public / prefix / f'docs/{page}/index.html').read_text()) is None, f'{name}: docs/{page} must not offer comparison', errors)
             if options.get('zh_off'):

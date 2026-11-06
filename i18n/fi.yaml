@@ -248,12 +248,15 @@ ui_expo_prev: "Edellinen kuva"
 ui_expo_next: "Seuraava kuva"
 
 # Translation comparison reader
-ui_compare_view: 'Kaksikielinen näkymä'
+ui_compare_view: 'Rinnakkaisnäkymä'
 ui_compare_sync: 'Synkronoi vieritys'
-ui_compare_sync_approximate: 'Otsikot eivät täsmää täysin; synkronointi käyttää asiakirjan likimääräistä etenemistä.'
+ui_compare_sync_approximate: 'Osa otsikoista eroaa sivujen välillä, joten vastaavien otsikoiden väliset kohdat ovat arvioita.'
+ui_compare_sync_progress: 'Mikään yhteinen otsikko ei kohdista sivuja, joten synkronointi seuraa koko asiakirjan lukemisen etenemistä.'
 ui_compare_sync_unavailable: 'Synkronointi ei ole käytettävissä, koska otsikot ovat päällekkäisiä tai väärässä järjestyksessä.'
-ui_shortcut_compare: 'Avaa kaksikielinen näkymä'
+ui_shortcut_compare: 'Avaa rinnakkaisnäkymä'
 ui_compare_error: "Sivua ei voitu ladata."
+ui_compare_loading: 'Ladataan…'
+ui_compare_retry: 'Yritä uudelleen'
 
 ui_pagination: Sivutus
 ui_breadcrumb: Murupolku

@@ -248,12 +248,15 @@ ui_expo_prev: "Előző kép"
 ui_expo_next: "Következő kép"
 
 # Translation comparison reader
-ui_compare_view: 'Kétnyelvű nézet'
+ui_compare_view: 'Kettős nézet'
 ui_compare_sync: 'Görgetés szinkronizálása'
-ui_compare_sync_approximate: 'A címsorok nem egyeznek teljesen; a szinkronizálás a dokumentum hozzávetőleges előrehaladását használja.'
+ui_compare_sync_approximate: 'Egyes címsorok eltérnek a két oldalon, ezért az egyező címsorok közötti pozíciók becsültek.'
+ui_compare_sync_progress: 'Egyetlen közös címsor sem igazítja egymáshoz az oldalakat, ezért a szinkronizálás a teljes dokumentum olvasási előrehaladását követi.'
 ui_compare_sync_unavailable: 'A szinkronizálás nem érhető el, mert a címsorok ismétlődnek vagy rossz sorrendben vannak.'
-ui_shortcut_compare: 'Kétnyelvű nézet megnyitása'
+ui_shortcut_compare: 'Kettős nézet megnyitása'
 ui_compare_error: "Az oldal nem tölthető be."
+ui_compare_loading: 'Betöltés…'
+ui_compare_retry: 'Újra'
 
 ui_pagination: Lapozás
 ui_breadcrumb: Navigációs útvonal

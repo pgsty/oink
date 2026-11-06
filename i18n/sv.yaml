@@ -248,12 +248,15 @@ ui_expo_prev: "Föregående bild"
 ui_expo_next: "Nästa bild"
 
 # Translation comparison reader
-ui_compare_view: 'Tvåspråkig vy'
+ui_compare_view: 'Dubbelvy'
 ui_compare_sync: 'Synkronisera rullning'
-ui_compare_sync_approximate: 'Rubrikerna matchar inte helt; synkroniseringen använder dokumentets ungefärliga framsteg.'
+ui_compare_sync_approximate: 'Vissa rubriker skiljer sig mellan sidorna, så positioner mellan matchande rubriker är uppskattade.'
+ui_compare_sync_progress: 'Ingen gemensam rubrik kan rikta in sidorna, så synkroniseringen följer läsförloppet i hela dokumentet.'
 ui_compare_sync_unavailable: 'Synkronisering är inte tillgänglig eftersom rubrikerna är duplicerade eller ligger i fel ordning.'
-ui_shortcut_compare: 'Öppna tvåspråkig vy'
+ui_shortcut_compare: 'Öppna dubbelvy'
 ui_compare_error: "Det gick inte att läsa in sidan."
+ui_compare_loading: 'Läser in …'
+ui_compare_retry: 'Försök igen'
 
 ui_pagination: Sidnavigering
 ui_breadcrumb: Brödsmulor

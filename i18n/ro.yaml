@@ -249,12 +249,15 @@ ui_expo_prev: "Imaginea anterioară"
 ui_expo_next: "Imaginea următoare"
 
 # Translation comparison reader
-ui_compare_view: 'Vizualizare bilingvă'
+ui_compare_view: 'Vizualizare dublă'
 ui_compare_sync: 'Sincronizează derularea'
-ui_compare_sync_approximate: 'Titlurile nu corespund complet; sincronizarea folosește progresul aproximativ al documentului.'
+ui_compare_sync_approximate: 'Unele titluri diferă între cele două pagini, așa că pozițiile dintre titlurile corespunzătoare sunt estimate.'
+ui_compare_sync_progress: 'Niciun titlu comun nu poate alinia aceste pagini, așa că sincronizarea urmează progresul citirii întregului document.'
 ui_compare_sync_unavailable: 'Sincronizarea nu este disponibilă deoarece titlurile sunt duplicate sau în ordine greșită.'
-ui_shortcut_compare: 'Deschide vizualizarea bilingvă'
+ui_shortcut_compare: 'Deschide vizualizarea dublă'
 ui_compare_error: "Această pagină nu a putut fi încărcată."
+ui_compare_loading: 'Se încarcă…'
+ui_compare_retry: 'Reîncearcă'
 
 ui_pagination: Paginare
 ui_breadcrumb: Cale de navigare

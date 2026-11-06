@@ -1,0 +1,8 @@
+{{- /* Blog archive pages share their section's RelPermalink, so comparison
+     discovery and the actions that carry it are cached by the pager URL. Page 1
+     keeps its RelPermalink; every non-paginated page is unchanged. */ -}}
+{{- $key := .RelPermalink -}}
+{{- if and (eq (lower (.Store.Get "tdOutputFormat" | default "html")) "html") (.Store.Get "tdBlogPaginated") -}}
+  {{- $key = .Paginator.URL -}}
+{{- end -}}
+{{- return $key -}}

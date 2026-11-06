@@ -248,12 +248,15 @@ ui_expo_prev: "Imatge precedenta"
 ui_expo_next: "Imatge seguenta"
 
 # Translation comparison reader
-ui_compare_view: 'Vista bilingua'
+ui_compare_view: 'Vista dobla'
 ui_compare_sync: 'Sincronizar lo desfilament'
-ui_compare_sync_approximate: 'Los títols correspondon pas completament; la sincronizacion utiliza una progression aproximativa dins lo document.'
+ui_compare_sync_approximate: 'Unes títols son diferents entre las doas paginas ; las posicions entre los títols correspondents son estimadas.'
+ui_compare_sync_progress: 'Cap de títol comun permet pas d’alinhar aquestas paginas ; la sincronizacion seguís la progression de lectura dins tot lo document.'
 ui_compare_sync_unavailable: 'La sincronizacion es pas disponibla perque los títols son duplicats o dins un òrdre incorrècte.'
-ui_shortcut_compare: 'Dobrir la vista bilingua'
+ui_shortcut_compare: 'Dobrir la vista dobla'
 ui_compare_error: "Impossible de cargar aquesta pagina."
+ui_compare_loading: 'Cargament…'
+ui_compare_retry: 'Tornar ensajar'
 
 ui_pagination: Paginacion
 ui_breadcrumb: Fil d’Ariana

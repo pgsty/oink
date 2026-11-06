@@ -248,12 +248,15 @@ ui_expo_prev: "पिछली छवि"
 ui_expo_next: "अगली छवि"
 
 # Translation comparison reader
-ui_compare_view: 'द्विभाषी दृश्य'
+ui_compare_view: 'दोहरा दृश्य'
 ui_compare_sync: 'समकालिक स्क्रॉलिंग'
-ui_compare_sync_approximate: 'शीर्षक पूरी तरह मेल नहीं खाते; सिंक दस्तावेज़ की अनुमानित प्रगति का उपयोग करता है।'
+ui_compare_sync_approximate: 'दोनों पृष्ठों के कुछ शीर्षक अलग हैं, इसलिए मेल खाते शीर्षकों के बीच की स्थिति अनुमानित है।'
+ui_compare_sync_progress: 'कोई साझा शीर्षक इन पृष्ठों को संरेखित नहीं कर सकता, इसलिए सिंक पूरे दस्तावेज़ की पढ़ने की प्रगति का अनुसरण करता है।'
 ui_compare_sync_unavailable: 'शीर्षक दोहराए गए हैं या गलत क्रम में हैं, इसलिए सिंक उपलब्ध नहीं है।'
-ui_shortcut_compare: 'द्विभाषी दृश्य खोलें'
+ui_shortcut_compare: 'दोहरा दृश्य खोलें'
 ui_compare_error: "यह पृष्ठ लोड नहीं हो सका।"
+ui_compare_loading: 'लोड हो रहा है…'
+ui_compare_retry: 'फिर से कोशिश करें'
 
 ui_pagination: पृष्ठ नेविगेशन
 ui_breadcrumb: नेविगेशन पथ

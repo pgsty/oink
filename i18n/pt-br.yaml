@@ -249,12 +249,15 @@ ui_expo_prev: "Imagem anterior"
 ui_expo_next: "Próxima imagem"
 
 # Translation comparison reader
-ui_compare_view: 'Visualização bilíngue'
+ui_compare_view: 'Exibição dupla'
 ui_compare_sync: 'Sincronizar rolagem'
-ui_compare_sync_approximate: 'Os títulos não correspondem totalmente; a sincronização usa o progresso aproximado do documento.'
+ui_compare_sync_approximate: 'Alguns títulos diferem entre as duas páginas, então as posições entre títulos correspondentes são estimadas.'
+ui_compare_sync_progress: 'Nenhum título em comum permite alinhar estas páginas, então a sincronização segue o progresso de leitura do documento inteiro.'
 ui_compare_sync_unavailable: 'A sincronização não está disponível porque os títulos estão duplicados ou fora de ordem.'
-ui_shortcut_compare: 'Abrir visualização bilíngue'
+ui_shortcut_compare: 'Abrir exibição dupla'
 ui_compare_error: "Não foi possível carregar esta página."
+ui_compare_loading: 'Carregando…'
+ui_compare_retry: 'Tentar novamente'
 
 ui_pagination: Paginação
 ui_breadcrumb: Caminho de navegação

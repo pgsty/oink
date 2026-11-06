@@ -248,12 +248,15 @@ ui_expo_prev: "Forrige bilde"
 ui_expo_next: "Neste bilde"
 
 # Translation comparison reader
-ui_compare_view: 'Tospråklig visning'
+ui_compare_view: 'Dobbeltvisning'
 ui_compare_sync: 'Synkroniser rulling'
-ui_compare_sync_approximate: 'Overskriftene samsvarer ikke helt; synkroniseringen bruker omtrentlig fremdrift i dokumentet.'
+ui_compare_sync_approximate: 'Noen overskrifter er ulike på de to sidene, så posisjoner mellom samsvarende overskrifter er anslått.'
+ui_compare_sync_progress: 'Ingen felles overskrift kan justere sidene mot hverandre, så synkroniseringen følger lesefremdriften i hele dokumentet.'
 ui_compare_sync_unavailable: 'Synkronisering er ikke tilgjengelig fordi overskriftene er dupliserte eller i feil rekkefølge.'
-ui_shortcut_compare: 'Åpne tospråklig visning'
+ui_shortcut_compare: 'Åpne dobbeltvisning'
 ui_compare_error: "Kunne ikke laste denne siden."
+ui_compare_loading: 'Laster inn …'
+ui_compare_retry: 'Prøv igjen'
 
 ui_pagination: Sidenavigasjon
 ui_breadcrumb: Brødsmulesti

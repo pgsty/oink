@@ -248,12 +248,15 @@ ui_expo_prev: "Önceki görsel"
 ui_expo_next: "Sonraki görsel"
 
 # Translation comparison reader
-ui_compare_view: 'İki dilli görünüm'
+ui_compare_view: 'İkili görünüm'
 ui_compare_sync: 'Kaydırmayı eşitle'
-ui_compare_sync_approximate: 'Başlıklar tamamen eşleşmiyor; eşitleme belgede yaklaşık ilerleme kullanır.'
+ui_compare_sync_approximate: 'Bazı başlıklar iki sayfa arasında farklı; eşleşen başlıklar arasındaki konumlar tahminidir.'
+ui_compare_sync_progress: 'Sayfaları hizalayabilecek ortak bir başlık yok; eşitleme belgenin genel okuma ilerlemesini izler.'
 ui_compare_sync_unavailable: 'Başlıklar yinelendiği veya sıra dışı olduğu için eşitleme kullanılamıyor.'
-ui_shortcut_compare: 'İki dilli görünümü aç'
+ui_shortcut_compare: 'İkili görünümü aç'
 ui_compare_error: "Bu sayfa yüklenemedi."
+ui_compare_loading: 'Yükleniyor…'
+ui_compare_retry: 'Yeniden dene'
 
 ui_pagination: Sayfalama
 ui_breadcrumb: Gezinti yolu

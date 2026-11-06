@@ -62,11 +62,11 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.5.0 keeps the Hugo-only build boundary and adds an opt-in Bilingual View
-for reading a page beside one of its translations. It also preserves the local
-PlantUML and diagram reading, richer local search, table reader, blog gallery,
-and component refinements introduced in 1.4.0. Hugo Extended 0.168.0 is the
-minimum and default validation version. See the [release notes](https://oink.pgsty.com/blog/release/1.5.0/)
+OINK 1.5.1 keeps the Hugo-only build boundary and stabilizes Duo View, the
+two-pane reader introduced in 1.5.0. It also corrects RSS and Print aggregation,
+navigation identity, search ranking, safe fallbacks, and related accessibility
+and localization details. Hugo Extended 0.168.0 is the minimum and default
+validation version. See the [release notes](https://oink.pgsty.com/blog/release/1.5.1/)
 and [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site

@@ -1371,8 +1371,15 @@ params:
                     order = ("b", "a") if section in scopes else ("a", "b")
                     expected = [prefix + published + "/" + name + "/" for name in order]
                     root_url = prefix + published + "/"
-                    tree = next(item for item in nav if item["id"] == root_url)
-                    require([item["id"] for item in tree["children"]] == expected,
+                    # Navigation JSON identity drops the deployment and language
+                    # prefixes; its URLs keep the published path (shell contract).
+                    tree = next((item for item in nav if item["id"] == "/" + published + "/"), None)
+                    if tree is None:
+                        errors.append(f"{scopes} {language} {section} navigation.json lost its section root")
+                        continue
+                    require(tree["url"].endswith(root_url),
+                            f"{scopes} {language} {section} navigation.json dropped its published path", errors)
+                    require([item["id"] for item in tree["children"]] == ["/" + published + "/" + name + "/" for name in order],
                             f"{scopes} {language} {section} navigation.json escaped its scope", errors)
                     for i, url in enumerate([root_url, *expected]):
                         html = page_path(source / "public", url.removeprefix("/sub")).read_text()

@@ -249,9 +249,9 @@ ui_expo_next: "Nästa bild"
 
 # Translation comparison reader
 ui_compare_view: 'Dubbelvy'
-ui_compare_sync: 'Synkronisera rullning'
+ui_compare_sync: 'Synkron rullning'
 ui_compare_sync_approximate: 'Vissa rubriker skiljer sig mellan sidorna, så positioner mellan matchande rubriker är uppskattade.'
-ui_compare_sync_progress: 'Ingen gemensam rubrik kan rikta in sidorna, så synkroniseringen följer läsförloppet i hela dokumentet.'
+ui_compare_sync_progress: 'Ingen gemensam rubrik kan användas för att matcha sidornas positioner, så synkroniseringen följer läsförloppet i hela dokumentet.'
 ui_compare_sync_unavailable: 'Synkronisering är inte tillgänglig eftersom rubrikerna är duplicerade eller ligger i fel ordning.'
 ui_shortcut_compare: 'Öppna dubbelvy'
 ui_compare_error: "Det gick inte att läsa in sidan."

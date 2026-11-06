@@ -252,7 +252,7 @@ ui_expo_next: "Imaginea următoare"
 ui_compare_view: 'Vizualizare dublă'
 ui_compare_sync: 'Sincronizează derularea'
 ui_compare_sync_approximate: 'Unele titluri diferă între cele două pagini, așa că pozițiile dintre titlurile corespunzătoare sunt estimate.'
-ui_compare_sync_progress: 'Niciun titlu comun nu poate alinia aceste pagini, așa că sincronizarea urmează progresul citirii întregului document.'
+ui_compare_sync_progress: 'Nu există un titlu comun care să permită alinierea paginilor, așa că sincronizarea se bazează pe progresul lecturii în întregul document.'
 ui_compare_sync_unavailable: 'Sincronizarea nu este disponibilă deoarece titlurile sunt duplicate sau în ordine greșită.'
 ui_shortcut_compare: 'Deschide vizualizarea dublă'
 ui_compare_error: "Această pagină nu a putut fi încărcată."

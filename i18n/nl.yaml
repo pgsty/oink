@@ -249,9 +249,9 @@ ui_expo_next: "Volgende afbeelding"
 
 # Translation comparison reader
 ui_compare_view: 'Duoweergave'
-ui_compare_sync: 'Scrollen synchroniseren'
+ui_compare_sync: 'Synchroon scrollen'
 ui_compare_sync_approximate: 'Sommige koppen verschillen tussen de twee pagina’s, dus posities tussen overeenkomende koppen zijn geschat.'
-ui_compare_sync_progress: 'Geen gemeenschappelijke kop kan deze pagina’s uitlijnen, dus de synchronisatie volgt de leesvoortgang in het hele document.'
+ui_compare_sync_progress: 'Geen gemeenschappelijke kop is geschikt om de pagina’s uit te lijnen; de synchronisatie volgt daarom de leesvoortgang in het hele document.'
 ui_compare_sync_unavailable: 'Synchronisatie is niet beschikbaar omdat koppen dubbel voorkomen of in de verkeerde volgorde staan.'
 ui_shortcut_compare: 'Duoweergave openen'
 ui_compare_error: "Deze pagina kon niet worden geladen."

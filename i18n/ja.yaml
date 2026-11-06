@@ -249,8 +249,8 @@ ui_expo_next: "次の画像"
 # Translation comparison reader
 ui_compare_view: '並列表示'
 ui_compare_sync: 'スクロールを同期'
-ui_compare_sync_approximate: '一部の見出しが両ページで一致しないため、一致する見出しの間の位置は推定です。'
-ui_compare_sync_progress: '両ページを揃えられる共通の見出しがないため、文書全体の読み進み具合に合わせて同期します。'
+ui_compare_sync_approximate: '両ページで一部の見出しが一致しないため、一致する見出し間の位置を推定します。'
+ui_compare_sync_progress: '両ページの位置合わせに使える共通の見出しがないため、文書全体をどこまで読み進めたかに応じて同期します。'
 ui_compare_sync_unavailable: '見出しが重複しているか順序が異なるため、同期は利用できません。'
 ui_shortcut_compare: '並列表示を開く'
 ui_compare_error: "このページを読み込めませんでした。"

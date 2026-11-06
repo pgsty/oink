@@ -271,12 +271,12 @@ ui_expo_next: "下一張"
 # Translation comparison reader
 ui_compare_view: '雙欄檢視'
 ui_compare_sync: '同步捲動'
-ui_compare_sync_approximate: '兩頁的部分標題錨點不一致，相符標題之間的位置為估算。'
-ui_compare_sync_progress: '沒有可用於對齊兩頁的共同標題錨點，將依全文閱讀進度同步。'
-ui_compare_sync_unavailable: '標題錨點重複或順序不一致，無法進行同步。'
+ui_compare_sync_approximate: '兩頁的部分標題不同，相符標題之間的位置為估算結果。'
+ui_compare_sync_progress: '沒有可用於對齊兩頁的共同標題，將依全文閱讀進度同步。'
+ui_compare_sync_unavailable: '標題重複或順序不一致，無法同步。'
 ui_shortcut_compare: '開啟雙欄檢視'
 ui_compare_error: "無法載入此頁面。"
-ui_compare_loading: '正在載入…'
+ui_compare_loading: '載入中…'
 ui_compare_retry: '重試'
 
 ui_pagination: 分頁導覽

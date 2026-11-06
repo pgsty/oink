@@ -255,9 +255,9 @@ ui_expo_next: "الصورة التالية"
 ui_compare_view: 'عرض مزدوج'
 ui_compare_sync: 'مزامنة التمرير'
 ui_compare_sync_approximate: 'بعض العناوين مختلفة بين الصفحتين، لذا تُقدَّر المواضع الواقعة بين العناوين المتطابقة.'
-ui_compare_sync_progress: 'لا يوجد عنوان مشترك يمكنه محاذاة الصفحتين، لذا تتبع المزامنة تقدّم القراءة في المستند بأكمله.'
+ui_compare_sync_progress: 'لا يوجد عنوان مشترك صالح لمحاذاة الصفحتين، لذا تعتمد المزامنة على تقدّم القراءة في المستند بأكمله.'
 ui_compare_sync_unavailable: 'المزامنة غير متاحة لأن العناوين مكررة أو غير مرتبة.'
-ui_shortcut_compare: 'فتح العرض المزدوج'
+ui_shortcut_compare: 'افتح العرض المزدوج'
 ui_compare_error: "تعذر تحميل هذه الصفحة."
 ui_compare_loading: 'جارٍ التحميل…'
 ui_compare_retry: 'إعادة المحاولة'

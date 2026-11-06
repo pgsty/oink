@@ -249,7 +249,7 @@ ui_expo_next: "Növbəti şəkil"
 
 # Translation comparison reader
 ui_compare_view: 'İkili görünüş'
-ui_compare_sync: 'Sürüşdürməni sinxronlaşdır'
+ui_compare_sync: 'Sinxron sürüşdürmə'
 ui_compare_sync_approximate: 'Bəzi başlıqlar iki səhifə arasında fərqlənir, ona görə də uyğun başlıqlar arasındakı mövqelər təxminidir.'
 ui_compare_sync_progress: 'Səhifələri uyğunlaşdıra biləcək ortaq başlıq yoxdur, ona görə də sinxronlaşdırma bütün sənəd üzrə oxuma irəliləyişini izləyir.'
 ui_compare_sync_unavailable: 'Başlıqlar təkrarlandığı və ya ardıcıllığı pozulduğu üçün sinxronlaşdırma əlçatan deyil.'

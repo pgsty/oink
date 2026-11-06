@@ -252,12 +252,12 @@ ui_expo_next: "התמונה הבאה"
 ui_compare_view: 'תצוגה כפולה'
 ui_compare_sync: 'גלילה מסונכרנת'
 ui_compare_sync_approximate: 'חלק מהכותרות שונות בין שני הדפים, ולכן המיקומים בין כותרות תואמות משוערים.'
-ui_compare_sync_progress: 'אין כותרת משותפת שיכולה ליישר את הדפים, ולכן הסנכרון עוקב אחר התקדמות הקריאה במסמך כולו.'
+ui_compare_sync_progress: 'אין כותרת משותפת מתאימה ליישור הדפים, ולכן הסנכרון מתבסס על התקדמות הקריאה במסמך כולו.'
 ui_compare_sync_unavailable: 'הסנכרון אינו זמין כי הכותרות כפולות או מסודרות בסדר שגוי.'
-ui_shortcut_compare: 'פתיחת תצוגה כפולה'
+ui_shortcut_compare: 'פתח תצוגה כפולה'
 ui_compare_error: "לא ניתן לטעון דף זה."
 ui_compare_loading: 'טוען…'
-ui_compare_retry: 'ניסיון חוזר'
+ui_compare_retry: 'נסה שוב'
 
 ui_pagination: ניווט בין עמודים
 ui_breadcrumb: נתיב ניווט

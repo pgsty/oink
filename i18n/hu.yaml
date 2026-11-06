@@ -249,9 +249,9 @@ ui_expo_next: "Következő kép"
 
 # Translation comparison reader
 ui_compare_view: 'Kettős nézet'
-ui_compare_sync: 'Görgetés szinkronizálása'
+ui_compare_sync: 'Szinkron görgetés'
 ui_compare_sync_approximate: 'Egyes címsorok eltérnek a két oldalon, ezért az egyező címsorok közötti pozíciók becsültek.'
-ui_compare_sync_progress: 'Egyetlen közös címsor sem igazítja egymáshoz az oldalakat, ezért a szinkronizálás a teljes dokumentum olvasási előrehaladását követi.'
+ui_compare_sync_progress: 'Nincs az oldalak igazítására alkalmas közös címsor, ezért a szinkronizálás a teljes dokumentum olvasási előrehaladását követi.'
 ui_compare_sync_unavailable: 'A szinkronizálás nem érhető el, mert a címsorok ismétlődnek vagy rossz sorrendben vannak.'
 ui_shortcut_compare: 'Kettős nézet megnyitása'
 ui_compare_error: "Az oldal nem tölthető be."

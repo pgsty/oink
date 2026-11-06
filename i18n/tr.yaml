@@ -252,7 +252,7 @@ ui_compare_view: 'İkili görünüm'
 ui_compare_sync: 'Kaydırmayı eşitle'
 ui_compare_sync_approximate: 'Bazı başlıklar iki sayfa arasında farklı; eşleşen başlıklar arasındaki konumlar tahminidir.'
 ui_compare_sync_progress: 'Sayfaları hizalayabilecek ortak bir başlık yok; eşitleme belgenin genel okuma ilerlemesini izler.'
-ui_compare_sync_unavailable: 'Başlıklar yinelendiği veya sıra dışı olduğu için eşitleme kullanılamıyor.'
+ui_compare_sync_unavailable: 'Başlıklar yinelendiği veya yanlış sırada olduğu için eşitleme kullanılamıyor.'
 ui_shortcut_compare: 'İkili görünümü aç'
 ui_compare_error: "Bu sayfa yüklenemedi."
 ui_compare_loading: 'Yükleniyor…'

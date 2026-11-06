@@ -250,9 +250,9 @@ ui_expo_next: "Sledeća slika"
 
 # Translation comparison reader
 ui_compare_view: 'Dvostruki prikaz'
-ui_compare_sync: 'Uskladi pomeranje'
+ui_compare_sync: 'Sinhrono pomeranje'
 ui_compare_sync_approximate: 'Neki naslovi se razlikuju između dve stranice, pa su položaji između odgovarajućih naslova procenjeni.'
-ui_compare_sync_progress: 'Nijedan zajednički naslov ne može da poravna stranice, pa sinhronizacija prati ukupni napredak čitanja dokumenta.'
+ui_compare_sync_progress: 'Nema zajedničkog naslova pogodnog za poravnanje stranica, pa sinhronizacija prati ukupni napredak čitanja dokumenta.'
 ui_compare_sync_unavailable: 'Sinhronizacija nije dostupna jer se naslovi ponavljaju ili su pogrešno poređani.'
 ui_shortcut_compare: 'Otvori dvostruki prikaz'
 ui_compare_error: "Nije moguće učitati ovu stranicu."

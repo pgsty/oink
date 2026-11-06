@@ -58,6 +58,9 @@ All notable changes to OINK are documented here. The project follows
 - Apply the shared URL policy to Landing links, retain fluid section spacing,
   hide repeated marquee rows from assistive technology, and preserve focus,
   print links, forced-color navigation and RTL font roles.
+- Rank a search term repeated in its strongest field above a passing mention in
+  the same field, without crossing field tiers, instead of falling back to title
+  order; literal identifiers such as `top_k` were affected most (#60).
 
 ## [1.5.0] — 2026-11-04
 

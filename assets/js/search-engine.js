@@ -123,6 +123,27 @@
   var weights = { title: 100, keywords: 80, categories: 60, tags: 60,
     headings: 50, description: 30, body: 10 };
 
+  // A literal term scores by the best field that contains it. Repeated
+  // occurrences in that field order pages within its tier: the bonus grows
+  // toward 20% and never lets a field outrank the next one up (body stays
+  // under 12 while description starts at 30; headings stay under tags' 60).
+  // A single occurrence keeps the plain field weight.
+  var REPEAT_CAP = 20;
+  function occurrences(text, term) {
+    var count = 0;
+    for (var at = text.indexOf(term); at >= 0 && count < REPEAT_CAP; at = text.indexOf(term, at + term.length))
+      count += 1;
+    return count;
+  }
+  function literalScore(fields, term) {
+    var best = 0;
+    Object.keys(weights).forEach(function (key) {
+      var count = occurrences(fields[key], term);
+      if (count) best = Math.max(best, weights[key] * (1 + 0.2 * (1 - 1 / count)));
+    });
+    return best;
+  }
+
   function create(documents, lunrApi, maxResults) {
     var docs = Array.from(new Map((documents || []).map(function (doc) {
       return [doc.ref, doc];
@@ -255,10 +276,7 @@
         var textScore = 0;
         var phraseMatch = false;
         needles.forEach(function (term, t) {
-          var score = 0;
-          Object.keys(weights).forEach(function (key) {
-            if (fields[key].indexOf(term) >= 0) score = Math.max(score, weights[key]);
-          });
+          var score = literalScore(fields, term);
           var alternative = alternatives[t].get(doc.ref) || 0;
           if (score || alternative) matched += 1;
           textScore += Math.max(score, alternative);

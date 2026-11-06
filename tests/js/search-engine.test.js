@@ -236,6 +236,34 @@ const scopedTypo = engineModule.create([
 assert.equal(scopedTypo.query('databsae', {root:'docs'})[0].doc.ref, '/docs/database/',
   'another root must not suppress spelling fallback inside the chosen scope');
 
+// Issue #60: an identifier that skips Lunr (`top_k`) must rank the page that
+// uses it repeatedly above a passing mention, not fall back to title order.
+const identifier = engineModule.create([
+  { ref: '/a/', title: 'Alpha notes', body: 'Benchmarks ran with top_k set to 10.' },
+  { ref: '/q/', title: 'Query reference',
+    body: 'top_k: number of results. Set top_k to 5 for short answers. top_k must be ' +
+      'between 1 and 100. When top_k exceeds the candidate pool, fewer results return.' },
+], null, 10);
+assert.deepEqual(identifier.query('top_k').map((result) => result.doc.title),
+  ['Query reference', 'Alpha notes']);
+assert.equal(identifier.query('top_k').find((result) => result.doc.ref === '/a/').textScore, 10,
+  'a single occurrence keeps the plain field weight');
+// The same holds for a plain word that Lunr also matches.
+const repeated = engineModule.create([
+  { ref: '/a/', title: 'Alpha', body: 'One replica.' },
+  { ref: '/z/', title: 'Zulu', body: 'A replica, its replica lag and a third replica.' },
+], lunr, 10);
+assert.deepEqual(repeated.query('replica').map((result) => result.doc.ref), ['/z/', '/a/']);
+// Repetition reorders within a field tier but never crosses into the next.
+const tiers = engineModule.create([
+  { ref: '/body/', title: 'Body', body: Array(50).fill('top_k').join(' ') },
+  { ref: '/description/', title: 'Zeta', description: 'Mentions top_k once.' },
+  { ref: '/headings/', title: 'Headings', headings: Array(50).fill('top_k').join(' ') },
+  { ref: '/tags/', title: 'Tags', tags: ['top_k'] },
+], null, 10);
+assert.deepEqual(tiers.query('top_k').map((result) => result.doc.ref),
+  ['/tags/', '/headings/', '/description/', '/body/']);
+
 if (process.argv.length > 2) {
   assert.equal(process.argv.length, 4, 'expected EN and ZH built index paths');
   const en = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));

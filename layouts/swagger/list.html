@@ -1,7 +1,7 @@
 {{ define "main" }}
 <div class="td-content">
 		{{ partial "page-title.html" . }}
-	{{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
+	{{ with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
 	<header class="td-article-meta">
 		{{ partial "taxonomy-terms-article-wrapper.html" . -}}
 		{{ if partial "reading-time-enabled.html" . -}}

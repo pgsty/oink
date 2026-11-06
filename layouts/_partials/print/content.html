@@ -9,7 +9,7 @@
 {{ $break := cond .DoPageBreak "page-break-before: always" "" -}}
 <div class="td-content" style="{{ $break }}">
 	<h1 id="pg-{{ .Page.File.UniqueID }}">{{ .PageNum }} - {{ .Page.Title }}</h1>
-    {{ with .Page.Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
+    {{ with .Page.Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
 	{{ $content }}
 </div>
 {{ end }}

@@ -1,6 +1,6 @@
 <div class="td-content">
 	{{ partial "page-title.html" . }}
-	{{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
+	{{ with .Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
 	<header class="td-article-meta">
 		{{ partial "taxonomy-terms-article-wrapper.html" . -}}
 		{{ if (and (ne .Type "book") (partial "reading-time-enabled.html" .)) -}}

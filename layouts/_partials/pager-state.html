@@ -25,6 +25,9 @@
   {{- else }}{{ $enabled = and (eq $format "html") $page.Params.pager }}{{ end -}}
 {{- end -}}
 
+{{- /* Blog lists own pagination, not a link into the article sequence. */ -}}
+{{- if and (eq $page.Type "blog") (not $page.IsPage) }}{{ $enabled = false }}{{ end -}}
+
 {{- $prev := false -}}
 {{- $next := false -}}
 {{- if $enabled -}}

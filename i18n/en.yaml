@@ -65,7 +65,7 @@ ui_theme_light: Light
 ui_theme_dark: Dark
 ui_appearance: Appearance
 ui_appearance_style: Style
-ui_appearance_mode: Light
+ui_appearance_mode: Color mode
 ui_appearance_close: Close appearance settings
 ui_appearance_unsaved: Your browser is not saving settings, so this choice lasts only on this page.
 ui_preset_default: Default
@@ -270,3 +270,6 @@ ui_compare_sync_approximate: 'Headings do not fully match; sync uses approximate
 ui_compare_sync_unavailable: 'Sync is unavailable because the headings are duplicated or out of order.'
 ui_shortcut_compare: 'Open bilingual view'
 ui_compare_error: "Could not load this page."
+
+ui_pagination: Pagination
+ui_breadcrumb: Breadcrumb

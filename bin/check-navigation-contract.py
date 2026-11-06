@@ -811,10 +811,9 @@ def validate_observation(
                     }[variant]
                     navigation = build["navigation"][lang]
                     require(
-                        navigation["mobile"] == []
-                        and navigation["docs_active"]["mobile"] == [],
-                        f"{deployment}/{variant}/{state}/{lang} the Home/"
-                        "Landing drawer escaped onto a plain or docs surface",
+                        bool(navigation["mobile"])
+                        and bool(navigation["docs_active"]["mobile"]),
+                        f"{deployment}/{variant}/{state}/{lang} site drawer must cover both navbar-only fixture surfaces",
                     )
                     for region in ("desktop",):
                         links = navigation[region]
@@ -1256,12 +1255,14 @@ params:
                 require(parsed("docs/part/b").links == [prefix + route + "/" for route in ("docs/part", "docs/part/b", "docs/part/a")],
                         f"{language} nested root leaked outer manual entries")
                 navigation = json.loads((output / language / "navigation.json").read_text())["root"]["children"]
-                docs = next(node for node in navigation if node["id"] == prefix + "docs/")
-                require([node["id"] for node in docs["children"]] == [prefix + route + "/" for route in ("intro", "settings")],
+                docs = next(node for node in navigation if node["id"] == "/docs/")
+                require(docs["url"].endswith(prefix + "docs/"),
+                        f"{language} navigation.json dropped its published deployment/language path")
+                require([node["id"] for node in docs["children"]] == ["/" + route + "/" for route in ("intro", "settings")],
                         f"{language} navigation.json lost virtual Docs topology")
-                require(docs["children"][1]["children"][0]["id"] == prefix + "api/",
+                require(docs["children"][1]["children"][0]["id"] == "/api/",
                         f"{language} navigation.json lost the explicit parent-child relationship")
-                require(docs["children"][1]["children"][1]["id"] == prefix + "docs/part/",
+                require(docs["children"][1]["children"][1]["id"] == "/docs/part/",
                         f"{language} navigation.json lost the nested root under its explicit parent")
 
 

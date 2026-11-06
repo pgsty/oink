@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 from html import unescape
 from html.parser import HTMLParser
@@ -717,6 +718,74 @@ def create_site(root: Path, body: str, *, extra_ui: str = "", draft: bool = Fals
     write(root / "content/book/page.md", f"---\ntitle: Page\n{status}---\n\n{body}\n")
 
 
+def check_invalid_number_outputs(hugo: str) -> list[str]:
+    """Invalid numbers preserve bodies without inventing targets or index rows."""
+    errors: list[str] = []
+    cases = {
+        "figure": ('{{< fig num="1/2" id="discarded" src="/x.png" caption="Figure fallback" />}}', "Figure fallback"),
+        "table": ('{{< tbl num="1/2" id="discarded" caption="Table fallback" >}}\n| Value |\n| --- |\n| Kept table |\n{{< /tbl >}}', "Kept table"),
+        "equation": ('{{< eq num="1/2" id="discarded" caption="Equation fallback" >}}x+y{{< /eq >}}', "Equation fallback"),
+        "example": ('{{< eg num="1/2" id="discarded" caption="Example fallback" >}}Example body{{< /eg >}}', "Example body"),
+        "native-table": ('| Value |\n| --- |\n| Native table |\n{num="1/2" caption="Table fallback"}', "Native table"),
+        "native-code": ('```text {num="1/2" caption="Example fallback"}\nNative code\n```', "Native code"),
+        "figure-positional": ('{{< fig "bad" >}}Figure body{{< /fig >}}', "Figure body"),
+        "table-positional": ('{{< tbl "bad" >}}\n| Value |\n| --- |\n| Table body |\n{{< /tbl >}}', "Table body"),
+        "example-positional": ('{{< eg "bad" >}}Example body{{< /eg >}}', "Example body"),
+    }
+    with tempfile.TemporaryDirectory(prefix="oink-book-number-fallbacks-") as temp:
+        site = Path(temp)
+        write(site / "hugo.yaml", base_config().replace(
+            "page: [HTML]", "page: [HTML, PRINT, MARKDOWN]"
+        ).replace("section: [HTML]", "section: [HTML, PRINT, MARKDOWN, BookManifest]"))
+        write(site / "content/book/_index.md",
+              "---\ntitle: Book\ntype: book\ncascade:\n  type: book\n---\n\n"
+              "{{< book-figures >}}\n{{< book-tables >}}\n"
+              "{{< book-equations >}}\n{{< book-examples >}}\n")
+        for name, (body, _) in cases.items():
+            write(site / f"content/book/{name}.md", f"---\ntitle: {name}\n---\n\n{body}\n")
+        write(site / "content/book/valid.md", """---
+title: Valid numbers
+---
+{{< fig num="9" src="/x.png" caption="Valid figure" />}}
+{{< tbl num="9" caption="Valid table" >}}
+| Value |
+| --- |
+| Valid table |
+{{< /tbl >}}
+{{< eq num="9" >}}x+y{{< /eq >}}
+{{< eg num="9" caption="Valid example" >}}Valid body{{< /eg >}}
+""")
+        public = site / "public"
+        result = build(hugo, site, public)
+        log = result.stdout + result.stderr
+        require(result.returncode == 0, f"invalid-number matrix stopped the build: {log}", errors)
+        if result.returncode != 0:
+            return errors
+        for name, (_, body_marker) in cases.items():
+            require(f"content/book/{name}.md:" in log, f"{name}: invalid number/argument emitted no diagnostic", errors)
+            for relative in (f"book/{name}/index.html", f"_print/book/{name}/index.html", f"book/{name}/index.md"):
+                rendered = (public / relative).read_text()
+                require(body_marker in rendered, f"{relative}: unnumbered fallback lost its body", errors)
+                require('id="discarded"' not in rendered and 'data-td-book-num=' not in rendered
+                        and re.search(r'id="(?:fig|tbl|eq|eg)-"', rendered) is None,
+                        f"{relative}: invalid number emitted a Book target", errors)
+        manifest = json.loads((public / "book/book.json").read_text())
+        pages = {page["path"]: page for page in manifest["pages"]}
+        for name in cases:
+            require(f"/book/{name}" in pages and pages[f"/book/{name}"]["targets"] == [],
+                    f"{name}: invalid number was registered in BookManifest", errors)
+        valid_ids = {f"{kind}-9" for kind in ("fig", "tbl", "eq", "eg")}
+        require({target["id"] for target in pages.get("/book/valid", {}).get("targets", [])} == valid_ids,
+                "invalid-number protection dropped valid Book targets", errors)
+        for relative in ("book/index.html", "book/index.md"):
+            index = (public / relative).read_text()
+            for target in valid_ids:
+                require(f"/book/valid/#{target}" in index, f"{relative}: valid index entry {target} disappeared", errors)
+            require("discarded" not in index and not any(f"/book/{name}/#" in index for name in cases),
+                    f"{relative}: invalid number appeared in a Book index", errors)
+    return errors
+
+
 def check_sidebar_headings(hugo: str) -> list[str]:
     """Headings are opt-in, page overrides win, and cached trees stay neutral."""
     errors: list[str] = []
@@ -1079,6 +1148,11 @@ def check_invalid_components(hugo: str) -> list[str]:
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
             require((source / "public/book/page/index.html").is_file(),
                     f"invalid Book case {name} emitted no safe page output", errors)
+            if name in ("missing-num", "num-type", "num-grammar", "eg-num"):
+                rendered = (source / "public/book/page/index.html").read_text()
+                require('id="fig-"' not in rendered and 'id="tbl-"' not in rendered
+                        and 'id="eg-"' not in rendered and 'id="eq-"' not in rendered,
+                        f"invalid Book case {name} emitted an empty Book target id", errors)
             if name in ("xref-empty", "xref-page", "fig-caption-title"):
                 for relative in ("book/page/index.html", "_print/book/page/index.html", "book/page/index.md"):
                     rendered = (source / "public" / relative).read_text()
@@ -1207,7 +1281,7 @@ def check_rss_output(hugo: str) -> list[str]:
         source = Path(temp)
         write(
             source / "hugo.yaml",
-            base_config().replace("disableKinds: [home, RSS, sitemap, taxonomy, term]", "disableKinds: [home, sitemap, taxonomy, term]").replace("page: [HTML]", "page: [RSS]"),
+            base_config().replace("disableKinds: [home, RSS, sitemap, taxonomy, term]", "disableKinds: [home, sitemap, taxonomy, term]").replace("section: [HTML]", "section: [HTML, RSS]"),
         )
         write(source / "content/book/_index.md", "---\ntitle: Book\ntype: book\ncascade:\n  type: book\n---\n")
         write(source / "data/contributors.yaml", "items:\n  - github: pgsty\n    role: Theme fixture\n")
@@ -1230,32 +1304,26 @@ SELECT 1;
 {{< contributors >}}
 {{< xref fig="1" />}}
 before{{< book-toc >}}after
+
+<!--more-->
 """,
-        )
-        write(
-            source / "layouts/book/single.rss.xml",
-            '{{- .Store.Set "tdOutputFormat" "rss" -}}<fixture>{{ .RenderShortcodes | safeHTML }}</fixture>\n',
         )
         result = build(hugo, source, source / "public")
         if result.returncode != 0:
             return [f"Book RSS fixture failed: {result.stdout}{result.stderr}"]
-        path = source / "public/book/page/index.xml"
+        path = source / "public/book/index.xml"
         require(path.exists(), "Book RSS fixture emitted no page output", errors)
         if path.exists():
-            rss = path.read_text(encoding="utf-8")
-            for marker in (
-                "**Figure 1.** Caption",
-                "**Table 1.** Rows",
-                "$$\na+b\n$$",
-                "**Equation 1.**",
-                "**Example 1.** Sample",
-                "- [\\@pgsty](https://github.com/pgsty) — Theme fixture",
-                "[Figure 1](#fig-1)",
-                "beforeafter",
-            ):
+            feed = ET.fromstring(path.read_text(encoding="utf-8"))
+            rss = feed.findtext("channel/item/description", "")
+            for marker in ("Figure 1", "Caption", "Table 1", "Rows", "<table", "<math",
+                           "Equation 1", "Example 1", "Sample", "SELECT", "<ul>",
+                           "https://github.com/pgsty", 'href="#fig-1"', "beforeafter"):
                 require(marker in rss, f"Book RSS fallback lost {marker}", errors)
-            for marker in ("<figure", "td-book-", "Book contents", "<nav"):
+            for marker in ("**Figure", "**Table", "$$", "| A |", "[Figure 1]", "<script", "<button", "<nav"):
                 require(marker not in rss, f"Book RSS output leaked {marker}", errors)
+            require(feed.find("channel/item/pubDate") is None,
+                    "undated Book page emitted a fabricated publication date", errors)
     return errors
 
 
@@ -1510,6 +1578,7 @@ def main() -> int:
         + check_home_manifest(args.hugo)
         + check_reading_time(args.hugo)
         + check_invalid_components(args.hugo)
+        + check_invalid_number_outputs(args.hugo)
         + check_footnotes(args.hugo)
         + check_invalid_contributors(args.hugo)
         + check_ddia_compatibility(args.hugo)

@@ -18,12 +18,14 @@
 {{- end -}}
 {{- if $ok -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if in (slice "markdown" "rss") $format -}}
+{{- if eq $format "markdown" -}}
 [{{ partial "content/markdown-escape.html" (T "ui_openapi_spec") }}]({{ $validated.markdown }})
-{{- else if eq $format "print" -}}
+{{- else if eq $format "rss" -}}
+<p><a href="{{ $validated.href }}">{{ $validated.href }}</a></p>
+{{- else if in (slice "print" "rss") $format -}}
 <p class="td-swagger-print">{{ T "ui_openapi_spec" }} — <a href="{{ $validated.href }}">{{ $validated.href }}</a></p>
 {{- else -}}
-{{- $id := printf "td-swagger-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") .Ordinal -}}
+{{- $id := printf "td-swagger-%s-%s" (md5 .Page.RelPermalink | truncate 8 "") (partial "content/shortcode-ordinal.html" .) -}}
 {{- .Page.Store.Set "hasSwagger" true -}}
 <div id="{{ $id }}" class="td-swagger-ui" data-td-swagger data-td-spec-url="{{ $validated.href }}"></div>
 {{- end -}}

@@ -5,6 +5,28 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Fixed
+
+- Keep ordinary builds usable for positional shortcode arguments, invalid Book
+  numbers, missing manual-link references, and malformed Landing records.
+- Namespace nested shortcode and Markdown component IDs together with their
+  references, so copy and chart controls target their own content.
+- Sort RSS before limiting entries, omit undated publication dates, and render
+  static component HTML instead of raw Markdown while preserving summary boundaries.
+- Preserve keyboard focus during copying, feedback, comparison loading and Expo
+  navigation; allow Escape to dismiss hover menus and keyboard access to anchors.
+- Restore mobile utilities on navbar-only pages, remove closed-drawer shadows,
+  duplicate Book TOC numbering, empty TOC controls, and prose list-style leakage.
+- Preserve populated taxonomy-rail controls and join version page links without
+  repeating the current deployment prefix.
+- Keep navigation JSON IDs and section-index lookup keys independent of language
+  and deployment prefixes, preserving explicit order on subpath deployments.
+- Localize blog pagination and breadcrumbs in all 32 locales, correct appearance
+  and translation strings, and accept language codes in the translation-notice schema.
+- Apply the shared URL policy to Landing links, retain fluid section spacing,
+  hide repeated marquee rows from assistive technology, and preserve focus,
+  print links, forced-color navigation and RTL font roles.
+
 ## [1.5.0] — 2026-11-04
 
 ### Added

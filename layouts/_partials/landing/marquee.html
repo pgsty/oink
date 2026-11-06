@@ -19,7 +19,7 @@
   </label>
   {{- end }}
   {{- range $row := seq (cond $interactive $rows 1) }}
-  <div class="td-landing-marquee__row{{ if eq (mod $row 2) 0 }} td-landing-marquee__row--alternate{{ end }}"{{ if $interactive }} data-td-marquee-row{{ end }}>
+  <div class="td-landing-marquee__row{{ if eq (mod $row 2) 0 }} td-landing-marquee__row--alternate{{ end }}"{{ if $interactive }} data-td-marquee-row{{ end }}{{ if gt $row 1 }} aria-hidden="true" inert{{ end }}>
     <div class="td-landing-marquee__track">
       <div class="td-landing-marquee__group">
         {{- range $itemIndex, $item := $items }}{{ partial $template (dict "page" $page "data" $data "item" $item "marquee" true "scope" (printf "%s-row-%d-item-%d" $scope $row $itemIndex)) }}{{ end -}}

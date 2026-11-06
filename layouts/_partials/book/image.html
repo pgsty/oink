@@ -14,7 +14,7 @@
   ) -}}
   {{- $href = $linkURL.href -}}
 {{- end -}}
-{{- if in (slice "markdown" "rss") $format -}}
+{{- if eq $format "markdown" -}}
   {{- $markdown := printf "![%s](%s)" (partial "content/markdown-escape.html" $alt) $image.markdownSrc -}}
   {{- if $href }}{{ $markdown = printf "[%s](%s)" $markdown (partial "content/markdown-url.html" $href) }}{{ end -}}
   {{- $markdown | safeHTML -}}

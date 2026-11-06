@@ -17,7 +17,7 @@ body.td-expo-shell:has(.td-expo-viewer[open]) { padding-inline-end: var(--td-exp
   font-size: 1rem; line-height: 1;
   &:hover, &[aria-pressed='true'] { color: var(--bs-emphasis-color); background: var(--td-shell-accent); border-color: var(--bs-border-color); }
   &:focus-visible { outline: 2px solid var(--bs-link-color); outline-offset: 2px; }
-  &:disabled { opacity: .35; cursor: default; }
+  &:disabled, &[aria-disabled="true"] { opacity: .35; cursor: default; }
   &[hidden] { display: none; }
 }
 .td-expo-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 14px; }

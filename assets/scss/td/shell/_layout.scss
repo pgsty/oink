@@ -299,13 +299,17 @@
     z-index: 1045;
     border-inline-end: 0;
     border-inline-start: 1px solid var(--bs-border-color);
-    box-shadow: var(--td-shell-shadow-lg);
+    box-shadow: none;
     transform: translateX(100%);
     transition: transform var(--td-motion-duration-slow) ease;
   }
 }
 
 @include media-breakpoint-down(md) {
+  [data-td-shell-drawer='open'] .td-shell-sidebar__panel {
+    box-shadow: var(--td-shell-shadow-lg);
+  }
+
   [dir='rtl'] .td-shell-sidebar__panel {
     transform: translateX(-100%);
   }

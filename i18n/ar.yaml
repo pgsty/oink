@@ -258,3 +258,6 @@ ui_compare_sync_approximate: 'العناوين لا تتطابق بالكامل�
 ui_compare_sync_unavailable: 'المزامنة غير متاحة لأن العناوين مكررة أو غير مرتبة.'
 ui_shortcut_compare: 'فتح العرض ثنائي اللغة'
 ui_compare_error: "تعذر تحميل هذه الصفحة."
+
+ui_pagination: التنقل بين الصفحات
+ui_breadcrumb: مسار التنقل

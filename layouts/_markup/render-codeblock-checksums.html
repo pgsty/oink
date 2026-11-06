@@ -84,7 +84,7 @@
 {{- end -}}
 {{- if $ok -}}
   {{- $entries := partial "release/assets-parse.html" (dict "content" $inner "position" .Position "base" $base "algo" $algo) -}}
-  {{- if in (slice "markdown" "rss") $format -}}
+  {{- if eq $format "markdown" -}}
     {{- partial "release/assets-markdown.html" (dict "entries" $entries "grouped" $grouped) | safeHTML -}}
   {{- else -}}
     {{- $interactive := eq $format "html" -}}

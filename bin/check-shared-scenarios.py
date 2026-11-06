@@ -160,7 +160,7 @@ def check_example(public: Path) -> list[str]:
 
     for marker in ("<!doctype html>", "<html ", "<head>", '<body class="td-404">', "</html>"):
         require(marker in not_found, f"404 output is not a complete document: {marker}", errors)
-    for marker in ("td-print-view", "_print/", "data-td-landing"):
+    for marker in ("td-print-view", "_print/", 'class="td-landing-landing'):
         require(marker not in not_found, f"404 inherited another output shell: {marker}", errors)
 
     robots = public / "robots.txt"

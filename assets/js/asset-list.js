@@ -43,7 +43,7 @@
   function resetControl(button) {
     var label = button.getAttribute('data-td-label-copy') || 'Copy';
     setControl(button, 'idle', label);
-    button.disabled = false;
+    button.removeAttribute('aria-disabled');
   }
 
   function scheduleReset(button) {
@@ -56,7 +56,7 @@
   }
 
   function copyFromControl(button, doc) {
-    if (!button || button.disabled) return Promise.resolve(false);
+    if (!button || button.disabled || button.getAttribute('aria-disabled') === 'true') return Promise.resolve(false);
     var root = button.closest('[data-td-asset-list]');
     if (!root) return Promise.resolve(false);
     var row = button.closest('[data-td-asset]');
@@ -67,7 +67,7 @@
     if (!button.hasAttribute('data-td-asset-copy-all')) text += '\n';
 
     var status = root.querySelector('[data-td-asset-status]');
-    button.disabled = true;
+    button.setAttribute('aria-disabled', 'true');
     if (status) status.textContent = '';
     return writeClipboard(text, doc).then(function () {
       var label = button.getAttribute('data-td-label-copied') || 'Copied';
@@ -79,7 +79,7 @@
       var label = button.getAttribute('data-td-label-copy') || 'Copy';
       setControl(button, 'error', label);
       if (status) status.textContent = label;
-      button.disabled = false;
+      button.removeAttribute('aria-disabled');
       if (global.console && typeof global.console.error === 'function') {
         global.console.error('OINK asset list: unable to copy checksums:', error);
       }

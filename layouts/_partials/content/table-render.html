@@ -138,8 +138,14 @@
 {{- $id := $idRaw -}}
 {{- if $numRaw -}}
   {{- $num = partial "book/validate-num.html" (dict "name" "table" "value" $numRaw "position" .Position) -}}
-  {{- if not $id }}{{ $id = printf "tbl-%s" $num }}{{ else }}{{ $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) }}{{ end -}}
-  {{- partial "book/register-target.html" (dict "page" $page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+  {{- if $num -}}
+    {{- if not $id }}{{ $id = printf "tbl-%s" $num }}{{ else }}{{ $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) }}{{ end -}}
+    {{- if $id }}{{ partial "book/register-target.html" (dict "page" $page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
+  {{- else -}}
+    {{- $numRaw = "" -}}
+    {{- if $id }}{{ warnf "table: id requires a valid num at %s; dropping it" .Position }}{{ end -}}
+    {{- $id = "" -}}
+  {{- end -}}
 {{- else if $id -}}
   {{- $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) -}}
 {{- end -}}

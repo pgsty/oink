@@ -253,3 +253,6 @@ ui_compare_sync_approximate: '제목이 완전히 일치하지 않아 문서의 
 ui_compare_sync_unavailable: '제목이 중복되었거나 순서가 달라 동기화를 사용할 수 없습니다.'
 ui_shortcut_compare: '이중 언어 보기 열기'
 ui_compare_error: "이 페이지를 불러올 수 없습니다."
+
+ui_pagination: 페이지 탐색
+ui_breadcrumb: 현재 위치

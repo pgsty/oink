@@ -14,6 +14,7 @@ function element(attributes = {}) {
     textContent: '',
     setAttribute(name, value) { values.set(name, String(value)); },
     getAttribute(name) { return values.has(name) ? values.get(name) : null; },
+    removeAttribute(name) { values.delete(name); },
     hasAttribute(name) { return values.has(name); },
     querySelector() { return null; },
   };
@@ -80,7 +81,10 @@ assert.equal(
   assert.equal(status.textContent, 'Copied');
   assert.equal(icon.className, 'fa-solid fa-check');
 
-  button.disabled = false;
+  assert.equal(button.disabled, false);
+  assert.equal(button.getAttribute('aria-disabled'), 'true');
+  assert.equal(await assets.copyFromControl(button, {}), false);
+  button.removeAttribute('aria-disabled');
   button.setAttribute('data-td-asset-copy-all', '');
   assert.equal(await assets.copyFromControl(button, {}), true);
   assert.equal(writes[1], assets.allChecksumLines(root));
@@ -109,6 +113,7 @@ assert.equal(
   const listeners = new Map();
   const initRoot = {
     ready: false,
+    removeAttribute(name) { values.delete(name); },
     hasAttribute(name) { return name === 'data-td-asset-list-ready' && this.ready; },
     setAttribute(name) { if (name === 'data-td-asset-list-ready') this.ready = true; },
     querySelectorAll() { return controls; },

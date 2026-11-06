@@ -319,6 +319,11 @@ Compact body.
 {{< card title="Fallback resource" >}}Fallback card body.{{< /card >}}
 {{< /cards >}}
 
+{{< cards >}}
+{{< card "Positional title" >}}Positional card body.{{< /card >}}
+{{< card title="Kept sibling" >}}Valid sibling body.{{< /card >}}
+{{< /cards >}}
+
 {{% steps variant="invalid" %}}
 ### Fallback heading {#fallback-heading}
 
@@ -334,7 +339,7 @@ Fallback step body.
         require(result.returncode == 0, f"presentation build failed: {output}", errors)
         if result.returncode:
             return errors
-        for diagnostic in ("variant must be list", "variant must be compact"):
+        for diagnostic in ("variant must be list", "variant must be compact", "accepts named parameters only"):
             require(diagnostic in output, f"missing {diagnostic}", errors)
         html = (destination / "docs/presentation/index.html").read_text()
         for marker in ('<ul class="cards td-cards-list">', '<ol start="3" class="steps td-steps-compact">',
@@ -346,8 +351,10 @@ Fallback step body.
             require(marker in html, f"presentation lost {marker}", errors)
         for filename in ("index.html", "index.md", "index.xml"):
             rendered = (destination / f"docs/presentation/{filename}").read_text()
-            for text in ("Native resource", "Native third step", "Full description.", "Compact body.", "Fallback card body.", "Fallback step body."):
+            for text in ("Native resource", "Native third step", "Full description.", "Compact body.", "Fallback card body.", "Valid sibling body.", "Fallback step body."):
                 require(text in rendered, f"{filename} lost {text}", errors)
+            require("Positional card body." not in rendered,
+                    f"{filename} did not omit the invalid card", errors)
         markdown = (destination / "docs/presentation/index.md").read_text()
         require('<div' not in markdown and '{{<' not in markdown and '{{%' not in markdown,
                 "presentation wrappers leaked into Markdown", errors)
@@ -465,7 +472,7 @@ def check_openapi(hugo: str) -> list[str]:
                     "Redoc Print fallback lost the normalized subpath URL", errors)
             require(outputs["Markdown"].count(f"]({expected})") == 2,
                     "Redoc Markdown fallback lost the normalized subpath URL", errors)
-            require(outputs["RSS"].count(f"]({expected})") == 2,
+            require(outputs["RSS"].count(f'href="{expected}"') == 2,
                     "Redoc RSS fallback lost the normalized subpath URL", errors)
             for name in ("Print", "Markdown", "RSS"):
                 require("<redoc" not in outputs[name] and "redoc.standalone" not in outputs[name],

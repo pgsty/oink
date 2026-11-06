@@ -1,0 +1,4 @@
+{{- $text := .text -}}
+{{- $href := partial "landing/url.html" (dict "page" .page "value" .value) -}}
+{{- if $href }}{{ $text = printf "[%s](%s)" $text (partial "content/markdown-url.html" $href) }}{{ end -}}
+{{- return $text -}}

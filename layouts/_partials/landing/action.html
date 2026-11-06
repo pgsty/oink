@@ -1,11 +1,11 @@
 {{- $scope := .scope | default (printf "landing-%s" (md5 (printf "%v" .item))) -}}
 {{- $page := .page -}}
 {{- $item := .item -}}
-{{- $url := $item.url | default $item.href -}}
+{{- $url := partial "landing/url.html" (dict "page" $page "value" ($item.url | default $item.href)) -}}
 {{- with $url -}}
   {{- $name := $item.name | default $item.title | default "item" | markdownify | plainify -}}
   {{- $label := $.label | default $item.link_label -}}
-<a class="td-landing-card-link" href="{{ . | relLangURL }}"{{ if $item.external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+<a class="td-landing-card-link" href="{{ . }}"{{ if $item.external }} target="_blank" rel="noopener noreferrer"{{ end }}>
   {{- with $label -}}
     {{- partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-action-field-1" $scope) "value" .) -}}
   {{- else -}}

@@ -368,7 +368,8 @@
       background: var(--bs-body-color);
       &::before { display: none; }
       .td-shell-tree__link, .td-shell-tree__link > i,
-      .td-shell-tree__toggle { color: var(--bs-body-bg); }
+      .td-shell-tree__chevron, .td-book-number { color: inherit; }
+      .td-shell-tree__chevron:hover { background: transparent; color: inherit; }
       // A CSS triangle gives the selected-row marker no spoken text.
       .td-shell-tree__link::before {
         content: '';

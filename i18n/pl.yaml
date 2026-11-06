@@ -256,3 +256,6 @@ ui_compare_sync_approximate: 'Nagłówki nie pasują w pełni; synchronizacja u�
 ui_compare_sync_unavailable: 'Synchronizacja jest niedostępna, ponieważ nagłówki się powtarzają lub są w niewłaściwej kolejności.'
 ui_shortcut_compare: 'Otwórz widok dwujęzyczny'
 ui_compare_error: "Nie udało się wczytać tej strony."
+
+ui_pagination: Nawigacja stron
+ui_breadcrumb: Ścieżka nawigacji

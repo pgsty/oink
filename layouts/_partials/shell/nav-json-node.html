@@ -19,7 +19,7 @@
 {{- else if isset $s.Params "manual_link" -}}
   {{- $node := dict
       "title" ($s.LinkTitle | default $s.Title | strings.TrimSpace)
-      "url" $s.Params.manual_link
+      "url" (partial "content/manual-link.html" $s)
       "kind" "external"
   -}}
   {{- with $childNodes }}{{ $node = merge $node (dict "children" .) }}{{ end -}}
@@ -27,7 +27,7 @@
 {{- else if isset $s.Params "manual_link_relref" -}}
   {{- $node := dict
       "title" ($s.LinkTitle | default $s.Title | strings.TrimSpace)
-      "url" (relref $s $s.Params.manual_link_relref)
+      "url" (partial "content/manual-link.html" $s)
       "kind" "link"
   -}}
   {{- with $childNodes }}{{ $node = merge $node (dict "children" .) }}{{ end -}}

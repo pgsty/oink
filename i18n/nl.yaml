@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'De koppen komen niet volledig overeen; de synchron
 ui_compare_sync_unavailable: 'Synchronisatie is niet beschikbaar omdat koppen dubbel voorkomen of in de verkeerde volgorde staan.'
 ui_shortcut_compare: 'Tweetalige weergave openen'
 ui_compare_error: "Deze pagina kon niet worden geladen."
+
+ui_pagination: Paginanavigatie
+ui_breadcrumb: Kruimelpad

@@ -10,7 +10,8 @@
     <figure class="td-landing-case-study"{{ if $interactive }} data-td-reveal{{ end }}>
       <div class="td-landing-case-study__stats">{{ range $index, $stat := $stats }}{{ if or (not (isset $stat "value")) (not ($stat.label | default "")) }}{{ warnf "%s: case-study stat %d requires value and label; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end }}<div><strong>{{ $stat.value }}</strong><span>{{ $stat.label }}</span></div>{{ end }}</div>
       <blockquote>{{ partial "landing/markdown-block.html" (dict "page" $page "scope" (printf "%s-case-study-field-1" $scope) "value" $data.quote) }}</blockquote>
-      <figcaption>{{ if $data.url }}<a href="{{ $data.url }}">{{ end }}{{ $data.source }}{{ if $data.url }}</a>{{ end }}</figcaption>
+      {{- $url := partial "landing/url.html" (dict "page" $page "value" $data.url) -}}
+      <figcaption>{{ if $url }}<a href="{{ $url }}">{{ end }}{{ $data.source }}{{ if $url }}</a>{{ end }}</figcaption>
     </figure>
   </div>
 </section>

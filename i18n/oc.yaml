@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Los títols correspondon pas completament; la sinc
 ui_compare_sync_unavailable: 'La sincronizacion es pas disponibla perque los títols son duplicats o dins un òrdre incorrècte.'
 ui_shortcut_compare: 'Dobrir la vista bilingua'
 ui_compare_error: "Impossible de cargar aquesta pagina."
+
+ui_pagination: Paginacion
+ui_breadcrumb: Fil d’Ariana

@@ -1,6 +1,8 @@
 {{- /* One tab inside `{{< tabs >}}`: label (required), value (required when the
        parent declares group, forbidden otherwise); the body is Markdown. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "label" "value")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- /* A tab that cannot be registered warns and is skipped; the sibling tabs
        still render. */ -}}
 {{- $ok := true -}}
@@ -9,12 +11,12 @@
 {{- else -}}
   {{- warnf "shortcode %q must be enclosed by tabs at %s; skipping the tab" .Name .Position -}}{{- $ok = false -}}
 {{- end -}}
-{{- if or (not .IsNamedParams) (not (isset .Params "label")) }}{{ warnf "shortcode %q requires named parameter label at %s; skipping the tab" .Name .Position }}{{ $ok = false }}{{ end -}}
-{{- $label := strings.TrimSpace (printf "%v" (.Get "label")) -}}
+{{- if or (not .IsNamedParams) (not (isset $params "label")) }}{{ warnf "shortcode %q requires named parameter label at %s; skipping the tab" .Name .Position }}{{ $ok = false }}{{ end -}}
+{{- $label := strings.TrimSpace (printf "%v" (index $params "label" | default "")) -}}
 {{- if not $label }}{{ warnf "shortcode %q: label must not be empty at %s; skipping the tab" .Name .Position }}{{ $ok = false }}{{ end -}}
 {{- $value := "" -}}
-{{- if isset .Params "value" -}}
-  {{- $value = strings.TrimSpace (printf "%v" (.Get "value")) -}}
+{{- if isset $params "value" -}}
+  {{- $value = strings.TrimSpace (printf "%v" (index $params "value")) -}}
   {{- if not (findRE `^[a-z0-9][a-z0-9_-]*$` $value) }}{{ warnf "shortcode %q: value must match ^[a-z0-9][a-z0-9_-]*$; got %q at %s; dropping the value" .Name $value .Position }}{{ $value = "" }}{{ end -}}
 {{- end -}}
 {{- $body := strings.TrimSpace (printf "%s" .InnerDeindent) -}}

@@ -200,12 +200,12 @@ a.td-badge--solid {
   padding-inline-start: 0.25em;
 
   &:focus-visible {
-    visibility: visible;
+    opacity: 1;
   }
 }
 
 .td-field__term:hover > .td-field__self-link {
-  visibility: visible;
+  opacity: 1;
 }
 
 .td-field__term {

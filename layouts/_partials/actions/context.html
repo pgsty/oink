@@ -69,22 +69,18 @@
   ) -}}
 {{- end -}}
 {{- $versionOptions := slice -}}
-{{- $pagePath := "" -}}
-{{- if $p.Site.Params.version_menu_pagelinks }}{{ $pagePath = $p.RelPermalink }}{{ end -}}
 {{- $baseURL := strings.TrimSuffix "/" $p.Site.BaseURL -}}
 {{- range $p.Site.Params.versions -}}
   {{- if ne .name "---" -}}
     {{- $url := strings.TrimSuffix "/" (.url | default "") -}}
-    {{- $pagelinks := ne .pagelinks false -}}
-    {{- $target := $url -}}
-    {{- if and $target $pagelinks }}{{ $target = printf "%s%s" $target $pagePath }}{{ end -}}
+    {{- $target := partial "content/version-url.html" (dict "page" $p "entry" .) -}}
     {{- $versionOptions = $versionOptions | append (dict
       "id" (.version | default (.name | urlize))
       "title" (.name | default .version | plainify)
       "url" $target
       "active" (or (eq .version $p.Site.Params.version) (eq $baseURL $url))
-      "available" (ne $url "")
-      "disabledReason" (cond (ne $url "") "" (printf "URL %s" (T "ui_field_required")))
+      "available" (ne $target "")
+      "disabledReason" (cond (ne $target "") "" (printf "URL %s" (T "ui_field_required")))
     ) -}}
   {{- end -}}
 {{- end -}}

@@ -4,8 +4,7 @@
        order is the contract and weight is the private mechanism deriving it.
        See the agent-indexes proposal. */ -}}
 {{- $s := .page -}}
-{{- $id := $s.RelPermalink -}}
-{{- with $s.Site.LanguagePrefix }}{{ $id = strings.TrimPrefix . $id }}{{ end -}}
+{{- $id := partial "content/navigation-key.html" $s -}}
 {{- $node := dict
     "id" $id
     "title" ($s.LinkTitle | default $s.Title | strings.TrimSpace)

@@ -176,7 +176,7 @@ ui_page_annotation: 頁面資訊
 ui_backlinks: 反向連結
 ui_backlinks_more: "再顯示 {{ . }} 條"
 ui_field_required: 必填
-ui_action_unavailable: 暂不可用
+ui_action_unavailable: 暫不可用
 ui_image_zoom_dialog: 圖片預覽
 ui_image_zoom_open: 開啟圖片預覽
 ui_image_zoom_close: 關閉圖片預覽
@@ -275,3 +275,6 @@ ui_compare_sync_approximate: '標題錨點未完全對應，將按全文閱讀�
 ui_compare_sync_unavailable: '標題錨點重複或順序不一致，無法進行同步。'
 ui_shortcut_compare: '開啟雙語檢視'
 ui_compare_error: "無法載入此頁面。"
+
+ui_pagination: 分頁導覽
+ui_breadcrumb: 麵包屑導覽

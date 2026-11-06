@@ -33,7 +33,7 @@
           {{- if not (reflect.IsMap .) }}{{ warnf "%s: metrics item %d source must be a map; dropping the source" $page.Path (add $index 1) }}{{ else -}}
           {{- $sourceLabel := strings.TrimSpace (printf "%v" (.label | default "")) -}}
           {{- if not $sourceLabel }}{{ warnf "%s: metrics item %d source requires label; dropping the source" $page.Path (add $index 1) }}{{ else -}}
-          {{- with .url }}<a class="td-landing-metric__source" href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $sourceLabel }}">{{ $sourceLabel }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>{{ else }}<span class="td-landing-metric__source">{{ $sourceLabel }}</span>{{ end -}}
+          {{- with partial "landing/url.html" (dict "page" $page "value" .url) }}<a class="td-landing-metric__source" href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $sourceLabel }}">{{ $sourceLabel }} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>{{ else }}<span class="td-landing-metric__source">{{ $sourceLabel }}</span>{{ end -}}
           {{- end -}}
           {{- end -}}
         {{- end }}

@@ -1,0 +1,9 @@
+{{- /* Share the content URL safety rules, then localize site paths. Fragment
+       and query-only links must remain relative to the current document. */ -}}
+{{- if not .value }}{{ return "" }}{{ end -}}
+{{- $resolved := partial "content/url.html" (dict "label" "landing link" "position" .page.Path "value" .value) -}}
+{{- $href := $resolved.href -}}
+{{- if and $resolved.valid (not $resolved.scheme) (not (or (hasPrefix $resolved.raw "#") (hasPrefix $resolved.raw "?"))) -}}
+  {{- $href = strings.TrimPrefix "/" $resolved.raw | relLangURL -}}
+{{- end -}}
+{{- return $href -}}

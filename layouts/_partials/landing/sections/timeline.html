@@ -10,7 +10,8 @@
       {{- range $index, $item := $items }}{{- $scope := printf "%s-item-%v" $scope $index -}}
         {{- if not (reflect.IsMap $item) }}{{ warnf "%s: timeline item %d must be a map; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
         {{- if or (not ($item.date | default "")) (not ($item.title | default "")) }}{{ warnf "%s: timeline item %d requires date and title; skipping it" $page.Path (add $index 1) }}{{ continue }}{{ end -}}
-      <li>{{ with $item.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<time>{{ $item.date }}</time><div><h3>{{ if $item.url }}<a href="{{ $item.url }}">{{ end }}{{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-timeline-field-1" $scope) "value" $item.title) }}{{ if $item.url }}</a>{{ end }}</h3>{{ with ($item.desc | default $item.text) }}{{ partial "landing/markdown-block.html" (dict "page" $page "scope" (printf "%s-timeline-field-2" $scope) "value" .) }}{{ end }}</div></li>
+      {{- $url := partial "landing/url.html" (dict "page" $page "value" $item.url) -}}
+      <li>{{ with $item.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<time>{{ $item.date }}</time><div><h3>{{ if $url }}<a href="{{ $url }}">{{ end }}{{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-timeline-field-1" $scope) "value" $item.title) }}{{ if $url }}</a>{{ end }}</h3>{{ with ($item.desc | default $item.text) }}{{ partial "landing/markdown-block.html" (dict "page" $page "scope" (printf "%s-timeline-field-2" $scope) "value" .) }}{{ end }}</div></li>
       {{- end }}
     </ol>
   </div>

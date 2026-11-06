@@ -255,3 +255,6 @@ ui_compare_sync_approximate: 'Os títulos não correspondem totalmente; a sincro
 ui_compare_sync_unavailable: 'A sincronização não está disponível porque os títulos estão duplicados ou fora de ordem.'
 ui_shortcut_compare: 'Abrir visualização bilíngue'
 ui_compare_error: "Não foi possível carregar esta página."
+
+ui_pagination: Paginação
+ui_breadcrumb: Caminho de navegação

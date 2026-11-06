@@ -20,7 +20,7 @@
   {{- end -}}
 {{- end -}}
 {{- if $ok -}}
-  {{- $owner := printf "download-%d" .Ordinal -}}
+  {{- $owner := printf "download-%s" (partial "content/shortcode-ordinal.html" .) -}}
   {{- $owners := .Page.Store.Get "tdDownloadOwners" | default (dict) -}}
   {{- if isset $owners $key -}}
     {{- if ne (index $owners $key) $owner -}}

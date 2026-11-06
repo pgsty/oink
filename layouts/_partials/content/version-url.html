@@ -1,0 +1,15 @@
+{{- $page := .page -}}
+{{- $entry := .entry -}}
+{{- $href := "" -}}
+{{- with $entry.url -}}
+  {{- $validated := partial "content/url.html" (dict "label" "version link" "position" $page.Path "kind" "web" "value" .) -}}
+  {{- if $validated.valid -}}
+    {{- $href = $validated.raw -}}
+    {{- if and $page.Site.Params.version_menu_pagelinks (ne $entry.pagelinks false) -}}
+      {{- $basePath := strings.TrimSuffix "/" (urls.Parse $page.Site.BaseURL).Path -}}
+      {{- $pagePath := strings.TrimPrefix $basePath $page.RelPermalink -}}
+      {{- $href = printf "%s/%s" (strings.TrimSuffix "/" $href) (strings.TrimPrefix "/" $pagePath) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $href -}}

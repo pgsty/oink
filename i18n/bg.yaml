@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Заглавията не съвпадат нап�
 ui_compare_sync_unavailable: 'Синхронизацията не е налична, защото заглавията се повтарят или са в различен ред.'
 ui_shortcut_compare: 'Отвори двуезичен изглед'
 ui_compare_error: "Страницата не може да се зареди."
+
+ui_pagination: Навигация по страници
+ui_breadcrumb: Навигационна пътека

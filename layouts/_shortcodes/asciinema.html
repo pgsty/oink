@@ -37,9 +37,11 @@
   {{- end -}}
 {{- end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if in (slice "markdown" "rss") $format -}}
+{{- if eq $format "markdown" -}}
 [{{ partial "content/markdown-escape.html" (printf "%v" $title) }}]({{ partial "content/markdown-url.html" $src }})
-{{- else if eq $format "print" -}}
+{{- else if eq $format "rss" -}}
+<p><a href="{{ $src }}">{{ $title }}</a></p>
+{{- else if in (slice "print" "rss") $format -}}
 <p class="td-asciinema-print">{{ $title }} — <a href="{{ $src }}">{{ $src }}</a></p>
 {{- else -}}
 {{- /* Every number is validated lexically before it is cast: a bad value
@@ -112,7 +114,7 @@
   {{- end -}}
   {{- with $markers }}{{ $options = merge $options (dict "markers" .) }}{{ end -}}
 {{- end -}}
-{{- $id := printf "td-asciinema-%s-%d" (md5 .Page.RelPermalink) .Ordinal -}}
+{{- $id := printf "td-asciinema-%s-%s" (md5 .Page.RelPermalink) (partial "content/shortcode-ordinal.html" .) -}}
 {{- .Page.Store.Set "hasAsciinema" true -}}
 <div id="{{ $id }}" class="td-asciinema td-max-width-on-larger-screens" data-td-asciinema
   data-td-timer-label="{{ T "ui_asciinema_timer" }}">

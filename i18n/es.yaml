@@ -186,7 +186,7 @@ print_show_regular: "Volver a la vista normal de esta página"
 print_entire_section: "Imprimir sección completa"
 # Feedback
 feedback_question: "¿Fue útil esta página?"
-feedback_positive: "Si"
+feedback_positive: "Sí"
 feedback_negative: "No"
 feedback_thanks: "Gracias—su retroalimentación ayuda a mejorar esta página."
 feedback_reason_prompt: "¿Qué impidió su uso? (opcional)"
@@ -255,3 +255,6 @@ ui_compare_sync_approximate: 'Los encabezados no coinciden por completo; la sinc
 ui_compare_sync_unavailable: 'La sincronización no está disponible porque los encabezados están duplicados o fuera de orden.'
 ui_shortcut_compare: 'Abrir vista bilingüe'
 ui_compare_error: "No se pudo cargar esta página."
+
+ui_pagination: Paginación
+ui_breadcrumb: Ruta de navegación

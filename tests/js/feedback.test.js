@@ -80,7 +80,8 @@ test('a choice is recorded immediately without a server or free text', () => {
   assert.equal(page.result.hidden, false);
   assert.equal(page.reasons.hidden, false);
   assert.equal(page.notSolved.getAttribute('aria-pressed'), 'true');
-  assert.equal(page.solved.disabled, true);
+  assert.equal(page.solved.getAttribute('aria-disabled'), 'true');
+  assert.equal(page.solved.disabled, false);
   assert.equal(page.reasons.focused, true);
   assert.deepEqual(events, [[
     'event',
@@ -101,7 +102,7 @@ test('an optional reason refines the structured analytics event once', () => {
   page.missing.dispatch('click');
   page.outdated.dispatch('click');
   assert.equal(page.missing.getAttribute('aria-pressed'), 'true');
-  assert.equal(page.outdated.disabled, true, 'a saved reason cannot be double-counted');
+  assert.equal(page.outdated.getAttribute('aria-disabled'), 'true', 'a saved reason cannot be double-counted');
   assert.equal(events.length, 2);
   assert.deepEqual(events[1], [
     'event',

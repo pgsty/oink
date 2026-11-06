@@ -271,3 +271,6 @@ ui_compare_sync_approximate: '标题锚点未完全匹配，将按全文阅读�
 ui_compare_sync_unavailable: '标题锚点重复或顺序不一致，无法进行同步。'
 ui_shortcut_compare: '打开双语视图'
 ui_compare_error: "无法加载此页面。"
+
+ui_pagination: 分页导航
+ui_breadcrumb: 面包屑导航

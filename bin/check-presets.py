@@ -42,6 +42,11 @@ def main():
         slate = palette(brand_source, mode)
         for key, value in baseline['palettes'][mode].items():
             actual = slate[key]
+            # The historical palette remains the provenance; opaque focus
+            # indicators deliberately correct its translucent focus token.
+            if key == '--bs-focus-ring-color':
+                assert actual == 'var(--bs-link-color)', 'focus ring must use the opaque accessible link token'
+                continue
             # The optional preset-accent indirection retains the same fallback.
             actual = re.sub(r'var\(--td-preset-accent(?:-rgb|-hover)?, (var\([^)]+\))\)', r'\1', actual)
             assert actual == value, f'Slate {mode} changed {key}: {actual} != {value}'

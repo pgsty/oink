@@ -334,6 +334,10 @@ a > img.td-image {
   }
 }
 
+.td-book-toc ol {
+  list-style: none;
+}
+
 .td-book-toc__item--draft > a::after {
   margin-inline-start: 0.35rem;
   color: var(--bs-warning-text-emphasis);

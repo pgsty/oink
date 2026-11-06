@@ -4,6 +4,10 @@
 {{- $key := .key -}}
 {{- $page := .page -}}
 {{- $value := false -}}
+{{- if not (reflect.IsMap $record) -}}
+  {{- warnf "%s: landing field %q requires a mapping record; using no value" $page.Path $key -}}
+  {{- return false -}}
+{{- end -}}
 {{- $lang := replace (lower $page.Site.Language.Lang) "-" "_" -}}
 {{- $primary := index (split $lang "_") 0 -}}
 {{- range slice (printf "%s_%s" $key $lang) (printf "%s_%s" $key $primary) $key -}}

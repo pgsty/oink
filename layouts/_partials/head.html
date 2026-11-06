@@ -106,12 +106,20 @@
 <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
 {{ end -}}
 {{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if and (eq .Type "blog") .IsSection -}}
+  {{- $index := partial "shell/blog-index-state.html" . -}}
+  {{- with $index.pager -}}
+    {{- with .Prev }}<link rel="prev" href="{{ .URL }}">{{ end -}}
+    {{- with .Next }}<link rel="next" href="{{ .URL }}">{{ end -}}
+  {{- end -}}
+{{- else -}}
 {{- $pager := partialCached "pager-state.html" . .Site.BaseURL .Site.Language.Lang .RelPermalink $outputFormat -}}
 {{- with $pager.prev }}
 <link rel="prev" href="{{ .RelPermalink }}">
 {{- end -}}
 {{- with $pager.next }}
 <link rel="next" href="{{ .RelPermalink }}">
+{{- end -}}
 {{- end -}}
 
 {{/* Every baseof template records the format in the page store before head is

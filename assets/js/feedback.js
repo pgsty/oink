@@ -79,12 +79,12 @@
       choices.forEach(function (button) {
         var active = response && data(button, 'tdFeedbackChoice') === response.result;
         button.setAttribute('aria-pressed', String(Boolean(active)));
-        button.disabled = Boolean(response);
+        button.setAttribute('aria-disabled', String(Boolean(response)));
       });
       reasonChoices.forEach(function (button) {
         var active = response && data(button, 'tdFeedbackReason') === response.reason;
         button.setAttribute('aria-pressed', String(Boolean(active)));
-        button.disabled = !response || response.result !== 'not_solved' || Boolean(response.reason);
+        button.setAttribute('aria-disabled', String(!response || response.result !== 'not_solved' || Boolean(response.reason)));
       });
       result.hidden = !response;
       if (reasons) reasons.hidden = !response || response.result !== 'not_solved';

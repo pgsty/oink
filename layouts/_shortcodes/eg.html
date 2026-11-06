@@ -2,28 +2,36 @@
        or more fenced code blocks). Native single-fence form: a fence with
        {num="4-1" caption="…" #id}. Replaces the leaf `example` shortcode. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "num" "id" "caption" "class")) -}}
-{{- if not (isset .Params "num") }}{{ warnf "shortcode %q requires parameter num at %s; rendering the example unnumbered" .Name .Position }}{{ end -}}
-{{- if not (isset .Params "caption") }}{{ warnf "shortcode %q requires parameter caption at %s; rendering it uncaptioned" .Name .Position }}{{ end -}}
-{{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
-{{- $id := printf "eg-%s" $num -}}
-{{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
-{{- $caption := .Get "caption" -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
+{{- if not (isset $params "num") }}{{ warnf "shortcode %q requires parameter num at %s; rendering the example unnumbered" .Name .Position }}{{ end -}}
+{{- if not (isset $params "caption") }}{{ warnf "shortcode %q requires parameter caption at %s; rendering it uncaptioned" .Name .Position }}{{ end -}}
+{{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (index $params "num") "position" .Position) -}}
+{{- $id := "" -}}
+{{- if $num -}}
+  {{- $id = printf "eg-%s" $num -}}
+  {{- if isset $params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (index $params "id") "position" .Position) }}{{ end -}}
+{{- else if isset $params "id" -}}
+  {{- warnf "shortcode %q: id requires a valid num at %s; dropping it" .Name .Position -}}
+{{- end -}}
+{{- $caption := index $params "caption" | default "" -}}
 {{- if ne (printf "%T" $caption) "string" }}{{ warnf "shortcode %q: caption must be a string at %s; dropping it" .Name .Position }}{{ $caption = "" }}{{ end -}}
 {{- $caption = strings.TrimSpace $caption -}}
 {{- if not $caption }}{{ warnf "shortcode %q: caption must not be empty at %s; rendering it uncaptioned" .Name .Position }}{{ end -}}
 {{- $class := "" -}}
-{{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
+{{- if isset $params "class" }}{{ $class = strings.TrimSpace (index $params "class") }}{{ end -}}
 {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- if not $inner }}{{ warnf "shortcode %q requires inner content (the example body) at %s; rendering nothing" .Name .Position }}{{ end -}}
-{{- partial "book/register-target.html" (dict "page" .Page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+{{- if and $num $id }}{{ partial "book/register-target.html" (dict "page" .Page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $label := partial "book/label.html" (dict "kind" "eg" "num" $num) -}}
-{{- if in (slice "markdown" "rss") $format -}}
-  {{- printf "**%s.** %s\n\n%s" $label (partial "content/markdown-escape.html" $caption) $inner | safeHTML -}}
+{{- $label := "" -}}{{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "eg" "num" $num) }}{{ end -}}
+{{- if eq $format "markdown" -}}
+  {{- $prefix := cond $label (printf "**%s.** " $label) "" -}}
+  {{- printf "%s%s\n\n%s" $prefix (partial "content/markdown-escape.html" $caption) $inner | safeHTML -}}
 {{- else -}}
-<figure id="{{ $id }}" class="td-book-figure td-book-figure--eg{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="eg" data-td-book-num="{{ $num }}">
-  <figcaption><span class="td-eg-label">{{ $label }}</span> <span class="td-eg-caption">{{ $caption }}</span></figcaption>
-  <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "eg%d" .Ordinal) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
+<figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ if $num }}td-book-figure td-book-figure--eg{{ end }}{{ with $class }} {{ . }}{{ end }}"{{ if $num }} data-td-book-kind="eg" data-td-book-num="{{ $num }}"{{ end }}>
+  <figcaption>{{ with $label }}<span class="td-eg-label">{{ . }}</span> {{ end }}<span class="td-eg-caption">{{ $caption }}</span></figcaption>
+  <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "eg-%s" (partial "content/shortcode-ordinal.html" .)) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
 </figure>
 {{- end -}}

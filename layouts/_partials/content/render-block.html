@@ -41,6 +41,23 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+  {{- /* Data fences and field-table labels also use document-local ordinals.
+         Rewrite only generated families, keeping their ID references together. */ -}}
+  {{- $hash := md5 $page.RelPermalink -}}
+  {{- $generated := printf `id="(td-(infographic|echarts|filetree)-%s-f[0-9]+(-canvas|-title)?|td-fields-%s-t[0-9]+-label)"` $hash $hash -}}
+  {{- range findRESubmatch $generated $html -}}
+    {{- $old := index . 1 -}}
+    {{- $new := printf "td-%s-%s" ($scope | anchorize) (strings.TrimPrefix "td-" $old) -}}
+    {{- range $attr := slice `id="` `aria-labelledby="` `aria-controls="` `href="#` -}}
+      {{- $html = replace $html (printf `%s%s"` $attr $old) (printf `%s%s"` $attr $new) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range findRESubmatch `class="td-field" id="(field-[^"]+)"` $html -}}
+    {{- $old := index . 1 -}}
+    {{- $new := printf "field-%s-%s" ($scope | anchorize) (strings.TrimPrefix "field-" $old) -}}
+    {{- $html = replace $html (printf `id="%s"` $old) (printf `id="%s"` $new) -}}
+    {{- $html = replace $html (printf `href="#%s"` $old) (printf `href="#%s"` $new) -}}
+  {{- end -}}
   {{- $html = $html | safeHTML -}}
 {{- end -}}
 {{- return $html -}}

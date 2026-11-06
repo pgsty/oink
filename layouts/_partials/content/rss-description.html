@@ -1,9 +1,12 @@
 {{- /* Render an RSS-safe summary without crossing a manual summary divider. */ -}}
 {{- $page := . -}}
+{{- $previous := $page.Store.Get "tdOutputFormat" | default "html" -}}
+{{- $page.Store.Set "tdOutputFormat" "rss" -}}
 {{- $markup := $page.Markup "td-rss-summary" -}}
 {{- $render := $markup.Render -}}
 {{- $summary := $render.Summary -}}
 {{- $description := printf "%s" $summary.Text -}}
 {{- $description = partial "content/static-image-output.html" $description -}}
 {{- if eq $page.Type "expo" }}{{ $description = printf "%s%s" $description (partial "expo/static.html" $page) }}{{ end -}}
+{{- $page.Store.Set "tdOutputFormat" $previous -}}
 {{- return $description -}}

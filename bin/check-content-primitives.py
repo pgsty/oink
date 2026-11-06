@@ -10,6 +10,7 @@ forms (`{.steps}`, `{.cards}`), the `filetree` fence, the table family (`.matrix
 from __future__ import annotations
 
 import argparse
+import xml.etree.ElementTree as ET
 from html import escape, unescape
 from pathlib import Path
 import re
@@ -383,7 +384,7 @@ def check_generic_rss_output(hugo: str) -> list[str]:
         content.mkdir(parents=True)
         (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
         (content / "item.md").write_text(
-            "---\ntitle: Primitive feed\ndate: 2026-08-11\n---\n\n"
+            "---\ntitle: Primitive feed\ndate: 2026-08-11\nweight: -100\n---\n\n"
             "| Key | Value |\n| --- | --- |\n| Feed table | Complete static content |\n\n"
             "```filetree\n- closed/\n  - nested.md\n```\n\n"
             "1. first\n1. second\n{.steps}\n\n"
@@ -391,6 +392,12 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             '{{</* badge text="Example only" */>}}\n'
             "```\n"
         )
+        (content / "newest.md").write_text("---\ntitle: Newest\ndate: 2026-08-12\nweight: 1000\n---\nNewest entry.\n")
+        (content / "undated.md").write_text("---\ntitle: Undated\nweight: -1000\n---\nUndated entry.\n")
+        blog = site / "content/blog"
+        blog.mkdir()
+        for page in ("_index.md", "item.md", "newest.md", "undated.md"):
+            (blog / page).write_text((content / page).read_text())
         nested = content / "nested"
         nested.mkdir()
         (nested / "_index.md").write_text("---\ntitle: Nested\n---\n")
@@ -429,6 +436,23 @@ def check_generic_rss_output(hugo: str) -> list[str]:
             require(marker not in source, f"generic RSS primitive fixture leaked interactive FileTree markup {marker}", errors)
         require("td-badge td-badge" not in source, "generic RSS primitive fixture rendered the escaped example", errors)
         require("Nested child must not enter" not in source, "generic section RSS recursively included a nested section page", errors)
+        for feed_path in ("docs/index.xml", "blog/index.xml"):
+            feed = ET.fromstring((destination / feed_path).read_text())
+            items = feed.findall("channel/item")
+            require(items[0].findtext("title") == "Newest", f"{feed_path}: feed order followed weights instead of dates", errors)
+            undated = next(item for item in items if item.findtext("title") == "Undated")
+            require(undated.find("pubDate") is None, f"{feed_path}: undated item has a fabricated date", errors)
+        with (site / "hugo.yaml").open("a") as config:
+            config.write("services:\n  rss:\n    limit: 1\n")
+        limited = run_hugo_process([hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
+                                   "--destination", str(destination), "--logLevel", "warn"],
+                                  cwd=ROOT, capture_output=True, text=True, check=False)
+        require(limited.returncode == 0, f"limited feed build failed: {limited.stdout}{limited.stderr}", errors)
+        if limited.returncode == 0:
+            for feed_path in ("docs/index.xml", "blog/index.xml"):
+                items = ET.fromstring((destination / feed_path).read_text()).findall("channel/item")
+                require([item.findtext("title") for item in items] == ["Newest"],
+                        f"{feed_path}: limit dropped the latest entry", errors)
     return errors
 
 
@@ -849,17 +873,13 @@ INVALID_CASES = (
 )
 
 
-UNBATCHED_INVALID_CASES = {"field-positional", "include-positional"}
-
-
 def check_invalid_cases(hugo: str) -> list[str]:
     errors: list[str] = []
-    batched = tuple(case for case in INVALID_CASES if case[0] not in UNBATCHED_INVALID_CASES)
     with tempfile.TemporaryDirectory(prefix="oink-primitives-invalid-") as temp:
         temp_path = Path(temp)
         content = temp_path / "content/docs"
         content.mkdir(parents=True)
-        for name, body, _ in batched:
+        for name, body, _ in INVALID_CASES:
             (content / f"{name}.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
         (content / "param-map.md").write_text("---\ntitle: Param map\nparams:\n  fixture_map:\n    a: 1\n---\n\n{{< param fixture_map >}}\n")
         command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn"]
@@ -869,7 +889,7 @@ def check_invalid_cases(hugo: str) -> list[str]:
         )
         output = result.stdout + result.stderr
         require(result.returncode == 0, f"batched invalid cases failed to render safely: {output.strip()}", errors)
-        for name, _, expected in batched:
+        for name, _, expected in INVALID_CASES:
             case_output = "\n".join(line for line in output.splitlines() if f"content/docs/{name}.md:" in line)
             require(expected in case_output, f"invalid case {name} did not report {expected!r} at its position: {case_output or output.strip()}", errors)
             require((temp_path / f"public/docs/{name}/index.html").is_file(), f"invalid case {name} lost its safe output", errors)
@@ -884,24 +904,6 @@ def check_invalid_cases(hugo: str) -> list[str]:
         if param_page.is_file():
             require("fixture_map" not in param_page.read_text(), "param map value reached the rendered page", errors)
 
-    for name, body, expected in INVALID_CASES:
-        if name not in UNBATCHED_INVALID_CASES:
-            continue
-        with tempfile.TemporaryDirectory(prefix=f"oink-primitives-{name}-") as temp:
-            temp_path = Path(temp)
-            content = temp_path / "content/docs"
-            content.mkdir(parents=True)
-            (content / "invalid.md").write_text(f"---\ntitle: Invalid {name}\n---\n\n{body}")
-            command = [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn"]
-            result = run_hugo_process(
-                [*command, "--destination", str(temp_path / "public")],
-                cwd=ROOT, capture_output=True, text=True, check=False,
-            )
-            output = result.stdout + result.stderr
-            case_output = "\n".join(line for line in output.splitlines() if "content/docs/invalid.md:" in line)
-            require(expected in case_output, f"invalid case {name} did not report {expected!r} at its position: {case_output or output.strip()}", errors)
-            page = temp_path / "public/docs/invalid/index.html"
-            require(page.is_file() == (result.returncode == 0), f"invalid case {name} left partial output", errors)
     return errors
 
 

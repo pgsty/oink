@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'शीर्षक पूरी तरह मे�
 ui_compare_sync_unavailable: 'शीर्षक दोहराए गए हैं या गलत क्रम में हैं, इसलिए सिंक उपलब्ध नहीं है।'
 ui_shortcut_compare: 'द्विभाषी दृश्य खोलें'
 ui_compare_error: "यह पृष्ठ लोड नहीं हो सका।"
+
+ui_pagination: पृष्ठ नेविगेशन
+ui_breadcrumb: नेविगेशन पथ

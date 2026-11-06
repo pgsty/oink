@@ -3,8 +3,6 @@
 {{- $dropup := .dropup | default false -}}
 {{- $iconOnly := .iconOnly | default false -}}
 {{- $menuName := $page.Site.Params.version_menu | default "Version" -}}
-{{- $path := "" -}}
-{{- if $page.Site.Params.version_menu_pagelinks }}{{ $path = $page.Page.RelPermalink }}{{ end -}}
 {{- $baseURL := strings.TrimSuffix "/" $page.Site.BaseURL -}}
 
 <div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}{{ if $iconOnly }} td-version-menu--icon-only{{ end }}" data-td-version-menu>
@@ -28,11 +26,11 @@
           {{- $isDisabled := not $url -}}
           {{- $name := .name | default .version -}}
           {{- $kind := .kind | default (cond $isDisabled "text" "") -}}
-          {{- $pagelinks := ne .pagelinks false -}}
-          {{- if $url }}
+          {{- $href := partial "content/version-url.html" (dict "page" $page "entry" .) -}}
+          {{- if $href }}
           <a class="dropdown-item{{ if $isActive }} active{{ end }}{{ with $kind }} dropdown-item-{{ . }}{{ end }}"
             {{- if $isActive }} aria-current="page"{{ end }}
-            href="{{ $url }}{{ if $pagelinks }}{{ $path }}{{ end }}">{{ $name | markdownify }}</a>
+            href="{{ $href }}">{{ $name | markdownify }}</a>
           {{- else }}
           <span class="dropdown-item disabled{{ with $kind }} dropdown-item-{{ . }}{{ end }}">{{ $name | markdownify }}</span>
           {{- end -}}

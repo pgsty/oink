@@ -1,0 +1,14 @@
+{{- /* Lists of records shared by the HTML and text renderers. */ -}}
+{{- $items := slice -}}
+{{- if reflect.IsSlice .value -}}
+  {{- range .value -}}
+    {{- if reflect.IsMap . -}}
+      {{- $items = $items | append . -}}
+    {{- else -}}
+      {{- warnf "landing %s item must be a map; skipping it" $.where -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- warnf "landing %s must be an array; omitting it" .where -}}
+{{- end -}}
+{{- return $items -}}

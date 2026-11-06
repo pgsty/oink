@@ -256,3 +256,6 @@ ui_compare_sync_approximate: 'Заголовки збігаються не по�
 ui_compare_sync_unavailable: 'Синхронізація недоступна, бо заголовки повторюються або мають неправильний порядок.'
 ui_shortcut_compare: 'Відкрити двомовний перегляд'
 ui_compare_error: "Не вдалося завантажити цю сторінку."
+
+ui_pagination: Навігація сторінками
+ui_breadcrumb: Навігаційний ланцюжок

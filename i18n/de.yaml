@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Die Überschriften stimmen nicht vollständig übe
 ui_compare_sync_unavailable: 'Die Synchronisierung ist nicht verfügbar, weil Überschriften doppelt oder in falscher Reihenfolge vorkommen.'
 ui_shortcut_compare: 'Zweisprachige Ansicht öffnen'
 ui_compare_error: "Diese Seite konnte nicht geladen werden."
+
+ui_pagination: Seitennavigation
+ui_breadcrumb: Navigationspfad

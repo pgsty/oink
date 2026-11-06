@@ -448,6 +448,8 @@ def validate_manifest(
     versions = by_id["switch_version"]["options"]
     require([option["id"] for option in versions] == ["v1", "v2"], f"{lang} version options changed")
     require(versions[0]["active"] is True and versions[0]["available"] is True, f"{lang} active version changed")
+    require(versions[0]["url"] == f"https://v1.example.com/{lang}/docs/guides/tutorial/",
+            f"{lang} version URL retained the source deployment prefix: {versions[0]['url']}")
     require(versions[1]["available"] is False and versions[1]["disabledReason"], f"{lang} disabled version lacks reason")
 
     commands = map_by_id(manifest.get("commands", []))

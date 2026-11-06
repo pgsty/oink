@@ -22,7 +22,7 @@
   {{- else if isset $target.Params "manual_link" -}}
     {{- $entry := dict
         "title" ($target.LinkTitle | default $target.Title | strings.TrimSpace)
-        "url" $target.Params.manual_link
+        "url" (partial "content/manual-link.html" $target)
         "kind" "external"
     -}}
     {{- with $childNodes }}{{ $entry = merge $entry (dict "children" .) }}{{ end -}}
@@ -30,7 +30,7 @@
   {{- else if isset $target.Params "manual_link_relref" -}}
     {{- $entry := dict
         "title" ($target.LinkTitle | default $target.Title | strings.TrimSpace)
-        "url" (relref $target $target.Params.manual_link_relref)
+        "url" (partial "content/manual-link.html" $target)
         "kind" "link"
     -}}
     {{- with $childNodes }}{{ $entry = merge $entry (dict "children" .) }}{{ end -}}

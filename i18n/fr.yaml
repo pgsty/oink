@@ -255,3 +255,6 @@ ui_compare_sync_approximate: 'Les titres ne correspondent pas entièrement ; la 
 ui_compare_sync_unavailable: 'La synchronisation est indisponible, car les titres sont dupliqués ou dans le mauvais ordre.'
 ui_shortcut_compare: 'Ouvrir la vue bilingue'
 ui_compare_error: "Impossible de charger cette page."
+
+ui_pagination: Navigation des pages
+ui_breadcrumb: Fil d’Ariane

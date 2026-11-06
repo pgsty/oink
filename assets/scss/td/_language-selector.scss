@@ -65,7 +65,7 @@
     }
   }
 
-  &:hover > ul,
+  &:not([data-td-menu-ready]):hover > ul,
   &.td-is-open > ul {
     opacity: 1;
     visibility: visible;
@@ -74,7 +74,7 @@
     transition-delay: 0ms;
   }
 
-  &:focus-within > ul {
+  &:not([data-td-menu-ready]):focus-within > ul {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;

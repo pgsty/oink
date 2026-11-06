@@ -1,19 +1,36 @@
 {{- /* Right rail for the TOC, the backlinks group, and root-scoped taxonomy
        clouds. Input: dict "page" . "hasToc" bool. */ -}}
 {{- $p := .page -}}
-{{- $hasToc := .hasToc -}}
+{{- $hasToc := not (not .hasToc) -}}
 {{- $clouds := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" $p "key" "toc_taxonomies")) "kind" "bool"
     "fallback" true
     "key" "params.ui.toc_taxonomies" "where" (cond (isset $p.Params "toc_taxonomies") $p.Path "")) -}}
 {{- $backlinkSources := partial "backlinks-sources.html" $p -}}
-{{- if or $hasToc $clouds $backlinkSources -}}
-<aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
+{{- $taxonomyHTML := "" -}}
+{{- if $clouds -}}
+  {{- /* Enabling clouds does not guarantee there are terms in this root. */ -}}
+  {{- $switcher := "" -}}
+  {{- if in (slice "taxonomy" "term") $p.Kind }}{{ $switcher = partial "shell/taxonomy-switcher.html" $p }}{{ end -}}
+  {{- $root := partial "shell/taxonomy-root.html" $p -}}
+  {{- $rootKey := "all" -}}
+  {{- with $root }}{{ $rootKey = .RelPermalink | default "all" }}{{ end -}}
+  {{- $exclude := "" -}}
+  {{- if eq $p.Kind "taxonomy" }}{{ $exclude = $p.Data.Plural }}{{ end -}}
+  {{- $terms := partialCached "shell/taxonomy-terms-clouds.html"
+        (dict "site" $p.Site "root" $root "exclude" $exclude)
+        $p.Site.Language.Lang $rootKey $exclude -}}
+  {{- $taxonomyHTML = printf "%s%s" $switcher $terms | strings.TrimSpace | safeHTML -}}
+{{- end -}}
+{{- if or $hasToc $taxonomyHTML $backlinkSources -}}
+<aside class="td-shell-toc d-print-none" aria-label="{{ T (cond $hasToc "toc_on_this_page" "ui_page_annotation") }}">
   <div class="td-shell-toc__panel">
     {{- if not $hasToc }}
+    {{/* Taxonomy/backlink-only rails still need a way to collapse the rail.
+          The control is intentionally retained for this non-TOC case. */}}
     <div class="td-shell-toc__actions">
       <button type="button" class="td-shell-toc__title-btn" data-td-shell-right-toggle
-        title="{{ T "ui_toc_hide" }}" aria-label="{{ T "ui_toc_hide" }}">
+        title="{{ T "ui_sidebar_collapse" }}" aria-label="{{ T "ui_sidebar_collapse" }}">
         {{- partialCached "shell/icon.html" "menu" "menu" -}}
       </button>
     </div>
@@ -52,26 +69,13 @@
       {{ with $backlinkSources -}}
       {{ partial "backlinks.html" (dict "page" $p "sources" .) }}
       {{- end }}
-      {{ if $clouds -}}
-        {{- /* Taxonomy and term pages lead with the switcher between
-             taxonomies; a taxonomy page then omits its own cloud, whose
-             terms are already the cards beside it. */ -}}
-        {{- if in (slice "taxonomy" "term") $p.Kind }}{{ partial "shell/taxonomy-switcher.html" $p }}{{ end -}}
-        {{- $root := partial "shell/taxonomy-root.html" $p -}}
-        {{- $rootKey := "all" -}}
-        {{- with $root }}{{ $rootKey = .RelPermalink | default "all" }}{{ end -}}
-        {{- $exclude := "" -}}
-        {{- if eq $p.Kind "taxonomy" }}{{ $exclude = $p.Data.Plural }}{{ end -}}
-        {{- partialCached "shell/taxonomy-terms-clouds.html"
-              (dict "site" $p.Site "root" $root "exclude" $exclude)
-              $p.Site.Language.Lang $rootKey $exclude -}}
-      {{- end }}
+      {{ $taxonomyHTML }}
     </div>
   </div>
 </aside>
 <div class="td-shell-toc-float d-print-none">
   <button type="button" class="td-shell-iconbtn" data-td-shell-right-toggle
-    title="{{ T "ui_toc_show" }}" aria-label="{{ T "ui_toc_show" }}">
+    title="{{ T (cond $hasToc "ui_toc_show" "ui_sidebar_expand") }}" aria-label="{{ T (cond $hasToc "ui_toc_show" "ui_sidebar_expand") }}">
     {{- partialCached "shell/icon.html" "menu" "menu" -}}
   </button>
 </div>

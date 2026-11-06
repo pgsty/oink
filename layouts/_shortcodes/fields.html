@@ -72,7 +72,7 @@
   {{- end -}}
   {{- $markdown | safeHTML -}}
 {{- else -}}
-  {{- $labelID := printf "td-fields-%s-%d-label" (md5 .Page.RelPermalink) .Ordinal -}}
+  {{- $labelID := printf "td-fields-%s-%s-label" (md5 .Page.RelPermalink) (partial "content/shortcode-ordinal.html" .) -}}
   {{- $items := slice -}}
   {{- range $key, $entry := $entries -}}
     {{- $meta := partial "content/field-meta.html" (dict
@@ -81,7 +81,7 @@
       "hasDefault" $entry.hasDefault
       "default" $entry.default
     ) -}}
-    {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%d#%s" $.Ordinal $key)) -}}
+    {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%s#%s" (partial "content/shortcode-ordinal.html" $) $key)) -}}
     {{- /* The collision-resolved anchor is also the render scope. */ -}}
     {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" $anchor "content" $entry.description "origin" (printf "shortcode %q at %s" $.Name $.Position))) "descriptionMarkdown" false) -}}
   {{- end -}}

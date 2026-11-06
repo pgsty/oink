@@ -32,6 +32,7 @@
           {{- if not (reflect.IsMap .) }}{{ warnf "%s: pricing tier %d cta must be a map; dropping the call to action" $page.Path (add $index 1) }}{{ else -}}
           {{- $label := partial "landing/field.html" (dict "page" $page "record" . "key" "label") -}}
           {{- $url := partial "landing/field.html" (dict "page" $page "record" . "key" "url") -}}
+          {{- $url = partial "landing/url.html" (dict "page" $page "value" $url) -}}
           {{- if or (eq $label false) (eq $url false) (not $label) (not $url) }}{{ warnf "%s: pricing tier %d cta requires label and url; dropping the call to action" $page.Path (add $index 1) }}{{ else -}}
         <a class="td-landing-button td-landing-button--{{ .style | default (cond $tier.featured "primary" "ghost") }}" href="{{ $url }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ $label }}</a>
           {{- end -}}

@@ -133,8 +133,8 @@
     canvas.style.height = `${Math.max(stage.clientHeight, h * zoom)}px`;
     get('scale').textContent = `${Math.round(zoom * 100)}%`;
     const limits = bounds();
-    get('minus').disabled = zoom <= limits.min + .00001;
-    get('plus').disabled = zoom >= limits.max - .00001;
+    get('minus').setAttribute('aria-disabled', String(zoom <= limits.min + .00001));
+    get('plus').setAttribute('aria-disabled', String(zoom >= limits.max - .00001));
     if (recenter) {
       stage.scrollLeft = Math.max(0, centerX * Math.max(stage.clientWidth, w * zoom) - stage.clientWidth / 2);
       stage.scrollTop = Math.max(0, centerY * Math.max(stage.clientHeight, h * zoom) - stage.clientHeight / 2);
@@ -181,7 +181,8 @@
     get('original').href = link.href;
     get('locate').href = data.tdExpoPermalink;
     get('viewer-motion').hidden = data.tdExpoAnimated !== 'true';
-    prev.disabled = active === 0; next.disabled = active === links.length - 1;
+    prev.setAttribute('aria-disabled', String(active === 0));
+    next.setAttribute('aria-disabled', String(active === links.length - 1));
     setSource(); resizeImage(false); stage.scrollTo(0, 0);
   };
   image.addEventListener('load', () => {

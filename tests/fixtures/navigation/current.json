@@ -122,10 +122,106 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": []
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": []
       },
       "runtime_patterns": {
@@ -319,12 +415,174 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/tutorial/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/tutorial/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/preview/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -541,12 +799,196 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/tutorial/",
+              "kind": "group",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/advanced/",
+              "kind": "link",
+              "level": 2,
+              "rel": [],
+              "target": "",
+              "text": "Advanced Topic"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/tutorial/",
+            "kind": "group",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/advanced/",
+            "kind": "link",
+            "level": 2,
+            "rel": [],
+            "target": "",
+            "text": "Advanced Topic"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/preview/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -764,12 +1206,196 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/tutorial/",
+              "kind": "group",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/advanced/",
+              "kind": "link",
+              "level": 2,
+              "rel": [],
+              "target": "",
+              "text": "Advanced Topic"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/tutorial/",
+            "kind": "group",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/advanced/",
+            "kind": "link",
+            "level": 2,
+            "rel": [],
+            "target": "",
+            "text": "Advanced Topic"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/preview/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -897,10 +1523,106 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": []
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": []
       },
       "runtime_patterns": {
@@ -1093,12 +1815,174 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/tutorial/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/tutorial/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -1294,12 +2178,174 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/tutorial/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/tutorial/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -1516,12 +2562,196 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/tutorial/",
+              "kind": "group",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/advanced/",
+              "kind": "link",
+              "level": 2,
+              "rel": [],
+              "target": "",
+              "text": "Advanced Topic"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/tutorial/",
+            "kind": "group",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/advanced/",
+            "kind": "link",
+            "level": 2,
+            "rel": [],
+            "target": "",
+            "text": "Advanced Topic"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -1739,12 +2969,196 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/tutorial/",
+              "kind": "group",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/guides/advanced/",
+              "kind": "link",
+              "level": 2,
+              "rel": [],
+              "target": "",
+              "text": "Advanced Topic"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/tutorial/",
+            "kind": "group",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/guides/advanced/",
+            "kind": "link",
+            "level": 2,
+            "rel": [],
+            "target": "",
+            "text": "Advanced Topic"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]
@@ -1869,10 +3283,106 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": []
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/preview/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": []
       },
       "runtime_patterns": {
@@ -1996,10 +3506,106 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": []
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/preview/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": []
       },
       "runtime_patterns": {
@@ -2192,12 +3798,174 @@
               "text": "Status"
             }
           ],
-          "mobile": [],
+          "mobile": [
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Docs"
+            },
+            {
+              "active": true,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Guides"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/guides/tutorial/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "First Tutorial"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/docs/reference/",
+              "kind": "link",
+              "level": 1,
+              "rel": [],
+              "target": "",
+              "text": "Reference"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/blog/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Blog"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": false,
+              "href": "/preview/en/project/",
+              "kind": "link",
+              "level": 0,
+              "rel": [],
+              "target": "",
+              "text": "Project"
+            },
+            {
+              "active": false,
+              "current": "",
+              "external": true,
+              "href": "https://status.example.com/",
+              "kind": "link",
+              "level": 0,
+              "rel": [
+                "noopener",
+                "noreferrer"
+              ],
+              "target": "_blank",
+              "text": "Status"
+            }
+          ],
           "panels": [
             "td-navbar-desktop-docs-0"
           ]
         },
-        "mobile": [],
+        "mobile": [
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Guides"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/guides/tutorial/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "First Tutorial"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/docs/reference/",
+            "kind": "link",
+            "level": 1,
+            "rel": [],
+            "target": "",
+            "text": "Reference"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": false,
+            "href": "/preview/en/blog/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "current": "page",
+            "external": false,
+            "href": "/preview/en/project/",
+            "kind": "link",
+            "level": 0,
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "current": "",
+            "external": true,
+            "href": "https://status.example.com/",
+            "kind": "link",
+            "level": 0,
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
         "panels": [
           "td-navbar-desktop-docs-0"
         ]

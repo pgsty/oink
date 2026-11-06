@@ -255,3 +255,6 @@ ui_compare_sync_approximate: 'Titlurile nu corespund complet; sincronizarea folo
 ui_compare_sync_unavailable: 'Sincronizarea nu este disponibilă deoarece titlurile sunt duplicate sau în ordine greșită.'
 ui_shortcut_compare: 'Deschide vizualizarea bilingvă'
 ui_compare_error: "Această pagină nu a putut fi încărcată."
+
+ui_pagination: Paginare
+ui_breadcrumb: Cale de navigare

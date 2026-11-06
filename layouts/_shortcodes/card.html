@@ -2,6 +2,8 @@
        Awesome class pair), badge, image + image_alt | decorative; the body is
        the Markdown description, rendered here with RenderString. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "title" "link" "icon" "badge" "image" "image_alt" "decorative")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- /* A card that cannot be rendered warns and is skipped; the sibling cards
        in the grid still render. */ -}}
 {{- $ok := true -}}
@@ -18,11 +20,11 @@
 {{- if or (not .Params) (not .IsNamedParams) -}}
   {{- warnf "shortcode %q requires named parameters (title, …) at %s; skipping the card" .Name .Position -}}
   {{- $ok = false -}}
-{{- else if not (isset .Params "title") -}}
+{{- else if not (isset $params "title") -}}
   {{- warnf "shortcode %q requires parameter title at %s; skipping the card" .Name .Position -}}
   {{- $ok = false -}}
 {{- else -}}
-  {{- $titleParam := .Get "title" -}}
+  {{- $titleParam := index $params "title" -}}
   {{- if ne (printf "%T" $titleParam) "string" -}}
     {{- warnf "shortcode %q: title must be a string at %s; skipping the card" .Name .Position -}}
     {{- $ok = false -}}
@@ -36,42 +38,42 @@
 {{- end -}}
 {{- $href := "" -}}
 {{- $external := false -}}
-{{- if and $ok (isset .Params "link") -}}
-  {{- $url := partial "content/url.html" (dict "name" .Name "parameter" "link" "position" .Position "value" (.Get "link") "kind" "link") -}}
+{{- if and $ok (isset $params "link") -}}
+  {{- $url := partial "content/url.html" (dict "name" .Name "parameter" "link" "position" .Position "value" (index $params "link") "kind" "link") -}}
   {{- $href = $url.href -}}
   {{- $external = $url.external -}}
 {{- end -}}
 {{- $icon := "" -}}
-{{- if and $ok (isset .Params "icon") -}}
-  {{- $icon = strings.TrimSpace (printf "%v" (.Get "icon")) -}}
+{{- if and $ok (isset $params "icon") -}}
+  {{- $icon = strings.TrimSpace (printf "%v" (index $params "icon")) -}}
   {{- if not (findRE `^fa-(solid|regular|brands) fa-[a-z0-9-]+$` $icon) -}}
     {{- warnf "shortcode %q: icon must be one Font Awesome class pair such as \"fa-solid fa-rocket\"; got %q at %s; dropping the icon" .Name $icon .Position -}}
     {{- $icon = "" -}}
   {{- end -}}
 {{- end -}}
 {{- $badge := "" -}}
-{{- if isset .Params "badge" }}{{ $badge = strings.TrimSpace (printf "%v" (.Get "badge")) }}{{ end -}}
+{{- if isset $params "badge" }}{{ $badge = strings.TrimSpace (printf "%v" (index $params "badge")) }}{{ end -}}
 {{- $image := false -}}
-{{- if and $ok (isset .Params "image") -}}
+{{- if and $ok (isset $params "image") -}}
   {{- $decorative := false -}}
-  {{- if isset .Params "decorative" -}}
-    {{- $decorativeParam := .Get "decorative" -}}
+  {{- if isset $params "decorative" -}}
+    {{- $decorativeParam := index $params "decorative" -}}
     {{- if ne (printf "%T" $decorativeParam) "bool" -}}
       {{- warnf "shortcode %q: decorative must be boolean at %s; treating the image as meaningful" .Name .Position -}}
     {{- else -}}
       {{- $decorative = $decorativeParam -}}
     {{- end -}}
   {{- end -}}
-  {{- $hasAlt := isset .Params "image_alt" -}}
+  {{- $hasAlt := isset $params "image_alt" -}}
   {{- if and $hasAlt $decorative -}}
     {{- warnf "shortcode %q: image_alt and decorative are mutually exclusive at %s; keeping the alt text" .Name .Position -}}
     {{- $decorative = false -}}
   {{- end -}}
   {{- $image = partial "content/image-resolve.html" (dict
-    "name" .Name "position" .Position "page" .Page "src" (.Get "image")
-    "hasAlt" $hasAlt "alt" (cond $hasAlt (.Get "image_alt") "") "decorative" $decorative "requireAlt" true
+    "name" .Name "position" .Position "page" .Page "src" (index $params "image")
+    "hasAlt" $hasAlt "alt" (cond $hasAlt (index $params "image_alt") "") "decorative" $decorative "requireAlt" true
   ) -}}
-{{- else if or (isset .Params "image_alt") (isset .Params "decorative") -}}
+{{- else if or (isset $params "image_alt") (isset $params "decorative") -}}
   {{- warnf "shortcode %q: image_alt/decorative require image at %s; ignoring them" .Name .Position -}}
 {{- end -}}
 {{- $body := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
@@ -83,8 +85,8 @@
   {{- with $body }}{{ $line = printf "%s — %s" $line (replaceRE `\s*\n\s*` " " .) }}{{ end -}}
 - {{ $line | safeHTML }}
 {{- else -}}
-{{- $scope := printf "%s-%d" (.Parent.Name | anchorize) .Parent.Ordinal -}}
-{{- $id := printf "td-card-%s-%s-%d" (md5 .Page.RelPermalink | truncate 8 "") $scope .Ordinal -}}
+{{- $scope := printf "%s-%s" (.Parent.Name | anchorize) (partial "content/shortcode-ordinal.html" .) -}}
+{{- $id := printf "td-card-%s-%s" (md5 .Page.RelPermalink | truncate 8 "") $scope -}}
 <article id="{{ $id }}" class="td-content-card">
 {{- with $image }}
 <img class="td-content-card__image" src="{{ .src }}" alt="{{ .alt }}"{{ if gt .width 0 }} width="{{ .width }}" height="{{ .height }}"{{ end }} loading="lazy" decoding="async">
@@ -96,7 +98,7 @@
 {{- with $badge }}<span class="td-content-card__badge">{{ . }}</span>{{ end -}}
 </div>
 {{- if $body }}
-<div class="td-content-card__description">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "card%d" .Ordinal) "content" $body "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
+<div class="td-content-card__description">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "card-%s" (partial "content/shortcode-ordinal.html" .)) "content" $body "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
 {{- end }}
 </div>
 </article>

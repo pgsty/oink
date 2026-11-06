@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'A címsorok nem egyeznek teljesen; a szinkronizál
 ui_compare_sync_unavailable: 'A szinkronizálás nem érhető el, mert a címsorok ismétlődnek vagy rossz sorrendben vannak.'
 ui_shortcut_compare: 'Kétnyelvű nézet megnyitása'
 ui_compare_error: "Az oldal nem tölthető be."
+
+ui_pagination: Lapozás
+ui_breadcrumb: Navigációs útvonal

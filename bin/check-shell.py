@@ -707,7 +707,7 @@ def check_featured_image_sources() -> list[str]:
     # deliberately independent of whether a page carries an image.
     rail = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text()
     require('"key" "params.ui.toc_taxonomies"' in rail
-            and "if or $hasToc $clouds" in rail,
+            and "if or $hasToc $taxonomyHTML $backlinkSources" in rail,
             "the taxonomy clouds are no longer an opt-out that can empty the rail", errors)
     toc_style = (ROOT / "layouts/_partials/shell/toc-style.html").read_text()
     require('"allowed" (slice "fixed" "flow")' in toc_style
@@ -986,7 +986,7 @@ def build_example(hugo: str) -> list[str]:
                     and source.find('td-shell-footline__theme', footline) >= 0
                     and source.find('class="td-shell-keyboard td-nav-hover-menu"', footline) >= 0,
                     "rendered bottom bar lost its language/theme/help controls", errors)
-            require('aria-label="breadcrumb"' in source,
+            require('class="td-breadcrumbs' in source,
                     "nested documentation page lost its breadcrumb", errors)
             require('class="td-shell-root__item' in source and 'href="/blog/"' in source,
                     "rendered root switcher is not global", errors)
@@ -995,11 +995,11 @@ def build_example(hugo: str) -> list[str]:
         require(blog.is_file(), "blog root fixture is missing", errors)
         if blog.is_file():
             blog_source = blog.read_text()
-            require('data-td-pager-next' in blog_source,
-                    "blog root does not page to its first child", errors)
+            require('data-td-pager-next' not in blog_source,
+                    "blog list incorrectly pages into its first article", errors)
             require('data-td-page-annotation' in blog_source,
                     "blog root bypasses the page-end annotation", errors)
-            require('aria-label="breadcrumb"' not in blog_source
+            require('class="td-breadcrumbs' not in blog_source
                     and 'data-td-page-actions' in blog_source
                     and 'td-shell-topline--actions-only' in blog_source,
                     "blog root did not hide its breadcrumb while retaining actions", errors)
@@ -1086,7 +1086,7 @@ def build_example(hugo: str) -> list[str]:
         require(docs.is_file(), "docs root fixture is missing", errors)
         if docs.is_file():
             docs_source = docs.read_text()
-            require('aria-label="breadcrumb"' not in docs_source
+            require('class="td-breadcrumbs' not in docs_source
                     and 'data-td-page-actions' in docs_source
                     and 'td-shell-topline--actions-only' in docs_source,
                     "docs root did not hide its breadcrumb while retaining actions", errors)
@@ -1276,7 +1276,7 @@ def check_immersive_output(public: Path) -> list[str]:
                 f"the immersive {source_name} fixture grew a sidebar", errors)
         require("td-shell-tags-cloud" not in source,
                 f"the immersive {source_name} fixture's rail carries taxonomy clouds", errors)
-        require('aria-label="breadcrumb"' not in source
+        require('class="td-breadcrumbs' not in source
                 and "td-shell-topline--actions-only" in source,
                 f"the immersive {source_name} fixture regrew a breadcrumb "
                 "over the blog shell's breadcrumb-free default", errors)
@@ -1372,6 +1372,9 @@ params:
             if not output.is_file():
                 continue
             html = output.read_text(encoding="utf-8")
+            require('<aside class="td-shell-toc ' not in html
+                    and 'data-td-shell-right-toggle' not in html,
+                    f"{name} rendered an empty rail or its controls without headings, terms, or backlinks", errors)
             tree_start = html.find('id="td-sidebar-menu"')
             tree_end = html.find("</nav>", tree_start)
             first = re.search(
@@ -1790,6 +1793,11 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         require(second_path.is_file(), "toggle fixture did not generate a second page", errors)
         if second_path.is_file():
             second = second_path.read_text(encoding="utf-8")
+            require('<link rel="prev" href="/blog/oink/">' in second,
+                    "blog pagination head points into the article chain", errors)
+            require('data-td-pager-next' not in second and 'role="button"' not in
+                    second.split('td-blog-posts__pagination', 1)[-1].split('</nav>', 1)[0],
+                    "blog list leaked article navigation or button roles", errors)
             second_rows = re.findall(
                 r'<li class="td-blog-posts-list__item">.*?<a href="([^"]+)"', second, re.S)
             second_table = re.findall(

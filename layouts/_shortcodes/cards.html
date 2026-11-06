@@ -11,7 +11,7 @@
 {{- if eq $format "markdown" -}}
 {{ .Inner }}
 {{- else -}}
-<div class="td-content-cards td-content-cards--auto{{ if $list }} td-cards-list{{ end }}" id="td-cards-{{ md5 .Page.RelPermalink | truncate 8 "" }}-{{ .Ordinal }}">
+<div class="td-content-cards td-content-cards--auto{{ if $list }} td-cards-list{{ end }}" id="td-cards-{{ md5 .Page.RelPermalink | truncate 8 "" }}-{{ partial "content/shortcode-ordinal.html" . }}">
 {{ .Inner }}
 </div>
 {{- end -}}

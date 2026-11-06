@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Overskriftene samsvarer ikke helt; synkroniseringe
 ui_compare_sync_unavailable: 'Synkronisering er ikke tilgjengelig fordi overskriftene er dupliserte eller i feil rekkefølge.'
 ui_shortcut_compare: 'Åpne tospråklig visning'
 ui_compare_error: "Kunne ikke laste denne siden."
+
+ui_pagination: Sidenavigasjon
+ui_breadcrumb: Brødsmulesti

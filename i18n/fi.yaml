@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Otsikot eivät täsmää täysin; synkronointi kä
 ui_compare_sync_unavailable: 'Synkronointi ei ole käytettävissä, koska otsikot ovat päällekkäisiä tai väärässä järjestyksessä.'
 ui_shortcut_compare: 'Avaa kaksikielinen näkymä'
 ui_compare_error: "Sivua ei voitu ladata."
+
+ui_pagination: Sivutus
+ui_breadcrumb: Murupolku

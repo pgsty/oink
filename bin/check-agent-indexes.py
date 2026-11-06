@@ -402,6 +402,7 @@ outputs:
         write("content/docs/a.md", "---\ntitle: A\nweight: 1\n---\nVisible A\n")
         write("content/docs/b.md", "---\ntitle: B\nweight: 2\n---\nVisible B\n")
         write("content/docs/alias.md", "---\ntitle: Alias\nmanual_link_relref: /docs/a\nweight: 3\n---\n")
+        write("content/docs/bad-alias.md", "---\ntitle: Bad alias\nmanual_link_relref: /docs/does-not-exist\nweight: 4\n---\n")
         write("content/docs/hidden/_index.md", "---\ntitle: Hidden group\ntoc_hide: true\n---\n")
         write("content/docs/hidden/child.md", "---\ntitle: Hidden child\n---\nHidden body\n")
         declared = [
@@ -409,6 +410,7 @@ outputs:
                 {"page": "/docs/hidden/child", "url": "/docs/hidden/child/"}]},
             {"page": "/docs/b", "url": "/docs/b/"},
             {"page": "/docs/alias", "url": "/docs/alias/"},
+            {"page": "/docs/bad-alias", "url": "/docs/bad-alias/"},
             {"page": "/docs/a", "url": "/docs/a/"},
         ]
         for name, sections in (("declared", declared), ("empty", [])):
@@ -435,12 +437,79 @@ outputs:
             alias = next((node for node in children if node["title"] == "Alias"), {})
             require(alias == {"title": "Alias", "kind": "link", "url": "/manual/docs/a/"},
                     f"{name}: internal alias lost its target: {alias}", errors)
+            bad = next((node for node in children if node["title"] == "Bad alias"), {})
+            require(bad.get("url") == "/manual/docs/bad-alias/", "invalid alias lost its safe permalink", errors)
+            require("does not resolve to a page" in result.stdout + result.stderr, "invalid alias emitted no warning", errors)
             first = (destination / f"docs/{order[0]}/index.html").read_text()
             require(f'<a data-next href="/manual/docs/{order[1]}/">' in first,
                     f"{name}: pager differs from visible reading order", errors)
             if not sections:
                 require("falling back to the section tree" in result.stdout + result.stderr,
                         "empty explicit navigation did not warn", errors)
+
+
+def check_navigation_path_keys(hugo: str, errors: list[str]) -> None:
+    """Identity and declared section order survive language/deployment prefixes."""
+    for base_path in ("/", "/manual/"):
+        for language_subdir in (False, True):
+            case = f"{base_path} language_subdir={language_subdir}"
+            with tempfile.TemporaryDirectory(prefix="oink-nav-path-keys-") as temp:
+                site = Path(temp)
+
+                def write(relative: str, value: str) -> None:
+                    path = site / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(value, encoding="utf-8")
+
+                write("hugo.yaml", f"""baseURL: https://example.org{base_path}
+title: Navigation path keys
+theme: {ROOT.name}
+defaultContentLanguage: en
+defaultContentLanguageInSubdir: {str(language_subdir).lower()}
+languages:
+  en: {{weight: 1}}
+  zh: {{weight: 2}}
+disableKinds: [RSS, sitemap, taxonomy, term]
+outputs:
+  home: [HTML, NAVJSON]
+  section: [HTML]
+  page: [HTML]
+""")
+                write("layouts/index.html", "ok")
+                write("layouts/docs/list.html", '{{ partial "section-index.html" . }}')
+                write("layouts/docs/single.html", "ok")
+                for suffix in ("", ".zh"):
+                    write(f"content/docs/_index{suffix}.md", "---\ntitle: Docs\n---\n")
+                    for weight, name in enumerate(("alpha", "beta"), 1):
+                        write(f"content/docs/{name}{suffix}.md",
+                              f"---\ntitle: {name}\nweight: {weight}\n---\n")
+                write("data/docs_nav.json", json.dumps({
+                    "sections": [{"page": "/docs", "children": [
+                        {"page": "/docs/beta"}, {"page": "/docs/alpha"}]}],
+                    "children_by_url": {"/docs/": ["/docs/beta", "/docs/alpha"]},
+                }))
+                result = subprocess.run(
+                    [hugo, "--source", str(site), "--themesDir", str(ROOT.parent),
+                     "--destination", str(site / "public"), "--logLevel", "warn"],
+                    capture_output=True, text=True, check=False, timeout=BUILD_TIMEOUT)
+                require(result.returncode == 0, f"{case}: navigation build failed: {result.stdout}{result.stderr}", errors)
+                if result.returncode != 0:
+                    continue
+                for lang in ("en", "zh"):
+                    language_path = f"{lang}/" if language_subdir or lang != "en" else ""
+                    output = site / "public" / language_path
+                    nav = json.loads((output / "navigation.json").read_text())
+                    nodes = nav_page_nodes(nav["root"])
+                    expected_ids = ["/", "/docs/", "/docs/beta/", "/docs/alpha/"]
+                    require([node["id"] for node in nodes] == expected_ids,
+                            f"{case}/{lang}: navigation IDs retain a language or deployment prefix: {[node['id'] for node in nodes]}", errors)
+                    for node, expected_id in zip(nodes, expected_ids):
+                        expected = f"https://example.org{base_path}{language_path}{expected_id.lstrip('/')}"
+                        require(node["url"] == expected, f"{case}/{lang}: published URL changed: {node['url']}", errors)
+                    html = (output / "docs/index.html").read_text()
+                    links = re.findall(r'<a\b[^>]*href="([^"]+)"', html)
+                    require(links == [f"{base_path}{language_path}docs/{name}/" for name in ("beta", "alpha")],
+                            f"{case}/{lang}: section index ignored declared order: {links}", errors)
 
 
 def check_nested_section(hugo: str, errors: list[str]) -> None:
@@ -502,6 +571,7 @@ def main() -> int:
         check_determinism(args.hugo, public, errors)
         check_explicit_tree(args.hugo, errors)
         check_explicit_boundaries(args.hugo, errors)
+        check_navigation_path_keys(args.hugo, errors)
         check_nested_section(args.hugo, errors)
     else:
         print("  (reused build: determinism, explicit-tree, and "

@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Pealkirjad ei ühti täielikult; sünkroonimine ka
 ui_compare_sync_unavailable: 'Sünkroonimine pole saadaval, sest pealkirjad korduvad või on vales järjekorras.'
 ui_shortcut_compare: 'Ava kakskeelne vaade'
 ui_compare_error: "Seda lehte ei saanud laadida."
+
+ui_pagination: Lehekülgede navigeerimine
+ui_breadcrumb: Asukoharada

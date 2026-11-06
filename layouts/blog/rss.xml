@@ -18,6 +18,7 @@
 {{- end }}
 {{- /* A blog section feed includes regular pages from all nested sections. */ -}}
 {{- $pages := .RegularPagesRecursive }}
+{{- $pages = $pages.ByDate.Reverse }}
 {{- $limit := .Site.Config.Services.RSS.Limit }}
 {{- if ge $limit 1 }}
   {{- $pages = $pages | first $limit }}
@@ -38,18 +39,17 @@
       <copyright>{{ . }}</copyright>
     {{ end }}
     {{ if gt (len $pages) 0 }}
-      <lastBuildDate>{{ (index $pages.ByLastmod.Reverse 0).Lastmod.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
+      {{ with (index $pages.ByLastmod.Reverse 0).Lastmod }}<lastBuildDate>{{ .Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}
     {{ end }}
     {{ with .OutputFormats.Get "RSS" }}
       {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
     {{ end }}
     {{ range $pages }}
-      {{- .Store.Set "tdOutputFormat" "rss" -}}
       {{- $description := partial "content/rss-description.html" . -}}
       <item>
         <title>{{ .Title }}</title>
         <link>{{ .Permalink }}</link>
-        <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
+        {{ if not .PublishDate.IsZero }}<pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>{{ end }}
         {{ with $authorEmail }}<author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>{{ end }}
         {{- /* RSS 2.0 `author` is an address, so a per-item byline needs Dublin
                Core. The site-level managingEditor above is untouched. */ -}}

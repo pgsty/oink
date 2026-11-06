@@ -7,12 +7,12 @@
   <div class="td-site-container">
     {{- partial "landing/heading.html" (dict "page" $page "data" $data "id" $id) }}
     {{- range $index, $module := $data.items }}{{- $scope := printf "%s-item-%v" $scope $index -}}
-    {{- $url := $module.url | default $module.href }}
+    {{- $url := partial "landing/url.html" (dict "page" $page "value" ($module.url | default $module.href)) }}
     <article class="td-landing-module{{ if eq (mod $index 2) 1 }} td-landing-module--reverse{{ end }}">
       <div class="td-landing-module__copy">
         {{- with $module.ref }}<p class="td-landing-module__ref">{{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-capabilities-field-1" $scope) "value" .) }}</p>{{ end }}
         <h3>
-          {{- if $url }}<a href="{{ $url | relLangURL }}"{{ if $module.external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ end -}}
+          {{- if $url }}<a href="{{ $url }}"{{ if $module.external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ end -}}
           {{- partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-capabilities-field-2" $scope) "value" ($module.title | default $module.name)) -}}
           {{- if $url }}</a>{{ end -}}
         </h3>
@@ -75,9 +75,9 @@
            style="--td-component-columns: {{ $columns }}"
            {{- if $interactive }} role="navigation" aria-label="{{ .aria_label | default $module.title }}"{{ else }} aria-hidden="true"{{ end }}>
         {{- range .items }}
-          {{- $itemURL := .url | default .href }}
+          {{- $itemURL := partial "landing/url.html" (dict "page" $page "value" (.url | default .href)) }}
           {{- if $itemURL }}
-        <a href="{{ $itemURL | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</a>
+        <a href="{{ $itemURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</a>
           {{- else }}
         <span><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</span>
           {{- end }}

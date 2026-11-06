@@ -47,7 +47,7 @@
   {{- end -}}
   {{- $href = printf "#%s" $anchor -}}
 {{- end -}}
-{{- if in (slice "markdown" "rss") $format -}}
+{{- if eq $format "markdown" -}}
   {{- $markdownText := $inner -}}
   {{- if not $markdownText }}{{ $markdownText = $label | plainify }}{{ end -}}
   {{- if $missingTarget -}}

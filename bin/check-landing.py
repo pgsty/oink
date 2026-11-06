@@ -245,8 +245,8 @@ def check_sources() -> list[str]:
     require('printf "%s_%s" $key $primary' in field, "field helper lacks primary language fallback", errors)
     require("$hasLanding" in scripts and "js/landing.js" in scripts, "hasLanding assembly is incomplete", errors)
     require(
-        '$landingSurface := and (not $drawerMode) (or .IsHome $landingLayout)' in navbar,
-        "the drawer entry must render on both navbar-only surfaces (Home and "
+        '$landingSurface := not $drawerMode' in navbar,
+        "the drawer entry must render on every navbar-only surface (including "
         "explicit Landing layouts)",
         errors,
     )
@@ -345,6 +345,10 @@ params:
 
 
 INVALID_CASES = (
+    ("bad-metric-source", "sections: [{type: metrics, data: {items: [{label: Count, value: 1, source: invalid}]}}]\n", "source must be a map"),
+    ("missing-features", "sections: [{type: pricing, data: {tiers: [{name: Basic, price: Free}]}}]\n", ""),
+    ("missing-cells", "sections: [{type: pricing-compare, data: {tiers: [Free], groups: [{name: A, rows: [{name: B}]}]}}]\n", "cells must be an array"),
+    ("string-items", "sections: [{type: cards, data: {items: [bad, {title: Good}]}}, {type: hero, data: {actions: [bad]}}, {type: pricing, data: {tiers: [bad, {name: Basic, price: Free}]}}]\n", "item must be a map"),
     ("missing-data", "", "was not found"),
     ("unknown-section", "sections: [not-a-section]\n", "unknown section type"),
     ("bad-visual", "sections:\n  - type: capabilities\n    data:\n      items:\n        - title: Bad\n          visual: {type: video}\n", "unsupported visual.type"),
@@ -378,6 +382,8 @@ def check_invalid(hugo: str) -> list[str]:
         with tempfile.TemporaryDirectory(prefix=f"td-landing-components-landing-{name}-") as temp:
             site = Path(temp)
             create_site(site, data)
+            page_source = site / "content/test.md"
+            page_source.write_text(page_source.read_text().replace("title: Test landing\n", "title: Test landing\noutputs: [HTML, markdown]\n"))
             result = run(hugo, site)
             output = result.stdout + result.stderr
             # A malformed section warns and renders nothing while the rest of
@@ -426,6 +432,55 @@ def check_localized_fields(hugo: str) -> list[str]:
             require("Primary name" not in source, "primary field overrode a full-language field", errors)
             for marker in ('id="td-section-nav"', 'class="td-shell-sidebar', 'class="td-toc'):
                 require(marker not in source, f"typed landing fixture inherited article chrome: {marker}", errors)
+    return errors
+
+
+def check_link_boundaries(hugo: str) -> list[str]:
+    errors: list[str] = []
+    data = """sections:
+  - type: hero
+    data:
+      title: Links
+      actions:
+        - {label: Anchor, url: '#install'}
+        - {label: Docs, url: /docs/}
+        - {label: Unsafe, url: 'javascript:alert(1)'}
+  - type: cta
+    data:
+      actions:
+        - {label: Query, url: '?view=all'}
+        - {label: Unsafe CTA, url: 'javascript:alert(1)'}
+  - type: cta
+    data:
+      label: Standalone
+      url: /start/
+  - type: metrics
+    data:
+      items:
+        - {label: Count, value: 1, source: {label: Source, url: /data/}}
+        - {label: Count, value: 2, source: {label: Unsafe source, url: 'javascript:alert(1)'}}
+"""
+    with tempfile.TemporaryDirectory(prefix="oink-landing-links-") as temp:
+        site = Path(temp)
+        create_site(site, data, language="zh")
+        config = site / "hugo.yaml"
+        config.write_text(config.read_text().replace("https://example.org/", "https://example.org/sub/") + "defaultContentLanguageInSubdir: true\n")
+        page = site / "content/test.md"
+        page.write_text(page.read_text().replace("title: Test landing\n", "title: Test landing\noutputs: [HTML, markdown]\n"))
+        result = run(hugo, site)
+        require(result.returncode == 0, f"landing link fixture failed: {result.stdout}{result.stderr}", errors)
+        if result.returncode == 0:
+            html = (site / "public/zh/test/index.html").read_text()
+            markdown = (site / "public/zh/test/index.md").read_text()
+            for target in ("#install", "/sub/zh/docs/", "?view=all", "/sub/zh/start/", "/sub/zh/data/"):
+                require(f'href="{target}"' in html, f"landing HTML changed link {target}", errors)
+                require(f"]({target})" in markdown, f"landing Markdown changed link {target}", errors)
+            for output in (html, markdown):
+                require("javascript:" not in output and "ZgotmplZ" not in output, "landing leaked an unsafe URL", errors)
+            main = re.search(r"<main\b[^>]*>(.*?)</main>", html, re.S)
+            require(main is not None and 'href=""' not in main.group(1) and "]()" not in markdown,
+                    "landing turned an invalid target into a link to the current page", errors)
+            require("unsupported URL scheme" in result.stdout + result.stderr, "landing unsafe URL emitted no warning", errors)
     return errors
 
 
@@ -759,6 +814,7 @@ def main() -> int:
         + check_invalid(args.hugo)
         + check_localized_fields(args.hugo)
         + check_centered_hero(args.hugo)
+        + check_link_boundaries(args.hugo)
         + check_preview_scopes(args.hugo)
         + check_metric_display(args.hugo)
         + check_rss(args.hugo)

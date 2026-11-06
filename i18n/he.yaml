@@ -255,3 +255,6 @@ ui_compare_sync_approximate: 'הכותרות אינן תואמות לחלוטי�
 ui_compare_sync_unavailable: 'הסנכרון אינו זמין כי הכותרות כפולות או מסודרות בסדר שגוי.'
 ui_shortcut_compare: 'פתיחת תצוגה דו-לשונית'
 ui_compare_error: "לא ניתן לטעון דף זה."
+
+ui_pagination: ניווט בין עמודים
+ui_breadcrumb: נתיב ניווט

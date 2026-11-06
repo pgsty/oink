@@ -1,25 +1,28 @@
 {{- /* Include a page resource, asset, or content file. Missing files warn and
        render nothing; code=false renders Markdown in the page context. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "file" "code" "lang")) -}}
-{{- if or (not .IsNamedParams) (not (isset .Params "file")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
+{{- if or (not .IsNamedParams) (not (isset $params "file")) -}}
   {{- warnf "shortcode %q requires named parameter file at %s; including nothing" .Name .Position -}}
 {{- end -}}
-{{- $file := strings.TrimSpace (printf "%v" (.Get "file")) -}}
+{{- $file := strings.TrimSpace (printf "%v" (index $params "file" | default "")) -}}
 {{- if not $file }}{{ warnf "shortcode %q: file must not be empty at %s; including nothing" .Name .Position }}{{ end -}}
 {{- if strings.Contains $file ".." }}{{ warnf "shortcode %q: file must not contain ..; got %q at %s; including nothing" .Name $file .Position }}{{ $file = "" }}{{ end -}}
 {{- $code := false -}}
-{{- if isset .Params "code" -}}
-  {{- $code = .Get "code" -}}
+{{- if isset $params "code" -}}
+  {{- $code = index $params "code" -}}
   {{- if ne (printf "%T" $code) "bool" }}{{ warnf "shortcode %q: code must be boolean at %s; including it as content" .Name .Position }}{{ $code = false }}{{ end -}}
 {{- end -}}
 {{- $lang := "" -}}
-{{- if isset .Params "lang" -}}
+{{- if isset $params "lang" -}}
   {{- if not $code }}{{ warnf "shortcode %q: lang requires code=true at %s; ignoring lang" .Name .Position }}{{ end -}}
-  {{- $lang = strings.TrimSpace (printf "%v" (.Get "lang")) -}}
+  {{- $lang = strings.TrimSpace (printf "%v" (index $params "lang")) -}}
 {{- end -}}
 {{- /* Resolution order: page resource → asset (mount) → file under content/
        (leading "/" = content root, otherwise relative to the page's directory).
        Never outside content/ or assets/. */ -}}
+{{- if $file -}}
 {{- $content := "" -}}
 {{- $found := false -}}
 {{- if not (hasPrefix $file "/") -}}
@@ -50,7 +53,7 @@
   {{- if eq $format "markdown" -}}
     {{- printf "```%s\n%s\n```" $lang (strings.TrimRight "\n" $content) | safeHTML -}}
   {{- else -}}
-    {{- $config := partial "code/normalize.html" (dict "page" .Page "position" .Position "code" $content "language" $lang "attributes" (dict) "options" (dict) "key" (printf "include-%d" .Ordinal)) -}}
+    {{- $config := partial "code/normalize.html" (dict "page" .Page "position" .Position "code" $content "language" $lang "attributes" (dict) "options" (dict) "key" (printf "include-%s" (partial "content/shortcode-ordinal.html" .))) -}}
     {{- $highlighted := partial "code/highlight.html" $config -}}
     {{- partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
   {{- end -}}
@@ -59,6 +62,7 @@
   {{- if eq $format "markdown" -}}
     {{- $content | safeHTML -}}
   {{- else -}}
-    {{- partial "content/render-block.html" (dict "page" .Page "scope" (printf "include%d" .Ordinal) "content" $content "origin" (printf "shortcode %q at %s" .Name .Position)) -}}
+    {{- partial "content/render-block.html" (dict "page" .Page "scope" (printf "include-%s" (partial "content/shortcode-ordinal.html" .)) "content" $content "origin" (printf "shortcode %q at %s" .Name .Position)) -}}
   {{- end -}}
+{{- end -}}
 {{- end -}}

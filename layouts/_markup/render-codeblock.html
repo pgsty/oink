@@ -13,6 +13,11 @@
 {{- if and $numRaw $tab }}{{ warnf "code block: num (Book example) and tab (tabs) are mutually exclusive at %s; ignoring tab" .Position }}{{ $tab = "" }}{{ end -}}
 {{- if and $caption (not $numRaw) }}{{ warnf "code block: caption requires num (numbered example) at %s; ignoring caption" .Position }}{{ $caption = "" }}{{ end -}}
 {{- if and $numRaw (not $caption) }}{{ warnf "code block: a numbered example requires caption at %s; dropping the number" .Position }}{{ $numRaw = "" }}{{ end -}}
+{{- $num := "" -}}
+{{- if $numRaw -}}
+  {{- $num = partial "book/validate-num.html" (dict "name" "code block" "value" $numRaw "position" .Position) -}}
+  {{- if not $num }}{{ $numRaw = "" }}{{ end -}}
+{{- end -}}
 {{- /* For a numbered example the author id names the <figure> (the Book
        target), not the code block root, so it is not passed to normalize. */ -}}
 {{- $egID := "" -}}
@@ -36,16 +41,15 @@
 {{- if $tab -}}
   {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" $group "value" $value "kind" "code" "content" $html) -}}
 {{- else if $numRaw -}}
-  {{- $num := partial "book/validate-num.html" (dict "name" "code block" "value" $numRaw "position" .Position) -}}
   {{- $id := printf "eg-%s" $num -}}
   {{- if $egID }}{{ $id = partial "book/validate-id.html" (dict "name" "code block" "value" $egID "position" .Position) }}{{ end -}}
-  {{- partial "book/register-target.html" (dict "page" $page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+  {{- if $id }}{{ partial "book/register-target.html" (dict "page" $page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
   {{- $label := partial "book/label.html" (dict "kind" "eg" "num" $num) -}}
   {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
   {{- if in (slice "markdown" "rss") $format -}}
     {{- printf "<p><strong>%s.</strong> %s</p>\n" $label (htmlEscape $caption) | safeHTML -}}{{ $html }}
   {{- else -}}
-<figure id="{{ $id }}" class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="{{ $num }}">
+<figure{{ with $id }} id="{{ . }}"{{ end }} class="td-book-figure td-book-figure--eg" data-td-book-kind="eg" data-td-book-num="{{ $num }}">
   <figcaption><span class="td-eg-label">{{ $label }}</span> <span class="td-eg-caption">{{ $caption }}</span></figcaption>
   {{ $html }}
 </figure>

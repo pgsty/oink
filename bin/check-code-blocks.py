@@ -433,6 +433,20 @@ def check_nested_render_ids(hugo: str) -> list[str]:
             "```shell\necho repeated again\n```\n"
         ),
     }
+    nested = (
+        '{{< cards >}}\n{{< card title="Nested" >}}\n'
+        '```shell\necho child\n```\n'
+        '```infographic\ninfographic list-row-simple-horizontal-arrow\ndata\n  items\n    - label A\n```\n'
+        '```echarts\n{"series": [{"type": "bar", "data": [1]}]}\n```\n'
+        '```filetree\n- root/\n  - child.txt\n```\n'
+        '| Field | Description |\n| --- | --- |\n| native_port | Native port. |\n{.fields caption="Ports"}\n'
+        '{{< /card >}}\n{{< /cards >}}\n'
+        '{{< fields >}}{{< field name="port" >}}Port.{{< /field >}}{{< /fields >}}\n'
+    )
+    pages["docs/nested.md"] += (
+        '{{< tabs >}}{{< tab label="Alpha" >}}\n' + nested + '{{< /tab >}}'
+        '{{< tab label="Beta" >}}\n' + nested + '{{< /tab >}}{{< /tabs >}}\n'
+    )
     config = "outputs:\n  section: [HTML, print]\n  page: [HTML, print]\n"
     result, destination, temp = temp_build(
         hugo, pages, prefix="oink-code-nested-ids-", extra_config=config
@@ -454,7 +468,7 @@ def check_nested_render_ids(hugo: str) -> list[str]:
             source = path.read_text(encoding="utf-8")
             roots = re.findall(r'id="([^"]+)" data-td-code(?:\s|>)', source)
             roots_by_output[output] = roots
-            require(len(roots) == 7, f"nested fixture {output} rendered {len(roots)} code roots: {roots}", errors)
+            require(len(roots) == 9, f"nested fixture {output} rendered {len(roots)} code roots: {roots}", errors)
             require(len(roots) == len(set(roots)), f"nested fixture {output} code roots are not unique: {roots}", errors)
             require("td-code-8f44e545-authored" in roots
                     and "td-code-8f44e545-fence-0-authored" in roots
@@ -578,6 +592,7 @@ INVALID_CASES = (
     ("tabs-default-unknown", '{{< tabs group="g" default="zzz" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "does not match a tab value"),
     ("tab-outside", '{{< tab label="A" >}}a{{< /tab >}}\n', "must be enclosed by tabs"),
     ("tab-missing-label", '{{< tabs >}}{{< tab >}}a{{< /tab >}}{{< /tabs >}}\n', "requires named parameter label"),
+    ("tab-positional", '{{< tabs >}}{{< tab "A" >}}a{{< /tab >}}{{< /tabs >}}\n', "accepts named parameters only"),
     ("tab-value-required", '{{< tabs group="g" >}}{{< tab label="A" >}}a{{< /tab >}}{{< /tabs >}}\n', "value is required because tabs declares group"),
     ("tab-value-forbidden", '{{< tabs >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< /tabs >}}\n', "value is only allowed when tabs declares a group"),
     ("tab-duplicate-value", '{{< tabs group="g" >}}{{< tab label="A" value="a" >}}a{{< /tab >}}{{< tab label="B" value="a" >}}b{{< /tab >}}{{< /tabs >}}\n', "duplicate value"),

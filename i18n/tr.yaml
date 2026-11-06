@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Başlıklar tamamen eşleşmiyor; eşitleme belged
 ui_compare_sync_unavailable: 'Başlıklar yinelendiği veya sıra dışı olduğu için eşitleme kullanılamıyor.'
 ui_shortcut_compare: 'İki dilli görünümü aç'
 ui_compare_error: "Bu sayfa yüklenemedi."
+
+ui_pagination: Sayfalama
+ui_breadcrumb: Gezinti yolu

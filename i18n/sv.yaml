@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Rubrikerna matchar inte helt; synkroniseringen anv
 ui_compare_sync_unavailable: 'Synkronisering är inte tillgänglig eftersom rubrikerna är duplicerade eller ligger i fel ordning.'
 ui_shortcut_compare: 'Öppna tvåspråkig vy'
 ui_compare_error: "Det gick inte att läsa in sidan."
+
+ui_pagination: Sidnavigering
+ui_breadcrumb: Brödsmulor

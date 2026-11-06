@@ -246,7 +246,16 @@
       "description": "Taxonomy term clouds on the right rail. Front matter `toc_taxonomies` (or a section cascade) turns them off; a rail left with neither a TOC nor clouds renders nothing at all."
     },
     "translation_notice": {
-      "description": "Language code of the authoritative version, so a translated page can say so and link to it; false disables the line. Front matter `translation_notice: false` opts out a page written natively in this language."
+      "description": "Language code of the authoritative version, so a translated page can say so and link to it; false disables the line. Front matter `translation_notice: false` opts out a page written natively in this language.",
+      "anyOf": [
+        {
+          "const": false
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        }
+      ]
     },
     "upstream_link": {
       "description": "Front matter key read by the theme's templates."

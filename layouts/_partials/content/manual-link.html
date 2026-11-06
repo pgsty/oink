@@ -1,0 +1,28 @@
+{{- /* Resolve manual aliases before calling relref: Hugo logs missing refs as
+       build errors even inside try. Invalid aliases fall back to this page. */ -}}
+{{- $page := . -}}
+{{- $url := $page.RelPermalink -}}
+{{- if isset $page.Params "manual_link" -}}
+  {{- $url = (partial "content/url.html" (dict "label" "manual_link" "position" $page.Path "value" $page.Params.manual_link)).href -}}
+{{- else if isset $page.Params "manual_link_relref" -}}
+  {{- $ref := $page.Params.manual_link_relref -}}
+  {{- $valid := false -}}
+  {{- if eq (printf "%T" $ref) "string" -}}
+    {{- $parsed := try (urls.Parse $ref) -}}
+    {{- if not $parsed.Err -}}
+      {{- if and (not $parsed.Value.Scheme) (not $parsed.Value.Host) $ref -}}
+        {{- $target := $page -}}
+        {{- with $parsed.Value.Path -}}
+          {{- $found := try ($page.GetPage .) -}}
+          {{- $target = $found.Value -}}
+        {{- end -}}
+        {{- if $target -}}
+          {{- $url = relref $page $ref -}}
+          {{- $valid = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not $valid }}{{ warnf "manual_link_relref %v at %s does not resolve to a page; using the page permalink" $ref $page.Path }}{{ end -}}
+{{- end -}}
+{{- return $url -}}

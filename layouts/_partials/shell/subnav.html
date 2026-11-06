@@ -6,7 +6,7 @@
 {{- end -}}
 {{- $config := partialCached "shell/config.html" $page $page.Site.Language.Lang -}}
 <header class="td-shell-subnav d-md-none d-print-none">
-  <a class="td-shell-subnav__brand" href="{{ $page.Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
+  <a class="td-shell-subnav__brand" href="{{ $page.Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} — {{ T "ui_home" }}">
     <img src="{{ $config.logoURL }}" alt="" width="20" height="20">
     {{- if $config.wordmarkURL }}
     <img class="td-shell-brand-logo--wordmark" src="{{ $config.wordmarkURL }}" alt="" width="100" height="40">

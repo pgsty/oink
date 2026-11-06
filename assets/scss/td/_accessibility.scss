@@ -26,14 +26,12 @@
   }
 }
 
-// Oink uses color, hover color, and visible focus states for links. Keep the
-// no-underline treatment consistent across content and component overrides.
-// Ink's scoped prose rule explicitly restores underlines as part of its identity.
+// Default link decoration; component and print rules may restore underlines.
 a,
 a:hover,
 a:focus,
 a:active {
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 // Without an underline, inline links need a non-color distinction from the
@@ -66,4 +64,32 @@ a:active {
   background-color: #53657a;
   color: #fff;
   opacity: 1;
+}
+
+// Navbar links share the active preset's opaque focus color.
+.td-site-header .nav-link:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 2px;
+}
+
+// Keep the ring inside the scroll viewport that clips its contents.
+.td-code pre[tabindex]:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: -3px;
+}
+
+@media (forced-colors: active) {
+  .td-shell-tree__row.td-shell-active,
+  .td-site-header [aria-current='page'],
+  .td-site-drawer [aria-current='page'] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  .td-site-footer__logo span {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
 }

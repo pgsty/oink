@@ -99,7 +99,7 @@
     const timer = resetTimers.get(button);
     if (timer) window.clearTimeout(timer);
     const label = button.dataset.tdLabelCopy || 'Copy code';
-    button.disabled = false;
+    button.removeAttribute('aria-disabled');
     if (controlStaysVisible(button)) {
       updateCopyControl(button, 'idle', label);
       return;
@@ -119,10 +119,10 @@
   const handleCopy = async (button) => {
     const root = resolveRoot(button);
     const code = findCode(root);
-    if (!root || !code || button.disabled) return;
+    if (!root || !code || button.disabled || button.getAttribute('aria-disabled') === 'true') return;
 
     const status = root.querySelector('[data-td-code-status]');
-    button.disabled = true;
+    button.setAttribute('aria-disabled', 'true');
     if (status) status.textContent = '';
     try {
       const text =

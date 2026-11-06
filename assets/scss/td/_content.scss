@@ -103,8 +103,7 @@
     border-inline-start: 6px solid var(--bs-primary);
   }
 
-  ul li,
-  ol li {
+  :where(ul, ol):not([class]) > li {
     margin-bottom: 0.25rem;
   }
 
@@ -289,18 +288,20 @@
   font-size: 90%;
   padding-inline-start: 0.25em;
   text-decoration: none;
-  visibility: hidden;
+  opacity: 0;
+
+  &:focus-visible { opacity: 1; }
 
   // Always visible on touch devices and small screens
   @media (hover: none) and (pointer: coarse),
     (max-width: map-get($grid-breakpoints, sm)) {
-    visibility: visible;
+    opacity: 1;
   }
 }
 
 @for $i from 1 through 6 {
   h#{$i}:hover > .td-heading-self-link {
-    visibility: visible;
+    opacity: 1;
   }
 }
 

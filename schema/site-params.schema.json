@@ -262,8 +262,16 @@
             },
             "translation_notice": {
               "description": "Language code of the authoritative version, so a translated page can say so and link to it; false disables the line. Front matter `translation_notice: false` opts out a page written natively in this language.",
-              "type": "boolean",
-              "default": false
+              "default": false,
+              "anyOf": [
+                {
+                  "const": false
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
             },
             "reading_time": {
               "description": "Reading time in the article header. Front matter `reading_time: false` hides it for one page.",

@@ -8,8 +8,10 @@
   const buttons = [...document.querySelectorAll('[data-td-compare-open]')];
   const status = document.querySelector('[data-td-compare-error]');
   let pending;
+  let opening;
   let pendingResumeToken = null;
   function open(trigger, options) {
+    if (opening) return opening;
     if (status) status.textContent = '';
     if (!pending) pending = new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -19,15 +21,19 @@
       script.onerror = () => { script.remove(); pending = null; reject(new Error(config.labels.error)); };
       document.head.appendChild(script);
     });
-    buttons.forEach(button => { button.disabled = true; button.setAttribute('aria-busy', 'true'); });
-    return pending.then(() => {
+    buttons.forEach(button => { button.setAttribute('aria-disabled', 'true'); button.setAttribute('aria-busy', 'true'); });
+    opening = pending.then(() => {
       // A reload can start loading the reader before the user presses Back.
       // Do not turn that completed traversal into a new reader history entry.
       if (options?.resumeToken && history.state?.oinkCompareReader !== options.resumeToken) return;
       return window.OinkCompare.open(config, trigger || buttons[0], options);
     })
       .catch(error => { if (status) status.textContent = config.labels.error; throw error; })
-      .finally(() => buttons.forEach(button => { button.disabled = false; button.removeAttribute('aria-busy'); }));
+      .finally(() => {
+        opening = null;
+        buttons.forEach(button => { button.removeAttribute('aria-disabled'); button.removeAttribute('aria-busy'); });
+      });
+    return opening;
   }
   // A reload or a back/forward restore can land on the reader's own history
   // entry. Reopen the reader there, so Back closes it instead of doing nothing.

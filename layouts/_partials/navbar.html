@@ -6,12 +6,12 @@
        aside). */ -}}
 {{- $landingLayout := eq .Layout "landing" -}}
 {{- $drawerMode := and (not $landingLayout) (partial "shell/chrome-enabled.html" .) (partial "shell/sidebar-enabled.html" .) -}}
-{{- /* Home and explicit Landing layouts render the drawer entry: these are
+{{- /* All surfaces without a sidebar render the site drawer entry: these are
        the navbar-only surfaces with no sidebar drawer to fall back on. CSS
        gates the button to the below-md tier, where it joins search as the
        whole right-hand contract; the centered link tree stays at every
        width, so the drawer only restores the full labelled hierarchy. */ -}}
-{{- $landingSurface := and (not $drawerMode) (or .IsHome $landingLayout) -}}
+{{- $landingSurface := not $drawerMode -}}
 {{- /* The navbar owns this drawer even when the site replaces the main
        Landing renderer with its own homepage template. */ -}}
 {{- if $landingSurface }}{{ .Page.Store.Set "hasLanding" true }}{{ end -}}
@@ -74,10 +74,10 @@
             {{- else }}
             {{- $url := strings.TrimSuffix "/" (.url | default "") }}
             {{- $isActive := or (eq .version $.Site.Params.version) (eq (strings.TrimSuffix "/" $.Site.BaseURL) $url) }}
-            {{- $path := cond (and $.Site.Params.version_menu_pagelinks (ne .pagelinks false)) $.RelPermalink "" }}
-            {{- if $url }}
+            {{- $href := partial "content/version-url.html" (dict "page" $ "entry" .) }}
+            {{- if $href }}
             <a class="td-nav-hover-menu__option{{ if $isActive }} td-is-active{{ end }}"
-              {{- if $isActive }} aria-current="page"{{ end }} href="{{ $url }}{{ $path }}">{{ .name | default .version | markdownify }}</a>
+              {{- if $isActive }} aria-current="page"{{ end }} href="{{ $href }}">{{ .name | default .version | markdownify }}</a>
             {{- else }}
             <span class="td-nav-hover-menu__option td-is-disabled">{{ .name | default .version | markdownify }}</span>
             {{- end }}
@@ -104,8 +104,7 @@
         {{- end }}
         {{- if $drawerMode }}
         {{- /* The one width-gated control: below md the sidebar becomes a
-             drawer, and this opens it. Non-shell pages need no equivalent —
-             the compact navbar keeps every item visible as an icon. */ -}}
+             drawer, and this opens it. Navbar-only pages use the site drawer below. */ -}}
         <button class="td-nav-util td-site-nav__menu-toggle" type="button" data-td-shell-drawer-open
           title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
           aria-controls="td-shell-sidebar" aria-expanded="false">
@@ -142,6 +141,10 @@
     {{- end }}
     {{- with $altSite }}
     <a class="td-site-nav__menu-link" href="{{ .url }}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-language" aria-hidden="true"></i><span>{{ .label }}</span></a>
+    {{- end }}
+    {{ partial "language-selector.html" (dict "page" $ "mode" "list") }}
+    {{- with .Site.Params.versions }}
+      {{ partial "navbar-version-selector.html" (dict "page" $) }}
     {{- end }}
     {{- with $config.projectRepo }}
     <a class="td-site-nav__menu-link" href="{{ . }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i><span>GitHub{{ with $githubStars }} · {{ . }}{{ end }}</span></a>

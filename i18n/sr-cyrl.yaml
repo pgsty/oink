@@ -255,3 +255,6 @@ ui_compare_sync_approximate: 'Наслови се не поклапају у п�
 ui_compare_sync_unavailable: 'Синхронизација није доступна јер се наслови понављају или су погрешно поређани.'
 ui_shortcut_compare: 'Отвори двојезични приказ'
 ui_compare_error: "Није могуће учитати ову страницу."
+
+ui_pagination: Навигација по страницама
+ui_breadcrumb: Путања навигације

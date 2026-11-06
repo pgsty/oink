@@ -47,6 +47,8 @@ their ordinary specificity and source order. */ -}}
   {{ $rtl := resources.Get "third_party/bootstrap/dist/css/bootstrap.rtl.min.css" -}}
   {{ $rtlContent := replaceRE `:root,\[data-bs-theme=light\]\{[^}]*\}` "" $rtl.Content 1 -}}
   {{ $rtlContent = replaceRE `\[data-bs-theme=dark\]\{[^}]*\}` "" $rtlContent 1 -}}
+  {{/* The RTL artifact supplies direction, not a second font authority. */ -}}
+  {{ $rtlContent = replaceRE `font-family:[^;}]+;?` "" $rtlContent -}}
   {{ $rtl = resources.FromString "third_party/bootstrap/dist/css/bootstrap.rtl.oink.min.css" $rtlContent -}}
   {{ if hugo.IsProduction -}}
     {{ $rtl = $rtl | fingerprint -}}

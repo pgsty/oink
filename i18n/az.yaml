@@ -254,3 +254,6 @@ ui_compare_sync_approximate: 'Başlıqlar tam uyğun gəlmir; sinxronlaşdırma 
 ui_compare_sync_unavailable: 'Başlıqlar təkrarlandığı və ya ardıcıllığı pozulduğu üçün sinxronlaşdırma əlçatan deyil.'
 ui_shortcut_compare: 'İkidilli görünüşü aç'
 ui_compare_error: "Bu səhifəni yükləmək mümkün olmadı."
+
+ui_pagination: Səhifələr üzrə naviqasiya
+ui_breadcrumb: Naviqasiya yolu

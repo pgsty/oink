@@ -7,10 +7,7 @@
 {{ $pages := slice -}}
 {{ $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{ $docsChildren := index $docsNav "children_by_url" | default dict -}}
-{{ $currentURL := $page.RelPermalink -}}
-{{ with $page.Site.LanguagePrefix -}}
-    {{ $currentURL = strings.TrimPrefix . $currentURL -}}
-{{ end -}}
+{{ $currentURL := partial "content/navigation-key.html" $page -}}
 {{ if and (in (slice "docs" "book") $page.Type) (isset $docsChildren $currentURL) -}}
     {{ range (index $docsChildren $currentURL) -}}
         {{ $child := $page.Site.GetPage . -}}
@@ -40,13 +37,13 @@
         {{/* If simple_list is true we show a bulleted list of subpages */}}
         <ul>
             {{ range $pages -}}
-                {{ $manualLink := cond (isset .Params "manual_link") .Params.manual_link ( cond (isset .Params "manual_link_relref") (relref . .Params.manual_link_relref) .RelPermalink) }}
+                {{ $manualLink := partial "content/manual-link.html" . }}
                 <li><a href="{{ $manualLink }}"{{ with .Params.manual_link_title }} title="{{ . }}"{{ end }}{{ with .Params.manual_link_target }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}>{{- .Title -}}</a></li>
             {{ end -}}
         </ul>
     {{ else if eq $mode "cards" -}}
         {{ range $pages -}}
-            {{ $manualLink := cond (isset .Params "manual_link") .Params.manual_link ( cond (isset .Params "manual_link_relref") (relref . .Params.manual_link_relref) .RelPermalink) -}}
+            {{ $manualLink := partial "content/manual-link.html" . -}}
             <article class="td-content-card td-section-index__card">
                 <div class="td-content-card__body">
                     <div class="td-content-card__head">
@@ -60,7 +57,7 @@
     {{ else -}}
         {{/* Otherwise we show a formatted list of subpages with page descriptions */}}
         {{ range $pages -}}
-            {{ $manualLink := cond (isset .Params "manual_link") .Params.manual_link ( cond (isset .Params "manual_link_relref") (relref . .Params.manual_link_relref) .RelPermalink) -}}
+            {{ $manualLink := partial "content/manual-link.html" . -}}
             <div class="td-section-index__entry">
                 <h2 class="h5">
                     <a href="{{ $manualLink }}"{{ with .Params.manual_link_title }} title="{{ . }}"{{ end }}{{ with .Params.manual_link_target }} target="{{ . }}"{{ if eq . "_blank" }} rel="noopener"{{ end }}{{ end }}>{{- .Title -}}</a>

@@ -13,7 +13,7 @@
   {{- end -}}
 {{- end -}}
 {{- if $entries -}}
-  {{- if in (slice "markdown" "rss") $format -}}
+  {{- if eq $format "markdown" -}}
   {{- $rows := slice -}}
   {{- range $entries -}}
     {{- $label := partial "book/label.html" . -}}

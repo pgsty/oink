@@ -253,3 +253,6 @@ ui_compare_sync_approximate: '見出しが完全には一致しないため、�
 ui_compare_sync_unavailable: '見出しが重複しているか順序が異なるため、同期は利用できません。'
 ui_shortcut_compare: 'バイリンガル表示を開く'
 ui_compare_error: "このページを読み込めませんでした。"
+
+ui_pagination: ページ送り
+ui_breadcrumb: パンくずリスト

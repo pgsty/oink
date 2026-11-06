@@ -171,12 +171,12 @@ def main() -> int:
                     require(label in all_case.rows, f"{lang} missing fixture row {label}")
                     require(all_case.rows[label]["icon"], f"all hides icon for {label}")
                     require(not none.rows[label]["icon"], f"none emits icon for {label}")
-                for key in ("root", "active_group", "collapsed_group"):
+                for key in ("root", "active_group", "collapsed_group", "leaf"):
                     require(
                         groups.rows[names[key]]["icon"],
                         f"groups hides structural icon for {names[key]}",
                     )
-                for key in ("active_leaf", "collapsed_leaf", "leaf"):
+                for key in ("active_leaf", "collapsed_leaf"):
                     require(
                         not groups.rows[names[key]]["icon"],
                         f"groups emits leaf icon for {names[key]}",

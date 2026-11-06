@@ -10,15 +10,20 @@
       {{- if isset $.Params $name }}{{ warnf "shortcode %q: parameter %q requires num at %s; ignoring it" $.Name $name $.Position }}{{ end -}}
     {{- end -}}
   {{- end -}}
-  {{- if in (slice "markdown" "rss") $format -}}
+  {{- if eq $format "markdown" -}}
     {{- printf "$$\n%s\n$$" $inner | safeHTML -}}
   {{- else -}}
     {{- partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) -}}
   {{- end -}}
 {{- else -}}
   {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (.Get "num") "position" .Position) -}}
-  {{- $id := printf "eq-%s" $num -}}
-  {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
+  {{- $id := "" -}}
+  {{- if $num -}}
+    {{- $id = printf "eq-%s" $num -}}
+    {{- if isset .Params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (.Get "id") "position" .Position) }}{{ end -}}
+  {{- else if isset .Params "id" -}}
+    {{- warnf "shortcode %q: id requires a valid num at %s; dropping it" .Name .Position -}}
+  {{- end -}}
   {{- $caption := "" -}}
   {{- if isset .Params "caption" }}{{ $caption = .Get "caption" }}{{ end -}}
   {{- if ne (printf "%T" $caption) "string" }}{{ warnf "shortcode %q: caption must be a string at %s; dropping it" .Name .Position }}{{ $caption = "" }}{{ end -}}
@@ -26,14 +31,15 @@
   {{- $class := "" -}}
   {{- if isset .Params "class" }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
   {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
-  {{- partial "book/register-target.html" (dict "page" .Page "kind" "eq" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
-  {{- $label := partial "book/label.html" (dict "kind" "eq" "num" $num) -}}
-  {{- if in (slice "markdown" "rss") $format -}}
-    {{- printf "**%s.**%s\n\n$$\n%s\n$$" $label (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
+  {{- if and $num $id }}{{ partial "book/register-target.html" (dict "page" .Page "kind" "eq" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
+  {{- $label := "" -}}{{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "eq" "num" $num) }}{{ end -}}
+  {{- if eq $format "markdown" -}}
+    {{- $prefix := cond $label (printf "**%s.**" $label) "" -}}
+    {{- printf "%s%s\n\n$$\n%s\n$$" $prefix (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
   {{- else -}}
-<figure id="{{ $id }}" class="td-book-figure td-book-figure--eq{{ with $class }} {{ . }}{{ end }}" data-td-book-kind="eq" data-td-book-num="{{ $num }}">
+<figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ if $num }}td-book-figure td-book-figure--eq{{ end }}{{ with $class }} {{ . }}{{ end }}"{{ if $num }} data-td-book-kind="eq" data-td-book-num="{{ $num }}"{{ end }}>
   <div class="td-book-equation__body">{{ partial "scripts/math.html" (dict "Type" "block" "Inner" $inner "Page" .Page "Position" .Position) }}</div>
-  <figcaption><span class="td-eq-label">{{ $label }}</span>{{ with $caption }} <span class="td-eq-caption">{{ . }}</span>{{ end }}</figcaption>
+  <figcaption>{{ with $label }}<span class="td-eq-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-eq-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
   {{- end -}}
 {{- end -}}

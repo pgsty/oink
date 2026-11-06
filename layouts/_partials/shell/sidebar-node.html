@@ -17,16 +17,7 @@
 {{- $ellipsis := ne .overflow "wrap" -}}
 {{- $nodeID := $s.RelPermalink | default $s.Path | default $s.Title -}}
 {{- $mid := printf "m-%s" ($nodeID | anchorize) -}}
-{{- $manualLink :=
-    cond
-      (isset $s.Params "manual_link")
-      $s.Params.manual_link
-      (cond
-        (isset $s.Params "manual_link_relref")
-        (relref $s $s.Params.manual_link_relref)
-        $s.RelPermalink
-      )
--}}
+{{- $manualLink := partial "content/manual-link.html" $s -}}
 {{- $manualLinkTitle :=
     cond
       (isset $s.Params "manual_link_title")

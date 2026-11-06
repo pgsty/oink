@@ -1,0 +1,19 @@
+{{- $pager := .Paginator -}}
+{{- if gt $pager.TotalPages 1 -}}
+<nav aria-label="{{ T "ui_pagination" }}">
+  <ul class="pagination">
+    {{- with $pager.Prev }}<li class="page-item"><a class="page-link" href="{{ .URL }}" rel="prev">{{ T "ui_pager_prev" }}</a></li>{{ end -}}
+    {{- $gap := false -}}
+    {{- range $pager.Pagers -}}
+      {{- if or (eq .PageNumber 1) (eq .PageNumber $pager.TotalPages) (and (ge .PageNumber (sub $pager.PageNumber 2)) (le .PageNumber (add $pager.PageNumber 2))) -}}
+        {{- $gap = false -}}
+        <li class="page-item{{ if eq .PageNumber $pager.PageNumber }} active{{ end }}"><a class="page-link" href="{{ .URL }}"{{ if eq .PageNumber $pager.PageNumber }} aria-current="page"{{ end }}>{{ .PageNumber }}</a></li>
+      {{- else if not $gap -}}
+        {{- $gap = true -}}
+        <li class="page-item disabled"><span class="page-link" aria-hidden="true">…</span></li>
+      {{- end -}}
+    {{- end -}}
+    {{- with $pager.Next }}<li class="page-item"><a class="page-link" href="{{ .URL }}" rel="next">{{ T "ui_pager_next" }}</a></li>{{ end -}}
+  </ul>
+</nav>
+{{- end -}}

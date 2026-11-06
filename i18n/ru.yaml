@@ -256,3 +256,6 @@ ui_compare_sync_approximate: 'Заголовки совпадают не пол�
 ui_compare_sync_unavailable: 'Синхронизация недоступна: заголовки повторяются или расположены в неправильном порядке.'
 ui_shortcut_compare: 'Открыть двуязычный вид'
 ui_compare_error: "Не удалось загрузить эту страницу."
+
+ui_pagination: Навигация по страницам
+ui_breadcrumb: Навигационная цепочка

@@ -1,0 +1,7 @@
+{{- /* Navigation identity excludes deployment and language prefixes; published
+       links continue to use the page's original permalink. */ -}}
+{{- $path := .RelPermalink -}}
+{{- $basePath := strings.TrimSuffix "/" (urls.Parse .Site.BaseURL).Path -}}
+{{- $path = strings.TrimPrefix $basePath $path -}}
+{{- with .Site.LanguagePrefix }}{{ $path = strings.TrimPrefix . $path }}{{ end -}}
+{{- return $path -}}

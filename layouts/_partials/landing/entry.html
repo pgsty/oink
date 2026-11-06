@@ -21,4 +21,19 @@
 {{- $enabled := true -}}
 {{- if and (reflect.IsMap $entry) (isset $entry "enabled") (not (index $entry "enabled")) }}{{ $enabled = false }}{{ end -}}
 {{- if and (reflect.IsMap $data) (isset $data "enabled") (not (index $data "enabled")) }}{{ $enabled = false }}{{ end -}}
+{{- if and $enabled $data -}}
+  {{- if not (reflect.IsMap $data) -}}
+    {{- warnf "landing %s data must be a map; omitting the section" $type -}}
+    {{- $data = dict -}}
+  {{- else -}}
+    {{- $keys := slice "items" "actions" -}}
+    {{- if eq $type "pricing" }}{{ $keys = $keys | append "tiers" }}{{ end -}}
+    {{- range $keys -}}
+      {{- if isset $data . -}}
+        {{- $items := partial "landing/records.html" (dict "value" (index $data .) "where" (printf "%s.%s" $type .)) -}}
+        {{- $data = merge $data (dict . $items) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- return (dict "rawType" $rawType "type" $type "key" $key "entry" $entryMap "data" $data "enabled" $enabled) -}}

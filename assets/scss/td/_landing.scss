@@ -1612,6 +1612,7 @@
   overflow: hidden;
 
   summary {
+    &:focus-visible { outline-offset: -3px; }
     display: flex;
     align-items: center;
     justify-content: space-between;

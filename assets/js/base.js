@@ -69,6 +69,23 @@ limitations under the License.
         }, true);
     }
 
+    function dismissMenuOnEscape(menu, trigger, close) {
+        menu.setAttribute('data-td-menu-ready', '');
+        // Bootstrap delegates dropdown keydown in document capture. Its
+        // Escape handler stops propagation and focuses the trigger, whose
+        // focusin can reopen the menu. Finish dismissal on that same target.
+        const escapeTarget = menu.hasAttribute('data-td-version-menu') ? document : menu;
+        escapeTarget.addEventListener('keydown', function(event) {
+            if (event.key !== 'Escape' || !menu.contains(event.target)) return;
+            event.preventDefault();
+            event.stopPropagation();
+            // Focusing the trigger may run focusin/open. Close afterwards so
+            // the restored focus cannot reopen the dismissed surface.
+            if (trigger && menu.contains(document.activeElement)) trigger.focus();
+            close();
+        }, true);
+    }
+
     function initLanguageMenus() {
         document.querySelectorAll('.td-language-selector--menu').forEach(function(menu, index) {
             const trigger = menu.querySelector('.td-language-selector__trigger');
@@ -77,7 +94,8 @@ limitations under the License.
 
             function open() {
                 if (window.OinkSurfaceCoordinator) {
-                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer'] : [];
+                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
+                        : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
                     window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
                 }
                 window.clearTimeout(closeTimer);
@@ -104,6 +122,7 @@ limitations under the License.
             menu.addEventListener('pointerleave', function(event) {
                 if (event.pointerType !== 'touch') closeSoon();
             });
+            dismissMenuOnEscape(menu, trigger, close);
             menu.addEventListener('focusin', open);
             menu.addEventListener('focusout', function(event) {
                 if (!menu.contains(event.relatedTarget)) closeSoon();
@@ -142,7 +161,8 @@ limitations under the License.
 
             menu.addEventListener('show.bs.dropdown', function() {
                 if (window.OinkSurfaceCoordinator) {
-                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer'] : [];
+                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
+                        : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
                     window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
                 }
             });
@@ -162,6 +182,7 @@ limitations under the License.
             menu.addEventListener('pointerleave', function(event) {
                 if (event.pointerType !== 'touch') closeSoon();
             });
+            dismissMenuOnEscape(menu, trigger, close);
             menu.addEventListener('focusin', open);
             menu.addEventListener('focusout', function(event) {
                 if (!menu.contains(event.relatedTarget)) closeSoon();
@@ -197,7 +218,8 @@ limitations under the License.
 
             function open() {
                 if (window.OinkSurfaceCoordinator) {
-                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer'] : [];
+                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
+                        : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
                     window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
                 }
                 window.clearTimeout(closeTimer);
@@ -226,6 +248,7 @@ limitations under the License.
             menu.addEventListener('pointerleave', function(event) {
                 if (event.pointerType !== 'touch') closeSoon();
             });
+            dismissMenuOnEscape(menu, trigger, close);
             menu.addEventListener('focusin', open);
             menu.addEventListener('focusout', function(event) {
                 if (!menu.contains(event.relatedTarget)) closeSoon();

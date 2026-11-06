@@ -13,14 +13,14 @@
       <div class="td-landing-final-cta__actions">
         {{- with $data.actions }}
           {{- range $scopeIndex1, $scopeItem1 := . }}{{- $scope := printf "%s-item-%v" $scope $scopeIndex1 -}}
-            {{- $url := .url | default .href -}}
-            {{- if $url }}<a class="td-landing-button td-landing-button--{{ .style | default "ghost" }}" href="{{ $url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span class="td-landing-button td-landing-button--{{ .style | default "ghost" }}">{{ end -}}
+            {{- $url := partial "landing/url.html" (dict "page" $page "value" (.url | default .href)) -}}
+            {{- if $url }}<a class="td-landing-button td-landing-button--{{ .style | default "ghost" }}" href="{{ $url }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span class="td-landing-button td-landing-button--{{ .style | default "ghost" }}">{{ end -}}
             {{ with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-cta-field-3" $scope) "value" .label) }}
             {{- if $url }}</a>{{ else }}</span>{{ end -}}
           {{- end }}
         {{- else }}
-          {{- $url := $data.url | default $data.href -}}
-          {{- if $url }}<a class="td-landing-button td-landing-button--{{ $data.style | default "primary" }}" href="{{ $url | relLangURL }}"{{ if $data.external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span class="td-landing-button td-landing-button--{{ $data.style | default "primary" }}">{{ end -}}
+          {{- $url := partial "landing/url.html" (dict "page" $page "value" ($data.url | default $data.href)) -}}
+          {{- if $url }}<a class="td-landing-button td-landing-button--{{ $data.style | default "primary" }}" href="{{ $url }}"{{ if $data.external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span class="td-landing-button td-landing-button--{{ $data.style | default "primary" }}">{{ end -}}
           {{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-cta-field-4" $scope) "value" $data.label) }} <i class="{{ $data.icon | default "fa-solid fa-arrow-right" }}" aria-hidden="true"></i>
           {{- if $url }}</a>{{ else }}</span>{{ end -}}
         {{- end }}

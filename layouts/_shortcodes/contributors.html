@@ -14,13 +14,15 @@
 {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $items := partial "contributors/items.html" (dict "data" $data "key" $key) -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if in (slice "markdown" "rss") $format -}}
+{{- if eq $format "markdown" -}}
   {{- range $items }}
     {{- $label := printf "@%s" .github | partial "content/markdown-escape.html" -}}
     {{- $url := .url | partial "content/markdown-url.html" -}}
     {{- printf "- [%s](%s)%s\n" $label $url (cond .role (printf " — %s" (partial "content/markdown-escape.html" .role)) "") | safeHTML -}}
   {{- end -}}
+{{- else if eq $format "rss" -}}
+  <ul>{{ range $items }}<li><a href="{{ .url }}">@{{ .github }}</a>{{ with .role }} — {{ . }}{{ end }}</li>{{ end }}</ul>
 {{- else -}}
-  {{- $id := printf "contributors-%s-%d" .Page.File.UniqueID .Ordinal -}}
+  {{- $id := printf "contributors-%s-%s" .Page.File.UniqueID (partial "content/shortcode-ordinal.html" .) -}}
   {{- partial "contributors/wall.html" (dict "id" $id "items" $items "class" $class) -}}
 {{- end -}}

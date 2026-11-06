@@ -95,9 +95,9 @@
       {{- with $hero.actions }}
       <div class="td-landing-hero__actions">
         {{- range $scopeIndex3, $scopeItem3 := . }}{{- $scope := printf "%s-item-%v" $scope $scopeIndex3 -}}
-          {{- $url := .url | default .href -}}
+          {{- $url := partial "landing/url.html" (dict "page" $page "value" (.url | default .href)) -}}
           {{- if $url }}
-        <a class="td-landing-button td-landing-button--{{ .style | default "ghost" }}" href="{{ $url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+        <a class="td-landing-button td-landing-button--{{ .style | default "ghost" }}" href="{{ $url }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>
           {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
           <span>{{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-hero-field-7" $scope) "value" .label) }}</span>
         </a>
@@ -111,9 +111,9 @@
       </div>
       {{- end }}
       {{- with $hero.detail }}
-      {{- $url := .url | default .href -}}
+      {{- $url := partial "landing/url.html" (dict "page" $page "value" (.url | default .href)) -}}
       <p class="td-landing-hero__detail">
-        {{- if $url }}<a href="{{ $url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span>{{ end -}}
+        {{- if $url }}<a href="{{ $url }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ else }}<span>{{ end -}}
         {{ with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ partial "landing/markdown.html" (dict "page" $page "scope" (printf "%s-hero-field-9" $scope) "value" .label) }} <span aria-hidden="true">→</span>
         {{- if $url }}</a>{{ else }}</span>{{ end -}}
       </p>

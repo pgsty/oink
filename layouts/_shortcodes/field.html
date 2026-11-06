@@ -1,5 +1,7 @@
 {{- /* Register one validated field with the enclosing fields collector. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "name" "type" "required" "default")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- /* A field that cannot be registered warns and is skipped; its siblings in
        the list still render. */ -}}
 {{- $ok := true -}}
@@ -14,11 +16,11 @@
 {{- end -}}
 
 {{- $fieldName := "" -}}
-{{- if not (and .IsNamedParams (isset .Params "name")) -}}
+{{- if not (and .IsNamedParams (isset $params "name")) -}}
   {{- warnf "shortcode %q requires parameter name at %s; skipping the field" .Name .Position -}}
   {{- $ok = false -}}
 {{- else -}}
-  {{- $nameParam := .Get "name" -}}
+  {{- $nameParam := index $params "name" -}}
   {{- if ne (printf "%T" $nameParam) "string" -}}
     {{- warnf "shortcode %q: name must be a string at %s; skipping the field" .Name .Position -}}
     {{- $ok = false -}}
@@ -32,8 +34,8 @@
 {{- end -}}
 
 {{- $fieldType := "" -}}
-{{- if and .IsNamedParams (isset .Params "type") -}}
-  {{- $typeParam := .Get "type" -}}
+{{- if and .IsNamedParams (isset $params "type") -}}
+  {{- $typeParam := index $params "type" -}}
   {{- if ne (printf "%T" $typeParam) "string" -}}
     {{- warnf "shortcode %q: type must be a string at %s; dropping the type" .Name .Position -}}
   {{- else -}}
@@ -45,8 +47,8 @@
 {{- end -}}
 
 {{- $required := false -}}
-{{- if and .IsNamedParams (isset .Params "required") -}}
-  {{- $requiredParam := .Get "required" -}}
+{{- if and .IsNamedParams (isset $params "required") -}}
+  {{- $requiredParam := index $params "required" -}}
   {{- if ne (printf "%T" $requiredParam) "bool" -}}
     {{- warnf "shortcode %q: required must be boolean at %s; treating it as optional" .Name .Position -}}
   {{- else -}}
@@ -54,10 +56,10 @@
   {{- end -}}
 {{- end -}}
 
-{{- $hasDefault := isset .Params "default" -}}
+{{- $hasDefault := isset $params "default" -}}
 {{- $defaultDisplay := "" -}}
 {{- if $hasDefault -}}
-  {{- $defaultParam := .Get "default" -}}
+  {{- $defaultParam := index $params "default" -}}
   {{- $defaultType := printf "%T" $defaultParam -}}
   {{- $scalarTypes := slice
     "string" "bool" "int" "int8" "int16" "int32" "int64"

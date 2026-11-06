@@ -1160,6 +1160,95 @@ def check_rss_pager_output(hugo: str) -> list[str]:
     return errors
 
 
+def check_blog_print_pagination(hugo: str) -> list[str]:
+    """A blog's Print aggregate must not inherit HTML archive pagination."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-blog-print-pagination-") as temp:
+        source = Path(temp)
+        create_theme_site(source)
+        config = source / "hugo.yaml"
+        config.write_text(
+            config.read_text().replace(
+                "outputs:\n  page: [HTML]\n  section: [HTML]",
+                "outputs:\n  page: [HTML]\n  section: [HTML, PRINT]",
+            ).replace(
+                "    pager_types: [docs, book, blog]\n",
+                "    pager_types: [docs, book, blog]\n    blog_index_size: 1\n",
+            )
+        )
+        write_file(
+            source / "content/blog/_index.md",
+            "---\ntitle: Blog\ntype: blog\noutputs: [HTML, PRINT]\n---\n",
+        )
+        for index in range(3):
+            write_file(
+                source / f"content/blog/post-{index}.md",
+                f"---\ntitle: Post {index}\ntype: blog\n"
+                f"date: 2026-10-0{index + 1}\n---\n\nPRINT-BODY-{index}\n",
+            )
+        result = run_site(hugo, source)
+        if result.returncode != 0:
+            return [f"blog Print pagination fixture failed: {result.stdout}{result.stderr}"]
+
+        print_pages = sorted((source / "public/_print/blog").rglob("index.html"))
+        require(
+            print_pages == [source / "public/_print/blog/index.html"],
+            f"blog Print must emit only its section aggregate, found {len(print_pages)} pages",
+            errors,
+        )
+        for path in print_pages:
+            content = path.read_text(encoding="utf-8")
+            parsed = parse_navigation(content)
+            require(not parsed.head_links, "blog Print aggregate emitted head pagination", errors)
+            require(not parsed.pager_links, "blog Print aggregate emitted pager links", errors)
+            for index in range(3):
+                require(
+                    content.count(f"PRINT-BODY-{index}") == 1,
+                    f"blog Print aggregate repeated or lost PRINT-BODY-{index}",
+                    errors,
+                )
+
+        html_pages = [
+            source / "public/blog/index.html",
+            source / "public/blog/page/2/index.html",
+            source / "public/blog/page/3/index.html",
+        ]
+        for index, path in enumerate(html_pages):
+            require(path.is_file(), f"blog HTML page is missing: {path}", errors)
+            if path.is_file():
+                content = path.read_text(encoding="utf-8")
+                expected = 2 - index
+                require(
+                    f"PRINT-BODY-{expected}" in content,
+                    f"blog HTML page {index + 1} lost its own post",
+                    errors,
+                )
+                for other in range(3):
+                    if other != expected:
+                        require(
+                            f"PRINT-BODY-{other}" not in content,
+                            f"blog HTML page {index + 1} inherited Post {other}",
+                            errors,
+                        )
+                parsed = parse_navigation(content)
+                expected_head = [
+                    {"next": "/blog/page/2/"},
+                    {"prev": "/blog/", "next": "/blog/page/3/"},
+                    {"prev": "/blog/page/2/"},
+                ][index]
+                require(
+                    parsed.head_links == expected_head,
+                    f"blog HTML page {index + 1} has wrong head pagination: {parsed.head_links}",
+                    errors,
+                )
+                require(
+                    not parsed.pager_links,
+                    f"blog HTML page {index + 1} emitted article pager links",
+                    errors,
+                )
+    return errors
+
+
 def check_pager_sources() -> list[str]:
     errors: list[str] = []
     state = (ROOT / "layouts/_partials/pager-state.html").read_text()
@@ -1511,6 +1600,7 @@ def main() -> int:
         + check_invalid_pager_config(args.hugo)
         + check_invalid_eq_escape(args.hugo)
         + check_unnumbered_math_attributes(args.hugo)
+        + check_blog_print_pagination(args.hugo)
         + check_print_math_and_heading(args.hugo)
         + check_print_relative_links(args.hugo)
         + check_print_encoded_fragments(args.hugo)

@@ -17,6 +17,12 @@ All notable changes to OINK are documented here. The project follows
 
 ### Fixed
 
+- Keep RSS page summaries in RSS format state while the page feed is rendered,
+  so home-feed rendering cannot restore stale HTML state into static output.
+- Restrict blog archive pagination and head `prev`/`next` links to HTML, keeping
+  Print to one complete aggregate instead of repeating it for every archive page.
+- Fail a Duo View pane that remains blank through its 15-second document timeout,
+  while ignoring the iframe's initial blank load and preserving readable slow pages.
 - Show the approximate-sync note only when headings actually differ: matched
   headings that cannot scroll to the reading line no longer raise it on tall
   viewports, and a map no shared heading can anchor says it follows overall

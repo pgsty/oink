@@ -397,6 +397,63 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  oink.zip
     return errors
 
 
+def check_rss_page_format_isolation(hugo: str) -> list[str]:
+    """RSS page output stays static while the home feed is built in the same run."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-components-release-rss-pages-") as temp:
+        site = Path(temp)
+        create_site(site)
+        config = (site / "hugo.yaml").read_text(encoding="utf-8")
+        write(
+            site / "hugo.yaml",
+            config.replace("disableKinds: [RSS,", "disableKinds: [").replace(
+                "page: [HTML]", "page: [RSS]"
+            ),
+        )
+        write(
+            site / "layouts/docs/single.rss.xml",
+            '{{- .Store.Set "tdOutputFormat" "rss" -}}<fixture>{{ .RenderShortcodes }}</fixture>\n',
+        )
+        assets = (
+            "{{< release-assets >}}\n"
+            "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  oink.zip\n"
+            "{{< /release-assets >}}\n\n"
+        )
+        body = "{{< release-card >}}\n\n" + assets * 20
+        for index in range(24):
+            write(
+                site / f"content/docs/rss-{index}.md",
+                f"---\ntitle: RSS release {index}\ndate: 2026-08-14\n"
+                "outputs: [RSS]\n"
+                "release_url: https://github.com/pgsty/oink/releases/tag/v2.0.0\n"
+                "---\n\n" + body,
+            )
+        result = run(hugo, site)
+        if result.returncode != 0:
+            return [f"RSS page isolation fixture failed: {result.stdout}{result.stderr}"]
+        outputs = sorted((site / "public/docs").glob("rss-*/index.xml"))
+        require(len(outputs) == 24, "RSS page isolation fixture did not emit all pages", errors)
+        for path in outputs:
+            source = path.read_text(encoding="utf-8")
+            require(
+                source.count("| File | Checksum |") == 20,
+                f"RSS page lost or duplicated static asset tables: {path.relative_to(site)}",
+                errors,
+            )
+            require(
+                source.count("e" * 64) == 20,
+                f"RSS page lost or duplicated asset checksums: {path.relative_to(site)}",
+                errors,
+            )
+            for marker in ("td-release-card__link", "data-td-asset", "<button"):
+                require(
+                    marker not in source,
+                    f"RSS page contains interactive release markup ({marker}): {path.relative_to(site)}",
+                    errors,
+                )
+    return errors
+
+
 def check_removed_list_keys(hugo: str) -> list[str]:
     """The 0.5 product filter and grouping keys warn and change nothing."""
     errors: list[str] = []
@@ -545,6 +602,7 @@ def main() -> int:
 
     errors += (
         check_algorithms_and_rss(args.hugo)
+        + check_rss_page_format_isolation(args.hugo)
         + check_releases_layout(args.hugo)
         + check_removed_list_keys(args.hugo)
         + check_invalid(args.hugo)

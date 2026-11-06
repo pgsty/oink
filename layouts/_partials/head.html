@@ -106,7 +106,7 @@
 <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
 {{ end -}}
 {{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- if and (eq .Type "blog") .IsSection -}}
+{{- if and (eq $outputFormat "html") (eq .Type "blog") .IsSection -}}
   {{- $index := partial "shell/blog-index-state.html" . -}}
   {{- with $index.pager -}}
     {{- with .Prev }}<link rel="prev" href="{{ .URL }}">{{ end -}}

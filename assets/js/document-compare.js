@@ -414,11 +414,17 @@
       // not the load event, which also waits for images and embeds. `final`
       // marks the load event or the timeout: only then is an invalid document
       // a failure, and a readable one is never discarded for a slow resource.
-      function ready(final) {
+      function ready(final, expired = false) {
         if (!alive() || paneSignal.aborted || pane.ready) return;
         const win = frame.contentWindow;
         try {
-          if (win.location.href === 'about:blank') return;
+          if (win.location.href === 'about:blank') {
+            // The iframe can announce its initial empty document before the
+            // replacement request starts. Only the explicit timeout treats a
+            // blank document as a failed target.
+            if (expired) fail();
+            return;
+          }
           if (!valid(win)) { if (final) fail(); return; }
           const doc = win.document;
           clearTimeout(timeout);
@@ -514,7 +520,7 @@
       url.searchParams.set(paneFlag, '1');
       // Both initial loading and language changes replace the frame entry.
       frame.contentWindow.location.replace(url.href);
-      timeout = setTimeout(() => ready(true), 15000);
+      timeout = setTimeout(() => ready(true, true), 15000);
     }
 
     // A single target needs no chooser: both headings and the narrow switcher

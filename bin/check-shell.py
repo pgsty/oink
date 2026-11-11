@@ -1834,7 +1834,10 @@ params:
         (source / "content/blog/_index.md").write_text(
             "---\ntitle: Blog\ntype: blog\ncascade:\n  type: blog\n---\n", encoding="utf-8")
         (source / "content/blog/bundled/index.md").write_text(
-            "---\ntitle: Bundled\ndate: 2026-08-13\n---\n\nA post with its image beside it.\n",
+            "---\ntitle: Bundled\ndate: 2026-08-13\n"
+            "description: Bundle description takes precedence.\n"
+            "summary: This summary must not replace the description.\n"
+            "---\n\nA post with its image beside it.\n",
             encoding="utf-8")
         shutil.copyfile(
             ROOT / "tests/site/content/fixtures/lists/shot-a.png",
@@ -1842,7 +1845,7 @@ params:
         )
         (source / "content/blog/external.md").write_text(
             "---\ntitle: External\ndate: 2026-08-12\n"
-            "description: A post that lives somewhere else.\n"
+            "summary: A post that lives somewhere else.\n"
             "manual_link: https://example.net/post/\n---\n\nBody.\n",
             encoding="utf-8")
         (source / "content/blog/plain.md").write_text(
@@ -1887,6 +1890,9 @@ params:
                 f"the card fixture titles drifted: {sorted(by_title)}", errors)
 
         bundled = by_title.get("Bundled", "")
+        require("Bundle description takes precedence." in bundled
+                and "This summary must not replace" not in bundled,
+                "the authored description lost precedence over summary", errors)
         # Hugo names a processed image differently across the supported
         # versions; what has to hold is that the card points at one, not at
         # the original the row form still emits.
@@ -1903,7 +1909,7 @@ params:
                 and "fa-arrow-up-right-from-square" in external,
                 "the external card lost its target, rel, or affordance", errors)
         require("A post that lives somewhere else." in external,
-                "the external card summarises the local body instead of its description", errors)
+                "the external card lost its authored summary fallback", errors)
 
         rows = [
             item.split("</li>", 1)[0]
@@ -1932,6 +1938,8 @@ params:
         require('href="https://example.net/post/"' in gallery_html
                 and 'rel="noopener noreferrer"' in gallery_html,
                 "gallery lost external manual_link semantics", errors)
+        require("A post that lives somewhere else." in gallery_html,
+                "gallery lost the authored summary fallback", errors)
         require(gallery_html.count('is-missing') == 3 and gallery_html.count('<img ') == 1,
                 "gallery missing-cover fallback or images: [] drifted", errors)
         require('loading="lazy"' in gallery_html and 'alt=""' in gallery_html

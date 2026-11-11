@@ -30,7 +30,7 @@ search_keywords: [提示块, Callout, Alert, Admonition, 告警, 折叠块, note
 > 用 `hugo server -D` 可以预览草稿。
 
 > [!IMPORTANT]
-> 主题下限是 Hugo Extended 0.168.0，低于它构建直接失败。
+> 主题下限是 Hugo Extended 0.169.0，低于它构建直接失败。
 
 > [!WARNING]
 > `hugo --cleanDestinationDir` 会清空 `public/`。
@@ -58,7 +58,7 @@ search_keywords: [提示块, Callout, Alert, Admonition, 告警, 折叠块, note
 > 用 `hugo server -D` 可以预览草稿。
 
 > [!IMPORTANT]
-> 主题下限是 Hugo Extended 0.168.0，低于它构建直接失败。
+> 主题下限是 Hugo Extended 0.169.0，低于它构建直接失败。
 
 > [!WARNING]
 > `hugo --cleanDestinationDir` 会清空 `public/`。

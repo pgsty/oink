@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: 1.27.3
-  HUGO_VERSION: "0.168.0"
+  GO_VERSION: 1.27.4
+  HUGO_VERSION: "0.169.0"
   GOTOOLCHAIN: local
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '26.13.0'
 
       # The theme ships its browser runtimes as plain assets, so these run
       # without an install step. They are the only automated coverage of the
@@ -50,7 +50,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '27'
       - uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
@@ -69,29 +69,29 @@ jobs:
       - name: Install pinned publication tools
         shell: bash
         run: |
-          pandoc_archive="$RUNNER_TEMP/pandoc-3.10-linux-amd64.tar.gz"
+          pandoc_archive="$RUNNER_TEMP/pandoc-3.13-linux-amd64.tar.gz"
           curl --fail --location --silent --show-error \
             --output "$pandoc_archive" \
-            https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-linux-amd64.tar.gz
-          echo "e0f8af62d0f267d22baa5bcefe6d5dda3a097ccc60de794b759fe03159923244  $pandoc_archive" \
+            https://github.com/jgm/pandoc/releases/download/3.13/pandoc-3.13-linux-amd64.tar.gz
+          echo "38aa33b325a2bc96a4c39409631212db55702f564250bcdbead180b3bf646389  $pandoc_archive" \
             | sha256sum --check
           tar --extract --gzip --file "$pandoc_archive" --directory "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/pandoc-3.10/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/pandoc-3.13/bin" >> "$GITHUB_PATH"
 
-          epubcheck_archive="$RUNNER_TEMP/epubcheck-5.3.0.zip"
+          epubcheck_archive="$RUNNER_TEMP/epubcheck-5.4.0.zip"
           curl --fail --location --silent --show-error \
             --output "$epubcheck_archive" \
-            https://github.com/w3c/epubcheck/releases/download/v5.3.0/epubcheck-5.3.0.zip
-          echo "6c07e68584b2e2ce2f89fe06e1246dfead3eb36b46b340e7d93524f29dcff6c5  $epubcheck_archive" \
+            https://github.com/w3c/epubcheck/releases/download/v5.4.0/epubcheck-5.4.0.zip
+          echo "33350c61038e71dfb3d45a76aed04bf5481e6d5500cb780f6e98db8bbd15a28c  $epubcheck_archive" \
             | sha256sum --check
           unzip -q "$epubcheck_archive" -d "$RUNNER_TEMP/epubcheck"
-          echo "EPUBCHECK_JAR=$RUNNER_TEMP/epubcheck/epubcheck-5.3.0/epubcheck.jar" >> "$GITHUB_ENV"
+          echo "EPUBCHECK_JAR=$RUNNER_TEMP/epubcheck/epubcheck-5.4.0/epubcheck.jar" >> "$GITHUB_ENV"
 
-          chrome_archive="$RUNNER_TEMP/chrome-headless-shell-151.0.7922.34.zip"
+          chrome_archive="$RUNNER_TEMP/chrome-headless-shell-157.0.8103.50.zip"
           curl --fail --location --silent --show-error \
             --output "$chrome_archive" \
-            https://storage.googleapis.com/chrome-for-testing-public/151.0.7922.34/linux64/chrome-headless-shell-linux64.zip
-          echo "3cfc2bd00d1bafcf8a68dc74c9c92bb7150ddc8d26ade948a776316e1cec4f14  $chrome_archive" \
+            https://storage.googleapis.com/chrome-for-testing-public/157.0.8103.50/linux64/chrome-headless-shell-linux64.zip
+          echo "7bf0d41e424efd1d6281c4162993ab9dc5de92fac213c211614905a71c057d0f  $chrome_archive" \
             | sha256sum --check
           unzip -q "$chrome_archive" -d "$RUNNER_TEMP/chrome"
           chrome="$RUNNER_TEMP/chrome/chrome-headless-shell-linux64/chrome-headless-shell"
@@ -183,7 +183,7 @@ jobs:
   build:
     name: Hugo theme checks
     runs-on: ubuntu-latest
-    # CI uses the shared Hugo Extended 0.168.0 baseline. A run that reaches this
+    # CI uses the shared Hugo Extended 0.169.0 baseline. A run that reaches this
     # ceiling is hung infrastructure, and a cancelled six-hour job must never
     # again stand in for a release verdict.
     timeout-minutes: 60

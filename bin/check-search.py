@@ -320,6 +320,16 @@ def main() -> int:
                 and not (invalid_output / "third_party/docsearch").exists(),
                 "incomplete Algolia configuration still emitted DocSearch markup or assets",
             )
+            valid_site = workspace / "site-algolia-valid"
+            valid_output = workspace / "public-algolia-valid"
+            helper.copy_fixture_site(valid_site, "flat", False, subpath=False)
+            config_path = valid_site / "hugo.yaml"
+            config_path.write_text(config_path.read_text().replace("params:\n",
+                "params:\n  search:\n    algolia:\n      appId: TESTAPP\n      apiKey: public-search-key\n      indexName: docs-index\n", 1))
+            helper.run_hugo(valid_site, valid_output, workspace / "cache-algolia-valid")
+            rendered = "\n".join(path.read_text() for path in valid_output.rglob("*.html"))
+            require(re.search(r'indices:\s*\["docs-index"\]', rendered) is not None,
+                    "DocSearch 5 did not receive the configured index through indices")
         palette = (ROOT / "assets" / "js" / "command-palette.js").read_text(encoding="utf-8")
         require(
             "searchApi.group(results)" in palette

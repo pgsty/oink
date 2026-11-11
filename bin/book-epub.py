@@ -2,7 +2,7 @@
 """Package an opt-in OINK BookManifest and whole-Book Print HTML as EPUB 3.
 
 Requires Pandoc 3.x: chapter splitting relies on `--split-level` and on
-pandoc's `ch%03d.xhtml` chunk naming (CI pins 3.10; pandoc 2.x fails
+pandoc's `ch%03d.xhtml` chunk naming (CI pins 3.13; pandoc 2.x fails
 cleanly on the unknown flag, and a naming change is caught by
 `check-book-epub.py`'s chapter and fragment gates, never silently).
 """

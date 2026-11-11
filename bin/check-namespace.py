@@ -108,11 +108,11 @@ THIRD_PARTY_DATA = {
 # asciinema-player.css reads --term-* (palette, font, metrics); renaming them
 # leaves the player on its built-in black-on-white defaults inside an OINK
 # terminal surface, which is how the 0.5 sweep broke it. Markmap reads its
-# --markmap-text-color token on the SVG; prefixing it leaves dark text on the
-# dark article canvas.
+# --mm-text/--mm-bg/--mm-link tokens on the SVG and in notes; renaming them
+# breaks article contrast and the note link palette.
 THIRD_PARTY_PROPERTY = re.compile(
     r"^--(?:term-(color-(foreground|background|\d+)|font-family|line-height|cols|rows)"
-    r"|markmap-text-color)$"
+    r"|mm-(text|bg|link))$"
 )
 BEM_CLASS = re.compile(r"^[a-z][a-z0-9-]*(?:__|--)[a-z0-9_-]+$")
 PLAYER_THEME_RE = re.compile(

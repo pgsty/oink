@@ -443,8 +443,15 @@
           }
           // Frame input never reaches the host dialog, so a pinned note closes here.
           doc.addEventListener('pointerdown', () => syncNote.classList.remove('td-is-open'), { capture: true, signal: paneSignal });
+          const hasOpenPaneDialog = () => Boolean(
+            doc.querySelector('dialog[open]') ||
+            Array.from(doc.querySelectorAll('[role="dialog"]')).some(node => {
+              const style = win.getComputedStyle(node);
+              return style.display !== 'none' && style.visibility !== 'hidden' && node.getClientRects().length > 0;
+            })
+          );
           doc.addEventListener('keydown', event => {
-            if (event.defaultPrevented || doc.querySelector('dialog[open]')) return;
+            if (event.defaultPrevented || hasOpenPaneDialog()) return;
             if (event.key === 'Escape' || isToggleKey(event)) { event.preventDefault(); close(); return; }
             if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) own();
           }, { signal: paneSignal });
@@ -467,9 +474,15 @@
             state.pendingScroll = requestAnimationFrame(follow);
           }, { passive: true, signal: paneSignal });
           doc.addEventListener('click', event => {
-            const link = event.target.closest('a[href]');
-            if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || link.hasAttribute('download')) return;
-            const url = new URL(link.href, win.location.href);
+            const link = event.target.closest('a');
+            const rawHref = link && (typeof link.href === 'string'
+              ? (link.hasAttribute('href') ? link.href : '')
+              : (link.href?.baseVal || link.getAttribute('href') || link.getAttribute('xlink:href') || ''));
+            if (!rawHref || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || link.hasAttribute('download')) return;
+            const linkTarget = typeof link.target === 'string'
+              ? link.target
+              : (link.target?.baseVal || link.getAttribute('target') || '');
+            const url = new URL(rawHref, win.location.href);
             url.searchParams.delete(paneFlag);
             if (!/^https?:$/.test(url.protocol)) return;
             if (url.origin === location.origin && url.pathname === win.location.pathname && url.hash) {
@@ -485,7 +498,7 @@
               win.history.replaceState(null, '', win.location.pathname + win.location.search + url.hash);
               win.dispatchEvent(new win.HashChangeEvent('hashchange', { oldURL, newURL: win.location.href }));
               target.scrollIntoView({ behavior: 'instant', block: 'start' });
-            } else if (url.origin !== location.origin || link.target === '_blank') {
+            } else if (url.origin !== location.origin || linkTarget === '_blank') {
               event.preventDefault(); window.open(url.href, '_blank', 'noopener');
             } else {
               event.preventDefault(); close(false, true);
@@ -550,6 +563,9 @@
       // Capture focus before hiding a pane, and make the destination usable
       // before restoring it. Moving a focused subtree otherwise blurs to body.
       showSide(visibleSide);
+      // CSS must not hide the old menu host before this callback can capture
+      // its focus: browsers may update media-query styles before firing change.
+      dialog.classList.toggle('td-compare--narrow', narrow.matches);
       if (!choosable || languageMenu.parentNode === host) return;
       host.append(languageMenu);
       if (focused) {

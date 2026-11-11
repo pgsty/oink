@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+from html import unescape
 import json
 import re
 import subprocess
@@ -90,6 +91,15 @@ def main() -> int:
                             'data-td-t-no-commands=', 'enterkeyhint="go"',
                         )),
                         f"{deployment}/{lang} Palette markup or localization is incomplete",
+                    )
+                    close = re.search(
+                        r'<button\b(?=[^>]*data-td-shell-search-close)[^>]*'
+                        r'aria-label="([^"]+)"[^>]*>\s*<kbd>([^<]+)</kbd>', html,
+                    )
+                    require(
+                        close is not None
+                        and unescape(close.group(2)).casefold() in unescape(close.group(1)).casefold(),
+                        f"{deployment}/{lang} Palette close name omits its visible key label",
                     )
                     bundles = referenced_bundles(output, html)
                     require(

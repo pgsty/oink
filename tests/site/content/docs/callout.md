@@ -36,7 +36,7 @@ type has a default icon and accent colour.
 > `hugo server -D` previews drafts.
 
 > [!IMPORTANT]
-> The floor is Hugo Extended 0.168.0; anything older fails the build outright.
+> The floor is Hugo Extended 0.169.0; anything older fails the build outright.
 
 > [!WARNING]
 > `hugo --cleanDestinationDir` empties `public/`.
@@ -64,7 +64,7 @@ type has a default icon and accent colour.
 > `hugo server -D` previews drafts.
 
 > [!IMPORTANT]
-> The floor is Hugo Extended 0.168.0; anything older fails the build outright.
+> The floor is Hugo Extended 0.169.0; anything older fails the build outright.
 
 > [!WARNING]
 > `hugo --cleanDestinationDir` empties `public/`.

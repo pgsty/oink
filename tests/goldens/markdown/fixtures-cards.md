@@ -1,5 +1,5 @@
 # Cards (rich)
-> The `{{</* cards */>}}` / `{{</* card */>}}` full form with icons, badges, images and Markdown bodies.
+> The cards and card shortcodes with icons, badges, images and Markdown bodies.
 ---
 LLMS index: [llms.txt](/llms.txt)
 ---

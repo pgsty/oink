@@ -1,108 +1,205 @@
-{{ if eq .Site.Params.markmap true }}
 (function () {
   'use strict';
+  const config = document.querySelector('[data-td-markmap-config]');
+  if (!config) return;
+  let engine;
+  const loadEngine = () => (engine ??= import(JSON.parse(config.textContent).src));
+  const fitLabel = {{ i18n "ui_diagram_fit" | jsonify | safeJS }};
+  const detailsLabel = {{ i18n "callout_details" | jsonify | safeJS }};
+  const dark = () => document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
 
-  var fitLabel = {{ i18n "ui_diagram_fit" | jsonify | safeJS }};
-
-  function enhance(container, source) {
-    var api = window.markmap;
-    var transformer = new api.Transformer(api.autoLoader.transformPlugins);
-    transformer.urlBuilder.setProvider('oink', api.autoLoader.provider);
-    transformer.urlBuilder.provider = 'oink';
-    // Preserve the autoloader's normalization for indented outlines and YAML.
-    var lines = source.split('\n');
-    var indent = lines.reduce(function (minimum, line) {
-      return line.trim() ? Math.min(minimum, line.match(/^\s*/)[0].length) : minimum;
-    }, Infinity);
-    var content = lines.map(function (line) { return line.slice(indent); }).join('\n').trim();
-    var map, svg, mounting, ready, frame;
-    var manual = false;
-    var size = '';
-    var generation = 0;
-
-    function fit() {
-      if (!ready || !svg.getBoundingClientRect().width) return;
-      // Layout changes should not animate or override a reader's gesture.
-      var duration = map.options.duration;
-      map.options.duration = 0;
-      map.fit();
-      map.options.duration = duration;
+  async function enhance(code) {
+    const pre = code.parentElement;
+    const source = code.textContent;
+    let container, map;
+    const cleanup = [];
+    function listen(target, type, callback, options) {
+      target.addEventListener(type, callback, options);
+      cleanup.push(() => target.removeEventListener(type, callback, options));
     }
-
-    async function render() {
-      var version = ++generation;
-      var result = transformer.transform(content);
-      var assets = transformer.getUsedAssets(result.features);
-      await Promise.all([api.loadCSS(assets.styles || []), api.loadJS(assets.scripts || [])]);
-      if (version !== generation) return;
-      var options = api.deriveOptions(result.frontmatter && result.frontmatter.markmap);
-      options.autoFit = false;
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) options.duration = 0;
-      await map.setData(result.root, options);
-      await document.fonts.ready;
-      ready = true;
-      if (!manual) fit();
-    }
-
-    function resize() {
-      frame = 0;
-      if (!container.getBoundingClientRect().width || window.matchMedia('print').matches) return;
-      if (!map) {
-        if (mounting) return;
-        mounting = true;
-        svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        var reset = document.createElement('button');
-        reset.type = 'button';
-        reset.className = 'td-markmap__fit';
-        reset.textContent = fitLabel;
-        reset.addEventListener('click', function () { manual = false; fit(); });
-        container.replaceChildren(svg, reset);
-        map = api.Markmap.create(svg, { embedGlobalCSS: false });
-        map.zoom.on('start.oink', function (event) {
-          if (event.sourceEvent) manual = true;
-        });
-        // Markmap's scroll-for-pan mode applies its transform programmatically.
-        svg.addEventListener('wheel', function () { manual = true; }, { passive: true });
-        transformer.hooks.retransform.tap(function () { render().catch(failed); });
-        render().catch(failed);
+    function fallback(error, focus = false) {
+      cleanup.forEach(dispose => dispose());
+      map?.destroy();
+      container?.replaceWith(pre);
+      if (focus) {
+        pre.tabIndex = -1;
+        pre.focus({ preventScroll: true });
       }
-      var rect = svg.getBoundingClientRect();
-      var next = rect.width + ':' + rect.height;
-      if (next === size) return;
-      size = next;
-      if (!manual) fit();
-    }
-
-    function schedule() {
-      if (!frame) frame = requestAnimationFrame(resize);
-    }
-
-    function failed(error) {
       console.error('Markmap:', error);
-      container.textContent = source;
     }
-
-    if (window.ResizeObserver) new ResizeObserver(schedule).observe(container);
-    else window.addEventListener('resize', schedule);
-    document.addEventListener('td:tab-shown', schedule);
-    document.addEventListener('toggle', schedule, true);
-    window.addEventListener('afterprint', schedule);
-    schedule();
-  }
-
-  Array.prototype.forEach.call(
-    document.querySelectorAll('.language-markmap'),
-    function (code) {
-      var pre = code.parentNode;
-      if (!pre || !pre.parentNode) return;
-      var container = document.createElement('div');
+    try {
+      const api = await loadEngine();
+      // Match upstream's whitespace normalization without interpreting HTML.
+      const lines = source.split(/\r?\n/);
+      const rawIndent = lines.reduce((min, line) => (
+        line.trim() ? Math.min(min, line.match(/^\s*/)[0].length) : min
+      ), Infinity);
+      const indent = Number.isFinite(rawIndent) ? rawIndent : 0;
+      const content = lines.map(line => line.slice(indent)).join('\n').trim();
+      const parsed = api.parse(content, { plugins: [api.remarkMath] });
+      const nodes = new Map();
+      api.walkTree(parsed.root, node => {
+        const links = new Map();
+        function collect(inlines) {
+          for (const inline of inlines) {
+            if (inline.type === 'link') {
+              const href = inline.url.trim();
+              const labels = links.get(href) || new Set();
+              labels.add(api.toPlainText(inline.children).trim() || href);
+              links.set(href, labels);
+            }
+            if (inline.children) collect(inline.children);
+          }
+        }
+        collect(node.content);
+        nodes.set(node.id, { links, label: api.toPlainText(node.content) });
+      });
+      const resolved = api.resolveViewOptions({ plugins: [...api.defaultContentPlugins, api.mathContent] }, parsed.frontmatter.markmap);
+      for (const warning of resolved.warnings) console.warn('Markmap:', warning);
+      await document.fonts.ready;
+      // Firefox's OffscreenCanvas can resolve system fonts differently from
+      // SVG. Measure on a document canvas so wrapping and fit use its fonts.
+      const options = { ...resolved.options, colorScheme: dark(),
+        measurer: api.createCanvasMeasurer(document.createElement('canvas').getContext('2d')) };
+      container = document.createElement('div');
       container.className = 'markmap';
-      container.textContent = pre.textContent;
-      pre.parentNode.replaceChild(container, pre);
-      var source = container.textContent;
-      window.markmap.autoLoader.ready.then(function () { enhance(container, source); });
-    },
-  );
-
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const reset = document.createElement('button');
+      reset.type = 'button';
+      reset.className = 'td-markmap__fit';
+      reset.textContent = fitLabel;
+      container.append(svg, reset);
+      pre.replaceWith(container);
+      map = api.Markmap.create(svg, parsed.root, options);
+      let manual = false, frame = 0, size = '';
+      function fit() {
+        if (svg.getBoundingClientRect().width) map.fit();
+      }
+      listen(reset, 'click', () => { manual = false; fit(); });
+      map.zoomBehavior.on('zoom.oink', event => { if (event.sourceEvent) manual = true; });
+      function resize() {
+        frame = 0;
+        if (window.matchMedia('print').matches) return;
+        const rect = svg.getBoundingClientRect();
+        const next = rect.width + ':' + rect.height;
+        if (!rect.width || size === next) return;
+        size = next;
+        if (!manual) fit();
+      }
+      function schedule() { if (!frame) frame = requestAnimationFrame(resize); }
+      function nodeId(element) {
+        return element.closest('[data-key^="node:"]')?.getAttribute('data-key').slice(5);
+      }
+      function labelControls() {
+        // Upstream draws links as transparent rectangles over separate text.
+        // Use the parsed label, including all lines of a wrapped link, for AT.
+        for (const link of svg.querySelectorAll('a')) {
+          const href = link.getAttribute('href');
+          const labels = nodes.get(nodeId(link))?.links.get(href);
+          const label = labels ? [...labels].join(' / ') : (href || '');
+          if (label && link.getAttribute('aria-label') !== label) link.setAttribute('aria-label', label);
+          if (link.getAttribute('target') === '_blank' && !link.hasAttribute('rel')) {
+            link.setAttribute('rel', 'noopener');
+          }
+        }
+        for (const note of svg.querySelectorAll('[data-action="notes"]')) {
+          const node = nodes.get(nodeId(note));
+          const label = node?.label ? detailsLabel + ': ' + node.label : detailsLabel;
+          note.setAttribute('role', 'button');
+          note.setAttribute('tabindex', '0');
+          note.setAttribute('aria-haspopup', 'dialog');
+          note.setAttribute('aria-label', label);
+        }
+      }
+      // Animated fold/unfold and deferred math renders populate SVG <g> nodes
+      // across animation frames after `render` fires; observe childList updates.
+      const svgObserver = new MutationObserver(labelControls);
+      svgObserver.observe(svg, { childList: true, subtree: true });
+      cleanup.push(() => svgObserver.disconnect());
+      map.on('render', () => { labelControls(); if (!manual) fit(); });
+      labelControls();
+      let noteTrigger, noteNodeId, noteDialog;
+      function liveNoteTrigger(id = noteNodeId) {
+        if (id) {
+          const selector = `[data-key="node:${window.CSS?.escape ? window.CSS.escape(id) : id}"] [data-action="notes"]`;
+          const found = svg.querySelector(selector);
+          if (found) return found;
+        }
+        return noteTrigger?.isConnected ? noteTrigger : null;
+      }
+      async function openNote(event) {
+        const trigger = event.target.closest('[data-action="notes"]');
+        if (!trigger || (event.type === 'keydown' && !['Enter', ' '].includes(event.key))) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const id = nodeId(trigger);
+        if (map.openNoteId === id) { map.closeNotes(); return; }
+        noteTrigger = trigger;
+        noteNodeId = id;
+        try {
+          // Keyboard focus can start the page's smooth scroll. Finish that
+          // movement before opening: the vendor closes notes on page scroll.
+          trigger.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
+          await new Promise(resolve => requestAnimationFrame(resolve));
+          await map.openNotes(id);
+          const dialog = document.activeElement;
+          if (map.openNoteId === id && dialog?.classList.contains('markmap-popover')) {
+            noteDialog = dialog;
+            const label = (liveNoteTrigger(id) || trigger).getAttribute('aria-label');
+            if (label) dialog.setAttribute('aria-label', label);
+          }
+        } catch (error) { fallback(error, true); }
+      }
+      listen(svg, 'click', openNote, true);
+      listen(svg, 'keydown', openNote);
+      listen(document, 'keydown', event => {
+        if (event.key !== 'Escape' || !map.openNoteId || document.querySelector('dialog[open]')) return;
+        const focusInside = noteDialog?.contains(event.target) || noteDialog?.contains(document.activeElement);
+        const trigger = liveNoteTrigger(map.openNoteId);
+        event.preventDefault();
+        event.stopPropagation();
+        map.closeNotes();
+        if (focusInside) trigger?.focus({ preventScroll: true });
+      }, true);
+      if (window.ResizeObserver) {
+        const observer = new ResizeObserver(schedule);
+        observer.observe(container);
+        cleanup.push(() => observer.disconnect());
+      } else listen(window, 'resize', schedule);
+      listen(document, 'td:tab-shown', schedule);
+      listen(document, 'toggle', schedule, true);
+      let printFocus;
+      listen(window, 'beforeprint', () => {
+        printFocus = noteDialog?.contains(document.activeElement) ? document.activeElement : null;
+      });
+      listen(window, 'afterprint', () => {
+        schedule();
+        if (printFocus) {
+          const target = printFocus.isConnected ? printFocus : liveNoteTrigger();
+          target?.focus({ preventScroll: true });
+          printFocus = null;
+        }
+      });
+      cleanup.push(() => cancelAnimationFrame(frame));
+      const themeObserver = new MutationObserver(() => {
+        map.applyOptions({ ...options, colorScheme: dark() });
+        map.render({ animate: false });
+        // Notes live under body and snapshot the map's tokens when opened.
+        // Keep an already-open note in sync with the reader's appearance.
+        if (noteDialog?.isConnected) {
+          for (const [name, value] of Object.entries(map.currentTokens())) {
+            noteDialog.style.setProperty('--' + name, value);
+          }
+        }
+      });
+      themeObserver.observe(document.documentElement,
+        { attributes: true, attributeFilter: ['data-bs-theme', 'data-td-preset'] });
+      cleanup.push(() => themeObserver.disconnect());
+      map.render({ animate: false });
+      schedule();
+    } catch (error) {
+      fallback(error);
+    }
+  }
+  document.querySelectorAll('pre > code.language-markmap').forEach(enhance);
 })();
-{{ end }}

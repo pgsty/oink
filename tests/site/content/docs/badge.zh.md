@@ -95,13 +95,13 @@ Hugo 的内部占位符文本。把状态写进标题下面的第一段：
 ## 列表与步骤里 {#in-lists}
 
 ```markdown {title="源码"}
-1. 安装 Hugo Extended {{</* badge text="≥ 0.168.0" tone="info" */>}}
+1. 安装 Hugo Extended {{</* badge text="≥ 0.169.0" tone="info" */>}}
 1. 克隆文档站，修改 `hugo.yaml` 里的 `baseURL`
 1. `hugo server` 预览 {{</* badge text="1313 端口" tone="neutral" */>}}
 {.steps}
 ```
 
-1. 安装 Hugo Extended {{< badge text="≥ 0.168.0" tone="info" >}}
+1. 安装 Hugo Extended {{< badge text="≥ 0.169.0" tone="info" >}}
 1. 克隆文档站，修改 `hugo.yaml` 里的 `baseURL`
 1. `hugo server` 预览 {{< badge text="1313 端口" tone="neutral" >}}
 {.steps}

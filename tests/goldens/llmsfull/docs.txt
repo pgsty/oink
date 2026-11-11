@@ -147,7 +147,7 @@ type has a default icon and accent colour.
 > [!TIP]
 > `hugo server -D` previews drafts.
 > [!IMPORTANT]
-> The floor is Hugo Extended 0.168.0; anything older fails the build outright.
+> The floor is Hugo Extended 0.169.0; anything older fails the build outright.
 > [!WARNING]
 > `hugo --cleanDestinationDir` empties `public/`.
 > [!CAUTION]
@@ -166,7 +166,7 @@ type has a default icon and accent colour.
 > [!TIP]
 > `hugo server -D` previews drafts.
 > [!IMPORTANT]
-> The floor is Hugo Extended 0.168.0; anything older fails the build outright.
+> The floor is Hugo Extended 0.169.0; anything older fails the build outright.
 > [!WARNING]
 > `hugo --cleanDestinationDir` empties `public/`.
 > [!CAUTION]
@@ -1194,14 +1194,14 @@ number the table.
 | Item | Value |
 | --- | --- |
 | Theme version | v0.5.0 |
-| Hugo floor | 0.168.0 Extended |
+| Hugo floor | 0.169.0 Extended |
 | Licence | Apache-2.0 |
 {caption="Theme facts this site currently builds against"}
 ```
 | Item | Value |
 | --- | --- |
 | Theme version | v0.5.0 |
-| Hugo floor | 0.168.0 Extended |
+| Hugo floor | 0.169.0 Extended |
 | Licence | Apache-2.0 |
 {caption="Theme facts this site currently builds against"}
 ## Compatibility matrices {#matrix}
@@ -1683,7 +1683,7 @@ indented. The three headings below appear in this page's table of contents.
 ```markdown {title="Source"}
 {{% steps %}}
 ### Install the toolchain {#install-toolchain}
-You need Hugo Extended ≥ 0.168.0 and Go.
+You need Hugo Extended ≥ 0.169.0 and Go.
 ### Run the server {#run-server}
 {{< tabs group="oink-os" default="macos" >}}
 {{< tab label="macOS" value="macos" >}}
@@ -1698,7 +1698,7 @@ Push to `main`; the workflow the repository ships builds and publishes.
 {{% /steps %}}
 ```
 ### Install the toolchain {#install-toolchain}
-You need Hugo Extended ≥ 0.168.0 and Go.
+You need Hugo Extended ≥ 0.169.0 and Go.
 ### Run the server {#run-server}
 **macOS**
 `brew install hugo go`
@@ -4593,12 +4593,12 @@ Badges make a comparison table easier to scan than a column of "yes" and "no".
 | The `image` shortcode | — | **removed** |
 ## In lists and steps {#in-lists}
 ```markdown {title="Source"}
-1. Install Hugo Extended {{< badge text="≥ 0.168.0" tone="info" >}}
+1. Install Hugo Extended {{< badge text="≥ 0.169.0" tone="info" >}}
 1. Clone the documentation site and change `baseURL` in `hugo.yaml`
 1. `hugo server` to preview {{< badge text="port 1313" tone="neutral" >}}
 {.steps}
 ```
-1. Install Hugo Extended **≥ 0\.168\.0**
+1. Install Hugo Extended **≥ 0\.169\.0**
 1. Clone the documentation site and change `baseURL` in `hugo.yaml`
 1. `hugo server` to preview **port 1313**
 {.steps}
@@ -4861,7 +4861,7 @@ imports:
 - path: github.com/pgsty/oink
 hugoVersion:
 extended: true
-min: 0.168.0
+min: 0.169.0
 ```
 Code blocks and fences share one pipeline: highlighting, line numbers and the
 copy button all work. Fence attributes (`title=`, `collapse`, `hl_lines=`)
@@ -4909,7 +4909,7 @@ hugo mod get github.com/pgsty/oink@v0.5.0
 | Item | Value |
 | --- | --- |
 | Current version | v0.5.0 |
-| Hugo floor | 0.168.0 |
+| Hugo floor | 0.169.0 |
 [Release notes](https://github.com/pgsty/oink/releases/tag/v0.5.0)
 Where site parameters are defined and which exist is in
 [Configuration](https://oink.pgsty.com/docs/customize/config/); page parameters

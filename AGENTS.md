@@ -147,7 +147,7 @@ python3 -m unittest discover -s tests/migrations -t .
 
 ### Toolchain and diagnostics
 
-- Use OINK v1.5.1 and Hugo Extended 0.168.0 for maintained consumer sites,
+- Use OINK v1.5.1 and Hugo Extended 0.169.0 for maintained consumer sites,
   development, CI, and release checks. Keep this baseline pinned; `theme.toml`
   declares it as `min_version`. Update requirements, checkers, and current
   bilingual contracts together. Keep the upstream LibSass deprecation warning
@@ -156,8 +156,8 @@ python3 -m unittest discover -s tests/migrations -t .
   Ordinary consumers must not install Dart Sass or another Sass executable.
   Preserve project-variable/style hooks. Future Hugo upgrades must preserve
   this dependency boundary; do not add compatibility shims for unrelated versions.
-- The module declares Go 1.27.3 as its minimum; the current development default
-  is Go 1.27.3. Record the actual local tool versions when reporting validation.
+- The module declares Go 1.27.4 as its minimum; the current development default
+  is Go 1.27.4. Record the actual local tool versions when reporting validation.
 - Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING` in any build,
   checker, preview, or CI job. Review diagnostics and verify their owning
   output contracts. Invalid-input tests check warnings and safe fallback

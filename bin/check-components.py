@@ -13,6 +13,7 @@ from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 import re
+from urllib.parse import quote_plus
 import subprocess
 import tempfile
 
@@ -438,9 +439,19 @@ def check_openapi(hugo: str) -> list[str]:
                     "the ReDoc overrides are still inlined in the shortcode instead of the standalone stylesheet", errors)
             require(re.search(r'href="[^"]*redoc[^"]*\.css[^"]*"', html) is not None,
                     "the ReDoc standalone stylesheet is not loaded beside the runtime", errors)
-            require(html.count('spec-url="https://example.org/openapi/spec.yaml"') == 2,
+            frames = list(destination.glob("js/chunks/redoc-frame*.html"))
+            require(len(frames) == 1 and 'type="module"' in frames[0].read_text(),
+                    "ReDoc readers do not share a locally published ESM frame", errors)
+            require(html.count('sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox"') == 3,
+                    "ReDoc frames must support authored links and downloads without top-level navigation", errors)
+            frame_js = list(destination.glob("js/chunks/redoc-frame*.js"))
+            require(bool(frame_js) and re.search(r"disableTelemetry\s*:\s*(?:true|!0)", frame_js[0].read_text()),
+                    "ReDoc must explicitly disable telemetry", errors)
+            require(bool(frame_js) and "frameElement" in frame_js[0].read_text() and "td-redoc__frame" in frame_js[0].read_text(),
+                    "ReDoc frame must restrict cross-origin specs to same-origin authored embeds", errors)
+            require(html.count('?spec=' + quote_plus('https://example.org/openapi/spec.yaml') + '"') == 2,
                     "leading and non-leading Redoc paths differ at the site root", errors)
-            require('spec-url="https://spec.example.org/openapi.yaml"' in html,
+            require('?spec=' + quote_plus('https://spec.example.org/openapi.yaml') + '"' in html,
                     "Redoc rewrote a valid remote specification URL", errors)
 
     subpath_page = (
@@ -466,7 +477,7 @@ def check_openapi(hugo: str) -> list[str]:
                 "Markdown": (destination / "docs/redoc/index.md").read_text(),
                 "RSS": (destination / "docs/redoc/index.xml").read_text(),
             }
-            require(outputs["HTML"].count(f'spec-url="{expected}"') == 2,
+            require(outputs["HTML"].count('?spec=' + quote_plus(expected) + '"') == 2,
                     "leading and non-leading Redoc paths differ under a subpath", errors)
             require(outputs["Print"].count(f'href="{expected}"') == 2,
                     "Redoc Print fallback lost the normalized subpath URL", errors)
@@ -475,7 +486,7 @@ def check_openapi(hugo: str) -> list[str]:
             require(outputs["RSS"].count(f'href="{expected}"') == 2,
                     "Redoc RSS fallback lost the normalized subpath URL", errors)
             for name in ("Print", "Markdown", "RSS"):
-                require("<redoc" not in outputs[name] and "redoc.standalone" not in outputs[name],
+                require("td-redoc__frame" not in outputs[name] and "redoc.standalone" not in outputs[name],
                         f"Redoc {name} fallback regained an interactive runtime", errors)
             require((destination / "openapi/spec.yaml").is_file(),
                     "the static-root Redoc specification was not published", errors)
@@ -533,19 +544,21 @@ def check_media_output_states(hugo: str) -> list[str]:
         markdown = (destination / "docs/media/index.md").read_text()
         printed = (destination / "_print/docs/media/index.html").read_text()
         rss = (destination / "docs/media/index.xml").read_text()
-        require("data-td-asciinema" in html and "data-td-swagger" in html and "<redoc" in html,
+        require("data-td-asciinema" in html and "data-td-swagger" in html and "td-redoc__frame" in html,
                 "the HTML output lost its interactive components", errors)
-        require("asciinema-player" in html and "swagger-ui-bundle" in html and "redoc.standalone" in html,
+        require("asciinema-player" in html and "swagger-ui-bundle" in html and "redoc-frame" in html,
                 "the HTML output does not load the three runtimes", errors)
+        require('<div data-td-asciinema-player><a href="/images/install.cast">Walkthrough</a></div>' in html,
+                "Asciinema lost its recording link before JavaScript enhancement", errors)
         for name, text in (("markdown", markdown), ("rss", rss)):
             require("<script" not in text and 'class="td-' not in text
-                    and "data-td-asciinema" not in text and "<redoc" not in text,
+                    and "data-td-asciinema" not in text and "td-redoc__frame" not in text,
                     f"the {name} output still carries component markup", errors)
         require("[Walkthrough](/images/install.cast)" in markdown,
                 "the markdown output lost the asciinema link line", errors)
-        for runtime in ("asciinema-player", "swagger-ui-bundle", "redoc.standalone", "swagger-init"):
+        for runtime in ("asciinema-player", "swagger-ui-bundle", "redoc-frame", "swagger-init"):
             require(runtime not in printed, f"the print output still loads {runtime}", errors)
-        require("data-td-asciinema" not in printed and "data-td-swagger" not in printed and "<redoc" not in printed,
+        require("data-td-asciinema" not in printed and "data-td-swagger" not in printed and "td-redoc__frame" not in printed,
                 "the print output still renders interactive containers", errors)
         require(printed.count('-print"') >= 3 and 'href="/spec-a.yaml"' in printed,
                 "the print output lacks the static fallback links", errors)
@@ -770,6 +783,33 @@ def check_template_contracts() -> list[str]:
     return errors
 
 
+def check_dependency_migrations(hugo: str) -> list[str]:
+    errors: list[str] = []
+    result, destination, temp = build_site(hugo, {
+        "docs/map.md": "---\ntitle: Map\noutputs: [HTML, print, markdown, RSS]\n---\n\n"
+        "```markmap\r\n---\r\nmarkmap:\r\n  initialExpandLevel: 2\r\n---\r\n# A > B & C\r\n```\n",
+        "snippets/mindmap.md": "```markmap\n# Included\n- Child\n```\n",
+        "docs/host.md": "---\ntitle: Host\n---\n\n{{< include file=\"/snippets/mindmap.md\" >}}\n",
+    }, prefix="oink-dependency-migrations-", config="params:\n  markmap: true\n")
+    with temp:
+        require(result.returncode == 0, "Markmap migration warning stopped the build", errors)
+        diag = result.stdout + result.stderr
+        require(diag.count("Markmap 1 renamed initialExpandLevel to foldLevel") == 1,
+                f"legacy Markmap option must warn exactly once across output formats, got {diag.count('Markmap 1 renamed initialExpandLevel to foldLevel')}", errors)
+        if result.returncode == 0:
+            html = (destination / "docs/map/index.html").read_text()
+            require("# A &gt; B &amp; C" in html and "&amp;gt;" not in html,
+                    "Markmap source is not escaped exactly once", errors)
+            host_html = (destination / "docs/host/index.html").read_text()
+            require("data-td-markmap-config" in host_html,
+                    "Markmap inside include did not register hasMarkmap on the host page", errors)
+            for path in ("_print/docs/map/index.html", "docs/map/index.md", "docs/map/index.xml"):
+                text = (destination / path).read_text()
+                require("data-td-markmap-config" not in text and "third_party/markmap" not in text,
+                        f"Markmap loaded a runtime in {path}", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--public", type=Path)
@@ -790,6 +830,7 @@ def main() -> int:
         + check_steps_container(args.hugo)
         + check_presentation_variants(args.hugo)
         + check_openapi(args.hugo)
+        + check_dependency_migrations(args.hugo)
         + check_media_output_states(args.hugo)
         + check_empty_tabs(args.hugo)
         + check_print_tab_namespaces(args.hugo)

@@ -1,30 +1,14 @@
-// Theme overrides for the ReDoc reader. Compiled standalone and loaded only
-// on pages that render the interactive component, next to its runtime -- the
-// global stylesheet must not carry per-capability rules to every page.
-.td-redoc input {
-  height: 64px;
+// ReDoc's router and vendor styles are confined to an independent document.
+.td-redoc__frame {
+  display: block;
+  inline-size: 100%;
+  block-size: 75vh;
+  min-block-size: 28rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  background: #fff;
 }
 
-.td-redoc span[type='put'],
-.td-redoc span[type='get'],
-.td-redoc span[type='delete'],
-.td-redoc span[type='post'],
-.td-redoc span[type='options'],
-.td-redoc span[type='patch'],
-.td-redoc span[type='basic'],
-.td-redoc span[type='link'],
-.td-redoc span[type='head'] {
-  border-radius: 4px;
-}
-
-.td-redoc h2 {
-  margin-top: 0;
-}
-
-.td-redoc img[alt='redocly logo'] {
-  display: none;
-}
-
-.td-redoc a[href='https://redocly.com/redoc/'] {
-  display: none;
+@media print {
+  .td-redoc__frame { display: none; }
 }

@@ -51,7 +51,7 @@ search_keywords: [表格, Table, matrix, 矩阵, full-width, 全宽, caption, �
 | 条目 | 取值 |
 | --- | --- |
 | 主题版本 | v0.5.0 |
-| Hugo 下限 | 0.168.0 Extended |
+| Hugo 下限 | 0.169.0 Extended |
 | 许可证 | Apache-2.0 |
 {caption="本站当前使用的主题事实"}
 ```
@@ -59,7 +59,7 @@ search_keywords: [表格, Table, matrix, 矩阵, full-width, 全宽, caption, �
 | 条目 | 取值 |
 | --- | --- |
 | 主题版本 | v0.5.0 |
-| Hugo 下限 | 0.168.0 Extended |
+| Hugo 下限 | 0.169.0 Extended |
 | 许可证 | Apache-2.0 |
 {caption="本站当前使用的主题事实"}
 

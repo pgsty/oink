@@ -9,7 +9,7 @@
 {{ end -}}
 {{ $plantumlEnabled := partial "config-enabled.html" (dict "value" .Site.Params.plantuml "key" "params.plantuml") -}}
 {{ $drawioEnabled := partial "config-enabled.html" (dict "value" .Site.Params.drawio "key" "params.drawio") -}}
-{{ $hasMarkmap := and $markmapEnabled (.Page.Store.Get "hasMarkmap") -}}
+{{ $hasMarkmap := and $markmapEnabled (.Page.Store.Get "hasMarkmap") (eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{ $keyboardNavParam := (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) -}}
@@ -38,75 +38,7 @@
 {{ $hasAuthoredA11y := and $interactiveOutput (.Page.Store.Get "hasAuthoredA11y" | default false) -}}
 
 {{ if $hasMarkmap -}}
-{{ range resources.Match "third_party/katex/fonts/*" -}}
-  {{ $published := .Publish -}}
-{{ end -}}
-{{ $d3 := resources.Get "third_party/markmap/d3.min.js" -}}
-{{ $katexJS := resources.Get "third_party/katex/katex.min.js" -}}
-{{ $katexCSS := resources.Get "third_party/katex/katex.min.css" -}}
-{{ $markmapLib := resources.Get "third_party/markmap/markmap-lib.js" -}}
-{{ $markmapView := resources.Get "third_party/markmap/markmap-view.js" -}}
-{{ $markmapToolbar := resources.Get "third_party/markmap/markmap-toolbar.js" -}}
-{{ $markmapToolbarCSS := resources.Get "third_party/markmap/markmap-toolbar.css" -}}
-{{ $markmapAutoloader := resources.Get "third_party/markmap/markmap-autoloader.js" -}}
-{{ $highlightJS := resources.Get "third_party/markmap/highlightjs/highlight.min.js" -}}
-{{ $highlightCSS := resources.Get "third_party/markmap/highlightjs/default.min.css" -}}
-{{ $webfontloader := resources.Get "third_party/markmap/webfontloader.js" -}}
-{{ if hugo.IsProduction -}}
-  {{ $d3 = $d3 | fingerprint -}}
-  {{ $katexJS = $katexJS | fingerprint -}}
-  {{ $katexCSS = $katexCSS | fingerprint -}}
-  {{ $markmapLib = $markmapLib | fingerprint -}}
-  {{ $markmapView = $markmapView | fingerprint -}}
-  {{ $markmapToolbar = $markmapToolbar | fingerprint -}}
-  {{ $markmapToolbarCSS = $markmapToolbarCSS | fingerprint -}}
-  {{ $markmapAutoloader = $markmapAutoloader | fingerprint -}}
-  {{ $highlightJS = $highlightJS | fingerprint -}}
-  {{ $highlightCSS = $highlightCSS | fingerprint -}}
-  {{ $webfontloader = $webfontloader | fingerprint -}}
-{{ end -}}
-<style>
-.markmap > svg {
-  width: 100%;
-  height: 300px;
-}
-</style>
-<script>
-window.markmap = {
-  autoLoader: {
-    manual: true,
-    baseJs: [
-      { type: 'script', data: { src: {{ $d3.RelPermalink | jsonify | safeJS }} } },
-      { type: 'script', data: { src: {{ $katexJS.RelPermalink | jsonify | safeJS }} } },
-      { type: 'script', data: { src: {{ $markmapLib.RelPermalink | jsonify | safeJS }} } },
-      { type: 'script', data: { src: {{ $markmapView.RelPermalink | jsonify | safeJS }} } },
-      { type: 'script', data: { src: {{ $markmapToolbar.RelPermalink | jsonify | safeJS }} } },
-    ],
-    baseCss: [
-      { type: 'stylesheet', data: { href: {{ $markmapToolbarCSS.RelPermalink | jsonify | safeJS }} } },
-    ],
-    provider(path) {
-      const assets = {
-        {{/* Markmap 0.18.12 requests its pinned asset IDs; serve the
-             compatible refreshed files from those local aliases. */ -}}
-        '@highlightjs/cdn-assets@11.11.1/highlight.min.js': {{ $highlightJS.RelPermalink | jsonify | safeJS }},
-        '@highlightjs/cdn-assets@11.11.1/styles/default.min.css': {{ $highlightCSS.RelPermalink | jsonify | safeJS }},
-        'katex@0.16.18/dist/katex.min.js': {{ $katexJS.RelPermalink | jsonify | safeJS }},
-        'katex@0.16.18/dist/katex.min.css': {{ $katexCSS.RelPermalink | jsonify | safeJS }},
-        'webfontloader@1.6.28/webfontloader.js': {{ $webfontloader.RelPermalink | jsonify | safeJS }},
-      };
-      if (!assets[path]) throw new Error(`Markmap asset is not vendored: ${path}`);
-      return assets[path];
-    },
-    onReady() {
-      const { autoLoader, builtInPlugins } = window.markmap;
-      autoLoader.transformPlugins = builtInPlugins.filter(plugin => plugin.name !== 'prism');
-    },
-  },
-};
-</script>
-<script src="{{ $markmapAutoloader.RelPermalink }}"
-  {{- with $markmapAutoloader.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
+  {{ partial "scripts/markmap.html" . -}}
 {{ end -}}
 
 {{ $plantumlSVGURL := "" -}}
@@ -277,10 +209,6 @@ window.markmap = {
   {{ if hugo.IsProduction }}{{ $redocCSS = $redocCSS | minify | fingerprint }}{{ end -}}
   <link rel="stylesheet" href="{{ $redocCSS.RelPermalink }}"
     {{- with $redocCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
-  {{ $redoc := resources.Get "third_party/redoc/redoc.standalone.js" -}}
-  {{ if hugo.IsProduction }}{{ $redoc = $redoc | fingerprint }}{{ end -}}
-  <script src="{{ $redoc.RelPermalink }}"
-    {{- with $redoc.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 
 {{ if and $interactiveOutput (.Page.Store.Get "hasSwagger") -}}
@@ -375,7 +303,7 @@ if (!window.OinkComparePane && document.getElementById('td-docsearch')) {
     container: '#td-docsearch',
     appId: {{ .appId | jsonify | safeJS }},
     apiKey: {{ .apiKey | jsonify | safeJS }},
-    indexName: {{ .indexName | jsonify | safeJS }},
+    indices: [{{ .indexName | jsonify | safeJS }}],
   });
 }
 </script>

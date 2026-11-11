@@ -5,6 +5,59 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Changed
+
+- Raise the module and CI baseline to Go 1.27.4 and Hugo Extended 0.169.0,
+  retaining built-in LibSass and consumer SCSS hooks. Refresh the documentation
+  test dependencies and maintainer build lock to current compatible releases.
+- Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
+  0.169.0's improved plain-text spacing and resulting word counts in goldens.
+  Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome
+  headless shell 157.0.8103.50.
+- Refresh local browser dependencies: DocSearch 5.2.0, Mermaid 12.3.0,
+  KaTeX 0.19.1, Swagger UI 5.34.1, ReDoc 3.1.0, Asciinema 3.18.0,
+  Infographic 0.2.20, Pako 3.0.3, idb-keyval 6.3.0, and Viz.js 3.31.0
+  (Graphviz 16.1.0). Font Awesome 7.3.1 and the other current stable assets
+  remain pinned. Preserve Mermaid's dagre/default/classic defaults.
+- Migrate Markmap to the scoped 1.1.0 parser, renderer and view. Its local ESM
+  graph replaces the legacy autoloader, standalone D3, highlight.js and
+  WebFontLoader; MathJax renders map formulas on demand. Map options now use
+  `foldLevel` (root depth 0), `wrapWidth`, `levelGap`, `siblingGap`, and
+  `colorDepth`. Old option names warn and are ignored. Paragraphs, code blocks
+  and tables become notes; raw HTML is dropped. Dedicated Print keeps source.
+- Load ReDoc as a local ES module in a separate document for each specification.
+  Its router and stylesheet cannot change article anchors or other instances.
+  Disable telemetry and retain a direct specification link. ReDoc 2 option
+  overrides and custom styles must be migrated to its version 3 API.
+- Record maintainer-only, locked builds for Markmap, Pako and the SVG loader,
+  including bundled-package license inventories. Ordinary sites still build
+  with Hugo alone and no dependency downloads.
+
+### Fixed
+
+- Include the visible Esc key in the localized search close-button name and
+  expose its Escape shortcut, preserving speech-input access under axe 4.14.
+- Preserve Duo View's language-menu focus when browser media-query rendering
+  precedes the resize callback, including both sides of the 899/900px breakpoint.
+- Preserve literal punctuation in Markmap source without double HTML escaping;
+  retain appearance, fit controls, hidden-container recovery and source fallback.
+  Give SVG links accessible names and visible keyboard focus through animated
+  folding and redraws, make notes keyboard-accessible, and use document font
+  measurements for Firefox layout. Keep open notes synchronized with appearance,
+  hide their floating panels in browser print, and restore the complete source if
+  a note chunk cannot load. Finish focus-induced scrolling before opening a note,
+  and give note links the article's accessible color and an underline. Restore
+  note focus after print or trigger redraws, register included Markmap fences on
+  their host page, accept CRLF front matter, and warn once per legacy option.
+- Restrict the local ReDoc reader frame to same-origin specifications unless it
+  is embedded by a same-origin `.td-redoc__frame` with the matching authored URL.
+- Support SVG anchor links (`SVGAElement`) inside Duo View panes, and yield
+  reader keyboard shortcuts while an in-pane ARIA dialog is open.
+- Isolate Asciinema initialization, fetch and recording parse errors and retain the recording
+  link, so one failed player cannot prevent other components from mounting.
+  Keep that link usable with JavaScript disabled or a missing player bundle.
+
+
 ## [1.5.1] — 2026-11-06
 
 ### Changed

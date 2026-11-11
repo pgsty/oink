@@ -215,9 +215,6 @@
     "simple_list": {
       "description": "Front matter key read by the theme's templates."
     },
-    "summary": {
-      "description": "Front matter key read by the theme's templates."
-    },
     "tags": {
       "description": "Front matter key read by the theme's templates."
     },

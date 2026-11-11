@@ -122,7 +122,7 @@
     <span class="td-asciinema__lights" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="td-asciinema__title" dir="auto">{{ $title }}</span>
   </div>
-  <div data-td-asciinema-player></div>
+  <div data-td-asciinema-player><a href="{{ $src }}">{{ $title }}</a></div>
   <script type="application/json" data-td-asciinema-config>{{ dict "src" $src "theme" $theme "options" $options | jsonify | safeJS }}</script>
 </div>
 {{- end -}}

@@ -519,7 +519,7 @@
 "url": "https://example.org/fixtures/image-zoom-exclusions/"
 },
 {
-"description": "The `{{\u003c/* cards */\u003e}}` / `{{\u003c/* card */\u003e}}` full form with icons, badges, images and Markdown bodies.",
+"description": "The cards and card shortcodes with icons, badges, images and Markdown bodies.",
 "id": "/fixtures/cards/",
 "kind": "page",
 "markdown": "https://example.org/fixtures/cards/index.md",

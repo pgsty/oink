@@ -1,0 +1,9 @@
+{{- /* ReDoc 3 owns its hash router and global stylesheet. Each reader gets
+     its own local document, so multiple specifications and article anchors
+     cannot interfere. Nothing is downloaded at build time. */ -}}
+{{- $engine := resources.Get "third_party/redoc/redoc.standalone.js" -}}
+{{- if hugo.IsProduction }}{{ $engine = $engine | fingerprint }}{{ end -}}
+{{- $script := resources.Get "js/redoc-frame.js" | resources.ExecuteAsTemplate "js/chunks/redoc-frame.js" (dict "engine" $engine.RelPermalink) -}}
+{{- if hugo.IsProduction }}{{ $script = $script | minify | fingerprint }}{{ end -}}
+{{- $frame := resources.Get "html/redoc-frame.html" | resources.ExecuteAsTemplate "js/chunks/redoc-frame.html" (dict "script" $script.RelPermalink) -}}
+{{- return ($frame | fingerprint) -}}

@@ -13,11 +13,11 @@ const source = fs.readFileSync(
 
 test('Markmap maps the article token on screen with wrapper/SVG specificity', () => {
   assert.match(source,
-    /@media\s+screen\s*\{\s*\.td-content\s+\.markmap\s*\{\s*--markmap-text-color:\s*var\(--bs-body-color\);\s*\}\s*\}/,
+    /@media\s+screen\s*\{\s*\.td-content\s+\.markmap\s*\{\s*--mm-text:\s*var\(--bs-body-color\);\s*--mm-bg:\s*var\(--bs-body-bg\);\s*--mm-link:\s*var\(--bs-link-color\);\s*\}\s*\}/,
     'keep the mapping screen-only and applicable to both wrapper and SVG');
 });
 
 test('Markmap has no competing text-token assignment or important override', () => {
-  const declarations = source.match(/--markmap-text-color\s*:[^;]+;/g) || [];
-  assert.deepEqual(declarations, ['--markmap-text-color: var(--bs-body-color);']);
+  const declarations = source.match(/--mm-text\s*:[^;]+;/g) || [];
+  assert.deepEqual(declarations, ['--mm-text: var(--bs-body-color);', '--mm-text: #000;']);
 });

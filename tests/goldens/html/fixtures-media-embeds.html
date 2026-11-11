@@ -58,7 +58,7 @@ document.documentElement.setAttribute('data-theme', theme);
 <meta property="og:image" content="https://example.org/images/oink.webp">
 <meta itemprop="name" content="Media embeds">
 <meta itemprop="description" content="Regression fixtures for the asciinema, redoc, and swagger output states — interactive HTML, static print, and pure Markdown/RSS.">
-<meta itemprop="wordCount" content="8">
+<meta itemprop="wordCount" content="12">
 <meta itemprop="image" content="https://example.org/images/oink.webp">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://example.org/images/oink.webp">
@@ -729,14 +729,14 @@ data-td-timer-label="Playback time">
 <span class="td-asciinema__lights" aria-hidden="true"><i></i><i></i><i></i></span>
 <span class="td-asciinema__title" dir="auto">Install walkthrough</span>
 </div>
-<div data-td-asciinema-player></div>
+<div data-td-asciinema-player><a href="/images/install.cast">Install walkthrough</a></div>
 <script type="application/json" data-td-asciinema-config>{"options":{"autoPlay":false,"fit":"width","loop":false,"markers":[10,"Boot",25,"Configure"],"preload":false,"rows":16,"speed":2,"startAt":60},"src":"/images/install.cast","theme":"auto"}</script>
 </div>
 <h2 id="redoc-reader">ReDoc reader<a class="td-heading-self-link" href="#redoc-reader" aria-label="Link to this heading"></a>
 </h2>
-<div id="td-redoc-217b95da-1" class="td-redoc">
-<redoc spec-url="https://example.org/openapi/sample.yaml" hide-hostname="true" hide-logo="true"
-suppress-warnings="true" lazy-rendering native-scrollbars></redoc>
+<div id="td-redoc-217b95da-1" class="td-redoc"><iframe src="/js/chunks/redoc-frame.c817dbc8d4a56f46eaf3e042641265bc43f6e78335d6209d99eeee89c60b2bd7.html?spec=https%3A%2F%2Fexample.org%2Fopenapi%2Fsample.yaml" title="OpenAPI specification"
+class="td-redoc__frame" loading="lazy" sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox"></iframe>
+<p><a href="https://example.org/openapi/sample.yaml">OpenAPI specification</a></p>
 </div>
 <h2 id="swagger-explorer">Swagger explorer<a class="td-heading-self-link" href="#swagger-explorer" aria-label="Link to this heading"></a>
 </h2>
@@ -988,10 +988,9 @@ data-td-label-expand="Show footer links"><i class="td-shell-icon td-shell-icon--
 <link rel="stylesheet" href="/third_party/asciinema/asciinema-player.min.<hash>.css" integrity="<sri>" crossorigin="anonymous">
 <script src="/third_party/asciinema/asciinema-player.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="/scss/redoc.min.<hash>.css" integrity="<sri>" crossorigin="anonymous">
-<script src="/third_party/redoc/redoc.standalone.0dcd970abc8cce6097eb87d044ca0c36a4ad4c8eb3d05d977fc24c32237144c0.js" integrity="<sri>" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/third_party/swagger-ui/swagger-ui.d7f39f764aa18c7b47dd05b9af5613e373e4ac0f3557c2693d52d0abc2464d76.css" integrity="<sri>" crossorigin="anonymous">
-<script src="/third_party/swagger-ui/swagger-ui-bundle.16d93d5cc19e54c98fb0b81157dbb3bd90780aa36b914e128a643b31e54a93f4.js" integrity="<sri>" crossorigin="anonymous"></script>
-<script src="/third_party/swagger-ui/swagger-ui-standalone-preset.b6c3e519a7b920b9bfd48eb92521a768da1bc86343b926ef74ba6d481da6844b.js" integrity="<sri>" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/third_party/swagger-ui/swagger-ui.c3cfe8248c4b0b89673600fb829924eafbac6de4bc4b2b06f5f5243483074d0a.css" integrity="<sri>" crossorigin="anonymous">
+<script src="/third_party/swagger-ui/swagger-ui-bundle.36eeb4d5640b9c036b1d0f854499af1cceebbdb260b790a03a18be5e8488fbf5.js" integrity="<sri>" crossorigin="anonymous"></script>
+<script src="/third_party/swagger-ui/swagger-ui-standalone-preset.5243d492e14505e0cab87ac8b0195d0e615943e651743b2b698450a46eb470be.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden
 data-td-index-src="/offline-search-index.en.<hash>.json"
 data-td-max-results="10"
@@ -1020,7 +1019,7 @@ role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
 aria-controls="td-shell-search-results" aria-expanded="false"
 aria-label="Search…" enterkeyhint="go">
 <button type="button" class="td-shell-search__esc" data-td-shell-search-close
-aria-label="Close">
+aria-label="Esc: Close" aria-keyshortcuts="Escape">
 <kbd>esc</kbd>
 </button>
 </div>

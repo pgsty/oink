@@ -31,8 +31,10 @@
 {{- .Page.Store.Set "hasRedoc" true -}}
 {{- $id := printf "td-redoc-%s-%s" (md5 .Page.RelPermalink | truncate 8 "") (partial "content/shortcode-ordinal.html" .) -}}
 <div id="{{ $id }}" class="td-redoc">
-  <redoc spec-url="{{ $url }}" hide-hostname="true" hide-logo="true"
-    suppress-warnings="true" lazy-rendering native-scrollbars></redoc>
+  {{- $frame := partialCached "scripts/redoc-frame.html" .Page "redoc-frame" -}}
+  <iframe src="{{ $frame.RelPermalink }}?spec={{ $url | urlquery }}" title="{{ T "ui_openapi_spec" }}"
+    class="td-redoc__frame" loading="lazy" sandbox="allow-scripts allow-same-origin allow-downloads allow-popups allow-popups-to-escape-sandbox"></iframe>
+  <p><a href="{{ $url }}">{{ T "ui_openapi_spec" }}</a></p>
 </div>
 {{- end -}}
 {{- end -}}

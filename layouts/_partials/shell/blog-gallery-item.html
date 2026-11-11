@@ -1,6 +1,6 @@
 {{- $link := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
 {{- $external := isset .Params "manual_link" -}}
-{{- $summary := .Description | default .Params.summary | plainify | htmlUnescape -}}
+{{- $summary := .Description | default .RawSummary | plainify | htmlUnescape -}}
 {{- if and (not $summary) (not $external) }}{{ $summary = .Plain | htmlUnescape | truncate 160 }}{{ end -}}
 {{- $summary = $summary | truncate 200 -}}
 {{- $image := (partialCached "featured-image-resolve.html" . .RelPermalink).media -}}

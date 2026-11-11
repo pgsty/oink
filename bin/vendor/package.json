@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@markmap/core": "1.1.0",
+    "@markmap/parse": "1.1.0",
+    "@markmap/render": "1.1.0",
+    "@markmap/plugin-math": "1.1.0",
+    "esbuild": "0.28.2",
+    "@markmap/view": "1.1.0",
+    "pako": "3.0.3",
+    "external-svg-loader": "1.7.1",
+    "idb-keyval": "6.3.0"
+  },
+  "overrides": {
+    "idb-keyval": "6.3.0",
+    "katex": "0.19.1",
+    "highlight.js": "11.12.0"
+  },
+  "name": "oink-vendor-build",
+  "version": "1.0.0"
+}

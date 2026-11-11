@@ -18,7 +18,7 @@
     {{- $featuredImage := partial "featured-image-src.html" $p -}}
     {{- $summary := "" -}}
     {{- if $isExternal -}}
-      {{- $summary = $p.Description | default $p.Params.summary | plainify | htmlUnescape -}}
+      {{- $summary = $p.Description | default $p.RawSummary | plainify | htmlUnescape -}}
     {{- else -}}
       {{- $summary = $p.Plain | htmlUnescape | truncate 250 -}}
     {{- end -}}

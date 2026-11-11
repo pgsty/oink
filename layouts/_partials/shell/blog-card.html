@@ -1,6 +1,6 @@
 {{- $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
 {{- $isExternal := isset .Params "manual_link" -}}
-{{- $summary := .Description | default .Params.summary | plainify | htmlUnescape -}}
+{{- $summary := .Description | default .RawSummary | plainify | htmlUnescape -}}
 {{- if and (not $summary) (not $isExternal) -}}
   {{- $summary = .Plain | htmlUnescape | truncate 160 -}}
 {{- end -}}

@@ -33,6 +33,11 @@
   async function render(source, dark) {
     const api = await engine();
     const settings = norm(api.mermaidAPI?.defaultConfig || {}, params);
+    // Mermaid 12 changes all three defaults. Keep existing diagrams stable;
+    // authors can opt into ELK, the new themes and looks explicitly.
+    settings.layout ??= 'dagre';
+    settings.theme ??= 'default';
+    settings.look ??= 'classic';
     settings.startOnLoad = false;
     if (dark) {
       settings.theme = 'dark';

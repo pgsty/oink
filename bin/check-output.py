@@ -163,6 +163,17 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
         for ident, n in parser.ids.items():
             if n > 1:
                 errors.append(f"{rel}: duplicate id {ident!r} ({n}×)")
+        if re.fullmatch(r"js/chunks/redoc-frame\.[0-9a-f]{64}\.html", rel):
+            # An embedded API reader is a standalone document, not a shell.
+            if parser.cores or parser.actions or parser.manifest_lines or parser.base_stylesheets:
+                errors.append(f"{rel}: isolated ReDoc frame regained host chrome")
+            if 'type="module"' not in text or 'name="robots" content="noindex"' not in text:
+                errors.append(f"{rel}: isolated ReDoc frame lost its ESM/noindex contract")
+            if len(parser.chunks) != 1 or not parser.chunks[0].startswith('redoc-frame'):
+                errors.append(f"{rel}: isolated ReDoc frame must load exactly one initializer")
+            for remote in parser.remote:
+                errors.append(f"{rel}: remote asset {remote}")
+            continue
         # Print omits the core bundle; every other page loads it exactly once.
         if len(parser.actions) != 1:
             errors.append(f"{rel}: expected exactly one actions bundle, found {len(parser.actions)}")

@@ -58,8 +58,29 @@
       function mount() {
         if (currentRenderId !== renderId) return;
         if (player) player.dispose();
+        player = null;
         target.replaceChildren();
-        player = window.AsciinemaPlayer.create(config.src, target, options);
+        function fallback(error) {
+          if (currentRenderId !== renderId) return;
+          const focused = target.contains(document.activeElement);
+          console.error('Asciinema:', error);
+          if (player) player.dispose();
+          player = null;
+          const link = document.createElement('a');
+          link.href = config.src;
+          link.textContent = root.querySelector('.td-asciinema__title')?.textContent || config.src;
+          target.replaceChildren(link);
+          if (focused) link.focus({ preventScroll: true });
+        }
+        try {
+          player = window.AsciinemaPlayer.create(config.src, target, options);
+          // Options can fail synchronously; fetching and parsing the recording
+          // fail later. Both paths preserve access to the original recording.
+          player.addEventListener('error', fallback);
+        } catch (error) {
+          fallback(error);
+          return;
+        }
         var timer = target.querySelector('.ap-timer');
         if (timer && !timer.getAttribute('aria-label')) {
           timer.setAttribute(

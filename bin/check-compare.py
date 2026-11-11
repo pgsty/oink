@@ -25,7 +25,7 @@ PANE_RUNS = {
     'clipboard', 'code-block', 'content-components', 'dark-mode', 'diagram', 'drawio', 'expo',
     'expo-geometry', 'filetree', 'image-zoom', 'landing', 'markmap', 'mermaid', 'palette-model',
     'plantuml', 'plantuml-browser', 'search-engine', 'surface-coordinator', 'swagger-init',
-    'table-reader', 'tabs',
+    'table-reader', 'tabs', 'redoc-frame',
 }
 HOST_ONLY = {'compare-scroll', 'document-compare'}
 # Every visible reader string is localized in Hugo and handed to the runtime.
@@ -69,6 +69,9 @@ def check_pane_guards(errors: list[str]) -> None:
         require(f"'{event}'" in runtimes.get('document-compare', ''),
                 f'assets/js/document-compare.js must remeasure on {event} from assets/js/tabs.js', errors)
     require(bool(tab_events), 'assets/js/tabs.js no longer announces a td:tab-* event the reader can follow', errors)
+    compare_source = runtimes.get('document-compare', '')
+    require('baseVal' in compare_source and '[role="dialog"]' in compare_source,
+            'assets/js/document-compare.js must handle SVG anchor links and yield to open ARIA dialogs', errors)
     for name, source in runtimes.items():
         guarded = bool(PANE_GUARD.search(source))
         if name in PANE_SUPPRESSED:

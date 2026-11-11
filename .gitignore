@@ -10,3 +10,5 @@ resources/
 .claude/
 tmp/
 plan/
+bin/vendor/node_modules/
+bin/vendor/out/

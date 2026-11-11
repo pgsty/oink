@@ -1,7 +1,7 @@
 ---
 title: 卡片（完整形态）
 linkTitle: 卡片（完整形态）
-description: 带图标、徽章、图片与 Markdown 正文的 `{{</* cards */>}}` / `{{</* card */>}}` 完整形态。
+description: 带图标、徽章、图片与 Markdown 正文的 cards 和 card 短代码。
 outputs: [HTML, markdown]
 weight: 35
 ---

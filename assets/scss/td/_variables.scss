@@ -1,28 +1,39 @@
-// Bootstrap options
+// Sass values the theme sets before Bootstrap declares its own defaults. A site
+// build compiles no Sass, so nothing overrides them: change a value here and
+// regenerate the bundles with bin/build-css.py.
 
 :root,
 [data-bs-theme='light'] {
   --td-pre-bg: var(--bs-tertiary-bg);
 }
 
-// UI element colors
+// Fonts. Nothing here reaches a font service; every face the theme uses ships
+// with it. `_tokens-typography.scss` puts the bundled Inter face in front of
+// the sans stack for the `technical` preset.
+$font-family-sans-serif:
+  -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+  'Microsoft YaHei', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC',
+  sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+$font-family-monospace:
+  'IBM Plex Mono', SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo,
+  Consolas, 'Liberation Mono', 'Sarasa Mono SC', 'Noto Sans Mono CJK SC',
+  monospace;
 
-// Fonts
+$line-height-base: 1.7;
+$headings-font-weight: 700;
 
-// Nothing here reaches a font service; every face the theme uses ships with it.
-$font-family-sans-serif: $td-fonts-serif !default;
-$font-family-monospace: $td-font-family-monospace !default;
+// Palette: the Bootstrap colors the theme changes.
+$blue: #287cab;
+$red: #c72c48;
+$orange: #b4762e;
+$yellow: #e0a35c;
+$green: #53ac79;
+$cyan: #419edb;
+$secondary: $orange;
 
-$td-font-weight-body-text: $font-weight-normal !default;
-$line-height-base: 1.7 !default;
-$headings-font-weight: 700 !default;
-
-// Space
-
-$td-block-space-top-base: 4 * $spacer !default;
-$td-block-space-bottom-base: 4 * $spacer !default;
-
-// Navbar
-
-$td-navbar-min-height: 50px !default;
-$td-navbar__main-min-height-mobile: 2.5rem !default;
+// Theme-only values.
+$td-font-weight-body-text: 400;
+$td-block-space-top-base: 4rem;
+$td-block-space-bottom-base: 4rem;
+$td-navbar-min-height: 50px;
+$td-navbar__main-min-height-mobile: 2.5rem;

@@ -4,7 +4,6 @@
 // are imported for their functions, variables, maps and mixins; only `root`
 // and the visually-hidden helper emit CSS.
 @import '../third_party/bootstrap/scss/functions';
-@import 'td/variables_forward';
 @import 'td/variables';
 @import '../third_party/bootstrap/scss/variables';
 @import '../third_party/bootstrap/scss/variables-dark';

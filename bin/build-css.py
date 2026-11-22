@@ -32,12 +32,11 @@ SOURCE = ROOT / "assets" / "scss"
 OUTPUT = ROOT / "assets" / "oink"
 # SCSS outside assets/scss/ that the entries import.
 VENDORED = ("bootstrap/scss", "inter", "ibm-plex-sans")
-TRANSPILERS = ("libsass", "dartsass")
 # Hugo executables to try for LibSass, in order, when --hugo is not given.
 LIBSASS_HUGO = ("hugo", "hugo-0.169.0")
 
 LAYOUT = """{{- range $name := site.Params.entries -}}
-  {{- $options := dict "transpiler" site.Params.transpiler "outputStyle" "expanded" -}}
+  {{- $options := dict "transpiler" "libsass" "outputStyle" "expanded" -}}
   {{- with resources.Get (printf "scss/%s.scss" $name) -}}
     {{- (. | css.Sass $options).Publish -}}
   {{- end -}}
@@ -52,15 +51,13 @@ def has_libsass(hugo: str) -> bool:
     return "+extended" in result.stdout
 
 
-def find_compiler(requested: str | None, transpiler: str) -> str:
-    """Return the Hugo executable that will run the Sass compiler."""
+def find_compiler(requested: str | None) -> str:
+    """Return the Hugo executable that will run LibSass."""
 
-    names = (requested,) if requested else (LIBSASS_HUGO if transpiler == "libsass" else ("hugo",))
+    names = (requested,) if requested else LIBSASS_HUGO
     found = [path for path in map(shutil.which, names) if path]
     if not found:
         raise SystemExit(f"Hugo executable not found: {', '.join(names)}")
-    if transpiler != "libsass":
-        return found[0]
     for path in found:
         if has_libsass(path):
             return path
@@ -74,7 +71,7 @@ def entries() -> list[str]:
                   if not path.name.startswith("_"))
 
 
-def compile_bundles(hugo: str, transpiler: str) -> dict[str, bytes]:
+def compile_bundles(hugo: str) -> dict[str, bytes]:
     """Return {entry name: compiled CSS} from a fresh, isolated Hugo build."""
 
     names = entries()
@@ -90,18 +87,16 @@ def compile_bundles(hugo: str, transpiler: str) -> dict[str, bytes]:
             f"    - source: {ROOT / 'assets'}\n"
             "      target: assets\n"
             "params:\n"
-            f"  transpiler: {transpiler}\n"
             f"  entries: [{', '.join(names)}]\n",
             encoding="utf-8",
         )
         env = os.environ.copy()
         # No inherited module wiring and no cached transform may stand in for
-        # the compiler. LibSass is inside Hugo; Dart Sass is found on PATH.
+        # the compiler. LibSass is inside Hugo, so the build needs no PATH.
         env.update(GOWORK="off", HUGO_MODULE_WORKSPACE="off",
                    HUGO_RESOURCEDIR=str(site / "resources"))
         env.pop("HUGO_MODULE_REPLACEMENTS", None)
-        if transpiler == "libsass":
-            env["PATH"] = str(site / "empty-path")
+        env["PATH"] = str(site / "empty-path")
         command = [hugo, "--source", str(site), "--destination", str(site / "public"),
                    "--cacheDir", str(site / "cache"), "--ignoreCache", "--noBuildLock",
                    "--logLevel", "warn", "--environment", "production"]
@@ -109,7 +104,7 @@ def compile_bundles(hugo: str, transpiler: str) -> dict[str, bytes]:
         output = result.stdout + result.stderr
         errors = [line for line in output.splitlines() if line.startswith("ERROR")]
         if result.returncode or errors:
-            raise SystemExit(f"Sass build failed ({transpiler}):\n{output}")
+            raise SystemExit(f"Sass build failed:\n{output}")
         bundles = {}
         for name in names:
             path = site / "public" / "scss" / f"{name}.css"
@@ -158,18 +153,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--hugo", help="Hugo that runs the compiler; default: hugo, then "
                                        "hugo-0.169.0, whichever has LibSass")
-    parser.add_argument("--transpiler", choices=TRANSPILERS, default="libsass",
-                        help="the release compiler is libsass, built into Hugo Extended 0.169")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--check", action="store_true",
                       help="compare shipped bundles with a fresh compile; write nothing")
     mode.add_argument("--watch", action="store_true",
                       help="rebuild whenever an SCSS source changes")
     args = parser.parse_args()
-    hugo = find_compiler(args.hugo, args.transpiler)
+    hugo = find_compiler(args.hugo)
 
     if args.check:
-        problems = stale(compile_bundles(hugo, args.transpiler))
+        problems = stale(compile_bundles(hugo))
         if problems:
             raise SystemExit("Shipped CSS is stale; run python3 bin/build-css.py:\n  "
                              + "\n  ".join(problems))
@@ -181,7 +174,7 @@ def main() -> None:
         state = source_state() if args.watch else None
         if state != seen or not args.watch:
             try:
-                changed = write(compile_bundles(hugo, args.transpiler))
+                changed = write(compile_bundles(hugo))
             except (SystemExit, subprocess.SubprocessError, RuntimeError) as error:
                 if not args.watch:
                     raise

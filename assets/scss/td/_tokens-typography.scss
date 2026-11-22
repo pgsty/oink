@@ -1,25 +1,13 @@
-// Public typography roles. Existing Docsy and Bootstrap Sass variables seed
-// these values so consuming sites keep their current customization contract.
-// Keep this valid in Hugo Extended's Sass pipeline: sites must not need Dart
-// Sass, PostCSS, or a Node.js toolchain.
+// Public typography roles. A site changes a role through `params.ui.fonts` or
+// its own CSS. Keep this valid in LibSass, which compiles the shipped bundles.
 
 :root {
   // The `technical` preset reads UI and prose in the bundled Inter face; the
   // platform stack behind it still renders CJK, emoji, and anything Inter
-  // lacks. A project that declared its own sans stack keeps exactly that stack:
-  // Inter is only put in front of OINK's stock value.
-  @if $font-family-sans-serif == $_td-fonts-sans-default {
-    --td-ui-font-family: 'Inter', var(--bs-body-font-family);
-  } @else {
-    --td-ui-font-family: var(--bs-body-font-family);
-  }
+  // lacks.
+  --td-ui-font-family: 'Inter', var(--bs-body-font-family);
   --td-body-font-family: var(--td-ui-font-family);
-
-  @if $headings-font-family == null {
-    --td-heading-font-family: var(--td-body-font-family);
-  } @else {
-    --td-heading-font-family: #{inspect($headings-font-family)};
-  }
+  --td-heading-font-family: var(--td-body-font-family);
 
   --td-code-font-family: #{inspect($font-family-code)};
   --td-display-font-family: 'Chakra Petch', var(--td-ui-font-family);
@@ -40,19 +28,12 @@
   // IBM Plex Sans for UI, prose, headings, and display; Latin first, then the
   // platform CJK sans faces, so Chinese reads in PingFang/YaHei/Noto, never a
   // synthesized fallback. The wordmark keeps the brand face.
-  @if $font-family-sans-serif == $_td-fonts-sans-default {
-    --td-ui-font-family:
+  --td-ui-font-family:
       'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC',
       'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC',
       'Segoe UI', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  } @else {
-    // A project that declared its own sans stack keeps exactly that stack.
-    --td-ui-font-family: var(--bs-body-font-family);
-  }
   --td-body-font-family: var(--td-ui-font-family);
-  @if $headings-font-family == null {
-    --td-heading-font-family: var(--td-body-font-family);
-  }
+  --td-heading-font-family: var(--td-body-font-family);
   --td-display-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
   --td-brand-font-family: 'Chakra Petch', var(--td-ui-font-family);
@@ -66,16 +47,10 @@
 
 [data-td-preset='terminal'] {
   // Mono belongs to the controls and headings; prose keeps a reading face.
-  // Legacy Sass stacks and explicit YAML roles remain authoritative.
+  // Explicit `params.ui.fonts` roles remain authoritative.
   --td-ui-font-family: var(--td-code-font-family);
-  @if $font-family-sans-serif == $_td-fonts-sans-default {
-    --td-body-font-family: 'IBM Plex Sans', var(--bs-body-font-family);
-  } @else {
-    --td-body-font-family: var(--bs-body-font-family);
-  }
-  @if $headings-font-family == null {
-    --td-heading-font-family: var(--td-ui-font-family);
-  }
+  --td-body-font-family: 'IBM Plex Sans', var(--bs-body-font-family);
+  --td-heading-font-family: var(--td-ui-font-family);
   --td-display-font-family: var(--td-heading-font-family);
   --td-brand-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
@@ -84,20 +59,13 @@
 [data-td-typography='system'] {
   // Keep the dependency direction Bootstrap base -> OINK semantic role.
   // Bootstrap's reboot and monospace utility also consume this base token.
-  // An explicit legacy override is a project decision and remains authoritative.
-  @if $font-family-monospace == $_td-font-family-monospace-default {
-    --bs-font-monospace:
+  --bs-font-monospace:
       SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo, Consolas,
       'Liberation Mono', 'Sarasa Mono SC', 'Noto Sans Mono CJK SC', monospace;
-  } @else {
-    --bs-font-monospace: #{inspect($font-family-monospace)};
-  }
 
   --td-ui-font-family: var(--bs-body-font-family);
   --td-body-font-family: var(--td-ui-font-family);
-  @if $headings-font-family == null {
-    --td-heading-font-family: var(--td-body-font-family);
-  }
+  --td-heading-font-family: var(--td-body-font-family);
   --td-display-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
   --td-brand-font-family: var(--td-display-font-family);

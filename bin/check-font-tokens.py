@@ -20,8 +20,7 @@ REVERSE_PATTERN = re.compile(r"--bs-[\w-]+\s*:\s*var\(--td-")
 FAMILY_NAME_ALLOWLIST = {
     TD_ROOT / "_brand.scss",  # Local @font-face declarations.
     TD_ROOT / "_tokens-typography.scss",  # Public role defaults.
-    TD_ROOT / "_variables_forward.scss",  # Bootstrap mono compatibility.
-    TD_ROOT / "_variables.scss",
+    TD_ROOT / "_variables.scss",  # The Sass stacks Bootstrap reads.
 }
 PUBLIC_ROLES = (
     "ui-font-family",
@@ -151,12 +150,11 @@ def main() -> int:
     for token in sorted(references - definitions):
         errors.append(f"undefined typography token --{token}")
 
-    legacy_seeds = (
-        ("--td-heading-font-family", "$headings-font-family"),
+    role_seeds = (
         ("--td-code-font-family", "$font-family-code"),
         ("--td-print-font-family", "var(--td-body-font-family)"),
     )
-    for token, variable in legacy_seeds:
+    for token, variable in role_seeds:
         if token not in token_source or variable not in token_source:
             errors.append(
                 f"{token_path.relative_to(ROOT)}: {token} must preserve {variable}"

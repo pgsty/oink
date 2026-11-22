@@ -106,13 +106,8 @@ configuration, data, layouts, assets, or modules.
 python3 bin/migrations/oink06.py report --sites <dir>...
 python3 bin/migrations/oink06.py migrate --site <dir> [--write]
 python3 bin/migrations/oink06.py check --site <dir>
-python3 bin/migrations/sass_hooks.py --site <dir> [--write]
 python3 -m unittest discover -s tests/migrations -t .
 ```
-
-`sass_hooks.py` converts a site's retired SCSS hooks. It writes only
-`assets/css/project.css` and needs a Sass-capable Hugo; review its `REVIEW`
-lines, then delete the SCSS hooks by hand.
 
 ## Releases
 

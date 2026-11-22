@@ -98,10 +98,7 @@
   body,
   .td-print-view {
     --td-body-font-family: var(--td-print-font-family);
-
-    @if $headings-font-family == null {
-      --td-heading-font-family: var(--td-print-font-family);
-    }
+    --td-heading-font-family: var(--td-print-font-family);
 
     min-width: 0 !important;
     background: #fff !important;

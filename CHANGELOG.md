@@ -23,12 +23,9 @@ All notable changes to OINK are documented here. The project follows
   then `assets/css/project/*.css` in path order, as plain CSS; the theme
   publishes them as one stylesheet after its own. Sass variables such as
   `$primary` and the legacy Sass font variables no longer reach the theme;
-  override the corresponding custom properties and rules instead. Run
-  `python3 bin/migrations/sass_hooks.py --site <dir>` once, on Hugo Extended
-  0.169, to convert existing hooks: it writes the changed theme values and the
-  site's own rules, keeps each value's old cascade position, checks the result
-  against the old stylesheet declaration by declaration, and lists what needs
-  review.
+  override the corresponding custom properties and rules instead. Convert a
+  hook by hand: keep the site's own rules as plain CSS, and restate each Sass
+  variable the site changed as the custom property or rule it produced.
 - A site that compiled the theme's SCSS partials in its own templates must use
   the shipped bundles instead; the partials were never a public interface.
 
@@ -73,6 +70,13 @@ All notable changes to OINK are documented here. The project follows
 - Record maintainer-only, locked builds for Markmap, Pako and the SVG loader,
   including bundled-package license inventories. Ordinary sites still build
   with Hugo alone and no dependency downloads.
+
+### Removed
+
+- Remove the Sass that only a site's own Sass could reach: the `!default`
+  flags, the re-declared Bootstrap defaults in `_variables_forward.scss`, the
+  branches that answered legacy font variables, and the Bootstrap version
+  guard. The shipped CSS is byte-identical.
 
 ### Fixed
 

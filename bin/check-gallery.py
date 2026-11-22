@@ -327,8 +327,8 @@ def check_zoom_reuse(hugo: str) -> list[str]:
 
 def check_template_contracts() -> list[str]:
     errors: list[str] = []
-    styles = (ROOT / "assets/scss/td/_gallery.scss").read_text()
-    markers = (ROOT / "assets/scss/td/_markers.scss").read_text()
+    styles = (ROOT / "assets/css/td/gallery.css").read_text()
+    markers = (ROOT / "assets/css/td/markers.css").read_text()
     candidate = (ROOT / "layouts/_partials/content/image-zoom-candidate.html").read_text()
     static_output = (ROOT / "layouts/_partials/content/static-image-output.html").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
@@ -344,7 +344,7 @@ def check_template_contracts() -> list[str]:
     # runtime needs a gallery-shaped structural exception any more.
     require("ul.gallery" not in candidate, "Zoom candidate scan still special-cases gallery lists", errors)
     require("ul.gallery" not in runtime, "the Zoom runtime still special-cases gallery lists", errors)
-    require("ul.gallery" not in markers, "_markers.scss still styles the removed gallery list", errors)
+    require("ul.gallery" not in markers, "markers.css still styles the removed gallery list", errors)
     require("data-td-image-zoom" in hook, "render-image hook does not mark eligible block images for Zoom", errors)
     require("$policy.generic" in (ROOT / "layouts/_markup/render-codeblock-gallery.html").read_text(), "Gallery hook drops generic attributes", errors)
     require("js/gallery" not in scripts and not (ROOT / "assets/js/gallery.js").exists(), "Gallery added a second runtime", errors)

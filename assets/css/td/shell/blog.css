@@ -1,0 +1,1089 @@
+/* ============================================================
+   Blog lists, article metadata, and taxonomy surfaces inside the shell.
+   ============================================================ */
+/* ------------------------------------------------------------ list page */
+.td-blog-posts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.td-blog-posts-list__item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.td-blog-posts-list__item:last-child {
+  border-bottom: 0;
+}
+
+/* Preserve h2/h3 semantics while using the visual size of Bootstrap .h5. */
+.td-blog-posts-list .h5 {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.td-blog-posts-list .h5 a {
+  color: var(--bs-body-color);
+}
+
+.td-blog-posts-list .h5 a:hover {
+  color: var(--td-shell-primary);
+  text-decoration: none;
+}
+
+.td-blog-posts-list .h5 i {
+  font-size: 11px;
+  color: var(--td-shell-muted-fg);
+}
+
+/* Date and section metadata row. */
+.td-blog-posts-list small, .td-blog-posts-list .small {
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+/* On desktop, the thumbnail defines the summary row height. */
+.td-blog-posts-list__summary-row--with-image {
+  height: 125px;
+  overflow: hidden;
+}
+
+.td-blog-posts-list__thumbnail {
+  /* The inline width is a maximum, not a floor: at the md breakpoint the
+     content column is only ~485px wide, and a rigid 250px thumbnail plus the
+     summary's min-content width overflowed the page. */
+  height: 100%;
+  max-width: 40%;
+}
+
+.td-blog-posts-list__thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--bs-border-color);
+}
+
+.td-blog-posts-list__summary {
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.td-blog-posts-list__summary-row--with-image .td-blog-posts-list__summary > p {
+  display: -webkit-box;
+  max-height: 100%;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+}
+
+/* Bootstrap's .flex-grow-1 leaves min-width at auto, so the summary
+   refused to shrink below its longest word run. */
+.td-blog-posts-list__body .flex-grow-1 {
+  min-width: 0;
+}
+
+/* A summary is machine-extracted prose: it can contain a URL or a long
+   identifier that has no break opportunity, which pushed the row past the
+   viewport once the column got narrow. */
+.td-blog-posts-list__body p {
+  overflow-wrap: anywhere;
+}
+
+.td-blog-posts-list__body .td-blog-posts-list__summary > p,
+.td-blog-posts-list__body .td-blog-posts-list__summary-mobile > p {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--bs-secondary-color);
+}
+
+.td-blog-posts__pagination {
+  margin-top: 1.5rem;
+}
+
+.td-blog-posts__pagination .pagination {
+  justify-content: center;
+}
+
+/* ------------------------------------------------- list page, card form */
+/* `params.ui.blog_index: cards` swaps the row list for a grid of the shared
+   content cards. The grid, the card surface, the whole-face link, and its
+   focus ring all come from `.td-content-cards` / `.td-content-card`; only the
+   blog-specific parts live here. */
+.td-blog-cards {
+  /* The year heading already carries the separation the card grid would
+     otherwise add above itself. */
+  margin-block: 0.5rem 0;
+}
+
+.td-blog-card {
+  /* A card is a browsing surface, not a reading one: everything in it is a
+     step down from body size so the title, the date, the tags, and three
+     lines of description all fit without the card growing. */
+  font-size: 14px;
+}
+
+.td-blog-card__image {
+  display: block;
+  width: 100%;
+  /* Processed images arrive cropped to 16:9; SVG, static, and remote ones
+     cannot be cropped, so the same frame is imposed here. */
+  aspect-ratio: 16 / 9;
+  border-block-end: 1px solid var(--bs-border-color);
+  background: var(--bs-secondary-bg);
+  object-fit: cover;
+}
+
+/* The heading exists for the document outline; `.td-content-card__title`
+   on the link owns the type, so `.h5` must not size the row. */
+.td-blog-card__heading {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.td-blog-card__heading i {
+  font-size: 10px;
+  color: var(--td-shell-muted-fg);
+}
+
+.td-blog-card__tags {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-block-size: 3.6em;
+  overflow: hidden;
+}
+
+.td-blog-card__tags li {
+  display: inline-flex;
+  margin: 0;
+}
+
+.td-blog-card__tags .td-badge {
+  font-size: 11px;
+}
+
+.td-blog-card__summary {
+  display: -webkit-box;
+  /* Three lines, and the box is reserved whether or not the text fills it,
+     so a short summary does not make its card shorter than its neighbours. */
+  min-block-size: calc(3 * 1.55em);
+  margin-block-start: 0.4rem;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  /* A summary is machine-extracted prose: a URL or a long identifier in it
+     has no break opportunity and would push the card past its column. */
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) and (max-width: 1399.98px) {
+  .td-blog-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (forced-colors: active) {
+  /* Border colour and shadow are both dropped in forced colours, so the
+     hovered and focused card needs a shape of its own. */
+  .td-blog-card:hover,
+.td-blog-card:focus-within {
+    outline: 2px solid Highlight;
+  }
+  .td-blog-card__image {
+    border-block-end-color: CanvasText;
+  }
+}
+
+/* --------------------------------------------- post metadata line */
+/* One line under a post title in a row, a card, or a term archive:
+   `shell/blog-meta.html` renders the same markup in all three, so the styling
+   lives once here instead of once per form. */
+.td-blog-meta {
+  margin: 0.35rem 0 0.6rem;
+}
+
+.td-blog-meta small, .td-blog-meta .small {
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+.td-blog-meta__sep {
+  color: var(--bs-tertiary-color);
+}
+
+.td-blog-meta__author, .td-blog-meta__section {
+  color: inherit;
+  transition: color var(--td-motion-duration-fast) ease;
+}
+
+.td-blog-meta__author:hover, .td-blog-meta__author:focus-visible, .td-blog-meta__section:hover, .td-blog-meta__section:focus-visible {
+  color: var(--td-shell-primary);
+}
+
+/* A block sibling below the sentence, not a run inside it: the badges get
+   one wrapping line of their own. */
+.td-blog-meta__terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0.35rem 0 0.6rem;
+}
+
+.td-blog-meta__terms .td-badge {
+  font-size: 11px;
+}
+
+/* Tucked under its sentence: the pair reads as one metadata unit. */
+.td-blog-meta + .td-blog-meta__terms {
+  margin-block-start: -0.3rem;
+}
+
+/* Inside a card the whole face is the title link's ::after overlay, so the
+   links in this line have to lift themselves back above it to stay clickable. */
+.td-blog-card .td-blog-meta {
+  margin-block: 0.3rem 0;
+}
+
+.td-blog-card .td-blog-meta small, .td-blog-card .td-blog-meta .small {
+  font-size: 11.5px;
+}
+
+.td-blog-card .td-blog-meta__author, .td-blog-card .td-blog-meta__section {
+  position: relative;
+  z-index: 2;
+}
+
+/* ------------------------------------------- reader-chosen index form */
+.td-blog-posts[data-td-blog-default='list'] .td-blog-posts__paged > [data-td-blog-form='cards'],
+.td-blog-posts[data-td-blog-default='list'] .td-blog-posts__paged > [data-td-blog-form='gallery'],
+.td-blog-posts[data-td-blog-default='cards'] .td-blog-posts__paged > [data-td-blog-form='list'],
+.td-blog-posts[data-td-blog-default='cards'] .td-blog-posts__paged > [data-td-blog-form='gallery'],
+.td-blog-posts[data-td-blog-default='gallery'] .td-blog-posts__paged > [data-td-blog-form='list'],
+.td-blog-posts[data-td-blog-default='gallery'] .td-blog-posts__paged > [data-td-blog-form='cards'],
+.td-blog-posts[data-td-blog-default='table'] > .td-blog-posts__paged,
+.td-blog-posts[data-td-blog-default='list'] > [data-td-blog-form='table'],
+.td-blog-posts[data-td-blog-default='gallery'] > [data-td-blog-form='table'],
+.td-blog-posts[data-td-blog-default='cards'] > [data-td-blog-form='table'] {
+  display: none;
+}
+
+/* The stored choice governs only an index that published every form: the
+   attribute is written from localStorage on every shell page, so a section
+   whose toggle is off carries one form and would otherwise have it hidden in
+   favour of markup that was never emitted. */
+html[data-td-blog-index='list'] .td-blog-posts[data-td-blog-forms='all'] > .td-blog-posts__paged {
+  display: block;
+}
+
+html[data-td-blog-index='list'] .td-blog-posts[data-td-blog-forms='all'] > [data-td-blog-form='table'] {
+  display: none;
+}
+
+html[data-td-blog-index='list'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='cards'] {
+  display: none;
+}
+
+html[data-td-blog-index='list'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='gallery'] {
+  display: none;
+}
+
+html[data-td-blog-index='list'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='list'] {
+  display: block;
+}
+
+html[data-td-blog-index='cards'] .td-blog-posts[data-td-blog-forms='all'] > .td-blog-posts__paged {
+  display: block;
+}
+
+html[data-td-blog-index='cards'] .td-blog-posts[data-td-blog-forms='all'] > [data-td-blog-form='table'] {
+  display: none;
+}
+
+html[data-td-blog-index='cards'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='list'] {
+  display: none;
+}
+
+html[data-td-blog-index='cards'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='gallery'] {
+  display: none;
+}
+
+html[data-td-blog-index='cards'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='cards'] {
+  display: grid;
+}
+
+html[data-td-blog-index='table'] .td-blog-posts[data-td-blog-forms='all'] > .td-blog-posts__paged {
+  display: none;
+}
+
+html[data-td-blog-index='table'] .td-blog-posts[data-td-blog-forms='all'] > [data-td-blog-form='table'] {
+  display: table;
+}
+
+html[data-td-blog-index='gallery'] .td-blog-posts[data-td-blog-forms='all'] > .td-blog-posts__paged {
+  display: block;
+}
+
+html[data-td-blog-index='gallery'] .td-blog-posts[data-td-blog-forms='all'] > [data-td-blog-form='table'] {
+  display: none;
+}
+
+html[data-td-blog-index='gallery'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='list'],
+html[data-td-blog-index='gallery'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='cards'] {
+  display: none;
+}
+
+html[data-td-blog-index='gallery'] .td-blog-posts[data-td-blog-forms='all'] .td-blog-posts__paged > [data-td-blog-form='gallery'] {
+  display: block;
+}
+
+/* Show the destination glyph for the next form in the cycle. */
+.td-page-actions__form .td-page-actions__icon--form-cards,
+.td-page-actions__form .td-page-actions__icon--form-gallery,
+.td-page-actions__form .td-page-actions__icon--form-table {
+  display: none;
+}
+
+html[data-td-blog-index='list'] .td-page-actions__form .td-page-actions__icon--form-list {
+  display: none;
+}
+
+html[data-td-blog-index='list'] .td-page-actions__form .td-page-actions__icon--form-cards {
+  display: inline-flex;
+}
+
+html[data-td-blog-index='cards'] .td-page-actions__form .td-page-actions__icon--form-list {
+  display: none;
+}
+
+html[data-td-blog-index='cards'] .td-page-actions__form .td-page-actions__icon--form-table {
+  display: inline-flex;
+}
+
+html[data-td-blog-index='table'] .td-page-actions__form .td-page-actions__icon--form-list {
+  display: none;
+}
+
+html[data-td-blog-index='table'] .td-page-actions__form .td-page-actions__icon--form-gallery {
+  display: inline-flex;
+}
+
+/* --------------------------------------------------- table index form */
+.td-blog-table {
+  width: 100%;
+  margin-block: 1rem 1.5rem;
+  border-collapse: collapse;
+  border-block-start: 1px solid var(--bs-border-color);
+}
+
+.td-blog-table td {
+  padding: 0.55rem 0;
+  border-block-end: 1px solid var(--bs-border-color);
+  vertical-align: baseline;
+}
+
+/* This element-and-class base outranks a bare `.td-blog-table__date`, so
+   the gap that keeps a date off the title it precedes has to be declared
+   at the same specificity or it never lands -- which a locale with dates
+   longer than the ISO default (`February 14, 2026`, `2026年01月02日`) sees
+   as a title butted straight against the date. */
+
+.td-blog-table td.td-blog-table__date {
+  padding-inline-end: 1rem;
+}
+
+.td-blog-table td.td-blog-table__tags {
+  padding-inline-start: 1rem;
+}
+
+.td-blog-table__date {
+  width: 7.5em;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.td-blog-table__title {
+  overflow-wrap: anywhere;
+}
+
+.td-blog-table__title a {
+  font-weight: 600;
+}
+
+.td-blog-table__tags {
+  text-align: end;
+}
+
+.td-blog-table__tags .td-badge {
+  margin-inline-start: 0.3rem;
+}
+
+@media (max-width: 767.98px) {
+  .td-blog-table__tags {
+    display: none;
+  }
+}
+
+/* -------------------------------------------- inline taxonomy terms */
+.taxonomy.td-taxonomy-terms-article {
+  display: flex;
+  align-items: baseline;
+  margin: 0.4rem 0;
+}
+
+.taxonomy.td-taxonomy-terms-article .td-taxonomy-terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.taxonomy.td-taxonomy-terms-article .td-taxonomy-terms li {
+  margin: 0;
+}
+
+a.td-taxonomy-term {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12.5px;
+  line-height: 18px;
+  color: var(--td-shell-muted-fg);
+  text-decoration: none;
+  transition: background-color var(--td-motion-duration-fast) ease, color var(--td-motion-duration-fast) ease;
+}
+
+/* Hovering a tag says "this is the accent you are about to filter by", so
+   it pours the theme color rather than a neutral grey -- a section with its
+   own theme color hovers in that color. Kept one step under the active
+   state, which adds a tinted border and a heavier weight on top. */
+a.td-taxonomy-term:hover {
+  background: var(--td-shell-primary-wash);
+  color: var(--td-shell-primary);
+  text-decoration: none;
+}
+
+a.td-taxonomy-term .td-taxonomy-label {
+  font-weight: 400;
+}
+
+a.td-taxonomy-term .td-taxonomy-count {
+  font-size: 11px;
+  color: var(--bs-tertiary-color);
+}
+
+/* -------------------------------------- taxonomy chips and filters */
+.td-shell-tag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 9px;
+  /* Lighter at rest than the fields around it: a tag is a quiet label until
+     the pointer says otherwise, and a page can carry twenty of them. The
+     hover below is what gives it weight, gliding the whole chip into the
+     section's theme color on the shared color curve. */
+  border: 1px solid color-mix(in srgb, var(--bs-border-color) 55%, transparent);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--td-shell-field) 55%, transparent);
+  font-size: 12.5px;
+  line-height: 18px;
+  color: var(--td-shell-muted-fg);
+  text-decoration: none;
+  transition: background-color var(--td-motion-duration-fast) ease, color var(--td-motion-duration-fast) ease, border-color var(--td-motion-duration-fast) ease;
+}
+
+/* Hovering a tag says "this is the accent you are about to filter by", so
+   it pours the theme color rather than a neutral grey -- a section with its
+   own theme color hovers in that color. Kept one step under the active
+   state, which adds a stronger fill, a tinted border and a heavier weight. */
+.td-shell-tag:hover {
+  background: var(--td-shell-primary-wash);
+  border-color: color-mix(in srgb, var(--td-shell-primary) 25%, var(--bs-border-color));
+  color: var(--td-shell-primary);
+  text-decoration: none;
+}
+
+.td-shell-tag.td-is-active {
+  background: var(--td-shell-primary-dim);
+  border-color: color-mix(in srgb, var(--td-shell-primary) 35%, transparent);
+  color: var(--td-shell-primary);
+  font-weight: 500;
+}
+
+.td-shell-tag__count {
+  font-size: 11px;
+  color: var(--bs-tertiary-color);
+}
+
+.td-shell-tag.td-is-active .td-shell-tag__count {
+  color: inherit;
+  opacity: 0.75;
+}
+
+/* Right-rail taxonomy cloud, ordered by count. */
+.td-shell-tags-cloud__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 6px 4px;
+}
+
+.td-shell-tags-cloud .td-shell-tag {
+  max-width: 100%;
+  border-radius: 999px;
+}
+
+.td-shell-tags-cloud .td-shell-tag > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-shell-tags-cloud .td-shell-tag:hover {
+  background: var(--td-shell-primary-wash);
+}
+
+.td-shell-tags-cloud .td-shell-tag.td-is-active {
+  background: var(--td-shell-primary-dim);
+}
+
+.td-shell-tags-cloud .td-shell-tag__count {
+  flex: 0 0 auto;
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--td-shell-accent);
+  color: var(--bs-body-color);
+  font-size: 11px;
+  line-height: 17px;
+  text-align: center;
+}
+
+/* ------------------------------------ taxonomy pages: head and term cards */
+/* One head for both levels of a taxonomy. The taxonomy page opens with its
+   whole-taxonomy glyph in a tinted tile beside the localized name and a count
+   of terms; a term page trades the tile for a kicker that names the taxonomy
+   and links back to it, then carries the term's own page count. Both sit
+   inside `.td-content`, so the h1 keeps the document-title type and only its
+   margin is reset here. */
+.td-taxonomy-head {
+  margin-block-end: 1.25rem;
+}
+
+.td-taxonomy-head__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-block-end: 0.6rem;
+  color: var(--td-shell-muted-fg);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color var(--td-motion-duration-fast) ease;
+}
+
+.td-taxonomy-head__kicker > i {
+  font-size: 0.9em;
+}
+
+.td-taxonomy-head__kicker:is(a):hover, .td-taxonomy-head__kicker:is(a):focus-visible {
+  color: var(--td-shell-primary);
+  text-decoration: none;
+}
+
+.td-taxonomy-head__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.8rem;
+}
+
+.td-taxonomy-head__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: 0.875rem;
+  background: var(--td-shell-primary-dim);
+  color: var(--td-shell-primary);
+  font-size: 1.25rem;
+}
+
+.td-taxonomy-head__title {
+  min-inline-size: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.td-taxonomy-head__count {
+  flex: none;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  background: var(--td-shell-accent);
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* The taxonomy page's grid of terms: one line per term -- the term glyph
+   (an author's small portrait), the term, its page count -- and the whole
+   card is the link. Equal columns fill by `auto-fill`, so a taxonomy of two
+   terms does not stretch two cards across the page; narrow screens get one. */
+.td-taxonomy-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 0.625rem;
+  margin: 0.25rem 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.td-taxonomy-cards__item {
+  min-inline-size: 0;
+  margin: 0;
+}
+
+/* The surface, its hover edge, and the accent come from `.td-content-card`;
+   the card is itself the anchor, so no title overlay is needed. */
+.td-taxonomy-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  block-size: 100%;
+  padding: 0.7rem 0.875rem;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.td-taxonomy-card:hover, .td-taxonomy-card:focus-visible {
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.td-taxonomy-card:focus-visible {
+  outline: 2px solid var(--bs-focus-ring-color);
+  outline-offset: 2px;
+}
+
+.td-taxonomy-card__icon {
+  flex: none;
+  inline-size: 1.25rem;
+  color: var(--td-card-accent);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.td-taxonomy-card__avatar {
+  flex: none;
+  inline-size: 24px;
+  block-size: 24px;
+  border-radius: 50%;
+  background: var(--bs-secondary-bg);
+  box-shadow: 0 0 0 1px var(--bs-border-color);
+  object-fit: cover;
+}
+
+.td-taxonomy-card__avatar--placeholder {
+  display: inline-grid;
+  place-items: center;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.td-taxonomy-card__title {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  color: var(--bs-emphasis-color);
+  font-family: var(--td-heading-font-family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.td-taxonomy-card:hover .td-taxonomy-card__title, .td-taxonomy-card:focus-visible .td-taxonomy-card__title {
+  color: var(--td-shell-primary);
+}
+
+.td-taxonomy-card__count {
+  flex: none;
+  color: var(--td-card-accent);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Rail group on taxonomy and term pages: one row per taxonomy, linking to
+   its index page, the current one on the selected ground. Rows borrow the
+   sidebar tree's metrics and grounds, so the group reads as more navigation
+   rather than as a second cloud. */
+.td-shell-taxonomies__list {
+  margin: 0;
+  padding: 4px 0 2px;
+  list-style: none;
+}
+
+.td-shell-taxonomies__item {
+  margin: 0;
+}
+
+.td-shell-taxonomies__link {
+  gap: 8px;
+  text-decoration: none;
+}
+
+.td-shell-taxonomies__link:hover, .td-shell-taxonomies__link:focus-visible {
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.td-shell-taxonomies__link.td-shell-active, .td-shell-taxonomies__link.td-shell-active:hover {
+  color: var(--td-shell-row-selected-fg);
+}
+
+.td-shell-taxonomies__link.td-shell-active .td-shell-aside-group__icon {
+  color: inherit;
+}
+
+.td-shell-taxonomies__label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-shell-taxonomies__count {
+  flex: 0 0 auto;
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--td-shell-accent);
+  color: var(--bs-body-color);
+  font-size: 11px;
+  line-height: 17px;
+  text-align: center;
+}
+
+@media (forced-colors: active) {
+  /* Tints and shadows are dropped in forced colours, so the tile, the
+     portrait, and the hovered card each need a drawn edge of their own. */
+  .td-taxonomy-head__icon,
+.td-taxonomy-card__avatar {
+    border: 1px solid CanvasText;
+  }
+  .td-taxonomy-card:hover,
+.td-taxonomy-card:focus-visible {
+    outline: 2px solid Highlight;
+  }
+}
+
+.td-shell-term-summary {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--bs-secondary-color);
+}
+
+/* --------------------------------------------------------- series strip */
+/* CSS-only series disclosure with forced-color-safe borders. The closed bar is
+   deliberately quiet; opening it reveals a compact reading-path panel rather
+   than turning the article head into one long list.
+
+   A blog article in `hero` mode paints its featured image absolutely from the
+   top of the page, and the strip sits inside that band -- so an opaque card
+   would punch a hole through the picture. The panel is translucent over a blur
+   instead, the same frosted treatment the navbar and the shell's popovers
+   already use. On an ordinary white article the tint resolves to the page's own
+   ground, so one treatment serves both without a variant. */
+.td-series-strip {
+  --td-series-gutter: 0.875rem;
+  --td-series-pad: 0.5625rem;
+  --td-series-tail: 7rem;
+  --td-series-ordinal: 1.625rem;
+  position: relative;
+  margin-block: 1.25rem 1.75rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--bs-border-color) 65%, transparent);
+  border-radius: var(--td-code-radius, 0.75rem);
+  background: var(--td-shell-field);
+  -webkit-backdrop-filter: blur(10px) saturate(1.35);
+  backdrop-filter: blur(10px) saturate(1.35);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--td-shell-muted-fg);
+}
+
+/* Without a blur to sit on, a 55% ground over a featured image is unreadable,
+   so those browsers take the opaque card rather than a translucent one. */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .td-series-strip {
+    background: var(--td-brand-elev, var(--bs-tertiary-bg));
+  }
+}
+
+/* The real term link sits over an identical hidden copy in the summary. The
+   copy reserves its exact place without nesting one interactive control in
+   another, while the rest of the bar remains the disclosure target. */
+.td-series-strip__name, .td-series-strip__ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-inline-size: 0;
+}
+
+.td-series-strip__name {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: var(--td-series-pad);
+  inset-inline-start: var(--td-series-gutter);
+  max-inline-size: calc(100% - var(--td-series-tail) - var(--td-series-gutter) - var(--td-series-gutter));
+  min-block-size: var(--td-series-ordinal);
+  color: var(--td-accent);
+}
+
+.td-series-strip__name:hover, .td-series-strip__name:focus-visible {
+  color: var(--td-accent-hover);
+  text-decoration: none;
+}
+
+.td-series-strip__ghost {
+  max-inline-size: calc(100% - var(--td-series-tail));
+  visibility: hidden;
+}
+
+.td-series-strip__icon {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.05rem;
+  block-size: 1.05rem;
+  font-size: 0.8125rem;
+}
+
+.td-series-strip__term {
+  min-inline-size: 0;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-series-strip__all {
+  min-inline-size: 0;
+}
+
+.td-series-strip__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-block-size: 44px;
+  padding-block: var(--td-series-pad);
+  padding-inline: var(--td-series-gutter);
+  cursor: pointer;
+  list-style: none;
+  transition: background-color var(--td-motion-duration-fast) ease;
+}
+
+.td-series-strip__summary::-webkit-details-marker {
+  display: none;
+}
+
+.td-series-strip__summary:hover {
+  /* The greyed theme-tinted ground sidebar navigation uses for the same
+     state. The fallback is the ground this bar had before that token
+     existed, so the strip never depends on it having landed. */
+  background: var(--td-shell-row-hover, var(--td-shell-primary-wash));
+}
+
+.td-series-strip__summary:focus-visible {
+  outline: 2px solid var(--bs-focus-ring-color);
+  outline-offset: -3px;
+}
+
+.td-series-strip__part {
+  flex: none;
+  padding-block: 0.125rem;
+  padding-inline: 0.4375rem;
+  border-radius: 999px;
+  background: var(--td-shell-accent);
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.td-series-strip__caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.625rem;
+  block-size: 1.625rem;
+  margin-inline-start: auto;
+  border-radius: 0.5rem;
+  color: var(--td-shell-muted-fg);
+  transition: transform var(--td-motion-duration) ease, background-color var(--td-motion-duration-fast) ease, color var(--td-motion-duration-fast) ease;
+}
+
+.td-series-strip__caret > svg,
+.td-series-strip__caret > i {
+  display: block;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 0.75rem;
+}
+
+.td-series-strip__summary:hover .td-series-strip__caret {
+  background: var(--td-shell-primary-wash);
+  color: var(--td-accent);
+}
+
+.td-series-strip__all[open] > .td-series-strip__summary > .td-series-strip__caret {
+  transform: rotate(180deg);
+}
+
+/* Equal-width menu cells use the available measure instead of leaving the
+   right half of a wide content card blank. `auto-fit` adds columns only when
+   each title can retain a readable minimum, so a phone naturally gets one. */
+.td-series-strip__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0.625rem;
+  border-block-start: 1px solid color-mix(in srgb, var(--bs-border-color) 65%, transparent);
+  list-style: none;
+  counter-reset: td-series;
+}
+
+/* Scoped through the list, not named on its own: `.td-content ol li` carries
+   a bottom margin at two classes and a type, so a single-class reset loses to
+   it and every cell keeps 4px of prose rhythm it never asked for. */
+.td-series-strip__list > .td-series-strip__item {
+  min-inline-size: 0;
+  margin: 0;
+  counter-increment: td-series;
+}
+
+.td-series-strip__link {
+  display: grid;
+  grid-template-columns: var(--td-series-ordinal) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.625rem;
+  min-block-size: 42px;
+  padding-block: 0.4375rem;
+  padding-inline: 0.625rem;
+  border-radius: 0.625rem;
+  color: var(--bs-body-color);
+  transition: background-color var(--td-motion-duration-fast) ease, color var(--td-motion-duration-fast) ease;
+}
+
+.td-series-strip__link::before {
+  content: counter(td-series);
+  display: grid;
+  place-items: center end;
+  inline-size: var(--td-series-ordinal);
+  block-size: var(--td-series-ordinal);
+  border-radius: 0.5rem;
+  color: var(--bs-tertiary-color);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.td-series-strip__link > .td-series-strip__title {
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.td-series-strip__link:hover, .td-series-strip__link:focus-visible {
+  background: var(--td-shell-row-hover, var(--td-shell-primary-wash));
+  color: var(--td-accent);
+  text-decoration: none;
+}
+
+.td-series-strip__link:hover::before, .td-series-strip__link:focus-visible::before {
+  color: inherit;
+}
+
+/* The selected ground is the one sidebar navigation uses for the same job, so
+   a panel in the article and the tree beside it agree about what "you are
+   here" looks like. The filled ordinal and the heavier title carry the state
+   on their own where that ground is taken away -- forced colours, or paper. */
+.td-series-strip__link[aria-current='page'] {
+  background: var(--td-shell-primary-dim);
+  color: var(--td-accent);
+}
+
+.td-series-strip__link[aria-current='page']::before {
+  place-items: center;
+  background: var(--td-accent);
+  color: var(--bs-body-bg);
+}
+
+.td-series-strip__link[aria-current='page'] > .td-series-strip__title {
+  font-weight: 600;
+}
+
+/* Print shows the open state; the caret has nothing to say on paper, and the
+   grid collapses so the reading order stays unambiguous on the page. */
+@media print {
+  .td-series-strip__caret {
+    display: none;
+  }
+  .td-series-strip__list {
+    display: block;
+  }
+}
+
+ol.td-blog-posts-list--numbered {
+  list-style: decimal;
+  padding-inline-start: 1.75rem;
+}
+
+ol.td-blog-posts-list--numbered > .td-blog-posts-list__item::marker {
+  color: var(--td-shell-muted-fg);
+  font-size: 13px;
+}

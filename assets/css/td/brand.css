@@ -1,0 +1,311 @@
+/* Canonical brand layer, derived from the Silo documentation visual system. */
+@font-face {
+  font-family: 'Chakra Petch';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(../webfonts/brand/chakra-petch-latin-700-normal.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(../webfonts/brand/ibm-plex-mono-latin-400-normal.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url(../webfonts/brand/ibm-plex-mono-latin-400-italic.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(../webfonts/brand/ibm-plex-mono-latin-600-normal.woff2) format("woff2");
+}
+
+:root,
+[data-bs-theme='light'] {
+  --bs-body-bg: #f1f4f8;
+  --bs-body-bg-rgb: 241, 244, 248;
+  --bs-body-color: #16222e;
+  --bs-body-color-rgb: 22, 34, 46;
+  --bs-emphasis-color: #0d161f;
+  --bs-emphasis-color-rgb: 13, 22, 31;
+  --bs-secondary-color: #3d4e61;
+  --bs-secondary-color-rgb: 61, 78, 97;
+  --bs-tertiary-color: #586b80;
+  --bs-tertiary-color-rgb: 88, 107, 128;
+  --bs-secondary-bg: #e9eef4;
+  --bs-secondary-bg-rgb: 233, 238, 244;
+  --bs-tertiary-bg: #f6f9fc;
+  --bs-tertiary-bg-rgb: 246, 249, 252;
+  --bs-border-color: rgba(48, 74, 105, 0.14);
+  --bs-border-color-translucent: rgba(48, 74, 105, 0.14);
+  /* The link family. Every link the reader can click resolves through these
+     four tokens, and a published theme color never touches them: prose links
+     and external URLs stay this navy in every section, so a colored section
+     does not turn its running text into a second kind of thing. What a theme
+     color does move is --td-accent below. Hover leaves the muted navy for a
+     vivid azure -- the Tailwind move, saturation doing as much of the work
+     as lightness -- held at the brightest step that still reads AA body
+     text on the sky canvas (4.62:1) and the white surfaces (5.09:1). */
+  --bs-link-color: #245f94;
+  --bs-link-color-rgb: 36, 95, 148;
+  --bs-link-hover-color: #1d6fc4;
+  --bs-link-hover-color-rgb: 29, 111, 196;
+  /* The theme accent. It defaults to the brand link color, and a published
+     `theme_color` redeclares just these three in the head -- never the
+     Bootstrap link family, so prose links and external URLs keep the brand
+     blue in every section. The accent's job is grounds and hovers. A visual
+     preset that wants an accent apart from its links sets the optional
+     `--td-preset-accent` trio, as the Ink and Terminal experiments do. */
+  --td-accent: var(--td-preset-accent, var(--bs-link-color));
+  --td-accent-rgb: var(--td-preset-accent-rgb, var(--bs-link-color-rgb));
+  --td-accent-hover: var(--td-preset-accent-hover, var(--bs-link-hover-color));
+  /* Keyboard focus uses the opaque, contrast-checked link color. */
+  --bs-focus-ring-color: var(--bs-link-color);
+  /* Inline code ink, shared by prose (through --td-code-inline-fg) and by
+     markup outside .td-content such as Landing narrative fields. Crimson,
+     the Blowfish convention: a page dense in identifiers reads as code and
+     prose rather than as code and links, which an azure ink one step off the
+     link blue could not do. Dark enough to clear AA on every surface the ink
+     actually lands on -- the page canvas, cards, and the tinted callout
+     bodies. NOT retinted by a published theme color: code ink is a reading
+     convention, the same in every section. */
+  --bs-code-color: #b02a37;
+  --td-pre-bg: #fff;
+  --td-brand-elev: #fff;
+  --td-brand-silk: #5d7189;
+  --td-brand-copper: #b4762e;
+  --td-brand-copper-dim: rgba(180, 118, 46, 0.6);
+  --td-brand-line-strong: rgba(48, 74, 105, 0.3);
+  --td-brand-header-bg: rgba(241, 244, 248, 0.85);
+  --td-brand-shadow-sm: 0 2px 10px rgba(23, 42, 66, 0.08);
+  --td-brand-shadow-md: 0 12px 34px rgba(23, 42, 66, 0.12);
+  --td-brand-mark-from: #1d588c;
+  --td-brand-mark-to: #b4762e;
+  --td-brand-mark-gradient: linear-gradient(
+    115deg,
+    var(--td-brand-mark-from) 6%,
+    var(--td-brand-mark-to) 94%
+  );
+}
+
+[data-bs-theme='dark'] {
+  --bs-body-bg: #0b1119;
+  --bs-body-bg-rgb: 11, 17, 25;
+  --bs-body-color: #e8eef6;
+  --bs-body-color-rgb: 232, 238, 246;
+  --bs-emphasis-color: #f4f8fc;
+  --bs-emphasis-color-rgb: 244, 248, 252;
+  --bs-secondary-color: #b6c2d2;
+  --bs-secondary-color-rgb: 182, 194, 210;
+  --bs-tertiary-color: #7f8da1;
+  --bs-tertiary-color-rgb: 127, 141, 161;
+  --bs-secondary-bg: #121c29;
+  --bs-secondary-bg-rgb: 18, 28, 41;
+  --bs-tertiary-bg: #182435;
+  --bs-tertiary-bg-rgb: 24, 36, 53;
+  --bs-border-color: rgba(148, 176, 210, 0.16);
+  --bs-border-color-translucent: rgba(148, 176, 210, 0.16);
+  --bs-link-color: #5da2dd;
+  --bs-link-color-rgb: 93, 162, 221;
+  --bs-link-hover-color: #7fb8e8;
+  --bs-link-hover-color-rgb: 127, 184, 232;
+  --td-accent: var(--td-preset-accent, var(--bs-link-color));
+  --td-accent-rgb: var(--td-preset-accent-rgb, var(--bs-link-color-rgb));
+  --td-accent-hover: var(--td-preset-accent-hover, var(--bs-link-hover-color));
+  --bs-focus-ring-color: var(--bs-link-color);
+  --bs-code-color: #f0899a;
+  --td-pre-bg: #0a0f16;
+  --td-brand-elev: #121c29;
+  --td-brand-silk: #93a3b8;
+  --td-brand-copper: #e0a35c;
+  --td-brand-copper-dim: rgba(224, 163, 92, 0.55);
+  --td-brand-line-strong: rgba(148, 176, 210, 0.32);
+  --td-brand-header-bg: rgba(11, 17, 25, 0.92);
+  --td-brand-shadow-sm: 0 4px 18px rgba(2, 8, 18, 0.35);
+  --td-brand-shadow-md: 0 14px 44px rgba(2, 8, 18, 0.45);
+  --td-brand-mark-from: #7fb8e8;
+  --td-brand-mark-to: #e0a35c;
+}
+
+/* A section's own color, carried per element as a light/dark pair. The
+   stylesheet picks the half: an inline custom property outranks every rule,
+   so writing the resolved value inline would freeze light into dark mode. */
+.td-section-tint {
+  --td-section-color: var(--td-section-light);
+}
+
+[data-bs-theme='dark'] .td-section-tint {
+  --td-section-color: var(--td-section-dark);
+}
+
+/* Text selection carries the accent too -- on a section with its own theme
+   color, even dragging across a paragraph says which section this is. */
+::selection {
+  background: rgba(var(--td-accent-rgb), 0.22);
+}
+
+[data-bs-theme='dark'] ::selection {
+  background: rgba(var(--td-accent-rgb), 0.35);
+}
+
+a {
+  text-decoration: none;
+  /* Every link glides between its color states on the shared colors curve —
+     the sitewide default behind the chrome's hover vocabulary. Controls that
+     declare a richer transition override this wholesale, and reduced motion
+     zeroes the duration tokens. */
+  transition: color var(--td-motion-duration) var(--td-shell-ease-color), background-color var(--td-motion-duration) var(--td-shell-ease-color), border-color var(--td-motion-duration) var(--td-shell-ease-color);
+}
+
+@media (min-width: 992px) {
+  .td-max-width-on-larger-screens, .td-content .footnotes,
+.td-content > .td-callout,
+.td-content > .td-tabs,
+.td-content > .td-fields,
+.td-content > ol.steps,
+.td-content > .td-figure,
+.td-content > .highlight,
+.td-content > .katex-display,
+.td-content > .lead,
+.td-content > .td-table,
+.td-content > table,
+.td-content > blockquote,
+.td-content > dl dd,
+.td-content > h1,
+.td-content > .h1,
+.td-content > h2,
+.td-content > .h2,
+.td-content > ol,
+.td-content > p,
+.td-content > pre,
+.td-content > ul, .td-content > .td-article-header > .td-page-heading, .td-content > .td-article-header > .lead, .td-content > .td-page-heading {
+    max-width: 100%;
+  }
+}
+
+/* Bare highlighted output (no enhanced shell) gets the same card treatment
+   as `.td-code`; the shell itself owns its border and radius. */
+.td-content .highlight {
+  overflow: hidden;
+  border: 1px solid var(--td-code-border-color);
+  border-radius: var(--td-code-radius);
+  background: var(--td-pre-bg);
+}
+
+.td-content .highlight > pre {
+  border: 0;
+}
+
+.td-content pre,
+.td-content .chroma {
+  border-color: var(--td-code-border-color);
+  border-radius: var(--td-code-radius);
+  background-color: var(--td-pre-bg);
+}
+
+.td-content blockquote {
+  margin: 1.25rem 0;
+  padding: 0.7rem 1.1rem;
+  border-inline-start: 2px solid var(--td-brand-copper);
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  border-start-end-radius: 6px;
+  border-end-end-radius: 6px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--td-brand-copper) 7%, transparent), transparent 80%);
+  color: var(--bs-secondary-color);
+}
+
+[dir='rtl'] .td-content blockquote {
+  background: linear-gradient(-90deg, color-mix(in srgb, var(--td-brand-copper) 7%, transparent), transparent 80%);
+}
+
+.td-content blockquote > :first-child {
+  margin-top: 0;
+}
+
+.td-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Tables: hairline rows under a quiet header, no zebra fill. On the tinted
+   canvas Bootstrap's stripe reads as grey bands rather than as guidance.
+   Bootstrap's `.table` rules also carry `table:not(.td-initial)`, so the
+   overrides repeat that selector to outrank them. */
+.td-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-color: var(--bs-border-color);
+}
+
+.td-content table:not(.td-initial) {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: transparent;
+}
+
+.td-content table:not(.td-initial) > :not(caption) > * > th,
+.td-content table:not(.td-initial) > :not(caption) > * > td {
+  padding: 0.75rem 0.875rem;
+  vertical-align: top;
+}
+
+.td-content table:not(.td-initial) thead th,
+.td-content table:not(.td-initial) thead td {
+  background: var(--bs-secondary-bg);
+  font-family: var(--td-ui-font-family);
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--td-brand-line-strong);
+  color: var(--bs-emphasis-color);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .td-content table:not(.td-initial) tbody tr:hover > * {
+    background-color: color-mix(in srgb, var(--bs-body-color) 3%, var(--bs-body-bg));
+  }
+}
+
+.td-content table:not(.td-initial) tbody tr:last-child > * {
+  border-bottom-color: var(--td-brand-line-strong);
+}
+
+[data-bs-theme='dark'] .td-content .chroma {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+[data-bs-theme='dark'] .td-content .chroma .m,
+[data-bs-theme='dark'] .td-content .chroma .mb,
+[data-bs-theme='dark'] .td-content .chroma .mf,
+[data-bs-theme='dark'] .td-content .chroma .mh,
+[data-bs-theme='dark'] .td-content .chroma .mi,
+[data-bs-theme='dark'] .td-content .chroma .il,
+[data-bs-theme='dark'] .td-content .chroma .mo {
+  color: #6cb6ff;
+}
+
+[data-bs-theme='dark'] .td-content .chroma .go {
+  color: #c8d1dc;
+}
+
+.td-breadcrumbs .breadcrumb-item a {
+  color: var(--bs-tertiary-color);
+}
+
+.td-breadcrumbs .breadcrumb-item a:hover {
+  color: var(--bs-link-color);
+}
+
+.td-breadcrumbs .breadcrumb-item.active {
+  color: var(--bs-secondary-color);
+}

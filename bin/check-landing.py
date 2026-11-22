@@ -198,7 +198,7 @@ def check_sources() -> list[str]:
     field = (ROOT / "layouts/_partials/landing/field.html").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     navbar = (ROOT / "layouts/_partials/navbar.html").read_text()
-    styles = (ROOT / "assets/scss/td/_landing.scss").read_text()
+    styles = (ROOT / "assets/css/td/landing.css").read_text()
     runtime = (ROOT / "assets/js/landing.js").read_text()
     hero = (ROOT / "layouts/_partials/landing/sections/hero.html").read_text()
     preview = (ROOT / "layouts/_partials/landing/sections/preview.html").read_text()
@@ -250,10 +250,10 @@ def check_sources() -> list[str]:
         "explicit Landing layouts)",
         errors,
     )
-    navbar_styles = (ROOT / "assets/scss/td/_site-navbar.scss").read_text()
+    navbar_styles = (ROOT / "assets/css/td/site-navbar.css").read_text()
     mid_tier = navbar_styles.split("@media (max-width: 991.98px)", 1)
     below_md = navbar_styles.split(
-        "// Below md the shell sidebar becomes a drawer", 1
+        "/* Below md the shell sidebar becomes a drawer", 1
     )
     require(
         len(mid_tier) == 2
@@ -272,9 +272,9 @@ def check_sources() -> list[str]:
         "@media (forced-colors: active)",
         "@media print",
         "[dir='rtl'] .td-landing-marquee",
-        "&:has(&__pause input:checked) &__track",
+        ".td-landing-marquee:has(.td-landing-marquee__pause input:checked) .td-landing-marquee__track",
         ".td-landing-preview",
-        "&--center",
+        ".td-landing-hero--center",
     ):
         require(marker in styles, f"landing styles lack {marker}", errors)
     for marker in (
@@ -295,7 +295,7 @@ def check_sources() -> list[str]:
 
     # Landing surfaces that are dark in both site themes have to declare that
     # locally. Without it the root Chroma palette -- emitted unscoped so code
-    # stays readable on sites without dark mode, see `_chroma.scss` -- paints
+    # stays readable on sites without dark mode, see `chroma.css` -- paints
     # light-mode token colours onto a permanently dark plate, which is how the
     # code plate reached 1.22:1 on punctuation before this check existed.
     for partial in sorted((ROOT / "layouts/_partials/landing").rglob("*.html")):

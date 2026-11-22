@@ -961,20 +961,20 @@ def check_template_contracts() -> list[str]:
     ):
         require(not (ROOT / relative).exists(), f"{relative} must stay deleted", errors)
 
-    markers = (ROOT / "assets/scss/td/_markers.scss").read_text()
+    markers = (ROOT / "assets/css/td/markers.css").read_text()
     for marker in ("ol.steps", "ul.cards", "counter-reset: td-step", "ol.steps[start=", "@media print", "forced-colors", "prefers-reduced-motion"):
-        require(marker in markers, f"_markers.scss lacks {marker}", errors)
+        require(marker in markers, f"markers.css lacks {marker}", errors)
     # FileTree and Gallery left the list-marker layer for data fences. Assert the
     # selectors are gone rather than the words: the file explains the move, and a
     # bare substring test would forbid documenting it.
     for selector in ("ul.filetree", "ul.gallery"):
-        require(selector not in markers, f"_markers.scss keeps the removed {selector} list marker", errors)
-    gallery_scss = (ROOT / "assets/scss/td/_gallery.scss").read_text()
-    for marker in (".td-gallery", "&__item", "&__image", "&__description", "forced-colors", "@media print"):
-        require(marker in gallery_scss, f"_gallery.scss lacks {marker}", errors)
-    filetree_styles = (ROOT / "assets/scss/td/_filetree.scss").read_text()
-    for marker in (".td-filetree", "--td-filetree-name-col", "--td-filetree-indent: 2.5ch", "clamp(50%, var(--td-filetree-name-col), 70%)", ".td-filetree__divider", ".td-filetree__details[open]", ".td-filetree--static", ".td-filetree--plain", "@media print", "@media (forced-colors: active)", "[dir='rtl']", "media-breakpoint-down(sm)"):
-        require(marker in filetree_styles, f"_filetree.scss lacks {marker}", errors)
+        require(selector not in markers, f"markers.css keeps the removed {selector} list marker", errors)
+    gallery_styles = (ROOT / "assets/css/td/gallery.css").read_text()
+    for marker in (".td-gallery", ".td-gallery__item", ".td-gallery__image", ".td-gallery__description", "forced-colors", "@media print"):
+        require(marker in gallery_styles, f"gallery.css lacks {marker}", errors)
+    filetree_styles = (ROOT / "assets/css/td/filetree.css").read_text()
+    for marker in (".td-filetree", "--td-filetree-name-col", "--td-filetree-indent: 2.5ch", "clamp(50%, var(--td-filetree-name-col), 70%)", ".td-filetree__divider", ".td-filetree__details[open]", ".td-filetree--static", ".td-filetree--plain", "@media print", "@media (forced-colors: active)", "[dir='rtl']", "@media (max-width: 575.98px)"):
+        require(marker in filetree_styles, f"filetree.css lacks {marker}", errors)
     filetree_hook = (ROOT / "layouts/_markup/render-codeblock-filetree.html").read_text()
     for marker in ('partial "content/attributes.html"', "$policy.generic", 'partial "content/filetree-parse.html"', 'partial "content/filetree-icon.html"', 'partial "content/tab-block.html"', "td-filetree--static", "td-filetree-source", "```filetree", '$page.Store.Set "hasFileTree" true', 'role="separator"', 'T "ui_filetree_divider"'):
         require(marker in filetree_hook, f"render-codeblock-filetree.html lacks {marker}", errors)
@@ -990,7 +990,7 @@ def check_template_contracts() -> list[str]:
     filetree_parse = (ROOT / "layouts/_partials/content/filetree-parse.html").read_text()
     for marker in ("$indentCh := 2.5", '"icon" "tone" "open" "type"', "├──|└──", "director(?:y|ies)", 'partial "content/url.html"'):
         require(marker in filetree_parse, f"filetree-parse.html lacks {marker}", errors)
-    styles = (ROOT / "assets/scss/td/shortcodes/_content-primitives.scss").read_text()
+    styles = (ROOT / "assets/css/td/shortcodes/content-primitives.css").read_text()
     require("@media print" in styles and "@media (forced-colors: active)" in styles, "content primitives lack print / forced-colors styles", errors)
     require(".td-filetree" not in styles and ".td-gallery" not in styles and ".td-imgproc" not in styles, "content primitives styles keep removed component selectors", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()

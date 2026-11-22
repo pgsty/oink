@@ -109,7 +109,7 @@ class Structure(HTMLParser):
         if tag == "link" and "stylesheet" in (attrs.get("rel") or ""):
             href = attrs.get("href") or ""
             clean = href.split("?", 1)[0]
-            if re.search(r"/scss/(?:fontawesome|main)(?:\.min\.[0-9a-f]{64})?\.css$", clean):
+            if re.search(r"/css/(?:fontawesome|main)(?:\.min\.[0-9a-f]{64})?\.css$", clean):
                 self.base_stylesheets.append(href)
             if href.startswith(("http://", "https://", "//")):
                 self.remote.append(f"stylesheet {href[:60]}")
@@ -193,7 +193,7 @@ def check_html(public: Path) -> tuple[list[str], dict[str, int]]:
             errors.append(f"{rel}: repeated runtime chunk(s): {parser.chunks}")
         stylesheet_roles = []
         for href in parser.base_stylesheets:
-            match = re.search(r"/scss/(fontawesome|main)(?:\.min\.[0-9a-f]{64})?\.css(?:\?.*)?$", href)
+            match = re.search(r"/css/(fontawesome|main)(?:\.min\.[0-9a-f]{64})?\.css(?:\?.*)?$", href)
             if match:
                 stylesheet_roles.append(match.group(1))
         if stylesheet_roles != ["fontawesome", "main"]:

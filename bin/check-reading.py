@@ -183,8 +183,8 @@ def check_math(public: Path) -> list[str]:
     require("if not $hasNum" in eq, "eq escape hatch still requires num", errors)
     require('partial "scripts/math.html"' in eq, "eq escape hatch bypasses the shared math renderer", errors)
 
-    styles = (ROOT / "assets/scss/td/_content.scss").read_text()
-    print_styles = (ROOT / "assets/scss/td/_print.scss").read_text()
+    styles = (ROOT / "assets/css/td/content.css").read_text()
+    print_styles = (ROOT / "assets/css/td/print.css").read_text()
     require(".katex-display" in styles, "theme lacks KaTeX overflow styles", errors)
     require("overflow-x: auto" in styles, "long equations do not scroll within the column", errors)
     require(
@@ -1254,7 +1254,7 @@ def check_pager_sources() -> list[str]:
     state = (ROOT / "layouts/_partials/pager-state.html").read_text()
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
     head = (ROOT / "layouts/_partials/head.html").read_text()
-    styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
+    styles = (ROOT / "assets/css/td/pager.css").read_text()
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
     nav_flatten = (ROOT / "layouts/_partials/shell/nav-flatten-section.html").read_text()
     nav_children = (ROOT / "layouts/_partials/shell/nav-children.html").read_text()
@@ -1283,8 +1283,8 @@ def check_pager_sources() -> list[str]:
         "page-end order is not feedback, annotation, pager, comments",
         errors,
     )
-    require("&__link--prev {\n    margin-inline-end: auto;" in styles
-            and "&__link--next {\n    margin-inline-start: auto;" in styles,
+    require(".td-pager__link--prev {\n  margin-inline-end: auto;" in styles
+            and ".td-pager__link--next {\n  margin-inline-start: auto;" in styles,
             "a single-direction pager does not keep its own edge", errors)
     require("td-pager__summary" not in pager and "td-pager__title" in pager,
             "pager renders more than the linked title", errors)

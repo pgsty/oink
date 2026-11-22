@@ -1,0 +1,479 @@
+/* 
+   Style Markdown content
+
+   cSpell:ignore: katex */
+.td-content {
+  order: 1;
+  font-family: var(--td-body-font-family);
+  overflow-wrap: anywhere;
+}
+
+/* Prose heading scale. Bootstrap's fluid 2.5rem/2rem/1.75rem headings are
+   sized for marketing pages; documentation reads better with a tighter,
+   semibold scale where the size step (not the weight) carries hierarchy.
+   Negative tracking suits Inter and every platform sans at these sizes. */
+.td-content h1, .td-content .h1,
+.td-content h2,
+.td-content .h2,
+.td-content h3,
+.td-content .h3,
+.td-content h4,
+.td-content .h4,
+.td-content h5,
+.td-content .h5,
+.td-content h6,
+.td-content .h6 {
+  color: var(--bs-emphasis-color);
+  font-family: var(--td-heading-font-family);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.td-content h1, .td-content .h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.td-content h2, .td-content .h2 {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.td-content h3, .td-content .h3 {
+  font-size: 1.25rem;
+}
+
+.td-content h4, .td-content .h4 {
+  font-size: 1.0625rem;
+}
+
+.td-content h5, .td-content .h5,
+.td-content h6,
+.td-content .h6 {
+  font-size: 1rem;
+}
+
+.td-content p,
+.td-content li,
+.td-content td {
+  font-weight: 400;
+}
+
+.td-content > h1, .td-content > .h1 {
+  margin-bottom: 1rem;
+}
+
+.td-content > h2, .td-content > .h2 {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.td-content > h2:first-child, .td-content > .h2:first-child {
+  margin-top: 0;
+}
+
+.td-content > h2 + h3, .td-content > .h2 + h3, .td-content > h2 + .h3, .td-content > .h2 + .h3 {
+  margin-top: 1.25rem;
+}
+
+.td-content > h3, .td-content > .h3 {
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.td-content > h4, .td-content > .h4,
+.td-content > h5,
+.td-content > .h5,
+.td-content > h6,
+.td-content > .h6 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.td-content blockquote {
+  /* Logical, so the quote bar stays on the side the text starts from: the
+     theme's own stylesheet is compiled once and never run through rtlcss. */
+  padding-inline-start: 1rem;
+  margin-bottom: 1rem;
+  color: var(--bs-secondary-color);
+  border-inline-start: 6px solid var(--bs-primary);
+}
+
+.td-content :where(ul, ol):not([class]) > li {
+  margin-bottom: 0.25rem;
+}
+
+.td-content strong {
+  font-weight: 700;
+}
+
+.td-content details:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.td-content details > p:first-of-type {
+  margin-top: 1rem;
+}
+
+/* Page description under the title: quieter and lighter than the h1, but
+   regular weight (Bootstrap's 300 gets thin and patchy in Inter and CJK). */
+.td-content .lead {
+  margin-bottom: 1.5rem;
+  color: var(--bs-secondary-color);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Server-rendered KaTeX can be wider than the document column. Keep long
+   equations readable without allowing them to widen the page itself. */
+.td-content .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.25rem;
+}
+
+.td-content .katex-display:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 3px;
+}
+
+/* Hugo's table render hook owns the scroll viewport so a wide table cannot
+   widen the page. The full-width author modifier opts out of the regular
+   prose measure and uses the entire article canvas. */
+.td-content .td-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  margin-block-end: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+
+.td-content .td-table-scroll:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 3px;
+}
+
+.td-content .td-table-scroll > table {
+  /* The wrapper owns responsiveness. Restore the table formatting context
+     so short tables distribute their columns across the available width. */
+  display: table;
+  width: max-content;
+  min-width: 100%;
+  margin-bottom: 0;
+}
+
+@media screen {
+  /* Structural guards must not raise the cost of consumer overrides. */
+  .td-content .td-table-scroll:where(:not(.td-table-scroll--static)) > table:where(.td-table--wide) {
+    /* Preserve ordinary tables. Authors opt technical identifiers into a
+       wider measure; the wrapper still contains any horizontal overflow. */
+    width: max-content;
+    max-width: none;
+  }
+  .td-content .td-table-scroll:where(:not(.td-table-scroll--static)) > table:where(.td-table--wide) > :where(thead, tbody, tfoot) > :where(tr) > :is(th, td) {
+    /* Unlike anywhere, break-word keeps technical tokens in the
+       intrinsic minimum width, with an escape hatch for very long ones. */
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .td-content .td-table-scroll:where(:not(.td-table-scroll--static)) > table:where(.td-table--wide) > :where(thead, tbody, tfoot) > :where(tr) > :is(th, td) a,
+.td-content .td-table-scroll:where(:not(.td-table-scroll--static)) > table:where(.td-table--wide) > :where(thead, tbody, tfoot) > :where(tr) > :is(th, td) code {
+    overflow-wrap: inherit;
+    word-break: inherit;
+  }
+  .td-content .td-table-scroll:where(:not(.td-table-scroll--static)) > table:where(.td-table--wide) > :where(thead, tbody, tfoot) > :where(tr) > td {
+    /* Bound prose's preferred measure instead of making a long
+       description one enormous line. Auto layout may distribute extra
+       space; matrix headers keep their explicit nowrap behavior. */
+    max-width: 40ch;
+  }
+}
+
+.td-content .td-table-scroll--full {
+  width: 100%;
+  max-width: none;
+}
+
+/* RSS is a plain static box. Print also carries the static-output marker,
+   but its focusable on-screen viewport must still contain wide tables.
+   The print media rule below expands every table only for paper output. */
+.td-content .td-table-scroll--static:not([tabindex]) {
+  max-width: none;
+  overflow: visible;
+  /* A nested static viewport must not inherit an outer screen cell's rule. */
+  overflow-wrap: anywhere;
+}
+
+/* Keep the skip-link destination visible without framing the whole article. */
+#td-main-content:focus-visible:not([data-td-pointer-focus]):has(h1, .h1) {
+  outline: none;
+}
+
+#td-main-content:focus-visible:not([data-td-pointer-focus]):has(h1, .h1) h1:first-of-type, #td-main-content:focus-visible:not([data-td-pointer-focus]):has(h1, .h1) .h1:first-of-type {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 4px;
+}
+
+.td-content pre[tabindex]:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 3px;
+}
+
+/* Only a pointer-origin focus on these reading containers suppresses the
+   browser's later keyboard heuristic. Controls and Tab focus are unaffected. */
+#td-main-content[data-td-pointer-focus]:focus,
+.td-content .td-table-scroll[data-td-pointer-focus]:focus,
+.td-content pre[tabindex][data-td-pointer-focus]:focus {
+  outline: none;
+}
+
+@media print {
+  .td-content .katex-display,
+.td-content .td-table-scroll {
+    max-width: none;
+    overflow: visible;
+  }
+}
+
+@media (forced-colors: active) {
+  #td-main-content:focus-visible:not([data-td-pointer-focus]) h1:first-of-type, #td-main-content:focus-visible:not([data-td-pointer-focus]) .h1:first-of-type,
+.td-content pre[tabindex]:focus-visible,
+.td-content .katex-display:focus-visible,
+.td-content .td-table-scroll:focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+.td-heading-self-link {
+  font-size: 90%;
+  padding-inline-start: 0.25em;
+  text-decoration: none;
+  opacity: 0;
+}
+
+.td-heading-self-link::before {
+  content: '#';
+}
+
+.td-heading-self-link:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) and (pointer: coarse), (max-width: 576px) {
+  /* Always visible on touch devices and small screens */
+  .td-heading-self-link {
+    opacity: 1;
+  }
+}
+
+h1:hover > .td-heading-self-link, .h1:hover > .td-heading-self-link {
+  opacity: 1;
+}
+
+h2:hover > .td-heading-self-link, .h2:hover > .td-heading-self-link {
+  opacity: 1;
+}
+
+h3:hover > .td-heading-self-link, .h3:hover > .td-heading-self-link {
+  opacity: 1;
+}
+
+h4:hover > .td-heading-self-link, .h4:hover > .td-heading-self-link {
+  opacity: 1;
+}
+
+h5:hover > .td-heading-self-link, .h5:hover > .td-heading-self-link {
+  opacity: 1;
+}
+
+h6:hover > .td-heading-self-link, .h6:hover > .td-heading-self-link {
+  opacity: 1;
+}
+
+/* Low-friction structured feedback. The first click records an answer through
+   the consumer site's analytics integration; no form or server is required. */
+.td-feedback {
+  margin-block: 2rem 0;
+  padding-block: 0.875rem;
+  border-block-start: 1px solid var(--bs-border-color);
+}
+
+.td-feedback__prompt {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.625rem;
+}
+
+.td-feedback__prompt .td-feedback__question {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.td-feedback__choices {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0.25rem;
+}
+
+.td-feedback__choice, .td-feedback__reason, .td-feedback__details, .td-feedback__change {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0.375rem 0.7rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bs-body-color);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.td-feedback__choice:hover, .td-feedback__choice:focus-visible, .td-feedback__choice[aria-pressed='true'], .td-feedback__reason:hover, .td-feedback__reason:focus-visible, .td-feedback__reason[aria-pressed='true'], .td-feedback__details:hover, .td-feedback__details:focus-visible, .td-feedback__details[aria-pressed='true'], .td-feedback__change:hover, .td-feedback__change:focus-visible, .td-feedback__change[aria-pressed='true'] {
+  border-color: var(--bs-secondary-color);
+  background: var(--bs-tertiary-bg);
+}
+
+.td-feedback__choice:disabled, .td-feedback__reason:disabled, .td-feedback__details:disabled, .td-feedback__change:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.td-feedback__choice {
+  min-height: 30px;
+  padding: 0.3rem 0.625rem;
+}
+
+.td-feedback__result {
+  margin-block-start: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-secondary-color);
+}
+
+.td-feedback__result[hidden] {
+  display: none;
+}
+
+.td-feedback__result p:last-child {
+  margin: 0;
+}
+
+.td-feedback__thanks {
+  margin: 0;
+  color: var(--bs-body-color);
+  font-weight: 600;
+}
+
+.td-feedback__reasons {
+  margin-block-start: 0.75rem;
+}
+
+.td-feedback__reasons > p {
+  margin-block-end: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.td-feedback__reason-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.td-feedback__reason {
+  min-height: 30px;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--bs-border-radius);
+  font-size: 0.8125rem;
+}
+
+.td-feedback__result-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block-start: 0.625rem;
+}
+
+.td-feedback__details, .td-feedback__change {
+  min-height: 30px;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--bs-border-radius);
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+
+.td-feedback__details {
+  color: var(--bs-link-color);
+}
+
+.td-feedback.td-is-submitted .td-feedback__choice[aria-pressed='true'] {
+  color: var(--bs-link-color);
+  opacity: 1;
+}
+
+.td-feedback__reason[aria-pressed='true'] {
+  color: var(--bs-link-color);
+  opacity: 1;
+}
+
+@media (max-width: 575.98px) {
+  .td-feedback__prompt {
+    flex-wrap: wrap;
+  }
+}
+
+/* Provenance line under the article. The hairline above it matches the
+   feedback block's rule, so the page end reads as a distinct region. */
+.td-page-annotation {
+  margin-block: 2rem 1.25rem;
+  padding-block-start: 0.875rem;
+  border-block-start: 1px solid var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  font-family: var(--td-body-font-family);
+  font-size: 0.8125rem;
+}
+
+/* After the feedback block (which already carries the rule) sit closer. */
+.td-feedback + .td-page-annotation {
+  margin-block-start: 0.5rem;
+}
+
+.td-page-meta__footer {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.td-page-meta__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.td-page-meta__item a {
+  /* The global link treatment removes decoration with !important. Metadata
+     is inline prose and needs a visible distinction beyond link color. */
+  text-decoration: underline !important;
+  text-underline-offset: 0.15em;
+}
+
+.td-page-meta__icon {
+  flex: 0 0 1rem;
+  text-align: center;
+}

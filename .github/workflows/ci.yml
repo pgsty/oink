@@ -11,10 +11,6 @@ permissions:
 
 env:
   GO_VERSION: 1.27.4
-  # Jobs build with the current Hugo release, as a consumer would. Only `scss`
-  # names one: the last release whose Extended edition contains LibSass, the
-  # compiler of the shipped CSS.
-  LIBSASS_HUGO_VERSION: "0.169.0"
   GOTOOLCHAIN: local
 
 jobs:
@@ -373,11 +369,8 @@ jobs:
       - name: Check four-state goldens
         run: python3 bin/check-goldens.py
 
-      # This Hugo has no LibSass and the checker hides PATH, so a layout that
-      # called a Sass compiler would fail here. The `scss` job checks that the
-      # bundles are current.
-      - name: Check that site builds use the shipped CSS
-        run: python3 bin/check-scss.py --skip-freshness
+      - name: Check the stylesheet layers and their assembly
+        run: python3 bin/check-stylesheets.py
 
       - name: Build the system typography preset
         working-directory: tests/site
@@ -396,20 +389,3 @@ jobs:
               --destination "$RUNNER_TEMP/oink-invalid" \
               >"$RUNNER_TEMP/oink-invalid.log" 2>&1
           grep -q 'invalid params.ui.typography' "$RUNNER_TEMP/oink-invalid.log"
-
-  scss:
-    name: Shipped CSS
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.x'
-      # The only job that needs LibSass: it recompiles the bundles to compare.
-      - uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: ${{ env.LIBSASS_HUGO_VERSION }}
-          extended: true
-      - name: Keep the shipped bundles current
-        run: python3 bin/build-css.py --check

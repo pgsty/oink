@@ -1,0 +1,83 @@
+/* Public typography roles. A site changes a role through `params.ui.fonts` or
+   its own CSS. */
+:root {
+  /* The `technical` preset reads UI and prose in the bundled Inter face; the
+     platform stack behind it still renders CJK, emoji, and anything Inter
+     lacks. */
+  --td-ui-font-family: 'Inter', var(--bs-body-font-family);
+  --td-body-font-family: var(--td-ui-font-family);
+  --td-heading-font-family: var(--td-body-font-family);
+  --td-code-font-family: var(--bs-font-monospace);
+  --td-display-font-family: 'Chakra Petch', var(--td-ui-font-family);
+  --td-meta-font-family: 'IBM Plex Mono', var(--td-code-font-family);
+  /* The wordmark. It follows the display role unless a visual preset gives
+     the wordmark its own face while display headings change. */
+  --td-brand-font-family: var(--td-display-font-family);
+  /* Print keeps its own role so a site can give paper a different face, but
+     the theme ships no print-only font: it follows the body role. */
+  --td-print-font-family: var(--td-body-font-family);
+}
+
+/* Visual presets restate font roles at (0,1,0). They precede the system
+   block, so `typography: system` still collapses every role to platform faces
+   in every preset, and `params.ui.fonts`, emitted inline after this
+   stylesheet, still beats both. Slate is the `:root` block above. */
+[data-td-preset='paper'] {
+  /* IBM Plex Sans for UI, prose, headings, and display; Latin first, then the
+     platform CJK sans faces, so Chinese reads in PingFang/YaHei/Noto, never a
+     synthesized fallback. The wordmark keeps the brand face. */
+  --td-ui-font-family:
+      'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+      'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC',
+      'Segoe UI', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --td-body-font-family: var(--td-ui-font-family);
+  --td-heading-font-family: var(--td-body-font-family);
+  --td-display-font-family: var(--td-ui-font-family);
+  --td-meta-font-family: var(--td-ui-font-family);
+  --td-brand-font-family: 'Chakra Petch', var(--td-ui-font-family);
+}
+
+[data-td-preset='ink'] {
+  --td-display-font-family: var(--td-heading-font-family);
+  --td-brand-font-family: var(--td-ui-font-family);
+  --td-meta-font-family: var(--td-ui-font-family);
+}
+
+[data-td-preset='terminal'] {
+  /* Mono belongs to the controls and headings; prose keeps a reading face.
+     Explicit `params.ui.fonts` roles remain authoritative. */
+  --td-ui-font-family: var(--td-code-font-family);
+  --td-body-font-family: 'IBM Plex Sans', var(--bs-body-font-family);
+  --td-heading-font-family: var(--td-ui-font-family);
+  --td-display-font-family: var(--td-heading-font-family);
+  --td-brand-font-family: var(--td-ui-font-family);
+  --td-meta-font-family: var(--td-ui-font-family);
+}
+
+[data-td-typography='system'] {
+  /* Keep the dependency direction Bootstrap base -> OINK semantic role.
+     Bootstrap's reboot and monospace utility also consume this base token. */
+  --bs-font-monospace:
+      SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo, Consolas,
+      'Liberation Mono', 'Sarasa Mono SC', 'Noto Sans Mono CJK SC', monospace;
+  --td-ui-font-family: var(--bs-body-font-family);
+  --td-body-font-family: var(--td-ui-font-family);
+  --td-heading-font-family: var(--td-body-font-family);
+  --td-display-font-family: var(--td-ui-font-family);
+  --td-meta-font-family: var(--td-ui-font-family);
+  --td-brand-font-family: var(--td-display-font-family);
+  --td-print-font-family: var(--td-body-font-family);
+}
+
+body {
+  font-family: var(--td-ui-font-family);
+}
+
+/* Bootstrap sets this selector's family directly. Repeating it after
+   Bootstrap turns that value into a role a site can override at run time. */
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--td-code-font-family);
+}

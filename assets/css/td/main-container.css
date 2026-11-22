@@ -1,0 +1,33 @@
+.td-outer {
+  display: flex;
+  flex-direction: column;
+  min-height: calc( 100vh - 50px - 2.5rem);
+}
+
+@media (min-width: 768px) {
+  .td-outer {
+    min-height: 100vh;
+  }
+}
+
+@media (min-width: 768px) {
+  .td-default main > section:first-of-type {
+    padding-top: calc( 50px + 4rem);
+  }
+}
+
+.td-main {
+  flex-grow: 1;
+}
+
+.td-404 main {
+  --td-main-padding-top: 1.5rem;
+  padding-top: var(--td-main-padding-top);
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .td-404 main {
+    padding-top: calc(var(--td-main-padding-top) + 50px);
+  }
+}

@@ -5,8 +5,8 @@
   "trees": [
     {
       "path": "assets/third_party",
-      "files": 224,
-      "sha256": "f1675b5deb433f8944d5c4f34ea4921026779348cf3fc3c9858920b9bb506723"
+      "files": 132,
+      "sha256": "bdfadcbef586f0a26caa871495cb6d04cd817051535a2476b877156f77eb392a"
     },
     {
       "path": "assets/js/third_party",
@@ -29,10 +29,6 @@
         "assets/third_party/bootstrap/LICENSE"
       ],
       "artifacts": [
-        {
-          "path": "assets/third_party/bootstrap/scss/bootstrap.scss",
-          "sha256": "1d0ce002e4cc698d712589fbf9eaf02a0690284526d71ca4d78afe417204ab0d"
-        },
         {
           "path": "assets/third_party/bootstrap/dist/css/bootstrap.rtl.min.css",
           "sha256": "b9048c83571ab73da54395b6b307219f9eb9c5447f4f8edb17a069eb0f19465a"
@@ -107,12 +103,12 @@
       ],
       "artifacts": [
         {
-          "path": "assets/third_party/inter/_normal.scss",
-          "sha256": "1a0f10ce2bb6e3f5bc42ac3a390a983747c0d09a71bfa0e0bb29ebb4ce204387"
+          "path": "assets/third_party/inter/normal.css",
+          "sha256": "9d9ac8de09b9e10a05c6c497aca17149212752f915370a3d9986b8c7b9b66a7d"
         },
         {
-          "path": "assets/third_party/inter/_italic.scss",
-          "sha256": "2be8112aeedd22b97a53237ab181317e7580c059c3d25932ce761cdd1186f04b"
+          "path": "assets/third_party/inter/italic.css",
+          "sha256": "99378a348900351b0ff175c42e9ac86db12cd6b0db335faf0eef293af1122f8c"
         },
         {
           "path": "static/webfonts/inter/inter-cyrillic-ext-wght-italic.woff2",
@@ -182,12 +178,12 @@
       ],
       "artifacts": [
         {
-          "path": "assets/third_party/ibm-plex-sans/_normal.scss",
-          "sha256": "f942294a45203e0414036d964402c3661d28393ba350af2d08ecd558b33b7b1e"
+          "path": "assets/third_party/ibm-plex-sans/normal.css",
+          "sha256": "ead587ff3b60a6258d34770798ffab5dfb4218cc96e0ac2f884d5790289fcd15"
         },
         {
-          "path": "assets/third_party/ibm-plex-sans/_italic.scss",
-          "sha256": "943002f526e34c6ad37eb0b2a2ded3fa1c315b39c300e2c4e73666f473689b42"
+          "path": "assets/third_party/ibm-plex-sans/italic.css",
+          "sha256": "53386f65dc147e4d1f2e12d6292389f261466766ee3f58a23163d6c9d97d1bee"
         },
         {
           "path": "static/webfonts/ibm-plex-sans/ibm-plex-sans-cyrillic-ext-wght-italic.woff2",

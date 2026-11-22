@@ -609,12 +609,12 @@ def measure_build(name: str, snapshot: Path, hugo: str, theme: Path, *, fixture:
     result["by_type"] = summarise_pages(pages)
     result["chunks"] = chunk_table(dest, pages, cache)
     result["chunk_count"] = len(result["chunks"])
-    css_files = sorted(dest.glob("scss/main*.css"))
+    css_files = sorted(dest.glob("css/main*.css"))
     result["main_css"] = [
         {"file": p.name, "bytes": p.stat().st_size, "gzip": len(gzip.compress(p.read_bytes(), 6))}
         for p in css_files
     ]
-    fontawesome_css = sorted(dest.glob("scss/fontawesome*.css"))
+    fontawesome_css = sorted(dest.glob("css/fontawesome*.css"))
     result["fontawesome_css"] = [
         {"file": p.name, "bytes": p.stat().st_size, "gzip": len(gzip.compress(p.read_bytes(), 6))}
         for p in fontawesome_css

@@ -1,0 +1,461 @@
+/* Chroma style: github-dark (generated base plus cross-theme role resets) */
+/* Generated using: hugo gen chromastyles --style=github-dark */
+/* Background */
+/* PreWrapper */
+/* Error */
+/* LineLink */
+/* LineTableTD */
+/* LineTable */
+/* LineHighlight */
+/* LineNumbersTable */
+/* LineNumbers */
+/* Line */
+/* Keyword */
+/* KeywordConstant */
+/* KeywordDeclaration */
+/* KeywordNamespace */
+/* KeywordPseudo */
+/* KeywordReserved */
+/* KeywordType */
+/* Punctuation (layer reset) */
+/* NameAttribute (layer reset) */
+/* NameClass */
+/* NameConstant */
+/* NameDecorator */
+/* NameEntity */
+/* NameException */
+/* NameLabel */
+/* NameNamespace */
+/* NameOther */
+/* NameProperty */
+/* NameTag */
+/* NameBuiltin (layer reset) */
+/* NameBuiltinPseudo (layer reset) */
+/* NameVariable */
+/* NameVariableClass */
+/* NameVariableGlobal */
+/* NameVariableInstance */
+/* NameVariableMagic */
+/* NameFunction */
+/* NameFunctionMagic */
+/* Literal */
+/* LiteralDate */
+/* LiteralString */
+/* LiteralStringAffix */
+/* LiteralStringBacktick */
+/* LiteralStringChar */
+/* LiteralStringDelimiter */
+/* LiteralStringDoc */
+/* LiteralStringDouble */
+/* LiteralStringEscape */
+/* LiteralStringHeredoc */
+/* LiteralStringInterpol */
+/* LiteralStringOther */
+/* LiteralStringRegex */
+/* LiteralStringSingle */
+/* LiteralStringSymbol */
+/* LiteralNumber */
+/* LiteralNumberBin */
+/* LiteralNumberFloat */
+/* LiteralNumberHex */
+/* LiteralNumberInteger */
+/* LiteralNumberIntegerLong */
+/* LiteralNumberOct */
+/* Operator */
+/* OperatorWord */
+/* OperatorReserved */
+/* Comment */
+/* CommentHashbang */
+/* CommentMultiline */
+/* CommentSingle */
+/* CommentSpecial */
+/* CommentPreproc */
+/* CommentPreprocFile */
+/* GenericDeleted */
+/* GenericEmph (layer reset) */
+/* GenericError */
+/* GenericHeading */
+/* GenericInserted */
+/* GenericOutput */
+/* GenericPrompt */
+/* GenericStrong */
+/* GenericSubheading */
+/* GenericTraceback */
+/* GenericUnderline */
+/* TextWhitespace */
+
+[data-bs-theme='dark'] .bg {
+  color: #e6edf3;
+  background-color: #0d1117;
+}
+
+[data-bs-theme='dark'] .chroma {
+  color: #e6edf3;
+  background-color: #0d1117;
+  -webkit-text-size-adjust: none;
+}
+
+[data-bs-theme='dark'] .chroma .err {
+  color: #f85149;
+}
+
+[data-bs-theme='dark'] .chroma .lnlinks {
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+[data-bs-theme='dark'] .chroma .lntd {
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+[data-bs-theme='dark'] .chroma .lntable {
+  border-spacing: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+[data-bs-theme='dark'] .chroma .hl {
+  background-color: #6e7681;
+}
+
+[data-bs-theme='dark'] .chroma .lnt {
+  white-space: pre;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0 0.4em 0 0.4em;
+  color: #737679;
+}
+
+[data-bs-theme='dark'] .chroma .ln {
+  white-space: pre;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-right: 0.4em;
+  padding: 0 0.4em 0 0.4em;
+  color: #6e7681;
+}
+
+[data-bs-theme='dark'] .chroma .line {
+  display: flex;
+}
+
+[data-bs-theme='dark'] .chroma .k {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .kc {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .kd {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .kn {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .kp {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .kr {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .kt {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .p {
+  color: #e6edf3;
+}
+
+[data-bs-theme='dark'] .chroma .na {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .nc {
+  color: #f0883e;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .no {
+  color: #79c0ff;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .nd {
+  color: #d2a8ff;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .ni {
+  color: #ffa657;
+}
+
+[data-bs-theme='dark'] .chroma .ne {
+  color: #f0883e;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .nl {
+  color: #79c0ff;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .nn {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .nx {
+  color: #e6edf3;
+}
+
+[data-bs-theme='dark'] .chroma .py {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .nt {
+  color: #7ee787;
+}
+
+[data-bs-theme='dark'] .chroma .nb {
+  color: #ffa657;
+}
+
+[data-bs-theme='dark'] .chroma .bp {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .nv {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .vc {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .vg {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .vi {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .vm {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .nf {
+  color: #d2a8ff;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .fm {
+  color: #d2a8ff;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .l {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .ld {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .s {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .sa {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .sb {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .sc {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .dl {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .sd {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .s2 {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .se {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .sh {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .si {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .sx {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .sr {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .s1 {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .ss {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .m {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .mb {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .mf {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .mh {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .mi {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .il {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .mo {
+  color: #a5d6ff;
+}
+
+[data-bs-theme='dark'] .chroma .o {
+  color: #ff7b72;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .ow {
+  color: #ff7b72;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .or {
+  color: #ff7b72;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .c {
+  color: #8b949e;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .ch {
+  color: #8b949e;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .cm {
+  color: #8b949e;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .c1 {
+  color: #8b949e;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .cs {
+  color: #8b949e;
+  font-weight: bold;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .cp {
+  color: #8b949e;
+  font-weight: bold;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .cpf {
+  color: #8b949e;
+  font-weight: bold;
+  font-style: italic;
+}
+
+[data-bs-theme='dark'] .chroma .gd {
+  color: #ffa198;
+  background-color: #490202;
+}
+
+[data-bs-theme='dark'] .chroma .ge {
+  color: inherit;
+}
+
+[data-bs-theme='dark'] .chroma .gr {
+  color: #ffa198;
+}
+
+[data-bs-theme='dark'] .chroma .gh {
+  color: #79c0ff;
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .gi {
+  color: #56d364;
+  background-color: #0f5323;
+}
+
+[data-bs-theme='dark'] .chroma .go {
+  color: #8b949e;
+}
+
+[data-bs-theme='dark'] .chroma .gp {
+  color: #8b949e;
+}
+
+[data-bs-theme='dark'] .chroma .gs {
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .chroma .gu {
+  color: #79c0ff;
+}
+
+[data-bs-theme='dark'] .chroma .gt {
+  color: #ff7b72;
+}
+
+[data-bs-theme='dark'] .chroma .gl {
+  text-decoration: underline;
+}
+
+[data-bs-theme='dark'] .chroma .w {
+  color: #6e7681;
+}

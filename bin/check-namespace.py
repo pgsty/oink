@@ -215,7 +215,7 @@ def check_sources() -> list[str]:
         list((ROOT / "layouts").rglob("*.html"))
         + list((ROOT / "layouts").rglob("*.xml"))
         + list((ROOT / "assets").rglob("*.js"))
-        + list((ROOT / "assets").rglob("*.scss"))
+        + list((ROOT / "assets").rglob("*.css"))
     )
     vocabulary = "\n".join(path.read_text(encoding="utf-8", errors="ignore") for path in source_files)
     allowed_unprefixed = {
@@ -277,10 +277,10 @@ def check_sources() -> list[str]:
     # reaches the player only under the player's own names. A --td-term-*
     # variant compiles, passes every other check, and leaves the terminal on
     # asciinema's built-in black inside a light OINK window — the 0.5 break.
-    scss = "\n".join(
-        path.read_text(encoding="utf-8") for path in sorted((ROOT / "assets/scss").rglob("*.scss"))
+    styles = "\n".join(
+        path.read_text(encoding="utf-8") for path in sorted((ROOT / "assets/css/td").rglob("*.css"))
     )
-    themed = set(PLAYER_THEME_RE.findall(scss))
+    themed = set(PLAYER_THEME_RE.findall(styles))
     for variant in ("td-light", "td-dark"):
         if variant not in themed:
             errors.append(

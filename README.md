@@ -65,8 +65,8 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 OINK 1.5.1 keeps the Hugo-only build boundary and stabilizes Duo View, the
 two-pane reader introduced in 1.5.0. It also corrects RSS and Print aggregation,
 navigation identity, search ranking, safe fallbacks, and related accessibility
-and localization details. That release still compiles Sass and needs Hugo's
-Extended edition; the current checkout does not. See the [release notes](https://oink.pgsty.com/blog/release/1.5.1/)
+and localization details. That release needs Hugo's Extended edition; the
+current checkout builds with any edition. See the [release notes](https://oink.pgsty.com/blog/release/1.5.1/)
 and [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site
@@ -83,9 +83,9 @@ repository's internal fixtures.
 · [Live starter](https://pgsty.github.io/oink-starter/)
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
-You need Git, Go, and Hugo. A site build compiles no Sass and needs no
-Node.js; only a site still pinned to OINK 1.5.1 or older needs a Hugo that
-contains LibSass. To evaluate the neutral template locally:
+You need Git, Go, and Hugo; a site build needs no Node.js and no other tool.
+Only a site still pinned to OINK 1.5.1 or older needs Hugo's Extended edition.
+To evaluate the neutral template locally:
 
 ```sh
 git clone https://github.com/pgsty/oink-starter.git
@@ -228,7 +228,7 @@ assuming drop-in compatibility.
 | Dependency | Policy |
 | --- | --- |
 | Hugo | 0.169.0 or newer, any edition. OINK 1.5.1 and older need the Extended edition, which ended with Hugo 0.169 |
-| Sass | None in a site build: the theme ships compiled CSS. Theme maintainers regenerate it with `bin/build-css.py`, which needs a Hugo that contains LibSass |
+| Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
 | Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
@@ -236,9 +236,7 @@ assuming drop-in compatibility.
 Development, preview and checks use whichever Hugo is installed, and CI
 installs the current release; none is pinned. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.
 Keep warnings visible and review them. Focused checks verify theme diagnostics
-and safe fallbacks directly. Site builds use no Sass. Regenerating the shipped
-CSS is a maintainer step that still needs LibSass, which only Hugo's Extended
-edition up to 0.169 contains; replacing that compiler is a separate decision.
+and safe fallbacks directly.
 Dated release and research records retain their original tool versions.
 
 ## Community and releases

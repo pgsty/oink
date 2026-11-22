@@ -1,0 +1,530 @@
+/* ============================================================
+   Right-rail table of contents with a muted track and accent indicator.
+   Active path geometry is calculated by docs-shell.js.
+   ============================================================ */
+/* The column reserves width while the fixed, collapsible panel stays in place. */
+.td-shell-layout {
+  /* Keep compact desktops readable; share extra wide-screen space with the
+     outline without letting it grow indefinitely on an ultrawide monitor. */
+  --td-shell-toc-w: clamp(286px, 20vw, 420px);
+}
+
+.td-shell-toc {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .td-shell-toc {
+    display: block;
+    flex: 0 0 var(--td-shell-toc-w);
+    width: var(--td-shell-toc-w);
+  }
+
+  /* Follow viewport resizing immediately. Interpolating this width makes the
+     article shrink with each drag step, then widen as the rail catches up;
+     text near a wrapping boundary can alternate between the two layouts. */
+}
+
+.td-shell-toc__panel {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .td-shell-toc__panel {
+    position: fixed;
+    inset-block-start: var(--td-shell-nav-h);
+    /* Share the sidebar's available height when the footer enters view. */
+    inset-block-end: var(--td-shell-footer-offset, 0px);
+    inset-inline-end: 0;
+    width: var(--td-shell-toc-w);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* Match the article's breadcrumb row rather than starting the TOC rail
+       at an unrelated hard-coded height. */
+    padding-block: var(--td-shell-content-top, 2.5rem) 12px;
+    padding-inline: 8px 20px;
+    transition: transform var(--td-motion-duration) ease, opacity var(--td-motion-duration) ease;
+  }
+}
+
+/* Collapse releases layout width once; only the panel's slide/fade animates. */
+@media (min-width: 1200px) {
+  [data-td-shell-toc='collapsed'] .td-shell-toc {
+    width: 0;
+    flex-basis: 0;
+  }
+  [data-td-shell-toc='collapsed'] .td-shell-toc__panel {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  [dir='rtl'][data-td-shell-toc='collapsed'] .td-shell-toc__panel {
+    transform: translateX(-100%);
+  }
+}
+
+/* Floating restore action, visible only when collapsed at xl and above. */
+.td-shell-toc-float {
+  display: none;
+  position: fixed;
+  /* Match the breadcrumb / RSS-copy action row on the article canvas. */
+  top: calc( var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem));
+  inset-inline-end: 16px;
+  z-index: 40;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--td-shell-card);
+  box-shadow: var(--td-shell-shadow-lg);
+}
+
+@media (min-width: 1200px) {
+  [data-td-shell-toc='collapsed'] .td-shell-toc-float {
+    display: flex;
+    animation: td-shell-fade var(--td-motion-duration-slow) ease both;
+  }
+}
+
+/* ------------------------------------------------ flow rail (toc_style) */
+@media (min-width: 1200px) {
+  .td-shell-layout--toc-flow .td-shell-toc {
+    --td-shell-toc-w: var(--td-shell-toc-flow-w, clamp(340px, 22vw, 440px));
+    flex-basis: var(--td-shell-toc-w);
+    width: var(--td-shell-toc-w);
+  }
+  /* Preserve the collapsed override against the later flow rule. */
+  [data-td-shell-toc='collapsed'] .td-shell-layout--toc-flow .td-shell-toc {
+    width: 0;
+    flex-basis: 0;
+  }
+  .td-shell-layout--toc-flow .td-shell-toc__panel {
+    position: sticky;
+    inset-block-start: calc(var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem));
+    inset-block-end: auto;
+    inset-inline-end: auto;
+    width: 100%;
+    max-block-size: calc(100dvh - var(--td-shell-nav-h) - var(--td-shell-content-top, 2.5rem) - 1rem);
+    padding-block-start: 0;
+    margin-block-start: var(--td-shell-toc-flow-offset, 0px);
+  }
+}
+
+/* No-TOC fallback control; regular TOC pages use the inline group toggle. */
+.td-shell-toc__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.td-shell-toc__title-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  transition: background-color var(--td-motion-duration-fast) ease, color var(--td-motion-duration-fast) ease;
+}
+
+.td-shell-toc__title-btn .td-shell-icon {
+  --td-shell-icon-size: 16px;
+}
+
+.td-shell-toc__title-btn:hover {
+  background: var(--td-shell-accent);
+  color: var(--bs-body-color);
+}
+
+.td-shell-toc__inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.td-shell-toc__body {
+  position: relative;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 0;
+  margin-inline-start: 1px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+}
+
+.td-shell-toc__body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Each entry owns an SVG segment. The accent path is clipped to the active
+   range, and docs-shell.js writes depth-dependent logical indentation. */
+.td-shell-toc__body #TableOfContents ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.td-shell-toc__body #TableOfContents a {
+  position: relative;
+  z-index: 0;
+  display: block;
+  padding-block: 6px;
+  /* Logical, not `padding: 6px 6px 6px 0`: the inline style that
+     docs-shell.js writes is padding-inline-start, so a physical
+     shorthand would hand RTL the indent and the pill gutter on the
+     same side. The end value is trailing room for the pill. */
+  padding-inline: 0 6px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--td-shell-muted-fg);
+  overflow-wrap: anywhere;
+  transition: color var(--td-motion-duration) ease;
+}
+
+/* Pill behind the one entry the reader is standing in. It starts after
+   this item's own indent (docs-shell.js writes --td-shell-toc-pill-x) and
+   sits below the track SVG, so the rail reads through it unbroken.
+   Deliberately no weight change: the accent geometry is measured once per
+   resize, and re-wrapping an entry mid-scroll would desync it. */
+.td-shell-toc__body #TableOfContents a::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset-block: 1px;
+  inset-inline: var(--td-shell-toc-pill-x, 14px) 0;
+  border-radius: 6px;
+  transition: background-color var(--td-motion-duration) ease;
+}
+
+.td-shell-toc__body #TableOfContents a:hover {
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+/* The whole lit range reads in the section's accent: these are the
+   headings the viewport is standing over, the same span the rail's lit
+   line covers, so ink and line tell one story. docs-shell.js toggles
+   .active on every entry in that range. */
+.td-shell-toc__body #TableOfContents a.active {
+  color: var(--td-accent);
+}
+
+/* Written by docs-shell.js on the one heading the reader is inside, which
+   is also where j/k lands. Ordered last so it survives :hover. Within the
+   lit range this entry alone adds the pill ground -- the dot is parked
+   here, and one ground under the whole range would read as a block
+   selection rather than a place. */
+.td-shell-toc__body #TableOfContents a[aria-current='location'] {
+  color: var(--td-accent);
+}
+
+.td-shell-toc__body #TableOfContents a[aria-current='location']::before {
+  background: var(--td-shell-toc-pill-bg);
+}
+
+/* The first and last entries drop the padding that would push the list's
+   text off the body's own edges -- but the pill is drawn inside the link
+   box, so each trimmed side compensates with the 5px the box no longer
+   carries. The body's 12px block padding gives the overhang room, keeping
+   the cursor pill the same height on every row. */
+.td-shell-toc__body #TableOfContents > ul > li:first-child > a {
+  padding-top: 0;
+}
+
+.td-shell-toc__body #TableOfContents > ul > li:first-child > a::before {
+  inset-block-start: -5px;
+}
+
+.td-shell-toc__body #TableOfContents > ul > li:last-child > a:only-child {
+  padding-bottom: 0;
+}
+
+.td-shell-toc__body #TableOfContents > ul > li:last-child > a:only-child::before {
+  inset-block-end: -5px;
+}
+
+/* Muted per-item track with Bezier connectors across depth changes. */
+.td-shell-toc__rail {
+  position: absolute;
+  inset-inline-start: 0;
+  top: -6px;
+  height: calc(100% + 6px);
+  z-index: -1;
+  overflow: visible;
+}
+
+.td-shell-toc__rail line,
+.td-shell-toc__rail path {
+  stroke: var(--td-shell-rail);
+  stroke-width: 1;
+  fill: none;
+}
+
+/* End early before a depth change to leave room for the connector. */
+.td-shell-toc__rail--cut {
+  height: 100%;
+}
+
+/* The active range in path coordinates: a start distance
+   (--td-shell-track-start), a lit length (--td-shell-track-length), and which
+   end of it the dot leads from (--td-shell-dot-lead, 0 or 1). docs-shell.js
+   registers all three with CSS.registerProperty — an @property rule here
+   would not survive the CSS minifier — so the numbers themselves interpolate:
+   the transition runs on the overlay, and the dash and the dot both derive
+   their geometry from the one in-flight value, which is what pins the dot to
+   the end of the lit line at every frame of every animation. An engine
+   without registered properties snaps the rail into place, still glued.
+
+   Light the accent path along the active range with its dash pattern. */
+.td-shell-toc__active {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  pointer-events: none;
+  /* The range animates here, once — base duration, hard ease-out. The curve
+     matters more than the duration: a fast scroll retargets this transition
+     on every heading it passes, and an ease-out makes its progress up front,
+     so each retarget still advances the line at once and the chase converges
+     on the entries the list is highlighting. (An ease-in-out restarted
+     mid-chase never leaves the slow opening of its curve — the line fell
+     whole entries behind the links already coloured.) The end selector is
+     faster still: a change of reading direction is one quick flick of the
+     dot along the lit line to its other end. */
+  transition: --td-shell-track-start var(--td-motion-duration) var(--td-shell-ease-dialog), --td-shell-track-length var(--td-motion-duration) var(--td-shell-ease-dialog), --td-shell-dot-lead var(--td-motion-duration-fast) var(--td-shell-ease-dialog);
+}
+
+.td-shell-toc__active svg {
+  display: block;
+  overflow: visible;
+}
+
+.td-shell-toc__active path {
+  stroke: var(--td-accent);
+  stroke-width: 1;
+  fill: none;
+  /* One dash the length of the range, parked at its start distance; the
+     99999px gap outruns any real path, so a second dash never appears.
+     No transition here — the variables arrive already animated. */
+  stroke-dasharray: var(--td-shell-track-length, 0px) 99999px;
+  stroke-dashoffset: calc(-1 * var(--td-shell-track-start, 0px));
+}
+
+/* A 4px dot capping the lit line, placed through CSS motion-path properties.
+   docs-shell.js parks it on whichever end of the active range the reader is
+   travelling towards, so it always leads rather than trails. */
+.td-shell-toc__dot {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--td-accent);
+  box-shadow: 0 0 0 2px rgba(var(--td-accent-rgb), 0.2);
+  /* The dot's place *is* the line's end: start plus none or all of the lit
+     length, read from the same animated values the dash is drawn from. The
+     line positions the dot; it has no motion schedule of its own to fall
+     out of step with. */
+  offset-distance: calc( var(--td-shell-track-start, 0px) + var(--td-shell-dot-lead, 1) * var(--td-shell-track-length, 0px));
+  opacity: var(--td-shell-dot-o, 0);
+  transition: opacity var(--td-motion-duration) ease;
+}
+
+/* Forced colors flattens fill/stroke and drops backgrounds, which would erase
+   every distinction the rail is built on. Restore them with system colors. */
+@media (forced-colors: active) {
+  .td-shell-toc__rail line,
+.td-shell-toc__rail path {
+    stroke: GrayText;
+  }
+  .td-shell-toc__active path {
+    stroke: Highlight;
+  }
+  .td-shell-toc__dot {
+    background: Highlight;
+    box-shadow: none;
+  }
+  .td-shell-toc__body #TableOfContents a[aria-current='location']::before {
+    border: 1px solid Highlight;
+  }
+}
+
+.td-shell-toc__panel > .td-shell-aside {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+}
+
+.td-shell-toc__panel > .td-shell-aside::-webkit-scrollbar {
+  display: none;
+}
+
+/* The fade and the scroll live on the stack, not on the contents alone. */
+.td-shell-toc__panel > .td-shell-aside .td-shell-toc__body {
+  overflow: visible;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+/* ---------------------------------------------- relocatable rail contents */
+/* Labelled, collapsible group around the TOC, matching the taxonomy clouds so
+   the rail reads as one stack of sections. */
+.td-shell-aside-group__head {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* TOC group header row: the rail collapse toggle occupies the icon column, so
+   the title starts exactly where the taxonomy group titles do, and the whole
+   row highlights as one item — the toggle just carries a special click. */
+.td-shell-aside-group__row {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  transition: background-color var(--td-motion-duration) ease;
+}
+
+.td-shell-aside-group__row:hover {
+  background: var(--td-shell-accent);
+  transition: none;
+}
+
+.td-shell-aside-group__row .td-shell-aside-group__head {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-inline-start: 0;
+}
+
+.td-shell-aside-group__row .td-shell-aside-group__head:hover {
+  background: transparent;
+}
+
+.td-shell-aside-group__rail-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding-block: 8px;
+  padding-inline: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .td-shell-aside-group__rail-toggle {
+    padding-block: 6px;
+  }
+}
+
+.td-shell-aside-group__rail-toggle:hover, .td-shell-aside-group__rail-toggle:focus-visible {
+  background: transparent;
+  color: var(--bs-body-color);
+}
+
+.td-shell-aside-group__rail-toggle .td-shell-icon {
+  --td-shell-icon-size: 16px;
+}
+
+/* Group icon shared by the taxonomy clouds; in the rail the TOC group's icon
+   is the rail toggle itself, so its static twin stays hidden there. */
+.td-shell-aside-group__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  width: 16px;
+  color: var(--td-shell-muted-fg);
+  font-size: 12px;
+  text-align: center;
+}
+
+.td-shell-aside-group__icon .td-shell-icon {
+  --td-shell-icon-size: 16px;
+}
+
+.td-shell-aside-group__icon--toc {
+  display: none;
+}
+
+/* Inside the drawer the rail does not exist: the toggle hides, its static
+   icon shows, and the head regains the tree indent so the "Content" group
+   lines up with the taxonomy heads below it. */
+.td-shell-sidebar__aside .td-shell-aside-group__rail-toggle {
+  display: none;
+}
+
+.td-shell-sidebar__aside .td-shell-aside-group__icon--toc {
+  display: inline-flex;
+}
+
+.td-shell-sidebar__aside .td-shell-aside-group__row .td-shell-aside-group__head {
+  padding-inline-start: var(--td-shell-indent, 8px);
+}
+
+.td-shell-aside-group__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  text-align: start;
+}
+
+.td-shell-aside-group + .td-shell-aside-group {
+  margin-top: 8px;
+}
+
+/* The whole stack scrolls as one now that every section is collapsible;
+   scrolling only the contents let the groups below squeeze it to nothing on a
+   short viewport. */
+/* Below xl the block is moved into the sidebar drawer. There it sits under the
+   navigation tree, so it borrows the tree's metrics — same row height, same
+   indent, same type — rather than keeping the narrower rail's. */
+.td-shell-sidebar__aside {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--bs-border-color);
+  font-size: 14px;
+}
+
+.td-shell-sidebar__aside[hidden] {
+  display: none;
+}
+
+/* Section headings read like the tree's top-level rows. */
+.td-shell-sidebar__aside .td-shell-aside-group__title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--bs-body-color);
+}
+
+.td-shell-sidebar__aside .td-shell-aside-group__head {
+  border-radius: 10px;
+}
+
+.td-shell-sidebar__aside .td-shell-aside-group__head:hover {
+  background: var(--td-shell-accent);
+}
+
+/* No fixed panel to scroll within: let the contents extend the drawer's own
+   scroller instead of nesting a second one behind a fade mask. */
+.td-shell-sidebar__aside .td-shell-toc__body {
+  max-height: none;
+  overflow: visible;
+  mask-image: none;
+  -webkit-mask-image: none;
+}

@@ -1,0 +1,443 @@
+/* Chapter numbers read as part of the sidebar row, not as a technical token:
+   they inherit the surrounding face so a Chinese title and its number are one
+   line of one font. `tabular-nums` keeps the column aligned without mono. */
+.td-book-number {
+  flex: none;
+  color: var(--bs-secondary-color);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* Book content has its own reading measure, independent from the outer shell.
+   Consumer sites can override these tokens without replacing the layout API. */
+.td-book {
+  --td-book-content-slim: 48rem;
+  --td-book-content-normal: 70rem;
+}
+
+.td-book-content--slim .td-shell-article > .td-content,
+.td-book-content--normal .td-shell-article > .td-content,
+.td-book-content--wide .td-shell-article > .td-content {
+  width: 100%;
+  margin-inline: auto;
+}
+
+.td-book-content--slim .td-shell-article > .td-content {
+  max-width: var(--td-book-content-slim);
+}
+
+.td-book-content--normal .td-shell-article > .td-content {
+  max-width: var(--td-book-content-normal);
+}
+
+.td-book-content--wide .td-shell-article > .td-content {
+  max-width: none;
+}
+
+.td-book-content--normal .td-shell-layout--w-normal .td-shell-article {
+  max-width: var(--td-book-content-normal);
+}
+
+.td-book-content--wide .td-shell-layout--w-normal .td-shell-article {
+  max-width: none;
+}
+
+/* The generic tree rule makes every child span flexible. Book numbers are an
+   atomic, right-aligned column; the following title owns the remaining row. */
+body.td-book .td-shell-tree__link {
+  text-align: start;
+}
+
+body.td-book .td-shell-tree__link > .td-book-number {
+  flex: 0 0 auto;
+  min-width: 1.75rem;
+  overflow: visible;
+  overflow-wrap: normal;
+  text-align: end;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+body.td-book .td-shell-tree__link > .td-book-number + span {
+  flex: 1 1 auto;
+  text-align: start;
+}
+
+body.td-book .td-shell-tree__link > .td-book-draft-badge {
+  flex: none;
+}
+
+.td-book-draft-badge {
+  flex: none;
+  padding: 0.08rem 0.35rem;
+  border: 1px solid var(--bs-warning-border-subtle);
+  border-radius: var(--bs-border-radius-pill);
+  background: var(--bs-warning-bg-subtle);
+  color: var(--bs-warning-text-emphasis);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.td-book-draft {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+  max-width: 100%;
+  margin-block: 0 1.5rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--bs-warning-border-subtle);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-warning-bg-subtle);
+  color: var(--bs-warning-text-emphasis);
+}
+
+/* Base figure: one centered block image with a caption underneath. It backs
+   the render hook's `![alt](src)` + {caption=…} form and the `image`
+   shortcode's processed figure. A numbered figure carries this class *and*
+   `.td-book-figure`, so this block must stay first: the Book variant below
+   deliberately overrides the spacing. */
+.td-figure {
+  max-width: 100%;
+  margin-block: 1.5rem;
+  text-align: center;
+}
+
+.td-figure > figcaption {
+  margin-block-start: 0.6rem;
+  color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.td-figure > figcaption > :last-child {
+  margin-block-end: 0;
+}
+
+.td-figure__byline {
+  display: block;
+  color: var(--bs-tertiary-color);
+  font-size: 0.85em;
+}
+
+/* A `{link=…}` figure wraps its image in an anchor. The anchor shrinks to the
+   image so the click target is the picture, not the whole column. */
+.td-figure__link,
+.td-book-figure__link {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* Every figure image is the same centered block, whether it sits directly in
+   the figure or inside that anchor. Book image partials still write
+   `td-book-figure__image`; the retired image shortcode's `td-figure__image`
+   left the markup and its selector left with it. */
+.td-figure > img,
+.td-figure__link > img,
+.td-book-figure__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* Numbered figures (`fig`, `tbl`, `eq`, `eg`). `tbl`/`eq`/`eg` carry only this
+   class, so it stays self-sufficient rather than becoming a `.td-figure`
+   modifier; for `fig` it overrides the base spacing above. */
+.td-book-figure {
+  max-width: 100%;
+  margin-block: 2rem;
+  scroll-margin-block-start: var(--td-scroll-padding-top);
+  text-align: center;
+}
+
+.td-book-figure__body {
+  min-width: 0;
+  text-align: start;
+}
+
+.td-book-figure figcaption {
+  margin-block-start: 0.75rem;
+  color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* Numbered table: the caption is a title *above* the table (Chicago /
+   O'Reilly convention), start-aligned, in the heading face — figures keep
+   their caption below. */
+.td-book-figure--tbl {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.td-book-figure--tbl > .td-book-figure__body > .td-table-scroll,
+.td-book-figure--tbl > .td-book-figure__body > table {
+  margin-inline: auto;
+}
+
+.td-book-figure--tbl > .td-book-figure__body > .td-table-scroll,
+.td-book-figure--tbl > .td-book-figure__body > .td-table-frame {
+  margin-block-end: 0;
+}
+
+.td-book-figure--tbl > figcaption {
+  margin: 0 0 0.6rem;
+  color: var(--bs-heading-color, var(--bs-body-color));
+  font-family: var(--td-heading-font-family);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: start;
+}
+
+.td-book-figure--tbl > figcaption .td-tbl-label {
+  font-family: inherit;
+}
+
+.td-book-figure--tbl > figcaption .td-tbl-caption {
+  font-weight: 600;
+}
+
+.td-book-figure--eq {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.td-book-figure--eq .td-book-equation__body {
+  /* Reserve reading space before deciding whether the caption fits beside it. */
+  flex: 1 0 16rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.td-book-figure--eq .katex-display {
+  margin: 0;
+}
+
+.td-book-figure--eq figcaption {
+  max-width: 100%;
+  margin: 0 0 0 auto;
+  color: var(--bs-body-color);
+  text-align: end;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Numbered example (`eg`): one framed block, O'Reilly style — the caption is
+   the header bar of the frame and the example body sits *inside* it, so the
+   number, the caption, and the listing read as a single unit. */
+.td-book-figure--eg {
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color);
+  border-inline-start: 4px solid var(--bs-primary);
+  border-radius: var(--bs-border-radius);
+  text-align: start;
+}
+
+.td-book-figure--eg > figcaption {
+  display: flex;
+  gap: 0.35em;
+  align-items: baseline;
+  margin: 0;
+  padding: 0.7rem 0.9rem;
+  border-block-end: 1px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  font-family: var(--td-ui-font-family);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: start;
+}
+
+.td-book-figure--eg > .td-book-figure__body {
+  padding: 0.9rem;
+}
+
+.td-book-figure--eg > .td-book-figure__body > :first-child {
+  margin-block-start: 0;
+}
+
+.td-book-figure--eg > .td-book-figure__body > :last-child {
+  margin-block-end: 0;
+}
+
+/* A body that is exactly one code block (the common case) sits flush in
+   the frame, which already draws the border and the radius: the block must
+   not draw a second one. The native fence form puts that block straight
+   into the figure, the shortcode wraps it in the body element. Browsers
+   without `:has()` keep the padded form above for the wrapped case, which
+   is correct, only quieter. */
+.td-book-figure--eg > .td-code,
+.td-book-figure--eg > .td-book-figure__body:has(> .td-code:only-child) > .td-code {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.td-book-figure--eg > .td-book-figure__body:has(> .td-code:only-child) {
+  padding: 0;
+}
+
+/* A standalone Markdown image without caption / number: a bare block-level
+   <img class="td-image"> (no wrapper, so a linked standalone image stays valid). */
+img.td-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-block: 1rem;
+}
+
+a > img.td-image {
+  margin-block: 0;
+}
+
+/* `Figure 2-1` / `图 2-1` sits inside running prose. A face the label does not
+   share with the sentence around it splits every CJK label across two fonts,
+   because the bundled mono ships Latin only. Bold in the prose face is enough. */
+.td-fig-label,
+.td-tbl-label,
+.td-eq-label,
+.td-eg-label,
+.td-book-label {
+  color: var(--bs-body-color);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.td-book-xref {
+  white-space: nowrap;
+}
+
+.td-book-toc,
+.td-book-figures {
+  max-width: 100%;
+  margin-block: 1.5rem;
+}
+
+.td-book-toc ol, .td-book-toc.td-book-figures,
+.td-book-figures ol,
+.td-book-figures.td-book-figures {
+  padding-inline-start: 1.4rem;
+}
+
+.td-book-toc li + li,
+.td-book-figures li + li {
+  margin-block-start: 0.3rem;
+}
+
+.td-book-toc ol {
+  list-style: none;
+}
+
+.td-book-toc__item--draft > a::after {
+  margin-inline-start: 0.35rem;
+  color: var(--bs-warning-text-emphasis);
+  content: "(" attr(data-td-draft-label) ")";
+}
+
+.td-book-toc__headings {
+  margin-block: 0.3rem 0.6rem;
+  color: var(--bs-secondary-color);
+  font-size: 0.88rem;
+}
+
+.td-book-figures {
+  padding: 0;
+  list-style-position: inside;
+}
+
+.td-shell-tree__headings {
+  margin: 0.1rem 0 0.5rem;
+  /* Follow the owning row's depth and its optional icon/number columns, then
+     add one heading level. Logical spacing also preserves this hierarchy in RTL. */
+  padding-inline-start: calc( var(--td-shell-indent, 8px) + var(--td-book-heading-icon, 0px) + var(--td-book-heading-number, 0px) + 1rem);
+  padding-inline-end: 8px;
+  color: var(--td-shell-muted-fg);
+  font-size: 0.78rem;
+}
+
+.td-shell-tree__headings ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.td-shell-tree__headings ul ul {
+  padding-inline-start: 0.75rem;
+}
+
+.td-shell-tree__headings a {
+  display: block;
+  padding-block: 0.18rem;
+  color: inherit;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+/* These sit inside the sidebar, not inside the prose, so they follow the
+   section's accent rather than the link family: a Book with its own theme
+   color lights its headings in that color instead of the brand blue. */
+.td-shell-tree__headings a:hover,
+.td-shell-tree__headings a:focus-visible {
+  color: var(--td-accent);
+}
+
+.td-shell-tree__row:has(> .td-shell-tree__link > i) + .td-shell-tree__headings {
+  --td-book-heading-icon: 1.5rem;
+}
+
+.td-shell-tree__row:has(> .td-shell-tree__link > .td-book-number) + .td-shell-tree__headings {
+  --td-book-heading-number: calc(1.75rem + 8px);
+}
+
+@media (forced-colors: active) {
+  .td-book-draft,
+.td-book-draft-badge {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+
+@media print {
+  .td-book-content--slim .td-shell-article > .td-content,
+.td-book-content--normal .td-shell-article > .td-content,
+.td-book-content--wide .td-shell-article > .td-content {
+    max-width: none;
+  }
+  .td-book-draft,
+.td-book-draft-badge {
+    border-color: #777 !important;
+    background: transparent !important;
+    color: #111 !important;
+  }
+  .td-book-figure--eq {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+  .td-book-figure--eq .td-book-equation__body {
+    overflow: visible;
+  }
+  .td-book-figure--eq figcaption {
+    white-space: normal;
+    text-align: end;
+  }
+  .td-book-figure {
+    break-inside: avoid-page;
+  }
+  .td-book-print-page {
+    break-before: page;
+  }
+}

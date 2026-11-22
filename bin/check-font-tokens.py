@@ -7,8 +7,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCSS_ROOT = ROOT / "assets" / "scss"
-TD_ROOT = SCSS_ROOT / "td"
+TD_ROOT = ROOT / "assets" / "css" / "td"
 LAYOUT_ROOT = ROOT / "layouts"
 FAMILIES = ("Chakra Petch", "IBM Plex Mono", "IBM Plex Sans")
 # Inter is matched only as a quoted family literal: the bare word is ordinary
@@ -18,9 +17,8 @@ FAMILY_PATTERN = re.compile(
 )
 REVERSE_PATTERN = re.compile(r"--bs-[\w-]+\s*:\s*var\(--td-")
 FAMILY_NAME_ALLOWLIST = {
-    TD_ROOT / "_brand.scss",  # Local @font-face declarations.
-    TD_ROOT / "_tokens-typography.scss",  # Public role defaults.
-    TD_ROOT / "_variables.scss",  # The Sass stacks Bootstrap reads.
+    TD_ROOT / "brand.css",  # Local @font-face declarations.
+    TD_ROOT / "tokens-typography.css",  # Public role defaults.
 }
 PUBLIC_ROLES = (
     "ui-font-family",
@@ -39,8 +37,8 @@ SEMANTIC_VALUE = re.compile(
     r"^var\(--td-[\w-]*font-family(?:\s*,[^)]*)?\)(?:\s*!important)?$"
 )
 LITERAL_DECLARATION_ALLOWLIST = {
-    TD_ROOT / "_brand.scss": {"'Chakra Petch'", "'IBM Plex Mono'"},
-    TD_ROOT / "_landing.scss": {"Georgia, serif"},  # Decorative quote glyph.
+    TD_ROOT / "brand.css": {"'Chakra Petch'", "'IBM Plex Mono'"},
+    TD_ROOT / "landing.css": {"Georgia, serif"},  # Decorative quote glyph.
 }
 SPECIAL_DECLARATION_VALUES = {
     "inherit",
@@ -51,7 +49,9 @@ SPECIAL_DECLARATION_VALUES = {
 def main() -> int:
     errors: list[str] = []
     sources: dict[Path, str] = {}
-    for path in sorted(SCSS_ROOT.rglob("*.scss")):
+    for path in sorted(TD_ROOT.rglob("*.css")):
+        if TD_ROOT / "bootstrap" in path.parents:
+            continue        # Bootstrap declares its own base tokens.
         source = path.read_text()
         sources[path] = source
         for number, line in enumerate(source.splitlines(), 1):
@@ -102,7 +102,7 @@ def main() -> int:
                 f"attributes missing {attribute.removesuffix('=')}"
             )
 
-    token_path = TD_ROOT / "_tokens-typography.scss"
+    token_path = TD_ROOT / "tokens-typography.css"
     token_source = sources[token_path]
     for role in PUBLIC_ROLES:
         token = f"--td-{role}"
@@ -151,7 +151,7 @@ def main() -> int:
         errors.append(f"undefined typography token --{token}")
 
     role_seeds = (
-        ("--td-code-font-family", "$font-family-code"),
+        ("--td-code-font-family", "var(--bs-font-monospace)"),
         ("--td-print-font-family", "var(--td-body-font-family)"),
     )
     for token, variable in role_seeds:
@@ -210,11 +210,11 @@ def main() -> int:
                 f"{token_path.relative_to(ROOT)}: {selector} must precede the system "
                 "block so typography: system still wins"
             )
-    presets_path = TD_ROOT / "_presets.scss"
+    presets_path = TD_ROOT / "presets.css"
     if presets_path in sources and re.search(r"--td-[\w-]*font-family\s*:", sources[presets_path]):
         errors.append(
             f"{presets_path.relative_to(ROOT)}: font roles belong in "
-            "_tokens-typography.scss, before the system block"
+            "tokens-typography.css, before the system block"
         )
 
     if errors:

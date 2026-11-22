@@ -1,0 +1,26 @@
+{{- /* Return one of the theme's stylesheets as a resource: its layers
+       concatenated in cascade order and published as css/<name>.css. The
+       layers are plain CSS, so nothing is compiled; the caller minifies and
+       fingerprints. An unknown name or a missing layer warns and the result
+       is false or lacks that layer.
+
+       {{ with partial "css/bundle.html" "chrome" }}<link rel="stylesheet" href="{{ .RelPermalink }}">{{ end }} */ -}}
+{{- $name := . -}}
+{{- $bundle := false -}}
+{{- $names := index (partialCached "css/layers.html" "layers") $name -}}
+{{- if not $names -}}
+  {{- warnf "stylesheet: unknown stylesheet %q; expected main, chrome, landing, search or compare" $name -}}
+{{- else -}}
+  {{- $layers := slice -}}
+  {{- range $names -}}
+    {{- $path := printf "css/td/%s.css" . -}}
+    {{- if hasPrefix . "/" }}{{ $path = printf "%s.css" (strings.TrimPrefix "/" .) }}{{ end -}}
+    {{- with resources.Get $path -}}
+      {{- $layers = $layers | append . -}}
+    {{- else -}}
+      {{- warnf "stylesheet: layer not found: assets/%s" $path -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $layers }}{{ $bundle = $layers | resources.Concat (printf "css/%s.css" $name) }}{{ end -}}
+{{- end -}}
+{{- return $bundle -}}

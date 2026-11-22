@@ -1,0 +1,28 @@
+/* Keep code blocks LTR, see: https://github.com/google/docsy/issues/2529 */
+/*rtl:ignore*/
+[dir='rtl'] .td-code,
+[dir='rtl'] .td-code pre,
+[dir='rtl'] .td-code code {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+[dir='rtl'] .td-code__header,
+[dir='rtl'] .td-code__utilities,
+[dir='rtl'] .td-code__expand {
+  direction: rtl;
+  text-align: start;
+}
+
+[dir='rtl'] .td-code__filename {
+  unicode-bidi: plaintext;
+}
+
+[dir='rtl'] .highlight,
+[dir='rtl'] pre,
+[dir='rtl'] pre code {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}

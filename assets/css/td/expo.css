@@ -1,0 +1,604 @@
+/* Expo borrows the shell's color, typography and preset geometry tokens.
+   A disappearing scrollbar widens justified rows and can make them tall enough
+   to restore it, retriggering ResizeObserver forever. Keep the document's usable
+   width fixed across that boundary and while the viewer locks page scrolling.
+   Explicit scroll also covers overlay/custom scrollbar combinations that do
+   consume width while ignoring the stable gutter. */
+html:has(body.td-expo-shell) {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body.td-expo-shell:has(.td-expo-viewer[open]) {
+  padding-inline-end: var(--td-expo-scrollbar-width, 0px);
+}
+
+.td-expo-content {
+  max-width: none;
+}
+
+.td-expo-content > .lead {
+  max-width: 65ch;
+}
+
+.td-expo {
+  position: relative;
+  margin-block: 1.5rem 3rem;
+  font-family: var(--td-ui-font-family);
+}
+
+.td-expo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--bs-border-radius);
+  background: transparent;
+  color: var(--bs-secondary-color);
+  cursor: pointer;
+  text-decoration: none !important;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.td-expo-button:hover, .td-expo-button[aria-pressed='true'] {
+  color: var(--bs-emphasis-color);
+  background: var(--td-shell-accent);
+  border-color: var(--bs-border-color);
+}
+
+.td-expo-button:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 2px;
+}
+
+.td-expo-button:disabled, .td-expo-button[aria-disabled="true"] {
+  opacity: .35;
+  cursor: default;
+}
+
+.td-expo-button[hidden] {
+  display: none;
+}
+
+.td-expo-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.td-expo-toolbar[hidden] {
+  display: none;
+}
+
+.td-expo-toolbar > .td-expo-button {
+  width: 44px;
+  height: 44px;
+}
+
+.td-expo-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  flex-shrink: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-tertiary-bg);
+  overflow: hidden;
+}
+
+.td-expo-mode {
+  position: relative;
+  display: block;
+  margin: 0;
+}
+
+.td-expo-mode + .td-expo-mode {
+  border-inline-start: 1px solid var(--bs-border-color);
+}
+
+.td-expo-mode input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.td-expo-mode .td-expo-button {
+  width: 100%;
+  height: 42px;
+  border: 0;
+  border-radius: 0;
+  pointer-events: none;
+}
+
+.td-expo-mode input:hover + .td-expo-button {
+  color: var(--bs-emphasis-color);
+  background: var(--td-shell-accent);
+}
+
+.td-expo-mode input:checked + .td-expo-button {
+  color: var(--bs-emphasis-color);
+  background: var(--td-shell-accent);
+  box-shadow: inset 0 -2px var(--bs-link-color);
+}
+
+.td-expo-mode input:focus-visible + .td-expo-button {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: -3px;
+}
+
+.td-expo-size {
+  display: flex;
+  align-items: center;
+  flex: 0 1 200px;
+  gap: 8px;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  color: var(--bs-secondary-color);
+}
+
+.td-expo-size input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--bs-link-color);
+  cursor: pointer;
+}
+
+.td-expo-size__small, .td-expo-size__large {
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.td-expo-size__small {
+  font-size: 12px;
+}
+
+.td-expo-size__large {
+  font-size: 20px;
+}
+
+.td-expo-size .td-shell-icon {
+  font-size: inherit;
+  inline-size: 1em;
+  block-size: 1em;
+}
+
+.td-expo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(Min(220px, 100%), 1fr));
+  gap: 20px;
+}
+
+.td-expo-item {
+  min-width: 0;
+  margin: 0;
+  scroll-margin-block: 100px;
+}
+
+.td-expo-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--bs-tertiary-bg);
+}
+
+.td-expo-image picture {
+  display: block;
+  height: 100%;
+}
+
+.td-expo-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: 0;
+}
+
+/* Absolutely placed tiles paint over earlier siblings, and seamless tiles have
+   no gap for an outer ring: lift the focused tile and draw a two-tone ring
+   inside it, above the wall caption, so it reads on light and dark images. */
+.td-expo-item:focus-within {
+  z-index: 2;
+}
+
+.td-expo-image:focus-visible {
+  outline: none;
+}
+
+.td-expo-image:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 3px var(--bs-link-color), inset 0 0 0 5px var(--bs-body-bg);
+}
+
+.td-expo-caption {
+  padding: 12px 2px 16px;
+  overflow-wrap: anywhere;
+}
+
+.td-content .td-expo-caption h2, .td-expo-caption h2, .td-expo-caption .h2 {
+  font: 600 0.875rem/1.45 var(--td-ui-font-family);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.td-expo-caption p {
+  font-size: .8125rem;
+  line-height: 1.5;
+  margin: 5px 0 0;
+}
+
+.td-expo-caption small, .td-expo-caption .small {
+  display: block;
+  margin-top: 5px;
+  color: var(--bs-secondary-color);
+}
+
+.td-expo-grid--ready {
+  display: block;
+  position: relative;
+}
+
+.td-expo-grid--ready .td-expo-item {
+  position: absolute;
+}
+
+@media screen {
+  .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 36px 12px 12px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.88));
+    color: white;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption h2, .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption .h2, .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption p, .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption small, .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption .small, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption h2, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption .h2, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption p, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption small, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption .small {
+    color: white;
+  }
+  .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-caption p, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-caption p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-item:hover .td-expo-caption, .td-expo[data-td-expo-mode='wall'] .td-expo-grid--ready .td-expo-item:focus-within .td-expo-caption, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-item:hover .td-expo-caption, .td-expo[data-td-expo-mode='seamless'] .td-expo-grid--ready .td-expo-item:focus-within .td-expo-caption {
+    opacity: 1;
+  }
+}
+
+.td-expo-item:target {
+  outline: 3px solid var(--bs-link-color);
+  outline-offset: 3px;
+  z-index: 1;
+}
+
+.td-expo-albums {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(Min(260px, 100%), 1fr));
+  gap: 32px 24px;
+  margin-block: 2rem;
+}
+
+/* Covers follow the preset's shape token: soft in Paper and Slate, square in
+   Ink and Terminal. Hover dims the cover slightly and takes the link color. */
+.td-expo-album {
+  display: block;
+  color: inherit;
+  text-decoration: none !important;
+  border-radius: var(--bs-border-radius);
+}
+
+.td-expo-album img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-tertiary-bg);
+  transition: opacity .15s ease;
+}
+
+.td-content .td-expo-album h2, .td-content .td-expo-album .h2 {
+  font-size: 1.05rem;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  transition: color .15s ease;
+}
+
+.td-expo-album p {
+  font-size: .875rem;
+  color: var(--bs-secondary-color);
+}
+
+.td-expo-album:hover img {
+  opacity: .9;
+}
+
+.td-content .td-expo-album:hover h2, .td-content .td-expo-album:hover .h2, .td-content .td-expo-album:focus-visible h2, .td-content .td-expo-album:focus-visible .h2 {
+  color: var(--bs-link-color);
+}
+
+.td-expo-album:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-expo-album img, .td-content .td-expo-album h2, .td-content .td-expo-album .h2 {
+    transition: none;
+  }
+}
+
+@media screen {
+  html:has(.td-expo-viewer[open]) {
+    overflow: hidden;
+  }
+}
+
+.td-expo-viewer {
+  box-sizing: border-box;
+  width: calc(100vw - 48px);
+  height: calc(100dvh - 48px);
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  font-family: var(--td-ui-font-family);
+}
+
+.td-expo-viewer[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.td-expo-viewer::backdrop {
+  background: var(--td-shell-scrim, rgba(0, 0, 0, 0.65));
+}
+
+.td-expo-viewer__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 60px;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.td-expo-viewer__bar > span {
+  min-width: 65px;
+  color: var(--bs-secondary-color);
+  font-size: .8125rem;
+}
+
+.td-expo-viewer__tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.td-expo-viewer__tools output {
+  width: 48px;
+  text-align: center;
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.td-expo-viewer__stage {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: var(--bs-tertiary-bg);
+  direction: ltr;
+  /* Keep native pan and pinch, but let a double tap reach the fit toggle. */
+  touch-action: manipulation;
+}
+
+.td-expo-viewer__stage.is-pannable {
+  cursor: grab;
+}
+
+.td-expo-viewer__stage.is-dragging {
+  cursor: grabbing;
+}
+
+.td-expo-viewer__stage:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: -2px;
+}
+
+.td-expo-viewer__canvas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* The runtime paints the grid preview as a background until the original loads. */
+.td-expo-viewer__canvas img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  flex-shrink: 0;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  background: center / 100% 100% no-repeat;
+}
+
+.td-expo-viewer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 18px;
+  max-height: 28%;
+  flex-shrink: 0;
+}
+
+.td-expo-viewer__caption {
+  min-width: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+
+.td-expo-viewer__caption h2, .td-expo-viewer__caption .h2 {
+  font-size: 1rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.td-expo-viewer__caption p {
+  font-size: .8125rem;
+  margin: 5px 0 0;
+  white-space: pre-line;
+}
+
+.td-expo-viewer__caption small, .td-expo-viewer__caption .small {
+  font-size: .75rem;
+  color: var(--bs-secondary-color);
+}
+
+.td-expo-viewer__actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Album order mirrors in RTL, so the previous/next arrows point the same way. */
+[dir='rtl'] .td-expo-viewer .td-shell-icon--prev, [dir='rtl'] .td-expo-viewer .td-shell-icon--next {
+  transform: scaleX(-1);
+}
+
+/* Cards are separate objects and take the preset's shape token; wall and
+   seamless tiles stay square so rows read as one continuous surface. */
+.td-expo[data-td-expo-mode='cards'] .td-expo-image {
+  border-radius: var(--bs-border-radius);
+}
+
+@media (max-width: 767px) {
+  .td-expo-button {
+    width: 44px;
+    height: 44px;
+  }
+  .td-expo-modes .td-expo-button {
+    width: 100%;
+    height: 42px;
+  }
+  .td-expo-viewer {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+  .td-expo-viewer__bar {
+    padding: Max(6px, env(safe-area-inset-top)) 6px 6px;
+    gap: 0;
+  }
+  .td-expo-viewer__bar > span {
+    min-width: 40px;
+    font-size: .75rem;
+  }
+  .td-expo-viewer__tools {
+    gap: 0;
+  }
+  .td-expo-viewer__tools output {
+    width: 42px;
+  }
+  .td-expo-viewer__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 14px Max(8px, env(safe-area-inset-bottom));
+    max-height: 32%;
+  }
+  .td-expo-viewer__caption {
+    max-height: 110px;
+  }
+  .td-expo-viewer__actions {
+    justify-content: flex-end;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-expo-button {
+    border: 1px solid ButtonText;
+  }
+  .td-expo-mode input:checked + .td-expo-button {
+    outline: 2px solid Highlight;
+    outline-offset: -4px;
+  }
+  .td-expo-caption {
+    forced-color-adjust: auto;
+  }
+  .td-expo-image:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: -3px;
+  }
+}
+
+@media print {
+  .td-expo-toolbar, .td-expo-viewer {
+    display: none !important;
+  }
+  .td-expo-grid--ready {
+    display: block;
+    height: auto !important;
+  }
+  .td-expo-grid--ready .td-expo-item {
+    position: static;
+    width: auto !important;
+    break-inside: avoid;
+    margin-bottom: 2rem;
+  }
+  .td-expo-image {
+    height: auto !important;
+  }
+  .td-expo-image img {
+    max-height: 80vh;
+  }
+  .td-expo .td-expo-grid--ready .td-expo-caption {
+    position: static;
+    opacity: 1;
+    background: none;
+    color: inherit;
+    padding: 12px 0;
+  }
+  .td-expo .td-expo-grid--ready .td-expo-caption h2, .td-expo .td-expo-grid--ready .td-expo-caption .h2, .td-expo .td-expo-grid--ready .td-expo-caption p, .td-expo .td-expo-grid--ready .td-expo-caption small, .td-expo .td-expo-grid--ready .td-expo-caption .small {
+    color: inherit;
+    display: block;
+  }
+}

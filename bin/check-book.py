@@ -1378,8 +1378,8 @@ def check_sources() -> list[str]:
         "layouts/_partials/book/sidebar-headings.html": ("Fragments.ToHTML", "sidebar_headings"),
         "layouts/_partials/shell/config.html": ('slice "docs" "book" "blog" "swagger"',),
         "layouts/_td-content.html": ('ne .Type "book"', "reading-time.html"),
-        "assets/scss/td/_book.scss": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--normal", "&--eg", "flex-wrap: wrap", "overflow-wrap: anywhere"),
-        "assets/scss/td/_contributors.scss": ("auto-fill", "forced-colors", "@media print"),
+        "assets/css/td/book.css": ("forced-colors", "@media print", "break-inside", "td-book-draft", "td-book-content--normal", ".td-book-figure--eg", "flex-wrap: wrap", "overflow-wrap: anywhere"),
+        "assets/css/td/contributors.css": ("auto-fill", "forced-colors", "@media print"),
     }
     for relative, markers in source_markers.items():
         path = ROOT / relative
@@ -1425,7 +1425,7 @@ def check_sources() -> list[str]:
             < page_content.index('$page.Store.Set "tdBookAggregate" true')
             < page_content.index("$book = $page.RenderString"),
             "print/page-content.html does not serialize plain then Book variants", errors)
-    book_styles = (ROOT / "assets/scss/td/_book.scss").read_text(encoding="utf-8")
+    book_styles = (ROOT / "assets/css/td/book.css").read_text(encoding="utf-8")
     sidebar_number = re.search(
         r">\s*\.td-book-number\s*\{([^}]*)\}", book_styles, re.DOTALL
     )

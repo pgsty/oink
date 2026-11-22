@@ -196,25 +196,25 @@ def check_sources() -> list[str]:
         "sidebar_node": (ROOT / "layouts/_partials/shell/sidebar-node.html").read_text(encoding="utf-8"),
         "search": (ROOT / "layouts/_partials/search/metadata.html").read_text(encoding="utf-8"),
         "404": (ROOT / "layouts/404.html").read_text(encoding="utf-8"),
-        "tokens": (ROOT / "assets/scss/td/shell/_tokens.scss").read_text(encoding="utf-8"),
-        "content": (ROOT / "assets/scss/td/_content.scss").read_text(encoding="utf-8"),
+        "tokens": (ROOT / "assets/css/td/shell/tokens.css").read_text(encoding="utf-8"),
+        "content": (ROOT / "assets/css/td/content.css").read_text(encoding="utf-8"),
         "navbar": (ROOT / "layouts/_partials/navbar.html").read_text(
             encoding="utf-8"
         ),
         "navbar_autohide": (
             ROOT / "layouts/_partials/shell/navbar-autohide.html"
         ).read_text(encoding="utf-8"),
-        "navbar_styles": (ROOT / "assets/scss/td/_site-navbar.scss").read_text(
+        "navbar_styles": (ROOT / "assets/css/td/site-navbar.css").read_text(
             encoding="utf-8"
         ),
-        "variables": (ROOT / "assets/scss/td/_variables.scss").read_text(
+        "variables": (ROOT / "assets/css/td/variables.css").read_text(
             encoding="utf-8"
         ),
     }
     require("hugo.IsProduction" in sources["robots"], "robots policy is not environment-aware", errors)
     for marker in (".Attributes", "td-table-scroll--full", 'T "ui_table_scroll"'):
         require(marker in sources["table"], f"table hook lacks {marker}", errors)
-    for marker in ("overflow-x: auto", "&--full", "@media print"):
+    for marker in ("overflow-x: auto", ".td-table-scroll--full", "@media print"):
         require(marker in sources["content"], f"table styles lack {marker}", errors)
     for marker in ("section_index", 'slice "list" "cards"', "td-content-card", "sidebar_divider"):
         require(marker in sources["section"], f"section index lacks {marker}", errors)
@@ -262,7 +262,7 @@ def check_sources() -> list[str]:
         errors,
     )
     require(
-        "$td-navbar-min-height: 50px" in sources["variables"],
+        "height: 50px" in sources["navbar_styles"],
         "navbar height is not 50px",
         errors,
     )
@@ -285,7 +285,7 @@ def check_sources() -> list[str]:
         )
     for marker in (
         "(hover: hover) and (pointer: fine)",
-        "height: $td-navbar-min-height",
+        "height: 50px",
         ".td-navbar-autohide:focus-within",
         "@media (prefers-reduced-motion: reduce)",
     ):

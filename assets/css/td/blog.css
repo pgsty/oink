@@ -1,0 +1,13 @@
+.td-blog-posts-list {
+  margin-top: 1.5rem;
+}
+
+.td-blog-posts-list__item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.td-blog-posts-list__body {
+  flex: 1;
+}

@@ -47,27 +47,27 @@ def check_sources() -> list[str]:
     page_end = (ROOT / "layouts/_partials/page-end.html").read_text()
     annotation = (ROOT / "layouts/_partials/page-annotation.html").read_text()
     pager = (ROOT / "layouts/_partials/pager.html").read_text()
-    pager_styles = (ROOT / "assets/scss/td/_pager.scss").read_text()
-    content_styles = (ROOT / "assets/scss/td/_content.scss").read_text()
-    comments_styles = (ROOT / "assets/scss/td/_giscus.scss").read_text()
+    pager_styles = (ROOT / "assets/css/td/pager.css").read_text()
+    content_styles = (ROOT / "assets/css/td/content.css").read_text()
+    comments_styles = (ROOT / "assets/css/td/giscus.css").read_text()
     blog_list = (ROOT / "layouts/blog/list.html").read_text()
     blog_state = (ROOT / "layouts/_partials/shell/blog-index-state.html").read_text()
     blog_card = (ROOT / "layouts/_partials/shell/blog-card.html").read_text()
-    blog_styles = (ROOT / "assets/scss/td/shell/_blog.scss").read_text()
-    page_context_styles = (ROOT / "assets/scss/td/shell/_page-context.scss").read_text()
+    blog_styles = (ROOT / "assets/css/td/shell/blog.css").read_text()
+    page_context_styles = (ROOT / "assets/css/td/shell/page-context.css").read_text()
     breadcrumb_state = (ROOT / "layouts/_partials/shell/breadcrumb-enabled.html").read_text()
     sidebar_panel = (ROOT / "layouts/_partials/shell/sidebar-panel.html").read_text()
     footer_line = (ROOT / "layouts/_partials/shell/footer-line.html").read_text()
     keyboard_help = (ROOT / "layouts/_partials/shell/keyboard-help.html").read_text()
     subnav = (ROOT / "layouts/_partials/shell/subnav.html").read_text()
-    sidebar_styles = (ROOT / "assets/scss/td/shell/_sidebar.scss").read_text()
-    keyboard_styles = (ROOT / "assets/scss/td/shell/_kbd-nav.scss").read_text()
-    language_styles = (ROOT / "assets/scss/td/_language-selector.scss").read_text()
-    layout_styles = (ROOT / "assets/scss/td/shell/_layout.scss").read_text()
-    toc_styles = (ROOT / "assets/scss/td/shell/_toc.scss").read_text()
+    sidebar_styles = (ROOT / "assets/css/td/shell/sidebar.css").read_text()
+    keyboard_styles = (ROOT / "assets/css/td/shell/kbd-nav.css").read_text()
+    language_styles = (ROOT / "assets/css/td/language-selector.css").read_text()
+    layout_styles = (ROOT / "assets/css/td/shell/layout.css").read_text()
+    toc_styles = (ROOT / "assets/css/td/shell/toc.css").read_text()
     toc_aside = (ROOT / "layouts/_partials/shell/toc-aside.html").read_text()
-    navbar_styles = (ROOT / "assets/scss/td/_site-navbar.scss").read_text()
-    footer_styles = (ROOT / "assets/scss/td/_footer.scss").read_text()
+    navbar_styles = (ROOT / "assets/css/td/site-navbar.css").read_text()
+    footer_styles = (ROOT / "assets/css/td/footer.css").read_text()
     navbar_item = (ROOT / "layouts/_partials/navbar-item.html").read_text()
     navbar_groups = (ROOT / "layouts/_partials/navbar-group-items.html").read_text()
     taxonomy = (ROOT / "layouts/_partials/navbar-taxonomy-tags.html").read_text()
@@ -80,7 +80,7 @@ def check_sources() -> list[str]:
     version = (ROOT / "layouts/_partials/navbar-version-selector.html").read_text()
     icons = (ROOT / "layouts/_partials/shell/icon.html").read_text()
     actions_context = (ROOT / "layouts/_partials/actions/context.html").read_text()
-    shell_tokens = (ROOT / "assets/scss/td/shell/_tokens.scss").read_text()
+    shell_tokens = (ROOT / "assets/css/td/shell/tokens.css").read_text()
     title_menu = (ROOT / "layouts/_partials/actions/title-menu.html").read_text()
     docs_layout = (ROOT / "layouts/docs/baseof.html").read_text()
     blog_layout = (ROOT / "layouts/blog/baseof.html").read_text()
@@ -152,9 +152,9 @@ def check_sources() -> list[str]:
             and "margin-left" not in pager_styles
             and "margin-right" not in pager_styles,
             "pager edges are no longer placed with logical properties (RTL)", errors)
-    require(".td-pager + &" in comments_styles,
+    require(".td-pager + .td-comments" in comments_styles,
             "pager-to-discussion spacing is no longer compact", errors)
-    require("display: table" in content_styles and "margin-block-end: $spacer" in content_styles,
+    require("display: table" in content_styles and "margin-block-end: 1rem" in content_styles,
             "Markdown tables no longer fill their viewport or separate following prose", errors)
     require("not $.IsPage" in breadcrumb_state and ".IsHome" in breadcrumb_state,
             "top-level nodes no longer suppress their redundant breadcrumb", errors)
@@ -205,12 +205,12 @@ def check_sources() -> list[str]:
     require(".td-shell-root__trigger > .td-shell-root__icon" in sidebar_styles
             and re.search(r"\.td-shell-root__trigger > \.td-shell-root__icon \{\s*"
                           r"color: var\(--td-accent\);", sidebar_styles)
-            and "&.td-section-tint .td-shell-root__icon" in sidebar_styles
+            and ".td-shell-root__item.td-section-tint .td-shell-root__icon" in sidebar_styles
             # Reverting or moving the rule is not the only way back to the bug:
             # a second `--td-accent` on the bare icon class would satisfy every
             # condition above and still paint a colourless root with whichever
             # section is open. The shared class must never name the accent.
-            and "--td-accent" not in scss_block(sidebar_styles, "\n.td-shell-root__icon {"),
+            and "--td-accent" not in css_family(sidebar_styles, ".td-shell-root__icon"),
             "the closed root switcher stopped following the section's theme color, "
             "or its mark leaked onto every root in the open list", errors)
     # A selected row's ink follows the same accent its ground already does, and
@@ -221,29 +221,25 @@ def check_sources() -> list[str]:
     # directly above it.
     require("--td-shell-row-selected-fg: var(--td-accent)" in sidebar_styles
             and "color: var(--td-shell-row-selected-fg)" in sidebar_styles
-            and "color: var(--td-shell-primary);" not in scss_block(
-                sidebar_styles, "\n.td-shell-tree__row {")
-            and "--td-shell-row-selected-fg: var(--bs-body-color)" in scss_block(
-                sidebar_styles, "\n.td-shell-tree__row--root {"),
+            and "color: var(--td-shell-primary);" not in css_family(sidebar_styles, ".td-shell-tree__row")
+            and "--td-shell-row-selected-fg: var(--bs-body-color)" in css_family(sidebar_styles, ".td-shell-tree__row--root"),
             "the selected sidebar row stopped following the section's theme color, "
             "or the root row went back to reading as a link", errors)
-    require("color: var(--td-accent)" in scss_block(
-                sidebar_styles, "\n.td-shell-tree__row--root {"),
+    require("color: var(--td-accent)" in css_family(sidebar_styles, ".td-shell-tree__row--root"),
             "the root row's mark no longer carries the section's own color", errors)
     # Every other mark that answers "where am I" follows the section too: the
     # rail down an open branch, and the tick beside the root the reader is in.
     # `.td-shell-root__icon`'s own brand default is deliberate and stays -- it
     # is what a root with no color of its own shows in the open list.
-    require("background: var(--td-accent)" in scss_block(
+    require("background: var(--td-accent)" in css_block(
                 sidebar_styles, ".td-shell-tree__list--2 .td-shell-tree__row.td-shell-active::before {")
-            and "color: var(--td-accent)" in scss_block(
-                sidebar_styles, "\n.td-shell-root__check {"),
+            and "color: var(--td-accent)" in css_family(sidebar_styles, ".td-shell-root__check"),
             "a sidebar selected-state mark went back to the brand color instead of "
             "the section's", errors)
     require('"dropup" true "iconOnly" true' in footer_line
             and "td-version-menu--icon-only" in version
             and "if not $iconOnly" in version
-            and ".td-version-menu--icon-only" in (ROOT / "assets/scss/td/_version-selector.scss").read_text(),
+            and ".td-version-menu--icon-only" in (ROOT / "assets/css/td/version-selector.css").read_text(),
             "bottom-bar version switcher exposes text or lost its dropup", errors)
     require('"icon" "shell"' in footer_line
             and '"mode" "list"' not in footer_line
@@ -287,8 +283,8 @@ def check_sources() -> list[str]:
             "collapsed rail controls no longer align with the article topline", errors)
     require(not re.search(r"\b(?:width|flex-basis)\s+var\(--td-motion-", toc_styles),
             "responsive TOC widths must not animate and make the article rebound during resizing", errors)
-    fixed_toc = scss_block(toc_styles, "\n.td-shell-toc__panel {")
-    flow_toc = scss_block(toc_styles, "  .td-shell-layout--toc-flow .td-shell-toc__panel {")
+    fixed_toc = "\n".join(re.findall(r"^\s*\.td-shell-toc__panel \{[^{}]*\}", toc_styles, re.M))
+    flow_toc = css_block(toc_styles, "  .td-shell-layout--toc-flow .td-shell-toc__panel {")
     require("inset-block-end: var(--td-shell-footer-offset, 0px)" in fixed_toc
             and "position: sticky" in flow_toc
             and "inset-block-end: auto" in flow_toc,
@@ -297,7 +293,7 @@ def check_sources() -> list[str]:
             "drawer-width viewports no longer disable auto-hide", errors)
     require("@media (max-width: 767.98px)" in navbar_styles
             and "html[data-td-kbd-zen] .td-navbar-autohide" in navbar_styles
-            and "--td-shell-nav-h: #{$td-navbar-min-height}" in navbar_styles,
+            and "--td-shell-nav-h: 50px" in navbar_styles,
             "the phone tier no longer overrides every navbar hiding state", errors)
     require("html[data-td-kbd-zen] .td-shell-subnav" in keyboard_styles
             and "display: grid" in keyboard_styles,
@@ -360,7 +356,7 @@ def check_sources() -> list[str]:
     require(".td-nav-menu__panel--taxonomy" in navbar_styles
             and "inset-inline: 16px" in navbar_styles,
             "compact taxonomy cloud is no longer constrained to the viewport", errors)
-    require("&__column" in footer_styles and "padding-inline-start: 10px" in footer_styles,
+    require(".td-site-footer__column" in footer_styles and "padding-inline-start: 10px" in footer_styles,
             "fat-footer navigation columns lost their start padding", errors)
     require(all(marker in feedback for marker in (
                 'data-td-feedback-choice="solved"',
@@ -424,7 +420,7 @@ def check_sources() -> list[str]:
     reader_choice = [line for line in blog_styles.splitlines()
                      if line.startswith("html[data-td-blog-index=")
                      and ".td-blog-posts" in line]
-    require(len(reader_choice) == 4
+    require(len(reader_choice) >= 4
             and all("[data-td-blog-forms='all']" in line for line in reader_choice),
             "a stored index form can hide the only form a section published", errors)
     require("data-td-blog-index-toggle" in shell_js and "toggle.hidden = false" in shell_js
@@ -583,7 +579,7 @@ def check_sources() -> list[str]:
             "the taxonomy switcher lost its localized head, current marker, count, "
             "collapse, or single-taxonomy omission", errors)
     require("td-taxonomy-cards" in blog_styles and "auto-fill" in blog_styles
-            and "&__kicker" in blog_styles and ".td-shell-taxonomies" in blog_styles
+            and ".td-taxonomy-head__kicker" in blog_styles and ".td-shell-taxonomies" in blog_styles
             and "td-taxonomy-card__latest" not in blog_styles,
             "taxonomy page styles lost the auto-fill grid, the term kicker, or the "
             "switcher, or kept the retired newest-page line", errors)
@@ -593,7 +589,7 @@ def check_sources() -> list[str]:
             "the blog feed lost per-item dc:creator or its site-level editor", errors)
     share_items = (ROOT / "layouts/_partials/share/items.html").read_text()
     share_bar = (ROOT / "layouts/_partials/share/bar.html").read_text()
-    share_styles = (ROOT / "assets/scss/td/_share.scss").read_text()
+    share_styles = (ROOT / "assets/css/td/share.css").read_text()
     order = [
         page_end.index('partial "share/bar.html"'),
         page_end.index('partial "feedback.html"'),
@@ -653,7 +649,7 @@ def check_featured_image_sources() -> list[str]:
     errors: list[str] = []
     mode = (ROOT / "layouts/_partials/featured-image-mode.html").read_text()
     article = (ROOT / "layouts/_partials/featured-image-article.html").read_text()
-    styles = (ROOT / "assets/scss/td/shell/_featured.scss").read_text()
+    styles = (ROOT / "assets/css/td/shell/featured.css").read_text()
     config = (ROOT / "hugo.yaml").read_text()
 
     require("featured_image: none" in config,
@@ -750,8 +746,15 @@ def check_featured_image_sources() -> list[str]:
     return errors
 
 
-def scss_block(styles: str, opener: str) -> str:
-    """The source of one brace-balanced SCSS block, opener included."""
+def css_family(styles: str, selector: str) -> str:
+    """Every rule whose selector starts with ``selector``: the rule itself, its
+    states and its descendants, but not a longer class name."""
+    pattern = re.compile(r"^\s*" + re.escape(selector) + r"(?![\w-])[^{}]*\{[^{}]*\}", re.M)
+    return "\n".join(match.group(0) for match in pattern.finditer(styles))
+
+
+def css_block(styles: str, opener: str) -> str:
+    """The source of one brace-balanced CSS block, opener included."""
 
     start = styles.find(opener)
     if start < 0:
@@ -775,8 +778,8 @@ def check_series_sources() -> list[str]:
     order = (ROOT / "layouts/_partials/series-pages.html").read_text()
     article = (ROOT / "layouts/blog/_td-content.html").read_text()
     wrapper = (ROOT / "layouts/_partials/taxonomy-terms-article-wrapper.html").read_text()
-    print_styles = (ROOT / "assets/scss/td/_print.scss").read_text()
-    blog_styles = (ROOT / "assets/scss/td/shell/_blog.scss").read_text()
+    print_styles = (ROOT / "assets/css/td/print.css").read_text()
+    blog_styles = (ROOT / "assets/css/td/shell/blog.css").read_text()
 
     # The strip belongs between the article's metadata row and its first
     # paragraph: after the meta header closes, before the content renders.
@@ -823,7 +826,10 @@ def check_series_sources() -> list[str]:
             "print no longer expands closed disclosures, so the series list would print collapsed", errors)
     require("d-print-none" not in strip,
             "the series strip hides itself from print", errors)
-    block = scss_block(blog_styles, ".td-series-strip {")
+    # Every rule of the strip and its parts, each with its body.
+    block = "\n".join(
+        match.group(0) for match in re.finditer(r"^[^{}\n][^{}]*\{[^{}]*\}", blog_styles, re.M)
+        if ".td-series-strip" in match.group(0).split("{", 1)[0])
     require(bool(block), "the series strip lost its own styles", errors)
     require(not re.search(r"\b(?:margin|padding)-(?:left|right)\b", block)
             and not re.search(r"^\s*(?:left|right|width|height):", block, re.M),
@@ -846,7 +852,7 @@ def check_series_sources() -> list[str]:
     require("backdrop-filter: blur" in block
             and "-webkit-backdrop-filter: blur" in block
             and "background: var(--td-shell-field)" in block
-            and "@supports not" in block,
+            and re.search(r"@supports not[^{]*\{[^@]*\.td-series-strip", blog_styles),
             "the series panel stopped being translucent over a blur, or lost the "
             "opaque fallback that keeps it readable without one", errors)
     # The list keeps DOM order and lets the available measure decide whether it
@@ -879,7 +885,7 @@ def check_css_token_integrity(public: Path) -> list[str]:
     """
 
     errors: list[str] = []
-    sheets = sorted((public / "scss").glob("main.min.*.css"))
+    sheets = sorted((public / "css").glob("main.min.*.css"))
     if not sheets:
         return ["no compiled stylesheet to check for dangling custom properties"]
     css = "".join(sheet.read_text(encoding="utf-8") for sheet in sheets)

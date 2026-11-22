@@ -1,0 +1,64 @@
+{{- /* The layers of each theme stylesheet, in cascade order. A name is a file
+       under assets/css/td/ without its extension; a leading slash names an
+       asset outside that directory. `main` is the stylesheet of every OINK
+       page. The others serve a site-owned shell that does not load `main`:
+       `chrome` (tokens, typography, palettes, navbar and appearance
+       controls), `landing` (Landing sections, loaded after `chrome`),
+       `search` (command palette and local search) and `compare` (Duo View).
+       Order is the cascade: a later layer wins a tie in specificity. */ -}}
+{{- return (dict
+  "main" (slice
+    "charset" "variables" "bootstrap/root" "bootstrap/reboot"
+    "bootstrap/type" "bootstrap/images" "bootstrap/containers"
+    "bootstrap/grid" "bootstrap/tables" "bootstrap/forms/labels"
+    "bootstrap/forms/form-text" "bootstrap/forms/form-control"
+    "bootstrap/forms/form-select" "bootstrap/forms/form-check"
+    "bootstrap/forms/form-range" "bootstrap/forms/floating-labels"
+    "bootstrap/forms/input-group" "bootstrap/forms/validation"
+    "bootstrap/buttons" "bootstrap/transitions" "bootstrap/dropdown"
+    "bootstrap/button-group" "bootstrap/nav" "bootstrap/navbar"
+    "bootstrap/card" "bootstrap/accordion" "bootstrap/breadcrumb"
+    "bootstrap/pagination" "bootstrap/badge" "bootstrap/alert"
+    "bootstrap/progress" "bootstrap/list-group" "bootstrap/close"
+    "bootstrap/toasts" "bootstrap/modal" "bootstrap/tooltip"
+    "bootstrap/popover" "bootstrap/carousel" "bootstrap/spinners"
+    "bootstrap/offcanvas" "bootstrap/placeholders"
+    "bootstrap/helpers/clearfix" "bootstrap/helpers/color-bg"
+    "bootstrap/helpers/colored-links" "bootstrap/helpers/focus-ring"
+    "bootstrap/helpers/icon-link" "bootstrap/helpers/ratio"
+    "bootstrap/helpers/position" "bootstrap/helpers/stacks"
+    "bootstrap/helpers/visually-hidden" "bootstrap/helpers/stretched-link"
+    "bootstrap/helpers/text-truncation" "bootstrap/helpers/vr"
+    "bootstrap/utilities" "tokens-typography" "utilities" "blog" "byline"
+    "code" "chroma/light" "chroma/theme" "chroma/dark" "chroma/theme-dark"
+    "footer" "table" "breadcrumb" "pager" "backlinks" "release" "book"
+    "contributors" "alerts" "content" "share" "giscus" "search"
+    "language-selector" "version-selector" "main-container" "section-index"
+    "taxonomy" "drawio" "scroll" "shortcodes/steps"
+    "shortcodes/content-primitives" "markers" "filetree" "gallery" "expo"
+    "tabs" "content-components" "diagram" "swagger" "rtl" "shell/tokens"
+    "shell/layout" "shell/sidebar" "shell/toc" "shell/search" "shell/blog"
+    "shell/blog-gallery" "shell/featured" "shell/page-context"
+    "shell/kbd-nav" "/third_party/inter/normal" "/third_party/inter/italic"
+    "/third_party/ibm-plex-sans/normal" "/third_party/ibm-plex-sans/italic"
+    "brand" "site-navbar" "landing" "theme-toggle" "appearance" "presets"
+    "experimental-presets" "accessibility" "document-compare" "print"
+  )
+  "chrome" (slice
+    "charset" "variables" "bootstrap/root"
+    "bootstrap/helpers/visually-hidden" "tokens-typography"
+    "/third_party/inter/normal" "/third_party/inter/italic"
+    "/third_party/ibm-plex-sans/normal" "/third_party/ibm-plex-sans/italic"
+    "brand" "shell/tokens" "language-selector" "site-navbar" "theme-toggle"
+    "appearance" "presets" "experimental-presets"
+  )
+  "landing" (slice
+    "charset" "landing" "presets" "experimental-presets"
+  )
+  "search" (slice
+    "charset" "shell/search"
+  )
+  "compare" (slice
+    "charset" "document-compare"
+  )
+) -}}

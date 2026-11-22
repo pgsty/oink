@@ -7,16 +7,18 @@ All notable changes to OINK are documented here. The project follows
 
 ### Breaking changes
 
-- Ship compiled CSS. A site build no longer calls a Sass compiler: the theme
-  reads `assets/oink/main.css` and `assets/oink/redoc.css`, generated from the
-  same SCSS, and no layout calls `toCSS`. A site without style hooks gets the
-  same production stylesheet as before, apart from whitespace inside one
-  `@starting-style` block. The module no longer requires Hugo's Extended
-  edition. Verified on Hugo 0.170.1, which has no LibSass: the regression
-  fixture, the documentation site and three consumer sites build with only the
-  Hugo binary, and the fixture's 686 output files match the previous pipeline
-  apart from that stylesheet. Published 1.5.1 fails on Hugo 0.170 with
+- Make the stylesheet plain CSS. The theme contains and compiles no Sass: its
+  stylesheet is the layer files under `assets/css/td/`, which Hugo concatenates
+  in the order `layouts/_partials/css/layers.html` lists. A site build needs
+  only the Hugo binary, in any edition, and the module no longer requires
+  Hugo's Extended edition. The conversion changed no rule: the production
+  stylesheet is byte-identical to the last one compiled from Sass, and the
+  regression fixture's other 682 output files differ only in the stylesheet
+  path. Published 1.5.1 fails on Hugo 0.170 with
   `TOCSS-DART: … You need to install Dart Sass`.
+- Publish stylesheets under `/css/` instead of `/scss/`: `css/main.css`,
+  `css/fontawesome.css` and `css/redoc.css`. A site layout that named the old
+  paths must follow.
 - Retire the three SCSS hooks. `assets/scss/_variables_project.scss`,
   `_variables_project_after_bs.scss` and `_styles_project.scss` are ignored
   and each warns once per build. Put site rules in `assets/css/project.css`,
@@ -26,24 +28,21 @@ All notable changes to OINK are documented here. The project follows
   override the corresponding custom properties and rules instead. Convert a
   hook by hand: keep the site's own rules as plain CSS, and restate each Sass
   variable the site changed as the custom property or rule it produced.
-- A site that compiled the theme's SCSS partials in its own templates must use
-  the shipped bundles instead; the partials were never a public interface.
+- A site that compiled the theme's SCSS partials in its own templates must ask
+  for a stylesheet by name instead; the partials were never a public interface.
 
 ### Added
 
-- Ship `chrome.css`, `landing.css`, `search.css` and `compare.css` in
-  `assets/oink/` for site-owned shells: tokens, typography, palettes, navbar
-  and appearance controls; Landing sections, loaded after `chrome.css`; the
-  command palette; and Duo View. Publish them one directory below the site
-  root so their `../webfonts` references resolve.
-- Add `bin/build-css.py` for maintainers. It compiles every `assets/scss/`
-  entry into `assets/oink/` with LibSass, which only Hugo's Extended edition
-  up to 0.169 contains: it uses `hugo` when that has LibSass, and otherwise
-  `hugo-0.169.0` from `PATH` or the executable named with `--hugo`. `--check`
-  fails when a shipped bundle is stale and `--watch` rebuilds while editing.
-  `bin/check-scss.py` also rejects any Sass call in a layout, and its
-  `--skip-freshness` mode checks what a site build does where no LibSass is
-  available.
+- Add `partial "css/bundle.html" "<name>"`, which returns a theme stylesheet
+  as a resource. `main` is the stylesheet of every OINK page. For a site-owned
+  shell that does not load it: `chrome` (tokens, typography, palettes, navbar
+  and appearance controls), `landing` (Landing sections, loaded after
+  `chrome`), `search` (the command palette) and `compare` (Duo View). Each is
+  published one directory below the site root so its `../webfonts` references
+  resolve. An unknown name warns.
+- Add `bin/check-stylesheets.py`. It checks that every layer is listed and
+  exists, that no layout calls a stylesheet compiler, and that probe sites
+  built with an empty `PATH` publish the layers in order.
 
 ### Changed
 
@@ -51,9 +50,8 @@ All notable changes to OINK are documented here. The project follows
   documentation test dependencies and maintainer build lock to current
   compatible releases.
 - Stop pinning Hugo. Development and checks use the installed release, CI
-  installs the current one in the standard edition, as a consumer would, and
-  documentation no longer prescribes a release. Only the CI job that
-  recompiles the shipped CSS names one, for its LibSass.
+  installs the current one, as a consumer would, and documentation no longer
+  prescribes a release.
 - Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
   0.169.0's improved plain-text spacing and resulting word counts in goldens.
   Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome
@@ -79,12 +77,10 @@ All notable changes to OINK are documented here. The project follows
 
 ### Removed
 
-- Remove the Sass that only a site's own Sass could reach: the `!default`
-  flags, the re-declared Bootstrap defaults in `_variables_forward.scss`, the
-  branches that answered legacy font variables, and the Bootstrap version
-  guard. The shipped CSS is byte-identical.
-- Remove Font Awesome's vendored SCSS sources. The theme loads Font Awesome's
-  compiled CSS and webfonts; nothing compiled the SCSS.
+- Remove Sass from the theme: the SCSS sources under `assets/scss/`, the
+  vendored SCSS of Bootstrap, Font Awesome, Inter and IBM Plex Sans, and with
+  them every Sass variable, mixin and override layer. Bootstrap 5.3.8 remains
+  as plain CSS under `assets/css/td/bootstrap/`, with the theme's palette.
 
 ### Fixed
 

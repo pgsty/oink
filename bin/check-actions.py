@@ -637,7 +637,7 @@ def main() -> int:
                     all("invalid search_boost" in line for line in theme_warnings(log)),
                     f"{deployment} action fixture emitted an unrelated warning",
                 )
-                stylesheets = sorted((output / "scss").glob("*.css"))
+                stylesheets = sorted((output / "css").glob("*.css"))
                 require(stylesheets, f"{deployment} emitted no compiled stylesheet")
                 compiled_css = "\n".join(
                     path.read_text(encoding="utf-8") for path in stylesheets

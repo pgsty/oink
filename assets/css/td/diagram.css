@@ -1,0 +1,341 @@
+/* Browser-rendered diagrams and the viewport that lets a
+   reader look at one properly.
+
+   The fence used to reuse the code block's `<pre>`, which gave a diagram a
+   code frame it never earned: Mermaid emits `width="100%"` with a `max-width`
+   at the diagram's natural size, so anything narrower than the column sat
+   against the start edge with the remaining third of a bordered box empty
+   beside it. */
+.td-diagram,
+.td-plantuml {
+  position: relative;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  margin-block: 1rem;
+  margin-inline: 0;
+}
+
+.td-plantuml > pre[hidden] {
+  display: none;
+}
+
+.td-plantuml__image {
+  overflow: auto;
+}
+
+.td-plantuml__image > img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.td-plantuml__image:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 2px;
+}
+
+@media print {
+  .td-plantuml__image > img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Centred, and there is no alignment switch: a diagram is a figure, not
+   running text, and no reader has ever wanted one flush right. */
+.td-diagram__stage > svg {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+  margin-inline: auto;
+}
+
+/* Corner control, the same idea as the code block's own: present for keyboard
+   and touch, quiet until the pointer arrives. */
+.td-diagram__expand {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-body-bg);
+  color: var(--bs-secondary-color);
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.td-diagram__expand:hover {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+
+.td-diagram__expand:focus-visible {
+  opacity: 1;
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.td-diagram:hover > .td-diagram__expand,
+.td-diagram:focus-within > .td-diagram__expand {
+  opacity: 1;
+}
+
+/* Without hover there is nothing to reveal the control, so it stays out. */
+@media (hover: none) {
+  .td-diagram__expand {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-diagram__expand {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-diagram__expand {
+    opacity: 1;
+    border-color: ButtonBorder;
+  }
+}
+
+/* ---------------------------------------------------------------- dialog -- */
+.td-diagram-zoom {
+  inline-size: auto;
+  max-inline-size: 100vw;
+  max-block-size: 100vh;
+  max-block-size: 100dvh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--bs-body-color);
+  overflow: visible;
+}
+
+.td-diagram-zoom::backdrop {
+  background: rgba(var(--bs-dark-rgb), 0.82);
+}
+
+.td-diagram-zoom:not([open]) {
+  display: none;
+}
+
+.td-diagram-zoom__surface {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: calc(100vw - 1rem);
+  block-size: calc(100vh - 2rem);
+  block-size: calc(100dvh - 2rem);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+  background: var(--bs-body-bg);
+  box-shadow: var(--bs-box-shadow-lg);
+  overflow: hidden;
+}
+
+.td-diagram-zoom__controls {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-block-end: 1px solid var(--bs-border-color);
+}
+
+.td-diagram-zoom__control {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 50%;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.td-diagram-zoom__control svg,
+.td-diagram-zoom__control i {
+  inline-size: 1rem;
+  block-size: 1rem;
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.td-diagram-zoom__control:hover {
+  background: var(--bs-tertiary-bg);
+}
+
+.td-diagram-zoom__control:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.td-diagram-zoom__viewport {
+  position: relative;
+  inline-size: 100%;
+  flex: 1;
+  min-block-size: 0;
+  overflow: hidden;
+  cursor: grab;
+  /* Pan and pinch are handled here, so the browser must not claim the gesture. */
+  touch-action: none;
+  /* The pan/zoom transform is a physical coordinate space: a translate of +x
+     moves the drawing right in every writing mode. Anchoring the canvas to a
+     start edge that flips would put the zoom-to-pointer maths half a viewport
+     out in RTL, so this one box is pinned to LTR -- the same treatment code
+     blocks get in `rtl.css`, and `rtl:ignore` keeps rtlcss from
+     helpfully flipping it back. Mermaid sets its own text anchors, so nothing
+     inside the drawing depends on inheriting the page's direction. */
+  /*rtl:ignore*/
+  direction: ltr;
+}
+
+.td-diagram-zoom__viewport.is-grabbing {
+  cursor: grabbing;
+}
+
+.td-diagram-zoom__canvas {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.td-diagram-zoom__canvas > svg, .td-diagram-zoom__canvas > img {
+  display: block;
+  max-inline-size: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.td-diagram__source {
+  margin-block-start: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.td-diagram__source > summary {
+  width: fit-content;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.td-diagram__source > pre {
+  max-block-size: 24rem;
+  overflow: auto;
+}
+
+.td-diagram__action {
+  margin: 0.25rem 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  color: var(--bs-body-color);
+  background: var(--bs-body-bg);
+}
+
+.td-diagram__status {
+  display: block;
+  font-size: 0.875rem;
+}
+
+.td-diagram__stage {
+  overflow: auto;
+}
+
+.td-diagram-zoom__source {
+  flex: 1;
+  min-block-size: 0;
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.td-diagram-zoom__status {
+  flex-shrink: 0;
+  min-block-size: 1.5rem;
+  margin: 0;
+  padding-inline: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.td-diagram-zoom [hidden] {
+  display: none !important;
+}
+
+.td-diagram-zoom__control:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.td-diagram-zoom__control[aria-pressed="true"] {
+  background: var(--bs-tertiary-bg);
+  border-color: currentColor;
+}
+
+.td-diagram__source > summary:focus-visible,
+.td-diagram__source > pre:focus-visible,
+.td-diagram__action:focus-visible,
+.td-diagram-zoom__source:focus-visible,
+.td-diagram-zoom__viewport:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: -2px;
+}
+
+@media (pointer: coarse) {
+  .td-diagram__expand, .td-diagram-zoom__control {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+  .td-diagram__source > summary, .td-diagram__action {
+    min-block-size: 44px;
+  }
+}
+
+@media print {
+  .td-diagram__expand, .td-diagram__action, .td-diagram__status,
+.td-diagram__source > summary {
+    display: none !important;
+  }
+  .td-diagram[data-td-diagram-rendered="true"] > .td-diagram__source {
+    display: none !important;
+  }
+  .td-diagram--mermaid[data-td-diagram-theme="dark"] > .td-diagram__stage {
+    display: none !important;
+  }
+  .td-diagram--mermaid[data-td-diagram-theme="dark"] > .td-diagram__source {
+    display: block !important;
+  }
+  .td-content .td-diagram__source > pre {
+    display: block !important;
+    max-block-size: none;
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .td-content .td-diagram__source > pre > code {
+    background: transparent !important;
+    color: inherit !important;
+  }
+  .td-diagram__source::details-content {
+    content-visibility: visible !important;
+  }
+  .td-diagram__stage {
+    overflow: visible;
+  }
+}

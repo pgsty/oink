@@ -23,13 +23,13 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
         errors.append(message)
 
 
-# The light Chroma palette is emitted at the root (see `_chroma.scss`), so every
+# The light Chroma palette is emitted at the root (see `chroma/theme.css`), so every
 # paint property the dark palette omits keeps its light value on the dark
 # canvas. GitHub's two generated styles disagree about which roles carry a
 # colour, so the omission has to be caught per property, not per selector.
 PAINT_PROPERTIES = ("color", "background-color")
 
-# `_chroma.scss` re-declares these roles at the root after importing the light
+# `chroma/theme.css` re-declares these roles at the root after importing the light
 # palette, so the light value reaches neither theme and the dark palette need
 # not repeat them. Each entry is paired with an assertion below.
 SHARED_CHROMA_LAYER = {".chroma .err": frozenset({"background-color"})}
@@ -39,7 +39,7 @@ def chroma_palette_rules(source: str) -> dict[str, dict[str, str]]:
     """Map each rule of a generated Chroma palette to its declarations.
 
     The generated palettes are flat -- one single-line rule per token -- so a
-    brace-free body match is enough and avoids depending on a Sass parser.
+    brace-free body match is enough and avoids depending on a CSS parser.
     """
     rules: dict[str, dict[str, str]] = {}
     for selector, body in re.findall(r"(\.[A-Za-z][\w .-]*?)\s*\{([^{}]*)\}", source):
@@ -242,9 +242,9 @@ def check_outputs(public: Path) -> list[str]:
 
 def check_template_contracts() -> list[str]:
     errors: list[str] = []
-    light_palette = (ROOT / "assets/scss/td/chroma/_light.scss").read_text()
-    dark_palette = (ROOT / "assets/scss/td/chroma/_dark.scss").read_text()
-    shared_layer = (ROOT / "assets/scss/td/_chroma.scss").read_text()
+    light_palette = (ROOT / "assets/css/td/chroma/light.css").read_text()
+    dark_palette = (ROOT / "assets/css/td/chroma/dark.css").read_text()
+    shared_layer = (ROOT / "assets/css/td/chroma/theme.css").read_text()
     light_rules = chroma_palette_rules(light_palette)
     dark_rules = chroma_palette_rules(dark_palette)
     require(bool(light_rules) and bool(dark_rules), "Chroma palettes did not parse", errors)
@@ -264,7 +264,7 @@ def check_template_contracts() -> list[str]:
     # palette's box in both themes, which is what earns the exemption above.
     require(
         re.search(r"\.err \{[^}]*background-color: transparent", shared_layer) is not None,
-        "_chroma.scss no longer neutralises the light error background",
+        "chroma/theme.css no longer neutralises the light error background",
         errors,
     )
     dark_error = re.search(r"\.chroma \.err \{(?P<body>[^}]*)\}", dark_palette)
@@ -298,7 +298,7 @@ def check_template_contracts() -> list[str]:
     render_block = (ROOT / "layouts/_partials/content/render-block.html").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     runtime = (ROOT / "assets/js/tabs.js").read_text()
-    print_styles = (ROOT / "assets/scss/td/_print.scss").read_text()
+    print_styles = (ROOT / "assets/css/td/print.css").read_text()
 
     require("data-td-code-auto-id" in render, "automatic code-ID marker is missing", errors)
     require("tdRenderScope" not in normalize and "tdRenderScope" not in render_block, "nested-render code IDs still depend on Page Store state", errors)

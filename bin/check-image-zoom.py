@@ -21,7 +21,7 @@ def require(condition: bool, message: str, errors: list[str]) -> None:
 
 
 def enclosing_selectors(styles: str, position: int) -> list[str]:
-    """Return the selector text of every SCSS block that encloses ``position``."""
+    """Return the selector text of every CSS block that encloses ``position``."""
     selectors: list[str] = []
     depth = 0
     index = position
@@ -291,7 +291,7 @@ def check_template_contracts() -> list[str]:
     candidate = (ROOT / "layouts/_partials/content/image-zoom-candidate.html").read_text()
     dialog = (ROOT / "layouts/_partials/content/image-zoom-dialog.html").read_text()
     runtime = (ROOT / "assets/js/image-zoom.js").read_text()
-    styles = (ROOT / "assets/scss/td/shortcodes/_content-primitives.scss").read_text()
+    styles = (ROOT / "assets/css/td/shortcodes/content-primitives.css").read_text()
 
     for path in (ROOT / "layouts").rglob("*.html"):
         relative = path.relative_to(ROOT).as_posix()
@@ -365,7 +365,7 @@ def check_template_contracts() -> list[str]:
     for marker in ("forced-colors", "::backdrop", "@media print"):
         require(marker in styles, f"Zoom styles lack {marker}", errors)
     require(".td-image-zoom:not([open])" in styles, "Zoom lacks an unsupported-dialog closed fallback", errors)
-    # Zoom itself must not animate. content-primitives.scss also hosts other
+    # Zoom itself must not animate. content-primitives.css also hosts other
     # primitives, so scope the motion assertion to rule blocks whose selector
     # names the Zoom, and separately require a reduced-motion path for any
     # motion the rest of the file declares.
@@ -375,7 +375,7 @@ def check_template_contracts() -> list[str]:
     motion = list(re.finditer(r"^\s*(?:transition|animation)\s*:(.*?);", styles, re.M | re.S))
     if motion:
         reduce_block = re.search(r"@media \(prefers-reduced-motion: reduce\)\s*\{(.*?)\n\}", styles, re.S)
-        tokens = (ROOT / "assets/scss/td/shell/_tokens.scss").read_text()
+        tokens = (ROOT / "assets/css/td/shell/tokens.css").read_text()
         shared_reduce = re.search(
             r"@media \(prefers-reduced-motion: reduce\).*?"
             r"--td-motion-duration-fast:\s*0ms;.*?"

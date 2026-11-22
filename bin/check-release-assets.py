@@ -568,7 +568,7 @@ def check_sources() -> list[str]:
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text(encoding="utf-8")
     shortcode = (ROOT / "layouts/_shortcodes/release-assets.html").read_text(encoding="utf-8")
     parser = (ROOT / "layouts/_partials/release/assets-parse.html").read_text(encoding="utf-8")
-    styles = (ROOT / "assets/scss/td/_release.scss").read_text(encoding="utf-8")
+    styles = (ROOT / "assets/css/td/release.css").read_text(encoding="utf-8")
     require('Page.Store.Set "hasAssetList" true' in shortcode, "release-assets never sets its runtime flag", errors)
     require('$hasAssetList' in scripts and 'resources.Get "js/asset-list.js"' in scripts, "asset-list runtime is not conditionally wired", errors)
     require(

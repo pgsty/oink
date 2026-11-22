@@ -84,7 +84,7 @@ def build(base_url: str, public: Path) -> None:
     for marker in (f'href="{prefix}docs/"', f'href="{prefix}blog/"'):
         require(marker in home, f"starter navigation ignored {prefix}")
     for page in (math, landing):
-        require(f"{prefix}scss/" in page, f"starter assets ignored {prefix}")
+        require(f"{prefix}css/" in page, f"starter assets ignored {prefix}")
     require(f"{prefix}blog/release/" in release_index and f"{prefix}book/chapter-one/" in book,
             f"starter component links ignored {prefix}")
 

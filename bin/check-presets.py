@@ -26,10 +26,10 @@ def luminance(color):
 
 
 def main():
-    paper_source = (ROOT/'assets/scss/td/_presets.scss').read_text()
-    brand_source = (ROOT/'assets/scss/td/_brand.scss').read_text()
+    paper_source = (ROOT/'assets/css/td/presets.css').read_text()
+    brand_source = (ROOT/'assets/css/td/brand.css').read_text()
     baseline = json.loads((ROOT/'tests/goldens/presets/slate-v1.1.0.json').read_text())
-    experiment_source = (ROOT/'assets/scss/td/_experimental-presets.scss').read_text()
+    experiment_source = (ROOT/'assets/css/td/experimental-presets.css').read_text()
     palettes = {preset: {mode: palette(source, mode, preset) for mode in ('light', 'dark')}
                 for preset, source in [('paper', paper_source), ('ink', experiment_source), ('terminal', experiment_source)]}
     canvas_source = (ROOT/'layouts/_partials/_funcs/preset-canvases.html').read_text()
@@ -63,7 +63,7 @@ def main():
         for source in (slate, *(modes[mode] for modes in palettes.values())):
             assert source['--bs-body-bg'] in canvas_source
             assert source['--bs-body-color'] in canvas_source
-    fonts = (ROOT/'assets/scss/td/_tokens-typography.scss').read_text()
+    fonts = (ROOT/'assets/css/td/tokens-typography.css').read_text()
     assert fonts.index("[data-td-preset='paper']") < fonts.index("[data-td-typography='system']")
     assert '--td-brand-font-family:' in fonts.split("[data-td-typography='system']")[1]
     for preset in ('paper', 'ink', 'terminal'):

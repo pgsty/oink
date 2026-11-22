@@ -82,7 +82,7 @@ python3 bin/check-components.py               # component and render-hook contra
 python3 bin/check-output.py                   # fresh fixture + output structure/security
 python3 bin/check-namespace.py                # fresh fixture + naming namespace
 python3 bin/check-goldens.py                  # HTML/print/Markdown/RSS/LLMS goldens
-python3 bin/check-scss.py                     # shipped CSS is current; site builds call no Sass
+python3 bin/check-stylesheets.py              # stylesheet layers and their assembly
 python3 bin/check-params.py                   # config shapes and warning fallbacks
 python3 bin/check-i18n.py                     # locale schema parity
 python3 bin/generate-config-schema.py --check # generated schemas match their sources
@@ -152,30 +152,25 @@ python3 -m unittest discover -s tests/migrations -t .
   prescribe a Hugo release in documentation, CI, checkers or scripts.
   `theme.toml` and `hugo.yaml` declare the oldest release the theme supports;
   nothing else names one. Any edition builds this checkout.
-- A site build never compiles Sass. The theme ships its compiled CSS in
-  `assets/oink/`, and no layout may call `toCSS` or `css.Sass`. Consumers must
-  need nothing but the Hugo binary; do not make them install Dart Sass or any
-  other tool, and do not add compatibility shims for unrelated versions.
-- SCSS under `assets/scss/` stays the source. After changing it or the vendored
-  SCSS it imports, run `python3 bin/build-css.py` and keep each regenerated
-  bundle with its source change. The compiler is LibSass, the one tool here
-  tied to a Hugo release: only the Extended edition up to 0.169 contains it.
-  The script uses `hugo` when that has LibSass, and otherwise `hugo-0.169.0`
-  from `PATH` or `--hugo`. Its deprecation warning belongs to this step only,
-  so a site build that prints it has regressed. Without a LibSass Hugo,
-  `bin/check-scss.py --skip-freshness` checks the site-build half alone; CI
-  runs that on the current release and the freshness half in its `scss` job.
-  Dart Sass is not a drop-in replacement: 1.105 rejects the `@import` inside
-  `@if` in `td/_chroma.scss` and writes computed colors and `@extend` order
-  differently, so switching compilers changes the shipped CSS and needs its
-  own review.
-  `assets/oink/*.css` is the one generated output kept in Git, by the owner's
-  2026-11-22 decision: the module is distributed by tag, so the bundles must be
-  in the tree.
+- The stylesheet is plain CSS. Its source is the layer files under
+  `assets/css/td/`; `layouts/_partials/css/layers.html` lists them in cascade
+  order and `css/bundle.html` concatenates them. Editing a layer is the whole
+  change: there is no compiler, no build step and no generated file in Git, and
+  none may be added. No layout may call `css.Sass`, `toCSS` or PostCSS;
+  consumers must need nothing but the Hugo binary.
+- A layer is flat CSS that concatenates: no `@import`, no `//` comment, and
+  every value written out. A value used in several places, such as the 50px
+  navbar height, is repeated; change every occurrence together.
+- `assets/css/td/bootstrap/` is Bootstrap 5.3.8 as built for the theme: it
+  carries the theme's palette, and theme selectors that share a Bootstrap rule
+  (`.td-table`, the draw.io buttons, `.h1`–`.h6` beside headings) are written
+  into that rule. It is theme source, split by Bootstrap component. Upgrading
+  Bootstrap is a deliberate rewrite of those files, not a vendor refresh.
 - Consumers style a site with plain CSS in `assets/css/project.css` and
-  `assets/css/project/*.css`. The three SCSS hooks are retired and warn.
-  `chrome.css`, `landing.css`, `search.css`, and `compare.css` serve site-owned
-  shells. The SCSS partials are not a public interface.
+  `assets/css/project/*.css`. A site-owned shell asks for `chrome`, `landing`,
+  `search` or `compare` with `partial "css/bundle.html"`. The three SCSS hooks
+  of 1.5.1 and older warn and are ignored. Layer files are not a public
+  interface.
 - The module declares Go 1.27.4 as its minimum; the current development default
   is Go 1.27.4. Record the actual local tool versions when reporting validation.
 - Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING` in any build,

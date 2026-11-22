@@ -1,0 +1,38 @@
+/* Common utility classes */
+.td-block-padding, .td-default main > section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+  .td-block-padding, .td-default main > section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .td-max-width-on-larger-screens, .td-content > .td-page-heading, .td-content > .td-article-header > .lead, .td-content > .td-article-header > .td-page-heading, .td-content .footnotes,
+.td-content > .td-callout,
+.td-content > .td-tabs,
+.td-content > .td-fields,
+.td-content > ol.steps,
+.td-content > .td-figure,
+.td-content > .highlight,
+.td-content > .katex-display,
+.td-content > .lead,
+.td-content > .td-table,
+.td-content > table,
+.td-content > blockquote,
+.td-content > dl dd,
+.td-content > h1,
+.td-content > .h1,
+.td-content > h2,
+.td-content > .h2,
+.td-content > ol,
+.td-content > p,
+.td-content > pre,
+.td-content > ul {
+    max-width: 80%;
+  }
+}

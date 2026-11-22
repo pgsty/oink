@@ -1,0 +1,464 @@
+/* Goldmark list classes are the authoring API for CSS-only steps and cards.
+   FileTree and Gallery use data fences because they need per-item markup. */
+/* ---------------------------------------------------------------------------
+   Steps — ordered list
+   --------------------------------------------------------------------------- */
+ol.steps {
+  --td-step-marker-size: 2rem;
+  --td-step-gutter: 3.25rem;
+  --td-step-marker-gap: 0.35rem;
+  --td-step-surface: var(--bs-body-bg);
+  position: relative;
+  margin-block: 1.75rem 2rem;
+  padding-inline-start: var(--td-step-gutter);
+  list-style: none;
+  counter-reset: td-step;
+}
+
+@media (min-width: 576px) {
+  ol.steps {
+    --td-step-marker-size: 2.25rem;
+    --td-step-gutter: 3.75rem;
+  }
+}
+
+ol.steps::before {
+  position: absolute;
+  inset-block: calc(var(--td-step-marker-size) * 0.5) 0.35rem;
+  inset-inline-start: calc(var(--td-step-marker-size) * 0.5);
+  inline-size: 1px;
+  background: var(--bs-border-color);
+  content: '';
+}
+
+ol.steps > li {
+  position: relative;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  counter-increment: td-step;
+}
+
+ol.steps > li::before {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: calc(var(--td-step-gutter) * -1);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: var(--td-step-marker-size);
+  block-size: var(--td-step-marker-size);
+  border-radius: 50%;
+  background: var(--bs-secondary-bg);
+  box-shadow: 0 0 0 var(--td-step-marker-gap) var(--td-step-surface);
+  color: var(--bs-secondary-color);
+  content: counter(td-step);
+  font-family: var(--td-ui-font-family);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1;
+}
+
+ol.steps > li:last-child {
+  margin-block-end: 0;
+}
+
+/* The first line of a step sits on the marker's centre line. */
+ol.steps > li > :first-child {
+  min-block-size: var(--td-step-marker-size);
+  margin-block-start: 0;
+  padding-block-start: calc((var(--td-step-marker-size) - 1.5em) / 2);
+}
+
+ol.steps > li > :where(h2, h3, h4, h5, h6):first-child {
+  display: flex;
+  align-items: center;
+  margin-block: 0 0.5rem;
+  padding: 0;
+  border: 0;
+  line-height: 1.3;
+}
+
+ol.steps > li > :last-child {
+  margin-block-end: 0;
+}
+
+ol.steps > li > p {
+  margin-block-end: 0.75rem;
+}
+
+/* `start` on the list shifts the counter; CSS cannot read the attribute
+   generically, so cover the realistic range. */
+ol.steps[start='2'] {
+  counter-reset: td-step 1;
+}
+
+ol.steps[start='3'] {
+  counter-reset: td-step 2;
+}
+
+ol.steps[start='4'] {
+  counter-reset: td-step 3;
+}
+
+ol.steps[start='5'] {
+  counter-reset: td-step 4;
+}
+
+ol.steps[start='6'] {
+  counter-reset: td-step 5;
+}
+
+ol.steps[start='7'] {
+  counter-reset: td-step 6;
+}
+
+ol.steps[start='8'] {
+  counter-reset: td-step 7;
+}
+
+ol.steps[start='9'] {
+  counter-reset: td-step 8;
+}
+
+ol.steps[start='10'] {
+  counter-reset: td-step 9;
+}
+
+ol.steps[start='11'] {
+  counter-reset: td-step 10;
+}
+
+ol.steps[start='12'] {
+  counter-reset: td-step 11;
+}
+
+ol.steps[start='13'] {
+  counter-reset: td-step 12;
+}
+
+ol.steps[start='14'] {
+  counter-reset: td-step 13;
+}
+
+ol.steps[start='15'] {
+  counter-reset: td-step 14;
+}
+
+ol.steps[start='16'] {
+  counter-reset: td-step 15;
+}
+
+ol.steps[start='17'] {
+  counter-reset: td-step 16;
+}
+
+ol.steps[start='18'] {
+  counter-reset: td-step 17;
+}
+
+ol.steps[start='19'] {
+  counter-reset: td-step 18;
+}
+
+ol.steps[start='20'] {
+  counter-reset: td-step 19;
+}
+
+ol.steps[start='21'] {
+  counter-reset: td-step 20;
+}
+
+ol.steps[start='22'] {
+  counter-reset: td-step 21;
+}
+
+ol.steps[start='23'] {
+  counter-reset: td-step 22;
+}
+
+ol.steps[start='24'] {
+  counter-reset: td-step 23;
+}
+
+ol.steps[start='25'] {
+  counter-reset: td-step 24;
+}
+
+ol.steps[start='26'] {
+  counter-reset: td-step 25;
+}
+
+ol.steps[start='27'] {
+  counter-reset: td-step 26;
+}
+
+ol.steps[start='28'] {
+  counter-reset: td-step 27;
+}
+
+ol.steps[start='29'] {
+  counter-reset: td-step 28;
+}
+
+ol.steps[start='30'] {
+  counter-reset: td-step 29;
+}
+
+ol.steps[start='31'] {
+  counter-reset: td-step 30;
+}
+
+ol.steps[start='32'] {
+  counter-reset: td-step 31;
+}
+
+ol.steps[start='33'] {
+  counter-reset: td-step 32;
+}
+
+ol.steps[start='34'] {
+  counter-reset: td-step 33;
+}
+
+ol.steps[start='35'] {
+  counter-reset: td-step 34;
+}
+
+ol.steps[start='36'] {
+  counter-reset: td-step 35;
+}
+
+ol.steps[start='37'] {
+  counter-reset: td-step 36;
+}
+
+ol.steps[start='38'] {
+  counter-reset: td-step 37;
+}
+
+ol.steps[start='39'] {
+  counter-reset: td-step 38;
+}
+
+ol.steps[start='40'] {
+  counter-reset: td-step 39;
+}
+
+:lang(fa) ol.steps > li::before {
+  content: counter(td-step, persian);
+}
+
+/* ---------------------------------------------------------------------------
+   Cards — link list
+   --------------------------------------------------------------------------- */
+ul.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin-block: 1.25rem 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+ul.cards > li {
+  --td-card-accent: var(--bs-link-color);
+  position: relative;
+  display: block;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem 1.125rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-code-radius, 0.75rem);
+  background: var(--td-brand-elev, var(--bs-tertiary-bg));
+  transition: background-color var(--td-motion-duration-fast) ease, border-color var(--td-motion-duration-fast) ease, box-shadow var(--td-motion-duration) ease;
+  color: var(--bs-secondary-color);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* The same split as .td-content-card: the hovered edge is a ground and
+   follows the section's accent, while the focus outline below stays with
+   the link family. */
+ul.cards > li:has(> a:first-child, > p:first-child > a:first-child):hover, ul.cards > li:has(> a:first-child, > p:first-child > a:first-child):focus-within {
+  border-color: color-mix(in srgb, var(--td-accent) 45%, var(--bs-border-color));
+  background: color-mix(in srgb, var(--td-accent) 3%, var(--td-brand-elev, var(--bs-tertiary-bg)));
+  box-shadow: var(--td-brand-shadow-sm, none);
+}
+
+ul.cards > li:has(> a:first-child:focus-visible, > p:first-child > a:first-child:focus-visible) {
+  outline: 2px solid var(--td-card-accent);
+  outline-offset: 2px;
+}
+
+/* The link is the card title; everything after it is the description.
+   Tight form (`- [Title](url) — desc`) keeps the title inline so the
+   separator reads naturally; the loose form (own paragraph) stacks. */
+ul.cards > li > a:first-child,
+ul.cards > li > p:first-child > a:first-child {
+  position: static;
+  z-index: auto;
+  color: var(--bs-emphasis-color);
+  font-family: var(--td-heading-font-family);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+ul.cards > li > a:first-child::after,
+ul.cards > li > p:first-child > a:first-child::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: '';
+}
+
+ul.cards > li > a:first-child:focus-visible,
+ul.cards > li > p:first-child > a:first-child:focus-visible {
+  outline: none;
+}
+
+ul.cards > li > p:first-child > a:first-child {
+  display: block;
+  margin-block-end: 0.35rem;
+}
+
+ul.cards > li > p {
+  margin: 0;
+}
+
+ul.cards > li > p + p {
+  margin-block-start: 0.35rem;
+}
+
+/* Include links nested in emphasis or other inline markup. The more
+   specific title rules above keep its stretched target on the card. */
+ul.cards > li :is(a, button, summary, input, select, textarea) {
+  position: relative;
+  z-index: 2;
+}
+
+/* A list has one frame; the individual rows keep their native list semantics. */
+ul.cards.td-cards-list,
+.td-content-cards.td-cards-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-code-radius);
+  background: var(--td-brand-elev, var(--bs-tertiary-bg));
+}
+
+ul.cards.td-cards-list > li,
+ul.cards.td-cards-list > .td-content-card,
+.td-content-cards.td-cards-list > li,
+.td-content-cards.td-cards-list > .td-content-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+ul.cards.td-cards-list > li:first-child,
+ul.cards.td-cards-list > .td-content-card:first-child,
+.td-content-cards.td-cards-list > li:first-child,
+.td-content-cards.td-cards-list > .td-content-card:first-child {
+  border-start-start-radius: inherit;
+  border-start-end-radius: inherit;
+}
+
+ul.cards.td-cards-list > li:last-child,
+ul.cards.td-cards-list > .td-content-card:last-child,
+.td-content-cards.td-cards-list > li:last-child,
+.td-content-cards.td-cards-list > .td-content-card:last-child {
+  border-end-start-radius: inherit;
+  border-end-end-radius: inherit;
+}
+
+ul.cards.td-cards-list > li + li,
+ul.cards.td-cards-list > li + .td-content-card,
+ul.cards.td-cards-list > .td-content-card + li,
+ul.cards.td-cards-list > .td-content-card + .td-content-card,
+.td-content-cards.td-cards-list > li + li,
+.td-content-cards.td-cards-list > li + .td-content-card,
+.td-content-cards.td-cards-list > .td-content-card + li,
+.td-content-cards.td-cards-list > .td-content-card + .td-content-card {
+  border-block-start: 1px solid var(--bs-border-color);
+}
+
+ul.cards.td-cards-list > li:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):hover, ul.cards.td-cards-list > li:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):focus-within,
+ul.cards.td-cards-list > .td-content-card:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):hover,
+ul.cards.td-cards-list > .td-content-card:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):focus-within,
+.td-content-cards.td-cards-list > li:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):hover,
+.td-content-cards.td-cards-list > li:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):focus-within,
+.td-content-cards.td-cards-list > .td-content-card:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):hover,
+.td-content-cards.td-cards-list > .td-content-card:has(> a:first-child, > p:first-child > a:first-child, a.td-content-card__title):focus-within {
+  background: color-mix(in srgb, var(--td-accent) 4%, var(--td-brand-elev, var(--bs-tertiary-bg)));
+  box-shadow: none;
+}
+
+ol.steps.td-steps-compact,
+.td-steps.td-steps-compact {
+  --td-step-marker-size: 1.75rem;
+  --td-step-gutter: 2.75rem;
+  --td-step-marker-gap: 0.25rem;
+  margin-block: 1.5rem;
+}
+
+ol.steps.td-steps-compact > li,
+.td-steps.td-steps-compact > li {
+  margin-block-end: 1rem;
+}
+
+ol.steps.td-steps-compact > li:last-child,
+.td-steps.td-steps-compact > li:last-child {
+  margin-block-end: 0;
+}
+
+ol.steps.td-steps-compact > :where(h2, h3, h4, h5, h6):not(.no-step-marker),
+.td-steps.td-steps-compact > :where(h2, h3, h4, h5, h6):not(.no-step-marker) {
+  margin-block-start: 1.25rem;
+}
+
+ol.steps.td-steps-compact > :where(h2, h3, h4, h5, h6):first-child,
+.td-steps.td-steps-compact > :where(h2, h3, h4, h5, h6):first-child {
+  margin-block-start: 0;
+}
+
+ol.steps.td-steps-compact > li::before,
+ol.steps.td-steps-compact > :where(h2, h3, h4, h5, h6)::before,
+.td-steps.td-steps-compact > li::before,
+.td-steps.td-steps-compact > :where(h2, h3, h4, h5, h6)::before {
+  font-size: 0.8125rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion / forced colours / print
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  ul.cards > li {
+    transition: none;
+  }
+  ul.cards > li:hover, ul.cards > li:focus-within {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  ol.steps > li::before,
+ul.cards > li {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+
+@media print {
+  ul.cards {
+    display: block;
+  }
+  ul.cards > li {
+    margin-block-end: 0.75rem;
+    break-inside: avoid-page;
+  }
+}

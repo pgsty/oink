@@ -1,0 +1,90 @@
+.td-skip-link {
+  position: fixed;
+  inset-block-start: 0.75rem;
+  inset-inline-start: 0.75rem;
+  z-index: 1100;
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.5rem;
+  background: var(--bs-primary);
+  color: var(--bs-white);
+  font-size: 0.875rem;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-150%);
+  transition: opacity var(--td-motion-duration-fast) ease, transform var(--td-motion-duration-fast) ease;
+}
+
+.td-skip-link:focus-visible {
+  color: var(--bs-white);
+  opacity: 1;
+  outline: 3px solid var(--bs-link-color);
+  outline-offset: 2px;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Default link decoration; component and print rules may restore underlines. */
+a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none;
+}
+
+/* Without an underline, inline links need a non-color distinction from the
+   surrounding copy to preserve the WCAG link-in-text contract. */
+.td-content :where(p, li, dd, figcaption, td, th) a:not(.btn),
+.td-landing-landing :where(p, li, dd, figcaption, td, th) a:not(.btn) {
+  font-weight: 600;
+}
+
+:root:not([data-bs-theme='dark']) .td-content .text-primary,
+[data-bs-theme='light'] .td-content .text-primary {
+  color: var(--bs-link-color) !important;
+}
+
+:root:not([data-bs-theme='dark']) .td-content .text-info,
+[data-bs-theme='light'] .td-content .text-info {
+  color: #326f7d !important;
+}
+
+[data-bs-theme='dark'] .td-content .text-info {
+  color: #75c5d4 !important;
+}
+
+/* Bootstrap's disabled opacity blends both text and background below 4.5:1. */
+.btn-primary.disabled,
+.btn-primary:disabled {
+  border-color: #53657a;
+  background-color: #53657a;
+  color: #fff;
+  opacity: 1;
+}
+
+/* Navbar links share the active preset's opaque focus color. */
+.td-site-header .nav-link:focus-visible {
+  box-shadow: none;
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: 2px;
+}
+
+/* Keep the ring inside the scroll viewport that clips its contents. */
+.td-code pre[tabindex]:focus-visible {
+  outline: 2px solid var(--bs-link-color);
+  outline-offset: -3px;
+}
+
+@media (forced-colors: active) {
+  .td-shell-tree__row.td-shell-active,
+.td-site-header [aria-current='page'],
+.td-site-drawer [aria-current='page'] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .td-site-footer__logo span {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}

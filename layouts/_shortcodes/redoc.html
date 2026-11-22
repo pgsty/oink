@@ -1,7 +1,7 @@
 {{- /* Embed a ReDoc specification. Positional: one spec path/URL. Only the
        HTML output embeds the reader; print, Markdown, and RSS get a static
        link to the specification and register no runtime. The component
-       styles live in assets/scss/redoc.scss, loaded beside the runtime. */ -}}
+       styles live in assets/css/td/redoc.css, loaded beside the runtime. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
 {{- $ok := true -}}
 {{- if or .IsNamedParams (ne (len .Params) 1) -}}

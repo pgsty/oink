@@ -1,0 +1,440 @@
+/* ============================================================
+   Three-column documentation shell: sidebar, article, and TOC rail.
+   Includes desktop collapse/hover behavior and the mobile drawer.
+   ============================================================ */
+/* Full-bleed shell: remove the inherited container-fluid padding. */
+.td-shell-chrome .td-outer {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: none;
+}
+
+.td-main.td-shell-layout {
+  --td-shell-content-top: 2.75rem;
+  display: flex;
+  align-items: stretch;
+  /* The sticky navbar sits in normal flow, so the layout needs no top offset;
+     --td-shell-nav-h only positions fixed elements below it. */
+  padding-top: 0;
+  /* The footer is part of the content flow, so remove inherited bottom space. */
+  padding-bottom: 0;
+}
+
+/* Remove the inherited main offset; the article owns its spacing. */
+.td-shell-layout .td-shell-main {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0;
+}
+
+/* Article widths selected by page_width: normal, wide, or full. */
+.td-shell-article {
+  max-width: 1050px;
+  width: 100%;
+  margin-inline: auto;
+  padding: 1.5rem clamp(1rem, 4vw, 3rem) 3rem;
+}
+
+@media (min-width: 768px) {
+  .td-shell-article {
+    padding-top: var(--td-shell-content-top);
+  }
+}
+
+.td-shell-layout--w-wide .td-shell-article {
+  max-width: 1300px;
+}
+
+.td-shell-layout--w-full .td-shell-article {
+  max-width: none;
+}
+
+/* --------------------------------------------------------- compact footer */
+/* Flex layout keeps the footer at the viewport edge on short pages and below
+   the fold on long pages. */
+.td-shell-chrome .td-outer {
+  display: flex;
+  flex-direction: column;
+  /* The sticky navbar above .td-outer is part of the same viewport height;
+     without the subtraction every short page scrolls by the navbar height. */
+  min-height: calc(100dvh - var(--td-shell-nav-h));
+}
+
+.td-main.td-shell-layout {
+  flex: 1 0 auto;
+}
+
+/* The opaque full-width footer covers the bottom edges of the fixed rails. */
+.td-shell-footline {
+  position: relative;
+  /* Above the desktop rails even before footer-offset JavaScript runs, but
+     below the modal mobile drawer and dialogs. */
+  z-index: 115;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 11px clamp(16px, 3vw, 32px);
+  border-top: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  font-size: 12px;
+  color: var(--td-shell-muted-fg);
+}
+
+/* Below lg the three-column grid runs out of room and the copyright wraps
+   mid-sentence. Stack the groups as three full-width centered rows instead,
+   with the utility dock as the bottom row. */
+
+.td-shell-footline a {
+  color: inherit;
+  transition: color var(--td-motion-duration) var(--td-shell-ease-color);
+}
+
+.td-shell-footline a:hover {
+  color: var(--td-shell-primary-hover);
+  text-decoration: none;
+}
+
+.td-shell-footline__center {
+  grid-column: 2;
+  text-align: center;
+}
+
+.td-shell-footline__right {
+  display: flex;
+  grid-column: 3;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.td-shell-footline__copy {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.td-shell-footline__copy > .td-footer__copyright,
+.td-shell-footline__copy > .td-footer__copyright > p {
+  display: inline;
+  margin: 0;
+}
+
+@media (max-width: 991.98px) {
+  .td-shell-footline {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    text-align: center;
+  }
+  .td-shell-footline__copy, .td-shell-footline__center, .td-shell-footline__right {
+    grid-column: 1;
+  }
+  .td-shell-footline__right {
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------- mobile subnav */
+.td-shell-subnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 4px;
+  height: 50px;
+  padding-inline: 10px;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: rgba(var(--bs-body-bg-rgb), 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.td-shell-subnav__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 10px;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.td-shell-subnav__brand:hover {
+  text-decoration: none;
+}
+
+.td-shell-subnav__brand img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.td-shell-subnav__brand img.td-shell-brand-logo--wordmark {
+  width: auto;
+  /* ~70% of the 20px mark beside it. */
+  height: 14px;
+}
+
+.td-shell-subnav__menu {
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.td-shell-subnav__menu-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 34px;
+  flex: 0 0 32px;
+  border-radius: 8px;
+  color: var(--bs-tertiary-color);
+  text-decoration: none;
+}
+
+.td-shell-subnav__menu-link:hover, .td-shell-subnav__menu-link:focus-visible, .td-shell-subnav__menu-link.active {
+  background: var(--td-shell-accent);
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.td-shell-subnav__menu-link .td-navbar-entry__label,
+.td-shell-subnav__menu-link .td-navbar-entry__external {
+  display: none;
+}
+
+.td-shell-subnav__menu-link i {
+  font-size: 1rem;
+}
+
+.td-shell-subnav__actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+}
+
+.td-shell-subnav__btn {
+  padding: 8px;
+}
+
+@media (max-width: 479.98px) {
+  .td-shell-subnav .td-shell-brand-logo--wordmark {
+    display: none;
+  }
+  .td-shell-subnav__menu-link {
+    width: 28px;
+    flex-basis: 28px;
+  }
+}
+
+@media (max-width: 359.98px) {
+  .td-shell-subnav .td-shell-wordmark {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------- sidebar column */
+/* This column reserves layout width; the actual panel remains fixed. */
+.td-shell-sidebar {
+  flex: 0 0 auto;
+  width: clamp(var(--td-shell-sidebar-min), var(--td-shell-sidebar-w), var(--td-shell-sidebar-max));
+  transition: width var(--td-motion-duration) ease;
+}
+
+@media (max-width: 767.98px) {
+  .td-shell-sidebar {
+    display: contents;
+  }
+}
+
+.td-shell-sidebar__panel {
+  position: fixed;
+  inset-block-start: 0;
+  inset-block-end: var(--td-shell-footer-offset, 0px);
+  inset-inline-start: 0;
+  width: clamp(var(--td-shell-sidebar-min), var(--td-shell-sidebar-w), var(--td-shell-sidebar-max));
+  /* The information hierarchy belongs to the sidebar. Its opaque surface
+     intentionally masks the navbar's left edge on desktop. */
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  background: var(--td-shell-card);
+  border-inline-end: 1px solid var(--bs-border-color);
+  font-size: 14px;
+  /* No inset transition: the footer offset writes inset-block-end on every
+     scroll frame, and animating it let the panel lag behind the footer,
+     opening a blank seam between the two. */
+  transition: transform var(--td-motion-duration-slow) ease, opacity var(--td-motion-duration) ease, border-radius var(--td-motion-duration-slow) ease;
+}
+
+@media (max-width: 767.98px) {
+  .td-shell-sidebar__panel {
+    /* Right-side drawer: 85vw capped at 380px, square corners, slow motion.
+       Full height: the drawer and its backdrop cover the navbar too. */
+    inset-block-start: 0;
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    inset-block-end: 0;
+    width: 85vw;
+    max-width: 380px;
+    font-size: 15px;
+    z-index: 1045;
+    border-inline-end: 0;
+    border-inline-start: 1px solid var(--bs-border-color);
+    box-shadow: none;
+    transform: translateX(100%);
+    transition: transform var(--td-motion-duration-slow) ease;
+  }
+}
+
+@media (max-width: 767.98px) {
+  [data-td-shell-drawer='open'] .td-shell-sidebar__panel {
+    box-shadow: var(--td-shell-shadow-lg);
+  }
+  [dir='rtl'] .td-shell-sidebar__panel {
+    transform: translateX(-100%);
+  }
+  [dir='rtl'][data-td-shell-drawer='open'] .td-shell-sidebar__panel {
+    transform: translateX(0);
+  }
+}
+
+/* Desktop collapse state. */
+@media (min-width: 768px) {
+  [data-td-shell-sidebar='collapsed'] .td-shell-sidebar {
+    width: 0;
+  }
+  /* Slide out while retaining a 16px transparent pointer target. */
+  [data-td-shell-sidebar='collapsed'] .td-shell-sidebar__panel {
+    transform: translateX(calc(-100% + 16px));
+    opacity: 0;
+  }
+  /* Hover overlay floats above the content without changing column width. */
+  [data-td-shell-sidebar='collapsed']
+.td-shell-sidebar--overlay
+.td-shell-sidebar__panel {
+    transform: translateX(8px);
+    opacity: 1;
+    inset-block-start: 8px;
+    inset-block-end: calc(8px + var(--td-shell-footer-offset, 0px));
+    z-index: 120;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 14px;
+    box-shadow: var(--td-shell-shadow-lg);
+  }
+  [dir='rtl'][data-td-shell-sidebar='collapsed'] .td-shell-sidebar__panel {
+    transform: translateX(calc(100% - 16px));
+  }
+  [dir='rtl'][data-td-shell-sidebar='collapsed']
+.td-shell-sidebar--overlay
+.td-shell-sidebar__panel {
+    transform: translateX(-8px);
+  }
+}
+
+/* --------------------------------------------------------- mobile drawer */
+[data-td-shell-drawer='open'] .td-shell-sidebar__panel {
+  transform: translateX(0);
+}
+
+.td-shell-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background: var(--td-shell-scrim);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--td-motion-duration-slow) ease;
+}
+
+[data-td-shell-drawer='open'] .td-shell-drawer-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --------------------------------------- collapsed floating controls */
+.td-shell-float {
+  display: none;
+  position: fixed;
+  inset-inline-start: 16px;
+  /* Share the article's top inset so the restore control lines up with the
+     breadcrumb / page-actions row instead of occupying the navbar reveal
+     strip at the viewport corner. */
+  top: calc( var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem));
+  z-index: 40;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--td-shell-card);
+  box-shadow: var(--td-shell-shadow-lg);
+}
+
+/* -------------------------------------------------------- drag resizing */
+.td-shell-sidebar__resizer {
+  display: none;
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: -3px;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 5;
+  touch-action: none;
+}
+
+/* Reveal a centered 2px accent indicator on hover or drag. */
+.td-shell-sidebar__resizer::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 2px;
+  width: 2px;
+  background: var(--td-shell-primary);
+  opacity: 0;
+  transition: opacity var(--td-motion-duration) ease;
+}
+
+.td-shell-sidebar__resizer:hover::after {
+  opacity: 0.45;
+}
+
+@media (min-width: 768px) {
+  .td-shell-sidebar__resizer {
+    display: block;
+  }
+}
+
+/* Disable transitions and selection while dragging. */
+html[data-td-shell-resizing] {
+  cursor: col-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html[data-td-shell-resizing] .td-shell-sidebar,
+html[data-td-shell-resizing] .td-shell-sidebar__panel {
+  transition: none !important;
+}
+
+html[data-td-shell-resizing] .td-shell-sidebar__resizer::after {
+  opacity: 0.7;
+}
+
+/* Prevent embedded content from swallowing pointer events during a drag. */
+html[data-td-shell-resizing] iframe {
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  [data-td-shell-sidebar='collapsed'] .td-shell-float {
+    display: flex;
+    animation: td-shell-fade var(--td-motion-duration-slow) ease both;
+  }
+}

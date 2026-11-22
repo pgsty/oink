@@ -1,0 +1,39 @@
+[data-bs-theme='dark'] .chroma {
+  --td-code-hl-bg: color-mix(
+        in srgb,
+        var(--td-pre-bg) 91%,
+        var(--bs-link-color)
+      );
+  --td-code-hl-accent: color-mix(
+        in srgb,
+        var(--bs-link-color) 76%,
+        transparent
+      );
+  color: inherit;
+  background-color: var(--td-pre-bg);
+}
+
+/* The generated dark palette declares its own `.hl` background under
+   the theme selector. Re-apply the semantic treatment after the import
+   so that declaration cannot turn selected lines into solid grey bars. */
+[data-bs-theme='dark'] .chroma .hl {
+  background-color: var(--td-code-hl-bg);
+  box-shadow: inset 3px 0 0 var(--td-code-hl-accent);
+}
+
+[data-bs-theme='dark'] .chroma .ln,
+[data-bs-theme='dark'] .chroma .lnt,
+[data-bs-theme='dark'] .chroma .lnlinks {
+  color: #9aa8ba;
+}
+
+/* Keep terminal output secondary while making the prompt immediately
+   distinguishable from both the command and its output. */
+[data-bs-theme='dark'] .chroma .go {
+  color: #9aa8ba;
+}
+
+[data-bs-theme='dark'] .chroma .gp {
+  color: #7ee787;
+  font-weight: 600;
+}

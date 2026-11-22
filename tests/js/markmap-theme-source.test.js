@@ -8,7 +8,7 @@ const path = require('node:path');
 const test = require('node:test');
 
 const source = fs.readFileSync(
-  path.join(__dirname, '../../assets/scss/td/_content-components.scss'), 'utf8',
+  path.join(__dirname, '../../assets/css/td/content-components.css'), 'utf8',
 ).replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
 
 test('Markmap maps the article token on screen with wrapper/SVG specificity', () => {

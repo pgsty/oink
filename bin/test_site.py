@@ -17,11 +17,7 @@ HUGO_BUILD_TIMEOUT = 120
 
 
 def theme_warnings(output: str) -> list[str]:
-    """Return every warning line of a Hugo log.
-
-    A site build compiles no Sass, so Hugo's LibSass deprecation notice is no
-    longer an accepted line here.
-    """
+    """Return every warning line of a Hugo log."""
     return [line for line in output.splitlines() if line.startswith("WARN")]
 
 

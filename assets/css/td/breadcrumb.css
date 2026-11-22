@@ -1,0 +1,14 @@
+/* Breadcrumb */
+@media print {
+  .td-breadcrumbs {
+    display: none;
+  }
+}
+
+/* Top-level nodes omit their redundant one-crumb trail. Their shell topline
+   remains in place whenever page actions exist, so the control does not jump. */
+.td-breadcrumbs .breadcrumb {
+  background: inherit;
+  padding-left: 0;
+  padding-top: 0;
+}

@@ -1,0 +1,150 @@
+.btn-group,
+.btn-group-vertical {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.btn-group > .btn, dialog.drawioframe.btn-group > .drawioframe__close, div.drawio.btn-group > .drawiobtn,
+.btn-group-vertical > .btn,
+dialog.drawioframe.btn-group-vertical > .drawioframe__close,
+div.drawio.btn-group-vertical > .drawiobtn {
+  position: relative;
+  flex: 1 1 auto;
+}
+
+.btn-group > .btn-check:checked + .btn, dialog.drawioframe.btn-group > .btn-check:checked + .drawioframe__close, div.drawio.btn-group > .btn-check:checked + .drawiobtn,
+.btn-group > .btn-check:focus + .btn,
+dialog.drawioframe.btn-group > .btn-check:focus + .drawioframe__close,
+div.drawio.btn-group > .btn-check:focus + .drawiobtn,
+.btn-group > .btn:hover,
+dialog.drawioframe.btn-group > .drawioframe__close:hover,
+div.drawio.btn-group > .drawiobtn:hover,
+.btn-group > .btn:focus,
+dialog.drawioframe.btn-group > .drawioframe__close:focus,
+div.drawio.btn-group > .drawiobtn:focus,
+.btn-group > .btn:active,
+dialog.drawioframe.btn-group > .drawioframe__close:active,
+div.drawio.btn-group > .drawiobtn:active,
+.btn-group > .btn.active,
+dialog.drawioframe.btn-group > .active.drawioframe__close,
+div.drawio.btn-group > .active.drawiobtn,
+.btn-group-vertical > .btn-check:checked + .btn,
+dialog.drawioframe.btn-group-vertical > .btn-check:checked + .drawioframe__close,
+div.drawio.btn-group-vertical > .btn-check:checked + .drawiobtn,
+.btn-group-vertical > .btn-check:focus + .btn,
+dialog.drawioframe.btn-group-vertical > .btn-check:focus + .drawioframe__close,
+div.drawio.btn-group-vertical > .btn-check:focus + .drawiobtn,
+.btn-group-vertical > .btn:hover,
+dialog.drawioframe.btn-group-vertical > .drawioframe__close:hover,
+div.drawio.btn-group-vertical > .drawiobtn:hover,
+.btn-group-vertical > .btn:focus,
+dialog.drawioframe.btn-group-vertical > .drawioframe__close:focus,
+div.drawio.btn-group-vertical > .drawiobtn:focus,
+.btn-group-vertical > .btn:active,
+dialog.drawioframe.btn-group-vertical > .drawioframe__close:active,
+div.drawio.btn-group-vertical > .drawiobtn:active,
+.btn-group-vertical > .btn.active,
+dialog.drawioframe.btn-group-vertical > .active.drawioframe__close,
+div.drawio.btn-group-vertical > .active.drawiobtn {
+  z-index: 1;
+}
+
+.btn-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.btn-toolbar .input-group {
+  width: auto;
+}
+
+.btn-group {
+  border-radius: var(--bs-border-radius);
+}
+
+.btn-group > :not(.btn-check:first-child) + .btn, dialog.drawioframe.btn-group > :not(.btn-check:first-child) + .drawioframe__close, div.drawio.btn-group > :not(.btn-check:first-child) + .drawiobtn,
+.btn-group > .btn-group:not(:first-child) {
+  margin-left: calc(-1 * var(--bs-border-width));
+}
+
+.btn-group > .btn:not(:last-child):not(.dropdown-toggle), dialog.drawioframe.btn-group > .drawioframe__close:not(:last-child):not(.dropdown-toggle), div.drawio.btn-group > .drawiobtn:not(:last-child):not(.dropdown-toggle),
+.btn-group > .btn.dropdown-toggle-split:first-child,
+dialog.drawioframe.btn-group > .dropdown-toggle-split.drawioframe__close:first-child,
+div.drawio.btn-group > .dropdown-toggle-split.drawiobtn:first-child,
+.btn-group > .btn-group:not(:last-child) > .btn,
+.btn-group > dialog.drawioframe.btn-group:not(:last-child) > .drawioframe__close,
+.btn-group > div.drawio.btn-group:not(:last-child) > .drawiobtn {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.btn-group > .btn:nth-child(n + 3), dialog.drawioframe.btn-group > .drawioframe__close:nth-child(n + 3), div.drawio.btn-group > .drawiobtn:nth-child(n + 3),
+.btn-group > :not(.btn-check) + .btn,
+dialog.drawioframe.btn-group > :not(.btn-check) + .drawioframe__close,
+div.drawio.btn-group > :not(.btn-check) + .drawiobtn,
+.btn-group > .btn-group:not(:first-child) > .btn,
+.btn-group > dialog.drawioframe.btn-group:not(:first-child) > .drawioframe__close,
+.btn-group > div.drawio.btn-group:not(:first-child) > .drawiobtn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.dropdown-toggle-split {
+  padding-right: 0.5625rem;
+  padding-left: 0.5625rem;
+}
+
+.dropdown-toggle-split::after, .dropup .dropdown-toggle-split::after, .dropend .dropdown-toggle-split::after {
+  margin-left: 0;
+}
+
+.dropstart .dropdown-toggle-split::before {
+  margin-right: 0;
+}
+
+.btn-sm + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split, dialog.drawioframe.btn-group-sm > .drawioframe__close + .dropdown-toggle-split, div.drawio.btn-group-sm > .drawiobtn + .dropdown-toggle-split {
+  padding-right: 0.375rem;
+  padding-left: 0.375rem;
+}
+
+.btn-lg + .dropdown-toggle-split, .btn-group-lg > .btn + .dropdown-toggle-split, dialog.drawioframe.btn-group-lg > .drawioframe__close + .dropdown-toggle-split, div.drawio.btn-group-lg > .drawiobtn + .dropdown-toggle-split {
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+}
+
+.btn-group-vertical {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.btn-group-vertical > .btn, dialog.drawioframe.btn-group-vertical > .drawioframe__close, div.drawio.btn-group-vertical > .drawiobtn,
+.btn-group-vertical > .btn-group {
+  width: 100%;
+}
+
+.btn-group-vertical > .btn:not(:first-child), dialog.drawioframe.btn-group-vertical > .drawioframe__close:not(:first-child), div.drawio.btn-group-vertical > .drawiobtn:not(:first-child),
+.btn-group-vertical > .btn-group:not(:first-child) {
+  margin-top: calc(-1 * var(--bs-border-width));
+}
+
+.btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), dialog.drawioframe.btn-group-vertical > .drawioframe__close:not(:last-child):not(.dropdown-toggle), div.drawio.btn-group-vertical > .drawiobtn:not(:last-child):not(.dropdown-toggle),
+.btn-group-vertical > .btn-group:not(:last-child) > .btn,
+.btn-group-vertical > dialog.drawioframe.btn-group:not(:last-child) > .drawioframe__close,
+.btn-group-vertical > div.drawio.btn-group:not(:last-child) > .drawiobtn {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.btn-group-vertical > .btn:nth-child(n + 3), dialog.drawioframe.btn-group-vertical > .drawioframe__close:nth-child(n + 3), div.drawio.btn-group-vertical > .drawiobtn:nth-child(n + 3),
+.btn-group-vertical > :not(.btn-check) + .btn,
+dialog.drawioframe.btn-group-vertical > :not(.btn-check) + .drawioframe__close,
+div.drawio.btn-group-vertical > :not(.btn-check) + .drawiobtn,
+.btn-group-vertical > .btn-group:not(:first-child) > .btn,
+.btn-group-vertical > dialog.drawioframe.btn-group:not(:first-child) > .drawioframe__close,
+.btn-group-vertical > div.drawio.btn-group:not(:first-child) > .drawiobtn {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

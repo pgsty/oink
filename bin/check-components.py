@@ -759,7 +759,7 @@ def check_template_contracts() -> list[str]:
             require(marker in source, f"{name} lacks {marker}", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()
     diagram = (ROOT / "assets/js/diagram.js").read_text()
-    diagram_styles = (ROOT / "assets/scss/td/_diagram.scss").read_text()
+    diagram_styles = (ROOT / "assets/css/td/diagram.css").read_text()
     require("entry.printOpen" in diagram and "entry.kind === 'mermaid' && entry.theme === 'dark'" in diagram
             and 'data-td-diagram-theme="dark"' in diagram_styles and "color: #111 !important" in diagram_styles,
             "browser print must provide readable dark Mermaid source and restore its disclosure state", errors)
@@ -770,8 +770,8 @@ def check_template_contracts() -> list[str]:
     require("$fn:" in runtime and "OinkEchartsFunctions" in runtime, "ECharts callback bridge ($fn: / OinkEchartsFunctions) changed", errors)
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("or $hasAsciinema $hasEcharts $hasInfographic" in scripts, "scripts.html no longer loads content-components.js for data fences", errors)
-    styles = (ROOT / "assets/scss/td/_alerts.scss").read_text()
-    for marker in (".td-callout", "&--collapsible", "@media print", "forced-colors", "prefers-reduced-motion"):
+    styles = (ROOT / "assets/css/td/alerts.css").read_text()
+    for marker in (".td-callout", ".td-callout--collapsible", "@media print", "forced-colors", "prefers-reduced-motion"):
         require(marker in styles, f"callout styles lack {marker}", errors)
     for kind in CANONICAL_TYPES:
         require(f"--{kind}" in styles, f"callout styles lack the {kind} accent", errors)

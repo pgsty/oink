@@ -1,0 +1,6 @@
+/* The code canvas defaults to Bootstrap's tertiary surface. It is declared
+   first so that every later layer, and a site, can replace it. */
+:root,
+[data-bs-theme='light'] {
+  --td-pre-bg: var(--bs-tertiary-bg);
+}

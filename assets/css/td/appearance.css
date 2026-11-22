@@ -1,0 +1,298 @@
+/* The Appearance menu (layouts/_partials/shell/appearance-menu.html): a
+   trigger and a <dialog> panel with two native radio groups. Wide screens get
+   an anchored popover (dialog.show()); narrow screens and drawers get a modal
+   bottom sheet (dialog.showModal()) in the top layer. */
+.td-appearance {
+  position: relative;
+  display: inline-flex;
+}
+
+.td-appearance__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.td-appearance__panel {
+  /* Reset the UA dialog box; position per open mode below. */
+  box-sizing: border-box;
+  width: 18.5rem;
+  max-width: calc(100vw - 24px);
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  background: var(--td-shell-popover, var(--bs-body-bg));
+  box-shadow: var(--td-brand-shadow-md);
+  color: var(--bs-body-color);
+  font-family: var(--td-ui-font-family);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: start;
+}
+
+.td-appearance__panel:not(:modal) {
+  position: absolute;
+  inset-block: calc(100% + 8px) auto;
+  inset-inline: auto 0;
+  z-index: 1080;
+}
+
+.td-appearance__panel:modal {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: 85dvh;
+  overflow-y: auto;
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
+  border-width: 1px 0 0;
+  border-radius: 16px 16px 0 0;
+  font-size: 1rem;
+}
+
+.td-appearance__panel:modal::backdrop {
+  background: var(--td-shell-scrim, rgba(4, 10, 18, 0.45));
+}
+
+/* In the bottom dock the popover opens upward. */
+.td-appearance--up .td-appearance__panel:not(:modal) {
+  inset-block: auto calc(100% + 8px);
+}
+
+/* The title row and close button belong to the sheet; the popover closes
+   on Escape, an outside press, or the trigger. */
+.td-appearance__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  margin-bottom: 4px;
+}
+
+.td-appearance__panel:not(:modal) .td-appearance__head {
+  display: none;
+}
+
+.td-appearance__title {
+  color: var(--bs-emphasis-color);
+  font-weight: 600;
+}
+
+.td-appearance__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-end: -10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--bs-secondary-color);
+}
+
+.td-appearance__close:hover {
+  background: var(--td-shell-accent);
+  color: var(--bs-body-color);
+}
+
+.td-appearance__group {
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+}
+
+.td-appearance__group:last-of-type {
+  margin-bottom: 0;
+}
+
+.td-appearance__legend {
+  float: none;
+  width: auto;
+  margin: 0 0 6px;
+  padding: 0;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* Native radios stay in the accessibility tree and keep their arrow-key
+   behavior; they cover their option so the whole button is the hit target. */
+.td-appearance__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.td-appearance__presets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.td-appearance__preset, .td-appearance__mode {
+  position: relative;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.td-appearance__card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-control-radius);
+  color: var(--bs-secondary-color);
+  transition: border-color var(--td-motion-duration-fast) var(--td-shell-ease-color), background-color var(--td-motion-duration-fast) var(--td-shell-ease-color);
+}
+
+.td-appearance__preset:hover .td-appearance__card {
+  border-color: var(--td-brand-line-strong);
+  background: var(--td-shell-accent);
+}
+
+.td-appearance__input:checked + .td-appearance__card {
+  border-color: var(--td-accent);
+  background: rgba(var(--td-accent-rgb), 0.12);
+  color: var(--bs-emphasis-color);
+  font-weight: 600;
+}
+
+.td-appearance__name {
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* Icons identify the four styles without miniature preview cards. Each
+   keeps its own accent, independent of the currently selected preset. */
+.td-appearance__preset-icon {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.td-appearance__preset-icon .td-shell-icon {
+  --td-shell-icon-size: 14px;
+}
+
+.td-appearance__preset-icon--paper {
+  color: #9c5530;
+}
+
+.td-appearance__preset-icon--slate {
+  color: #245f94;
+}
+
+.td-appearance__preset-icon--ink {
+  color: #c8102e;
+}
+
+.td-appearance__preset-icon--terminal {
+  color: #935400;
+}
+
+.td-appearance__modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-control-radius);
+}
+
+.td-appearance__segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 0 6px;
+  border-inline-start: 1px solid var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  white-space: nowrap;
+}
+
+.td-appearance__segment .td-shell-icon {
+  --td-shell-icon-size: 13px;
+}
+
+.td-appearance__mode:first-child .td-appearance__segment {
+  border-inline-start: 0;
+}
+
+.td-appearance__mode:hover .td-appearance__segment {
+  background: var(--td-shell-accent);
+}
+
+.td-appearance__input:checked + .td-appearance__segment {
+  background: rgba(var(--td-accent-rgb), 0.12);
+  color: var(--bs-emphasis-color);
+  font-weight: 600;
+}
+
+.td-appearance__input:focus-visible + .td-appearance__card, .td-appearance__input:focus-visible + .td-appearance__segment {
+  outline: 2px solid var(--td-accent);
+  outline-offset: 2px;
+}
+
+.td-appearance__input:focus-visible + .td-appearance__segment {
+  outline-offset: -2px;
+}
+
+.td-appearance__note {
+  margin: 10px 0 0;
+  color: var(--bs-tertiary-color);
+  font-size: 0.75rem;
+}
+
+.td-appearance__panel:modal .td-appearance__card, .td-appearance__panel:modal .td-appearance__segment {
+  min-height: 44px;
+}
+
+[data-bs-theme='dark'] .td-appearance__preset-icon--paper {
+  color: #d99a6c;
+}
+
+[data-bs-theme='dark'] .td-appearance__preset-icon--slate {
+  color: #5da2dd;
+}
+
+[data-bs-theme='dark'] .td-appearance__preset-icon--ink {
+  color: #ff5c4d;
+}
+
+[data-bs-theme='dark'] .td-appearance__preset-icon--terminal {
+  color: #f0a73a;
+}
+
+/* The landing drawer's Appearance row spans the drawer like its siblings. */
+.td-site-drawer__appearance {
+  display: block;
+}
+
+@media (forced-colors: active) {
+  .td-appearance__input:checked + .td-appearance__card,
+.td-appearance__input:checked + .td-appearance__segment {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-appearance__card {
+    transition: none;
+  }
+}

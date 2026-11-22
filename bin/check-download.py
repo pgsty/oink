@@ -322,7 +322,7 @@ def check_sources() -> list[str]:
     errors: list[str] = []
     resolver = (ROOT / "layouts/_partials/download/resolve.html").read_text(encoding="utf-8")
     renderer = (ROOT / "layouts/_partials/download/render.html").read_text(encoding="utf-8")
-    styles = (ROOT / "assets/scss/td/_release.scss").read_text(encoding="utf-8")
+    styles = (ROOT / "assets/css/td/release.css").read_text(encoding="utf-8")
     require('partial "code/normalize.html"' in (ROOT / "layouts/_partials/download/code.html").read_text(), "download code does not reuse enhanced code normalization", errors)
     require('partial "release/assets-parse.html"' in renderer, "download assets do not reuse release parser", errors)
     require("rolling download channel" in (ROOT / "layouts/_partials/download/interpolate.html").read_text(), "rolling interpolation guard is missing", errors)

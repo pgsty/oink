@@ -1,0 +1,172 @@
+.td-language-selector {
+  color: inherit;
+  font-size: 0.8125rem;
+}
+
+.td-language-selector a {
+  color: inherit;
+}
+
+.td-language-selector--menu {
+  position: relative;
+  display: inline-flex;
+}
+
+.td-language-selector--menu > .td-language-selector__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color var(--td-motion-duration) var(--td-shell-ease-color), color var(--td-motion-duration) var(--td-shell-ease-color);
+}
+
+.td-language-selector--menu > .td-language-selector__trigger:hover, .td-language-selector--menu > .td-language-selector__trigger:focus-visible {
+  text-decoration: none;
+}
+
+.td-language-selector--menu > ul {
+  position: absolute;
+  inset-block-start: calc(100% + 0.35rem);
+  inset-inline-end: 0;
+  z-index: 1080;
+  min-width: 10.5rem;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--bs-body-bg) 92%, transparent);
+  box-shadow: var(--td-brand-shadow-md, var(--bs-box-shadow));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: top right;
+  transition: opacity var(--td-motion-duration-fast) ease, transform var(--td-motion-duration-fast) ease, visibility 0s linear var(--td-motion-duration-fast);
+}
+
+[dir='rtl'] .td-language-selector--menu > ul {
+  transform-origin: top left;
+}
+
+/* Keep the visual gap inside the hover target so pointer travel is continuous. */
+.td-language-selector--menu > ul::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 100%;
+  height: 0.35rem;
+}
+
+.td-language-selector--menu:not([data-td-menu-ready]):hover > ul, .td-language-selector--menu.td-is-open > ul {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0ms;
+}
+
+.td-language-selector--menu:not([data-td-menu-ready]):focus-within > ul {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0ms;
+}
+
+.td-language-selector--menu > ul:hover,
+.td-language-selector--menu > ul:focus-within {
+  transition-delay: 0ms;
+}
+
+.td-language-selector--list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.td-language-selector__item {
+  display: block;
+  padding: 0.38rem 0.55rem;
+  border-radius: 0.45rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.td-language-selector__item.active {
+  background: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary-text-emphasis);
+  font-weight: 600;
+}
+
+a.td-language-selector__item:hover,
+a.td-language-selector__item:focus-visible {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+
+.td-shell-toc__actions .td-language-selector {
+  flex: 0 0 auto;
+}
+
+.td-shell-toc__actions .td-language-selector__trigger {
+  min-width: 24px;
+  min-height: 24px;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.td-shell-toc__actions .td-language-selector__trigger > span {
+  display: none;
+}
+
+.td-shell-toc__actions .td-language-selector__trigger .td-shell-icon {
+  --td-shell-icon-size: 16px;
+}
+
+/* The bottom bar owns the icon-only language trigger. Its list opens upward
+   and end-aligns with the utility row so it cannot run beyond the viewport. */
+.td-shell-footline .td-language-selector--menu {
+  padding: 0;
+}
+
+.td-shell-footline .td-language-selector--menu > .td-language-selector__trigger {
+  width: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--td-shell-muted-fg);
+}
+
+.td-shell-footline .td-language-selector--menu > .td-language-selector__trigger > span {
+  display: none;
+}
+
+.td-shell-footline .td-language-selector--menu > .td-language-selector__trigger .td-shell-icon {
+  --td-shell-icon-size: 16px;
+}
+
+.td-shell-footline .td-language-selector--menu > .td-language-selector__trigger:hover {
+  background: var(--td-shell-accent);
+  color: var(--td-shell-primary-hover);
+}
+
+.td-shell-footline .td-language-selector--menu > ul {
+  inset-block: auto calc(100% + 0.35rem);
+  inset-inline-end: 0;
+  transform-origin: bottom right;
+}
+
+[dir='rtl'] .td-shell-footline .td-language-selector--menu > ul {
+  transform-origin: bottom right;
+}

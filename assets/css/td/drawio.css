@@ -1,0 +1,59 @@
+div.drawio {
+  display: inline-block;
+  position: relative;
+}
+
+div.drawio > .drawiobtn {
+  position: absolute;
+  inset-block-end: 5px;
+  inset-inline-end: 5px;
+  padding: 0.4em 0.5em;
+  font-size: 0.8em;
+  opacity: 0;
+}
+
+div.drawio:hover > .drawiobtn,
+div.drawio > .drawiobtn:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none), (forced-colors: active) {
+  div.drawio > .drawiobtn {
+    opacity: 1;
+  }
+}
+
+dialog.drawioframe {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  max-height: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 3rem 5% 5%;
+  background: #000b;
+  border: 0;
+}
+
+dialog.drawioframe iframe {
+  height: 100%;
+  width: 100%;
+  border: 0;
+  background: var(--bs-body-bg);
+}
+
+dialog.drawioframe > .drawioframe__close {
+  position: absolute;
+  inset-block-start: 0.25rem;
+  inset-inline-end: 5%;
+  min-height: 2.5rem;
+}
+
+@media print {
+  div.drawio > .drawiobtn,
+dialog.drawioframe {
+    display: none !important;
+  }
+}

@@ -97,6 +97,11 @@ All notable changes to OINK are documented here. The project follows
 - Isolate Asciinema initialization, fetch and recording parse errors and retain the recording
   link, so one failed player cannot prevent other components from mounting.
   Keep that link usable with JavaScript disabled or a missing player bundle.
+- Render sibling chapters in the listing page's own output format when
+  `book-figures`, `book-tables`, `book-equations` or `book-examples` collects
+  their numbered targets. Repeated builds now produce identical Print and
+  Markdown chapter output; the `wordCount` metadata of a Print chapter could
+  differ from one build to the next.
 
 
 ## [1.5.1] — 2026-11-06

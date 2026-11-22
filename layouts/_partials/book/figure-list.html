@@ -7,6 +7,12 @@
 {{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" $page "root" $root) $root.RelPermalink $page.Site.Language.Lang $page.Type -}}
 {{- range $sequence -}}
   {{- if eq . $page }}{{ continue }}{{ end -}}
+  {{- /* Rendering a sibling registers its numbered targets. Hugo renders the
+       pages of one output format in parallel, so that sibling may be
+       rendering itself right now. Give it this page's format, the value its
+       own template sets, and leave it there: switching it to another format
+       and back races with that render. */ -}}
+  {{- .Store.Set "tdOutputFormat" $format -}}
   {{- $discard := .Content -}}
   {{- range (.Store.Get "tdBookTargetOrder" | default dict) -}}
     {{- if eq .kind $kind }}{{ $entries = $entries | append . }}{{ end -}}

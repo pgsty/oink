@@ -1,4 +1,4 @@
-{{- $state := partialCached "comments-state.html" . .RelPermalink -}}
+{{- $state := partialCached "comments-state.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
 {{- if $state.enabled -}}
   {{- if ne $state.type "giscus" -}}
     {{- $warningID := printf "comments-unsupported-type-%s" ($state.type | default "unset") -}}

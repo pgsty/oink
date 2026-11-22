@@ -94,7 +94,7 @@
       if (event.shiftKey && (active === first || !container.contains(active))) {
         event.preventDefault();
         last.focus();
-      } else if (!event.shiftKey && active === last) {
+      } else if (!event.shiftKey && (active === last || !container.contains(active))) {
         event.preventDefault();
         first.focus();
       }
@@ -190,9 +190,10 @@
     if (!btn || !pop) return;
 
     function close(restoreFocus) {
-      if (pop.hidden) return;
+      if (btn.getAttribute('aria-expanded') !== 'true' && pop.hidden) return;
       window.clearTimeout(closeTimer);
       pop.classList.remove('td-is-open');
+      pop.inert = true;
       btn.setAttribute('aria-expanded', 'false');
       closeTimer = window.setTimeout(function () {
         pop.hidden = true;
@@ -205,9 +206,11 @@
       if (window.OinkSurfaceCoordinator)
         window.OinkSurfaceCoordinator.closeOthers('root-menu', ['drawer']);
       pop.hidden = false;
+      pop.inert = false;
       btn.setAttribute('aria-expanded', 'true');
       window.requestAnimationFrame(function () {
-        pop.classList.add('td-is-open');
+        if (btn.getAttribute('aria-expanded') === 'true')
+          pop.classList.add('td-is-open');
       });
       document.addEventListener('pointerdown', onOutside, true);
     }
@@ -288,7 +291,7 @@
         });
       });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && html.hasAttribute('data-td-shell-drawer'))
+      if (e.key === 'Escape' && !e.defaultPrevented && html.hasAttribute('data-td-shell-drawer'))
         close(true);
     });
     // The drawer is modal; keep keyboard focus out of the obscured document.
@@ -403,6 +406,15 @@
         min: parseFloat(cs.getPropertyValue('--td-shell-sidebar-min')) || 220,
         max: parseFloat(cs.getPropertyValue('--td-shell-sidebar-max')) || 480,
       };
+    }
+
+    var initialW = parseFloat(html.style.getPropertyValue('--td-shell-sidebar-w'));
+    if (initialW > 0) {
+      var ib = bounds();
+      html.style.setProperty(
+        '--td-shell-sidebar-w',
+        Math.round(Math.min(ib.max, Math.max(ib.min, initialW))) + 'px',
+      );
     }
 
     handle.addEventListener('pointerdown', function (e) {
@@ -1007,14 +1019,25 @@
 
     if ('ResizeObserver' in window) {
       var lastWidth = 0;
-      new ResizeObserver(function (entries) {
-        var w = entries[0].contentRect.width;
-        if (Math.abs(w - lastWidth) > 1) {
+      var lastHeight = 0;
+      var tocResize = new ResizeObserver(function () {
+        var w = body.clientWidth;
+        var h = tocNav.offsetHeight;
+        if (Math.abs(w - lastWidth) > 1 || Math.abs(h - lastHeight) > 1) {
           lastWidth = w;
+          lastHeight = h;
           build();
         }
         paint();
-      }).observe(body);
+      });
+      tocResize.observe(body);
+      tocResize.observe(tocNav);
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        build();
+        paint();
+      });
     }
     paint();
   }
@@ -1050,6 +1073,8 @@
    through the forms in one fixed order. It ships hidden and is revealed
    here, so a page with no JavaScript shows no control that cannot work. */
 (function () {
+  'use strict';
+  if (typeof window !== 'undefined' && window.OinkComparePane) return;
   var toggle = document.querySelector('[data-td-blog-index-toggle]');
   var posts = document.querySelector('.td-blog-posts[data-td-blog-default]');
   if (!toggle || !posts) return;

@@ -271,10 +271,12 @@ limitations under the License.
         });
     }
 
-    initHeaderScroll();
     initReadingFocus();
-    initLanguageMenus();
-    initVersionMenus();
-    initThemeMenus();
+    if (!window.OinkComparePane) {
+        initHeaderScroll();
+        initLanguageMenus();
+        initVersionMenus();
+        initThemeMenus();
+    }
 
 }());

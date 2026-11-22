@@ -1,5 +1,5 @@
 {{- $page := .page -}}
-{{- $found := partialCached "featured-image-resolve.html" $page $page.RelPermalink -}}
+{{- $found := partialCached "featured-image-resolve.html" $page $page.Site.BaseURL $page.Language.Lang $page.RelPermalink -}}
 {{- $src := $found.href -}}
 {{- $byline := "" -}}
 {{- with $found.resource -}}

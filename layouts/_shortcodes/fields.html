@@ -14,9 +14,9 @@
   {{- $id = strings.TrimSpace (printf "%v" (.Get "id")) -}}
   {{- if not $id -}}
     {{- warnf "shortcode %q: id must not be empty at %s; dropping it" .Name .Position -}}
-  {{- end -}}
-  {{- if findRE `[\s"'<>&]` $id -}}
+  {{- else if findRE `[\s"'<>&]` $id -}}
     {{- warnf "shortcode %q: id %q contains unsupported characters at %s; dropping it" .Name $id .Position -}}
+    {{- $id = "" -}}
   {{- end -}}
 {{- end -}}
 
@@ -25,10 +25,11 @@
   {{- $labelParam := .Get "label" -}}
   {{- if ne (printf "%T" $labelParam) "string" -}}
     {{- warnf "shortcode %q: label must be a string at %s; dropping it" .Name .Position -}}
-  {{- end -}}
-  {{- $label = strings.TrimSpace $labelParam -}}
-  {{- if not $label -}}
-    {{- warnf "shortcode %q: label must not be empty at %s; dropping it" .Name .Position -}}
+  {{- else -}}
+    {{- $label = strings.TrimSpace $labelParam -}}
+    {{- if not $label -}}
+      {{- warnf "shortcode %q: label must not be empty at %s; dropping it" .Name .Position -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 
@@ -39,7 +40,7 @@
 {{- $entries := .Scratch.Get "fieldEntries" | default (dict) -}}
 {{- if eq (len $entries) 0 -}}
   {{- warnf "shortcode %q requires at least one field child at %s; rendering nothing" .Name .Position -}}
-{{- end -}}
+{{- else -}}
 {{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 
 {{- if eq $outputFormat "markdown" -}}
@@ -89,4 +90,5 @@
     "label" $label "labelID" $labelID "entries" $items "format" $outputFormat
     "id" $id "class" (delimit $classes " ") "generic" $generic
   ) -}}
+{{- end -}}
 {{- end -}}

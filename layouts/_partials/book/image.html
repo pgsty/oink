@@ -7,13 +7,16 @@
 {{- $link := .link -}}
 {{- $format := .format -}}
 {{- $href := "" -}}
+{{- $external := false -}}
 {{- with $link -}}
   {{- $linkURL := partial "content/url.html" (dict
     "name" $sc.Name "parameter" "link" "position" $sc.Position
     "value" . "kind" "link"
   ) -}}
   {{- $href = $linkURL.href -}}
+  {{- $external = $linkURL.external -}}
 {{- end -}}
+{{- if and $image $image.src -}}
 {{- if eq $format "markdown" -}}
   {{- $markdown := printf "![%s](%s)" (partial "content/markdown-escape.html" $alt) $image.markdownSrc -}}
   {{- if $href }}{{ $markdown = printf "[%s](%s)" $markdown (partial "content/markdown-url.html" $href) }}{{ end -}}
@@ -22,9 +25,10 @@
 {{- /* A linked figure image is not zoomable (the runtime skips images inside
        anchors), so it declares no marker. */ -}}
 {{- $zoomable := and (eq $format "html") (not $href) (ne (strings.TrimSpace $alt) "") -}}
-{{- if $href }}<a class="td-book-figure__link" href="{{ $href }}">{{ end -}}
+{{- if $href }}<a class="td-book-figure__link" href="{{ $href }}"{{ if $external }} rel="external"{{ end }}>{{ end -}}
 <img class="td-book-figure__image" src="{{ $image.src }}" alt="{{ $alt }}"
   {{- with .width }} width="{{ . }}"{{ end -}}
   {{- with .height }} height="{{ . }}"{{ end }}{{ if $zoomable }} data-td-image-zoom{{ end }} loading="lazy" decoding="async">
 {{- if $href }}</a>{{ end -}}
+{{- end -}}
 {{- end -}}

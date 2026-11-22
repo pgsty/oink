@@ -18,5 +18,5 @@
   "current" (dict "url" .RelPermalink "label" (.Language.Label | default .Language.Lang))
   "shortcut" (cond $keyboardNav "B" "")
   "targets" $targets "labels" $labels | jsonify | safeJS }}</script>
-{{- partialCached "script-resource.html" (dict "target" "js/chunks/compare-entry.js" "members" (slice (resources.Get "js/compare-entry.js"))) "js/chunks/compare-entry.js" -}}
+{{- partialCached "script-resource.html" (dict "target" "js/chunks/compare-entry.js" "members" (slice (resources.Get "js/compare-entry.js"))) .Site.BaseURL "js/chunks/compare-entry.js" -}}
 {{- end -}}

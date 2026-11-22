@@ -137,7 +137,6 @@
   {{- $title = strings.TrimSpace $title -}}
   {{- if strings.Contains $title "${" }}{{ warnf "%s: title must not interpolate version facts; skipping the channel" $channelPosition }}{{ continue }}{{ end -}}
   {{- $note := partial "download/localized.html" (dict "record" $channel "key" "note" "page" $page) -}}
-  {{- $noteOk := true -}}
   {{- if ne $note false -}}
     {{- if ne (printf "%T" $note) "string" -}}
       {{- warnf "%s: note must resolve to a string; dropping the note" $channelPosition -}}
@@ -167,9 +166,11 @@
   {{- $url := "" -}}
   {{- if isset $channel "url" -}}
     {{- $url = partial "download/interpolate.html" (dict "value" $channel.url "field" "url" "kind" $kind "version" $version "tag" $tag "position" $channelPosition) -}}
-    {{- $url = (partial "content/url.html" (dict
-      "name" "download" "parameter" "url" "position" $channelPosition "value" $url "kind" "web"
-    )).href -}}
+    {{- if $url -}}
+      {{- $url = (partial "content/url.html" (dict
+        "name" "download" "parameter" "url" "position" $channelPosition "value" $url "kind" "web"
+      )).href -}}
+    {{- end -}}
   {{- end -}}
   {{- $steps := slice -}}
   {{- if isset $channel "steps" -}}

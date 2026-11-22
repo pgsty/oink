@@ -1,5 +1,9 @@
 {{- if partial "shell/search-enabled.html" . -}}
-{{- $indexURL := partialCached "offline-search-index.html" . .Site.Language.Lang -}}
+{{- $indexURL := partialCached "offline-search-index.html" . .Site.BaseURL .Site.Language.Lang -}}
+{{- $scopeSection := false -}}
+{{- with .FirstSection -}}
+  {{- if and (eq .Kind "section") (ne .Section "") }}{{ $scopeSection = . }}{{ end -}}
+{{- end -}}
 <div id="td-shell-search" class="td-shell-search" hidden
      data-td-index-src="{{ $indexURL }}"
      data-td-max-results="{{ partial "validate.html" (dict
@@ -34,7 +38,7 @@
         <kbd>esc</kbd>
       </button>
     </div>
-    {{ with .FirstSection }}
+    {{ with $scopeSection }}
     <div class="td-shell-search__scope" data-td-search-scope-row>
       <span id="td-search-scope-label" class="td-shell-search__scope-label">{{ T "ui_search_scope" }}</span>
       <div id="td-search-scope" class="td-shell-search__scope-options" role="radiogroup"

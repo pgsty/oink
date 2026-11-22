@@ -3,8 +3,8 @@
      `params.ui.sidebar_headings` is `false` (the default), `true` (which means
      depth 2), or an integer from 2 through 4. Anything else warns and falls
      back to `false`: a sidebar that quietly grows a branch nobody asked for is
-     worse than one that stays as it was, and the warning still fails CI under
-     `--panicOnWarning`. */ -}}
+     worse than one that stays as it was, while invalid-input checkers verify
+     the diagnostic directly. */ -}}
 {{- $page := .page -}}
 {{- $current := .current -}}
 {{- if eq $page $current -}}

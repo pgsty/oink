@@ -1,4 +1,4 @@
-{{- range partialCached "expo/items.html" . .RelPermalink }}
+{{- range partialCached "expo/items.html" . .Site.BaseURL .Language.Lang .RelPermalink }}
 
 ## {{ partial "content/markdown-escape.html" .title }}
 

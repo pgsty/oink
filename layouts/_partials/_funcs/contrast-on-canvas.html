@@ -17,7 +17,7 @@
   {{- $lin := cond (le $cs 0.04045) (div $cs 12.92) (math.Pow (div (add $cs 0.055) 1.055) 2.4) -}}
   {{- $lum = add $lum (mul .w $lin) -}}
 {{- end -}}
-{{- $preset := (partialCached "preset-config.html" "preset-global").preset -}}
+{{- $preset := (partialCached "preset-config.html" "preset-global" site.Language.Lang).preset -}}
 {{- $canvases := dict
     "paper" (dict "light" 0.921568 "dark" 0.007539)
     "slate" (dict "light" 0.901795 "dark" 0.005422)

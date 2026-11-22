@@ -188,7 +188,7 @@
     const button = root.querySelector('[data-td-code-expand]');
     if (!limit || !viewport || !button) return;
     resizeObserver?.observe(viewport);
-    if (root.offsetParent === null) return;
+    if (root.getClientRects().length === 0) return;
 
     const lines = sourceLines(root);
     if (lines.length <= limit) return;
@@ -283,7 +283,7 @@
     scope.querySelectorAll('[data-td-code]').forEach((root) => {
       measureCollapse(root);
     });
-    document.querySelectorAll('[data-td-code-copy]').forEach((button) => {
+    scope.querySelectorAll('[data-td-code-copy]').forEach((button) => {
       if (findCode(resolveRoot(button))) button.hidden = false;
     });
     window.requestAnimationFrame(expandHashTarget);

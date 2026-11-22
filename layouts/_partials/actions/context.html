@@ -55,8 +55,8 @@
 {{- $chatgptURL := printf "https://chatgpt.com/?%s" (querify "hints" "search" "prompt" $llmPrompt) -}}
 {{- $claudeURL := printf "https://claude.ai/new?%s" (querify "q" $llmPrompt) -}}
 
-{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-{{- $preset := partialCached "preset-config.html" "preset-global" -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" $p.Site.Language.Lang -}}
+{{- $preset := partialCached "preset-config.html" "preset-global" $p.Site.Language.Lang -}}
 {{- $presetOptions := slice -}}
 {{- range $preset.offered -}}
   {{- $presetOptions = $presetOptions | append (dict "id" . "title" (T (printf "ui_preset_%s" .)) "value" . "available" true "disabledReason" "") -}}

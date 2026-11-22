@@ -259,11 +259,6 @@
         }) || drawerOpeners[0] || opener;
       }
       if (
-        opener && opener.closest && opener.closest('[data-td-mobile-menu]')
-      ) {
-        opener = document.querySelector('[data-td-menu-toggle]') || opener;
-      }
-      if (
         opener && opener.closest && opener.closest('[data-td-landing-menu]')
       ) {
         opener = document.querySelector('[data-td-landing-menu-toggle]') || opener;
@@ -302,7 +297,8 @@
     }
 
     function close(restoreFocus, preservePending) {
-      if (!isOpen() && delayedClose) return;
+      var wasOpen = isOpen();
+      if (!wasOpen && delayedClose) return;
       delayedClose = true;
       session += 1;
       logicalOpen = false;
@@ -316,7 +312,12 @@
         cancelExtension();
         clearPending();
       }
-      if (restoreFocus !== false && root.contains(document.activeElement)) {
+      var activeEl = document.activeElement;
+      if (
+        wasOpen &&
+        restoreFocus !== false &&
+        (root.contains(activeEl) || activeEl === document.body || !activeEl)
+      ) {
         var focusTarget = lastOpener;
         // A desktop hover panel may have closed while search owned focus.
         if (focusTarget && !isRendered(focusTarget)) {
@@ -573,13 +574,14 @@
         return total + group.rows.length;
       }, 0);
 
-      if (!raw || choiceState || commandOnly || engine || (loadFailed && !retryIndex)) {
+      var indexFailed = (loadFailed && !retryIndex) || queryFailed;
+      if (!raw || choiceState || commandOnly || engine || indexFailed) {
         if (raw && !choiceState && !commandOnly && extensions.size && appendSearchTail(groups, raw)) {
           var note = !actionCount
-            ? (loadFailed && !retryIndex
+            ? (indexFailed
               ? (root.dataset.tdTIndexUnavailable || root.dataset.tdTEmpty || 'Page index unavailable')
               : (root.dataset.tdTEmpty || 'No results'))
-            : loadFailed && !retryIndex ? root.dataset.tdTIndexUnavailable : '';
+            : indexFailed ? root.dataset.tdTIndexUnavailable : '';
           renderGroups(groups, raw);
           if (note) {
             var nativeMessage = document.createElement('div');
@@ -591,14 +593,14 @@
           return;
         }
         if (!actionCount) {
-          message(loadFailed && !retryIndex && !commandOnly
+          message(indexFailed && !commandOnly
             ? (root.dataset.tdTIndexUnavailable || root.dataset.tdTEmpty || 'Page index unavailable')
             : commandOnly
               ? (root.dataset.tdTNoCommands || root.dataset.tdTEmpty || 'No results')
               : (root.dataset.tdTEmpty || 'No results'));
         } else {
           renderGroups(groups, choiceState ? '' : (commandOnly ? raw.slice(1).trim() : raw));
-          if (loadFailed && !retryIndex)
+          if (indexFailed)
             announce(root.dataset.tdTIndexUnavailable || resultMessage(rows.length));
         }
         return;
@@ -800,7 +802,7 @@
     });
     openers.forEach(function (el) { el.addEventListener('click', open); });
     root.querySelectorAll('[data-td-shell-search-close]').forEach(function (el) {
-      el.addEventListener('click', close);
+      el.addEventListener('click', function () { close(true); });
     });
 
     var apple = /Mac|iPhone|iPad|iPod/.test(

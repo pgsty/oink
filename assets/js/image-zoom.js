@@ -18,6 +18,19 @@
 
   let origin = null;
   let backdropPressed = false;
+  let suppressRestoreFocus = false;
+
+  window.OinkSurfaceCoordinator?.register('image-zoom', (restoreFocus) => {
+    if (!dialog.open) return;
+    suppressRestoreFocus = restoreFocus === false;
+    dialog.close();
+  });
+  window.addEventListener('beforeprint', () => {
+    if (dialog.open) {
+      suppressRestoreFocus = true;
+      dialog.close();
+    }
+  });
 
   const directCaption = (image) => {
     const figure = image.closest('figure');
@@ -68,6 +81,7 @@
   };
 
   const open = (button, image) => {
+    window.OinkSurfaceCoordinator?.closeOthers('image-zoom');
     const alt = image.getAttribute('alt') || '';
     const source = zoomSource(image);
     const caption = directCaption(image);
@@ -120,6 +134,8 @@
     dialogImage.alt = '';
     dialogCaption.textContent = '';
     dialogCaption.hidden = true;
+    const shouldRestore = !suppressRestoreFocus;
+    suppressRestoreFocus = false;
     const active = document.activeElement;
     const mayRestore =
       !active ||
@@ -127,7 +143,7 @@
       active === document.documentElement ||
       active === dialog ||
       dialog.contains(active);
-    if (origin?.isConnected && mayRestore) origin.focus({ preventScroll: true });
+    if (shouldRestore && origin?.isConnected && mayRestore) origin.focus({ preventScroll: true });
     origin = null;
   });
 })();

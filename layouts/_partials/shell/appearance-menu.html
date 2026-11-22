@@ -1,5 +1,5 @@
 {{- /* The Appearance menu: one trigger and one panel holding up to two native
-     radio groups, Style (visual preset) and Light (light / dark / system).
+     radio groups, Style (visual preset) and Color mode (light / dark / system).
 
      Input: dict
        page    -- the page;
@@ -17,8 +17,8 @@
      Style radios carry data-td-preset-value and are owned by appearance.js.
      Without JavaScript the panel stays closed and the site default renders. */ -}}
 {{- $context := .context | default "navbar" -}}
-{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-{{- $preset := partialCached "preset-config.html" "preset-global" -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" site.Language.Lang -}}
+{{- $preset := partialCached "preset-config.html" "preset-global" site.Language.Lang -}}
 {{- if or $darkMode.showMenu $preset.menu -}}
 {{- $canvases := partialCached "_funcs/preset-canvases.html" "preset-canvases" -}}
 {{- $presetIcons := dict "paper" "file-lines" "slate" "layers" "ink" "pen-nib" "terminal" "terminal" -}}

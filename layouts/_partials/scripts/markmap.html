@@ -1,7 +1,9 @@
-{{- /* Chunk names are fixed by the maintainer bundle. Publish the entire ESM
-     graph together, without Hugo rewriting relative imports or minifying it. */ -}}
-{{- range resources.Match "third_party/markmap/*" -}}
-  {{- $published := .Publish -}}
+{{- /* Chunk names are fixed by the maintainer bundle. Publish the ESM chunks
+     together, without Hugo rewriting relative imports or minifying them. */ -}}
+{{- range resources.Match "third_party/markmap/*.js" -}}
+  {{- if ne .Name "third_party/markmap/markmap.js" -}}
+    {{- $published := .Publish -}}
+  {{- end -}}
 {{- end -}}
 {{- $engine := resources.Get "third_party/markmap/markmap.js" -}}
 {{- if hugo.IsProduction }}{{ $engine = $engine | fingerprint }}{{ end -}}

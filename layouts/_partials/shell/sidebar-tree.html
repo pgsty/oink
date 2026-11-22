@@ -18,14 +18,12 @@
 {{/* When the sidebar is cached, "active" class is set client side. */ -}}
 {{ $shouldDelayActive := $cacheSidebar -}}
 
+{{ $rootEnabled := partial "validate.html" (dict "value" .Site.Params.ui.sidebar_root_enabled "kind" "bool" "fallback" true "key" "params.ui.sidebar_root_enabled") -}}
 <div id="td-sidebar-menu" class="td-shell-tree-wrap"{{ if $shouldDelayActive }} data-td-sidebar-hydrate-active{{ end }}>
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       data-td-sidebar-icon-policy="{{ $iconPolicy }}"
-      {{- if .Site.Params.ui.sidebar_root_enabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
-    {{ $navRoot := cond .Site.Params.ui.sidebar_root_enabled .Site.Home .FirstSection -}}
-    {{ if $sidebarRoot -}}
-      {{ $navRoot = $sidebarRoot -}}
-    {{ end -}}
+      {{- if $rootEnabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
+    {{ $navRoot := $sidebarRoot | default (cond $rootEnabled .Site.Home .FirstSection) -}}
     {{ $ulNr := 0 -}}
     {{ $ulShow := add $expandLevels 1 -}}
     {{ $sidebarMenuTruncate := partial "validate.html" (dict

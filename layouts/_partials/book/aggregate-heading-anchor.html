@@ -3,6 +3,4 @@
        component IDs stay global and therefore do not use this helper. */ -}}
 {{- $page := .page -}}
 {{- $anchor := .anchor -}}
-{{- $pageID := $page.Path | anchorize -}}
-{{- with $page.File }}{{ $pageID = .UniqueID }}{{ end -}}
-{{- return (printf "pg-%s--%s" $pageID $anchor) -}}
+{{- return (printf "%s--%s" (partial "print/page-id.html" $page) $anchor) -}}

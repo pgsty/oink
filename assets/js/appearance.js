@@ -29,14 +29,24 @@
     return Array.prototype.slice.call(document.querySelectorAll('[data-td-preset-value]'));
   }
 
-  // The presets this page offers, read from the rendered menu, so the runtime
-  // never accepts a name the site did not build a choice for.
+  // The presets this page offers, read from the rendered menu (or the action
+  // manifest when chrome menus are suppressed), so the runtime never accepts a
+  // name the site did not build a choice for.
   function offered() {
     var names = [];
     presetInputs().forEach(function (input) {
       var name = input.getAttribute('data-td-preset-value');
       if (name && names.indexOf(name) < 0) names.push(name);
     });
+    if (!names.length && window.OinkActions && typeof window.OinkActions.get === 'function') {
+      var action = window.OinkActions.get('switch_preset');
+      if (action && Array.isArray(action.options)) {
+        action.options.forEach(function (opt) {
+          var name = opt && (opt.value || opt.id);
+          if (name && names.indexOf(name) < 0) names.push(name);
+        });
+      }
+    }
     return names;
   }
 
@@ -173,7 +183,23 @@
     return name;
   }
 
+  var presetActionRegistered = false;
+
+  function registerPresetAction() {
+    if (presetActionRegistered) return;
+    if (window.OinkActions && window.OinkActions.get('switch_preset')) {
+      presetActionRegistered = true;
+      window.OinkActions.registerExecutor('switch_preset', function (context) {
+        var value = context && context.value;
+        var name = typeof value === 'string' ? value : value && value.value;
+        if (offered().indexOf(name) < 0) return Promise.reject(new Error('Unsupported preset'));
+        return { preset: applyPreset(name, true) };
+      });
+    }
+  }
+
   function initPresets() {
+    registerPresetAction();
     if (!offered().length) return;
     syncInputs();
     presetInputs().forEach(function (input) {
@@ -186,14 +212,6 @@
       if (event.key !== KEY && event.key !== null) return;
       applyPreset(readStored() || sitePreset(), false);
     });
-    if (window.OinkActions && window.OinkActions.get('switch_preset')) {
-      window.OinkActions.registerExecutor('switch_preset', function (context) {
-        var value = context && context.value;
-        var name = typeof value === 'string' ? value : value && value.value;
-        if (offered().indexOf(name) < 0) return Promise.reject(new Error('Unsupported preset'));
-        return { preset: applyPreset(name, true) };
-      });
-    }
   }
 
   // ---- The menu -------------------------------------------------------------
@@ -304,6 +322,7 @@
     document.querySelectorAll('[data-td-appearance]').forEach(initMenu);
   }
 
+  registerPresetAction();
   window.OinkAppearance = { applyPreset: applyPreset, offered: offered };
 
   if (document.readyState === 'loading') {

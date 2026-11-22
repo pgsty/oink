@@ -4,7 +4,7 @@
      semantic Markdown partial that owns the per-page markdown output. Pages
      hidden from navigation stay out of the bundle. Enabling the format
      anywhere but a top-level section warns and emits nothing, so ordinary
-     preview keeps working while --panicOnWarning blocks publication. */ -}}
+     preview keeps working without broken output. */ -}}
 {{- $root := . -}}
 {{- if or (ne $root.Kind "section") (ne $root.Parent $root.Site.Home) -}}
   {{- warnf "LLMSFULL output requires a top-level section at %s; emitting nothing" $root.Path -}}
@@ -16,8 +16,10 @@
     {{- $source := $page.Permalink -}}
     {{- with $page.OutputFormats.Get "markdown" }}{{ $source = .Permalink }}{{ end -}}
     {{- printf "================\nSource: %s\n================\n\n" $source -}}
+    {{- $previousFormat := $page.Store.Get "tdOutputFormat" -}}
     {{- $page.Store.Set "tdOutputFormat" "markdown" -}}
     {{- partial "content/markdown-document.md" $page -}}
+    {{- if $previousFormat }}{{ $page.Store.Set "tdOutputFormat" $previousFormat }}{{ else }}{{ $page.Store.Delete "tdOutputFormat" }}{{ end -}}
     {{- printf "\n\n" -}}
   {{- end -}}
 {{- end -}}

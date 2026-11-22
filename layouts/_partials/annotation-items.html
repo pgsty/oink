@@ -96,7 +96,7 @@
       {{- if or $noticeResult.external (hasPrefix $notice "#") (hasPrefix $notice "?") -}}
         {{- $notice = $noticeResult.href -}}
       {{- else -}}
-        {{- $notice = relLangURL $notice -}}
+        {{- $notice = strings.TrimPrefix "/" $noticeResult.raw | relLangURL -}}
       {{- end -}}
       {{- $licenceURL = $licenceResult.href -}}
     {{- else -}}

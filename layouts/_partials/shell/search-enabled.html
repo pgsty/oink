@@ -25,8 +25,17 @@
   {{- warnf "params.offline_search_on_serve must be a boolean or an exact true/false environment value; using true" -}}
   {{- $serveSearch = true -}}
 {{- end -}}
+{{- $offlineSearch := false -}}
+{{- if isset .Site.Params "offline_search" }}{{ $offlineSearch = .Site.Params.offline_search }}{{ end -}}
+{{- if eq (printf "%T" $offlineSearch) "string" -}}
+  {{- if eq $offlineSearch "true" }}{{ $offlineSearch = true }}{{ else if eq $offlineSearch "false" }}{{ $offlineSearch = false }}{{ end -}}
+{{- end -}}
+{{- if ne (printf "%T" $offlineSearch) "bool" -}}
+  {{- warnidf (printf "validate:bool:params.offline_search:%v" $offlineSearch) "params.offline_search must be a boolean; using false" -}}
+  {{- $offlineSearch = false -}}
+{{- end -}}
 {{- return and
-      .Site.Params.offline_search
+      $offlineSearch
       (or (not hugo.IsServer) $serveSearch)
       $surface
       (ne $format "print")

@@ -88,8 +88,8 @@
 {{- $scope := printf "%s-%s" (.Parent.Name | anchorize) (partial "content/shortcode-ordinal.html" .) -}}
 {{- $id := printf "td-card-%s-%s" (md5 .Page.RelPermalink | truncate 8 "") $scope -}}
 <article id="{{ $id }}" class="td-content-card">
-{{- with $image }}
-<img class="td-content-card__image" src="{{ .src }}" alt="{{ .alt }}"{{ if gt .width 0 }} width="{{ .width }}" height="{{ .height }}"{{ end }} loading="lazy" decoding="async">
+{{- if and $image $image.src }}
+<img class="td-content-card__image" src="{{ $image.src }}" alt="{{ $image.alt }}"{{ if gt $image.width 0 }} width="{{ $image.width }}" height="{{ $image.height }}"{{ end }} loading="lazy" decoding="async">
 {{- end }}
 <div class="td-content-card__body">
 <div class="td-content-card__head">

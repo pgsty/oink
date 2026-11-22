@@ -123,13 +123,18 @@
     {{- $anchor := partial "content/field-anchor.html" (dict "page" $page "name" $key "identity" (printf "tb%d#%d" $.Ordinal $rowIndex)) -}}
     {{- $entries = $entries | append (dict "name" $nameInner "anchor" $anchor "meta" $meta "description" $description "descriptionMarkdown" false) -}}
   {{- end -}}
-  {{- if not $entries }}{{ warnf "table .fields: at least one row is required at %s; rendering nothing" .Position }}{{ end -}}
-  {{- $labelID := printf "td-fields-%s-t%d-label" (md5 $page.RelPermalink) .Ordinal -}}
-  {{- $html := partial "content/fields-list.html" (dict "label" $caption "labelID" $labelID "entries" $entries "format" $format "id" $idRaw "class" (delimit $siteClasses " ") "generic" $policy.generic) -}}
-  {{- if $tab -}}
-    {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" (index $policy.consumed "group") "value" (index $policy.consumed "value") "kind" "table" "content" $html) -}}
+  {{- if not $entries -}}
+    {{- warnf "table .fields: at least one row is required at %s; rendering nothing" .Position -}}
   {{- else -}}
-    {{- $html -}}
+    {{- $fieldsID := "" -}}
+    {{- if $idRaw }}{{ $fieldsID = partial "book/validate-id.html" (dict "name" "table .fields" "value" $idRaw "position" .Position) }}{{ end -}}
+    {{- $labelID := printf "td-fields-%s-t%d-label" (md5 $page.RelPermalink) .Ordinal -}}
+    {{- $html := partial "content/fields-list.html" (dict "label" $caption "labelID" $labelID "entries" $entries "format" $format "id" $fieldsID "class" (delimit $siteClasses " ") "generic" $policy.generic) -}}
+    {{- if $tab -}}
+      {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" (index $policy.consumed "group") "value" (index $policy.consumed "value") "kind" "table" "content" $html) -}}
+    {{- else -}}
+      {{- $html -}}
+    {{- end -}}
   {{- end -}}
 {{- else -}}
 
@@ -139,8 +144,11 @@
 {{- if $numRaw -}}
   {{- $num = partial "book/validate-num.html" (dict "name" "table" "value" $numRaw "position" .Position) -}}
   {{- if $num -}}
-    {{- if not $id }}{{ $id = printf "tbl-%s" $num }}{{ else }}{{ $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) }}{{ end -}}
-    {{- if $id }}{{ partial "book/register-target.html" (dict "page" $page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
+    {{- if $id }}{{ $id = partial "book/validate-id.html" (dict "name" "table" "value" $id "position" .Position) }}{{ end -}}
+    {{- if not $id }}{{ $id = printf "tbl-%s" $num }}{{ end -}}
+    {{- if not (partial "book/register-target.html" (dict "page" $page "kind" "tbl" "source" "table" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+      {{- $id = "" -}}
+    {{- end -}}
   {{- else -}}
     {{- $numRaw = "" -}}
     {{- if $id }}{{ warnf "table: id requires a valid num at %s; dropping it" .Position }}{{ end -}}
@@ -182,7 +190,7 @@
   {{- else -}}
     {{- /* Same wrapper element as the `tbl` shortcode (td-book-figure__body), so a
            numbered table is styled identically whichever form produced it. */ -}}
-    {{- $html = printf `<figure id="%s" class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="%s"><div class="td-book-figure__body">%s</div><figcaption><span class="td-tbl-label">%s</span>%s</figcaption></figure>` $id $num $table $label (cond (ne $caption "") (printf ` <span class="td-tbl-caption">%s</span>` (htmlEscape $caption)) "") -}}
+    {{- $html = printf `<figure%s class="td-book-figure td-book-figure--tbl" data-td-book-kind="tbl" data-td-book-num="%s"><div class="td-book-figure__body">%s</div><figcaption><span class="td-tbl-label">%s</span>%s</figcaption></figure>` (cond (ne $id "") (printf ` id="%s"` $id) "") $num $table $label (cond (ne $caption "") (printf ` <span class="td-tbl-caption">%s</span>` (htmlEscape $caption)) "") -}}
   {{- end -}}
 {{- end -}}
 {{- if $tab -}}

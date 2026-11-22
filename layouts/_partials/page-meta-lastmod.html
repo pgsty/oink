@@ -3,7 +3,7 @@
      needs a different line overrides the resolver and keeps these classes,
      the print rules, and the icon column. The partial name is the older
      override point and stays. */ -}}
-{{- $items := partial "annotation-items.html" . -}}
+{{- $items := partialCached "annotation-items.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
 {{- with $items }}
 <div class="td-page-meta__footer">
   {{- range . }}

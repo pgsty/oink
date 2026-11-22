@@ -76,7 +76,10 @@
 
   function pathOf(url, base) {
     try {
-      var path = new URL(url, base).pathname;
+      var parsed = new URL(url, base);
+      var baseParsed = new URL(base);
+      if (parsed.origin !== baseParsed.origin) return '';
+      var path = parsed.pathname;
       return path.endsWith('/') ? path : path + '/';
     } catch (_) {
       return '';
@@ -435,8 +438,10 @@
         Array.prototype.forEach.call(
           toc.querySelectorAll('a[href^="#"]'),
           function (anchor) {
-            var id = (anchor.getAttribute('href') || '').slice(1);
-            var el = id && doc.getElementById(id);
+            var rawId = (anchor.getAttribute('href') || '').slice(1);
+            var id = rawId;
+            try { id = decodeURIComponent(rawId); } catch (_) {}
+            var el = (id && doc.getElementById(id)) || (rawId && doc.getElementById(rawId));
             if (el) targets.push(el);
           },
         );
@@ -504,7 +509,7 @@
         outlineCursor = -1;
         glideTo(0);
         if (win.history && win.history.replaceState)
-          win.history.replaceState(null, '', win.location.pathname + win.location.search);
+          win.history.replaceState(win.history.state, '', win.location.pathname + win.location.search);
         return;
       }
       if (next >= targets.length) return;
@@ -515,7 +520,7 @@
         anchorOffset(target),
       );
       if (target.id && win.history && win.history.replaceState)
-        win.history.replaceState(null, '', '#' + target.id);
+        win.history.replaceState(win.history.state, '', '#' + encodeURIComponent(target.id));
     }
 
     /* ------------------------------------------------------ paging (q/e) */
@@ -525,8 +530,13 @@
       // available. Section landing rows are links too, so a blog column ends
       // at the next column landing page before continuing into its first post.
       // Its empty edges stay empty: never mix the tree with a date-based pager.
-      var links = visibleTreeLinks(menu());
-      if (links.length) {
+      var rawLinks = visibleTreeLinks(menu());
+      if (rawLinks.length) {
+        var links = rawLinks.filter(function (link) {
+          return link.getAttribute('target') !== '_blank' &&
+            Boolean(pathOf(link.getAttribute('href') || '', win.location.href));
+        });
+        if (!links.length) return '';
         var index = currentTreeIndex(links, doc, win);
         if (index >= 0) {
           var neighbor = links[index + (direction === 'next' ? 1 : -1)];

@@ -8,8 +8,8 @@
 {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (index $params "num") "position" .Position) -}}
 {{- $id := "" -}}
 {{- if $num -}}
-  {{- $id = printf "fig-%s" $num -}}
   {{- if isset $params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (index $params "id") "position" .Position) }}{{ end -}}
+  {{- if not $id }}{{ $id = printf "fig-%s" $num }}{{ end -}}
 {{- else if isset $params "id" -}}
   {{- warnf "shortcode %q: id requires a valid num at %s; dropping it" .Name .Position -}}
 {{- end -}}
@@ -45,7 +45,6 @@
     {{- if eq $name "width" }}{{ $width = $value }}{{ else }}{{ $height = $value }}{{ end -}}
   {{- end -}}
 {{- end -}}
-{{- if and $num $id }}{{ partial "book/register-target.html" (dict "page" .Page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $label := "" -}}{{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "fig" "num" $num) }}{{ end -}}
 {{- /* Resolve `src` through the same image path as Markdown images. */ -}}
@@ -67,14 +66,22 @@
 {{- else if $hasAlt -}}
   {{- $alt = $altParam -}}
 {{- end -}}
-{{- if eq $format "markdown" -}}
-  {{- $body := $inner -}}
-  {{- if $src }}{{ $body = partial "book/image.html" (dict "shortcode" . "image" $image "alt" $alt "link" $link "width" $width "height" $height "format" "markdown") }}{{ end -}}
-  {{- $prefix := cond $label (printf "**%s.**" $label) "" -}}
-  {{- printf "%s%s%s" $prefix (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") (cond $body (printf "\n\n%s" $body) "") | safeHTML -}}
-{{- else -}}
+{{- $hasBody := or (and $src $image $image.src) (and (not $src) $inner) -}}
+{{- if $hasBody -}}
+  {{- if and $num $id -}}
+    {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+      {{- $id = "" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $format "markdown" -}}
+    {{- $body := $inner -}}
+    {{- if $src }}{{ $body = partial "book/image.html" (dict "shortcode" . "image" $image "alt" $alt "link" $link "width" $width "height" $height "format" "markdown") }}{{ end -}}
+    {{- $prefix := cond $label (printf "**%s.**" $label) "" -}}
+    {{- printf "%s%s%s" $prefix (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") (cond $body (printf "\n\n%s" $body) "") | safeHTML -}}
+  {{- else -}}
 <figure{{ with $id }} id="{{ . }}"{{ end }} class="td-figure{{ if $num }} td-book-figure td-book-figure--fig{{ end }}{{ with $class }} {{ . }}{{ end }}"{{ if $num }} data-td-book-kind="fig" data-td-book-num="{{ $num }}"{{ end }}>
   {{- if $src }}{{ partial "book/image.html" (dict "shortcode" . "image" $image "alt" $alt "link" $link "width" $width "height" $height "format" $format) }}{{ else }}<div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "fig-%s" (partial "content/shortcode-ordinal.html" .)) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>{{ end }}
   <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
+  {{- end -}}
 {{- end -}}

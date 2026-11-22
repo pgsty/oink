@@ -1,10 +1,10 @@
-{{/* cSpell:ignore docsearch markmap plantuml katex hasmermaid */ -}}
+{{/* cSpell:ignore docsearch markmap plantuml katex */ -}}
 {{ $shell := partial "shell/chrome-enabled.html" . -}}
 {{ $localSearch := partial "shell/search-enabled.html" . -}}
 {{ $hasGoogleSearch := ne (.Site.Params.gcs_engine_id | default "") "" -}}
 {{ $markmapEnabled := .Site.Params.markmap | default false -}}
 {{ if ne (printf "%T" $markmapEnabled) "bool" -}}
-  {{ warnf "params.markmap must be a boolean; got %v; using false" $markmapEnabled -}}
+  {{ warnidf (printf "validate:bool:params.markmap:%v" $markmapEnabled) "params.markmap must be a boolean; got %v; using false" $markmapEnabled -}}
   {{ $markmapEnabled = false -}}
 {{ end -}}
 {{ $plantumlEnabled := partial "config-enabled.html" (dict "value" .Site.Params.plantuml "key" "params.plantuml") -}}
@@ -14,7 +14,7 @@
 {{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
 {{ $keyboardNavParam := (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) -}}
 {{ if and (ne $keyboardNavParam nil) (ne (printf "%T" $keyboardNavParam) "bool") -}}
-  {{ warnf "params.ui.keyboard_nav must be a boolean; got %v; using true" $keyboardNavParam -}}
+  {{ warnidf (printf "validate:bool:params.ui.keyboard_nav:%v" $keyboardNavParam) "params.ui.keyboard_nav must be a boolean; got %v; using true" $keyboardNavParam -}}
   {{ $keyboardNavParam = nil -}}
 {{ end -}}
 {{/* Global action keys (language/theme/navbar/search) also belong on landing
@@ -34,7 +34,7 @@
 {{ $hasTabRuntime := and $interactiveOutput (.Page.Store.Get "hasTabs" | default false) -}}
 {{ $hasFileTree := and $interactiveOutput (.Page.Store.Get "hasFileTree" | default false) -}}
 {{ $hasTableReader := and $interactiveOutput (.Page.Store.Get "hasTableReader" | default false) -}}
-{{ $hasMermaid := and $interactiveOutput (.Page.Store.Get "hasmermaid" | default false) -}}
+{{ $hasMermaid := and $interactiveOutput (.Page.Store.Get "hasMermaid" | default false) -}}
 {{ $hasAuthoredA11y := and $interactiveOutput (.Page.Store.Get "hasAuthoredA11y" | default false) -}}
 
 {{ if $hasMarkmap -}}
@@ -49,7 +49,9 @@
     {{ $plantumlSVGURL = index .Site.Params.plantuml "svg_image_url" -}}
     {{ $plantumlServer = or (ne (printf "%T" $plantumlSVGURL) "string") (ne $plantumlSVGURL "") -}}
   {{ end -}}
-  {{ $plantumlSVG = eq (index .Site.Params.plantuml "svg") true -}}
+  {{ if isset .Site.Params.plantuml "svg" -}}
+    {{ $plantumlSVG = partial "validate.html" (dict "value" (index .Site.Params.plantuml "svg") "kind" "bool" "fallback" false "key" "params.plantuml.svg") -}}
+  {{ end -}}
 {{ end -}}
 {{ if and $plantumlEnabled $plantumlServer -}}
   {{ $endpoint := partial "content/url.html" (dict "label" "params.plantuml" "parameter" "svg_image_url" "position" "site configuration" "value" $plantumlSVGURL "kind" "image") -}}
@@ -115,7 +117,7 @@
 {{ end -}}
 {{ if or $hasMermaid (and $hasPlantuml (not $plantumlServer)) -}}
   {{ partial "content/diagram-zoom-dialog.html" . -}}
-  {{ partialCached "script-resource.html" (dict "target" "js/chunks/diagram.js" "members" (slice (resources.Get "js/diagram.js"))) "js/chunks/diagram.js" -}}
+  {{ partialCached "script-resource.html" (dict "target" "js/chunks/diagram.js" "members" (slice (resources.Get "js/diagram.js"))) .Site.BaseURL "js/chunks/diagram.js" -}}
 {{ end -}}
 {{ if and $hasPlantuml (not $plantumlServer) -}}
   {{ partial "scripts/plantuml.html" . -}}
@@ -233,14 +235,16 @@
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/swagger-init.js" "members" (slice (resources.Get "js/swagger-init.js"))) -}}
 {{ end -}}
 
-{{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch .Section }}{{ end -}}
-{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+{{ $scopeKey := "" -}}
+{{ with .FirstSection }}{{ if and (eq .Kind "section") (ne .Section "") }}{{ $scopeKey = .Section }}{{ end }}{{ end -}}
+{{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.BaseURL .Site.Language.Lang $localSearch $scopeKey }}{{ end -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
 {{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/dark-mode.js" "members" (slice (resources.Get "js/dark-mode.js"))) -}}
 {{ end -}}
 {{- /* The Appearance menu (style and/or mode) renders only when the site offers
      a choice; its runtime follows the same condition. */ -}}
-{{ if and $interactiveOutput (or $darkMode.showMenu (partialCached "preset-config.html" "preset-global").menu) -}}
+{{ if and $interactiveOutput (or $darkMode.showMenu (partialCached "preset-config.html" "preset-global" .Site.Language.Lang).menu) -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/appearance.js" "members" (slice (resources.Get "js/appearance.js"))) -}}
 {{ end -}}
 {{ if and $interactiveOutput $hasGiscus -}}
@@ -287,7 +291,7 @@
 {{ end -}}
 {{ if $hasImageZoom }}{{ partial "content/image-zoom-dialog.html" . }}{{ end -}}
 {{ range $jsChunks -}}
-  {{ partialCached "script-resource.html" . .target -}}
+  {{ partialCached "script-resource.html" . $.Site.BaseURL .target -}}
 {{ end -}}
 
 {{ if partialCached "search/algolia-enabled.html" . .Site.Language.Lang .Site.BaseURL -}}

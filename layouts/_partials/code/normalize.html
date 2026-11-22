@@ -1,7 +1,6 @@
 {{- $page := .page -}}
 {{- $attrs := .attributes | default (dict) -}}
 {{- $options := .options | default (dict) -}}
-{{- $defaults := .defaults | default (dict) -}}
 {{- $position := .position | default $page.Path -}}
 {{- $code := strings.TrimRight "\r\n" (.code | default "") -}}
 {{- $language := .language | default "" -}}
@@ -32,15 +31,9 @@
     {{- warnf "code block: label must not be empty at %s; dropping it" $position -}}
   {{- end -}}
 {{- end -}}
-{{- if and $label (isset $attrs "aria-label") -}}
-  {{- warnf "code block: label/filename and aria-label are mutually exclusive at %s; dropping aria-label" $position -}}
-{{- end -}}
 
-{{- $rootID := .id | default "" -}}
+{{- $rootID := "" -}}
 {{- if isset $attrs "id" -}}
-  {{- if $rootID -}}
-    {{- warnf "code block: duplicate internal and author id at %s; using the author id" $position -}}
-  {{- end -}}
   {{- $rootID = strings.TrimSpace (printf "%v" (index $attrs "id")) -}}
   {{- if not $rootID -}}
     {{- warnf "code block: id must not be empty at %s; deriving one" $position -}}
@@ -118,10 +111,6 @@
 
 {{- $hasCopy := false -}}
 {{- $copyValue := "" -}}
-{{- if isset $defaults "copy" -}}
-  {{- $hasCopy = true -}}
-  {{- $copyValue = printf "%v" (index $defaults "copy") -}}
-{{- end -}}
 {{- if isset $attrs "copy" -}}
   {{- $hasCopy = true -}}
   {{- $copyValue = printf "%v" (index $attrs "copy") -}}
@@ -151,10 +140,6 @@
 
 {{- $hasWrap := false -}}
 {{- $wrapValue := "false" -}}
-{{- if isset $defaults "wrap" -}}
-  {{- $hasWrap = true -}}
-  {{- $wrapValue = printf "%v" (index $defaults "wrap") -}}
-{{- end -}}
 {{- if isset $attrs "wrap" -}}
   {{- $hasWrap = true -}}
   {{- $wrapValue = printf "%v" (index $attrs "wrap") -}}
@@ -171,10 +156,6 @@
 
 {{- $hasCollapse := false -}}
 {{- $collapseValue := "" -}}
-{{- if isset $defaults "collapse" -}}
-  {{- $hasCollapse = true -}}
-  {{- $collapseValue = printf "%v" (index $defaults "collapse") -}}
-{{- end -}}
 {{- if isset $attrs "collapse" -}}
   {{- $hasCollapse = true -}}
   {{- $collapseValue = printf "%v" (index $attrs "collapse") -}}
@@ -214,7 +195,15 @@
 
 {{- /* This modifier changes presentation only; unsuitable source keeps the
        ordinary code block, highlighting, copy mode, and author attributes. */ -}}
-{{- $authorClassTokens := findRE `\S+` $authorClass -}}
+{{- $authorClassTokens := slice -}}
+{{- range findRE `\S+` $authorClass -}}
+  {{- if findRE `^[A-Za-z0-9_-]+$` . -}}
+    {{- $authorClassTokens = $authorClassTokens | append . -}}
+  {{- else -}}
+    {{- warnf "code block: class token %q contains unsafe characters at %s; dropping it" . $position -}}
+  {{- end -}}
+{{- end -}}
+{{- $authorClass = delimit $authorClassTokens " " -}}
 {{- $command := in $authorClassTokens "td-code-command" -}}
 {{- if and $command (or (ne $lineCount 1) (gt $collapseLines 0) (not (in (slice "" "false") $lineNosKey))) -}}
   {{- warnf "code block: td-code-command requires one line without line numbers or collapse at %s; using the regular block" $position -}}
@@ -228,7 +217,6 @@
   {{- $classes = $classes | append "td-code--untitled" -}}
 {{- end -}}
 {{- if $wrap }}{{ $classes = $classes | append "td-code--wrap" }}{{ end -}}
-{{- if .embedded }}{{ $classes = $classes | append "td-code--embedded" }}{{ end -}}
 {{- with $authorClass }}{{ $classes = $classes | append . }}{{ end -}}
 
 {{- return (dict
@@ -253,5 +241,4 @@
   "collapsible" $collapsible
   "lineCount" $lineCount
   "interactive" $interactive
-  "embedded" (.embedded | default false)
 ) -}}

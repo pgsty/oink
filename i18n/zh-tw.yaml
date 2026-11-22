@@ -71,7 +71,6 @@ ui_preset_paper: "Paper"
 ui_preset_slate: "Slate"
 ui_preset_ink: "Ink"
 ui_preset_terminal: "Terminal"
-ui_preset_experimental: "實驗"
 ui_page_actions: 操作
 ui_open_in_chatgpt: 在 ChatGPT 中開啟
 ui_open_in_claude: 在 Claude 中開啟
@@ -81,8 +80,6 @@ ui_toc_show: 顯示目錄
 ui_language_select: 選擇語言
 ui_language_switch: 切換語言
 
-# Used in sentences such as "All Tags"
-ui_all: 所有
 
 # Footer text
 footer_all_rights_reserved: 保留所有權利
@@ -246,7 +243,6 @@ ui_diagram_zoom_dialog: 圖表預覽
 ui_diagram_zoom_close: 關閉圖表預覽
 ui_diagram_zoom_in: 放大
 ui_diagram_zoom_out: 縮小
-ui_diagram_zoom_reset: 重設檢視
 ui_diagram_error: 圖表無法呈現
 ui_diagram_fit: 符合視窗大小
 ui_diagram_download: 下載 SVG

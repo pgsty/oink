@@ -19,7 +19,10 @@
 {{- end -}}
 {{- $result := printf "0|%s" (lower $version) -}}
 {{- if $validSemver -}}
-  {{- $key := printf "1|%020d|%020d|%020d" (int (index $match 1)) (int (index $match 2)) (int (index $match 3)) -}}
+  {{- $major := index $match 1 -}}
+  {{- $minor := index $match 2 -}}
+  {{- $patch := index $match 3 -}}
+  {{- $key := printf "1|%06d:%s|%06d:%s|%06d:%s" (len $major) $major (len $minor) $minor (len $patch) $patch -}}
   {{- $prerelease := index $match 5 -}}
   {{- if not $prerelease -}}
     {{- $result = printf "%s|2" $key -}}
@@ -27,7 +30,7 @@
     {{- $key = printf "%s|1" $key -}}
     {{- range split $prerelease "." -}}
       {{- if findRE `^[0-9]+$` . -}}
-        {{- $key = printf "%s|0%020d" $key (int .) -}}
+        {{- $key = printf "%s|0%06d:%s" $key (len .) . -}}
       {{- else -}}
         {{- $key = printf "%s|1%s" $key (lower .) -}}
       {{- end -}}

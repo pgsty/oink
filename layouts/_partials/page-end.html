@@ -8,7 +8,7 @@
      on has decided it before being asked how it went. Backlinks are not
      here: they are page metadata, and live beside the TOC in the right
      rail. */ -}}
-{{- $commentsState := partialCached "comments-state.html" . .RelPermalink -}}
+{{- $commentsState := partialCached "comments-state.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
 <div class="td-page-end">
   {{ partial "share/bar.html" . }}
   {{ partial "feedback.html" . }}

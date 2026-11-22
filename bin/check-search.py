@@ -221,6 +221,10 @@ def main() -> int:
                     require(isinstance(documents, list), f"{lang} index is not an array")
                     validate_language(documents, lang, prefix, required_fields)
                     validate_sections(documents, output, prefix)
+                    home_rel = "" if lang == "en" else f"{lang}/"
+                    home_html = (output / home_rel / "index.html").read_text()
+                    require('data-td-search-scope-row' not in home_html,
+                            f"{lang} home page rendered a self-referential section scope radio")
                     for suffix in ("/docs/guides/tutorial/", "/blog/post/"):
                         doc = by_suffix(documents, suffix)
                         html = (output / doc["ref"][len(prefix):] / "index.html").read_text()

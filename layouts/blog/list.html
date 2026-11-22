@@ -24,8 +24,8 @@
     <caption class="visually-hidden">{{ .Title }}</caption>
     <tbody>
       {{ range $tablePages -}}
-      {{ $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
-      {{ $isExternal := isset .Params "manual_link" -}}
+      {{ $manualLink := partial "content/manual-link.html" . -}}
+      {{ $isExternal := not (not (findRE "^https?://" $manualLink)) -}}
       <tr>
         <td class="td-blog-table__date">{{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (.Param "time_format_blog") }}</time>{{ end }}</td>
         <td class="td-blog-table__title"><a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>{{ if $isExternal }} <i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}</td>
@@ -65,8 +65,3 @@
 {{- end -}}
 {{ partial "page-end.html" . }}
 {{ end -}}
-
-{{ define "head" -}}
-{{- $index := partial "shell/blog-index-state.html" . -}}
-{{- partial "head.html" . -}}
-{{- end }}

@@ -3,7 +3,8 @@
 {{- $page := . -}}
 {{- $url := $page.RelPermalink -}}
 {{- if isset $page.Params "manual_link" -}}
-  {{- $url = (partial "content/url.html" (dict "label" "manual_link" "position" $page.Path "value" $page.Params.manual_link)).href -}}
+  {{- $validated := partial "content/url.html" (dict "label" "manual_link" "position" $page.Path "value" $page.Params.manual_link) -}}
+  {{- if $validated.valid }}{{ $url = $validated.href }}{{ end -}}
 {{- else if isset $page.Params "manual_link_relref" -}}
   {{- $ref := $page.Params.manual_link_relref -}}
   {{- $valid := false -}}

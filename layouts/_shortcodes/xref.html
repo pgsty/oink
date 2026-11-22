@@ -37,15 +37,26 @@
 ) -}}
 {{- $href := printf "#%s" $anchor -}}
 {{- if and $pageRef $targetPage }}{{ $href = printf "%s#%s" $targetPage.RelPermalink $anchor }}{{ end -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- $label := "" -}}
-{{- if $inner }}{{ $label = .Page.RenderString (dict "display" "inline") $inner }}{{ else if $kind }}{{ $label = partial "book/label.html" (dict "kind" $kind "num" $num) }}{{ else if $anchor }}{{ warnf "shortcode %q: an anchor-only reference requires inner link text at %s; using the anchor as its text" .Name .Position }}{{ $label = $anchor }}{{ end -}}
-{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if $inner -}}
+  {{- if ne $format "markdown" }}{{ $label = .Page.RenderString (dict "display" "inline") $inner }}{{ end -}}
+{{- else if $kind -}}
+  {{- $label = partial "book/label.html" (dict "kind" $kind "num" $num) -}}
+{{- else if $anchor -}}
+  {{- warnf "shortcode %q: an anchor-only reference requires inner link text at %s; using the anchor as its text" .Name .Position -}}
+  {{- $label = $anchor -}}
+{{- end -}}
 {{- if and (eq $format "print") (.Page.Store.Get "tdBookAggregate") $targetPage -}}
-  {{- if $targetPage.Fragments.Identifiers.Contains $anchor -}}
-    {{- $anchor = partial "book/aggregate-heading-anchor.html" (dict "page" $targetPage "anchor" $anchor) -}}
+  {{- $navRoot := partial "shell/sidebar-root.html" .Page -}}
+  {{- $inAggregate := and (ne $targetPage.Params.no_print true) (or (eq $targetPage $navRoot) ($targetPage.IsDescendant $navRoot)) -}}
+  {{- if $inAggregate -}}
+    {{- if $targetPage.Fragments.Identifiers.Contains $anchor -}}
+      {{- $anchor = partial "book/aggregate-heading-anchor.html" (dict "page" $targetPage "anchor" $anchor) -}}
+    {{- end -}}
+    {{- $href = printf "#%s" $anchor -}}
   {{- end -}}
-  {{- $href = printf "#%s" $anchor -}}
 {{- end -}}
 {{- if eq $format "markdown" -}}
   {{- $markdownText := $inner -}}

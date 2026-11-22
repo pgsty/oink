@@ -1,7 +1,13 @@
 {{- $page := .PageInner | default .Page -}}
-{{- if eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-  {{- $page.Store.Set "hasPlantuml" true -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "position" .Position "kind" "plantuml") -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if not (strings.TrimSpace .Inner) -}}
+  {{- warnf "plantuml: the fence requires diagram source at %s; rendering nothing" .Position -}}
+{{- else -}}
+  {{- if eq $format "html" -}}
+    {{- $page.Store.Set "hasPlantuml" true -}}
+  {{- end -}}
+  {{- /* html/template escapes text once. An explicit htmlEscape here corrupts
+         arrows, quotes and ampersands before either renderer reads textContent. */ -}}
+<pre{{ with $policy.class }} class="{{ . }}"{{ end }}{{ if ne $format "rss" }} tabindex="0"{{ end }}{{ partial "content/attrs.html" $policy.generic }}><code class="language-plantuml">{{ .Inner }}</code></pre>
 {{- end -}}
-{{- /* html/template escapes text once. An explicit htmlEscape here corrupts
-       arrows, quotes and ampersands before either renderer reads textContent. */ -}}
-<pre tabindex="0"><code class="language-plantuml">{{ .Inner }}</code></pre>

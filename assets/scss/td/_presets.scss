@@ -86,7 +86,6 @@ html[data-td-preset-switching] *::after {
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 9%, var(--bs-secondary-bg));
   --td-shell-primary-wash: rgba(33, 32, 28, 0.04);
   --td-callout-tint: 4%;
-  --td-hairline: rgba(33, 32, 28, 0.11);
   // Text on a link-colored ground (Landing primary action).
   --td-preset-player-line: rgba(33, 32, 28, 0.22);
   --td-preset-player-muted: #6b665d;
@@ -138,7 +137,6 @@ html[data-td-preset-switching] *::after {
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 12%, var(--bs-secondary-bg));
   --td-shell-primary-wash: rgba(236, 233, 227, 0.05);
   --td-callout-tint: 6%;
-  --td-hairline: rgba(236, 233, 227, 0.13);
   --td-preset-player-line: rgba(236, 233, 227, 0.26);
   --td-preset-player-muted: #958f84;
   --td-on-link: #161513;

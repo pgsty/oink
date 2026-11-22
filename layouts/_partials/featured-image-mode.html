@@ -4,7 +4,7 @@
     "key" "params.ui.featured_image" "where" (cond (isset .Params "featured_image") .Path "")) -}}
 {{- $active := "" -}}
 {{- if and (ne $mode "none") (eq (.Store.Get "tdOutputFormat") "html") -}}
-  {{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}
+  {{- $found := partialCached "featured-image-resolve.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
   {{- if or $found.resource $found.href -}}
     {{- $active = $mode -}}
   {{- end -}}

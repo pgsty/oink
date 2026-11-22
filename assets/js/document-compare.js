@@ -250,6 +250,7 @@
       if (returnFocus) {
         suppressLanguageOpen = true;
         languageTrigger.focus({ preventScroll: true });
+        suppressLanguageOpen = false;
       }
     }
     function closeLanguageMenuSoon() {
@@ -352,6 +353,18 @@
           syncWarning.matches(':focus-visible'));
     }
 
+    function syncPaneAppearance(pane) {
+      if (!pane.ready || !pane.document) return;
+      const hostRoot = document.documentElement;
+      const paneRoot = pane.document.documentElement;
+      for (const attr of ['data-bs-theme', 'data-theme', 'data-td-preset']) {
+        const val = hostRoot.getAttribute(attr);
+        if (val === null) paneRoot.removeAttribute(attr);
+        else paneRoot.setAttribute(attr, val);
+      }
+      paneRoot.classList.toggle('dark-mode', hostRoot.classList.contains('dark-mode'));
+    }
+
     function measure(preserve = false) {
       if (!alive() || !state.panes.every(pane => pane.ready)) return;
       if (preserve) state.panes.forEach(pane => restore(pane, pane.mark));
@@ -430,6 +443,7 @@
           clearTimeout(timeout);
           pane.ready = true;
           pane.document = doc;
+          syncPaneAppearance(pane);
           pane.body.removeAttribute('aria-busy');
           loading.remove();
           restore(pane, mark); pane.mark = bookmark(win);
@@ -485,19 +499,36 @@
             const url = new URL(rawHref, win.location.href);
             url.searchParams.delete(paneFlag);
             if (!/^https?:$/.test(url.protocol)) return;
-            if (url.origin === location.origin && url.pathname === win.location.pathname && url.hash) {
-              let target;
-              try { target = doc.getElementById(decodeURIComponent(url.hash.slice(1))); } catch (_) { return; }
-              if (!target) return;
+            const paneURL = new URL(win.location.href);
+            paneURL.searchParams.delete(paneFlag);
+            const sameDocument = url.origin === location.origin &&
+              url.pathname === paneURL.pathname &&
+              url.search === paneURL.search;
+            if (sameDocument && (url.hash || rawHref.includes('#'))) {
               event.preventDefault(); own();
+              const rawId = url.hash.slice(1);
+              if (!rawId || rawId.toLowerCase() === 'top') {
+                scroll(pane, 0, motionBehavior());
+                pane.mark = bookmark(win);
+                scheduleSave();
+                requestAnimationFrame(follow);
+                return;
+              }
+              let decodedId = rawId;
+              try { decodedId = decodeURIComponent(rawId); } catch (_) {}
+              const target = doc.getElementById(decodedId) || doc.getElementById(rawId);
+              if (!target) return;
               // replaceState avoids child entries in the joint session history,
               // but fires no hashchange. Dispatch it so hash-driven components
               // (tabs revealing a hidden panel, line highlights) react as they
               // would to a native fragment jump, then scroll the revealed target.
               const oldURL = win.location.href;
-              win.history.replaceState(null, '', win.location.pathname + win.location.search + url.hash);
+              win.history.replaceState(win.history.state, '', win.location.pathname + win.location.search + url.hash);
               win.dispatchEvent(new win.HashChangeEvent('hashchange', { oldURL, newURL: win.location.href }));
               target.scrollIntoView({ behavior: 'instant', block: 'start' });
+              pane.mark = bookmark(win);
+              scheduleSave();
+              requestAnimationFrame(follow);
             } else if (url.origin !== location.origin || linkTarget === '_blank') {
               event.preventDefault(); window.open(url.href, '_blank', 'noopener');
             } else {
@@ -593,6 +624,9 @@
     state.panes.forEach(pane => pane.tab.addEventListener('click', () => showSide(pane.index), { signal }));
     narrow.addEventListener('change', () => { updateLayout(); scheduleMeasure(); }, { signal });
     window.addEventListener('resize', scheduleMeasure, { signal });
+    const mirrorHostAppearance = () => { state.panes.forEach(syncPaneAppearance); scheduleMeasure(); };
+    window.addEventListener('td-theme-change', mirrorHostAppearance, { signal });
+    window.addEventListener('td-preset-change', mirrorHostAppearance, { signal });
     function chooseLanguage(index) {
       const descriptor = targets[index];
       // Choosing the current language again retries it after a failed load.
@@ -701,7 +735,16 @@
       if ((document.activeElement === title || document.activeElement === dialog) && forwardScroll(event)) event.preventDefault();
     }, { capture: true, signal });
     exit.addEventListener('click', () => close(), { signal });
-    dialog.addEventListener('cancel', event => { event.preventDefault(); close(); }, { signal });
+    dialog.addEventListener('cancel', event => {
+      event.preventDefault();
+      if (languageMenu.classList.contains('td-is-open')) { closeLanguageMenu(true); return; }
+      if (syncTipVisible()) {
+        syncNote.classList.remove('td-is-open');
+        syncNote.classList.add('td-is-dismissed');
+        return;
+      }
+      close();
+    }, { signal });
     dialog.addEventListener('close', () => { if (!dialog.open) close(); }, { signal });
     dialog.append(toolbar, mobile, panesRoot);
     document.body.append(dialog);

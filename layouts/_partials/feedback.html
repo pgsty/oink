@@ -30,7 +30,7 @@
 {{- end -}}
 {{- if $enabled -}}
   {{- .Page.Store.Set "hasFeedback" true -}}
-  {{- $commentsState := partialCached "comments-state.html" . .RelPermalink -}}
+  {{- $commentsState := partialCached "comments-state.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
 <section class="td-feedback d-print-none" data-td-feedback
   data-td-page-path="{{ .RelPermalink }}"
   data-td-language="{{ .Site.Language.Lang }}">

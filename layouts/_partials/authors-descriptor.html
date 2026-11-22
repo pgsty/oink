@@ -2,6 +2,6 @@
   "name" .LinkTitle
   "url" .RelPermalink
   "description" (.Description | plainify)
-  "avatar" (partialCached "featured-image-resolve.html" . .RelPermalink)
+  "avatar" (partialCached "featured-image-resolve.html" . .Site.BaseURL .Language.Lang .RelPermalink)
   "page" .
 ) -}}

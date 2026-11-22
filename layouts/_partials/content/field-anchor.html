@@ -1,10 +1,11 @@
 {{- $page := .page -}}
-{{- $identity := printf "%v" .identity -}}
+{{- $blockScope := $page.Store.Get "tdRenderBlockScope" | default "" -}}
+{{- $identity := cond (ne $blockScope "") (printf "%s:%v" $blockScope .identity) (printf "%v" .identity) -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- /* Normalize identifier punctuation before adding collision suffixes. */ -}}
 {{- $slug := strings.Trim (replaceRE `[^\p{L}\p{N}_]+` "-" (lower (printf "%v" .name))) "-" -}}
 {{- if not $slug }}{{ $slug = "entry" }}{{ end -}}
-{{- $base := printf "field-%s" $slug -}}
+{{- $base := cond (ne $blockScope "") (printf "field-%s-%s" $blockScope $slug) (printf "field-%s" $slug) -}}
 {{- $registry := $page.Store.Get "tdFieldAnchors" | default (dict) -}}
 {{- $id := "" -}}
 {{- range $i := seq 1 64 -}}

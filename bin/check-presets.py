@@ -66,6 +66,14 @@ def main():
     fonts = (ROOT/'assets/scss/td/_tokens-typography.scss').read_text()
     assert fonts.index("[data-td-preset='paper']") < fonts.index("[data-td-typography='system']")
     assert '--td-brand-font-family:' in fonts.split("[data-td-typography='system']")[1]
+    for preset in ('paper', 'ink', 'terminal'):
+        for mode in ('light', 'dark'):
+            giscus_css = (ROOT/f'assets/css/giscus-{preset}-{mode}.css').read_text()
+            assert '@import' not in giscus_css and 'https://' not in giscus_css
+            for required_token in ('--color-btn-primary-hover-bg:', '--color-action-list-item-default-hover-bg:'):
+                assert required_token in giscus_css, (preset, mode, required_token)
+            scale_token = '--color-scale-gray-1:' if mode == 'light' else '--color-scale-gray-7:'
+            assert scale_token in giscus_css, (preset, mode, scale_token)
 
     cases = [
         ('default', '', 'paper', False, False),

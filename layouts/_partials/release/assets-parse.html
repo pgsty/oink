@@ -20,7 +20,6 @@
   {{- $matches := findRESubmatch `^([0-9A-Fa-f]+) ([ *])(.+)$` $rawLine -}}
   {{- if ne (len $matches) 1 -}}
     {{- warnf "%s: release-assets line %d must be <hex><two spaces><name> or <hex><space>*<name>; got %q; skipping the line" $position $lineNumber $rawLine -}}{{- continue -}}
-    {{- continue -}}
   {{- end -}}
   {{- $match := index $matches 0 -}}
   {{- $hash := index $match 1 -}}

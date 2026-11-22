@@ -1,5 +1,5 @@
-{{- $config := partialCached "expo/config.html" . .RelPermalink -}}
-{{- $items := partialCached "expo/items.html" . .RelPermalink -}}
+{{- $config := partialCached "expo/config.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
+{{- $items := partialCached "expo/items.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
 {{- if $items -}}
 {{- .Store.Set "hasExpo" true -}}
 <section class="td-expo" data-td-expo data-td-expo-mode="{{ $config.mode }}" data-td-expo-size="{{ $config.size }}" data-td-expo-play-label="{{ T "ui_expo_play" }}" data-td-expo-pause-label="{{ T "ui_expo_pause" }}">

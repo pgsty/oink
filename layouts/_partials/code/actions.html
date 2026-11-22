@@ -1,7 +1,7 @@
 {{- $config := .config -}}
 {{- $compact := .compact | default false -}}
 {{- if $config.copyEnabled -}}
-<div class="td-code__utilities{{ if $compact }} td-code__utilities--compact{{ end }}"{{ with .slot }} data-td-code-actions="{{ . }}"{{ end }}>
+<div class="td-code__utilities{{ if $compact }} td-code__utilities--compact{{ end }}">
   <button class="td-code__copy" type="button" hidden data-td-code-copy
           data-td-code-target="{{ $config.rootID }}" data-td-copy-mode="{{ $config.copyMode }}"
           data-td-label-copy="{{ T "ui_code_copy_label" }}"

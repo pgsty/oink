@@ -38,7 +38,7 @@
 
     const imageURL = {{ .server | jsonify | safeJS }};
     Array.prototype.forEach.call(
-        document.querySelectorAll('.language-plantuml'),
+        document.querySelectorAll('pre > code.language-plantuml'),
         function (code) {
             const pre = code.parentNode;
             if (!pre || !pre.parentNode) return;
@@ -52,6 +52,9 @@
             const rendered = document.createElement('img');
             rendered.setAttribute('src', imageURL + encoded);
             rendered.setAttribute('alt', 'PlantUML diagram');
+            rendered.addEventListener('error', function () {
+                if (rendered.parentNode) rendered.parentNode.replaceChild(pre, rendered);
+            });
             {{ end }}
             pre.parentNode.replaceChild(rendered, pre);
         },

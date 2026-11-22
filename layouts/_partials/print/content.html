@@ -3,12 +3,12 @@
 {{ if templates.Exists (printf "_partials/%s" $tpl) }}
   {{ partial $tpl . }}
 {{ else -}}
-{{- $content := partialCached "print/page-content.html" (dict "page" .Page) .Page.RelPermalink -}}
+{{- $content := partialCached "print/page-content.html" (dict "page" .Page) .Page.Site.BaseURL .Page.Language.Lang .Page.RelPermalink -}}
 {{- $content = partial "book/namespace-print-headings.html" (dict "page" .Page "content" $content.plain "headings" $content.plainHeadings) -}}
 {{- if and .Root (.Page.Store.Get "hasMath") }}{{ .Root.Store.Set "hasMath" true }}{{ end -}}
 {{ $break := cond .DoPageBreak "page-break-before: always" "" -}}
 <div class="td-content" style="{{ $break }}">
-	<h1 id="pg-{{ .Page.File.UniqueID }}">{{ .PageNum }} - {{ .Page.Title }}</h1>
+	<h1 id="{{ partial "print/page-id.html" .Page }}">{{ .PageNum }} - {{ .Page.Title }}</h1>
     {{ with .Page.Description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
 	{{ $content }}
 </div>

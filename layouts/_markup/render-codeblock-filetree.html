@@ -23,9 +23,10 @@
 {{- $value := index $policy.consumed "value" | default "" -}}
 {{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ warnf "filetree: group/value require tab at %s; ignoring them" .Position }}{{ end -}}
 {{- $inner := replace (printf "%s" .Inner) "\r" "" -}}
-{{- if not (strings.ContainsNonSpace $inner) }}{{ warnf "filetree: the fence requires tree entries at %s; rendering nothing" .Position }}{{ end -}}
 {{- $parsed := partial "content/filetree-parse.html" (dict "source" $inner "position" .Position) -}}
 {{- $nodes := $parsed.nodes -}}
+{{- if not $nodes }}{{ warnf "filetree: the fence requires tree entries at %s; rendering nothing" .Position }}{{ end -}}
+{{- if $nodes -}}
 {{- $static := in (slice "print" "rss") $format -}}
 {{- $html := "" -}}
 
@@ -112,4 +113,5 @@
   {{- partial "content/tab-block.html" (dict "page" $page "position" .Position "tab" $tab "group" $group "value" $value "kind" "code" "content" ($html | safeHTML)) -}}
 {{- else -}}
   {{- $html | safeHTML -}}
+{{- end -}}
 {{- end -}}

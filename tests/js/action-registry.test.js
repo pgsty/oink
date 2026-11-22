@@ -9,6 +9,7 @@ const registryModule = require(
 );
 
 const builtinIds = [
+  'compare_translations',
   'copy_markdown',
   'copy_link',
   'open_chatgpt',
@@ -21,11 +22,13 @@ const builtinIds = [
   'create_project_issue',
   'print_section',
   'print',
+  'switch_preset',
   'switch_theme',
   'switch_language',
   'switch_version',
   'open_github',
 ];
+assert.deepEqual(builtinIds, Array.from(registryModule.BUILTINS));
 
 function descriptor(id, values = {}) {
   return {
@@ -310,8 +313,9 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   }
 
   let attempts = 0;
+  const copyMarkdownDescriptor = actions.find((a) => a.id === 'copy_markdown');
   const retryHarness = harness({
-    actions: [actions[0]],
+    actions: [copyMarkdownDescriptor],
     fetchImpl() {
       attempts += 1;
       if (attempts === 1) return Promise.resolve({ ok: false });
@@ -324,7 +328,7 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   await retryHarness.registry.run('copy_markdown');
   assert.equal(attempts, 2, 'failed markdown promise was not invalidated');
 
-  const fallbackHarness = harness({ actions: [actions[0]], clipboard: false });
+  const fallbackHarness = harness({ actions: [copyMarkdownDescriptor], clipboard: false });
   await fallbackHarness.registry.run('copy_markdown');
   assert.deepEqual(fallbackHarness.events.execCommands, ['copy']);
   assert.deepEqual(fallbackHarness.events.fallbackText, ['# Page']);

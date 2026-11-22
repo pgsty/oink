@@ -61,10 +61,11 @@
       {{- warnf "contributors data %q: url for %q must be a string; using the GitHub profile" $.key $github -}}
     {{- else -}}
       {{- $candidate := strings.TrimSpace $value -}}
-      {{- if not (findRE `^(https?://|/)` $candidate) -}}
+      {{- if not (findRE `^(https?://|/[^/\\]|/$)` $candidate) -}}
         {{- warnf "contributors data %q: url for %q must be HTTP(S) or root-relative; using the GitHub profile" $.key $github -}}
       {{- else -}}
-        {{- $url = $candidate -}}
+        {{- $validated := partial "content/url.html" (dict "label" (printf "contributors data %q" $.key) "parameter" (printf "url for %q" $github) "position" "data" "value" $candidate "kind" "web") -}}
+        {{- if $validated.valid }}{{ $url = $validated.href }}{{ end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
@@ -77,10 +78,11 @@
       {{- $candidate := strings.TrimSpace $value -}}
       {{- if not $candidate -}}
         {{- warnf "contributors data %q: avatar for %q must not be empty; dropping the avatar" $.key $github -}}
-      {{- else if not (findRE `^(https?://|/)` $candidate) -}}
+      {{- else if not (findRE `^(https?://|/[^/\\]|/$)` $candidate) -}}
         {{- warnf "contributors data %q: avatar for %q must be HTTP(S) or root-relative; dropping the avatar" $.key $github -}}
       {{- else -}}
-        {{- $avatar = $candidate -}}
+        {{- $validated := partial "content/url.html" (dict "label" (printf "contributors data %q" $.key) "parameter" (printf "avatar for %q" $github) "position" "data" "value" $candidate "kind" "image") -}}
+        {{- if $validated.valid }}{{ $avatar = $validated.href }}{{ end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

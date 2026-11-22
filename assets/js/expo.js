@@ -105,8 +105,14 @@
 
   const dialog = document.querySelector('[data-td-expo-viewer]');
   if (!dialog || typeof dialog.showModal !== 'function') return;
-  window.OinkSurfaceCoordinator?.register('expo-viewer', () => {
-    if (dialog.open) dialog.close();
+  let suppressRestoreFocus = false;
+  window.OinkSurfaceCoordinator?.register('expo-viewer', restoreFocus => {
+    if (!dialog.open) return;
+    suppressRestoreFocus = restoreFocus === false;
+    dialog.close();
+  });
+  window.addEventListener('beforeprint', () => {
+    if (dialog.open) { suppressRestoreFocus = true; dialog.close(); }
   });
   const get = name => dialog.querySelector(`[data-td-expo-${name}]`);
   const image = get('full'), stage = get('stage'), canvas = image.parentElement;
@@ -192,6 +198,13 @@
     if (!Number(items[active].dataset.tdExpoWidth)) dimensions = [image.naturalWidth, image.naturalHeight];
     resizeImage(false);
     preload();
+  });
+  image.addEventListener('error', () => {
+    if (!dialog.open) return;
+    const poster = links[active]?.dataset.tdExpoPoster;
+    if (!poster) return;
+    const posterHref = new URL(poster, location.href).href;
+    if (image.src !== posterHref) image.src = posterHref;
   });
   links.forEach((link, index) => link.addEventListener('click', event => {
     if (event.button || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
@@ -311,7 +324,9 @@
     document.body.style.removeProperty('--td-expo-scrollbar-width');
     image.removeAttribute('src');
     image.style.removeProperty('background-image');
-    if (!document.activeElement || document.activeElement === document.body || dialog.contains(document.activeElement)) origin?.focus({ preventScroll: true });
+    const shouldRestore = !suppressRestoreFocus;
+    suppressRestoreFocus = false;
+    if (shouldRestore && (!document.activeElement || document.activeElement === document.body || dialog.contains(document.activeElement))) origin?.focus({ preventScroll: true });
   });
   let backdrop = false;
   dialog.addEventListener('pointerdown', event => { backdrop = event.target === dialog; });

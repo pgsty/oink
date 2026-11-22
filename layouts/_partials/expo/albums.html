@@ -1,7 +1,7 @@
 {{ with .Pages }}<div class="td-expo-albums">{{ range . }}
 <a class="td-expo-album" href="{{ .RelPermalink }}">
   {{ $cover := false }}{{ $albums := slice . }}{{ if .IsSection }}{{ $albums = $albums | append .RegularPagesRecursive }}{{ end }}
-  {{ range $albums }}{{ with partialCached "expo/items.html" . .RelPermalink }}{{ $cover = index . 0 }}{{ break }}{{ end }}{{ end }}
+  {{ range $albums }}{{ with partialCached "expo/items.html" . .Site.BaseURL .Language.Lang .RelPermalink }}{{ $cover = index . 0 }}{{ break }}{{ end }}{{ end }}
   {{ with $cover }}<img src="{{ .poster }}" alt="" loading="lazy" decoding="async">{{ end }}
   <h2>{{ .LinkTitle }}</h2>{{ with .Description }}<p>{{ . }}</p>{{ end }}
 </a>{{ end }}</div>{{ end }}

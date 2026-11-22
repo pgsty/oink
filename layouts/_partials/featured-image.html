@@ -6,7 +6,7 @@
      global resource is cropped only when Hugo can process it. SVG and other
      non-processable resources follow the same framed path as static or remote
      URLs instead of calling an unsupported image operation. */ -}}
-{{ $found := partialCached "featured-image-resolve.html" $p $p.RelPermalink }}
+{{ $found := partialCached "featured-image-resolve.html" $p $p.Site.BaseURL $p.Language.Lang $p.RelPermalink }}
 {{ with $found.resource }}
 {{ if reflect.IsImageResourceProcessable . }}
 {{ $image := .Fill (printf "%dx%d" $w $h) }}

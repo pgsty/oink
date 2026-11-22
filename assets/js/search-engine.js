@@ -8,8 +8,6 @@
 (function () {
   'use strict';
 
-  var CJK = /[぀-ヿ㐀-䶿一-鿿豈-﫿]/;
-
   function number(value, fallback) {
     var parsed = Number(value);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
@@ -63,6 +61,7 @@
   // Most text needs no offset map; width/ligature/combining changes do.
   var segmenter;
   function matchRanges(value, needles, firstOnly) {
+    if (!needles || !needles.length) return [];
     var text = String(value || '');
     var lower = text.toLowerCase();
     var normalized = text.normalize('NFKC').toLowerCase();
@@ -79,6 +78,7 @@
         for (var n = 0; n < segment.length; n += 1)
           offsets.push([part.index, part.index + part.segment.length]);
       }
+      if (offsets.length !== normalized.length) offsets = null;
     }
     var ranges = [];
     needles.filter(Boolean).forEach(function (needle) {
@@ -247,14 +247,19 @@
       });
       result.ref = doc.ref;
       result.heading = '';
-      result.excerpt = snippet(doc.body, needles) || snippet(doc.description, needles) ||
+      var fallbackExcerpt = snippet(doc.body, needles) || snippet(doc.description, needles) ||
         doc.description || doc.excerpt || '';
-      if (best) {
-        result.excerpt = snippet(best.section.body, needles, phrase) || best.section.title;
-      }
+      result.excerpt = fallbackExcerpt;
       if (best && best.section.id) {
         result.ref = doc.ref.split('#')[0] + '#' + encodeURIComponent(best.section.id);
         result.heading = best.section.title;
+      }
+      if (best) {
+        result.excerpt = snippet(best.section.body, needles, phrase) ||
+          snippet(doc.description, needles) ||
+          doc.description ||
+          doc.excerpt ||
+          (best.section.title !== result.heading ? best.section.title : '');
       }
       return result;
     }
@@ -295,11 +300,10 @@
         }).slice(0, limit).map(function (hit) { return context(hit, needles, phrase); });
     }
 
-    return { query: query, queryCjk: query, queryLatin: query };
+    return { query: query };
   }
 
   window.OinkSearchEngine = {
-    CJK: CJK,
     compare: compare,
     group: group,
     lexical: lexical,

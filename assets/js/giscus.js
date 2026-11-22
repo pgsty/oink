@@ -33,9 +33,11 @@
       : resolveTheme(section.dataset.tdThemeLight);
   };
 
+  const pendingFrames = new WeakSet();
+
   const setTheme = section => {
     const frame = section.querySelector('iframe.giscus-frame');
-    if (!frame) return;
+    if (!frame || !frame.contentWindow || pendingFrames.has(frame)) return;
     frame.contentWindow.postMessage({
       giscus: { setConfig: { theme: getTheme(section) } },
     }, origin);
@@ -87,8 +89,10 @@
       const frame = section.querySelector('iframe.giscus-frame');
       if (!frame) return;
       frameFound = true;
+      pendingFrames.add(frame);
       window.clearTimeout(frameTimeout);
       frame.addEventListener('load', () => {
+        pendingFrames.delete(frame);
         setTheme(section);
         setReady(section);
       }, { once: true });
@@ -97,10 +101,13 @@
     frameObserver.observe(container, { childList: true, subtree: true });
 
     const script = document.createElement('script');
-    Object.entries(attributes).forEach(([name, value]) => script.setAttribute(name, value));
+    Object.entries(attributes).forEach(([name, value]) => {
+      if (value !== undefined) script.setAttribute(name, value);
+    });
     script.addEventListener('load', () => {
       if (frameFound) return;
       frameTimeout = window.setTimeout(() => {
+        frameObserver.disconnect();
         if (!frameFound) setError(section);
       }, frameTimeoutMs);
     }, { once: true });
@@ -119,10 +126,5 @@
     attributes: true,
     attributeFilter: ['data-bs-theme', 'data-td-preset'],
   });
-  const handleColorScheme = () => sections.forEach(setTheme);
-  if (colorScheme.addEventListener) {
-    colorScheme.addEventListener('change', handleColorScheme);
-  } else {
-    colorScheme.addListener(handleColorScheme);
-  }
+  colorScheme.addEventListener('change', () => sections.forEach(setTheme));
 })();

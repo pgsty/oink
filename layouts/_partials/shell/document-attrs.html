@@ -1,8 +1,8 @@
 {{- /* Shared root attributes. theme_init controls the pre-paint marker. */ -}}
 {{- $page := .page -}}
 {{- $themeInit := ne .theme_init false -}}
-{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-{{- $preset := partialCached "preset-config.html" "preset-global" -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" $page.Site.Language.Lang -}}
+{{- $preset := partialCached "preset-config.html" "preset-global" $page.Site.Language.Lang -}}
 {{- /* data-td-preset is the live preset (the head script may replace it with a
      reader's stored choice); data-td-site-preset keeps the site default so the
      Appearance menu can mark it and restore it. */ -}}

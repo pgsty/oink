@@ -34,13 +34,13 @@
     {{- warnf "image: command and options must be given together at %s; ignoring both" .Position -}}
     {{- $hasCommand = false -}}
   {{- end -}}
-  {{- if $hasCommand -}}
+  {{- if and $hasCommand $src -}}
     {{- $processed := partial "content/image-process.html" (dict
       "name" "image" "position" .Position "image" $image
       "command" (index $policy.consumed "command") "options" (index $policy.consumed "options")
     ) -}}
     {{- $src = $processed.src -}}
-    {{- if eq $format "rss" }}{{ $src = absURL $src }}{{ end -}}
+    {{- if and $src (eq $format "rss") }}{{ $src = absURL $src }}{{ end -}}
     {{- $fullSrc = $processed.fullSrc -}}
     {{- $width = $processed.width -}}
     {{- $height = $processed.height -}}
@@ -66,9 +66,11 @@
   {{- with index $policy.consumed "id" -}}
     {{- $id = partial "book/validate-id.html" (dict "name" "image" "value" . "position" $.Position) -}}
   {{- end -}}
-  {{- if $num -}}
+  {{- if and $src $num -}}
     {{- if not $id }}{{ $id = printf "fig-%s" $num }}{{ end -}}
-    {{- partial "book/register-target.html" (dict "page" $page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) -}}
+    {{- if not (partial "book/register-target.html" (dict "page" $page "kind" "fig" "source" "image" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+      {{- $id = "" -}}
+    {{- end -}}
   {{- end -}}
   {{- $figure = or $num $caption -}}
   {{- /* Bare linked images already have native Markdown syntax. */ -}}
@@ -84,6 +86,7 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- if $src -}}
 {{- $plainBlock := and $isBlock (not $figure) -}}
 {{- /* Linked images are not Zoom candidates. */ -}}
 {{- $zoomable := and $isBlock (eq $format "html") (ne $image.alt "") (eq $href "") -}}
@@ -120,4 +123,5 @@
   {{- /* Metadata never promotes a plain image to a figure. */ -}}
   <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}{{ with $image.byline }}<small class="td-figure__byline">{{ . }}</small>{{ end }}</figcaption>
 </figure>
+{{- end -}}
 {{- end -}}

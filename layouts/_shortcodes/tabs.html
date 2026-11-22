@@ -14,27 +14,42 @@
 {{- if eq (len $entries) 0 -}}
   {{- warnf "shortcode %q requires at least one tab child at %s; rendering nothing" .Name .Position -}}
 {{- else -}}
+{{- $declaredGroup := $group -}}
+{{- if $group -}}
+  {{- range $entries -}}
+    {{- if not .value -}}
+      {{- warnf "shortcode \"tab\": value is required because tabs declares group %q at %s; the tab will not sync" $declaredGroup .position -}}
+      {{- $group = "" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- $tabs := slice -}}
 {{- $seen := dict -}}
+{{- $valueDom := dict -}}
 {{- $i := 0 -}}
 {{- range $entries -}}
   {{- $value := .value -}}
-  {{- if $group -}}
-    {{- if not $value }}{{ warnf "shortcode \"tab\": value is required because tabs declares group %q at %s; the tab will not sync" $group .position }}{{ end -}}
-  {{- else -}}
+  {{- if not $declaredGroup -}}
     {{- if $value }}{{ warnf "shortcode \"tab\": value is only allowed when tabs declares a group at %s; ignoring it" .position }}{{ $value = "" }}{{ end -}}
+  {{- end -}}
+  {{- if not $group -}}
     {{- $value = printf "tab%d" (add $i 1) -}}
   {{- end -}}
-  {{- if isset $seen $value }}{{ warnf "shortcode \"tab\": duplicate value %q at %s; the later tab wins" $value .position }}{{ end -}}
-  {{- $seen = merge $seen (dict $value true) -}}
-  {{- $tabs = $tabs | append (merge . (dict "value" $value)) -}}
+  {{- $count := index $seen $value | default 0 -}}
+  {{- if gt $count 0 }}{{ warnf "shortcode \"tab\": duplicate value %q at %s; the later tab wins" $value .position }}{{ end -}}
+  {{- $count = add $count 1 -}}
+  {{- $seen = merge $seen (dict $value $count) -}}
+  {{- $domValue := cond (eq $count 1) $value (printf "%s-%d" $value $count) -}}
+  {{- $valueDom = merge $valueDom (dict $value $domValue) -}}
+  {{- $tabs = $tabs | append (merge . (dict "value" $domValue)) -}}
   {{- $i = add $i 1 -}}
 {{- end -}}
 {{- $default := "" -}}
 {{- if isset $params "default" -}}
   {{- $default = strings.TrimSpace (printf "%v" (.Get "default")) -}}
   {{- if not $group }}{{ warnf "shortcode %q: default requires group at %s; ignoring default" .Name .Position }}{{ $default = "" }}{{ end -}}
-  {{- if not (isset $seen $default) }}{{ warnf "shortcode %q: default %q does not match a tab value at %s; ignoring default" .Name $default .Position }}{{ $default = "" }}{{ end -}}
+  {{- if and $default (not (isset $seen $default)) }}{{ warnf "shortcode %q: default %q does not match a tab value at %s; ignoring default" .Name $default .Position }}{{ $default = "" }}{{ end -}}
+  {{- if $default }}{{ $default = index $valueDom $default }}{{ end -}}
 {{- end -}}
 {{- if not $default }}{{ $default = (index $tabs 0).value }}{{ end -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}

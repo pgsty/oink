@@ -2,10 +2,11 @@
        sequential-reading pager. Keep this in lockstep with sidebar-root-for
        semantics; callers must not invent a second root resolver. */ -}}
 {{- $page := . -}}
-{{- $root := cond $page.Site.Params.ui.sidebar_root_enabled $page.Site.Home $page.FirstSection -}}
-{{- $config := partialCached "shell/config.html" $page $page.Site.Language.Lang -}}
+{{- $rootEnabled := partial "validate.html" (dict "value" $page.Site.Params.ui.sidebar_root_enabled "kind" "bool" "fallback" true "key" "params.ui.sidebar_root_enabled") -}}
+{{- $root := cond $rootEnabled $page.Site.Home $page.FirstSection -}}
+{{- $config := partialCached "shell/config.html" $page $page.Site.BaseURL $page.Site.Language.Lang -}}
 
-{{- if $page.Site.Params.ui.sidebar_root_enabled -}}
+{{- if $rootEnabled -}}
   {{- if and $page.IsSection (eq $page.Params.sidebar_root_for "self") -}}
     {{- $root = $page -}}
   {{- else -}}

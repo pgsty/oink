@@ -9,10 +9,13 @@
   {{- with .Page }}{{ if not $key }}{{ $key = .Section }}{{ end }}{{ end -}}
   {{- if in $config.quickLinks $key -}}
     {{- $href := .URL -}}
-    {{- $description := .Params.description | default "" | plainify -}}
+    {{- $description := "" -}}
+    {{- with index .Params "description" }}{{ $description = printf "%v" . | plainify }}{{ end -}}
     {{- $target := urls.Parse .URL -}}
     {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
-    {{- if not $external }}{{ $href = .URL | relLangURL }}{{ end -}}
+    {{- if and (not $external) (not $target.Scheme) (not (hasPrefix .URL "#")) (not (hasPrefix .URL "?")) -}}
+      {{- $href = strings.TrimPrefix "/" .URL | relLangURL -}}
+    {{- end -}}
     {{- with .Page -}}
       {{- $href = .RelPermalink -}}
       {{- $description = .Description | default $description | plainify -}}

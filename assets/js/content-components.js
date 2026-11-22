@@ -130,25 +130,41 @@
     var chart;
 
     function render() {
-      if (chart) chart.dispose();
+      if (chart) {
+        chart.dispose();
+        chart = null;
+      }
       var theme =
         configuredTheme || (currentTheme() === 'dark' ? 'dark' : null);
-      chart = window.echarts.init(target, theme);
-      chart.setOption(options);
+      try {
+        chart = window.echarts.init(target, theme);
+        chart.setOption(options);
+      } catch (error) {
+        console.error('ECharts:', error);
+        if (chart) {
+          chart.dispose();
+          chart = null;
+        }
+        target.textContent = 'ECharts: ' + error.message;
+        target.setAttribute('role', 'alert');
+      }
     }
 
+    var resizeChart = function () {
+      if (chart) chart.resize();
+    };
     render();
     if (!configuredTheme) watchTheme(render);
     if (window.ResizeObserver) {
-      new ResizeObserver(function () {
-        if (chart) chart.resize();
-      }).observe(target);
+      new ResizeObserver(resizeChart).observe(target);
     } else {
-      window.addEventListener('resize', function () {
-        if (chart) chart.resize();
-      });
+      window.addEventListener('resize', resizeChart);
+      document.addEventListener('td:tab-shown', resizeChart);
+      document.addEventListener('toggle', resizeChart, true);
     }
   }
+
+  var infographicFontsRegistered = false;
 
   function initInfographic(root) {
     if (!window.AntVInfographic) return;
@@ -160,20 +176,23 @@
       target.setAttribute('role', 'alert');
     }
     try {
-      [
-        'Alibaba PuHuiTi',
-        'Source Han Sans',
-        'Source Han Serif',
-        'LXGW WenKai',
-        '851tegakizatsu',
-      ].forEach(function (fontFamily) {
-        window.AntVInfographic.registerFont({
-          fontFamily: fontFamily,
-          baseUrl: '',
-          fontWeight: {},
+      if (!infographicFontsRegistered) {
+        [
+          'Alibaba PuHuiTi',
+          'Source Han Sans',
+          'Source Han Serif',
+          'LXGW WenKai',
+          '851tegakizatsu',
+        ].forEach(function (fontFamily) {
+          window.AntVInfographic.registerFont({
+            fontFamily: fontFamily,
+            baseUrl: '',
+            fontWeight: {},
+          });
         });
-      });
-      window.AntVInfographic.setDefaultFont('sans-serif');
+        window.AntVInfographic.setDefaultFont('sans-serif');
+        infographicFontsRegistered = true;
+      }
       var started = false;
       var observer;
       function renderWhenVisible() {
@@ -184,8 +203,9 @@
         document.removeEventListener('td:tab-shown', renderWhenVisible);
         document.removeEventListener('toggle', renderWhenVisible, true);
         try {
+          var selectorId = window.CSS && window.CSS.escape ? window.CSS.escape(target.id) : target.id;
           var chart = new window.AntVInfographic.Infographic({
-            container: '#' + target.id,
+            container: '#' + selectorId,
             // The viewBox scales with the container, without rerendering the DSL.
             width: '100%',
             height: root.getAttribute('data-td-height') || 'auto',

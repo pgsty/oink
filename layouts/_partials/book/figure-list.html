@@ -4,7 +4,7 @@
 {{- $aggregate := and (eq $format "print") ($page.Store.Get "tdBookAggregate") -}}
 {{- $entries := slice -}}
 {{- $root := partial "shell/sidebar-root.html" $page -}}
-{{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" $page "root" $root) $root.RelPermalink $page.Site.Language.Lang $page.Type -}}
+{{- $sequence := partialCached "shell/nav-flatten.html" (dict "page" $page "root" $root) $page.Site.BaseURL $root.RelPermalink $page.Site.Language.Lang $page.Type -}}
 {{- range $sequence -}}
   {{- if eq . $page }}{{ continue }}{{ end -}}
   {{- /* Rendering a sibling registers its numbered targets. Hugo renders the
@@ -31,7 +31,8 @@
   {{- else -}}
 <ol class="td-book-figures td-book-figures--{{ $kind }}">
   {{- range $entries }}
-  <li><a href="{{ if $aggregate }}#{{ .id }}{{ else }}{{ .page.RelPermalink }}#{{ .id }}{{ end }}"><span class="td-book-label">{{ partial "book/label.html" . }}</span>{{ with .caption }} <span class="td-book-figures__caption">— {{ . }}</span>{{ end }}</a></li>
+  {{- $inAggregate := and $aggregate (ne .page.Params.no_print true) -}}
+  <li><a href="{{ if $inAggregate }}#{{ .id }}{{ else }}{{ .page.RelPermalink }}#{{ .id }}{{ end }}"><span class="td-book-label">{{ partial "book/label.html" . }}</span>{{ with .caption }} <span class="td-book-figures__caption">— {{ . }}</span>{{ end }}</a></li>
   {{- end }}
 </ol>
   {{- end -}}

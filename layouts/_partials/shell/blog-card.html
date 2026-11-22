@@ -1,11 +1,11 @@
-{{- $manualLink := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
-{{- $isExternal := isset .Params "manual_link" -}}
+{{- $manualLink := partial "content/manual-link.html" . -}}
+{{- $isExternal := not (not (findRE "^https?://" $manualLink)) -}}
 {{- $summary := .Description | default .RawSummary | plainify | htmlUnescape -}}
 {{- if and (not $summary) (not $isExternal) -}}
   {{- $summary = .Plain | htmlUnescape | truncate 160 -}}
 {{- end -}}
 {{- $summary = $summary | truncate 200 -}}
-{{- $found := partialCached "featured-image-resolve.html" . .RelPermalink -}}
+{{- $found := partialCached "featured-image-resolve.html" . .Site.BaseURL .Language.Lang .RelPermalink -}}
 {{- /* Authors are excluded: the meta sentence above the terms already names
      them, and a badge repeating the byline is noise. */ -}}
 {{- $termGroups := partial "shell/blog-terms.html" (dict "page" . "exclude" (slice "authors")) -}}

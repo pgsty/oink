@@ -4,8 +4,10 @@
 {{- $rows := slice -}}
 {{- range $headings -}}
   {{- if gt .Level 0 -}}
-    {{- $title := printf "%v" .Title | plainify -}}
-    {{- $rows = $rows | append (printf "%s- [%s](%s#%s)" $prefix $title $page.RelPermalink .ID) -}}
+    {{- $title := printf "%v" .Title | plainify | htmlUnescape -}}
+    {{- $escapedTitle := partial "content/markdown-escape.html" $title -}}
+    {{- $href := printf "%s#%s" $page.RelPermalink .ID | partial "content/markdown-url.html" -}}
+    {{- $rows = $rows | append (printf "%s- [%s](%s)" $prefix $escapedTitle $href) -}}
     {{- $children := partial "book/toc-headings-markdown.html" (dict "page" $page "headings" .Headings "prefix" (printf "%s  " $prefix)) -}}
     {{- if $children }}{{ $rows = $rows | append $children }}{{ end -}}
   {{- else -}}

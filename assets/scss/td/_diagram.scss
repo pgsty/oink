@@ -52,17 +52,6 @@
   }
 }
 
-.td-diagram__error {
-  margin: 0;
-  padding: $spacer;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--td-code-radius);
-  background-color: var(--td-pre-bg);
-  color: var(--bs-body-color);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 // Corner control, the same idea as the code block's own: present for keyboard
 // and touch, quiet until the pointer arrives.
 .td-diagram__expand {

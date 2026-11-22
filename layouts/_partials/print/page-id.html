@@ -1,0 +1,4 @@
+{{- /* Stable Print aggregate anchor for file-backed and virtual/adapter pages. */ -}}
+{{- $id := .Path | anchorize -}}
+{{- with .File }}{{ $id = .UniqueID }}{{ end -}}
+{{- return (printf "pg-%s" $id) -}}

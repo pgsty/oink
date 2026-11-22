@@ -4,8 +4,10 @@
 {{- $sidebarRoot := partial "shell/sidebar-root.html" . -}}
 {{- $iconPolicy := partial "shell/sidebar-icon-policy.html" . -}}
 {{- $language := .Site.Language.Lang -}}
-{{- $compactValue := partial "ui-param.html" (dict "page" . "key" "sidebar_menu_compact") -}}
-{{- $compact := not (not $compactValue) -}}
+{{- $compact := partial "validate.html" (dict
+    "value" (partial "ui-param.html" (dict "page" . "key" "sidebar_menu_compact")) "kind" "bool"
+    "fallback" true "key" "params.ui.sidebar_menu_compact"
+    "where" (cond (isset .Params "sidebar_menu_compact") .Path "")) -}}
 {{- $foldable := partial "validate.html" (dict
     "value" (partial "ui-param.html" (dict "page" . "key" "sidebar_menu_foldable")) "kind" "bool"
     "fallback" true "key" "params.ui.sidebar_menu_foldable"
@@ -45,9 +47,9 @@
 {{- end -}}
 {{- if $cacheSidebar -}}
   {{- if eq $tree "shell/docs-sidebar-tree.html" -}}
-    {{- partialCached $tree $args $sidebarRoot.RelPermalink $language $foldable $overflow -}}
+    {{- partialCached $tree $args .Site.BaseURL $sidebarRoot.RelPermalink $language $foldable $overflow -}}
   {{- else -}}
-    {{- partialCached $tree $args $sidebarRoot.RelPermalink $language $compact $foldable $expandLevels $overflow -}}
+    {{- partialCached $tree $args .Site.BaseURL $sidebarRoot.RelPermalink $language $compact $foldable $expandLevels $overflow -}}
   {{- end -}}
 {{- else -}}
   {{- partial $tree $args -}}

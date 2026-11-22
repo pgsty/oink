@@ -172,10 +172,16 @@
   addEventListener('scroll', wake, { passive: true, capture: true });
   addEventListener('resize', wake, { passive: true });
   document.addEventListener('toggle', wake, true);
+  document.addEventListener('td:tab-shown', wake);
   document.addEventListener('shown.bs.tab', wake);
+  let suppressRestoreFocus = false;
   function beginPrint() {
     if (printing) return;
     printing = true;
+    if (dialog.open) {
+      suppressRestoreFocus = true;
+      dialog.close();
+    }
     entries.forEach(entry => {
       entry.printOpen = entry.details.open;
       // Dark Mermaid colors assume a dark canvas. Source is ready synchronously
@@ -319,7 +325,13 @@
       showSource(true);
     }
   }
+  window.OinkSurfaceCoordinator?.register('diagram-zoom', restoreFocus => {
+    if (!dialog.open) return;
+    suppressRestoreFocus = restoreFocus === false;
+    dialog.close();
+  });
   function open(entry, trigger) {
+    window.OinkSurfaceCoordinator?.closeOthers('diagram-zoom');
     origin = trigger;
     openEntry = entry;
     status.textContent = '';
@@ -395,7 +407,7 @@
   }
   for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) viewport.addEventListener(name, endPointer);
   dialog.addEventListener('keydown', event => {
-    if (!dialog.open || viewport.hidden || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (!dialog.open || viewport.hidden || event.defaultPrevented || event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
     const moves = { ArrowLeft: [48, 0], ArrowRight: [-48, 0], ArrowUp: [0, 48], ArrowDown: [0, -48] };
     if (moves[event.key]) {
       view.x += moves[event.key][0]; view.y += moves[event.key][1]; applyView();
@@ -422,8 +434,10 @@
     pointers.clear();
     pinchDistance = 0;
     viewport.classList.remove('is-grabbing');
+    const shouldRestore = !suppressRestoreFocus;
+    suppressRestoreFocus = false;
     const active = document.activeElement;
-    if (origin?.isConnected && (!active || active === document.body || active === dialog || dialog.contains(active))) {
+    if (shouldRestore && origin?.isConnected && (!active || active === document.body || active === dialog || dialog.contains(active))) {
       origin.focus({ preventScroll: true });
     }
     origin = null;

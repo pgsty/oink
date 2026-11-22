@@ -23,7 +23,10 @@
     {{- warnf "%s: footnote reference [^%s] cannot be used inside a shortcode body — Hugo renders the body as its own document, so the reference prints literally when the definition sits on the page, and builds a second, colliding footnote list when it sits in the body. Author the block in its native form (a Markdown table, image, or fence followed by {num=\"…\" caption=\"…\"}) and keep footnotes in page Markdown." $origin $label -}}
   {{- end -}}
 {{- end -}}
+{{- $prevScope := $page.Store.Get "tdRenderBlockScope" | default "" -}}
+{{- if $scope }}{{ $page.Store.Set "tdRenderBlockScope" ($scope | anchorize) }}{{ end -}}
 {{- $html := $page.RenderString (dict "display" (.display | default "block")) $content -}}
+{{- if $prevScope }}{{ $page.Store.Set "tdRenderBlockScope" $prevScope }}{{ else }}{{ $page.Store.Delete "tdRenderBlockScope" }}{{ end -}}
 {{- if $scope -}}
   {{- $prefix := printf "td-code-%.8s-" (md5 $page.RelPermalink) -}}
   {{- range findRESubmatch `id="(td-code-[^"]+)" data-td-code\s+data-td-code-auto-id(?:\s|>)` $html -}}
@@ -51,12 +54,6 @@
     {{- range $attr := slice `id="` `aria-labelledby="` `aria-controls="` `href="#` -}}
       {{- $html = replace $html (printf `%s%s"` $attr $old) (printf `%s%s"` $attr $new) -}}
     {{- end -}}
-  {{- end -}}
-  {{- range findRESubmatch `class="td-field" id="(field-[^"]+)"` $html -}}
-    {{- $old := index . 1 -}}
-    {{- $new := printf "field-%s-%s" ($scope | anchorize) (strings.TrimPrefix "field-" $old) -}}
-    {{- $html = replace $html (printf `id="%s"` $old) (printf `id="%s"` $new) -}}
-    {{- $html = replace $html (printf `href="#%s"` $old) (printf `href="#%s"` $new) -}}
   {{- end -}}
   {{- $html = $html | safeHTML -}}
 {{- end -}}

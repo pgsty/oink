@@ -207,13 +207,24 @@ a {
     margin: 1.25rem 0;
     padding: 0.7rem 1.1rem;
     border-inline-start: 2px solid var(--td-brand-copper);
-    border-radius: 0 6px 6px 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    border-start-end-radius: 6px;
+    border-end-end-radius: 6px;
     background: linear-gradient(
       90deg,
       color-mix(in srgb, var(--td-brand-copper) 7%, transparent),
       transparent 80%
     );
     color: var(--bs-secondary-color);
+
+    [dir='rtl'] & {
+      background: linear-gradient(
+        -90deg,
+        color-mix(in srgb, var(--td-brand-copper) 7%, transparent),
+        transparent 80%
+      );
+    }
 
     > :first-child {
       margin-top: 0;
@@ -279,11 +290,6 @@ a {
   .il,
   .mo {
     color: #6cb6ff;
-  }
-
-  .ln,
-  .lnt {
-    color: #7b8591;
   }
 
   .go {

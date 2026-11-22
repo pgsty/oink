@@ -24,12 +24,13 @@
     return global.OinkClipboard.writeText(text, doc, global.navigator);
   }
 
-  function setControl(button, state, label) {
+  function setControl(button, state, textLabel, ariaLabel) {
+    var accessible = ariaLabel || textLabel;
     button.setAttribute('data-td-state', state);
-    button.setAttribute('aria-label', label);
-    button.setAttribute('title', label);
+    button.setAttribute('aria-label', accessible);
+    button.setAttribute('title', accessible);
     var labelNode = button.querySelector('span');
-    if (labelNode) labelNode.textContent = label;
+    if (labelNode) labelNode.textContent = textLabel;
     var icon = button.querySelector('i');
     if (icon) {
       icon.className = state === 'success'
@@ -41,8 +42,9 @@
   }
 
   function resetControl(button) {
-    var label = button.getAttribute('data-td-label-copy') || 'Copy';
-    setControl(button, 'idle', label);
+    var textLabel = button.getAttribute('data-td-label-copy') || 'Copy';
+    var ariaLabel = button.getAttribute('data-td-aria-copy') || textLabel;
+    setControl(button, 'idle', textLabel, ariaLabel);
     button.removeAttribute('aria-disabled');
   }
 
@@ -76,10 +78,11 @@
       scheduleReset(button);
       return true;
     }).catch(function (error) {
-      var label = button.getAttribute('data-td-label-copy') || 'Copy';
+      var label = button.getAttribute('data-td-label-error') || button.getAttribute('data-td-label-copy') || 'Copy failed';
       setControl(button, 'error', label);
       if (status) status.textContent = label;
       button.removeAttribute('aria-disabled');
+      scheduleReset(button);
       if (global.console && typeof global.console.error === 'function') {
         global.console.error('OINK asset list: unable to copy checksums:', error);
       }

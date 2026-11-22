@@ -47,7 +47,6 @@
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 8%, var(--bs-body-bg));
   --td-shell-primary-wash: rgba(20, 20, 20, 0.05);
   --td-callout-tint: 3%;
-  --td-hairline: rgba(20, 20, 20, 0.24);
   --td-preset-player-line: rgba(20, 20, 20, 0.55);
   --td-preset-player-muted: #636363;
   --td-on-link: #ffffff;
@@ -107,7 +106,6 @@
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 8%, var(--bs-body-bg));
   --td-shell-primary-wash: rgba(237, 237, 237, 0.06);
   --td-callout-tint: 5%;
-  --td-hairline: rgba(237, 237, 237, 0.24);
   --td-preset-player-line: rgba(237, 237, 237, 0.5);
   --td-preset-player-muted: #8f8f8f;
   --td-on-link: #0b0b0b;
@@ -166,7 +164,6 @@
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 12%, var(--bs-body-bg));
   --td-shell-primary-wash: rgba(29, 33, 31, 0.05);
   --td-callout-tint: 3%;
-  --td-hairline: rgba(29, 33, 31, 0.32);
   --td-preset-player-line: rgba(29, 33, 31, 0.55);
   --td-preset-player-muted: #606b63;
   --td-on-link: #ffffff;
@@ -226,7 +223,6 @@
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 12%, var(--bs-body-bg));
   --td-shell-primary-wash: rgba(211, 219, 214, 0.07);
   --td-callout-tint: 5%;
-  --td-hairline: rgba(211, 219, 214, 0.32);
   --td-preset-player-line: rgba(211, 219, 214, 0.55);
   --td-preset-player-muted: #8b9990;
   --td-on-link: #0c0f0e;
@@ -254,7 +250,8 @@
         .td-shell-search__panel, .td-shell-search__item, .td-shell-search__esc,
         .td-nav-search-box, .td-nav-search-box__kbd, .td-nav-hover-menu__pop, .td-shell-tag,
         .td-appearance__panel, .td-appearance__card, .td-appearance__modes,
-        .td-content-card, .td-blog-card, .td-table-scroll,
+        .td-content-card, .td-blog-card, .td-table-scroll, .td-table-reader,
+        .td-diagram-zoom__surface, .td-compare__sync-tip,
         .td-field__term, .td-tab-block, .td-print-document,
         .td-page-actions__group, .td-page-actions__menu, .td-asciinema) {
       border-radius: var(--td-experiment-radius);
@@ -318,7 +315,7 @@
         font-weight: 700;
       }
       // Underlines belong to prose, not card/control labels or heading anchors.
-      :is(p, li, td, dd, figcaption) a:not(.td-heading-anchor):not(.td-badge) {
+      :is(p, li, td, dd, figcaption) a:not(.td-heading-self-link):not(.td-badge) {
         // The shared accessibility sheet suppresses underlines with !important.
         // Ink intentionally restores this non-color prose affordance.
         text-decoration-line: underline !important;
@@ -350,8 +347,8 @@
       // Tables and prose remain sans. Only labels/headings take mono.
       table:not(.td-initial) { font-family: var(--td-body-font-family); }
       table:not(.td-initial) thead th { font-family: var(--td-ui-font-family); font-size: 0.8125rem; }
-      // Field names are structural labels, not prose code chips.
-      :not(pre) > code:not(.td-code-block):not(.td-field__name) { border: 1px solid var(--bs-border-color); }
+      // Field names, metadata chips, and checksum chips are structural labels, not prose code chips.
+      :not(pre, .td-field__type, .td-field__default, .td-field__meta-value) > code:not(.td-field__name):not(.td-asset-list__checksum) { border: 1px solid var(--bs-border-color); }
     }
     .td-callout { border: 1px solid var(--td-brand-line-strong); }
     .td-callout__title { font-family: var(--td-ui-font-family); }

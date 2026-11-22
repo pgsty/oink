@@ -42,7 +42,10 @@
             <h2>{{ .title }}</h2>
             <ul>
               {{- range .links }}
-              <li><a href="{{ .url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .label }}</a></li>
+              {{- $href := partial "landing/url.html" (dict "page" $ "value" .url) }}
+              {{- if $href }}
+              <li><a href="{{ $href }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .label }}</a></li>
+              {{- end }}
               {{- end }}
             </ul>
           </nav>

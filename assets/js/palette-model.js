@@ -2,7 +2,7 @@
 (function (global) {
   'use strict';
 
-  var CJK = /[぀-ヿ㐀-䶿一-鿿豈-﫿]/;
+  var CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 
   function lexical(a, b) {
     a = String(a || '');

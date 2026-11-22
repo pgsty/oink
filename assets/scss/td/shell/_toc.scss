@@ -39,7 +39,8 @@
     min-height: 0;
     // Match the article's breadcrumb row rather than starting the TOC rail
     // at an unrelated hard-coded height.
-    padding: var(--td-shell-content-top, 2.5rem) 20px 12px 8px;
+    padding-block: var(--td-shell-content-top, 2.5rem) 12px;
+    padding-inline: 8px 20px;
     transition:
       transform var(--td-motion-duration) ease,
       opacity var(--td-motion-duration) ease;
@@ -464,7 +465,8 @@
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  padding: 8px 4px 8px 8px; // Icon lands on the taxonomy heads' icon column.
+  padding-block: 8px;
+  padding-inline: 8px 4px; // Icon lands on the taxonomy heads' icon column.
   border: 0;
   background: transparent;
   color: var(--td-shell-muted-fg);
@@ -553,22 +555,11 @@
   }
 
   // Section headings read like the tree's top-level rows.
-  .td-shell-toc__title,
   .td-shell-aside-group__title {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
     color: var(--bs-body-color);
-  }
-
-  .td-shell-toc__title {
-    margin: 0;
-    padding: 8px;
-    padding-inline-start: var(--td-shell-indent, 8px);
-
-    .td-shell-icon {
-      color: var(--td-shell-muted-fg);
-    }
   }
 
   .td-shell-aside-group__head {

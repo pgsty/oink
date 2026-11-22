@@ -1,13 +1,19 @@
 {{- $page := .PageInner | default .Page -}}
-{{- if eq (lower ($page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
-  {{- $page.Store.Set "hasMarkmap" true -}}
-  {{- with findRE `(?s)^\s*---\s*\r?\n.*?\r?\n\s*---(?:\s*\r?\n|\s*$)` .Inner 1 -}}
-    {{- $header := index . 0 -}}
-    {{- range $old, $new := dict "initialExpandLevel" "foldLevel (root depth is 0; omit to expand everything)" "maxWidth" "wrapWidth" "spacingHorizontal" "levelGap" "spacingVertical" "siblingGap" "colorFreezeLevel" "colorDepth" -}}
-      {{- if findRE (printf `(?m)^\s*%s\s*:` $old) $header -}}
-        {{- warnf "Markmap 1 renamed %s to %s in %s; the old option is ignored" $old $new $page.Path -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "position" .Position "kind" "markmap") -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if not (strings.TrimSpace .Inner) -}}
+  {{- warnf "markmap: the fence requires mindmap source at %s; rendering nothing" .Position -}}
+{{- else -}}
+  {{- if eq $format "html" -}}
+    {{- $page.Store.Set "hasMarkmap" true -}}
+    {{- with findRE `(?s)^\s*---\s*\r?\n.*?\r?\n\s*---(?:\s*\r?\n|\s*$)` .Inner 1 -}}
+      {{- $header := index . 0 -}}
+      {{- range $old, $new := dict "initialExpandLevel" "foldLevel (root depth is 0; omit to expand everything)" "maxWidth" "wrapWidth" "spacingHorizontal" "levelGap" "spacingVertical" "siblingGap" "colorFreezeLevel" "colorDepth" -}}
+        {{- if findRE (printf `(?m)^\s*%s\s*:` $old) $header -}}
+          {{- warnf "Markmap 1 renamed %s to %s in %s; the old option is ignored" $old $new $page.Path -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
+<pre{{ with $policy.class }} class="{{ . }}"{{ end }}{{ if ne $format "rss" }} tabindex="0"{{ end }}{{ partial "content/attrs.html" $policy.generic }}><code class="language-markmap">{{ .Inner }}</code></pre>
 {{- end -}}
-<pre tabindex="0"><code class="language-markmap">{{ .Inner }}</code></pre>

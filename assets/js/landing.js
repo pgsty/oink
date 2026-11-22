@@ -107,14 +107,20 @@
   }
 
   function flashCopied(button, win) {
-    var previous = button.getAttribute('aria-label') || button.getAttribute('title') || '';
+    var previous = button.getAttribute('data-td-copy-initial-label');
+    if (previous === null) {
+      previous = button.getAttribute('aria-label') || button.getAttribute('title') || '';
+      button.setAttribute('data-td-copy-initial-label', previous);
+    }
     var copied = button.getAttribute('data-td-label-copied') || 'Copied';
     button.classList.add('td-is-copied');
     button.setAttribute('data-td-copy-state', 'success');
     button.setAttribute('aria-label', copied);
     var status = button.querySelector('[data-td-copy-status]');
     if (status) status.textContent = copied;
-    win.setTimeout(function () {
+    if (button._tdCopyTimer) win.clearTimeout(button._tdCopyTimer);
+    button._tdCopyTimer = win.setTimeout(function () {
+      button._tdCopyTimer = 0;
       button.classList.remove('td-is-copied');
       button.removeAttribute('data-td-copy-state');
       if (previous) button.setAttribute('aria-label', previous);
@@ -156,8 +162,7 @@
     if (win && typeof win.MutationObserver === 'function') {
       var observer = new win.MutationObserver(function () { syncThemeImages(root, doc); });
       observer.observe(doc.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
-    }
-    if (win && win.addEventListener) {
+    } else if (win && win.addEventListener) {
       win.addEventListener('td-theme-change', function () { syncThemeImages(root, doc); });
     }
     return count;
@@ -168,15 +173,16 @@
     var menu = root.querySelector('[data-td-landing-menu]');
     if (!toggle || !menu) return false;
     function setOpen(open, restoreFocus) {
+      var wasOpen = !menu.hidden;
       menu.hidden = !open;
       menu.classList.toggle('td-is-open', open);
       toggle.classList.toggle('td-is-open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (!open && restoreFocus) toggle.focus();
+      if (!open && wasOpen && restoreFocus) toggle.focus();
     }
     var coordinator = win && win.OinkSurfaceCoordinator;
     if (coordinator && typeof coordinator.register === 'function') {
-      coordinator.register('mobile-menu', function (restoreFocus) { setOpen(false, restoreFocus); });
+      coordinator.register('mobile-menu', function (restoreFocus) { setOpen(false, restoreFocus === true); });
     }
     toggle.addEventListener('click', function () {
       var open = menu.hidden;
@@ -187,8 +193,16 @@
       item.addEventListener('click', function () { setOpen(false, false); });
     });
     doc.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && !menu.hidden) setOpen(false, true);
+      if (event.key === 'Escape' && !event.defaultPrevented && !menu.hidden) setOpen(false, true);
     });
+    if (win && typeof win.matchMedia === 'function') {
+      var desktop = win.matchMedia('(min-width: 768px)');
+      if (desktop && typeof desktop.addEventListener === 'function') {
+        desktop.addEventListener('change', function (mq) {
+          if (mq.matches && !menu.hidden) setOpen(false, false);
+        });
+      }
+    }
     return true;
   }
 

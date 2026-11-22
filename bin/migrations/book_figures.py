@@ -850,10 +850,12 @@ def run(profile: str, root: Path, paths: list[str], *, write: bool, show_diff: b
     if show_diff:
         for path in sorted(diffs):
             sys.stdout.write(diffs[path])
-    if write:
+    if write and idempotent:
         for path, source in changed.items():
             (root / path).write_text(source, encoding="utf-8")
-    action = "wrote" if write else "would change"
+    elif write and not idempotent:
+        print(f"{profile}: refusing --write because migration output is not idempotent", file=sys.stderr)
+    action = "wrote" if (write and idempotent) else "would change"
     print(
         f"{profile}: scanned {len(sources)} files, {action} {len(changed)}, "
         f"counts={dict(sorted(result.counts.items()))}, skipped={len(result.findings)}, "

@@ -6,7 +6,7 @@
 {{- if or $keyboardNav $localSearch -}}
 {{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
 {{- $compareTargets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang (partial "compare/page-key.html" .) (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
     data-td-nav-hover-trigger data-td-nav-hover-open

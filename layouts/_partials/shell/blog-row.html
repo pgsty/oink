@@ -2,8 +2,8 @@
 {{- $headingLevel := .headingLevel | default 2 -}}
 {{- $linkImage := true -}}
 {{- if isset . "linkImage" }}{{ $linkImage = .linkImage }}{{ end -}}
-{{- $manualLink := cond (isset $p.Params "manual_link") $p.Params.manual_link $p.RelPermalink -}}
-{{- $isExternal := isset $p.Params "manual_link" -}}
+{{- $manualLink := partial "content/manual-link.html" $p -}}
+{{- $isExternal := not (not (findRE "^https?://" $manualLink)) -}}
 <li class="td-blog-posts-list__item">
   <div class="td-blog-posts-list__body">
     {{- if eq $headingLevel 3 }}

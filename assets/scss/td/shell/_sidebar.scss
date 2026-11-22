@@ -384,6 +384,13 @@
   transform: rotate(0deg);
 }
 
+[dir='rtl'] .td-shell-tree__chevron:not([aria-expanded='true']) .td-shell-icon,
+[dir='rtl'] [data-td-shell-tree-toggle]:not([aria-expanded='true'])
+  > .td-shell-tree__chevron
+  .td-shell-icon {
+  transform: rotate(90deg);
+}
+
 .td-shell-tree__children {
   display: grid;
   grid-template-rows: 0fr;

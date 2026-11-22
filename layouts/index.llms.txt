@@ -47,15 +47,22 @@ that agent-docs tooling applies to llms.txt entries. */ -}}
     {{ end -}}
     {{ $description = .Description | strings.TrimSpace | replaceRE `\s+` " " -}}
   {{ else -}}
-    {{ $entryHost := (urls.Parse .URL).Host -}}
-    {{ if and $entryHost (ne $entryHost $siteHost) -}}
+    {{ $parsedEntry := try (urls.Parse .URL) -}}
+    {{ if $parsedEntry.Err -}}
       {{ $onSite = false -}}
     {{ else -}}
-      {{ $url = cond (ne $entryHost "") .URL (.URL | absLangURL) -}}
+      {{ $u := $parsedEntry.Value -}}
+      {{ if or (and $u.Scheme (not (in (slice "http" "https") $u.Scheme))) (hasPrefix .URL "#") -}}
+        {{ $onSite = false -}}
+      {{ else if and $u.Host (ne $u.Host $siteHost) -}}
+        {{ $onSite = false -}}
+      {{ else -}}
+        {{ $url = cond (ne $u.Host "") .URL (strings.TrimPrefix "/" .URL | absLangURL) -}}
+      {{ end -}}
     {{ end -}}
   {{ end -}}
   {{ if $onSite -}}
-  - [{{ .Name }}]({{ $url }}){{ with $description }}: {{ . }}{{ end }} {{- "\n" -}}
+  - [{{ template "llms-label" .Name }}]({{ partial "content/markdown-url.html" $url }}){{ with $description }}: {{ . }}{{ end }} {{- "\n" -}}
   {{ end -}}
 {{ end -}}
 
@@ -93,8 +100,9 @@ nothing here. */ -}}
 {{ $bundleLines := slice -}}
 {{ range $section := .Site.Home.Sections -}}
   {{ with $section.OutputFormats.Get "llmsfull" -}}
+    {{ $label := replace (replace (replace ($section.LinkTitle | default $section.Title | strings.TrimSpace | replaceRE `\s+` " ") "\\" "\\\\") "[" "\\[") "]" "\\]" -}}
     {{ $bundleLines = $bundleLines | append (printf "- [%s](%s)"
-        ($section.LinkTitle | default $section.Title | strings.TrimSpace) .Permalink) -}}
+        $label (partial "content/markdown-url.html" .Permalink)) -}}
   {{ end -}}
 {{ end -}}
 {{ with $bundleLines -}}
@@ -108,36 +116,42 @@ nothing here. */ -}}
 
 {{/* Multilingual sites ------------------------------------------------------- */ -}}
 
-{{ with hugo.Sites -}}
+{{ if gt (len hugo.Sites) 1 -}}
   {{ "\n" -}}
 
   ## Site locales
 
   {{- "\n\n" -}}
-  {{ range . -}}
+  {{ range hugo.Sites -}}
     {{ $home := .Home -}}
     {{ $url := $home.Permalink -}}
     {{ with $home.OutputFormats.Get "markdown" -}}
       {{ $url = .Permalink -}}
     {{ end -}}
-    - [{{ $home.Language.Label }}]({{ $url }}) {{- "\n" -}}
+    - [{{ template "llms-label" ($home.Language.Label | default $home.Language.Lang) }}]({{ partial "content/markdown-url.html" $url }}) {{- "\n" -}}
   {{ end -}}
 {{ end -}}
+
+{{- define "llms-label" -}}
+  {{- replace (replace (replace (printf "%v" . | strings.TrimSpace | replaceRE `\s+` " ") "\\" "\\\\") "[" "\\[") "]" "\\]" -}}
+{{- end -}}
 
 {{/* A page that Hugo never renders (`build.render: never`, sidebar dividers)
      has no permalink and must not become a dead link in the index. */ -}}
 {{- define "llms-entry" -}}
   {{- $page := .page -}}
+  {{- if not $page.Params.sidebar_divider -}}
   {{- with $page.Permalink -}}
     {{- $url := . -}}
     {{- with $page.OutputFormats.Get "markdown" -}}
       {{- $url = .Permalink -}}
     {{- end -}}
-    {{- $title := $page.LinkTitle | default $page.Title | strings.TrimSpace -}}
+    {{- $title := replace (replace (replace ($page.LinkTitle | default $page.Title | strings.TrimSpace | replaceRE `\s+` " ") "\\" "\\\\") "[" "\\[") "]" "\\]" -}}
     {{- $description := $page.Description | strings.TrimSpace | replaceRE `\s+` " " -}}
     {{- $indent := strings.Repeat $.depth "  " -}}
-    {{- printf "%s- [%s](%s)" $indent $title $url -}}
+    {{- printf "%s- [%s](%s)" $indent $title (partial "content/markdown-url.html" $url) -}}
     {{- with $description }}: {{ . }}{{ end -}}
     {{- "\n" -}}
+  {{- end -}}
   {{- end -}}
 {{- end -}}

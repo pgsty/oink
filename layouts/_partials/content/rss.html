@@ -21,14 +21,16 @@
 {{- $pages = $pages.ByDate.Reverse }}
 {{- $limit := .Site.Config.Services.RSS.Limit }}
 {{- if ge $limit 1 }}{{ $pages = $pages | first $limit }}{{ end -}}
+{{- $hasCreators := false -}}
+{{- range $pages }}{{ if partial "authors-resolve.html" . }}{{ $hasCreators = true }}{{ end }}{{ end -}}
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"{{ if $hasCreators }} xmlns:dc="http://purl.org/dc/elements/1.1/"{{ end }}>
   <channel>
     <title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ .Site.Title }}{{ end }}</title>
     <link>{{ .Permalink }}</link>
     <description>Recent content {{ if ne .Title .Site.Title }}{{ with .Title }}in {{ . }} {{ end }}{{ end }}on {{ .Site.Title }}</description>
     <generator>Hugo</generator>
-    <language>{{ site.Language.Locale }}</language>
+    <language>{{ partial "language-tag.html" . }}</language>
     {{ with $authorEmail }}
       <managingEditor>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</managingEditor>
       <webMaster>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</webMaster>
@@ -47,6 +49,7 @@
         <link>{{ .Permalink }}</link>
         {{ if not .PublishDate.IsZero }}<pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>{{ end }}
         {{ with $authorEmail }}<author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>{{ end }}
+        {{ range partial "authors-resolve.html" . }}<dc:creator>{{ .name | transform.XMLEscape | safeHTML }}</dc:creator>{{ end }}
         <guid>{{ .Permalink }}</guid>
         <description>{{ $description | transform.XMLEscape | safeHTML }}</description>
       </item>

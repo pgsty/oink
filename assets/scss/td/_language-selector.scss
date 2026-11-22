@@ -50,6 +50,10 @@
     pointer-events: none;
     transform: translateY(-4px) scale(0.98);
     transform-origin: top right;
+
+    [dir='rtl'] & {
+      transform-origin: top left;
+    }
     transition:
       opacity var(--td-motion-duration-fast) ease,
       transform var(--td-motion-duration-fast) ease,

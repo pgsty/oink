@@ -47,8 +47,9 @@
     {{- $found = true -}}
   {{- end -}}
 {{- end -}}
-{{- if not $found }}{{ warnf "shortcode %q: file %q was not found (page resources, assets, or content/) at %s; including nothing" .Name $file .Position }}{{ end -}}
-{{- if $code -}}
+{{- if not $found -}}
+  {{- warnf "shortcode %q: file %q was not found (page resources, assets, or content/) at %s; including nothing" .Name $file .Position -}}
+{{- else if $code -}}
   {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
   {{- if eq $format "markdown" -}}
     {{- printf "```%s\n%s\n```" $lang (strings.TrimRight "\n" $content) | safeHTML -}}
@@ -62,7 +63,11 @@
   {{- if eq $format "markdown" -}}
     {{- $content | safeHTML -}}
   {{- else -}}
-    {{- partial "content/render-block.html" (dict "page" .Page "scope" (printf "include-%s" (partial "content/shortcode-ordinal.html" .)) "content" $content "origin" (printf "shortcode %q at %s" .Name .Position)) -}}
+    {{- $rendered := partial "content/render-block.html" (dict "page" .Page "scope" (printf "include-%s" (partial "content/shortcode-ordinal.html" .)) "content" $content "origin" (printf "shortcode %q at %s" .Name .Position)) -}}
+    {{- if eq $format "html" -}}
+      {{- partial "content/register-derived.html" (dict "page" .Page "html" $rendered "raw" $content) -}}
+    {{- end -}}
+    {{- $rendered -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}

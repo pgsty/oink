@@ -15,8 +15,5 @@
   {{- if and $anchorLineNos (not (isset $options "lineAnchors")) (not (isset $options "lineanchors")) -}}
     {{- $options = merge (dict "lineAnchors" $config.rootID) $options -}}
   {{- end -}}
-{{- else if $useClasses -}}
-  {{- $options = strings.Trim " ," (printf "%v" $options) -}}
-  {{- $options = cond $options (printf "%s,noClasses=false" $options) "noClasses=false" -}}
 {{- end -}}
 {{- transform.Highlight $config.code $config.language $options -}}

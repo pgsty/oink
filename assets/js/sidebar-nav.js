@@ -5,7 +5,9 @@
 
   function pathOf(url) {
     try {
-      var path = new URL(url, window.location.href).pathname;
+      var parsed = new URL(url, window.location.href);
+      if (parsed.origin !== window.location.origin) return '';
+      var path = parsed.pathname;
       return path.endsWith('/') ? path : path + '/';
     } catch (_) {
       return '';

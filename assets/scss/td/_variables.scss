@@ -10,8 +10,6 @@
 // Fonts
 
 // Nothing here reaches a font service; every face the theme uses ships with it.
-$td-font-awesome-font-name: 'Font Awesome 7 Free' !default;
-
 $font-family-sans-serif: $td-fonts-serif !default;
 $font-family-monospace: $td-font-family-monospace !default;
 
@@ -26,6 +24,5 @@ $td-block-space-bottom-base: 4 * $spacer !default;
 
 // Navbar
 
-$td-navbar-bg-color: transparent !default;
 $td-navbar-min-height: 50px !default;
 $td-navbar__main-min-height-mobile: 2.5rem !default;

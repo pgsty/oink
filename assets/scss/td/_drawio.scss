@@ -6,8 +6,8 @@ div.drawio {
     @extend .btn;
     @extend .btn-outline-primary;
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    inset-block-end: 5px;
+    inset-inline-end: 5px;
     padding: 0.4em 0.5em;
     font-size: 0.8em;
     opacity: 0;
@@ -52,5 +52,12 @@ dialog.drawioframe {
     inset-block-start: 0.25rem;
     inset-inline-end: 5%;
     min-height: 2.5rem;
+  }
+}
+
+@media print {
+  div.drawio > .drawiobtn,
+  dialog.drawioframe {
+    display: none !important;
   }
 }

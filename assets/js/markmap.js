@@ -7,6 +7,12 @@
   const fitLabel = {{ i18n "ui_diagram_fit" | jsonify | safeJS }};
   const detailsLabel = {{ i18n "callout_details" | jsonify | safeJS }};
   const dark = () => document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+  let instanceCount = 0;
+  function hasOpenModalDialog() {
+    return Array.from(document.querySelectorAll('dialog[open]')).some(
+      dialog => !dialog.classList.contains('td-appearance__panel') || dialog.matches(':modal'),
+    );
+  }
 
   async function enhance(code) {
     const pre = code.parentElement;
@@ -71,9 +77,15 @@
       container.append(svg, reset);
       pre.replaceWith(container);
       map = api.Markmap.create(svg, parsed.root, options);
+      const surfaceId = 'markmap-note-' + (++instanceCount);
       let manual = false, frame = 0, size = '';
+      const initialRect = svg.getBoundingClientRect();
+      if (initialRect.width) size = initialRect.width + ':' + initialRect.height;
       function fit() {
-        if (svg.getBoundingClientRect().width) map.fit();
+        if (svg.getBoundingClientRect().width) {
+          map.placed = false;
+          map.fit();
+        }
       }
       listen(reset, 'click', () => { manual = false; fit(); });
       map.zoomBehavior.on('zoom.oink', event => { if (event.sourceEvent) manual = true; });
@@ -127,6 +139,13 @@
         }
         return noteTrigger?.isConnected ? noteTrigger : null;
       }
+      window.OinkSurfaceCoordinator?.register(surfaceId, restoreFocus => {
+        if (!map?.openNoteId) return;
+        const trigger = liveNoteTrigger(map.openNoteId);
+        map.closeNotes();
+        if (restoreFocus === true) trigger?.focus({ preventScroll: true });
+      });
+      cleanup.push(() => map?.closeNotes());
       async function openNote(event) {
         const trigger = event.target.closest('[data-action="notes"]');
         if (!trigger || (event.type === 'keydown' && !['Enter', ' '].includes(event.key))) return;
@@ -134,6 +153,7 @@
         event.stopPropagation();
         const id = nodeId(trigger);
         if (map.openNoteId === id) { map.closeNotes(); return; }
+        window.OinkSurfaceCoordinator?.closeOthers(surfaceId);
         noteTrigger = trigger;
         noteNodeId = id;
         try {
@@ -142,8 +162,11 @@
           trigger.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' });
           await new Promise(resolve => requestAnimationFrame(resolve));
           await map.openNotes(id);
-          const dialog = document.activeElement;
-          if (map.openNoteId === id && dialog?.classList.contains('markmap-popover')) {
+          const dialog = map.popover?.popover?.el ||
+            (document.activeElement?.classList?.contains('markmap-popover')
+              ? document.activeElement
+              : document.querySelector('.markmap-popover'));
+          if (map.openNoteId === id && dialog?.classList?.contains('markmap-popover')) {
             noteDialog = dialog;
             const label = (liveNoteTrigger(id) || trigger).getAttribute('aria-label');
             if (label) dialog.setAttribute('aria-label', label);
@@ -153,7 +176,7 @@
       listen(svg, 'click', openNote, true);
       listen(svg, 'keydown', openNote);
       listen(document, 'keydown', event => {
-        if (event.key !== 'Escape' || !map.openNoteId || document.querySelector('dialog[open]')) return;
+        if (event.key !== 'Escape' || !map.openNoteId || hasOpenModalDialog()) return;
         const focusInside = noteDialog?.contains(event.target) || noteDialog?.contains(document.activeElement);
         const trigger = liveNoteTrigger(map.openNoteId);
         event.preventDefault();
@@ -195,7 +218,6 @@
       themeObserver.observe(document.documentElement,
         { attributes: true, attributeFilter: ['data-bs-theme', 'data-td-preset'] });
       cleanup.push(() => themeObserver.disconnect());
-      map.render({ animate: false });
       schedule();
     } catch (error) {
       fallback(error);

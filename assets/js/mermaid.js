@@ -23,10 +23,22 @@
   }
   function norm(defaults, input) {
     const result = {};
+    const lowerMap = {};
+    for (const [k, v] of Object.entries(input || {})) lowerMap[k.toLowerCase()] = [k, v];
     for (const key of Object.keys(defaults)) {
-      if (!Object.prototype.hasOwnProperty.call(input || {}, key.toLowerCase())) continue;
-      result[key] = defaults[key] && typeof defaults[key] === 'object'
-        ? norm(defaults[key], input[key.toLowerCase()]) : input[key.toLowerCase()];
+      const entry = lowerMap[key.toLowerCase()];
+      if (!entry) continue;
+      const val = entry[1];
+      if (key === 'themeVariables' && val && typeof val === 'object' && !Array.isArray(val)) {
+        result[key] = { ...val };
+      } else if (
+        defaults[key] && typeof defaults[key] === 'object' && !Array.isArray(defaults[key]) &&
+        val && typeof val === 'object' && !Array.isArray(val)
+      ) {
+        result[key] = norm(defaults[key], val);
+      } else {
+        result[key] = val;
+      }
     }
     return result;
   }

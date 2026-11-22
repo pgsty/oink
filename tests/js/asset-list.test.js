@@ -43,7 +43,8 @@ assert.equal(
     configurable: true,
     value: { clipboard: { writeText(text) { writes.push(text); return Promise.resolve(); } } },
   });
-  globalThis.setTimeout = () => 1;
+  let scheduledCallback = null;
+  globalThis.setTimeout = (fn) => { scheduledCallback = fn; return 1; };
 
   const status = element();
   const icon = element();
@@ -59,8 +60,10 @@ assert.equal(
   };
   const button = element({
     'data-td-asset-copy': '',
-    'data-td-label-copy': 'Copy checksum',
+    'data-td-label-copy': 'Copy',
+    'data-td-aria-copy': 'Copy checksum for pig arm64.rpm',
     'data-td-label-copied': 'Copied',
+    'data-td-label-error': 'Copy failed',
   });
   button.closest = (selector) => {
     if (selector === '[data-td-asset-list]') return root;
@@ -84,10 +87,30 @@ assert.equal(
   assert.equal(button.disabled, false);
   assert.equal(button.getAttribute('aria-disabled'), 'true');
   assert.equal(await assets.copyFromControl(button, {}), false);
-  button.removeAttribute('aria-disabled');
+  assert.equal(typeof scheduledCallback, 'function');
+  scheduledCallback();
+  assert.equal(button.getAttribute('aria-label'), 'Copy checksum for pig arm64.rpm', 'reset preserves per-file aria-label');
+  assert.equal(label.textContent, 'Copy');
   button.setAttribute('data-td-asset-copy-all', '');
   assert.equal(await assets.copyFromControl(button, {}), true);
   assert.equal(writes[1], assets.allChecksumLines(root));
+
+  // Clipboard rejection announces data-td-label-error and schedules reset.
+  scheduledCallback = null;
+  button.removeAttribute('aria-disabled');
+  Object.defineProperty(globalThis, 'navigator', {
+    configurable: true,
+    value: { clipboard: { writeText() { return Promise.reject(new Error('blocked')); } } },
+  });
+  const silentConsole = globalThis.console.error;
+  globalThis.console.error = () => {};
+  assert.equal(await assets.copyFromControl(button, {}), false);
+  globalThis.console.error = silentConsole;
+  assert.equal(button.getAttribute('data-td-state'), 'error');
+  assert.equal(status.textContent, 'Copy failed');
+  assert.equal(typeof scheduledCallback, 'function');
+  scheduledCallback();
+  assert.equal(button.getAttribute('data-td-state'), 'idle');
 
   const fallbackWrites = [];
   Object.defineProperty(globalThis, 'navigator', {

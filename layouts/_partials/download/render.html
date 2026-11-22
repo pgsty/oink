@@ -7,6 +7,8 @@
 
 {{- if eq $format "rss" -}}
   {{- /* The component is deliberately absent from feeds. */ -}}
+{{- else if not $data.channels -}}
+  {{- /* All channels were rejected by validation; emit nothing. */ -}}
 {{- else if eq $format "markdown" -}}
   {{- $chunks := slice -}}
   {{- range $channelIndex, $channel := $data.channels -}}
@@ -30,8 +32,10 @@
     {{- end -}}
     {{- with $channel.checksums -}}
       {{- $entries := partial "release/assets-parse.html" (dict "content" . "position" (printf "%s channel %q checksums" $page.Path $channel.id) "base" $assetBase "algo" "") -}}
-      {{- $assets := partial "release/assets-markdown.html" (dict "entries" $entries "grouped" false "disabled" (not $data.published)) -}}
-      {{- $lines = $lines | append (printf "%s" $assets) -}}
+      {{- if $entries -}}
+        {{- $assets := partial "release/assets-markdown.html" (dict "entries" $entries "grouped" false "disabled" (not $data.published)) -}}
+        {{- $lines = $lines | append (printf "%s" $assets) -}}
+      {{- end -}}
     {{- end -}}
     {{- $chunks = $chunks | append (delimit $lines "\n\n") -}}
   {{- end -}}
@@ -50,7 +54,7 @@
       <h2>{{ with $channel.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}<span>{{ $channel.title }}</span></h2>
       {{- if and (eq $channel.kind "pinned") (not $data.published) }}<span class="td-download__state" aria-disabled="true">{{ T "ui_download_unpublished" }}</span>{{ end }}
     </header>
-    {{- with $channel.note }}<div class="td-download__note">{{ $page.RenderString (dict "display" "block") . }}</div>{{ end -}}
+    {{- with $channel.note }}<div class="td-download__note">{{ partial "content/render-block.html" (dict "page" $page "scope" (printf "download-%s-%s" $owner $channel.id) "content" . "origin" (printf "%s channel %q note" $page.Path $channel.id)) }}</div>{{ end -}}
     {{- with $channel.url -}}
       {{- if and (eq $channel.kind "pinned") (not $data.published) -}}
       <span class="td-download__action td-is-disabled" aria-disabled="true">{{ $channel.title }}</span>
@@ -65,9 +69,11 @@
     {{- end -}}
     {{- with $channel.checksums -}}
       {{- $entries := partial "release/assets-parse.html" (dict "content" . "position" (printf "%s channel %q checksums" $page.Path $channel.id) "base" $assetBase "algo" "") -}}
-      {{- $assetsInteractive := and $interactive $data.published -}}
-      {{- if $assetsInteractive }}{{ $page.Store.Set "hasAssetList" true }}{{ end -}}
-      {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" false "interactive" $assetsInteractive "disabled" (not $data.published)) -}}
+      {{- if $entries -}}
+        {{- $assetsInteractive := and $interactive $data.published -}}
+        {{- if $assetsInteractive }}{{ $page.Store.Set "hasAssetList" true }}{{ end -}}
+        {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" false "interactive" $assetsInteractive "disabled" (not $data.published)) -}}
+      {{- end -}}
     {{- end }}
   </section>
   {{- end }}

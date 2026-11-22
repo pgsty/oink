@@ -72,7 +72,7 @@ class Element {
     return candidate === this || this.children.some((child) => child.contains && child.contains(candidate));
   }
   closest(selector) {
-    if (selector === '[data-td-mobile-menu]' && this.inMobile) return this;
+    if (selector === '[data-td-landing-menu]' && this.inMobile) return this;
     if (selector === '#td-shell-sidebar' && this.inDrawer) return this;
     return this.parentNode && this.parentNode.closest ? this.parentNode.closest(selector) : null;
   }
@@ -207,14 +207,16 @@ function setup({ controlledAnimationFrame = false } = {}) {
     },
   };
 
+  const body = new Element('body');
   global.document = {
     activeElement: opener,
+    body,
     documentElement: html,
     createElement(tag) { return new Element(tag); },
     createDocumentFragment() { return new Element('fragment'); },
     createTextNode(text) { const node = new Element('text'); node.textContent = text; return node; },
     getElementById(id) { return id === 'td-shell-search' ? root : null; },
-    querySelector(selector) { return selector === '[data-td-menu-toggle]' ? mobileToggle : null; },
+    querySelector(selector) { return selector === '[data-td-landing-menu-toggle]' ? mobileToggle : null; },
     querySelectorAll(selector) {
       if (selector === '[data-td-shell-search-open]') return [opener, mobileOpener];
       return [];
@@ -253,7 +255,7 @@ function setup({ controlledAnimationFrame = false } = {}) {
   const controller = paletteModule.init({ root, registry, model: window.OinkPaletteModel, searchApi });
 
   return {
-    controller, paletteModule, html, root, input, list, status, opener, mobileOpener, mobileToggle,
+    controller, paletteModule, html, body, root, close, input, list, status, opener, mobileOpener, mobileToggle,
     fetches, assigned, opened, calls, listeners, animationFrames,
     setFetch(value) { fetchBehavior = value; },
     setPending(value) { pendingAction = value; },
@@ -375,6 +377,13 @@ function setup({ controlledAnimationFrame = false } = {}) {
   h.mobileOpener.dispatch('click', { currentTarget: h.mobileOpener });
   h.controller.close();
   assert.equal(document.activeElement, h.mobileToggle, 'focus returned to a hidden mobile opener');
+
+  // Backdrop / Safari button clicks blur the input to document.body before click fires.
+  h.opener.dispatch('click', { currentTarget: h.opener });
+  document.activeElement = h.body;
+  h.close.dispatch('click', { currentTarget: h.close });
+  assert.equal(h.controller.isOpen(), false);
+  assert.equal(document.activeElement, h.opener, 'backdrop/button click did not restore focus');
 
   const failure = setup();
   failure.setFetch(() => Promise.reject(new Error('offline')));

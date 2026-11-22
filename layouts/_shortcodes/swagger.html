@@ -22,7 +22,7 @@
 [{{ partial "content/markdown-escape.html" (T "ui_openapi_spec") }}]({{ $validated.markdown }})
 {{- else if eq $format "rss" -}}
 <p><a href="{{ $validated.href }}">{{ $validated.href }}</a></p>
-{{- else if in (slice "print" "rss") $format -}}
+{{- else if eq $format "print" -}}
 <p class="td-swagger-print">{{ T "ui_openapi_spec" }} — <a href="{{ $validated.href }}">{{ $validated.href }}</a></p>
 {{- else -}}
 {{- $id := printf "td-swagger-%s-%s" (md5 .Page.RelPermalink | truncate 8 "") (partial "content/shortcode-ordinal.html" .) -}}

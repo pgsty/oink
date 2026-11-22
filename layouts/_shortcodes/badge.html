@@ -42,14 +42,14 @@
 {{- if not $badgeText -}}
 {{- else if eq $outputFormat "markdown" -}}
   {{- $markdownText := partial "content/markdown-escape.html" $badgeText -}}
-  {{- if $link -}}
+  {{- if and $link $link.valid -}}
     {{- printf "[**%s**](%s)" $markdownText $link.markdown | safeHTML -}}
   {{- else -}}
     {{- printf "**%s**" $markdownText | safeHTML -}}
   {{- end -}}
 {{- else -}}
   {{- $class := printf "td-badge td-badge--%s" $tone -}}
-  {{- if $link -}}
+  {{- if and $link $link.valid -}}
 <a class="{{ $class }}" href="{{ $link.href }}">{{ $badgeText }}</a>
   {{- else -}}
 <span class="{{ $class }}">{{ $badgeText }}</span>

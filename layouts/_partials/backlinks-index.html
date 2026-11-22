@@ -12,7 +12,9 @@
        and unresolvable destinations are dropped silently: this is a local
        navigation enhancement, not a link checker. */ -}}
 {{- $site := . -}}
-{{- $siteHost := (urls.Parse $site.BaseURL).Host -}}
+{{- $parsedBase := urls.Parse $site.BaseURL -}}
+{{- $siteHost := $parsedBase.Host -}}
+{{- $basePath := strings.TrimSuffix "/" $parsedBase.Path -}}
 {{- $prefix := $site.LanguagePrefix -}}
 {{- $scratch := newScratch -}}
 {{- range $source := where $site.Pages "Kind" "in" (slice "home" "section" "page") -}}
@@ -31,11 +33,16 @@
   {{- $seen := dict -}}
   {{- range $dest := $dests -}}
     {{- if or (not $dest) (hasPrefix $dest "#") }}{{ continue }}{{ end -}}
-    {{- $u := urls.Parse $dest -}}
+    {{- $parsedDest := try (urls.Parse $dest) -}}
+    {{- if $parsedDest.Err }}{{ continue }}{{ end -}}
+    {{- $u := $parsedDest.Value -}}
     {{- if and $u.Scheme (not (in (slice "http" "https") $u.Scheme)) }}{{ continue }}{{ end -}}
     {{- if and $u.Host (ne $u.Host $siteHost) }}{{ continue }}{{ end -}}
     {{- $path := $u.Path -}}
     {{- if not $path }}{{ continue }}{{ end -}}
+    {{- if and $basePath (hasPrefix $path "/") (or (eq $path $basePath) (hasPrefix $path (printf "%s/" $basePath))) -}}
+      {{- $path = strings.TrimPrefix $basePath $path | default "/" -}}
+    {{- end -}}
     {{- if and $prefix (or (eq $path $prefix) (hasPrefix $path (printf "%s/" $prefix))) -}}
       {{- $path = strings.TrimPrefix $prefix $path | default "/" -}}
     {{- end -}}

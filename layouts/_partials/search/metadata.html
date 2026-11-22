@@ -30,8 +30,10 @@
 {{- if not $icon -}}
   {{- $icons := dict
     "docs" "fa-solid fa-book"
+    "book" "fa-solid fa-book-open"
     "blog" "fa-solid fa-blog"
     "swagger" "fa-solid fa-code"
+    "expo" "fa-solid fa-images"
   -}}
   {{- $icon = index $icons $type | default (index $icons $root) | default "fa-solid fa-file-lines" -}}
 {{- end -}}

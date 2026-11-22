@@ -1,28 +1,33 @@
 {{- $page := .page -}}
-{{- $children := (union $page.Pages $page.Sections).ByWeight -}}
-{{- $children = where $children ".Params.toc_hide" "!=" true -}}
+{{- $children := partial "shell/nav-children.html" (dict "section" $page) -}}
 {{- $includeDraft := .includeDraft -}}
 {{- $depth := .depth -}}
 {{- $format := .format -}}
 {{- $level := .level | default 1 -}}
 {{- $aggregate := .aggregate | default false -}}
 {{- $treeDepth := cond (gt $depth 2) 2 $depth -}}
-{{- if and $children (le $level $treeDepth) -}}
+{{- $items := slice -}}
+{{- range $children -}}
+  {{- if and (not $includeDraft) (eq .Params.book_status "draft") }}{{ continue }}{{ end -}}
+  {{- $group := or (.Params.sidebar_divider | default false) (not .RelPermalink) -}}
+  {{- if and $group (not .Pages) }}{{ continue }}{{ end -}}
+  {{- $items = $items | append . -}}
+{{- end -}}
+{{- if and $items (le $level $treeDepth) -}}
 <ol class="td-book-toc__list">
-  {{- range $children -}}
-    {{- if and (not $includeDraft) (eq .Params.book_status "draft") }}{{ continue }}{{ end -}}
+  {{- range $items -}}
     {{- $group := or (.Params.sidebar_divider | default false) (not .RelPermalink) -}}
-    {{- if and $group (not .Pages) }}{{ continue }}{{ end -}}
     {{- $number := .Params.book_number | default "" -}}
+    {{- $inAggregate := and $aggregate (ne .Params.no_print true) -}}
     {{- $href := .RelPermalink -}}
-    {{- if $aggregate }}{{ $href = printf "#pg-%s" .File.UniqueID }}{{ end -}}
+    {{- if $inAggregate }}{{ $href = printf "#%s" (partial "print/page-id.html" .) }}{{ end -}}
   <li class="td-book-toc__item{{ if eq .Params.book_status "draft" }} td-book-toc__item--draft{{ end }}">
     {{- if $group -}}
     <span>{{ .LinkTitle }}</span>
     {{- else -}}
     <a href="{{ $href }}"{{ if eq .Params.book_status "draft" }} data-td-draft-label="{{ T "book_draft" }}"{{ end }}>{{ with $number }}<span class="td-book-number">{{ . }}</span> {{ end }}<span>{{ .LinkTitle }}</span></a>
     {{- end -}}
-    {{- if and (eq $depth 3) (not $group) }}{{ partial "book/toc-headings.html" (dict "page" . "headings" .Fragments.Headings "depth" 1 "level" 1 "aggregate" $aggregate) }}{{ end -}}
+    {{- if and (eq $depth 3) (not $group) }}{{ partial "book/toc-headings.html" (dict "page" . "headings" .Fragments.Headings "depth" 1 "level" 1 "aggregate" $inAggregate) }}{{ end -}}
     {{- if and .IsSection (lt $level 2) }}{{ partial "book/toc-tree.html" (dict "page" . "depth" $depth "includeDraft" $includeDraft "format" $format "level" (add $level 1) "aggregate" $aggregate) }}{{ end -}}
   </li>
   {{- end }}

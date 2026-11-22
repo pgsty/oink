@@ -66,18 +66,18 @@ const documents = [
 
 const engine = engineModule.create(documents, lunr, 20);
 
-const latin = engine.queryLatin('pgboost');
+const latin = engine.query('pgboost');
 assert.deepEqual(
   latin.slice(0, 2).map((result) => result.doc.ref),
   ['/docs/advanced/', '/docs/tutorial/'],
 );
 assert.ok(latin[0].score > latin[1].score);
 
-const latinKeyword = engine.queryLatin('postgres');
+const latinKeyword = engine.query('postgres');
 assert.equal(latinKeyword[0].doc.ref, '/docs/reference/');
 assert.ok(latinKeyword[0].score > 0);
 
-const cjk = engine.queryCjk('增强词');
+const cjk = engine.query('增强词');
 assert.deepEqual(
   cjk.slice(0, 2).map((result) => result.doc.ref),
   ['/zh/advanced/', '/zh/tutorial/'],
@@ -116,7 +116,7 @@ assert.equal(excerpts.get('/zh/fallback/'), keywordPages[1].excerpt);
 assert.equal(excerpts.get('/zh/no-summary/'), '');
 assert.equal(excerpts.get('/zh/body/'), '这里介绍配置步骤。');
 
-const tie = engine.queryLatin('tiequery');
+const tie = engine.query('tiequery');
 assert.deepEqual(
   tie.map((result) => result.doc.ref),
   ['/tie/a/', '/tie/b/'],
@@ -151,11 +151,11 @@ const defaults = legacy.map((document) => ({
 }));
 const legacyResults = engineModule
   .create(legacy, lunr, 20)
-  .queryLatin('ordinary')
+  .query('ordinary')
   .map((result) => [result.doc.ref, result.score]);
 const defaultResults = engineModule
   .create(defaults, lunr, 20)
-  .queryLatin('ordinary')
+  .query('ordinary')
   .map((result) => [result.doc.ref, result.score]);
 assert.deepEqual(legacyResults, defaultResults);
 
@@ -212,8 +212,13 @@ assert.deepEqual(inflected.query('runs').map(r=>r.doc.ref), ['/keyword/', '/body
   'English stem matches retain field weights');
 
 const headingsOnly = engineModule.create([{ref:'/heading/', title:'Manual',
+  description:'Connection guide.',
   headings:'连接设置', sections:[{id:'connection', title:'连接设置'}]}], lunr, 10);
 assert.equal(headingsOnly.query('连接')[0].ref, '/heading/#connection');
+assert.equal(headingsOnly.query('连接')[0].heading, '连接设置');
+assert.equal(headingsOnly.query('连接')[0].excerpt, 'Connection guide.',
+  'heading match without section body falls back to page description instead of duplicating heading');
+assert.deepEqual(engineModule.matchRanges('Database', []), []);
 
 // Search normalization must also locate excerpts and marks in the original text.
 for (const [query, original] of [
@@ -268,8 +273,8 @@ if (process.argv.length > 2) {
   assert.equal(process.argv.length, 4, 'expected EN and ZH built index paths');
   const en = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
   const zh = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
-  const enResults = engineModule.create(en, lunr, 20).queryLatin('pgboost');
-  const zhResults = engineModule.create(zh, lunr, 20).queryCjk('增强词');
+  const enResults = engineModule.create(en, lunr, 20).query('pgboost');
+  const zhResults = engineModule.create(zh, lunr, 20).query('增强词');
   assert.deepEqual(
     enResults.slice(0, 2).map((result) => result.doc.ref.split('/').at(-2)),
     ['advanced', 'tutorial'],

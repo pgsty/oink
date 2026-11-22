@@ -3,8 +3,8 @@
 {{ partial "compare/bootstrap.html" . -}}
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-{{ $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-{{ $preset := partialCached "preset-config.html" "preset-global" -}}
+{{ $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
+{{ $preset := partialCached "preset-config.html" "preset-global" .Site.Language.Lang -}}
 {{- $canvases := partialCached "_funcs/preset-canvases.html" "preset-canvases" -}}
 {{- $site := index $canvases $preset.preset -}}
 {{/* Browser hints before CSS loads */ -}}
@@ -124,13 +124,13 @@
 
 {{/* Every baseof template records the format in the page store before head is
 rendered, so read that instead of re-deriving it from the output-format lists. */ -}}
-{{ if and hugo.IsProduction (ne $outputFormat "print") (ne .Site.Language.Name "xx") -}}
+{{ if and hugo.IsProduction (ne $outputFormat "print") (ne .Site.Language.Lang "xx") -}}
 <meta name="robots" content="index, follow">
 {{ else -}}
 <meta name="robots" content="noindex, nofollow">
 {{ end -}}
 
-{{ partialCached "favicons.html" . }}
+{{ partialCached "favicons.html" . "favicons" .Site.BaseURL }}
 <title>
   {{- if .IsHome -}}
     {{ .Site.Title -}}
@@ -144,8 +144,8 @@ rendered, so read that instead of re-deriving it from the output-format lists. *
 {{ partial "opengraph.html" . -}}
 {{ partial "schema.html" . -}}
 {{ partial "twitter_cards.html" . -}}
-{{ partialCached "head-css.html" . (printf "head-css-%s" .Site.Language.Direction) -}}
-{{ partialCached "font-roles.html" . (printf "font-roles-%s" .Site.Language.Lang) -}}
+{{ partialCached "head-css.html" . (printf "head-css-%s-%s" .Site.BaseURL .Site.Language.Direction) -}}
+{{ partialCached "font-roles.html" . (printf "font-roles-%s-%s" .Site.BaseURL .Site.Language.Lang) -}}
 {{ partial "theme-color.html" . -}}
 {{ partial "shell/prepaint.html" . -}}
 {{ if partial "shell/search-enabled.html" . -}}

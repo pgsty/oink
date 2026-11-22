@@ -3,14 +3,7 @@
      builds; this page must always use the interactive document shell. */ -}}
 {{- .Page.Store.Set "tdOutputFormat" "html" -}}
 <!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage"
-    dir="{{ .Site.Language.Direction | default "ltr" }}"
-    lang="{{ partial "language-tag.html" . }}"
-    data-td-typography="{{ partial "typography-preset.html" .Site }}"
-    {{- $preset := partialCached "preset-config.html" "preset-global" }}
-    data-td-preset="{{ $preset.preset }}" data-td-site-preset="{{ $preset.preset }}"
-    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
-    {{- if $darkMode.enable }} data-td-theme-init{{ end }}>
+<html{{ partial "shell/document-attrs.html" (dict "page" .) }}>
   <head>{{ partial "head.html" . }}</head>
   <body class="td-404">
     {{ partial "skip-link.html" . }}

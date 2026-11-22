@@ -58,7 +58,15 @@
   {{- with $maxWidth }}{{ $heroStyle = printf "%s --td-hero-media-max: %s;" $heroStyle . }}{{ end -}}
 {{- end -}}
 {{- if $hasImage -}}
-  {{- $imageStyle = printf "--td-hero-image-light: url(%q); --td-hero-image-dark: url(%q);" ($imageLight | relURL) ($imageDark | relURL) -}}
+  {{- $lightURL := partial "content/url.html" (dict "name" "landing" "parameter" "hero.image" "position" $page.Path "value" (printf "%v" $imageLight) "kind" "image") -}}
+  {{- $darkURL := partial "content/url.html" (dict "name" "landing" "parameter" "hero.image" "position" $page.Path "value" (printf "%v" $imageDark) "kind" "image") -}}
+  {{- if and $lightURL.valid $darkURL.valid -}}
+    {{- $lightSrc := (partial "landing/media-resolve.html" (dict "url" $lightURL "page" $page)).src -}}
+    {{- $darkSrc := (partial "landing/media-resolve.html" (dict "url" $darkURL "page" $page)).src -}}
+    {{- $imageStyle = printf "--td-hero-image-light: url(%q); --td-hero-image-dark: url(%q);" $lightSrc $darkSrc -}}
+  {{- else -}}
+    {{- $hasImage = false -}}
+  {{- end -}}
 {{- end -}}
 <section id="{{ $id }}" class="td-landing-hero{{ if $hasImage }} td-landing-hero--with-media{{ end }}{{ if eq $align "center" }} td-landing-hero--center{{ end }}{{ with $breakpoint }} td-landing-hero--hide-media-below-{{ . }}{{ end }}{{ with $hero.class }} {{ . }}{{ end }}"{{ with $heroStyle }} style="{{ . | safeCSS }}"{{ end }} aria-labelledby="{{ $id }}-title">
   <div class="td-landing-hero__glow" aria-hidden="true"></div>

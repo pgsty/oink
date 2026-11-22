@@ -137,7 +137,7 @@
 }
 
 // Embedded code blocks (adjacent fence tabs) fill the panel: the tabs frame is
-// the shell. Specificity must beat `.td-content .td-code-group .td-code--embedded`.
+// the shell. Specificity must beat `.td-content .td-code--embedded`.
 .td-content .td-tabs .td-tabs__panel-body > .td-code.td-code--embedded:only-child {
   margin: -1rem -1.1rem;
   max-width: none;

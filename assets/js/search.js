@@ -18,11 +18,11 @@ limitations under the License.
   'use strict';
   if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
-  var searchPage = '{{ "search/" | absURL }}';
+  var searchPage = '{{ "search/" | absLangURL }}';
 
   // Delegated so the handler also covers search inputs added after load.
-  document.addEventListener('keypress', function (event) {
-    if (event.key !== 'Enter') return;
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Enter' || event.isComposing || event.keyCode === 229) return;
     var input = event.target;
     if (!input || typeof input.matches !== 'function') return;
     if (!input.matches('.td-search input')) return;

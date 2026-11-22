@@ -61,7 +61,8 @@
   gap: 10px;
   flex-shrink: 0;
   min-height: 56px;
-  padding: 6px 12px 6px 18px;
+  padding-block: 6px;
+  padding-inline: 18px 12px;
   border-bottom: 1px solid var(--bs-border-color);
 
   > .td-shell-icon {

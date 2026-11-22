@@ -12,6 +12,8 @@
     window.requestAnimationFrame(function () { status.textContent = text; });
   }
 
+  var copyTimers = typeof WeakMap === 'function' ? new WeakMap() : null;
+
   function showCopied(button, root) {
     // Every copy control sits inside a context root that carries the confirmed
     // wording, but the flip must survive a control that does not.
@@ -21,10 +23,15 @@
     if (label && !label.dataset.original) label.dataset.original = label.textContent;
     if (label && copied) label.textContent = copied;
     announce(root, copied || 'Copied');
-    window.setTimeout(function () {
+    if (copyTimers) {
+      var prev = copyTimers.get(button);
+      if (prev) window.clearTimeout(prev);
+    }
+    var timer = window.setTimeout(function () {
       button.classList.remove('td-is-copied');
       if (label && label.dataset.original) label.textContent = label.dataset.original;
     }, 1400);
+    if (copyTimers) copyTimers.set(button, timer);
   }
 
   function syncUrl(control, id) {
@@ -84,7 +91,9 @@
       control.tagName === 'A'
     ) {
       syncUrl(control, id);
-      control.addEventListener('click', function () { syncUrl(control, id); });
+      ['pointerenter', 'focus', 'click'].forEach(function (eventName) {
+        control.addEventListener(eventName, function () { syncUrl(control, id); });
+      });
     }
   });
 

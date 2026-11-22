@@ -4,18 +4,23 @@
 {{- $kind := .kind -}}
 {{- $position := .position | default $page.Path -}}
 {{- $ordinal := .ordinal | default 0 -}}
-{{- /* Source position interleaves shortcode and render-hook targets. */ -}}
-{{- $identity := printf "%s:%d" $page.Path $ordinal -}}
+{{- $source := .source | default "shortcode" -}}
+{{- $blockScope := $page.Store.Get "tdRenderBlockScope" | default "" -}}
+{{- /* Source kind, nested block scope, and ordinal stay stable across full-page
+       and RenderString(RawContent) passes while separating distinct hooks. */ -}}
+{{- $identity := printf "%s:%s:%s:%d" $page.Path $blockScope $source $ordinal -}}
 {{- $orderKey := printf "%08d-00000" $ordinal -}}
 {{- with findRESubmatch `:(\d+):(\d+)$` (trim (printf "%v" $position) "\"") -}}
   {{- $m := index . 0 -}}
   {{- $orderKey = printf "%08d-%05d" (int (index $m 1)) (int (index $m 2)) -}}
 {{- end -}}
 {{- $targets := $page.Store.Get "tdBookTargets" | default (dict) -}}
+{{- $accepted := true -}}
 {{- if isset $targets $id -}}
   {{- $existing := index $targets $id -}}
   {{- if not (and (eq $existing.identity $identity) (eq $existing.kind $kind) (eq $existing.num $num)) -}}
     {{- warnf "book component: duplicate id %q at %s (already used by %s %s at %s); keeping the first" $id $position $existing.kind $existing.num $existing.position -}}
+    {{- $accepted = false -}}
   {{- end -}}
 {{- end -}}
 {{- $numbers := $page.Store.Get "tdBookTargetNums" | default (dict) -}}
@@ -36,6 +41,9 @@
   "position" $position
 -}}
 {{- $page.Store.SetInMap "tdBookTargets" $id $entry -}}
-{{- $page.Store.SetInMap "tdBookTargetNums" $numberKey $entry -}}
+{{- if not (isset $numbers $numberKey) -}}
+  {{- $page.Store.SetInMap "tdBookTargetNums" $numberKey $entry -}}
+{{- end -}}
 {{- $page.Store.SetInMap "tdBookTargetOrder" (printf "%s-%s" $orderKey $id) $entry -}}
 {{- end -}}
+{{- return $accepted -}}

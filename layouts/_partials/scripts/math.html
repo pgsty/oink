@@ -4,6 +4,7 @@
 {{ with try (transform.ToMath .Inner $opts) -}}
   {{ with .Err -}}
     {{ warnf "Unable to render mathematical markup to HTML using the transform.ToMath function. The KaTeX display engine threw the following error: %s: see %s. The expression is left as written." . $.Position -}}
+    {{- if $display -}}<pre class="td-math-fallback"><code>{{ $.Inner }}</code></pre>{{- else -}}<code class="td-math-fallback">{{ $.Inner }}</code>{{- end -}}
   {{ else -}}
     {{- /* Hugo's embedded KaTeX predates the 0.18 CSS class renames on our
          compatibility floor. Normalize only generated class attributes to
@@ -11,12 +12,17 @@
          https://katex.org/docs/migration#v0180 */ -}}
     {{- $html := printf "%s" .Value -}}
     {{- $renamed := slice "accent" "base" "fix" "hdashline" "hline" "inner" "newline" "overlay" "overline" "root" "rule" "sizing" "smash" "sout" "stretchy" "strut" "tag" "thinbox" "underline" "vbox" -}}
-    {{- range findRE `class="[^"]*"` $html | uniq -}}
-      {{- $classes := slice -}}
-      {{- range split (strings.TrimSuffix `"` (strings.TrimPrefix `class="` .)) " " -}}
-        {{- $classes = $classes | append (cond (in $renamed .) (printf "katex-%s" .) .) -}}
+    {{- $parts := split $html `<span class="katex-html` -}}
+    {{- if eq (len $parts) 2 -}}
+      {{- $katexHTML := index $parts 1 -}}
+      {{- range findRE `class="[^"]*"` $katexHTML | uniq -}}
+        {{- $classes := slice -}}
+        {{- range split (strings.TrimSuffix `"` (strings.TrimPrefix `class="` .)) " " -}}
+          {{- $classes = $classes | append (cond (in $renamed .) (printf "katex-%s" .) .) -}}
+        {{- end -}}
+        {{- $katexHTML = replace $katexHTML . (printf `class="%s"` (delimit $classes " ")) -}}
       {{- end -}}
-      {{- $html = replace $html . (printf `class="%s"` (delimit $classes " ")) -}}
+      {{- $html = printf `%s<span class="katex-html%s` (index $parts 0) $katexHTML -}}
     {{- end -}}
     {{- if and $display (eq $format "html") -}}
       {{- replace $html `<span class="katex-display">` `<span class="katex-display" tabindex="0">` | safeHTML -}}

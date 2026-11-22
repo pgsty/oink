@@ -267,10 +267,29 @@
   outline-offset: 2px;
 }
 
-// Notes are appended under body, outside the article's link styles.
-.markmap-popover a {
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+// Notes are appended under body, outside the article's link and surface styles.
+.markmap-popover {
+  background: var(--mm-bg, var(--bs-tertiary-bg));
+  color: var(--mm-text, var(--bs-body-color));
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  box-shadow: var(--td-brand-shadow-md, var(--bs-box-shadow));
+
+  a {
+    color: var(--mm-link, var(--bs-link-color));
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  code {
+    color: var(--bs-code-color);
+    background: var(--td-code-inline-bg);
+  }
+
+  table th,
+  table td {
+    border-color: var(--bs-border-color);
+  }
 }
 
 @media screen {
@@ -286,7 +305,6 @@
     --mm-text: #000;
     --mm-bg: #fff;
   }
-  .td-markmap__fit { display: none; }
   .markmap-popover { display: none; }
 }
 

@@ -3,14 +3,9 @@
 {{- $id := .id -}}
 {{- $scope := printf "landing-%s" $id -}}
 {{- $items := $data.items | default (slice) -}}
-{{- with $data.rows -}}
-  {{- if reflect.IsSlice . -}}
-    {{- range . -}}
-      {{- range . -}}
-        {{- $items = $items | append . -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
+{{- if and (ne $data.items nil) (not (reflect.IsSlice $data.items)) -}}
+  {{- warnf "%s: logo-wall.items must be a list; rendering no items" $page.Path -}}
+  {{- $items = slice -}}
 {{- end -}}
 {{- $layout := lower (strings.TrimSpace (printf "%v" ($data.layout | default "grid"))) -}}
 {{- if not (in (slice "grid" "marquee") $layout) }}{{ warnf "%s: logo-wall.layout must be grid or marquee; using grid" $page.Path }}{{ $layout = "grid" }}{{ end -}}

@@ -24,8 +24,13 @@
     shade = document.createElement('dialog');
     shade.classList.add('drawioframe');
     shade.setAttribute('aria-label', 'Draw.io');
+    var nonBackdropDown = false;
+    shade.addEventListener('pointerdown', function (evt) {
+      nonBackdropDown = evt.target !== shade;
+    });
     shade.addEventListener('click', function (evt) {
-      if (evt.target === shade) closeFrame();
+      if (evt.target === shade && !nonBackdropDown) closeFrame();
+      nonBackdropDown = false;
     });
     shade.addEventListener('cancel', function (evt) {
       evt.preventDefault();
@@ -96,7 +101,7 @@
           } else if (msg.event === 'export') {
             if (typeof msg.data !== 'string'
               || !/^data:image\/(?:png|svg\+xml)(?:;[^,]*)?,/i.test(msg.data)) return;
-            const fn = img.src.replace(/^.*?([^/]+)$/, '$1');
+            const fn = img.src.split(/[?#]/)[0].replace(/^.*?([^/]+)$/, '$1');
             const dl = document.createElement('a');
             dl.setAttribute('href', msg.data);
             dl.setAttribute('download', fn);
@@ -122,13 +127,14 @@
     reader[method](blob);
   };
 
-  document.addEventListener('DOMContentLoaded', function () {
+  var initDrawio = function () {
     var config = document.getElementById('td-drawio-config');
     if (!config) return;
     var options = JSON.parse(config.textContent);
     server = options.server;
     closeLabel = options.close || 'Close';
     if (window.OinkSurfaceCoordinator) window.OinkSurfaceCoordinator.register('drawio', closeFrame);
+    window.addEventListener('beforeprint', function () { closeFrame(false); });
 
     var imagesBySource = new Map();
     document.querySelectorAll('main img').forEach(function (img) {
@@ -143,6 +149,7 @@
       xhr.responseType = 'blob';
       xhr.open('GET', src);
       xhr.addEventListener("load", function () {
+        if (xhr.status < 200 || xhr.status >= 300 || !xhr.response) return;
         read(xhr.response, 'readAsBinaryString', function (source) {
           if (source.indexOf('mxfile') === -1) return;
           read(xhr.response, 'readAsDataURL', function (imgdata) {
@@ -152,5 +159,10 @@
       });
       xhr.send();
     });
-  });
+  };
+  if (!document.readyState || document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDrawio);
+  } else {
+    initDrawio();
+  }
 }());

@@ -1,0 +1,7 @@
+{{ define "main" -}}
+<div class="td-content">
+  {{- partial "print/page-heading.html" . -}}
+  {{ $content := partialCached "print/page-content.html" (dict "page" .) .Site.BaseURL .Language.Lang .RelPermalink -}}
+  {{ $content.plain }}
+</div>
+{{- end }}

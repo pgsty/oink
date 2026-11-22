@@ -3,7 +3,7 @@
 {{- $resources := .Resources.ByType "image" }}
 {{- $imgParams := slice }}
 
-{{- $found := partialCached "featured-image-resolve.html" . .RelPermalink }}
+{{- $found := partialCached "featured-image-resolve.html" . .Site.BaseURL .Language.Lang .RelPermalink }}
 {{- with $found.resource }}
 {{- $imgs = $imgs | append (dict "Image" . "RelPermalink" .RelPermalink "Permalink" .Permalink) }}
 {{- else }}

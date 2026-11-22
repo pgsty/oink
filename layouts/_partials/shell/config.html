@@ -34,10 +34,20 @@
   {{- warnf "params.ui.docs_sidebar_root must be home or section; got %q; using section" $docsRoot -}}
   {{- $docsRoot = "section" -}}
 {{- end -}}
-{{- $shellTypes := .Site.Params.ui.shell_types | default (slice "docs" "book" "blog" "swagger" "expo") -}}
+{{- $defaultShellTypes := slice "docs" "book" "blog" "swagger" "expo" -}}
+{{- $shellTypes := .Site.Params.ui.shell_types | default $defaultShellTypes -}}
+{{- if not (reflect.IsSlice $shellTypes) -}}
+  {{- warnidf (printf "validate:slice:params.ui.shell_types:%v" $shellTypes) "params.ui.shell_types must be a list of content types; got %v; using defaults" $shellTypes -}}
+  {{- $shellTypes = $defaultShellTypes -}}
+{{- end -}}
 {{- $quickLinks := slice $docsSection $blogSection -}}
 {{- if isset .Site.Params.ui "quick_links" -}}
-  {{- $quickLinks = index .Site.Params.ui "quick_links" -}}
+  {{- $rawQuickLinks := index .Site.Params.ui "quick_links" -}}
+  {{- if reflect.IsSlice $rawQuickLinks -}}
+    {{- $quickLinks = $rawQuickLinks -}}
+  {{- else -}}
+    {{- warnidf (printf "validate:slice:params.ui.quick_links:%v" $rawQuickLinks) "params.ui.quick_links must be a list of menu identifiers; got %v; using defaults" $rawQuickLinks -}}
+  {{- end -}}
 {{- end -}}
 {{- return dict
   "brandName" $name

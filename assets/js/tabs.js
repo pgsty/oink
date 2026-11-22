@@ -153,7 +153,7 @@
       // Reveal outside-in so dependent components can measure their container.
       ancestors.forEach(function (entry) { select(entry.root, entry.value, 'hash'); });
       if (target.scrollIntoView) {
-        var reduced = win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var reduced = Boolean(win.OinkComparePane) || (win.matchMedia && win.matchMedia('(prefers-reduced-motion: reduce)').matches);
         target.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
       }
       return true;
@@ -216,6 +216,8 @@
       var list = doc.createElement('div');
       list.className = 'td-tabs__list';
       list.setAttribute('role', 'tablist');
+      var existingList = doc.querySelector ? doc.querySelector('.td-tabs__list[aria-label]') : null;
+      list.setAttribute('aria-label', group || (existingList && existingList.getAttribute('aria-label')) || 'Tabs');
       root.appendChild(list);
       run.forEach(function (block, i) {
         var value = values[i];

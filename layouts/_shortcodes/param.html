@@ -3,14 +3,22 @@
        stopping the build; only scalars (string / number / bool) are printed,
        and output is HTML-escaped plain text. */ -}}
 {{- partial "content/shortcode-params.html" (dict "shortcode" . "form" "positional") -}}
-{{- $name := .Get 0 -}}
+{{- $name := "" -}}
+{{- if and (not .IsNamedParams) (eq (len .Params) 1) -}}
+  {{- $rawName := .Get 0 -}}
+  {{- if eq (printf "%T" $rawName) "string" -}}
+    {{- $name = strings.TrimSpace $rawName -}}
+  {{- end -}}
+{{- else if gt (len .Params) 1 -}}
+  {{- warnf "%s: param accepts only one parameter name; printing nothing" .Position -}}
+{{- end -}}
 {{- $value := "" -}}
 {{- /* A separate flag, not the value itself: `false`, `0`, and "" are all
        legitimate parameter values that must still print. */ -}}
 {{- $printable := false -}}
-{{- if not $name -}}
+{{- if and (not .IsNamedParams) (le (len .Params) 1) (not $name) -}}
   {{- warnf "%s: param requires a page or site parameter name; printing nothing" .Position -}}
-{{- else -}}
+{{- else if $name -}}
   {{- $resolved := .Page.Param $name -}}
   {{- if eq $resolved nil -}}
     {{- warnf "%s: param %q was not found in page front matter or site configuration; printing nothing" .Position $name -}}
@@ -25,4 +33,11 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if $printable }}{{ printf "%v" $value | htmlEscape | safeHTML }}{{ end -}}
+{{- if $printable -}}
+  {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+  {{- if eq $format "markdown" -}}
+    {{- printf "%v" $value | safeHTML -}}
+  {{- else -}}
+    {{- printf "%v" $value | htmlEscape | safeHTML -}}
+  {{- end -}}
+{{- end -}}

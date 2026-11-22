@@ -19,7 +19,7 @@
   &:focus-visible {
     color: var(--bs-white);
     opacity: 1;
-    outline: 3px solid color-mix(in srgb, var(--bs-primary) 35%, white);
+    outline: 3px solid var(--bs-link-color);
     outline-offset: 2px;
     pointer-events: auto;
     transform: translateY(0);
@@ -43,6 +43,7 @@ a:active {
   }
 }
 
+:root:not([data-bs-theme='dark']) .td-content,
 [data-bs-theme='light'] .td-content {
   .text-primary {
     color: var(--bs-link-color) !important;

@@ -4,7 +4,8 @@
   if (window.OinkComparePane || !window.HTMLDialogElement) return;
   const node = document.getElementById('td-compare-config');
   if (!node) return;
-  const config = JSON.parse(node.textContent);
+  let config;
+  try { config = JSON.parse(node.textContent); } catch (_) { return; }
   const buttons = [...document.querySelectorAll('[data-td-compare-open]')];
   const status = document.querySelector('[data-td-compare-error]');
   let pending;

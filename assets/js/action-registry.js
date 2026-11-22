@@ -244,11 +244,6 @@
       executors.set(id, executor);
     }
 
-    function invalidateMarkdown(url) {
-      if (url) markdown.delete(url);
-      else markdown.clear();
-    }
-
     return Object.freeze({
       get: get,
       list: list,
@@ -259,7 +254,6 @@
       runCommand: runCommand,
       registerExecutor: registerExecutor,
       preloadMarkdown: fetchMarkdown,
-      invalidateMarkdown: invalidateMarkdown,
       resolveUrl: function (id, value) { return resolveUrl(id, value); },
       safeUrl: function (value) { return safeUrl(value, windowObject.location.href); },
     });

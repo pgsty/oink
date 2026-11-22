@@ -2,7 +2,8 @@
      sidebar_root_for:self section participates; one item degrades to a quiet
      link instead of pretending to be a dropdown. */ -}}
 {{- $page := . -}}
-{{- if $page.Site.Params.ui.sidebar_root_menu -}}
+{{- $rootMenu := partial "validate.html" (dict "value" $page.Site.Params.ui.sidebar_root_menu "kind" "bool" "fallback" true "key" "params.ui.sidebar_root_menu") -}}
+{{- if $rootMenu -}}
   {{- $state := partial "shell/root-menu-entries.html" $page -}}
   {{- $entries := $state.entries -}}
   {{- $current := $state.current -}}

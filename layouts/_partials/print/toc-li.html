@@ -5,5 +5,5 @@
 {{ if templates.Exists (printf "_partials/%s" $tpl) }}
   {{ partial $tpl . }}
 {{ else -}}
-{{ .sid }}: <a href="#pg-{{ .Page.File.UniqueID }}">{{ .Page.Title }}</a>
+{{ .sid }}: <a href="#{{ partial "print/page-id.html" .Page }}">{{ .Page.Title }}</a>
 {{ end }}

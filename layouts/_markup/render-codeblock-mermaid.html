@@ -14,15 +14,16 @@
      never rendered these diagrams -- it carried a `<pre class="mermaid">` that
      no runtime ever reached, at `font-size: 0` -- so it joins `echarts` and
      `infographic` on the static branch and shows the source instead. */ -}}
-{{- $page := .PageInner | default .Page -}}
-{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $page := .Page.Store -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "position" .Position "kind" "mermaid") -}}
+{{- $format := lower ($page.Get "tdOutputFormat" | default "html") -}}
 {{- $source := strings.TrimSpace .Inner -}}
 {{- if not $source }}{{ warnf "mermaid: the fence requires diagram source at %s; rendering nothing" .Position }}{{ end -}}
 {{- if or (not $source) (in (slice "markdown" "rss" "print") $format) -}}
 {{- with $source }}<pre class="td-mermaid-source"><code class="language-mermaid">{{ . }}</code></pre>{{ end -}}
 {{- else -}}
-{{- $page.Store.Set "hasmermaid" true -}}
-<figure class="td-diagram td-diagram--mermaid" data-td-diagram>
+{{- $page.Set "hasMermaid" true -}}
+<figure class="td-diagram td-diagram--mermaid{{ with $policy.class }} {{ . }}{{ end }}" data-td-diagram{{ partial "content/attrs.html" $policy.generic }}>
   <div class="td-diagram__stage" data-td-diagram-stage></div>
   <pre class="td-mermaid-source" tabindex="0"><code class="language-mermaid">{{ $source }}</code></pre>
   <button class="td-diagram__expand d-print-none" type="button" hidden data-td-diagram-expand aria-haspopup="dialog">

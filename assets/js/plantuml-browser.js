@@ -57,12 +57,22 @@ async function render(source, dark) {
   }
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   const image = new Image();
-  image.alt = source.trim();
+  image.alt = 'PlantUML';
   image.src = url;
   try { await image.decode(); }
   catch (error) { URL.revokeObjectURL(url); throw error; }
-  return { node: image, svg, width: image.naturalWidth, height: image.naturalHeight,
-    dispose: () => URL.revokeObjectURL(url) };
+  return {
+    node: image,
+    svg,
+    width: image.naturalWidth,
+    height: image.naturalHeight,
+    bind: stage => {
+      stage.tabIndex = 0;
+      stage.setAttribute('role', 'region');
+      stage.setAttribute('aria-label', 'PlantUML');
+    },
+    dispose: () => URL.revokeObjectURL(url),
+  };
 }
 if (window.OinkDiagrams) document.querySelectorAll('pre > code.language-plantuml').forEach(code => {
   const pre = code.parentElement;
@@ -70,9 +80,6 @@ if (window.OinkDiagrams) document.querySelectorAll('pre > code.language-plantuml
   block.className = 'td-plantuml td-diagram td-diagram--plantuml';
   const stage = document.createElement('div');
   stage.className = 'td-plantuml__image td-diagram__stage';
-  stage.tabIndex = 0;
-  stage.setAttribute('role', 'region');
-  stage.setAttribute('aria-label', 'PlantUML');
   pre.before(block);
   block.append(stage, pre);
   window.OinkDiagrams.register({ kind: 'plantuml', block, pre, stage, source: code.textContent, render });

@@ -435,9 +435,9 @@ def check_source() -> list[str]:
     items = (ROOT / "layouts/_partials/annotation-items.html").read_text(encoding="utf-8")
     render = (ROOT / "layouts/_partials/page-meta-lastmod.html").read_text(encoding="utf-8")
     wrapper = (ROOT / "layouts/_partials/page-annotation.html").read_text(encoding="utf-8")
-    if 'partial "annotation-items.html"' not in render:
+    if not re.search(r'partial(?:Cached)?\s+"annotation-items\.html"', render):
         errors.append("page-meta-lastmod.html no longer renders the resolved items")
-    if 'partial "annotation-items.html"' not in wrapper:
+    if not re.search(r'partial(?:Cached)?\s+"annotation-items\.html"', wrapper):
         errors.append("page-annotation.html no longer gates on the resolved items")
     if "upstream_link" not in items:
         errors.append("annotation-items.html no longer reads upstream_link")

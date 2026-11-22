@@ -29,8 +29,7 @@
     {{- end -}}
   {{- end -}}
   {{- if eq $.scope "content" -}}
-    {{- $text := replaceRE `(?is)<(script|style)\b[^>]*>.*?</(script|style)>` "" . -}}
-    {{- $text = replaceRE `(?i)</(h[1-6]|p|pre|div|li|tr|td|th|section|blockquote)>|<br\s*/?>` " " $text -}}
+    {{- $text := replaceRE `(?i)</(h[1-6]|p|pre|div|li|tr|td|th|section|blockquote)>|<br\s*/?>` " " . -}}
     {{- $text = $text | plainify | htmlUnescape -}}
     {{- $text = replaceRE `\s+` " " $text | strings.TrimSpace -}}
     {{- if $text }}{{ $body = printf "%s%s " $body $text }}{{ end -}}

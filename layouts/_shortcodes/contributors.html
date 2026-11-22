@@ -13,6 +13,7 @@
 {{- if and .IsNamedParams (isset .Params "class") }}{{ $class = strings.TrimSpace (.Get "class") }}{{ end -}}
 {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $items := partial "contributors/items.html" (dict "data" $data "key" $key) -}}
+{{- if $items -}}
 {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if eq $format "markdown" -}}
   {{- range $items }}
@@ -23,6 +24,7 @@
 {{- else if eq $format "rss" -}}
   <ul>{{ range $items }}<li><a href="{{ .url }}">@{{ .github }}</a>{{ with .role }} — {{ . }}{{ end }}</li>{{ end }}</ul>
 {{- else -}}
-  {{- $id := printf "contributors-%s-%s" .Page.File.UniqueID (partial "content/shortcode-ordinal.html" .) -}}
+  {{- $id := printf "contributors-%s-%s" (partial "print/page-id.html" .Page) (partial "content/shortcode-ordinal.html" .) -}}
   {{- partial "contributors/wall.html" (dict "id" $id "items" $items "class" $class) -}}
+{{- end -}}
 {{- end -}}

@@ -80,6 +80,9 @@
     {{- else if hasPrefix $baseInput "//" -}}
       {{- warnf "shortcode %q: base must not use a protocol-relative URL at %s; skipping the block" .Name .Position -}}
       {{- $ok = false -}}
+    {{- else if strings.Contains $baseInput `\` -}}
+      {{- warnf "shortcode %q: base must not contain backslashes at %s; skipping the block" .Name .Position -}}
+      {{- $ok = false -}}
     {{- else -}}
       {{- $parsedResult := try (urls.Parse $baseInput) -}}
       {{- if $parsedResult.Err -}}
@@ -118,12 +121,14 @@
 
 {{- if $ok -}}
   {{- $entries := partial "release/assets-parse.html" (dict "content" $inner "position" .Position "base" $base "algo" $algo) -}}
-  {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-  {{- if in (slice "markdown" "rss") $format -}}
-    {{- partial "release/assets-markdown.html" (dict "entries" $entries "grouped" $grouped) | safeHTML -}}
-  {{- else -}}
-    {{- $interactive := eq $format "html" -}}
-    {{- if $interactive }}{{ .Page.Store.Set "hasAssetList" true }}{{ end -}}
-    {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" $grouped "interactive" $interactive) -}}
+  {{- if $entries -}}
+    {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+    {{- if eq $format "markdown" -}}
+      {{- partial "release/assets-markdown.html" (dict "entries" $entries "grouped" $grouped) | safeHTML -}}
+    {{- else -}}
+      {{- $interactive := eq $format "html" -}}
+      {{- if $interactive }}{{ .Page.Store.Set "hasAssetList" true }}{{ end -}}
+      {{- partial "release/assets-table.html" (dict "entries" $entries "grouped" $grouped "interactive" $interactive "format" $format) -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}

@@ -16,14 +16,43 @@ main {
   --color-accent-subtle: rgba(237, 237, 237, 0.06);
   --color-btn-text: #ededed;
   --color-btn-bg: #161616;
-  --color-btn-hover-bg: #161616;
+  --color-btn-hover-bg: #1f1f1f;
+  --color-btn-hover-border: #ededed;
   --color-btn-active-bg: #111111;
+  --color-btn-active-border: #ff5c4d;
+  --color-btn-selected-bg: rgba(255, 92, 77, 0.12);
   --color-btn-border: rgba(237, 237, 237, 0.5);
+  --color-btn-shadow: none;
+  --color-btn-inset-shadow: none;
+  --color-btn-primary-text: #ffffff;
   --color-btn-primary-bg: #c8102e;
+  --color-btn-primary-hover-bg: #df1d3c;
+  --color-btn-primary-hover-border: #ff5c4d;
+  --color-btn-primary-selected-bg: #a50d26;
   --color-btn-primary-border: #ff5c4d;
+  --color-btn-primary-shadow: none;
+  --color-btn-primary-inset-shadow: none;
+  --color-btn-primary-disabled-bg: rgba(200, 16, 46, 0.55);
+  --color-btn-primary-disabled-border: rgba(255, 92, 77, 0.25);
+  --color-action-list-item-default-hover-bg: rgba(237, 237, 237, 0.08);
   --color-segmented-control-bg: #161616;
   --color-segmented-control-button-bg: #161616;
-  --color-scale-gray-1: #161616;
+  --color-segmented-control-button-selected-border: rgba(237, 237, 237, 0.5);
+  --color-scale-gray-7: #1f1f1f;
+  --color-scale-blue-8: rgba(255, 92, 77, 0.14);
   --oink-comment-border: rgba(237, 237, 237, 0.5);
   --oink-comment-shadow: none;
+}
+
+main .gsc-comment-box:not(.gsc-comment-box-is-reply),
+main .gsc-comment-box-tabs button,
+main .gsc-comment-box-textarea,
+main .gsc-comment-box-textarea-extras,
+main .gsc-comment-box-write:focus-within,
+main .btn,
+main .gsc-reactions-popover,
+main .gsc-replies,
+main .gsc-social-reaction-summary-item,
+main .gsc-reactions-button {
+  border-radius: 0;
 }

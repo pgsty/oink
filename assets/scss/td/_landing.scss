@@ -500,11 +500,19 @@
         transparent 92%
       );
 
+      [dir='rtl'] & {
+        background: linear-gradient(
+          -90deg,
+          var(--td-copper-dim),
+          transparent 92%
+        );
+      }
+
       &::before {
         content: '';
         position: absolute;
-        top: -2.5px;
-        left: 38%;
+        inset-block-start: -2.5px;
+        inset-inline-start: 38%;
         width: 6px;
         height: 6px;
         border: 1px solid var(--td-copper-dim);
@@ -652,15 +660,16 @@
 
     li {
       position: relative;
-      padding: 5px 0 5px 20px;
+      padding-block: 5px;
+      padding-inline: 20px 0;
       color: var(--td-soft);
       font-size: 0.94rem;
 
       &::before {
         content: '';
         position: absolute;
-        top: calc(0.85em + 2px);
-        left: 1px;
+        inset-block-start: calc(0.85em + 2px);
+        inset-inline-start: 1px;
         width: 8px;
         height: 8px;
         border: 2px solid var(--td-blue);
@@ -708,6 +717,14 @@
     );
     color: var(--td-soft);
     font-size: 0.92rem;
+
+    [dir='rtl'] & {
+      background: linear-gradient(
+        -90deg,
+        color-mix(in srgb, var(--td-copper) 8%, transparent),
+        transparent 80%
+      );
+    }
   }
 }
 
@@ -840,7 +857,8 @@
     }
 
     li {
-      padding: 7px 8px 7px 18px;
+      padding-block: 7px;
+      padding-inline: 18px 8px;
       border-radius: 7px;
 
       &.active {
@@ -1027,8 +1045,8 @@
 
     > span {
       position: absolute;
-      top: 18px;
-      right: 18px;
+      inset-block-start: 18px;
+      inset-inline-end: 18px;
       color: var(--td-muted);
       font-family: var(--td-meta-font-family);
       font-size: 0.65rem;
@@ -1303,6 +1321,10 @@
   animation-name: td-landing-marquee-left;
 }
 
+[dir='rtl'] .td-landing-marquee--right .td-landing-marquee__row--alternate .td-landing-marquee__track {
+  animation-name: td-landing-marquee-right;
+}
+
 // The card link names the tile's own destination, so the whole tile is the
 // click target: the anchor stretches an invisible overlay across the card. A
 // link authored inside the copy stays above that overlay, a tile without a
@@ -1467,8 +1489,8 @@
     &::before {
       content: '“';
       position: absolute;
-      top: -16px;
-      left: -2px;
+      inset-block-start: -16px;
+      inset-inline-start: -2px;
       color: color-mix(in srgb, var(--td-copper) 62%, transparent);
       font-family: Georgia, serif;
       font-size: 3.6rem;
@@ -1820,7 +1842,8 @@
   gap: 12px;
   align-items: center;
   max-width: 920px;
-  padding: 10px 10px 10px 18px;
+  padding-block: 10px;
+  padding-inline: 18px 10px;
   border: 1px solid var(--td-terminal-line);
   border-radius: var(--td-radius-md);
   background: var(--td-terminal);
@@ -1829,8 +1852,7 @@
   pre { min-width: 0; margin: 0; overflow-x: auto; background: transparent; }
   code { color: inherit; }
 
-  button,
-  .td-landing-step-command button {
+  button {
     min-width: 44px;
     min-height: 44px;
     border: 1px solid var(--td-terminal-line);
@@ -1899,7 +1921,8 @@
   gap: 8px;
   align-items: center;
   margin-top: 18px;
-  padding: 8px 8px 8px 12px;
+  padding-block: 8px;
+  padding-inline: 12px 8px;
   border-radius: var(--td-control-radius);
   background: var(--td-terminal);
   color: #c9d6e8;
@@ -1909,6 +1932,7 @@
   button {
     @include td-control-surface;
     --td-control-border: var(--td-terminal-line);
+    --td-control-bg: rgba(255, 255, 255, 0.05);
     min-width: 44px;
     min-height: 44px;
     border: 0;

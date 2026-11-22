@@ -79,7 +79,7 @@
     {{- else if eq $entry.form "p" }}{{ $href = printf $entry.template $prompt -}}
     {{- else if eq $entry.form "pin" -}}
       {{- $href = printf $entry.template $url $title -}}
-      {{- $featured := partialCached "featured-image-resolve.html" $page $page.RelPermalink -}}
+      {{- $featured := partialCached "featured-image-resolve.html" $page $page.Site.BaseURL $page.Language.Lang $page.RelPermalink -}}
       {{- $media := "" -}}
       {{- with $featured.resource }}{{ $media = .Permalink }}{{ else }}{{ $media = $featured.permalink }}{{ end -}}
       {{- with $media }}{{ $href = printf "%s&media=%s" $href (replace (urlquery .) "+" "%20") }}{{ end -}}

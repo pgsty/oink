@@ -25,10 +25,11 @@
 {{ end -}}
 {{ $sidebarRootURL := printf "/%s" (strings.TrimPrefix .Site.Home.RelPermalink $sidebarRootID) -}}
 
+{{ $rootEnabled := partial "validate.html" (dict "value" .Site.Params.ui.sidebar_root_enabled "kind" "bool" "fallback" true "key" "params.ui.sidebar_root_enabled") -}}
 <div id="td-sidebar-menu" class="td-shell-tree-wrap"{{ if $shouldDelayActive }} data-td-sidebar-hydrate-active{{ end }}>
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       data-td-sidebar-icon-policy="{{ $iconPolicy }}"
-      {{- if .Site.Params.ui.sidebar_root_enabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
+      {{- if $rootEnabled }} data-td-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
     <ul class="td-shell-tree__list td-shell-tree__list--1">
       {{- $hasRoot := false -}}
       {{- range $sections -}}

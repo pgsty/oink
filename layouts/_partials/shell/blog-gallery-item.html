@@ -1,9 +1,9 @@
-{{- $link := cond (isset .Params "manual_link") .Params.manual_link .RelPermalink -}}
-{{- $external := isset .Params "manual_link" -}}
+{{- $link := partial "content/manual-link.html" . -}}
+{{- $external := not (not (findRE "^https?://" $link)) -}}
 {{- $summary := .Description | default .RawSummary | plainify | htmlUnescape -}}
 {{- if and (not $summary) (not $external) }}{{ $summary = .Plain | htmlUnescape | truncate 160 }}{{ end -}}
 {{- $summary = $summary | truncate 200 -}}
-{{- $image := (partialCached "featured-image-resolve.html" . .RelPermalink).media -}}
+{{- $image := (partialCached "featured-image-resolve.html" . .Site.BaseURL .Language.Lang .RelPermalink).media -}}
 {{- $src := $image.src -}}
 {{- if $image.processable -}}
   {{- /* Preserve the cover's proportions; a gallery is not a 16:9 card. */ -}}

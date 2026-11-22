@@ -775,6 +775,38 @@ function press(harness, values) {
     'the first sidebar page keeps q a no-op instead of falling through',
   );
 
+  // Percent-encoded TOC anchors (e.g. CJK headings) and history.state preservation.
+  const cjkOutline = setup({ withTree: false });
+  cjkOutline.html.scrollHeight = 2000;
+  cjkOutline.win.innerHeight = 800;
+  cjkOutline.win.history.state = { oinkCompareSession: 'kept' };
+  const recordedStates = [];
+  cjkOutline.win.history.replaceState = (state, title, url) => {
+    recordedStates.push(state);
+    cjkOutline.win.hashes.push(url);
+  };
+  const cjkToc = new Element('nav');
+  cjkToc.id = 'TableOfContents';
+  const cjkAnchor = new Element('a');
+  cjkAnchor.setAttribute('href', '#' + encodeURIComponent('配置说明'));
+  cjkToc.appendChild(cjkAnchor);
+  const cjkHeading = new Element('h2');
+  cjkHeading.id = '配置说明';
+  cjkHeading.getBoundingClientRect = () => ({ top: 600 - cjkOutline.win.scrollY });
+  cjkOutline.root.appendChild(cjkHeading);
+  cjkOutline.root.appendChild(cjkToc);
+  press(cjkOutline, { key: 'j' });
+  assert.deepEqual(cjkOutline.win.scrolledTo, [576], 'j resolves percent-encoded TOC heading IDs');
+  assert.deepEqual(cjkOutline.win.hashes, ['#' + encodeURIComponent('配置说明')]);
+  assert.deepEqual(recordedStates, [{ oinkCompareSession: 'kept' }], 'j preserves history.state');
+
+  // External manual_link items in sidebar are skipped by q/e paging.
+  const extTree = setup();
+  const extItem = treeItem({ href: 'https://external.example/docs/b/one/' });
+  extTree.tree.menu.children[0].appendChild(extItem);
+  press(extTree, { key: 'e' });
+  assert.deepEqual(extTree.win.assigned, ['/docs/c/']);
+
   // ---------------------------------------------------------- h zen mode
   const zen = setup();
   press(zen, { key: 'h' });

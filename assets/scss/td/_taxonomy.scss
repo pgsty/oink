@@ -2,15 +2,6 @@
   width: 100%;
   clear: both;
   font-size: 0.8rem;
-
-  .td-taxonomy-title {
-    display: inline;
-    font-size: 1.25em;
-    height: 1em;
-    line-height: 1em;
-    margin-inline-end: 0.5em;
-    padding: 0;
-  }
 }
 
 .td-taxonomy-terms-cloud {
@@ -58,19 +49,28 @@
 .td-taxonomy-term {
   background: var(--bs-secondary-bg);
   border-width: 0;
-  border-radius: 0 3px 3px 0;
+  border-start-start-radius: 0;
+  border-end-start-radius: 0;
+  border-start-end-radius: 3px;
+  border-end-end-radius: 3px;
   color: var(--bs-body-color);
   display: inline-block;
   font-size: 1em;
   line-height: 1.5em;
   min-height: 1.5em;
   max-width: 100%;
-  padding: 0 0.5em 0 1em;
+  padding-block: 0;
+  padding-inline: 1em 0.5em;
   position: relative;
-  margin: 0 0.5em 0.2em 0;
+  margin-block: 0 0.2em;
+  margin-inline: 0 0.5em;
   text-decoration: none;
   transition: color var(--td-motion-duration);
   clip-path: polygon(100% 0, 100% 100%, 0.8em 100%, 0 50%, 0.8em 0);
+
+  [dir='rtl'] & {
+    clip-path: polygon(0 0, 0 100%, calc(100% - 0.8em) 100%, 100% 50%, calc(100% - 0.8em) 0);
+  }
 
   &:hover {
     background-color: var(--td-shell-primary-wash, var(--bs-primary-bg-subtle));

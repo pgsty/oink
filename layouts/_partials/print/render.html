@@ -9,7 +9,7 @@
     {{ $subSection = add $subSection 1 }}
     <li>
       {{- partial "print/toc-li.html" (dict "sid" $sid "Page" .) -}}
-      {{ if .IsSection }}
+      {{ if and .IsSection (partial "print/children.html" .) }}
       <ul>
         {{ template "recurse-toc" (dict "section" . "psid" (printf "%s." $sid)) }}
       </ul>
@@ -28,7 +28,7 @@
   {{ $breakOnWordCount := partial "validate.html" (dict
       "value" ($s.Site.Param "print.section_break_wordcount") "kind" "int"
       "min" 0 "fallback" 50 "key" "params.print.section_break_wordcount") }}
-  {{ $doPageBreak := gt (countwords $s.Content) $breakOnWordCount }}
+  {{ $doPageBreak := gt $s.WordCount $breakOnWordCount }}
 
   {{ range $pages }}
     {{ $sid := printf "%s%d" $psid $subSection }}
@@ -54,15 +54,15 @@
 </div>
 {{ partial "print/page-heading.html" . }}
 
-{{ if partial "validate.html" (dict
+{{ if and (partial "validate.html" (dict
     "value" (.Param "print.toc") "kind" "bool"
-    "fallback" true "key" "params.print.toc") }}
+    "fallback" true "key" "params.print.toc")) (partial "print/children.html" .CurrentSection) }}
     <ul>
     {{ template "recurse-toc" (dict "section" .CurrentSection "psid" "") }}
     </ul>
 {{ end }}
 
-{{- $content := partialCached "print/page-content.html" (dict "page" .) .RelPermalink -}}
+{{- $content := partialCached "print/page-content.html" (dict "page" .) .Site.BaseURL .Language.Lang .RelPermalink -}}
 {{- $content = partial "book/namespace-print-headings.html" (dict "page" . "content" $content.plain "headings" $content.plainHeadings) -}}
 <div class="content">
       {{ $content }}

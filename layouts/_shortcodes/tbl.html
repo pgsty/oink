@@ -5,8 +5,8 @@
 {{- $num := partial "book/validate-num.html" (dict "name" .Name "value" (index $params "num") "position" .Position) -}}
 {{- $id := "" -}}
 {{- if $num -}}
-  {{- $id = printf "tbl-%s" $num -}}
   {{- if isset $params "id" }}{{ $id = partial "book/validate-id.html" (dict "name" .Name "value" (index $params "id") "position" .Position) }}{{ end -}}
+  {{- if not $id }}{{ $id = printf "tbl-%s" $num }}{{ end -}}
 {{- else if isset $params "id" -}}
   {{- warnf "shortcode %q: id requires a valid num at %s; dropping it" .Name .Position -}}
 {{- end -}}
@@ -19,15 +19,24 @@
 {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
 {{- $inner := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- if not $inner }}{{ warnf "shortcode %q requires inner table content at %s; rendering nothing" .Name .Position }}{{ end -}}
-{{- if and $num $id }}{{ partial "book/register-target.html" (dict "page" .Page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal) }}{{ end -}}
-{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $label := "" -}}{{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "tbl" "num" $num) }}{{ end -}}
-{{- if eq $format "markdown" -}}
-  {{- $prefix := cond $label (printf "**%s.**" $label) "" -}}
-  {{- printf "%s%s\n\n%s" $prefix (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
-{{- else -}}
-<figure{{ with $id }} id="{{ . }}"{{ end }} class="{{ if $num }}td-book-figure td-book-figure--tbl{{ end }}{{ with $class }} {{ . }}{{ end }}"{{ if $num }} data-td-book-kind="tbl" data-td-book-num="{{ $num }}"{{ end }}>
+{{- if $inner -}}
+  {{- if and $num $id -}}
+    {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "tbl" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+      {{- $id = "" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+  {{- $label := "" -}}{{- if $num }}{{ $label = partial "book/label.html" (dict "kind" "tbl" "num" $num) }}{{ end -}}
+  {{- if eq $format "markdown" -}}
+    {{- $prefix := cond $label (printf "**%s.**" $label) "" -}}
+    {{- printf "%s%s\n\n%s" $prefix (cond $caption (printf " %s" (partial "content/markdown-escape.html" $caption)) "") $inner | safeHTML -}}
+  {{- else -}}
+    {{- $classes := slice -}}
+    {{- if $num }}{{ $classes = $classes | append "td-book-figure" "td-book-figure--tbl" }}{{ end -}}
+    {{- if $class }}{{ $classes = $classes | append $class }}{{ end -}}
+<figure{{ with $id }} id="{{ . }}"{{ end }}{{ with delimit $classes " " }} class="{{ . }}"{{ end }}{{ if $num }} data-td-book-kind="tbl" data-td-book-num="{{ $num }}"{{ end }}>
   <div class="td-book-figure__body">{{ partial "content/render-block.html" (dict "page" .Page "scope" (printf "tbl-%s" (partial "content/shortcode-ordinal.html" .)) "content" $inner "origin" (printf "shortcode %q at %s" .Name .Position)) }}</div>
   <figcaption>{{ with $label }}<span class="td-tbl-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-tbl-caption">{{ . }}</span>{{ end }}</figcaption>
 </figure>
+  {{- end -}}
 {{- end -}}

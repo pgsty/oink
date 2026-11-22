@@ -12,8 +12,10 @@
 {{- range $page := $pages -}}
   {{- /* Render semantic content once so native hooks and shortcodes register
        the same headings, numbered targets, and xrefs the HTML output owns. */ -}}
+  {{- $previousFormat := $page.Store.Get "tdOutputFormat" -}}
   {{- $page.Store.Set "tdOutputFormat" "html" -}}
   {{- $discard := $page.Content -}}
+  {{- if $previousFormat }}{{ $page.Store.Set "tdOutputFormat" $previousFormat }}{{ else }}{{ $page.Store.Delete "tdOutputFormat" }}{{ end -}}
   {{- $markdownURL := "" -}}
   {{- with $page.OutputFormats.Get "markdown" }}{{ $markdownURL = .RelPermalink }}{{ end -}}
   {{- if not $markdownURL -}}

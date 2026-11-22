@@ -162,7 +162,7 @@
     })
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
+  const initControls = () => {
     syncDirectThemeButtons()
 
     // A radio reports a choice through `change` (arrow keys included); a
@@ -182,5 +182,11 @@
             : 'dark')
         })
       })
-  })
+  }
+
+  if (!document.readyState || document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initControls)
+  } else {
+    initControls()
+  }
 })()

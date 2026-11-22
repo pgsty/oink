@@ -43,8 +43,9 @@
         {{- warnf "gallery: line %d: attribute %q is set twice at %s; keeping the first" $lineNo $key $position -}}
       {{- else if not (strings.TrimSpace $value) -}}
         {{- warnf "gallery: line %d: attribute %q must not be empty at %s; ignoring it" $lineNo $key $position -}}
+      {{- else -}}
+        {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
       {{- end -}}
-      {{- $attrs = merge $attrs (dict $key (strings.TrimSpace $value)) -}}
     {{- end -}}
   {{- end -}}
 
@@ -88,6 +89,7 @@
     "name" "gallery" "position" $position "page" $page "src" $src
     "hasAlt" true "alt" $alt "decorative" (eq $alt "")
   ) -}}
+  {{- if not $image.src }}{{ continue }}{{ end -}}
 
   {{- $items = $items | append (dict
     "line" $lineNo

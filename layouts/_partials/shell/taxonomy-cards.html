@@ -17,7 +17,7 @@
   <li class="td-taxonomy-cards__item">
     <a class="td-content-card td-taxonomy-card" href="{{ $term.RelPermalink }}">
       {{- if $isAuthors }}
-      {{ partial "authors-avatar.html" (dict "author" (dict "name" $term.LinkTitle "avatar" (partialCached "featured-image-resolve.html" $term $term.RelPermalink)) "size" 24 "class" "td-taxonomy-card__avatar") }}
+      {{ partial "authors-avatar.html" (dict "author" (dict "name" $term.LinkTitle "avatar" (partialCached "featured-image-resolve.html" $term $term.Site.BaseURL $term.Language.Lang $term.RelPermalink)) "size" 24 "class" "td-taxonomy-card__avatar") }}
       {{- else }}
       <span class="td-taxonomy-card__icon" aria-hidden="true"><i class="{{ $icon }}"></i></span>
       {{- end }}

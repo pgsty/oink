@@ -114,14 +114,15 @@
   // never detours to browser chrome, including Shift+Tab from the static title.
   dialog.addEventListener('keydown', event => {
     if (event.key !== 'Tab' || !active) return;
-    const stops = [...dialog.querySelectorAll('button, a[href], input, select, textarea, [tabindex]')]
+    const stops = [...dialog.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex]')]
       .filter(node => node.tabIndex >= 0 && !node.disabled && !node.closest('[inert]') &&
         node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden');
     const first = stops[0], last = stops[stops.length - 1];
     if (!first) return;
-    if (event.shiftKey && (document.activeElement === first || document.activeElement === title)) {
+    const current = document.activeElement;
+    if (event.shiftKey && (current === first || current === title || !dialog.contains(current))) {
       event.preventDefault(); last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
+    } else if (!event.shiftKey && (current === last || !dialog.contains(current))) {
       event.preventDefault(); first.focus();
     }
   });

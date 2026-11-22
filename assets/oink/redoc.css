@@ -4,7 +4,7 @@
   block-size: 75vh;
   min-block-size: 28rem;
   border: 1px solid var(--bs-border-color);
-  border-radius: .375rem;
+  border-radius: var(--bs-border-radius, 0.375rem);
   background: #fff;
 }
 

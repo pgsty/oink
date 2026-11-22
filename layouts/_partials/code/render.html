@@ -1,13 +1,15 @@
 {{- $config := .config -}}
 {{- $highlighted := .highlighted -}}
-{{- $externalActions := .externalActions | default false -}}
 {{- $classTokens := findRE `\S+` $config.classes -}}
 {{- if and (in $classTokens "td-code-command") (findRE `class="[^"]*\b(ln|lnt|lntable)\b` (printf "%s" $highlighted)) -}}
   {{- warnf "code block: td-code-command cannot use rendered line numbers at %s; using the regular block" $config.position -}}
-  {{- $config = merge $config (dict "classes" (delimit (complement (slice "td-code-command") $classTokens) " ")) -}}
+  {{- $classTokens = complement (slice "td-code-command") $classTokens -}}
+  {{- $config = merge $config (dict "classes" (delimit $classTokens " ")) -}}
 {{- end -}}
 {{- if and $config.wrap (strings.Contains (printf "%s" $highlighted) "lntable") -}}
   {{- warnf "code block: wrap=true is incompatible with rendered table line numbers at %s; disabling wrapping (use lineNos=inline to keep it)" $config.position -}}
+  {{- $classTokens = complement (slice "td-code--wrap") $classTokens -}}
+  {{- $config = merge $config (dict "wrap" false "classes" (delimit $classTokens " ")) -}}
 {{- end -}}
 {{- if ne $config.outputFormat "markdown" -}}
   {{- range findRESubmatch `\sid="([^"]+)"` (printf "%s" $highlighted) -}}
@@ -30,11 +32,9 @@
   {{- if $config.filename }}
   <div class="td-code__header">
     <span class="td-code__filename" id="{{ $config.filenameID }}" title="{{ $config.filename }}">{{ $config.filename }}</span>
-    {{- if not $externalActions }}
-      {{- partial "code/actions.html" (dict "config" $config) -}}
-    {{- end }}
+    {{- partial "code/actions.html" (dict "config" $config) -}}
   </div>
-  {{- else if not $externalActions }}
+  {{- else }}
     {{- partial "code/actions.html" (dict "config" $config "compact" true) -}}
   {{- end }}
   <div class="td-code__viewport" id="{{ $config.rootID }}-viewport" data-td-code-viewport>

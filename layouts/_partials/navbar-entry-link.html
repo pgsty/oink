@@ -15,7 +15,9 @@
   {{- $active = true -}}
 {{- end -}}
 {{- $href := $entry.URL -}}
-{{- if not $external }}{{ $href = $entry.URL | relLangURL }}{{ end -}}
+{{- if and (not $external) (not $target.Scheme) (not (hasPrefix $entry.URL "#")) (not (hasPrefix $entry.URL "?")) -}}
+  {{- $href = strings.TrimPrefix "/" $entry.URL | relLangURL -}}
+{{- end -}}
 {{- with $entry.Page -}}
   {{- $current = eq $page.RelPermalink .RelPermalink -}}
   {{- $active = or $active ($page.IsDescendant .) -}}

@@ -26,7 +26,7 @@ body.td-expo-shell:has(.td-expo-viewer[open]) { padding-inline-end: var(--td-exp
 .td-expo-modes {
   display: grid; grid-template-columns: repeat(3, 44px); flex-shrink: 0; min-width: 0;
   margin: 0; padding: 0; border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius);
-  background: var(--td-shell-surface, var(--bs-tertiary-bg)); overflow: hidden;
+  background: var(--bs-tertiary-bg); overflow: hidden;
 }
 .td-expo-mode {
   position: relative; display: block; margin: 0;
@@ -45,7 +45,7 @@ body.td-expo-shell:has(.td-expo-viewer[open]) { padding-inline-end: var(--td-exp
 .td-expo-size .td-shell-icon { font-size: inherit; inline-size: 1em; block-size: 1em; }
 .td-expo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(Min(220px, 100%), 1fr)); gap: 20px; }
 .td-expo-item { min-width: 0; margin: 0; scroll-margin-block: 100px; }
-.td-expo-image { position: relative; display: block; overflow: hidden; background: var(--td-shell-surface, var(--bs-tertiary-bg)); }
+.td-expo-image { position: relative; display: block; overflow: hidden; background: var(--bs-tertiary-bg); }
 .td-expo-image picture { display: block; height: 100%; }
 .td-expo-image img { display: block; width: 100%; height: 100%; object-fit: contain; margin: 0; }
 // Absolutely placed tiles paint over earlier siblings, and seamless tiles have
@@ -76,14 +76,14 @@ body.td-expo-shell:has(.td-expo-viewer[open]) { padding-inline-end: var(--td-exp
 // Covers follow the preset's shape token: soft in Paper and Slate, square in
 // Ink and Terminal. Hover dims the cover slightly and takes the link color.
 .td-expo-album { display: block; color: inherit; text-decoration: none !important; border-radius: var(--bs-border-radius); }
-.td-expo-album img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 12px; border-radius: var(--bs-border-radius); background: var(--td-shell-surface, var(--bs-tertiary-bg)); transition: opacity .15s ease; }
+.td-expo-album img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-bottom: 12px; border-radius: var(--bs-border-radius); background: var(--bs-tertiary-bg); transition: opacity .15s ease; }
 .td-content .td-expo-album h2 { font-size: 1.05rem; margin: 0 0 8px; padding: 0; border: 0; transition: color .15s ease; }
 .td-expo-album p { font-size: .875rem; color: var(--bs-secondary-color); }
 .td-expo-album:hover img { opacity: .9; }
 .td-content .td-expo-album:hover h2, .td-content .td-expo-album:focus-visible h2 { color: var(--bs-link-color); }
 .td-expo-album:focus-visible { outline: 2px solid var(--bs-link-color); outline-offset: 6px; }
 @media (prefers-reduced-motion: reduce) { .td-expo-album img, .td-content .td-expo-album h2 { transition: none; } }
-html:has(.td-expo-viewer[open]) { overflow: hidden; }
+@media screen { html:has(.td-expo-viewer[open]) { overflow: hidden; } }
 .td-expo-viewer {
   box-sizing: border-box; width: calc(100vw - 48px); height: calc(100dvh - 48px); max-width: none; max-height: none;
   margin: auto; padding: 0; overflow: hidden; background: var(--bs-body-bg); color: var(--bs-body-color);
@@ -96,7 +96,7 @@ html:has(.td-expo-viewer[open]) { overflow: hidden; }
 .td-expo-viewer__tools { display: flex; align-items: center; gap: 4px; }
 .td-expo-viewer__tools output { width: 48px; text-align: center; font-size: .75rem; font-variant-numeric: tabular-nums; }
 .td-expo-viewer__stage {
-  flex: 1; min-height: 0; overflow: hidden; overscroll-behavior: contain; background: var(--td-shell-surface, var(--bs-tertiary-bg)); direction: ltr;
+  flex: 1; min-height: 0; overflow: hidden; overscroll-behavior: contain; background: var(--bs-tertiary-bg); direction: ltr;
   // Keep native pan and pinch, but let a double tap reach the fit toggle.
   touch-action: manipulation;
   &.is-pannable { cursor: grab; }

@@ -546,9 +546,10 @@ html[data-td-compare-pane] body {
 }
 
 html[data-td-compare-pane] .td-site-header, html[data-td-compare-pane] .td-shell-subnav, html[data-td-compare-pane] .td-shell-sidebar, html[data-td-compare-pane] .td-shell-toc,
-html[data-td-compare-pane] .td-shell-topline, html[data-td-compare-pane] .td-shell-drawer-backdrop, html[data-td-compare-pane] .td-shell-floating-pill,
-html[data-td-compare-pane] .td-page-end, html[data-td-compare-pane] .td-page-actions, html[data-td-compare-pane] .td-compare-entry, html[data-td-compare-pane] .td-scroll-up,
-html[data-td-compare-pane] .td-blog-featured, html[data-td-compare-pane] footer, html[data-td-compare-pane] .td-shell-footline, html[data-td-compare-pane] .td-skip-link {
+html[data-td-compare-pane] .td-shell-topline, html[data-td-compare-pane] .td-shell-drawer-backdrop, html[data-td-compare-pane] .td-shell-float, html[data-td-compare-pane] .td-shell-toc-float,
+html[data-td-compare-pane] .td-page-end, html[data-td-compare-pane] .td-page-actions, html[data-td-compare-pane] .td-compare-entry,
+html[data-td-compare-pane] .td-featured-banner, html[data-td-compare-pane] .td-featured-hero, html[data-td-compare-pane] .td-featured-wash,
+html[data-td-compare-pane] footer, html[data-td-compare-pane] .td-shell-footline, html[data-td-compare-pane] .td-skip-link {
   display: none !important;
 }
 

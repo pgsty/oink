@@ -388,11 +388,11 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  oink.zip
                 source = outputs[0].read_text(encoding="utf-8")
                 for marker in (
                     "https://github.com/pgsty/oink/releases/tag/v2.0.0",
-                    "| File | Checksum |",
+                    '<table class="td-asset-list__table">',
                     "e" * 64,
                 ):
                     require(marker in source, f"RSS release output lost {marker}", errors)
-                for marker in ("td-release-card__link", "data-td-asset", "<button"):
+                for marker in ("td-release-card__link", "data-td-asset", "<button", "tabindex="):
                     require(marker not in source, f"RSS release output contains {marker}", errors)
     return errors
 
@@ -436,7 +436,7 @@ def check_rss_page_format_isolation(hugo: str) -> list[str]:
         for path in outputs:
             source = path.read_text(encoding="utf-8")
             require(
-                source.count("| File | Checksum |") == 20,
+                source.count('<table class="td-asset-list__table">') == 20,
                 f"RSS page lost or duplicated static asset tables: {path.relative_to(site)}",
                 errors,
             )
@@ -445,7 +445,7 @@ def check_rss_page_format_isolation(hugo: str) -> list[str]:
                 f"RSS page lost or duplicated asset checksums: {path.relative_to(site)}",
                 errors,
             )
-            for marker in ("td-release-card__link", "data-td-asset", "<button"):
+            for marker in ("td-release-card__link", "data-td-asset", "<button", "tabindex="):
                 require(
                     marker not in source,
                     f"RSS page contains interactive release markup ({marker}): {path.relative_to(site)}",
@@ -538,6 +538,7 @@ INVALID_CASES = (
     ("asset-path", "", '{{< release-assets base="/files" >}}\n' + "a" * 64 + "  path/file.zip\n{{< /release-assets >}}", "filename must be one path segment"),
     ("asset-scheme", "", '{{< release-assets base="javascript:alert(1)" >}}\n' + "a" * 64 + "  file.zip\n{{< /release-assets >}}", "base URL must use http or https"),
     ("asset-protocol-relative", "", '{{< release-assets base="//example.org/files" >}}\n' + "a" * 64 + "  file.zip\n{{< /release-assets >}}", "protocol-relative"),
+    ("asset-backslash", "", '{{< release-assets base="https://example.org\\files" >}}\n' + "a" * 64 + "  file.zip\n{{< /release-assets >}}", "must not contain backslashes"),
     ("asset-positional", "", '{{< release-assets "/files" >}}\n' + "a" * 64 + "  file.zip\n{{< /release-assets >}}", "accepts named parameters only"),
     ("asset-unknown", "", '{{< release-assets base="/files" color="red" >}}\n' + "a" * 64 + "  file.zip\n{{< /release-assets >}}", "unsupported parameter"),
 )

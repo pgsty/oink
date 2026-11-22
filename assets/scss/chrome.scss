@@ -1,0 +1,29 @@
+// Chrome for a site-owned shell: design tokens, typography, the four
+// palettes, the site navbar, and the language, theme and appearance controls.
+// It carries no reading shell and no Bootstrap component. The Bootstrap layers
+// are imported for their functions, variables, maps and mixins; only `root`
+// and the visually-hidden helper emit CSS.
+@import '../third_party/bootstrap/scss/functions';
+@import 'td/variables_forward';
+@import 'td/variables';
+@import '../third_party/bootstrap/scss/variables';
+@import '../third_party/bootstrap/scss/variables-dark';
+@import '../third_party/bootstrap/scss/maps';
+@import '../third_party/bootstrap/scss/mixins';
+@import '../third_party/bootstrap/scss/root';
+@import '../third_party/bootstrap/scss/helpers/visually-hidden';
+@import 'td/tokens-typography';
+@import '../third_party/inter/normal';
+@import '../third_party/inter/italic';
+@import '../third_party/ibm-plex-sans/normal';
+@import '../third_party/ibm-plex-sans/italic';
+@import 'td/support/mixins';
+@import 'td/brand';
+
+@import 'td/shell/tokens';
+@import 'td/language-selector';
+@import 'td/site-navbar';
+@import 'td/theme-toggle';
+@import 'td/appearance';
+@import 'td/presets';
+@import 'td/experimental-presets';

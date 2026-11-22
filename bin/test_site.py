@@ -16,19 +16,13 @@ TEST_SITE = ROOT / "tests/site"
 HUGO_BUILD_TIMEOUT = 120
 
 
-LIBSASS_WARNING = (
-    "WARN  deprecated: css.Sass: libsass was deprecated in Hugo v0.153.0 and will be removed "
-    "in a future release. Use dartsass instead. See https://gohugo.io/functions/css/sass/#dart-sass"
-)
-
-
 def theme_warnings(output: str) -> list[str]:
-    """Return warnings to check, excluding Hugo's accepted LibSass notice.
+    """Return every warning line of a Hugo log.
 
-    This filters checker assertions only; the original log stays intact.
+    A site build compiles no Sass, so Hugo's LibSass deprecation notice is no
+    longer an accepted line here.
     """
-    return [line for line in output.splitlines()
-            if line.startswith("WARN") and line != LIBSASS_WARNING]
+    return [line for line in output.splitlines() if line.startswith("WARN")]
 
 
 def run_hugo_process(

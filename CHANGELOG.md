@@ -5,11 +5,52 @@ All notable changes to OINK are documented here. The project follows
 
 ## Unreleased
 
+### Breaking changes
+
+- Ship compiled CSS. A site build no longer calls a Sass compiler: the theme
+  reads `assets/oink/main.css` and `assets/oink/redoc.css`, generated from the
+  same SCSS, and no layout calls `toCSS`. A site without style hooks gets the
+  same production stylesheet as before, apart from whitespace inside one
+  `@starting-style` block. The module no longer requires Hugo's Extended
+  edition. Verified on Hugo 0.170.1, which has no LibSass: the regression
+  fixture, the documentation site and three consumer sites build with only the
+  Hugo binary, and the fixture's 686 output files match the previous pipeline
+  apart from that stylesheet. Published 1.5.1 fails on Hugo 0.170 with
+  `TOCSS-DART: … You need to install Dart Sass`.
+- Retire the three SCSS hooks. `assets/scss/_variables_project.scss`,
+  `_variables_project_after_bs.scss` and `_styles_project.scss` are ignored
+  and each warns once per build. Put site rules in `assets/css/project.css`,
+  then `assets/css/project/*.css` in path order, as plain CSS; the theme
+  publishes them as one stylesheet after its own. Sass variables such as
+  `$primary` and the legacy Sass font variables no longer reach the theme;
+  override the corresponding custom properties and rules instead. Run
+  `python3 bin/migrations/sass_hooks.py --site <dir>` once, on Hugo Extended
+  0.169, to convert existing hooks: it writes the changed theme values and the
+  site's own rules, keeps each value's old cascade position, checks the result
+  against the old stylesheet declaration by declaration, and lists what needs
+  review.
+- A site that compiled the theme's SCSS partials in its own templates must use
+  the shipped bundles instead; the partials were never a public interface.
+
+### Added
+
+- Ship `chrome.css`, `landing.css`, `search.css` and `compare.css` in
+  `assets/oink/` for site-owned shells: tokens, typography, palettes, navbar
+  and appearance controls; Landing sections, loaded after `chrome.css`; the
+  command palette; and Duo View. Publish them one directory below the site
+  root so their `../webfonts` references resolve.
+- Add `bin/build-css.py` for maintainers. It compiles every `assets/scss/`
+  entry into `assets/oink/` with Hugo Extended 0.169's LibSass; `--check`
+  fails when a shipped bundle is stale and `--watch` rebuilds while editing.
+  Where `hugo` is 0.170 or newer, it uses `hugo-0.169.0` from `PATH` or the
+  executable named with `--hugo`.
+  `bin/check-scss.py` also rejects any Sass call in a layout.
+
 ### Changed
 
-- Raise the module and CI baseline to Go 1.27.4 and Hugo Extended 0.169.0,
-  retaining built-in LibSass and consumer SCSS hooks. Refresh the documentation
-  test dependencies and maintainer build lock to current compatible releases.
+- Raise the module baseline to Go 1.27.4 and Hugo 0.169.0, and CI to Hugo
+  Extended 0.169.0. Refresh the documentation test dependencies and maintainer
+  build lock to current compatible releases.
 - Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
   0.169.0's improved plain-text spacing and resulting word counts in goldens.
   Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome

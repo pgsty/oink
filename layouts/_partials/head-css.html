@@ -1,10 +1,32 @@
-{{ $scssMain := "scss/main.scss" -}}
-{{/* Use Hugo Extended's built-in compiler; consumers need no external Sass
-     executable. Hugo 0.168 may report its upstream LibSass deprecation. */ -}}
-{{ $scss := resources.Get $scssMain
-      | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
+{{ $main := "oink/main.css" -}}
+{{/* The theme ships its compiled CSS, so a site build calls no Sass compiler.
+     `bin/build-css.py` regenerates the bundle from assets/scss/. It is
+     published under scss/ so the stylesheet URL and its ../webfonts
+     references keep their public shape. */ -}}
+{{ $css := resources.Get $main -}}
+{{ with $css -}}
+  {{ $css = . | resources.Copy "scss/main.css" -}}
+{{ end -}}
+{{/* A site's own rules are plain CSS: css/project.css, then every
+     css/project/*.css in path order, published as one separate resource.
+     Editing them leaves the theme bundle and its cache entry untouched. */ -}}
+{{ $project := slice -}}
+{{ with resources.Get "css/project.css" }}{{ $project = $project | append . }}{{ end -}}
+{{ range sort (resources.Match "css/project/*.css") "Name" -}}
+  {{ $project = $project | append . -}}
+{{ end -}}
+{{ if $project -}}
+  {{ $project = $project | resources.Concat "css/project.css" -}}
+{{ else -}}
+  {{ $project = false -}}
+{{ end -}}
+{{ range slice "_variables_project" "_variables_project_after_bs" "_styles_project" -}}
+  {{ if resources.Get (printf "scss/%s.scss" .) -}}
+    {{ warnf "stylesheet: assets/scss/%s.scss is ignored; site builds no longer compile Sass. Move its rules to assets/css/project.css as plain CSS: https://oink.pgsty.com/docs/admin/upgrade/#sass-hooks" . -}}
+  {{ end -}}
+{{ end -}}
 {{/* Concatenate Font Awesome's official compiled CSS into one stable vendor
-     resource. Keep it separate from consumer SCSS so an ordinary theme or site
+     resource. Keep it separate from the theme and site styles so an ordinary
      style edit does not invalidate the icon distribution. The target remains
      under scss/ so Font Awesome's ../webfonts URLs keep their public shape. */ -}}
 {{ $fontAwesome := slice
@@ -13,12 +35,14 @@
       (resources.Get "third_party/Font-Awesome/css/regular.css")
       (resources.Get "third_party/Font-Awesome/css/brands.css")
       | resources.Concat "scss/fontawesome.css" -}}
-{{ $css := $scss -}}
 
 {{ if hugo.IsProduction -}}
   {{ $fontAwesome = $fontAwesome | minify | fingerprint -}}
-  {{ $css = $css | minify | fingerprint -}}
-  <link rel="preload" href="{{ $css.RelPermalink }}" as="style" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+  {{ with $project }}{{ $project = . | minify | fingerprint }}{{ end -}}
+  {{ with $css -}}
+    {{ $css = . | minify | fingerprint -}}
+    <link rel="preload" href="{{ $css.RelPermalink }}" as="style" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+  {{- end }}
 {{ end -}}
 
 {{ with $fontAwesome -}}
@@ -34,14 +58,21 @@
   {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end -}}
   >
 {{ else -}}
-  {{ warnf "stylesheet: resource not found or CSS build failed: %s; the page will render unstyled" $scssMain -}}
+  {{ warnf "stylesheet: resource not found: %s; the page will render unstyled" $main -}}
+{{ end -}}
+
+{{ with $project -}}
+  <link href="{{ .RelPermalink }}" rel="stylesheet"
+  {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end -}}
+  >
 {{ end -}}
 
 {{/* Bootstrap publishes its RTL transform as a release artifact. Keep that
 consumer-side artifact local instead of invoking PostCSS/rtlcss during a Hugo
 build. The main bundle already supplies Bootstrap and project color tokens, so
 strip only the RTL artifact's first light/dark token blocks before publishing
-it. Directional rules remain later in the cascade; project token overrides keep
+it. Directional rules remain later in the cascade, after the site's project
+stylesheet as they were after its compiled hook; project token overrides keep
 their ordinary specificity and source order. */ -}}
 {{ if eq .Site.Language.Direction "rtl" -}}
   {{ $rtl := resources.Get "third_party/bootstrap/dist/css/bootstrap.rtl.min.css" -}}

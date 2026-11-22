@@ -1,0 +1,15 @@
+.td-redoc__frame {
+  display: block;
+  inline-size: 100%;
+  block-size: 75vh;
+  min-block-size: 28rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  background: #fff;
+}
+
+@media print {
+  .td-redoc__frame {
+    display: none;
+  }
+}

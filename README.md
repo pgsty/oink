@@ -41,7 +41,7 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 ## Why OINK
 
 - **One deterministic toolchain.** Resolve the Hugo Module once, then build and
-  preview with Hugo Extended and its built-in Sass compiler.
+  preview with the Hugo binary alone. The theme ships its compiled CSS.
 - **Complete publishing surfaces.** Docs, Blog, Book, Expo image albums, OpenAPI, releases,
   downloads, and data-driven landing pages share one navigation and visual
   system.
@@ -84,8 +84,8 @@ repository's internal fixtures.
 · [Setup guide](https://oink.pgsty.com/docs/start/)
 
 For development and validation, use Git, Go 1.27.4, and Hugo Extended
-0.169.0 or a newer release that retains built-in LibSass. No external Sass
-compiler or Node.js is required. To evaluate the neutral template locally:
+0.169.0. A site build compiles no Sass and needs no Node.js. To evaluate the
+neutral template locally:
 
 ```sh
 git clone https://github.com/pgsty/oink-starter.git
@@ -227,8 +227,8 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | **Extended 0.169.0 minimum**; default development and CI version 0.169.0 |
-| Sass | Built-in LibSass; no separately installed compiler |
+| Hugo | **0.169.0 minimum**; default development and CI version Extended 0.169.0 |
+| Sass | None in a site build: the theme ships compiled CSS. Theme maintainers regenerate it with `bin/build-css.py` on Hugo Extended 0.169.0 |
 | Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
@@ -236,10 +236,11 @@ assuming drop-in compatibility.
 CI pins Go 1.27.4 and Hugo Extended 0.169.0. Development,
 preview, checks, release, and deployment use this same Hugo baseline. Do not
 enable `--panicOnWarning` or `HUGO_PANICONWARNING`. Keep warnings visible and
-review them; Hugo's upstream LibSass deprecation warning is accepted. Focused
-checks verify theme diagnostics and safe fallbacks directly. Future Hugo
-releases that remove LibSass require a separate compatibility decision;
-upgrading must preserve builds without an external Sass installation.
+review them. Focused checks verify theme diagnostics and safe fallbacks
+directly. Site builds no longer depend on LibSass, which Hugo 0.170 removed,
+and are verified on Hugo 0.170.1 with only the Hugo binary. Regenerating the
+shipped CSS still uses Hugo Extended 0.169.0; replacing that maintainer-side
+compiler is a separate decision.
 Dated release and research records retain their original tool versions.
 
 ## Community and releases

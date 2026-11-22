@@ -82,6 +82,7 @@ python3 bin/check-components.py               # component and render-hook contra
 python3 bin/check-output.py                   # fresh fixture + output structure/security
 python3 bin/check-namespace.py                # fresh fixture + naming namespace
 python3 bin/check-goldens.py                  # HTML/print/Markdown/RSS/LLMS goldens
+python3 bin/check-scss.py                     # shipped CSS is current; site builds call no Sass
 python3 bin/check-params.py                   # config shapes and warning fallbacks
 python3 bin/check-i18n.py                     # locale schema parity
 python3 bin/generate-config-schema.py --check # generated schemas match their sources
@@ -105,8 +106,13 @@ configuration, data, layouts, assets, or modules.
 python3 bin/migrations/oink06.py report --sites <dir>...
 python3 bin/migrations/oink06.py migrate --site <dir> [--write]
 python3 bin/migrations/oink06.py check --site <dir>
+python3 bin/migrations/sass_hooks.py --site <dir> [--write]
 python3 -m unittest discover -s tests/migrations -t .
 ```
+
+`sass_hooks.py` converts a site's retired SCSS hooks. It writes only
+`assets/css/project.css` and needs a Sass-capable Hugo; review its `REVIEW`
+lines, then delete the SCSS hooks by hand.
 
 ## Releases
 
@@ -150,12 +156,26 @@ python3 -m unittest discover -s tests/migrations -t .
 - Use OINK v1.5.1 and Hugo Extended 0.169.0 for maintained consumer sites,
   development, CI, and release checks. Keep this baseline pinned; `theme.toml`
   declares it as `min_version`. Update requirements, checkers, and current
-  bilingual contracts together. Keep the upstream LibSass deprecation warning
-  visible and accepted.
-- SCSS uses Hugo Extended's built-in LibSass, including main and ReDoc styles.
-  Ordinary consumers must not install Dart Sass or another Sass executable.
-  Preserve project-variable/style hooks. Future Hugo upgrades must preserve
-  this dependency boundary; do not add compatibility shims for unrelated versions.
+  bilingual contracts together.
+- A site build never compiles Sass. The theme ships its compiled CSS in
+  `assets/oink/`, and no layout may call `toCSS` or `css.Sass`. Consumers must
+  need nothing but the Hugo binary; do not make them install Dart Sass or any
+  other tool, and do not add compatibility shims for unrelated versions.
+- SCSS under `assets/scss/` stays the source. After changing it or the vendored
+  SCSS it imports, run `python3 bin/build-css.py` and keep each regenerated
+  bundle with its source change. The compiler is the LibSass inside Hugo
+  Extended 0.169.0; its deprecation warning belongs to this step only, so a
+  site build that prints it has regressed. Hugo 0.170 has no LibSass: where
+  `hugo` is that new, the script uses `hugo-0.169.0` from `PATH` or `--hugo`.
+  Site builds are verified on Hugo 0.170.1 (2026-11-22); moving the pinned
+  baseline there first needs a decision on this maintainer-side compiler.
+  `assets/oink/*.css` is the one generated output kept in Git, by the owner's
+  2026-11-22 decision: the module is distributed by tag, so the bundles must be
+  in the tree.
+- Consumers style a site with plain CSS in `assets/css/project.css` and
+  `assets/css/project/*.css`. The three SCSS hooks are retired and warn.
+  `chrome.css`, `landing.css`, `search.css`, and `compare.css` serve site-owned
+  shells. The SCSS partials are not a public interface.
 - The module declares Go 1.27.4 as its minimum; the current development default
   is Go 1.27.4. Record the actual local tool versions when reporting validation.
 - Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING` in any build,

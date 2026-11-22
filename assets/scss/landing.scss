@@ -1,0 +1,15 @@
+// The composable Landing sections for a site-owned shell. Load it after
+// chrome.css, which supplies the tokens these sections read.
+//
+// The palettes restyle Landing sections at the same specificity as the
+// sections' own rules, so they must follow them. chrome.css ends with the
+// palettes; repeating them here keeps that order when this file loads second.
+@import '../third_party/bootstrap/scss/functions';
+@import '../third_party/bootstrap/scss/variables';
+@import '../third_party/bootstrap/scss/variables-dark';
+@import '../third_party/bootstrap/scss/maps';
+@import '../third_party/bootstrap/scss/mixins';
+@import 'td/support/mixins';
+@import 'td/landing';
+@import 'td/presets';
+@import 'td/experimental-presets';

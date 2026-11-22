@@ -381,29 +381,6 @@ jobs:
           hugo --themesDir "$GITHUB_WORKSPACE/.." --destination "$RUNNER_TEMP/oink-system" --printPathWarnings
           grep -R -q 'data-td-typography="system"' "$RUNNER_TEMP/oink-system"
 
-      - name: Preserve legacy Sass font overrides
-        run: |
-          cp -R tests/site "$RUNNER_TEMP/oink-font-compat"
-          mkdir -p "$RUNNER_TEMP/oink-font-compat/assets/scss"
-          cp tests/fixtures/legacy-fonts/_variables_project.scss \
-            "$RUNNER_TEMP/oink-font-compat/assets/scss/_variables_project.scss"
-          hugo --source "$RUNNER_TEMP/oink-font-compat" \
-            --themesDir "$(dirname "$GITHUB_WORKSPACE")" \
-            --destination "$RUNNER_TEMP/oink-font-compat-public" \
-            --printPathWarnings
-          grep -R -q -- '--td-heading-font-family:Georgia, serif' \
-            "$RUNNER_TEMP/oink-font-compat-public/scss"
-          grep -R -q -- '--td-code-font-family:"Courier New", monospace' \
-            "$RUNNER_TEMP/oink-font-compat-public/scss"
-          grep -F -R -q -- \
-            '[data-td-typography=system]{--bs-font-monospace:"Legacy Mono", monospace' \
-            "$RUNNER_TEMP/oink-font-compat-public/scss"
-          if grep -R -q -- '--td-heading-font-family:var(--td-print-font-family)' \
-            "$RUNNER_TEMP/oink-font-compat-public/scss"; then
-            echo "print preset unexpectedly replaced the legacy heading font" >&2
-            exit 1
-          fi
-
       - name: Reject an invalid typography preset
         working-directory: tests/site
         run: |
@@ -415,7 +392,7 @@ jobs:
           grep -q 'invalid params.ui.typography' "$RUNNER_TEMP/oink-invalid.log"
 
   scss:
-    name: Built-in Sass (Hugo ${{ matrix.hugo }})
+    name: Shipped CSS
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -427,6 +404,6 @@ jobs:
         with:
           hugo-version: ${{ env.HUGO_VERSION }}
           extended: true
-      - name: Build without an external Sass executable
+      - name: Keep bundles current and site builds free of Sass
         run: |
           python3 bin/check-scss.py

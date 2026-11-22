@@ -3,14 +3,12 @@
 @import '../../third_party/bootstrap/scss/functions';
 
 @import 'variables_forward';
-@import '../variables_project';
 @import 'variables';
 @import 'support/mixins';
 
 @import '../../third_party/bootstrap/scss/bootstrap';
 @import 'support/bootstrap_vers_test';
 
-@import '../variables_project_after_bs';
 @import 'tokens-typography';
 
 @import 'support/utilities';
@@ -73,5 +71,3 @@
 @import 'accessibility';
 @import 'document-compare';
 @import 'print';
-
-@import '../styles_project';

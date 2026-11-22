@@ -205,10 +205,14 @@
 {{ end -}}
 
 {{ if and $interactiveOutput (.Page.Store.Get "hasRedoc") -}}
-  {{ $redocCSS := resources.Get "scss/redoc.scss" | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
-  {{ if hugo.IsProduction }}{{ $redocCSS = $redocCSS | minify | fingerprint }}{{ end -}}
-  <link rel="stylesheet" href="{{ $redocCSS.RelPermalink }}"
-    {{- with $redocCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+  {{ with resources.Get "oink/redoc.css" -}}
+    {{ $redocCSS := . | resources.Copy "scss/redoc.css" -}}
+    {{ if hugo.IsProduction }}{{ $redocCSS = $redocCSS | minify | fingerprint }}{{ end -}}
+    <link rel="stylesheet" href="{{ $redocCSS.RelPermalink }}"
+      {{- with $redocCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
+  {{- else -}}
+    {{ warnf "stylesheet: resource not found: oink/redoc.css; ReDoc frames will render unstyled" -}}
+  {{ end }}
 {{ end -}}
 
 {{ if and $interactiveOutput (.Page.Store.Get "hasSwagger") -}}

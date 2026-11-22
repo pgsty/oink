@@ -19,7 +19,7 @@ body:
     id: hugo-version
     attributes:
       label: Hugo version
-      placeholder: hugo v0.164.0+extended
+      placeholder: output of `hugo version`
     validations:
       required: true
   - type: textarea

@@ -19,7 +19,7 @@ about later releases or downstream adoption.
 - This repository is the OINK Hugo Module: theme implementation, defaults,
   vendored assets, migration tools, focused checkers, and synthetic fixtures.
   The root is the module; there is no site, npm workspace, or generated build
-  input. Hugo Extended is the build tool.
+  input. Hugo is the build tool.
 - Public bilingual documentation, tutorials, examples, case studies,
   integration/browser regression tests, visual review, and deployment belong
   to `../oink.pgsty.com`.
@@ -148,22 +148,27 @@ python3 -m unittest discover -s tests/migrations -t .
 
 ### Toolchain and diagnostics
 
-- Use OINK v1.5.1 and Hugo Extended 0.169.0 for maintained consumer sites,
-  development, CI, and release checks. Keep this baseline pinned; `theme.toml`
-  declares it as `min_version`. Update requirements, checkers, and current
-  bilingual contracts together.
+- Build, check and preview with the Hugo that is installed. Do not pin or
+  prescribe a Hugo release in documentation, CI, checkers or scripts.
+  `theme.toml` and `hugo.yaml` declare the oldest release the theme supports;
+  nothing else names one. Any edition builds this checkout.
 - A site build never compiles Sass. The theme ships its compiled CSS in
   `assets/oink/`, and no layout may call `toCSS` or `css.Sass`. Consumers must
   need nothing but the Hugo binary; do not make them install Dart Sass or any
   other tool, and do not add compatibility shims for unrelated versions.
 - SCSS under `assets/scss/` stays the source. After changing it or the vendored
   SCSS it imports, run `python3 bin/build-css.py` and keep each regenerated
-  bundle with its source change. The compiler is the LibSass inside Hugo
-  Extended 0.169.0; its deprecation warning belongs to this step only, so a
-  site build that prints it has regressed. Hugo 0.170 has no LibSass: where
-  `hugo` is that new, the script uses `hugo-0.169.0` from `PATH` or `--hugo`.
-  Site builds are verified on Hugo 0.170.1 (2026-11-22); moving the pinned
-  baseline there first needs a decision on this maintainer-side compiler.
+  bundle with its source change. The compiler is LibSass, the one tool here
+  tied to a Hugo release: only the Extended edition up to 0.169 contains it.
+  The script uses `hugo` when that has LibSass, and otherwise `hugo-0.169.0`
+  from `PATH` or `--hugo`. Its deprecation warning belongs to this step only,
+  so a site build that prints it has regressed. Without a LibSass Hugo,
+  `bin/check-scss.py --skip-freshness` checks the site-build half alone; CI
+  runs that on the current release and the freshness half in its `scss` job.
+  Dart Sass is not a drop-in replacement: 1.105 rejects the `@import` inside
+  `@if` in `td/_chroma.scss` and writes computed colors and `@extend` order
+  differently, so switching compilers changes the shipped CSS and needs its
+  own review.
   `assets/oink/*.css` is the one generated output kept in Git, by the owner's
   2026-11-22 decision: the module is distributed by tag, so the bundles must be
   in the tree.

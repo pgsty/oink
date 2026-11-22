@@ -11,7 +11,7 @@ per surface: html, print, markdown, rss, llms.
   bin/check-goldens.py --hugo PATH    # build with another Hugo binary
   bin/check-goldens.py --public DIR   # reuse an existing private-fixture build
 
-Build goldens with the current Hugo Extended baseline. Normalise nonsemantic
+Build goldens with the current Hugo baseline. Normalise nonsemantic
 build noise; review rendering changes when advancing the baseline instead of
 adding compatibility handling for obsolete Hugo releases. Update goldens in
 the same commit as the behaviour change and say why in the message.

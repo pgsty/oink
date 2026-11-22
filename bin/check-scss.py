@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Verify that a site build uses the shipped CSS and never compiles Sass."""
+"""Verify that a site build uses the shipped CSS and never compiles Sass.
+
+    python3 bin/check-scss.py                    # both halves
+    python3 bin/check-scss.py --skip-freshness   # the site-build half only
+
+The site-build half needs nothing but the Hugo under test. Only the freshness
+half recompiles the bundles, so only it needs a Hugo that contains LibSass.
+"""
 
 from __future__ import annotations
 
@@ -82,6 +89,9 @@ def main() -> None:
     parser.add_argument("--hugo", default="hugo", help="Hugo that builds the probe sites")
     parser.add_argument("--compiler", help="Hugo with LibSass for the freshness check; "
                                            "default: bin/build-css.py's own choice")
+    parser.add_argument("--skip-freshness", action="store_true",
+                        help="do not recompile the bundles; check only what a site build "
+                             "does, which needs no LibSass")
     args = parser.parse_args()
     hugo = shutil.which(args.hugo)
     if not hugo:
@@ -95,11 +105,16 @@ def main() -> None:
 
     # The bundles are compiled by LibSass; the probe sites below build with
     # whatever Hugo is under test, which may have no Sass compiler at all.
-    compiler = ["--hugo", args.compiler] if args.compiler else []
-    fresh = subprocess.run([sys.executable, str(ROOT / "bin/build-css.py"), "--check", *compiler],
-                           text=True, capture_output=True)
-    if fresh.returncode:
-        raise SystemExit(fresh.stdout + fresh.stderr)
+    if not args.skip_freshness:
+        compiler = ["--hugo", args.compiler] if args.compiler else []
+        fresh = subprocess.run([sys.executable, str(ROOT / "bin/build-css.py"), "--check", *compiler],
+                               text=True, capture_output=True)
+        if fresh.returncode:
+            output = fresh.stdout + fresh.stderr
+            if "No LibSass" in output:
+                output += ("Here that is --compiler <path to it>. --skip-freshness runs the "
+                           "site-build half alone; it does not show that the bundles are current.\n")
+            raise SystemExit(output.rstrip())
     version = subprocess.run([hugo, "version"], text=True, capture_output=True).stdout.split()[1]
 
     built: list[Path] = []
@@ -157,7 +172,8 @@ def main() -> None:
         for site in built:
             shutil.rmtree(site, ignore_errors=True)
 
-    print("Stylesheet checks passed: no Sass call in layouts, current bundles, shipped main/ReDoc "
+    freshness = "bundle freshness NOT checked" if args.skip_freshness else "current bundles"
+    print(f"Stylesheet checks passed: no Sass call in layouts, {freshness}, shipped main/ReDoc "
           f"CSS, project.css hook, retired SCSS hook warnings; sites built with Hugo {version} "
           "and no Sass on PATH")
 

@@ -37,17 +37,23 @@ All notable changes to OINK are documented here. The project follows
   command palette; and Duo View. Publish them one directory below the site
   root so their `../webfonts` references resolve.
 - Add `bin/build-css.py` for maintainers. It compiles every `assets/scss/`
-  entry into `assets/oink/` with Hugo Extended 0.169's LibSass; `--check`
+  entry into `assets/oink/` with LibSass, which only Hugo's Extended edition
+  up to 0.169 contains: it uses `hugo` when that has LibSass, and otherwise
+  `hugo-0.169.0` from `PATH` or the executable named with `--hugo`. `--check`
   fails when a shipped bundle is stale and `--watch` rebuilds while editing.
-  Where `hugo` is 0.170 or newer, it uses `hugo-0.169.0` from `PATH` or the
-  executable named with `--hugo`.
-  `bin/check-scss.py` also rejects any Sass call in a layout.
+  `bin/check-scss.py` also rejects any Sass call in a layout, and its
+  `--skip-freshness` mode checks what a site build does where no LibSass is
+  available.
 
 ### Changed
 
-- Raise the module baseline to Go 1.27.4 and Hugo 0.169.0, and CI to Hugo
-  Extended 0.169.0. Refresh the documentation test dependencies and maintainer
-  build lock to current compatible releases.
+- Raise the module baseline to Go 1.27.4 and Hugo 0.169.0. Refresh the
+  documentation test dependencies and maintainer build lock to current
+  compatible releases.
+- Stop pinning Hugo. Development and checks use the installed release, CI
+  installs the current one in the standard edition, as a consumer would, and
+  documentation no longer prescribes a release. Only the CI job that
+  recompiles the shipped CSS names one, for its LibSass.
 - Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
   0.169.0's improved plain-text spacing and resulting word counts in goldens.
   Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome

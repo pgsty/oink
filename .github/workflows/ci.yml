@@ -11,7 +11,10 @@ permissions:
 
 env:
   GO_VERSION: 1.27.4
-  HUGO_VERSION: "0.169.0"
+  # Jobs build with the current Hugo release, as a consumer would. Only `scss`
+  # names one: the last release whose Extended edition contains LibSass, the
+  # compiler of the shipped CSS.
+  LIBSASS_HUGO_VERSION: "0.169.0"
   GOTOOLCHAIN: local
 
 jobs:
@@ -53,8 +56,7 @@ jobs:
           java-version: '27'
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: ${{ env.HUGO_VERSION }}
-          extended: true
+          hugo-version: latest
 
       - name: Record build tool versions
         run: |
@@ -183,9 +185,8 @@ jobs:
   build:
     name: Hugo theme checks
     runs-on: ubuntu-latest
-    # CI uses the shared Hugo Extended 0.169.0 baseline. A run that reaches this
-    # ceiling is hung infrastructure, and a cancelled six-hour job must never
-    # again stand in for a release verdict.
+    # A run that reaches this ceiling is hung infrastructure, and a cancelled
+    # six-hour job must never again stand in for a release verdict.
     timeout-minutes: 60
 
     steps:
@@ -200,8 +201,7 @@ jobs:
           cache: false
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: ${{ env.HUGO_VERSION }}
-          extended: true
+          hugo-version: latest
 
       - name: Record build tool versions
         run: |
@@ -373,6 +373,12 @@ jobs:
       - name: Check four-state goldens
         run: python3 bin/check-goldens.py
 
+      # This Hugo has no LibSass and the checker hides PATH, so a layout that
+      # called a Sass compiler would fail here. The `scss` job checks that the
+      # bundles are current.
+      - name: Check that site builds use the shipped CSS
+        run: python3 bin/check-scss.py --skip-freshness
+
       - name: Build the system typography preset
         working-directory: tests/site
         env:
@@ -400,10 +406,10 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.x'
+      # The only job that needs LibSass: it recompiles the bundles to compare.
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: ${{ env.HUGO_VERSION }}
+          hugo-version: ${{ env.LIBSASS_HUGO_VERSION }}
           extended: true
-      - name: Keep bundles current and site builds free of Sass
-        run: |
-          python3 bin/check-scss.py
+      - name: Keep the shipped bundles current
+        run: python3 bin/build-css.py --check

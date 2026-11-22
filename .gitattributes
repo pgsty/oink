@@ -2,5 +2,8 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 
+# Compiled by bin/build-css.py from assets/scss/; review the SCSS instead.
+assets/oink/*.css linguist-generated=true
+
 # Preserve upstream bytes and VENDOR.json hashes, including original CRLFs.
 assets/third_party/plantuml/* -text whitespace=cr-at-eol

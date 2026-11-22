@@ -628,7 +628,7 @@
     var NAV_MARGIN = 24;
 
     // The three values the overlay animates, typed so the transitions in
-    // _toc.scss interpolate them. Registered here rather than with a CSS
+    // shell/toc.css interpolate them. Registered here rather than with a CSS
     // @property rule, which the production minifier drops. Without support
     // the rail snaps into place instead of animating, still glued.
     if (window.CSS && window.CSS.registerProperty) {

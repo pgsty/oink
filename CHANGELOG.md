@@ -77,6 +77,8 @@ All notable changes to OINK are documented here. The project follows
   flags, the re-declared Bootstrap defaults in `_variables_forward.scss`, the
   branches that answered legacy font variables, and the Bootstrap version
   guard. The shipped CSS is byte-identical.
+- Remove Font Awesome's vendored SCSS sources. The theme loads Font Awesome's
+  compiled CSS and webfonts; nothing compiled the SCSS.
 
 ### Fixed
 

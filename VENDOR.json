@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "generated": "2026-11-11",
+  "generated": "2026-11-22",
   "hash": "sha256",
   "trees": [
     {
       "path": "assets/third_party",
-      "files": 244,
-      "sha256": "d80bdb7d7eace1a647fee3dac63522367fb5fc02a3f0ccd6c5a8c2d5006f1978"
+      "files": 224,
+      "sha256": "f1675b5deb433f8944d5c4f34ea4921026779348cf3fc3c9858920b9bb506723"
     },
     {
       "path": "assets/js/third_party",
@@ -82,10 +82,6 @@
         {
           "path": "assets/third_party/Font-Awesome/css/brands.css",
           "sha256": "af2e900661ff931a30d0577eab72817cc175c7b6ca37e846c7e1dd54303f361e"
-        },
-        {
-          "path": "assets/third_party/Font-Awesome/scss/fontawesome.scss",
-          "sha256": "3c785994eb5204237d158dad42ddae46a95dc817637de6cb183bce33b18ad7af"
         },
         {
           "path": "static/webfonts/fa-solid-900.woff2",

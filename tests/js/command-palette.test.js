@@ -99,7 +99,7 @@ function tick() {
   return new Promise((resolve) => setImmediate(resolve));
 }
 
-function setup({ controlledAnimationFrame = false } = {}) {
+function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
   const listeners = new Map();
   const html = new Element('html');
   const root = new Element();
@@ -121,6 +121,7 @@ function setup({ controlledAnimationFrame = false } = {}) {
     tdTPreferences: 'Preferences', tdTCommands: 'Commands',
     tdTQuickLinks: 'Quick links', tdTChoice: 'Choose',
     tdTNoCommands: 'No commands', tdTActionFailed: 'Failed', tdTPages: 'Pages',
+    ...dataset,
   };
   root.querySelector = (selector) => ({
     '.td-shell-search__input': input,
@@ -197,7 +198,8 @@ function setup({ controlledAnimationFrame = false } = {}) {
     create(docs) {
       return {
         query(query) {
-          return docs.filter((doc) => doc.title.toLowerCase().includes(query.toLowerCase()))
+          const wanted = query.toLowerCase();
+          return docs.filter((doc) => (doc.title + ' ' + (doc.body || '')).toLowerCase().includes(wanted))
             .map((doc) => ({ doc, excerpt: doc.title, score: 1 }));
         },
       };
@@ -231,7 +233,7 @@ function setup({ controlledAnimationFrame = false } = {}) {
     configurable: true,
     value: { platform: 'MacIntel', userAgent: '' },
   });
-  global.fetch = (url) => { fetches.push(url); return fetchBehavior(); };
+  global.fetch = (url) => { fetches.push(url); return fetchBehavior(url); };
   global.window = {
     __OINK_PALETTE_MANUAL_INIT__: true,
     clearTimeout() {},
@@ -768,6 +770,100 @@ function setup({ controlledAnimationFrame = false } = {}) {
   await tick();
   assert.equal(extensionFailure.fetches.length, 2, 'extension disabled native retry');
   assert.equal(failedContexts.at(-1).phase, 'results');
+
+  // A split index answers from titles at once; the page text joins it later.
+  const index = [
+    { ref: '/docs/page/', title: 'PostgreSQL Page', root: 'docs' },
+    { ref: '/docs/other/', title: 'Other', root: 'docs' },
+  ];
+  const text = [{ ref: '/docs/other/', body: 'Mentions postgresql in its text.' }];
+  const reply = (value) => Promise.resolve({
+    ok: true, json: () => Promise.resolve(JSON.parse(JSON.stringify(value))),
+  });
+  const split = (bytes) => ({ tdBodySrc: '/body.json', tdBodyBytes: String(bytes),
+    tdTBodyLoad: 'Search page text ({size})', tdTBodyLoading: 'Loading page text' });
+  const pages = (h) => h.controller.rows().filter((row) => row.type === 'page').map((row) => row.sourceId);
+  const search = async (h) => {
+    h.input.value = 'postgresql';
+    h.opener.dispatch('click', { currentTarget: h.opener });
+    await tick();
+    await tick();
+  };
+
+  const staged = setup({ dataset: split(3 * 1024 * 1024) });
+  let deliver;
+  staged.setFetch((url) => url === '/body.json'
+    ? new Promise((resolve) => { deliver = resolve; }) : reply(index));
+  await search(staged);
+  assert.deepEqual(staged.fetches, ['/index.json', '/body.json'], 'page text within the limit loads by itself');
+  assert.deepEqual(pages(staged), ['/docs/page/'], 'titles answer before the page text arrives');
+  assert.ok(staged.status.textContent.includes('Loading page text'));
+  assert.ok(staged.controller.rows().every((row) => row.type !== 'body'));
+  deliver(await reply(text));
+  await tick();
+  await tick();
+  assert.deepEqual(pages(staged), ['/docs/page/', '/docs/other/'], 'page text did not join the results');
+  assert.ok(!staged.status.textContent.includes('Loading page text'));
+  staged.input.value = 'mentions';
+  staged.input.dispatch('input');
+  assert.deepEqual(pages(staged), ['/docs/other/']);
+  assert.equal(staged.fetches.length, 2, 'page text was fetched again');
+
+  const waiting = setup({ dataset: split(3 * 1024 * 1024) });
+  let deliverLate;
+  waiting.setFetch((url) => url === '/body.json'
+    ? new Promise((resolve) => { deliverLate = resolve; }) : reply(index));
+  waiting.input.value = 'mentions';
+  waiting.opener.dispatch('click', { currentTarget: waiting.opener });
+  await tick();
+  await tick();
+  assert.equal(waiting.controller.rows().length, 0);
+  assert.equal(waiting.status.textContent, 'Loading page text', 'an empty title search claimed there are no results');
+  deliverLate(await reply(text));
+  await tick();
+  await tick();
+  assert.deepEqual(pages(waiting), ['/docs/other/']);
+
+  // Text beyond the limit, or any text under Save-Data, waits for the reader.
+  for (const [name, bytes, saveData] of [['large', 9 * 1024 * 1024, false], ['save-data', 1024, true]]) {
+    const asked = setup({ dataset: split(bytes) });
+    global.window.navigator = { connection: { saveData } };
+    asked.setFetch((url) => reply(url === '/body.json' ? text : index));
+    await search(asked);
+    assert.deepEqual(asked.fetches, ['/index.json'], `${name}: page text loaded without being asked`);
+    assert.deepEqual(pages(asked), ['/docs/page/']);
+    const ask = asked.controller.rows().findIndex((row) => row.type === 'body');
+    assert.ok(ask >= 0, `${name}: nothing offers the page text`);
+    assert.match(asked.controller.rows()[ask].title, /^Search page text \((9[.,]0|0[.,]0) MB\)$/);
+    asked.controller.activate(ask);
+    await tick();
+    await tick();
+    assert.deepEqual(asked.fetches, ['/index.json', '/body.json']);
+    assert.deepEqual(pages(asked), ['/docs/page/', '/docs/other/']);
+    assert.ok(asked.controller.rows().every((row) => row.type !== 'body'));
+    assert.equal(document.activeElement, asked.input);
+  }
+
+  // A failed download offers the same row again.
+  const flaky = setup({ dataset: split(1024) });
+  let attempts = 0;
+  flaky.setFetch((url) => url !== '/body.json' ? reply(index)
+    : attempts++ ? reply(text) : Promise.reject(new Error('offline')));
+  await search(flaky);
+  await tick();
+  assert.deepEqual(pages(flaky), ['/docs/page/']);
+  const retry = flaky.controller.rows().findIndex((row) => row.type === 'body');
+  assert.ok(retry >= 0, 'a failed page-text download left no way to retry');
+  flaky.controller.activate(retry);
+  await tick();
+  await tick();
+  assert.deepEqual(pages(flaky), ['/docs/page/', '/docs/other/']);
+
+  // An index that was not split asks for nothing more.
+  const single = setup();
+  await search(single);
+  assert.deepEqual(single.fetches, ['/index.json']);
+  assert.ok(single.controller.rows().every((row) => row.type !== 'body'));
 
   console.log('Command Palette controller checks passed');
 })().catch((error) => {

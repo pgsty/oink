@@ -490,7 +490,8 @@
       var sections = Array.isArray(doc.sections) ? doc.sections.filter(Boolean) : [];
       // An index written before sections existed still names its headings.
       if (!sections.length) push(fold(doc.headings), d, HEADING);
-      var offsets = sections.filter(function (section) {
+      // A split index names each section's start before its text has loaded.
+      var offsets = !body ? [] : sections.filter(function (section) {
         return Number.isInteger(section.start);
       });
       if (!offsets.length) {

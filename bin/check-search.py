@@ -187,6 +187,77 @@ def write_section_probe(site: Path) -> None:
             '```filetree {title="Search output probe"}\n- docs/\n  - search.md # Local search\n```\n', encoding="utf-8")
 
 
+def write_large_page(site: Path) -> None:
+    """Add one English page that pushes the index past the single-file budget."""
+    paragraph = "Filler sentence for the split-index probe. " * 12
+    filler = (paragraph + "\n\n") * 150
+    parts = "".join(f"## Part {number}\n\n{filler}" for number in range(30))
+    (site / "content" / "docs" / "search-large.md").write_text(
+        '---\ntitle: "Large page"\n---\n\nIntroduction.\n\n' + parts
+        + "## Last part\n\nneedle_in_last_part closes the page.\n",
+        encoding="utf-8")
+
+
+def validate_split(helper: Any, workspace: Path, budget: dict[str, int]) -> str:
+    """A large index publishes page text separately; a small one stays whole."""
+    site = workspace / "site-split"
+    output = workspace / "public-split"
+    helper.copy_fixture_site(site, "flat", True, subpath=True)
+    write_section_probe(site)
+    write_large_page(site)
+    helper.run_hugo(site, output, workspace / "cache-split")
+    require(not list(output.glob("offline-search-source*")),
+            "the unsplit index source was published")
+
+    index_file = index_path(output, "en")
+    documents = json.loads(index_file.read_text(encoding="utf-8"))
+    require(all("body" not in doc for doc in documents), "split index kept page text")
+    payload = index_file.read_bytes()
+    require(len(payload) <= budget["uncompressed_bytes"]
+            and len(gzip.compress(payload, mtime=0)) <= budget["gzip_bytes"],
+            "split navigation index exceeds the budget")
+    body_files = sorted(output.glob("offline-search-body.en*.json"))
+    require(len(body_files) == 1, f"expected one en body file, found {body_files}")
+    entries = json.loads(body_files[0].read_text(encoding="utf-8"))
+    require(isinstance(entries, list) and entries
+            and all(set(entry) == {"ref", "body"} for entry in entries),
+            "page-text file is not a list of ref/body entries")
+    bodies = {entry["ref"]: entry["body"] for entry in entries}
+    require(len(bodies) == len(entries) and set(bodies) <= {doc["ref"] for doc in documents},
+            "page-text entries do not match index documents")
+    merged = [dict(doc, body=bodies[doc["ref"]]) if doc["ref"] in bodies else doc
+              for doc in documents]
+    validate_sections(merged, output, "/preview/")
+    large = by_suffix(merged, "/docs/search-large/")
+    last = large["sections"][-1]
+    require(last["title"] == "Last part"
+            and "needle_in_last_part" in large["body"].encode()[last["start"]:].decode(),
+            "section offsets no longer address the separated page text")
+
+    html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(encoding="utf-8")
+    require(f'data-td-index-src="/preview/{index_file.name}"' in html
+            and f'data-td-body-src="/preview/{body_files[0].name}"' in html
+            and f'data-td-body-bytes="{body_files[0].stat().st_size}"' in html
+            and "data-td-t-body-load=" in html and "data-td-t-body-loading=" in html,
+            "dialog does not announce the separated page text and its size")
+
+    # The other language stays within the budget and therefore in one file.
+    require(not list(output.glob("offline-search-body.zh*.json")), "a small index was split")
+    chinese = json.loads(index_path(output, "zh").read_text(encoding="utf-8"))
+    require(any("body" in doc for doc in chinese), "an unsplit index lost its page text")
+    html = (output / "zh" / "docs" / "guides" / "tutorial" / "index.html").read_text(encoding="utf-8")
+    require("data-td-body-src" not in html and "data-td-t-body-load" not in html,
+            "an unsplit index announced separate page text")
+
+    behavior = subprocess.run(
+        ["node", str(ROOT / "tests" / "js" / "search-engine.test.js"),
+         str(index_file), str(index_path(output, "zh"))],
+        cwd=ROOT, capture_output=True, check=False, text=True)
+    require(behavior.returncode == 0,
+            "ranking on a split index failed:\n" + (behavior.stdout + behavior.stderr).strip())
+    return (f"split/en: {len(payload)} B index + {body_files[0].stat().st_size} B page text")
+
+
 def main() -> int:
     reports: list[str] = []
     built_indexes: dict[str, dict[str, Path]] = {}
@@ -221,6 +292,8 @@ def main() -> int:
                     require(isinstance(documents, list), f"{lang} index is not an array")
                     validate_language(documents, lang, prefix, required_fields)
                     validate_sections(documents, output, prefix)
+                    require(not list(output.glob("offline-search-body.*")),
+                            f"{deployment} index within the budget was split")
                     home_rel = "" if lang == "en" else f"{lang}/"
                     home_html = (output / home_rel / "index.html").read_text()
                     require('data-td-search-scope-row' not in home_html,
@@ -278,6 +351,8 @@ def main() -> int:
                     f"{deployment} search ranking behavior test failed:\n"
                     + (behavior.stdout + behavior.stderr).strip(),
                 )
+
+            reports.append(validate_split(helper, workspace, budget))
 
             # Scope reductions must retain only the promised searchable fields.
             for scope in ("title", "heading", "summary"):

@@ -21,6 +21,8 @@ ui_search_partial: '部分匹配：{matched}/{total} 个关键词'
 ui_search_partial_results: 没有页面包含全部关键词，以下为部分匹配
 ui_search_empty: 未找到结果
 ui_search_loading: "正在加载搜索索引…"
+ui_search_body_load: "搜索正文（{size}）"
+ui_search_body_loading: "正在加载正文…"
 ui_search_results: '找到 {count} 条结果'
 ui_search_nav: 选择
 ui_search_open: 打开

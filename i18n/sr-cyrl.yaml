@@ -20,6 +20,8 @@ ui_search_partial: "Делимично подударање: {matched}/{total} �
 ui_search_partial_results: "Ниједна страница не одговара свим појмовима; приказана су делимична подударања"
 ui_search_empty: "Ниједан резултат није пронађен"
 ui_search_loading: "Учитавање индекса претраге…"
+ui_search_body_load: "Претражи текст страница ({size})"
+ui_search_body_loading: "Учитавање текста страница…"
 ui_search_results: "Пронађено резултата: {count}"
 ui_search_nav: "Навигација"
 ui_search_open: "Отвори"

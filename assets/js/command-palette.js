@@ -114,6 +114,15 @@
     var engine = null;
     var loading = false;
     var loadFailed = false;
+    // A large index is split in two. The first file locates pages by title,
+    // heading and keyword; the page text follows in a second file. Text up to
+    // AUTOMATIC_BODY_BYTES loads by itself. Larger text waits for the reader,
+    // as does any size when the browser asks to save data.
+    var AUTOMATIC_BODY_BYTES = 8 * 1024 * 1024;
+    var bodySrc = root.dataset.tdBodySrc || '';
+    var bodyBytes = parseInt(root.dataset.tdBodyBytes, 10) || 0;
+    var bodyState = bodySrc ? 'waiting' : 'none'; // then loading, loaded or failed
+    var documents = null;
     var indexRequest = 0;
     var rows = [];
     var selected = 0;
@@ -220,6 +229,12 @@
           engine = searchApi.create(data, maxResults);
           loading = false;
           syncBusy();
+          if (bodyState !== 'none' && bodyState !== 'loaded') {
+            documents = data;
+            bodyState = 'waiting';
+            var connection = global.navigator && global.navigator.connection;
+            if (bodyBytes <= AUTOMATIC_BODY_BYTES && !(connection && connection.saveData)) loadBody();
+          }
           if (isOpen()) render(input.value);
         })
         .catch(function () {
@@ -230,6 +245,57 @@
           if (isOpen() && normalQuery(input.value))
             render(input.value, false);
         });
+    }
+
+    // Render again once the page text changed the results, keeping the row
+    // the reader had reached.
+    function refresh() {
+      var current = rows[selected] && rows[selected].id;
+      render(input.value, false);
+      for (var n = 0; current && n < rows.length; n += 1)
+        if (rows[n].id === current) { select(n); break; }
+    }
+
+    function loadBody() {
+      if (!documents || bodyState === 'loading') return;
+      var pending = documents;
+      bodyState = 'loading';
+      fetch(bodySrc)
+        .then(function (response) {
+          if (!response.ok) throw new Error('Page text unavailable');
+          return response.json();
+        })
+        .then(function (entries) {
+          if (documents !== pending) return;
+          var bodies = new Map(entries.map(function (entry) { return [entry.ref, entry.body]; }));
+          pending.forEach(function (doc) {
+            if (typeof bodies.get(doc.ref) === 'string') doc.body = bodies.get(doc.ref);
+          });
+          engine = searchApi.create(pending, maxResults);
+          documents = null;
+          bodyState = 'loaded';
+          if (isOpen()) refresh();
+        })
+        .catch(function () {
+          if (documents !== pending) return;
+          // The row that asks for the page text returns, so the reader can retry.
+          bodyState = 'failed';
+          if (isOpen()) refresh();
+        });
+    }
+
+    function bodyRow() {
+      var megabytes = bodyBytes / 1048576;
+      var digits = megabytes < 10 ? 1 : 0;
+      var size = megabytes.toFixed(digits);
+      try {
+        size = new Intl.NumberFormat(html.lang || undefined, {
+          minimumFractionDigits: digits, maximumFractionDigits: digits,
+        }).format(megabytes);
+      } catch (_) { /* an unknown language tag keeps the plain number */ }
+      return { id: 'body:load', sourceId: 'body', type: 'body', available: true,
+        icon: 'fa-solid fa-file-lines',
+        title: (root.dataset.tdTBodyLoad || 'Search page text ({size})').replace('{size}', size + ' MB') };
     }
 
     // `seed` pre-fills the query. Passing the command prefix opens straight
@@ -425,6 +491,8 @@
         try { groups = pageGroups(engine.query(raw, { root: scope ? scope.value : '' })); } catch (_) { groups = []; queryFailed = true; }
       }
       var actions = model.actionRows(registry, raw);
+      if (engine && !queryFailed && (bodyState === 'waiting' || bodyState === 'failed'))
+        actions = actions.concat([bodyRow()]);
       if (actions.length)
         groups.push({ key: 'actions', label: labels.actions, rows: actions });
       return groups;
@@ -561,7 +629,9 @@
         select(0);
         var hasPartial = rows.some(function (row) { return row.page && row.page.partial; });
         announce(resultMessage(rows.length) + (hasPartial
-          ? '. ' + (root.dataset.tdTPartialResults || 'No page matches every term; showing partial matches') : ''));
+          ? '. ' + (root.dataset.tdTPartialResults || 'No page matches every term; showing partial matches') : '') +
+          (bodyState === 'loading' && normalQuery(input.value) && !choiceState
+            ? '. ' + (root.dataset.tdTBodyLoading || 'Loading page text…') : ''));
       }
     }
 
@@ -600,7 +670,10 @@
             ? (root.dataset.tdTIndexUnavailable || root.dataset.tdTEmpty || 'Page index unavailable')
             : commandOnly
               ? (root.dataset.tdTNoCommands || root.dataset.tdTEmpty || 'No results')
-              : (root.dataset.tdTEmpty || 'No results'));
+              // Titles and headings found nothing; the page text may yet.
+              : raw && !choiceState && bodyState === 'loading'
+                ? (root.dataset.tdTBodyLoading || 'Loading page text…')
+                : (root.dataset.tdTEmpty || 'No results'));
         } else {
           renderGroups(groups, choiceState ? '' : (commandOnly ? raw.slice(1).trim() : raw));
           if (indexFailed)
@@ -654,6 +727,12 @@
     function activate(index) {
       var row = rows[index];
       if (!row) return;
+      if (row.type === 'body') {
+        loadBody();
+        render(input.value, false);
+        input.focus({ preventScroll: true });
+        return;
+      }
       if (pendingKey) return;
       if (!row.available) {
         announce(row.disabledReason || root.dataset.tdTActionFailed || 'Unavailable');

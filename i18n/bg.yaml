@@ -20,6 +20,8 @@ ui_search_partial: "Частично съвпадение: {matched}/{total} д�
 ui_search_partial_results: "Няма страница с всички думи; показват се частични съвпадения"
 ui_search_empty: "Няма намерени резултати"
 ui_search_loading: "Зареждане на индекса за търсене…"
+ui_search_body_load: "Търсене в текста на страниците ({size})"
+ui_search_body_loading: "Зареждане на текста на страниците…"
 ui_search_results: "Намерени резултати: {count}"
 ui_search_nav: "Навигирай"
 ui_search_open: "Отвори"

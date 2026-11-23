@@ -1,8 +1,4 @@
-{{- $lang := .Site.Language.Lang | default "default" -}}
-{{- $target := printf "offline-search-index.%s.json" $lang -}}
-{{- $index := resources.Get "json/offline-search-index.json"
-      | resources.ExecuteAsTemplate $target .Site.Home -}}
-{{- if hugo.IsProduction -}}
-  {{- $index = $index | fingerprint "md5" -}}
-{{- end -}}
-{{- return $index.RelPermalink -}}
+{{- /* The URL of this language's local-search index. A large index is split;
+     search/index-resources.html owns both files. */ -}}
+{{- $search := partialCached "search/index-resources.html" . .Site.BaseURL .Site.Language.Lang -}}
+{{- return $search.index.RelPermalink -}}

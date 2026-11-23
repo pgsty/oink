@@ -1,11 +1,16 @@
 {{- if partial "shell/search-enabled.html" . -}}
-{{- $indexURL := partialCached "offline-search-index.html" . .Site.BaseURL .Site.Language.Lang -}}
+{{- $search := partialCached "search/index-resources.html" . .Site.BaseURL .Site.Language.Lang -}}
 {{- $scopeSection := false -}}
 {{- with .FirstSection -}}
   {{- if and (eq .Kind "section") (ne .Section "") }}{{ $scopeSection = . }}{{ end -}}
 {{- end -}}
 <div id="td-shell-search" class="td-shell-search" hidden
-     data-td-index-src="{{ $indexURL }}"
+     data-td-index-src="{{ $search.index.RelPermalink }}"
+     {{- with $search.body }}
+     data-td-body-src="{{ .RelPermalink }}" data-td-body-bytes="{{ $search.bytes }}"
+     data-td-t-body-load="{{ T "ui_search_body_load" }}"
+     data-td-t-body-loading="{{ T "ui_search_body_loading" }}"
+     {{- end }}
      data-td-max-results="{{ partial "validate.html" (dict
        "value" .Site.Params.offline_search_max_results "kind" "int"
        "min" 1 "fallback" 10 "key" "params.offline_search_max_results") }}"

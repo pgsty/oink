@@ -21,6 +21,8 @@ ui_search_partial: 'Partial match: {matched}/{total} terms'
 ui_search_partial_results: No page matches every term; showing partial matches
 ui_search_empty: No results found
 ui_search_loading: Loading search index…
+ui_search_body_load: 'Search page text ({size})'
+ui_search_body_loading: 'Loading page text…'
 ui_search_results: '{count} results found'
 ui_search_nav: Navigate
 ui_search_open: Open

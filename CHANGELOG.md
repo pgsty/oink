@@ -72,6 +72,16 @@ All notable changes to OINK are documented here. The project follows
   adjacent phrase, then by BM25 per section. A phrase no longer outranks every
   other match, and function words such as "how" or `如何` are not required of
   a page.
+- Split a local-search index larger than 2 MiB. The index keeps titles,
+  headings, anchors, keywords and descriptions, and the page text moves to
+  `offline-search-body.<lang>.json`. The palette shows results from the index
+  first and adds the text when it arrives. Text up to 8 MiB loads by itself;
+  larger text, or any size under Save-Data, loads when the reader chooses
+  "Search page text". An index within 2 MiB is published as before, byte for
+  byte. No key is added; `offline_search_index` still reduces what is indexed.
+  A tool that read `body` from a large index must read the second file. Adds
+  the `ui_search_body_load` and `ui_search_body_loading` strings in all 32
+  locales.
 - Raise the module baseline to Go 1.27.4 and Hugo 0.169.0. Refresh the
   documentation test dependencies and maintainer build lock to current
   compatible releases.

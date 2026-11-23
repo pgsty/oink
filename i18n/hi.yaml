@@ -20,6 +20,8 @@ ui_search_partial: "आंशिक मिलान: {matched}/{total} शब्
 ui_search_partial_results: "किसी पृष्ठ में सभी शब्द नहीं मिले; आंशिक मिलान दिखाए जा रहे हैं"
 ui_search_empty: "कोई परिणाम नहीं मिला"
 ui_search_loading: "खोज सूची लोड हो रही है…"
+ui_search_body_load: "पृष्ठों के पाठ में खोजें ({size})"
+ui_search_body_loading: "पृष्ठों का पाठ लोड हो रहा है…"
 ui_search_results: "{count} परिणाम मिले"
 ui_search_nav: "नेविगेट करें"
 ui_search_open: "खोलें"

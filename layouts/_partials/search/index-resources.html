@@ -1,0 +1,55 @@
+{{- /* The local-search files of one language, as resources.
+
+     The index template writes every document, with its body in `content`
+     scope. Within the 2 MiB single-file budget that output is the index,
+     byte for byte. Beyond it the bodies move to a second file, so the first
+     download holds only what locates a page: titles, headings, anchors,
+     keywords and descriptions. The palette fetches the bodies afterwards.
+
+     Returns `index`, and `body` with its size in `bytes` when the index was
+     split. Call it through partialCached, keyed by base URL and language. */ -}}
+{{- $lang := .Site.Language.Lang | default "default" -}}
+{{- $source := resources.Get "json/offline-search-index.json"
+      | resources.ExecuteAsTemplate (printf "offline-search-source.%s.json" $lang) .Site.Home -}}
+{{- $content := $source.Content -}}
+{{- $body := false -}}
+{{- $bytes := 0 -}}
+{{- if gt (len $content) 2097152 -}}
+  {{- /* A site may override the index template; output that is not a JSON
+       list is published as it is. */ -}}
+  {{- $parsed := try (transform.Unmarshal $content) -}}
+  {{- $documents := false -}}
+  {{- if $parsed.Err -}}
+    {{- warnf "local search index for %q is not valid JSON; publishing it unsplit" $lang -}}
+  {{- else -}}
+    {{- $documents = $parsed.Value -}}
+  {{- end -}}
+  {{- $entries := slice -}}
+  {{- $bodies := slice -}}
+  {{- if reflect.IsSlice $documents -}}
+    {{- range $documents -}}
+      {{- $document := . -}}
+      {{- $entry := dict -}}
+      {{- range $key, $value := $document -}}
+        {{- if ne $key "body" }}{{ $entry = merge $entry (dict $key $value) }}{{ end -}}
+      {{- end -}}
+      {{- $entries = $entries | append $entry -}}
+      {{- if and $document.ref $document.body -}}
+        {{- $bodies = $bodies | append (dict "ref" $document.ref "body" $document.body) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* A site template that writes no bodies has nothing to move. */ -}}
+  {{- if $bodies -}}
+    {{- $content = $entries | jsonify -}}
+    {{- $text := $bodies | jsonify -}}
+    {{- $bytes = len $text -}}
+    {{- $body = resources.FromString (printf "offline-search-body.%s.json" $lang) $text -}}
+  {{- end -}}
+{{- end -}}
+{{- $index := resources.FromString (printf "offline-search-index.%s.json" $lang) $content -}}
+{{- if hugo.IsProduction -}}
+  {{- $index = $index | fingerprint "md5" -}}
+  {{- with $body }}{{ $body = . | fingerprint "md5" }}{{ end -}}
+{{- end -}}
+{{- return (dict "index" $index "body" $body "bytes" $bytes) -}}

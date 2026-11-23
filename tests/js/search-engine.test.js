@@ -281,6 +281,18 @@ assert.deepEqual(refs(split.query('alpha beta')), ['/two/', '/one/'],
   'one section that covers the query leads a page that needs two');
 assert.equal(split.query('alpha beta')[1].partial, false);
 
+// A split index carries section offsets before the page text arrives.
+const navigation = { ref: '/split/', title: 'Tuning', description: 'Memory settings.',
+  sections: [{ id: 'memory', title: 'Memory', start: 0 }, { id: 'disk', title: 'Disk', start: 27 }] };
+const before = engineModule.create([navigation], 10);
+assert.equal(before.query('disk')[0].ref, '/split/#disk');
+assert.equal(before.query('disk')[0].excerpt, 'Memory settings.');
+assert.deepEqual(before.query('temp_file_limit'), []);
+const after = engineModule.create([{ ...navigation,
+  body: 'Memory work_mem sorts rows. Disk temp_file_limit caps spill files.' }], 10);
+assert.equal(after.query('temp_file_limit')[0].ref, '/split/#disk');
+assert.ok(after.query('temp_file_limit')[0].excerpt.includes('temp_file_limit'));
+
 const headingsOnly = engineModule.create([{ref:'/heading/', title:'Manual',
   description:'Connection guide.',
   headings:'连接设置', sections:[{id:'connection', title:'连接设置'}]}], 10);

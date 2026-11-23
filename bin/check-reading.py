@@ -142,6 +142,23 @@ def check_math(public: Path) -> list[str]:
     print_page = print_path.read_text()
 
     require(math_page.count('class="katex"') >= 5, "math fixture lost rendered KaTeX", errors)
+    # A formula's page publishes the twenty woff2 faces and a stylesheet that
+    # names exactly those. The woff and ttf copies stay in the module, where
+    # no browser that can lay the theme out would ask for them.
+    katex = public / "third_party/katex"
+    sheets = sorted(katex.glob("katex.min*.css"))
+    require(len(sheets) == 1 and sheets[0].name in math_page,
+            f"the math page does not link the one published KaTeX stylesheet: {[sheet.name for sheet in sheets]}", errors)
+    if sheets:
+        named = sorted(re.findall(r"url\(fonts/([^)]+)\)", sheets[0].read_text()))
+        fonts = sorted(path.name for path in (katex / "fonts").iterdir())
+        require(len(named) == 20 and named == fonts and all(name.endswith(".woff2") for name in fonts),
+                f"KaTeX must publish its 20 woff2 faces and name only those; "
+                f"stylesheet names {len(named)}, published {len(fonts)}, "
+                f"other formats {sorted({name.rsplit('.', 1)[-1] for name in named + fonts} - {'woff2'})}", errors)
+    vendored = sorted(path.suffix for path in (ROOT / "assets/third_party/katex/fonts").iterdir())
+    require(vendored.count(".woff2") == 20 and vendored.count(".woff") == 20 and vendored.count(".ttf") == 20,
+            "the vendored KaTeX distribution is no longer complete", errors)
     require('class="katex-display"' in math_page, "math fixture lost block rendering", errors)
     require(
         math_page.count('class="katex-display" tabindex="0"') >= 4,

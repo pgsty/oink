@@ -1,8 +1,16 @@
 {{/* cSpell:ignore katex */ -}}
-{{ range resources.Match "third_party/katex/fonts/*" -}}
+{{/* KaTeX ships each of its twenty faces as woff2, woff and ttf, and its
+     stylesheet lists all three with woff2 first. Every browser that can lay
+     this theme out takes the first, so the other two formats only add 0.8 MB
+     to a site with one formula. Publish the woff2 faces, and a stylesheet
+     that names nothing it does not publish. The vendored files stay exactly
+     as shipped; only what a site publishes is narrowed. */ -}}
+{{ range resources.Match "third_party/katex/fonts/*.woff2" -}}
   {{ $published := .Publish -}}
 {{ end -}}
 {{ $katexCSS := resources.Get "third_party/katex/katex.min.css" -}}
+{{ $katexCSS = replaceRE `,url\(fonts/[^)]+\.(?:woff|ttf)\) format\("(?:woff|truetype)"\)` "" $katexCSS.Content
+      | resources.FromString "third_party/katex/katex.min.css" -}}
 {{ if hugo.IsProduction }}{{ $katexCSS = $katexCSS | fingerprint }}{{ end -}}
 <link rel="stylesheet" href="{{ $katexCSS.RelPermalink }}"
   {{- with $katexCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>

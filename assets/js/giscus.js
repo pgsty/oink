@@ -120,7 +120,27 @@
     container.appendChild(script);
   };
 
-  sections.forEach(load);
+  // The widget is a third-party script and frame at the end of the page, and
+  // most readers never reach it. Ask for it when a reader comes within a
+  // scroll of the comments, or is already past them. Two visits cannot wait:
+  // one returning from sign-in, whose session is in the address until the
+  // widget takes it, and a site that set `loading: eager`.
+  const returning = /[?&]giscus=/.test(window.location.search || '');
+  if (returning || typeof IntersectionObserver !== 'function') {
+    sections.forEach(load);
+  } else {
+    const due = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        due.unobserve(entry.target);
+        load(entry.target);
+      }
+    }, { rootMargin: '1000000px 0px 600px 0px' });
+    sections.forEach(section => {
+      if (section.dataset.loading === 'eager') load(section);
+      else due.observe(section);
+    });
+  }
 
   new MutationObserver(() => sections.forEach(setTheme)).observe(document.documentElement, {
     attributes: true,

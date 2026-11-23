@@ -39,13 +39,23 @@
       </a>
 
       {{- /* Center zone: the site's own content-driven menu entries, true-
-           centered in the row by the grid. */ -}}
+           centered in the row by the grid. When horizontal space runs tight,
+           navbar-menu.js collapses icon-bearing entries to icons first and
+           folds any remaining overflow into the trailing disclosure button. */ -}}
       <div class="td-nav-links td-nav-menu-zone">
         {{- range $index, $entry := .Site.Menus.main -}}
           {{- if ne .Identifier "github" -}}
             {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "desktop" "index" $index) -}}
           {{- end -}}
         {{- end }}
+        <div class="td-nav-overflow" data-td-nav-overflow hidden>
+          <button type="button" class="td-nav-overflow__trigger" data-td-nav-overflow-toggle
+            aria-haspopup="true" aria-expanded="false" aria-controls="td-nav-overflow-panel"
+            title="{{ T "ui_nav_more" }}" aria-label="{{ T "ui_nav_more" }}">
+            {{- partialCached "shell/icon.html" "ellipsis" "navbar-more" -}}
+          </button>
+          <div class="td-nav-menu__panel td-nav-overflow__panel" id="td-nav-overflow-panel" data-td-nav-overflow-panel hidden></div>
+        </div>
       </div>
 
       {{- /* Right zone: the search box leads as the elastic boundary before

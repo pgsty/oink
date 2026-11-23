@@ -36,6 +36,33 @@
 {{- end -}}
 {{- if not $icon }}{{ $icon = "fa-solid fa-link" }}{{ end -}}
 
-{{- with .Page }}{{ with .Params.icon }}{{ $icon = . }}{{ end }}{{ end -}}
-{{- with .Params }}{{ with .icon }}{{ $icon = . }}{{ end }}{{ end -}}
+{{- $explicit := false -}}
+{{- $explicitValue := "" -}}
+{{- with .Page -}}
+  {{- if isset .Params "icon" -}}
+    {{- $explicit = true -}}
+    {{- $explicitValue = index .Params "icon" -}}
+  {{- end -}}
+{{- end -}}
+{{- with .Params -}}
+  {{- if isset . "icon" -}}
+    {{- $explicit = true -}}
+    {{- $explicitValue = index . "icon" -}}
+  {{- end -}}
+{{- end -}}
+{{- if $explicit -}}
+  {{- $kind := printf "%T" $explicitValue -}}
+  {{- if eq $kind "bool" -}}
+    {{- if not $explicitValue }}{{ $icon = "" }}{{ end -}}
+  {{- else if eq $kind "string" -}}
+    {{- $trimmed := strings.TrimSpace $explicitValue -}}
+    {{- if or (eq $trimmed "") (eq (lower $trimmed) "none") (eq (lower $trimmed) "false") -}}
+      {{- $icon = "" -}}
+    {{- else -}}
+      {{- $icon = $trimmed -}}
+    {{- end -}}
+  {{- else -}}
+    {{- warnidf (printf "validate:menu-icon:%v" $explicitValue) "menu %q params.icon must be a Font Awesome class string or false; got %T; keeping default icon" (.Name | default .Identifier) $explicitValue -}}
+  {{- end -}}
+{{- end -}}
 {{- return $icon -}}

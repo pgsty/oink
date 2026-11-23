@@ -63,7 +63,8 @@ a:active {
 }
 
 /* Navbar links share the active preset's opaque focus color. */
-.td-site-header .nav-link:focus-visible {
+.td-site-header .nav-link:focus-visible,
+.td-site-header .td-nav-overflow__trigger:focus-visible {
   box-shadow: none;
   outline: 2px solid var(--bs-link-color);
   outline-offset: 2px;
@@ -78,6 +79,7 @@ a:active {
 @media (forced-colors: active) {
   .td-shell-tree__row.td-shell-active,
 .td-site-header [aria-current='page'],
+.td-site-header .td-nav-overflow__trigger.active,
 .td-site-drawer [aria-current='page'] {
     outline: 2px solid Highlight;
     outline-offset: -2px;

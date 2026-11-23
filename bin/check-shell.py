@@ -304,6 +304,16 @@ def check_sources() -> list[str]:
             and ".td-nav-github .td-nav-count" in navbar_styles
             and "white-space: nowrap" in navbar_styles,
             "compact navbar labels can wrap or crowd the icon tier", errors)
+    navbar_template = (ROOT / "layouts/_partials/navbar.html").read_text()
+    navbar_script = (ROOT / "assets/js/navbar-menu.js").read_text()
+    require("flex-wrap: nowrap" in navbar_styles
+            and "data-td-nav-compact='icons'" in navbar_styles
+            and "[data-td-nav-overflowed]" in navbar_styles
+            and ".td-nav-overflow__panel" in navbar_styles
+            and "data-td-nav-overflow" in navbar_template
+            and 'T "ui_nav_more"' in navbar_template
+            and "initNavbarOverflow" in navbar_script,
+            "navbar no longer enforces single-line progressive icon collapse and overflow disclosure", errors)
     require("html:not([data-td-shell-sidebar='collapsed'])" in navbar_styles
             and "body.td-shell-chrome--navbar:has(#td-shell-sidebar)" in navbar_styles
             and "visibility: hidden" in navbar_styles,

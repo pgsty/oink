@@ -103,16 +103,18 @@ aria-label="Oink 示例站 — 首页">
 <span class="td-nav-title">Oink 示例站</span>
 </a><div class="td-nav-links td-nav-menu-zone"><a class="nav-link active" href="/zh/docs/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
-aria-label="文档"
+aria-label="文档" title="文档"
 data-td-navbar-region="desktop" data-td-navbar-label="文档"
+data-td-navbar-icon="true"
 data-td-navbar-external="false">
 <i class="fa-solid fa-cubes" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">文档</span></a>
 <div class="td-nav-menu" data-td-navbar-menu>
 <a class="nav-link td-nav-menu__parent-link" href="/zh/blog/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
-aria-label="博客"
+aria-label="博客" title="博客"
 data-td-navbar-region="desktop" data-td-navbar-label="博客"
+data-td-navbar-icon="true"
 data-td-navbar-external="false" aria-controls="td-navbar-desktop-blog-1" aria-expanded="false">
 <i class="fa-solid fa-blog" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">博客</span></a>
@@ -120,6 +122,7 @@ data-td-navbar-external="false" aria-controls="td-navbar-desktop-blog-1" aria-ex
 data-td-navbar-level="1" data-td-navbar-kind="link"
 aria-label="Oink 博客"
 data-td-navbar-region="desktop" data-td-navbar-label="Oink 博客"
+data-td-navbar-icon="true"
 data-td-navbar-external="false">
 <i class="fa-solid fa-pen-nib" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Oink 博客</span></a>
@@ -127,24 +130,33 @@ data-td-navbar-external="false">
 data-td-navbar-level="1" data-td-navbar-kind="link"
 aria-label="版本发布"
 data-td-navbar-region="desktop" data-td-navbar-label="版本发布"
+data-td-navbar-icon="true"
 data-td-navbar-external="false">
 <i class="fa-solid fa-rocket" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">版本发布</span></a>
 </div>
 </div><a class="nav-link" href="/zh/book/"
 data-td-navbar-level="0" data-td-navbar-kind="link" data-td-navbar-route
-aria-label="书籍"
+aria-label="书籍" title="书籍"
 data-td-navbar-region="desktop" data-td-navbar-label="书籍"
+data-td-navbar-icon="true"
 data-td-navbar-external="false">
 <i class="fa-solid fa-book" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">书籍</span></a>
 <a class="nav-link" href="https://pigsty.io/"
 data-td-navbar-level="0" data-td-navbar-kind="link"
-aria-label="Pigsty"
+aria-label="Pigsty" title="Pigsty"
 data-td-navbar-region="desktop" data-td-navbar-label="Pigsty"
+data-td-navbar-icon="true"
 data-td-navbar-external="true" target="_blank" rel="noopener noreferrer">
 <i class="fa-solid fa-database" aria-hidden="true"></i>
 <span class="td-navbar-entry__label">Pigsty</span><span class="td-navbar-entry__external"><i class="td-shell-icon td-shell-icon--external-link fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></span></a>
+<div class="td-nav-overflow" data-td-nav-overflow hidden>
+<button type="button" class="td-nav-overflow__trigger" data-td-nav-overflow-toggle
+aria-haspopup="true" aria-expanded="false" aria-controls="td-nav-overflow-panel"
+title="更多导航" aria-label="更多导航"><i class="td-shell-icon td-shell-icon--ellipsis fa-solid fa-ellipsis" aria-hidden="true"></i></button>
+<div class="td-nav-menu__panel td-nav-overflow__panel" id="td-nav-overflow-panel" data-td-nav-overflow-panel hidden></div>
+</div>
 </div><div class="td-nav-links td-nav-util-zone">
 <button type="button" class="td-nav-search-box" data-td-shell-search-open
 title="搜索…" aria-label="搜索…"
@@ -182,19 +194,19 @@ title="关闭外观设置" aria-label="关闭外观设置"><i class="td-shell-ic
 <label class="td-appearance__mode">
 <input class="td-appearance__input" type="radio" name="td-mode-navbar" value="light"
 data-bs-theme-value="light">
-<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>亮色</span>
+<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>浅色</span>
 </span>
 </label>
 <label class="td-appearance__mode">
 <input class="td-appearance__input" type="radio" name="td-mode-navbar" value="dark"
 data-bs-theme-value="dark">
-<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>暗色</span>
+<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>深色</span>
 </span>
 </label>
 <label class="td-appearance__mode">
 <input class="td-appearance__input" type="radio" name="td-mode-navbar" value="auto"
 data-bs-theme-value="auto" checked>
-<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>跟随系统</span>
+<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>系统</span>
 </span>
 </label>
 </div>
@@ -468,7 +480,7 @@ title="展开侧栏" aria-label="展开侧栏"><i class="td-shell-icon td-shell-
 data-td-t-copied="已复制 Markdown" data-td-t-copy-error="无法复制 Markdown">
 <div class="td-page-actions__group">
 <button type="button" class="td-page-actions__primary" data-td-action="copy_markdown" data-td-url="/zh/docs/callout/index.md"
-title="复制 Markdown 文本" aria-label="复制 Markdown 文本">
+title="复制 Markdown" aria-label="复制 Markdown">
 <span class="td-page-actions__icon"><i class="td-shell-icon td-shell-icon--copy fa-regular fa-copy" aria-hidden="true"></i></span>
 <span class="td-page-actions__icon td-page-actions__icon--done"><i class="td-shell-icon td-shell-icon--check fa-solid fa-check" aria-hidden="true"></i></span>
 </button>
@@ -480,7 +492,7 @@ title="操作" aria-label="操作"><i class="td-shell-icon td-shell-icon--chevro
 <ul class="td-page-actions__menu" id="td-page-actions-menu" data-td-page-actions-menu
 aria-label="操作">
 <li><button type="button" class="td-page-actions__item" data-td-action="copy_markdown" data-td-url="/zh/docs/callout/index.md">
-<i class="fa-regular fa-copy" aria-hidden="true"></i><span>复制 Markdown 文本</span>
+<i class="fa-regular fa-copy" aria-hidden="true"></i><span>复制 Markdown</span>
 </button></li>
 <li><a class="td-page-actions__item" data-td-action="open_chatgpt" data-td-page-open-in="chatgpt"
 href="https://chatgpt.com/?hints=search&amp;prompt=%E8%AF%B7%E9%98%85%E8%AF%BB&#43;https%3A%2F%2Fexample.org%2Fzh%2Fdocs%2Fcallout%2F&#43;%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82" target="_blank" rel="noopener noreferrer">
@@ -491,10 +503,10 @@ href="https://claude.ai/new?q=%E8%AF%B7%E9%98%85%E8%AF%BB&#43;https%3A%2F%2Fexam
 <i class="fa-brands fa-claude" aria-hidden="true"></i><span>在 Claude 中打开</span>
 </a></li>
 <li><a class="td-page-actions__item" data-td-action="view_markdown" href="/zh/docs/callout/index.md" target="_blank" rel="noopener">
-<i class="fa-brands fa-markdown" aria-hidden="true"></i><span>查阅 Markdown 源码</span>
+<i class="fa-brands fa-markdown" aria-hidden="true"></i><span>查看 Markdown 源码</span>
 </a></li>
 <li><a class="td-page-actions__item" data-td-action="view_history" href="https://github.com/pgsty/oink/commits/main/tests/site/content/docs/callout.zh.md" target="_blank" rel="noopener">
-<i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span>查阅编辑历史</span>
+<i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span>查看编辑历史</span>
 </a></li>
 <li class="td-page-actions__separator" role="separator"></li>
 <li><a class="td-page-actions__item" data-td-action="edit_page" href="https://github.com/pgsty/oink/edit/main/tests/site/content/docs/callout.zh.md" target="_blank" rel="noopener">
@@ -524,7 +536,7 @@ href="https://claude.ai/new?q=%E8%AF%B7%E9%98%85%E8%AF%BB&#43;https%3A%2F%2Fexam
 <header class="td-article-meta">
 </header>
 <p>提示块（Callout）是 GitHub / Obsidian 风格的块引用：<code>&gt; [!TYPE]</code> 起头，正文跟在后面。用于把提示、警告、前提条件从正文中分离出来；正文一句话能说清的内容不必使用提示块。</p>
-<h2 id="minimal">最简例子<a class="td-heading-self-link" href="#minimal" aria-label="标题锚点"></a>
+<h2 id="minimal">最简例子<a class="td-heading-self-link" href="#minimal" aria-label="链接到此标题"></a>
 </h2>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-0" data-td-code data-td-code-auto-id
 data-td-language="markdown" data-td-line-count="2" role="group" aria-labelledby="td-code-e2b611bc-fence-0-title">
@@ -549,7 +561,7 @@ aria-label="复制代码" title="复制代码">
 <p>Hugo Module 需要本机安装 Go；只用离线归档时不需要。</p>
 </div>
 </div><p>不写标题时使用本地化的类型名（中文站显示「注意」，英文站显示 &ldquo;Note&rdquo;）。源码在 GitHub 上按 GitHub 的提示块渲染，在普通 Markdown 阅读器中显示为块引用，内容都不会丢失。</p>
-<h2 id="types">十种类型<a class="td-heading-self-link" href="#types" aria-label="标题锚点"></a>
+<h2 id="types">十种类型<a class="td-heading-self-link" href="#types" aria-label="链接到此标题"></a>
 </h2>
 <p>前五种与 GitHub 一致，后五种是 OINK 追加的语义类型。每种类型有默认图标与强调色。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-1" data-td-code data-td-code-auto-id
@@ -639,7 +651,7 @@ aria-label="复制代码" title="复制代码">
 <p>Documentation is a love letter that you write to your future self.</p>
 </div>
 </div><p>类型名不区分大小写。</p>
-<h2 id="title">自定义标题<a class="td-heading-self-link" href="#title" aria-label="标题锚点"></a>
+<h2 id="title">自定义标题<a class="td-heading-self-link" href="#title" aria-label="链接到此标题"></a>
 </h2>
 <p>标记同一行的后续文字是标题，支持行内 Markdown（代码、粗体、链接）。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-2" data-td-code data-td-code-auto-id
@@ -664,7 +676,7 @@ aria-label="复制代码" title="复制代码">
 <div class="td-callout__body">
 <p>生产构建前先确认 <code>baseURL</code> 指向正式域名，否则所有绝对链接都会指错。</p>
 </div>
-</div><h2 id="body">正文内容<a class="td-heading-self-link" href="#body" aria-label="标题锚点"></a>
+</div><h2 id="body">正文内容<a class="td-heading-self-link" href="#body" aria-label="链接到此标题"></a>
 </h2>
 <p>正文是页面级 Markdown：列表、代码围栏、表格、图片、嵌套的提示块。每一行都以 <code>&gt;</code> 开头，围栏也不例外。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-3" data-td-code data-td-code-auto-id
@@ -734,7 +746,7 @@ aria-label="复制代码" title="复制代码">
 </table>
 </div>
 </div>
-</div><h2 id="collapsible">折叠<a class="td-heading-self-link" href="#collapsible" aria-label="标题锚点"></a>
+</div><h2 id="collapsible">折叠<a class="td-heading-self-link" href="#collapsible" aria-label="链接到此标题"></a>
 </h2>
 <p>类型后加 <code>-</code> 默认收起，加 <code>+</code> 默认展开；两者都渲染为原生 <code>&lt;details&gt;</code>，不加载 JavaScript。适用于完整输出、备选方案、背景说明这类不必默认展示的内容。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-5" data-td-code data-td-code-auto-id
@@ -767,7 +779,7 @@ aria-label="复制代码" title="复制代码">
 <div class="td-callout__body">
 <p>收起状态不会被记住，刷新后回到默认。</p>
 </div>
-</details><h2 id="details">中性折叠块 DETAILS<a class="td-heading-self-link" href="#details" aria-label="标题锚点"></a>
+</details><h2 id="details">中性折叠块 DETAILS<a class="td-heading-self-link" href="#details" aria-label="链接到此标题"></a>
 </h2>
 <p><code>[!DETAILS]</code> 是没有语义颜色的折叠块：不加符号默认收起，<code>[!DETAILS]+</code> 默认展开。用于冗长输出、完整配置文件等需要折叠的内容。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-6" data-td-code data-td-code-auto-id
@@ -807,7 +819,7 @@ aria-label="复制代码" title="复制代码">
 <span class="visually-hidden" role="status" aria-live="polite" data-td-code-status></span>
 </div>
 </div>
-</details><h2 id="icon">自定义图标<a class="td-heading-self-link" href="#icon" aria-label="标题锚点"></a>
+</details><h2 id="icon">自定义图标<a class="td-heading-self-link" href="#icon" aria-label="链接到此标题"></a>
 </h2>
 <p>块引用结束后的下一行写属性 <code>{icon=&quot;fa-solid fa-xxx&quot;}</code>（一对 Font Awesome class），替换该类型的默认图标。属性行紧接块引用，中间不能有空行。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-8" data-td-code data-td-code-auto-id
@@ -833,7 +845,7 @@ aria-label="复制代码" title="复制代码">
 <div class="td-callout__body">
 <p>从 Pigsty v4 起默认安装 PostgreSQL 18。</p>
 </div>
-</div><h2 id="nesting">嵌套<a class="td-heading-self-link" href="#nesting" aria-label="标题锚点"></a>
+</div><h2 id="nesting">嵌套<a class="td-heading-self-link" href="#nesting" aria-label="链接到此标题"></a>
 </h2>
 <p>提示块可以嵌套（每层多一个 <code>&gt;</code>），也可以放在列表项或步骤中。建议最多嵌套一层。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-9" data-td-code data-td-code-auto-id
@@ -867,7 +879,7 @@ aria-label="复制代码" title="复制代码">
 </div>
 </details>
 </div>
-</div><h2 id="pitfalls">未知类型与易错写法<a class="td-heading-self-link" href="#pitfalls" aria-label="标题锚点"></a>
+</div><h2 id="pitfalls">未知类型与易错写法<a class="td-heading-self-link" href="#pitfalls" aria-label="链接到此标题"></a>
 </h2>
 <p>未知的类型名不会导致构建失败，也不会丢失内容：该块渲染为普通块引用，<code>[!TYPE]</code> 标记原样可见。</p>
 <div class="td-code td-code--titled" id="td-code-e2b611bc-fence-10" data-td-code data-td-code-auto-id
@@ -896,7 +908,7 @@ aria-label="复制代码" title="复制代码">
 <li>属性行被格式化工具移动：把 <code>{icon=…}</code> 这类标记行放在 <code>&lt;!-- prettier-ignore-start --&gt;</code> / <code>&lt;!-- prettier-ignore-end --&gt;</code> 之间。</li>
 <li><code>style</code>、<code>onclick</code> 等属性导致构建失败：属性行只接受 <code>icon</code> 与 <code>class</code>（见下表）。</li>
 </ul>
-<h2 id="outputs">输出形态<a class="td-heading-self-link" href="#outputs" aria-label="标题锚点"></a>
+<h2 id="outputs">输出形态<a class="td-heading-self-link" href="#outputs" aria-label="链接到此标题"></a>
 </h2>
 <div class="td-table-scroll" tabindex="0" role="region" aria-label="可横向滚动的表格">
 <table>
@@ -927,7 +939,7 @@ aria-label="复制代码" title="复制代码">
 </table>
 </div>
 <p>提示块不加载脚本。</p>
-<h2 id="reference">参数参考<a class="td-heading-self-link" href="#reference" aria-label="标题锚点"></a>
+<h2 id="reference">参数参考<a class="td-heading-self-link" href="#reference" aria-label="链接到此标题"></a>
 </h2>
 <p>标记行 <code>&gt; [!TYPE]±  标题</code>：</p>
 <div class="td-fields">
@@ -975,14 +987,14 @@ aria-label="复制代码" title="复制代码">
 </dl>
 </div>
 <p><code>style</code>、<code>on*</code> 与其它任何键都会让构建失败。</p>
-<h2 id="limits">限制与常见问题<a class="td-heading-self-link" href="#limits" aria-label="标题锚点"></a>
+<h2 id="limits">限制与常见问题<a class="td-heading-self-link" href="#limits" aria-label="链接到此标题"></a>
 </h2>
 <ul>
 <li>不能自定义颜色：颜色由类型决定，需要新语义时选最接近的类型并自定义标题。</li>
 <li>折叠状态不持久化。</li>
 <li>提示块可以放在 <code>{.steps}</code> 列表项与 <code>{{% steps %}}</code> 步骤中（见<a href="/zh/docs/steps/">步骤</a>），块引用的每一行都以 <code>&gt;</code> 开头，缩进与列表项对齐。</li>
 </ul>
-<h2 id="related">相关<a class="td-heading-self-link" href="#related" aria-label="标题锚点"></a>
+<h2 id="related">相关<a class="td-heading-self-link" href="#related" aria-label="链接到此标题"></a>
 </h2>
 <ul>
 <li><a href="/zh/docs/steps/">步骤</a> — 步骤中放置提示块</li>
@@ -1146,19 +1158,19 @@ title="关闭外观设置" aria-label="关闭外观设置"><i class="td-shell-ic
 <label class="td-appearance__mode">
 <input class="td-appearance__input" type="radio" name="td-mode-footer" value="light"
 data-bs-theme-value="light">
-<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>亮色</span>
+<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--sun fa-solid fa-sun" aria-hidden="true"></i><span>浅色</span>
 </span>
 </label>
 <label class="td-appearance__mode">
 <input class="td-appearance__input" type="radio" name="td-mode-footer" value="dark"
 data-bs-theme-value="dark">
-<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>暗色</span>
+<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--moon fa-solid fa-moon" aria-hidden="true"></i><span>深色</span>
 </span>
 </label>
 <label class="td-appearance__mode">
 <input class="td-appearance__input" type="radio" name="td-mode-footer" value="auto"
 data-bs-theme-value="auto" checked>
-<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>跟随系统</span>
+<span class="td-appearance__segment"><i class="td-shell-icon td-shell-icon--contrast fa-solid fa-circle-half-stroke" aria-hidden="true"></i><span>系统</span>
 </span>
 </label>
 </div>
@@ -1240,14 +1252,14 @@ data-td-label-expand="展开页脚链接"><i class="td-shell-icon td-shell-icon-
 </div>
 </footer>
 </div>
-<script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"复制 Markdown 文本","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["复制 Markdown 文本","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"复制 Markdown 文本","url":"/zh/docs/callout/index.md"},{"available":true,"description":"复制链接","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["复制链接","分享","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"复制链接","url":"https://example.org/zh/docs/callout/"},{"available":true,"description":"在 ChatGPT 中打开","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["在 ChatGPT 中打开","就本页提问","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"请阅读 %s 的内容，以便我就此向你提问。","target":"blank","title":"在 ChatGPT 中打开","url":"https://chatgpt.com/?hints=search\u0026prompt=%E8%AF%B7%E9%98%85%E8%AF%BB+https%3A%2F%2Fexample.org%2Fzh%2Fdocs%2Fcallout%2F+%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82"},{"available":true,"description":"在 Claude 中打开","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["在 Claude 中打开","就本页提问","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"请阅读 %s 的内容，以便我就此向你提问。","target":"blank","title":"在 Claude 中打开","url":"https://claude.ai/new?q=%E8%AF%B7%E9%98%85%E8%AF%BB+https%3A%2F%2Fexample.org%2Fzh%2Fdocs%2Fcallout%2F+%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82"},{"available":true,"description":"查阅 Markdown 源码","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["查阅 Markdown 源码","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"查阅 Markdown 源码","url":"/zh/docs/callout/index.md"},{"available":true,"description":"查阅编辑历史","disabledReason":"","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["查阅编辑历史","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"查阅编辑历史","url":"https://github.com/pgsty/oink/commits/main/tests/site/content/docs/callout.zh.md"},{"available":true,"description":"编辑当前页面","disabledReason":"","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["编辑当前页面","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"编辑当前页面","url":"https://github.com/pgsty/oink/edit/main/tests/site/content/docs/callout.zh.md"},{"available":true,"description":"添加子页面","disabledReason":"","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["添加子页面","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"添加子页面","url":"https://github.com/pgsty/oink/new/main/tests/site/content/docs?filename=change-me.md\u0026value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60get-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A"},{"available":true,"description":"提交文档议题","disabledReason":"","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["提交文档议题","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"提交文档议题","url":"https://github.com/pgsty/oink/issues/new?title=%E6%8F%90%E7%A4%BA%E5%9D%97"},{"available":true,"description":"提交项目议题","disabledReason":"","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["提交项目议题","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"提交项目议题","url":"https://github.com/pgsty/oink/issues/new"},{"available":true,"description":"打印完整章节","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["打印完整章节","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"打印完整章节","url":"/zh/_print/docs/"},{"available":true,"description":"打印此页面","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["打印此页面","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"打印此页面","url":""},{"available":false,"description":"Version","disabledReason":"Version: 暂不可用","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"切换语言","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["切换语言","language"],"kind":"choice","options":[{"active":false,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"/docs/callout/"},{"active":true,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"/zh/docs/callout/"}],"placements":{"page":false,"palette":true},"target":"self","title":"切换语言","url":""},{"available":false,"description":"外观","disabledReason":"暂不可用","icon":"fa-solid fa-palette","id":"switch_preset","keywords":["preset","style","Paper","Slate","风格"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"paper","title":"Paper","value":"paper"}],"placements":{"page":false,"palette":true},"target":"self","title":"风格","url":""},{"available":true,"description":"切换配色","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["切换配色","亮色","暗色"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"跟随系统","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"亮色","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"暗色","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"切换配色","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"打开示例状态页","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","可用性","故障"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"示例服务状态","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["打印","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"打印本页","url":""},{"action":"","available":true,"description":"在示例站内跳转","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["组件","写作"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"打开提示块组件页","url":"/zh/docs/callout/"}],"language":"zh","quickLinks":[{"available":true,"description":"Markdown 组件样例","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["文档","docs"],"kind":"url","target":"self","title":"文档","url":"/zh/docs/"},{"available":true,"description":"真实的 OINK 发布说明与工程随笔，接线到全部博客特性。","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["博客","blog"],"kind":"url","target":"self","title":"博客","url":"/zh/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
+<script type="application/json" id="td-action-manifest">{"actions":[{"available":true,"description":"复制 Markdown","disabledReason":"","icon":"fa-regular fa-copy","id":"copy_markdown","keywords":["复制 Markdown","markdown","copy"],"kind":"copy","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"复制 Markdown","url":"/zh/docs/callout/index.md"},{"available":true,"description":"复制链接","disabledReason":"","icon":"fa-solid fa-link","id":"copy_link","keywords":["复制链接","分享","link","url","permalink"],"kind":"copy","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"复制链接","url":"https://example.org/zh/docs/callout/"},{"available":true,"description":"在 ChatGPT 中打开","disabledReason":"","icon":"fa-brands fa-openai","id":"open_chatgpt","keywords":["在 ChatGPT 中打开","就本页提问","chatgpt","gpt","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"请阅读 %s 的内容，以便我就此向你提问。","target":"blank","title":"在 ChatGPT 中打开","url":"https://chatgpt.com/?hints=search\u0026prompt=%E8%AF%B7%E9%98%85%E8%AF%BB+https%3A%2F%2Fexample.org%2Fzh%2Fdocs%2Fcallout%2F+%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82"},{"available":true,"description":"在 Claude 中打开","disabledReason":"","icon":"fa-brands fa-claude","id":"open_claude","keywords":["在 Claude 中打开","就本页提问","claude","anthropic","ai","llm"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"promptTemplate":"请阅读 %s 的内容，以便我就此向你提问。","target":"blank","title":"在 Claude 中打开","url":"https://claude.ai/new?q=%E8%AF%B7%E9%98%85%E8%AF%BB+https%3A%2F%2Fexample.org%2Fzh%2Fdocs%2Fcallout%2F+%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%BB%A5%E4%BE%BF%E6%88%91%E5%B0%B1%E6%AD%A4%E5%90%91%E4%BD%A0%E6%8F%90%E9%97%AE%E3%80%82"},{"available":true,"description":"查看 Markdown 源码","disabledReason":"","icon":"fa-brands fa-markdown","id":"view_markdown","keywords":["查看 Markdown 源码","markdown","source"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"查看 Markdown 源码","url":"/zh/docs/callout/index.md"},{"available":true,"description":"查看编辑历史","disabledReason":"","icon":"fa-solid fa-clock-rotate-left","id":"view_history","keywords":["查看编辑历史","history","commits","changelog","git"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"查看编辑历史","url":"https://github.com/pgsty/oink/commits/main/tests/site/content/docs/callout.zh.md"},{"available":true,"description":"编辑当前页面","disabledReason":"","icon":"fa-solid fa-pencil","id":"edit_page","keywords":["编辑当前页面","edit","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"编辑当前页面","url":"https://github.com/pgsty/oink/edit/main/tests/site/content/docs/callout.zh.md"},{"available":true,"description":"添加子页面","disabledReason":"","icon":"fa-solid fa-file-circle-plus","id":"create_child_page","keywords":["添加子页面","child","new","page"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"添加子页面","url":"https://github.com/pgsty/oink/new/main/tests/site/content/docs?filename=change-me.md\u0026value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60get-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A"},{"available":true,"description":"提交文档议题","disabledReason":"","icon":"fa-solid fa-circle-question","id":"create_issue","keywords":["提交文档议题","issue","github"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"提交文档议题","url":"https://github.com/pgsty/oink/issues/new?title=%E6%8F%90%E7%A4%BA%E5%9D%97"},{"available":true,"description":"提交项目议题","disabledReason":"","icon":"fa-solid fa-circle-exclamation","id":"create_project_issue","keywords":["提交项目议题","issue","github","project"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"blank","title":"提交项目议题","url":"https://github.com/pgsty/oink/issues/new"},{"available":true,"description":"打印完整章节","disabledReason":"","icon":"fa-solid fa-print","id":"print_section","keywords":["打印完整章节","print","section"],"kind":"url","options":[],"placements":{"page":true,"palette":true},"target":"self","title":"打印完整章节","url":"/zh/_print/docs/"},{"available":true,"description":"打印此页面","disabledReason":"","icon":"fa-solid fa-print","id":"print","keywords":["打印此页面","print"],"kind":"invoke","options":[],"placements":{"page":false,"palette":false},"target":"self","title":"打印此页面","url":""},{"available":false,"description":"Version","disabledReason":"Version: 暂不可用","icon":"fa-solid fa-code-branch","id":"switch_version","keywords":["Version","version"],"kind":"choice","options":[],"placements":{"page":false,"palette":true},"target":"self","title":"Version","url":""},{"available":true,"description":"切换语言","disabledReason":"","icon":"fa-solid fa-language","id":"switch_language","keywords":["切换语言","language"],"kind":"choice","options":[{"active":false,"available":true,"disabledReason":"","id":"en-US","title":"English","url":"/docs/callout/"},{"active":true,"available":true,"disabledReason":"","id":"zh-CN","title":"简体中文","url":"/zh/docs/callout/"}],"placements":{"page":false,"palette":true},"target":"self","title":"切换语言","url":""},{"available":false,"description":"外观","disabledReason":"暂不可用","icon":"fa-solid fa-palette","id":"switch_preset","keywords":["preset","style","Paper","Slate","风格"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"paper","title":"Paper","value":"paper"}],"placements":{"page":false,"palette":true},"target":"self","title":"风格","url":""},{"available":true,"description":"切换主题","disabledReason":"","icon":"fa-solid fa-circle-half-stroke","id":"switch_theme","keywords":["切换主题","浅色","深色"],"kind":"choice","options":[{"available":true,"disabledReason":"","id":"auto","title":"系统","value":"auto"},{"available":true,"disabledReason":"","id":"light","title":"浅色","value":"light"},{"available":true,"disabledReason":"","id":"dark","title":"深色","value":"dark"}],"placements":{"page":false,"palette":true},"target":"self","title":"切换主题","url":""},{"available":true,"description":"GitHub","disabledReason":"","icon":"fa-brands fa-github","id":"open_github","keywords":["GitHub","repository","source"],"kind":"url","options":[],"placements":{"page":false,"palette":true},"target":"blank","title":"GitHub","url":"https://github.com/pgsty/oink"}],"commands":[{"action":"","available":true,"description":"打开示例状态页","disabledReason":"","icon":"fa-solid fa-signal","id":"example_status","keywords":["uptime","可用性","故障"],"kind":"url","placements":{"page":false,"palette":true},"target":"blank","title":"示例服务状态","url":"https://status.example.org/"},{"action":"print","available":true,"description":"","disabledReason":"","icon":"fa-solid fa-print","id":"print_example","keywords":["打印","pdf"],"kind":"builtin","placements":{"page":false,"palette":true},"target":"self","title":"打印本页","url":""},{"action":"","available":true,"description":"在示例站内跳转","disabledReason":"","icon":"fa-solid fa-puzzle-piece","id":"example_docs","keywords":["组件","写作"],"kind":"url","placements":{"page":false,"palette":true},"target":"self","title":"打开提示块组件页","url":"/zh/docs/callout/"}],"language":"zh","quickLinks":[{"available":true,"description":"Markdown 组件样例","disabledReason":"","icon":"fa-solid fa-cubes","id":"quick_docs","keywords":["文档","docs"],"kind":"url","target":"self","title":"文档","url":"/zh/docs/"},{"available":true,"description":"真实的 OINK 发布说明与工程随笔，接线到全部博客特性。","disabledReason":"","icon":"fa-solid fa-blog","id":"quick_blog","keywords":["博客","blog"],"kind":"url","target":"self","title":"博客","url":"/zh/blog/"}],"rootOrder":["docs","blog","book","pigsty"],"version":1}</script>
 <script src="/js/actions.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <script src="/js/core.min.<hash>.js" integrity="<sri>" crossorigin="anonymous"></script>
 <div id="td-shell-search" class="td-shell-search" hidden
 data-td-index-src="/offline-search-index.zh.<hash>.json"
 data-td-max-results="10"
 data-td-t-empty="未找到结果"
-data-td-t-loading="正在加载搜索索引……"
+data-td-t-loading="正在加载搜索索引…"
 data-td-t-partial="部分匹配：{matched}/{total} 个关键词"
 data-td-t-partial-results="没有页面包含全部关键词，以下为部分匹配"
 data-td-t-results="找到 {count} 条结果"

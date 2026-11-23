@@ -65,6 +65,13 @@ All notable changes to OINK are documented here. The project follows
   Tab and the up/down arrows reach the links. Escape closes the list first.
   Landing `download` shows labelled channels in HTML and switches them
   without a fade once the Landing script loads.
+- Keep top navbar items on a single line at every width: when horizontal space
+  runs tight beside the brand, fixed desktop sidebar, and utility controls,
+  entries that define an icon automatically collapse to icon-only mode first
+  (`params.icon: false` or `"none"` opts an entry out of icons and keeps its
+  single-line label), and any entries that still do not fit fold into a
+  trailing `…` overflow disclosure panel (`ui_nav_more`) with their full icon,
+  label, and child links.
 - Proofread and tighten all 32 native interface catalogs (`i18n/*.yaml`, 240
   keys) for idiomatic phrasing and real-font UI widths, adding `ui_nav_more`,
   `comments_title`, and `comments_error`, widening the Appearance panel and

@@ -203,9 +203,18 @@
   text-decoration: none;
 }
 
-.td-shell-subnav__menu-link .td-navbar-entry__label,
-.td-shell-subnav__menu-link .td-navbar-entry__external {
+.td-shell-subnav__menu-link:has(> i) .td-navbar-entry__label,
+.td-shell-subnav__menu-link:has(> i) .td-navbar-entry__external {
   display: none;
+}
+
+.td-shell-subnav__menu-link:not(:has(> i)) {
+  width: auto;
+  flex: 0 0 auto;
+  padding-inline: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .td-shell-subnav__menu-link i {
@@ -226,7 +235,7 @@
   .td-shell-subnav .td-shell-brand-logo--wordmark {
     display: none;
   }
-  .td-shell-subnav__menu-link {
+  .td-shell-subnav__menu-link:has(> i) {
     width: 28px;
     flex-basis: 28px;
   }

@@ -132,9 +132,11 @@
 
 .td-site-header .td-nav-brand {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
   color: var(--bs-body-color);
+  white-space: nowrap;
 }
 
 .td-site-header .td-nav-brand:hover {
@@ -172,13 +174,26 @@
 
 .td-site-header .td-nav-links {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+}
+
+.td-site-header .td-nav-menu-zone > .nav-link,
+.td-site-header .td-nav-menu-zone > .td-nav-menu,
+.td-site-header .td-nav-menu-zone > .td-nav-overflow {
+  flex-shrink: 0;
+}
+
+.td-site-header .td-nav-menu-zone > [data-td-nav-overflowed] {
+  display: none !important;
 }
 
 .td-site-header .nav-link {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 7px;
   padding: 6px 10px;
   border-radius: 8px;
@@ -188,6 +203,7 @@
   color: var(--bs-tertiary-color);
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
   transition: background-color var(--td-motion-duration) var(--td-shell-ease-color), color var(--td-motion-duration) var(--td-shell-ease-color);
 }
 
@@ -201,6 +217,67 @@
 }
 
 .td-site-header .nav-link.active {
+  color: var(--bs-body-color);
+}
+
+/* Automatic desktop icon collapse: when horizontal space cannot fit every
+   top-level label on one line, entries that define an icon collapse to icons
+   first while entries without icons retain their single-line text label. */
+.td-site-header .td-site-nav[data-td-nav-compact='icons'] .td-nav-menu-zone > .nav-link:has(> i) .td-navbar-entry__label,
+.td-site-header .td-site-nav[data-td-nav-compact='icons'] .td-nav-menu-zone > .nav-link:has(> i) .td-navbar-entry__external,
+.td-site-header .td-site-nav[data-td-nav-compact='icons'] .td-nav-menu-zone > .td-nav-menu > .td-nav-menu__parent-link:has(> i) .td-navbar-entry__label,
+.td-site-header .td-site-nav[data-td-nav-compact='icons'] .td-nav-menu-zone > .td-nav-menu > .td-nav-menu__parent-link:has(> i) .td-navbar-entry__external {
+  display: none;
+}
+
+.td-site-header .td-site-nav[data-td-nav-compact='icons'] .td-nav-menu-zone > .nav-link:has(> i),
+.td-site-header .td-site-nav[data-td-nav-compact='icons'] .td-nav-menu-zone > .td-nav-menu > .td-nav-menu__parent-link:has(> i) {
+  min-width: 34px;
+  min-height: 34px;
+  justify-content: center;
+  padding: 6px 8px;
+  font-size: 1rem;
+}
+
+.td-site-header .td-nav-overflow {
+  position: relative;
+  display: inline-flex;
+}
+
+.td-site-header .td-nav-overflow[hidden] {
+  display: none;
+}
+
+.td-site-header .td-nav-overflow__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bs-tertiary-color);
+  font-size: 1rem;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--td-motion-duration) var(--td-shell-ease-color), color var(--td-motion-duration) var(--td-shell-ease-color);
+}
+
+.td-site-header .td-nav-overflow__trigger .td-shell-icon {
+  --td-shell-icon-size: 16px;
+}
+
+.td-site-header .td-nav-overflow__trigger:hover,
+.td-site-header .td-nav-overflow__trigger:focus-visible,
+.td-site-header .td-nav-overflow.td-is-open > .td-nav-overflow__trigger {
+  background: var(--td-brand-elev);
+  color: var(--td-accent-hover);
+}
+
+.td-site-header .td-nav-overflow__trigger.active {
   color: var(--bs-body-color);
 }
 
@@ -259,6 +336,16 @@
   width: min(520px, calc(100vw - 32px));
   max-width: none;
   padding: 10px;
+}
+
+/* Placed after .td-nav-menu__panel so inset-inline-start: auto overrides the
+   shared panel's start-edge anchor and keeps the trailing "…" list inside the
+   viewport in both LTR and RTL. */
+.td-site-header .td-nav-overflow__panel {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  max-height: calc(100dvh - 66px);
+  overflow-y: auto;
 }
 
 .td-site-header .td-navbar-taxonomy-tags {
@@ -387,6 +474,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   min-width: 34px;
   height: 34px;
   margin-inline-start: 0;
@@ -396,6 +484,7 @@
   background: transparent;
   color: var(--bs-tertiary-color);
   font-size: 1rem;
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color var(--td-motion-duration) var(--td-shell-ease-color), color var(--td-motion-duration) var(--td-shell-ease-color);
 }
@@ -470,12 +559,14 @@
 .td-site-header .td-nav-github {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 5px;
   margin-inline-start: 0;
   padding: 6px 8px;
   border-radius: 8px;
   color: var(--bs-tertiary-color);
   font-size: 1rem;
+  white-space: nowrap;
   transition: background-color var(--td-motion-duration) var(--td-shell-ease-color), color var(--td-motion-duration) var(--td-shell-ease-color);
 }
 
@@ -779,13 +870,13 @@ body.td-shell-chrome--navbar:has(#td-shell-sidebar)
 .td-site-header .td-nav-github .td-nav-count {
     display: none;
   }
-  .td-site-header .td-nav-links > .nav-link .td-navbar-entry__label,
-.td-site-header .td-nav-links > .nav-link .td-navbar-entry__external,
-.td-site-header .td-nav-menu > .td-nav-menu__parent-link .td-navbar-entry__label,
-.td-site-header .td-nav-menu > .td-nav-menu__parent-link .td-navbar-entry__external {
+  .td-site-header .td-nav-links > .nav-link:has(> i) .td-navbar-entry__label,
+.td-site-header .td-nav-links > .nav-link:has(> i) .td-navbar-entry__external,
+.td-site-header .td-nav-menu > .td-nav-menu__parent-link:has(> i) .td-navbar-entry__label,
+.td-site-header .td-nav-menu > .td-nav-menu__parent-link:has(> i) .td-navbar-entry__external {
     display: none;
   }
-  .td-site-header .nav-link {
+  .td-site-header .nav-link:has(> i) {
     min-width: 34px;
     min-height: 34px;
     justify-content: center;
@@ -812,7 +903,8 @@ body.td-shell-chrome--navbar:has(#td-shell-sidebar)
   .td-site-header .td-nav-links {
     gap: 2px;
   }
-  .td-site-header .nav-link,
+  .td-site-header .nav-link:has(> i),
+.td-site-header .td-nav-overflow__trigger,
 .td-site-header .td-nav-util,
 .td-site-header .td-nav-github,
 .td-site-header .td-nav-search-box,
@@ -825,6 +917,17 @@ body.td-shell-chrome--navbar:has(#td-shell-sidebar)
     min-height: 34px;
     justify-content: center;
     padding: 0;
+  }
+  .td-site-header .td-nav-overflow__panel {
+    position: fixed;
+    top: auto;
+    inset-block-start: 50px;
+    inset-inline-start: auto;
+    inset-inline-end: 12px;
+    width: min(260px, calc(100vw - 24px));
+    min-width: 0;
+    max-width: none;
+    max-height: calc(100dvh - 64px);
   }
 }
 

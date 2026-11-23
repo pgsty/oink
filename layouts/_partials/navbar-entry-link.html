@@ -23,13 +23,19 @@
   {{- $active = or $active ($page.IsDescendant .) -}}
   {{- $href = .RelPermalink -}}
 {{- end -}}
+{{- $icon := partial "menu-icon.html" $entry -}}
+{{- $hasIcon := ne $icon "" -}}
 <a class="{{ $class }}{{ if $active }} active{{ end }}" href="{{ $href }}"
   data-td-navbar-level="{{ $level }}" data-td-navbar-kind="{{ $kind }}"
   {{- if and (eq $level 0) (not $external) }} data-td-navbar-route{{ end }}
   aria-label="{{ $entry.Name | plainify }}"
+  {{- if and (eq $level 0) (eq $region "desktop") }} title="{{ $entry.Name | plainify }}"{{ end }}
   data-td-navbar-region="{{ $region }}" data-td-navbar-label="{{ $entry.Name | plainify }}"
+  data-td-navbar-icon="{{ if $hasIcon }}true{{ else }}false{{ end }}"
   data-td-navbar-external="{{ if $external }}true{{ else }}false{{ end }}"{{ if $current }} aria-current="page"{{ end }}{{ with .controls }} aria-controls="{{ . }}" aria-expanded="false"{{ end }}{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
-  <i class="{{ partial "menu-icon.html" $entry }}" aria-hidden="true"></i>
+  {{- if $hasIcon }}
+  <i class="{{ $icon }}" aria-hidden="true"></i>
+  {{- end }}
   <span class="td-navbar-entry__label">{{ $entry.Name }}</span>
   {{- if $external }}<span class="td-navbar-entry__external">{{ partialCached "shell/icon.html" "external-link" "navbar-external-link" }}</span>{{ end -}}
 </a>

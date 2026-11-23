@@ -118,6 +118,22 @@ All notable changes to OINK are documented here. The project follows
   Markmap renders its own with MathJax, so no page loaded the script. The
   KaTeX stylesheet and fonts stay.
 
+- Load the Asciinema, ECharts, Infographic and Markmap engines when a reader
+  approaches a component instead of with the page. A page names each engine
+  without requesting it; a component on screen, within a short scroll below,
+  or anywhere above the reader fetches its engine and mounts, one further down
+  waits, and a hidden one waits until it is shown. On a page with a chart, a
+  megabyte of ECharts no longer stands between the parser and the shell
+  runtime. Until it mounts, a player is its recording link and a map is its
+  source. Browser printing shows the declared options or DSL of a chart or
+  infographic that has not mounted, as the Print output does, and so does an
+  engine that cannot load. A site that tests for a rendered chart, player or
+  map must scroll it into view first.
+- Render a sidebar branch the current page is not in once per build and reuse
+  it, for sites below `sidebar_cache_limit`. Output is byte-identical and the
+  active state is still rendered at build time. A 449-page documentation tree
+  builds in 1.7 s instead of 4.3 s; the bilingual documentation site spends
+  17% less CPU time.
 ### Fixed
 
 - Include the visible Esc key in the localized search close-button name and

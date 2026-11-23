@@ -223,5 +223,23 @@
       fallback(error);
     }
   }
-  document.querySelectorAll('pre > code.language-markmap').forEach(enhance);
+  // The engine is a module graph of a third of a megabyte. A map on screen,
+  // within a short scroll below, or anywhere above the reader is drawn at
+  // once: drawing one above would move the text being read. One further down
+  // keeps its source until the reader approaches, and a hidden one (a closed
+  // tab or disclosure) until it is shown.
+  const blocks = document.querySelectorAll('pre > code.language-markmap');
+  if (typeof IntersectionObserver !== 'function') {
+    blocks.forEach(enhance);
+    return;
+  }
+  const due = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      due.unobserve(entry.target);
+      const code = entry.target.querySelector(':scope > code.language-markmap');
+      if (code) enhance(code);
+    }
+  }, { rootMargin: '1000000px 0px 320px 0px' });
+  blocks.forEach(code => due.observe(code.parentElement));
 })();

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 from html.parser import HTMLParser
+import json
 from pathlib import Path
 import re
 from urllib.parse import quote_plus
@@ -125,6 +126,21 @@ def check_outputs(public: Path) -> list[str]:
     require(bool(referenced_chunks(public, fences)), "data-fence page lacks runtime chunks", errors)
     source = combined_source(public, fences)
     require("OinkEchartsFunctions" in source and "data-td-echarts" in source, "data-fence chunks lack the ECharts runtime", errors)
+    # The page names the megabyte engine for the adapter to fetch when a chart
+    # is due. It never requests it with a script tag of its own.
+    engines = re.search(r'<script type="application/json" data-td-component-engines>(.*?)</script>', fences)
+    require(engines is not None, "data-fence page no longer names the ECharts engine for its adapter", errors)
+    if engines:
+        named = json.loads(engines.group(1)).get("echarts", {})
+        require(re.search(r"/third_party/echarts/echarts\.min(?:\.[0-9a-f]{64})?\.js$", named.get("src", "")) is not None,
+                f"the named ECharts engine is not the vendored bundle: {named.get('src')!r}", errors)
+        published = public / named.get("src", "").lstrip("/")
+        require(published.is_file(), "the named ECharts engine was not published", errors)
+        if re.search(r"\.[0-9a-f]{64}\.js$", named.get("src", "")):
+            require(named.get("integrity", "").startswith("sha256-"),
+                    "a fingerprinted ECharts engine is named without its integrity", errors)
+    require(re.search(r'<script\b[^>]*\bsrc="[^"]*third_party/echarts/', fences) is None,
+            "data-fence page requests the ECharts engine before any chart is due", errors)
     for marker in ('```echarts {height="320px"}', 'formatter: "$fn:bytesFormatter"', '```checksums {base="https://downloads.example.org/releases/stable" algo="sha256"}'):
         require(marker in fences_md, f"data-fence Markdown output lost {marker}", errors)
     require("data-td-echarts" not in fences_md and "td-asset-list" not in fences_md, "data-fence Markdown output contains HTML", errors)
@@ -770,6 +786,21 @@ def check_template_contracts() -> list[str]:
     require("$fn:" in runtime and "OinkEchartsFunctions" in runtime, "ECharts callback bridge ($fn: / OinkEchartsFunctions) changed", errors)
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("or $hasAsciinema $hasEcharts $hasInfographic" in scripts, "scripts.html no longer loads content-components.js for data fences", errors)
+    # Engines wait for the reader: on screen, a short scroll below, or anywhere
+    # above (mounting above would move the text being read). Printing and a
+    # failed engine fall back to the declared source.
+    require("data-td-component-engines" in scripts
+            and not re.search(r'<script src="\{\{ \$(?:asciinema|echarts|infographic)JS\.RelPermalink', scripts),
+            "scripts.html requests a player or chart engine with its own script tag", errors)
+    require("data-td-component-engines" in runtime
+            and "rootMargin: '1000000px 0px 320px 0px'" in runtime
+            and "script.integrity = asset.integrity" in runtime
+            and "'beforeprint'" in runtime and "showSource(" in runtime,
+            "content-components.js no longer defers its engines, verifies them, or falls back to source", errors)
+    markmap = (ROOT / "assets/js/markmap.js").read_text()
+    require("rootMargin: '1000000px 0px 320px 0px'" in markmap
+            and "typeof IntersectionObserver !== 'function'" in markmap,
+            "markmap.js draws every map at load again, or lost its fallback without IntersectionObserver", errors)
     styles = (ROOT / "assets/css/td/alerts.css").read_text()
     for marker in (".td-callout", ".td-callout--collapsible", "@media print", "forced-colors", "prefers-reduced-motion"):
         require(marker in styles, f"callout styles lack {marker}", errors)

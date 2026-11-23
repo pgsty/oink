@@ -1703,6 +1703,118 @@ def build_term_thumbnails(hugo: str) -> list[str]:
     return errors
 
 
+class SidebarRows(HTMLParser):
+    """Every sidebar row of a page: its link, list depth and state classes."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.depths: list[int] = []
+        self.open: list[dict] = []
+        self.rows: list[dict] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        classes = (values.get("class") or "").split()
+        if tag == "ul":
+            depth = next((int(name.rsplit("--", 1)[1]) for name in classes
+                          if name.startswith("td-shell-tree__list--")), None)
+            self.depths.append(-1 if depth is None else depth)
+        elif tag == "li" and "td-shell-tree__item" in classes:
+            row = {"depth": self.depths[-1] if self.depths else -1, "href": None,
+                   "hidden": "td-shell-tree__item--hidden" in classes,
+                   "path": "td-active-path" in classes, "active": False, "current": False}
+            self.open.append(row)
+            self.rows.append(row)
+        elif tag == "li":
+            self.open.append({"href": ""})
+        elif tag == "a" and "td-shell-tree__link" in classes and self.open and self.open[-1]["href"] is None:
+            self.open[-1].update(href=values.get("href") or "", active="active" in classes,
+                                 current=values.get("aria-current") == "page")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "ul" and self.depths:
+            self.depths.pop()
+        elif tag == "li" and self.open:
+            self.open.pop()
+
+
+def build_sidebar_branch_cache(hugo: str) -> list[str]:
+    """A cached branch never carries one page's state into another page.
+
+    Branches the current page is not in are rendered once and reused. Each
+    row's state is recomputed here from the URLs alone, for every page, with
+    hiding switched on and one page that expands a level further.
+    """
+    errors: list[str] = []
+    walker = (ROOT / "layouts/_partials/shell/sidebar-tree-node.html").read_text()
+    require('partialCached "shell/sidebar-tree-node.html" $child' in walker
+            and "if or $shouldDelayActive (eq $p .) ($p.IsDescendant .)" in walker,
+            "the content-tree walker renders every branch on every page again", errors)
+    with tempfile.TemporaryDirectory(prefix="oink-shell-sidebar-cache-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        (source / "content").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"baseURL: https://example.org/\ntitle: Sidebar fixture\ntheme: {ROOT.name}\n"
+            "disableKinds: [RSS, sitemap, taxonomy, term]\n"
+            "params:\n  ui:\n    sidebar_menu_foldable: false\n    sidebar_menu_compact: true\n"
+            "    sidebar_expand_levels: 0\n",
+            encoding="utf-8",
+        )
+        deeper = "/docs/b/y/y1/"
+        pages = ["/docs/"]
+        for section, groups in (("a", ("x", "z")), ("b", ("y",))):
+            pages.append(f"/docs/{section}/")
+            pages += [f"/docs/{section}/{section}{n}/" for n in (1, 2)]
+            for group in groups:
+                pages.append(f"/docs/{section}/{group}/")
+                pages += [f"/docs/{section}/{group}/{group}{n}/" for n in (1, 2)]
+        for url in pages:
+            leaf = url.strip("/").count("/") == 3 or re.fullmatch(r"/docs/[ab]/[ab]\d/", url)
+            target = source / "content" / (url.strip("/") + (".md" if leaf else "/_index.md"))
+            target.parent.mkdir(parents=True, exist_ok=True)
+            extra = "sidebar_expand_levels: 2\n" if url == deeper else ""
+            target.write_text(f"---\ntitle: {url}\n{extra}---\n\nBody.\n", encoding="utf-8")
+        result = run_hugo_process(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public")],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        require(result.returncode == 0,
+                "sidebar cache fixture failed: " + (result.stdout + result.stderr)[-800:], errors)
+        if result.returncode:
+            return errors
+
+        def parent(url: str) -> str:
+            return url.rstrip("/").rsplit("/", 1)[0] + "/"
+
+        checked = 0
+        for page in pages:
+            parser = SidebarRows()
+            parser.feed((root / "public" / page.strip("/") / "index.html").read_text())
+            rows = [row for row in parser.rows if row["href"] in pages]
+            require({row["href"] for row in rows} == set(pages),
+                    f"{page} lost sidebar rows: {sorted(set(pages) - {row['href'] for row in rows})}", errors)
+            shown_levels = 3 if page == deeper else 1
+            for row in rows:
+                node = row["href"]
+                on_path = page == node or page.startswith(node)
+                near = (parent(node) == parent(page) or parent(node) == page
+                        or (page != parent(node) and page.startswith(parent(node))))
+                expected = {
+                    "active": page == node, "current": page == node, "path": on_path,
+                    "hidden": not (row["depth"] < shown_levels or on_path or near),
+                }
+                actual = {key: row[key] for key in expected}
+                checked += 1
+                if actual != expected:
+                    errors.append(f"on {page} the sidebar row {node} is {actual}, expected {expected}")
+                    break
+        require(checked == len(pages) ** 2 or errors,
+                f"the sidebar cache probe compared {checked} rows, not every row of every page", errors)
+    return errors
+
+
 def build_drawer_ownership(hugo: str) -> list[str]:
     """Landing and 404 pages must not advertise an absent reading sidebar."""
     errors: list[str] = []
@@ -2212,7 +2324,7 @@ def main() -> int:
               + build_root_menu_visibility(args.hugo)
               + build_featured_image_rejection(args.hugo)
               + build_navbar_menu_columns(args.hugo) + build_drawer_ownership(args.hugo)
-              + build_term_thumbnails(args.hugo)
+              + build_term_thumbnails(args.hugo) + build_sidebar_branch_cache(args.hugo)
               + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo)
               + build_share_fixture(args.hugo))
     if errors:

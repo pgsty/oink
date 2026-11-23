@@ -327,10 +327,14 @@ def main() -> int:
         encoding="utf-8"
     )
     for asset, resource_variable in PREMINIFIED_STANDALONE_ASSETS.items():
+        # The page names the engine for content-components.js to fetch when a
+        # component is due; it is still one resource, fingerprinted as shipped.
         require(
-            f'<script src="{{{{ ${resource_variable}.RelPermalink }}}}"'
-            in scripts_template,
-            f"pre-minified runtime must be published as a standalone script: {asset}",
+            f'${resource_variable} := resources.Get "{asset}"' in scripts_template
+            and f'"src" ${resource_variable}.RelPermalink' in scripts_template
+            and f"${resource_variable} = ${resource_variable} | fingerprint }}}}" in scripts_template
+            and f"${resource_variable} | minify" not in scripts_template,
+            f"pre-minified runtime must be published as a standalone, unminified script: {asset}",
             errors,
         )
         require(

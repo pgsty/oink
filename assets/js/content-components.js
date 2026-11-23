@@ -1,4 +1,6 @@
 // Runtime for opt-in content components. Included only when a page uses one.
+// The page carries this small adapter; the player and chart engines load when
+// a component that needs them comes due.
 (function () {
   'use strict';
 
@@ -32,6 +34,132 @@
       attributes: true,
       attributeFilter: ['data-bs-theme'],
     });
+  }
+
+  // The engines are large pre-built scripts. The page names them without
+  // requesting them, and each is fetched once, when the first component that
+  // needs it is due. A script a site already loaded itself is used as it is.
+  var engines = configOf(document, '[data-td-component-engines]') || {};
+  var engineRequests = {};
+
+  function loadEngine(name, ready) {
+    if (ready()) return Promise.resolve();
+    if (!engineRequests[name]) {
+      engineRequests[name] = new Promise(function (resolve, reject) {
+        var asset = engines[name];
+        if (!asset || !asset.src) {
+          reject(new Error(name + ' engine is not published'));
+          return;
+        }
+        var script = document.createElement('script');
+        script.src = asset.src;
+        if (asset.integrity) {
+          script.integrity = asset.integrity;
+          script.crossOrigin = 'anonymous';
+        }
+        script.onload = function () {
+          if (ready()) resolve();
+          else reject(new Error(name + ' engine did not initialize'));
+        };
+        script.onerror = function () {
+          reject(new Error(name + ' engine could not be loaded'));
+        };
+        document.head.appendChild(script);
+      });
+    }
+    return engineRequests[name];
+  }
+
+  // The static form of a component whose engine is not there: the source the
+  // dedicated Print output shows. Returns the way back.
+  function showSource(root, kind, text) {
+    var canvas = root.querySelector('[data-td-' + kind + '-canvas]');
+    var pre = document.createElement('pre');
+    var code = document.createElement('code');
+    pre.className = 'td-' + kind + '-source';
+    code.className = 'language-' + kind;
+    code.textContent = text;
+    pre.appendChild(code);
+    if (canvas) canvas.hidden = true;
+    root.appendChild(pre);
+    return function () {
+      pre.remove();
+      if (canvas) canvas.hidden = false;
+    };
+  }
+
+  // A component is due when it is on screen, within a short scroll below, or
+  // anywhere above: mounting one above the reader would move the text being
+  // read. Hidden ones (a closed tab or disclosure) are due once shown.
+  var unmounted = new Map();
+  var observer =
+    typeof IntersectionObserver === 'function'
+      ? new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) begin(entry.target);
+            });
+          },
+          { rootMargin: '1000000px 0px 320px 0px' },
+        )
+      : null;
+
+  function begin(root) {
+    var component = unmounted.get(root);
+    if (!component || component.begun) return;
+    component.begun = true;
+    if (observer) observer.unobserve(root);
+    loadEngine(component.engine, component.ready).then(
+      function () {
+        unmounted.delete(root);
+        component.mount(root);
+      },
+      function (error) {
+        unmounted.delete(root);
+        console.error(component.engine + ':', error);
+        var text = component.source && component.source(root);
+        if (text) showSource(root, component.engine, text);
+      },
+    );
+  }
+
+  function defer(root, component) {
+    unmounted.set(root, component);
+    if (observer) observer.observe(root);
+    else begin(root);
+  }
+
+  // Browser printing cannot wait for a script. What has mounted prints as it
+  // is; the rest prints its source, as it does in the Print output.
+  var printRestores = null;
+
+  function beginPrint() {
+    if (printRestores) return;
+    printRestores = [];
+    unmounted.forEach(function (component, root) {
+      var text = component.source && component.source(root);
+      if (text) printRestores.push(showSource(root, component.engine, text));
+    });
+  }
+
+  function endPrint() {
+    if (!printRestores) return;
+    printRestores.forEach(function (restore) {
+      restore();
+    });
+    printRestores = null;
+  }
+
+  window.addEventListener('beforeprint', beginPrint);
+  window.addEventListener('afterprint', endPrint);
+  if (window.matchMedia) {
+    var printQuery = window.matchMedia('print');
+    if (printQuery.addEventListener) {
+      printQuery.addEventListener('change', function (event) {
+        if (event.matches) beginPrint();
+        else endPrint();
+      });
+    }
   }
 
   function initAsciinema(root) {
@@ -232,7 +360,41 @@
     }
   }
 
-  document.querySelectorAll('[data-td-asciinema]').forEach(initAsciinema);
-  document.querySelectorAll('[data-td-echarts]').forEach(initEcharts);
-  document.querySelectorAll('[data-td-infographic]').forEach(initInfographic);
+  // An unmounted player is its recording link, which is already its static
+  // form. A chart or an infographic has only its declared source.
+  document.querySelectorAll('[data-td-asciinema]').forEach(function (root) {
+    defer(root, {
+      engine: 'asciinema',
+      ready: function () {
+        return !!window.AsciinemaPlayer;
+      },
+      mount: initAsciinema,
+    });
+  });
+  document.querySelectorAll('[data-td-echarts]').forEach(function (root) {
+    defer(root, {
+      engine: 'echarts',
+      ready: function () {
+        return !!window.echarts;
+      },
+      mount: initEcharts,
+      source: function () {
+        var options = configOf(root, '[data-td-echarts-options]');
+        return options ? JSON.stringify(options, null, 2) : '';
+      },
+    });
+  });
+  document.querySelectorAll('[data-td-infographic]').forEach(function (root) {
+    defer(root, {
+      engine: 'infographic',
+      ready: function () {
+        return !!window.AntVInfographic;
+      },
+      mount: initInfographic,
+      source: function () {
+        var syntax = configOf(root, '[data-td-infographic-syntax]');
+        return typeof syntax === 'string' ? syntax : '';
+      },
+    });
+  });
 })();

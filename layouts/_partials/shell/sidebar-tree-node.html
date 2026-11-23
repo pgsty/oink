@@ -53,7 +53,29 @@
   {{- $rows := "" -}}
   {{- range $pages -}}
     {{- if (not (and (eq $s $p.Site.Home) (eq .Params.toc_root true))) -}}
-      {{- $rows = printf "%s%s" $rows (partial "shell/sidebar-tree-node.html" (dict "page" $p "section" . "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $childUlNr "ulShow" $ulShow "iconPolicy" $iconPolicy "compact" $compact "foldable" $foldableEnabled "overflow" $overflow)) -}}
+      {{- $child := dict "page" $p "section" . "shouldDelayActive" $shouldDelayActive "sidebarMenuTruncate" $sidebarMenuTruncate "ulNr" $childUlNr "ulShow" $ulShow "iconPolicy" $iconPolicy "compact" $compact "foldable" $foldableEnabled "overflow" $overflow -}}
+      {{- if or $shouldDelayActive (eq $p .) ($p.IsDescendant .) -}}
+        {{- $rows = printf "%s%s" $rows (partial "shell/sidebar-tree-node.html" $child) -}}
+      {{- else -}}
+        {{- /* A branch the current page is not in renders the same on every
+             page that sees it from the same depth with the same settings: no
+             row in it is active, on the active path, or the page's own Book
+             headings. The one thing the page still decides is whether the
+             branch's own row is hidden, which reads the row's parent alone,
+             so that bit joins the key. Below the row nothing reads the page.
+             A site under sidebar_cache_limit therefore walks each branch once
+             instead of once per page, and its output does not change. */ -}}
+        {{- $hidden := not (or
+              (lt $childUlNr $ulShow)
+              (eq .Parent $p.Parent)
+              (eq .Parent $p)
+              (not $compact)
+              ($p.IsDescendant .Parent)
+              $foldableEnabled) -}}
+        {{- $rows = printf "%s%s" $rows (partialCached "shell/sidebar-tree-node.html" $child
+              $p.Site.BaseURL $p.Language.Lang .Path $childUlNr $ulShow $hidden
+              $iconPolicy $compact $foldableEnabled $overflow $sidebarMenuTruncate) -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- $childMarkup = printf "<ul class=\"td-shell-tree__list td-shell-tree__list--%d\">%s</ul>" $childUlNr $rows | safeHTML -}}

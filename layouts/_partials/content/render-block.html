@@ -25,7 +25,9 @@
 {{- end -}}
 {{- $prevScope := $page.Store.Get "tdRenderBlockScope" | default "" -}}
 {{- if $scope }}{{ $page.Store.Set "tdRenderBlockScope" ($scope | anchorize) }}{{ end -}}
-{{- $html := $page.RenderString (dict "display" (.display | default "block")) $content -}}
+{{- $markup := $page.Page.Markup -}}
+{{- if $scope }}{{ $markup = $page.Page.Markup (printf "td-block/%s" $scope) }}{{ end -}}
+{{- $html := $markup.RenderString (dict "display" (.display | default "block")) $content -}}
 {{- if $prevScope }}{{ $page.Store.Set "tdRenderBlockScope" $prevScope }}{{ else }}{{ $page.Store.Delete "tdRenderBlockScope" }}{{ end -}}
 {{- if $scope -}}
   {{- $prefix := printf "td-code-%.8s-" (md5 $page.RelPermalink) -}}

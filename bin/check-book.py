@@ -73,6 +73,7 @@ class BookHTML(HTMLParser):
         super().__init__()
         self.ids: list[str] = []
         self.targets: dict[str, dict[str, object]] = {}
+        self.missing_target_ids: list[str] = []
         self.xrefs: list[dict[str, str]] = []
         self.sidebar_links: list[str] = []
         self.pager: dict[str, str] = {}
@@ -124,6 +125,8 @@ class BookHTML(HTMLParser):
             self._figure = target
             if target["id"]:
                 self.targets[str(target["id"])] = target
+            else:
+                self.missing_target_ids.append(f"{target['kind']} {target['num']}")
         elif tag == "figcaption" and self._figure is not None:
             self._figure_caption = True
         elif tag == "img" and self._figure is not None:
@@ -188,6 +191,8 @@ def validate_documents(
     target_owners: dict[str, list[str]] = defaultdict(list)
     referenced_anchors: set[str] = set()
     for url, document in documents.items():
+        for target in document.missing_target_ids:
+            errors.append(f"{url} numbered {target} has no target id")
         duplicate_ids = sorted(key for key, count in Counter(document.ids).items() if count > 1)
         for element_id in duplicate_ids:
             errors.append(f"{url} contains duplicate id {element_id!r}")
@@ -1014,6 +1019,7 @@ params:
             )
             for page in range(3):
                 target = (page + 1) % 3
+                figure_id = f"fig-{section}-{page}"
                 write(
                     source / f"content/book/s{section}/p{page}.md",
                     f"---\ntitle: Page {section}-{page}\nweight: {page}\n---\n\n"
@@ -1025,6 +1031,10 @@ params:
                     "{{< tab label=\"One\" value=\"one\" >}}One{{< /tab >}}\n"
                     "{{< tab label=\"Two\" value=\"two\" >}}Two{{< /tab >}}\n"
                     "{{< /tabs >}}\n\n"
+                    f'{{{{< xref fig="1" anchor="{figure_id}" />}}}}\n\n'
+                    f'{{{{< fig num="1" id="{figure_id}" src="/x.png" alt="Example" />}}}}\n\n'
+                    f'{{{{< eg num="2" id="eg-{section}-{page}-a" caption="First" >}}}}One{{{{< /eg >}}}}\n\n'
+                    f'{{{{< eg num="3" id="eg-{section}-{page}-b" caption="Second" >}}}}Two{{{{< /eg >}}}}\n\n'
                     f"{calls}\n",
                 )
 
@@ -1039,6 +1049,14 @@ params:
             for section in range(2):
                 for page in range(3):
                     plain = (public / f"_print/book/s{section}/p{page}/index.html").read_text()
+                    regular = (public / f"book/s{section}/p{page}/index.html").read_text()
+                    for target_id in (f"fig-{section}-{page}", f"eg-{section}-{page}-a", f"eg-{section}-{page}-b"):
+                        for route in ("_print/book", f"_print/book/s{section}"):
+                            aggregate = (public / route / "index.html").read_text()
+                            require(aggregate.count(f'id="{target_id}"') == 1,
+                                    f"{route}: numbered target {target_id} lost or duplicated", errors)
+                        require(all(output.count(f'id="{target_id}"') == 1 for output in (regular, plain)),
+                                f"chapter HTML or Print lost or duplicated {target_id}", errors)
                     rendered.append(plain)
                     require(plain.count('data-aggregate-probe="false-false-') == 6,
                             f"plain Print observed aggregate state on run {run + 1}, page {section}-{page}", errors)
@@ -1100,6 +1118,10 @@ def check_invalid_components(hugo: str) -> list[str]:
         ("num-grammar", '{{< fig num="1/2" src="/x.png" />}}', "num must match"),
         ("id-grammar", '{{< fig num="1" id="1bad" src="/x.png" />}}', "id must match"),
         ("duplicate-id", '{{< fig num="1" id="same" src="/x.png" />}}\n{{< tbl num="2" id="same" >}}x{{< /tbl >}}', "duplicate id"),
+        ("duplicate-nested-id", "\n\n".join(
+            '{{< eg num="' + number + '" caption="Group" >}}\n'
+            '{{< fig num="1" id="same" src="/x.png" alt="Picture" />}}\n{{< /eg >}}'
+            for number in ("2", "3")), 'duplicate id "same"'),
         ("duplicate-num", '{{< fig num="1" id="one" src="/x.png" />}}\n{{< fig num="1" id="two" src="/y.png" />}}', "duplicate fig number"),
         ("unsupported", '{{< fig num="1" src="/x.png" bogus="x" />}}', "unsupported parameter"),
         ("src-inner", '{{< fig num="1" src="/x.png" >}}body{{< /fig >}}', "mutually exclusive"),
@@ -1148,6 +1170,9 @@ def check_invalid_components(hugo: str) -> list[str]:
             require(expected in output, f"invalid Book case {name} did not report {expected!r}", errors)
             require((source / "public/book/page/index.html").is_file(),
                     f"invalid Book case {name} emitted no safe page output", errors)
+            if name in ("duplicate-id", "duplicate-nested-id"):
+                rendered = (source / "public/book/page/index.html").read_text()
+                require(rendered.count('id="same"') == 1, f"{name}: the first target must keep its id", errors)
             if name in ("missing-num", "num-type", "num-grammar", "eg-num"):
                 rendered = (source / "public/book/page/index.html").read_text()
                 require('id="fig-"' not in rendered and 'id="tbl-"' not in rendered
@@ -1337,10 +1362,11 @@ def check_validator_regressions() -> list[str]:
         ),
         "/book/two/": parse_html(
             '<figure id="shared" data-td-book-kind="fig" data-td-book-num="1"><figcaption>Figure 1</figcaption></figure>'
+            '<figure data-td-book-kind="eg" data-td-book-num="2"><figcaption>Example 2</figcaption></figure>'
         ),
     }
     found = "\n".join(validate_documents(documents))
-    for marker in ("empty alt", "missing anchor", "does not match target number", "duplicate target id"):
+    for marker in ("empty alt", "missing anchor", "does not match target number", "duplicate target id", "no target id"):
         require(marker in found, f"Book checker no longer detects {marker}", errors)
     return errors
 

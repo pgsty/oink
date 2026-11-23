@@ -307,7 +307,7 @@ mediaTypes:
     suffixes: [woff2]
 
 module:
-  # The theme ships compiled CSS, so a site build needs no Extended feature.
+  # The stylesheet is plain CSS, so a site build needs no Extended feature.
   hugoVersion:
     min: 0.169.0
   mounts:

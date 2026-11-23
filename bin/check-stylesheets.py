@@ -183,10 +183,24 @@ def main() -> None:
             (public / "css").glob("project.min.*.css")).read_text(encoding="utf-8")
 
         # A site-owned shell gets the smaller stylesheets by name; an unknown
-        # name warns. Retired SCSS hooks warn by name and reach no output.
+        # name warns. Retired SCSS hooks warn once by name even across mixed
+        # LTR and RTL directions, and reach no output.
         retired = {f"assets/scss/{name}.scss": f".oink-retired-{index} {{ color: $primary; }}\n"
                    for index, name in enumerate(RETIRED_HOOKS)}
-        public, diagnostics = build(hugo, {**retired, **SHELL}, "development")
+        multidir = {
+            "hugo.yaml": SITE["hugo.yaml"] + (
+                "defaultContentLanguage: en\n"
+                "languages:\n"
+                "  en:\n"
+                "    direction: ltr\n"
+                "    weight: 1\n"
+                "  ar:\n"
+                "    direction: rtl\n"
+                "    weight: 2\n"
+            ),
+            "content/_index.ar.md": "---\ntitle: RTL\n---\n",
+        }
+        public, diagnostics = build(hugo, {**retired, **SHELL, **multidir}, "development")
         built.append(public.parent)
         for name in RETIRED_HOOKS:
             matching = [line for line in diagnostics

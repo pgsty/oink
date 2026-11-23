@@ -595,10 +595,16 @@ def check_field_ids(html: str, log: str) -> list[str]:
         'href="#guc-work-mem" aria-label="Link to this field"',
         '<div class="td-field" id="field-copy" data-td-search-entry="copy">',
         '<div class="td-field" id="field-spaced" data-td-search-entry="spaced">',
+        '<div class="td-field" id="field-leading" data-td-search-entry="leading">',
+        '<div class="td-field" id="field-trailing" data-td-search-entry="trailing">',
+        '<div class="td-field" id="field-unicode" data-td-search-entry="unicode">',
+        '<div class="td-field" id="字段-id" data-td-search-entry="valid">',
     ):
         require(marker in html, f"explicit field id fixture missing {marker}", errors)
     require(html.count('id="guc-work-mem"') == 1, "a repeated field id reached the page twice", errors)
-    for warning in ('id "guc-work-mem" is already used', 'id "has space" contains unsupported characters'):
+    for warning in ('id "guc-work-mem" is already used', 'id "has space" contains unsupported characters',
+                    'id " leading" contains unsupported characters', 'id "trailing " contains unsupported characters',
+                    r'id "em\u2003space" contains unsupported characters'):
         require(warning in log, f"explicit field id fixture did not warn: {warning}", errors)
     return errors
 
@@ -700,6 +706,10 @@ def check_table_family(hugo: str) -> list[str]:
             '{{< field name="work_mem" type="integer" id="guc-work-mem" >}}Chosen{{< /field >}}\n'
             '{{< field name="copy" id="guc-work-mem" >}}Repeated{{< /field >}}\n'
             '{{< field name="spaced" id="has space" >}}Unsupported{{< /field >}}\n'
+            '{{< field name="leading" id=" leading" >}}Leading space{{< /field >}}\n'
+            '{{< field name="trailing" id="trailing " >}}Trailing space{{< /field >}}\n'
+            '{{< field name="unicode" id="em\u2003space" >}}Unicode space{{< /field >}}\n'
+            '{{< field name="valid" id="字段-id" >}}Unicode letters{{< /field >}}\n'
             "{{< /fields >}}\n",
             encoding="utf-8",
         )

@@ -209,11 +209,15 @@ def update(site, hugo, version, backup, refresh_vendor=False):
             (probe / "hugo.yaml").write_text(f"module:\n  imports:\n    - path: {MODULE}\n")
             output = run(probe, hugo, "mod", "get", MODULE + "@" + version)
             verify_graph(probe, hugo, version)
+            probe_go = module_info(probe).get("Go")
             sums = [line for line in (probe / "go.sum").read_text().splitlines()
                     if line.startswith(MODULE + " ") and line.split()[1] in (version, version + "/go.mod")]
             if {line.split()[1] for line in sums} != {version, version + "/go.mod"}:
                 raise RuntimeError("release probe did not resolve both OINK checksums")
         run(site, "go", "mod", "edit", "-require=" + MODULE + "@" + version)
+        if probe_go and probe_go != before.get("Go"):
+            run(site, "go", "mod", "edit", "-go=" + probe_go)
+            before["Go"] = probe_go
         current_sums = (site / "go.sum").read_text().splitlines() if (site / "go.sum").exists() else []
         retained = [line for line in current_sums if not line.startswith(MODULE + " ")]
         position = next((i for i, line in enumerate(retained)

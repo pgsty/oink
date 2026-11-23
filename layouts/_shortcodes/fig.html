@@ -69,7 +69,7 @@
 {{- $hasBody := or (and $src $image $image.src) (and (not $src) $inner) -}}
 {{- if $hasBody -}}
   {{- if and $num $id -}}
-    {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+    {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "fig" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal "shortcode" .)) -}}
       {{- $id = "" -}}
     {{- end -}}
   {{- end -}}

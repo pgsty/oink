@@ -824,6 +824,30 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
   await tick();
   assert.deepEqual(pages(waiting), ['/docs/other/']);
 
+  const waitingTail = setup({ dataset: split(3 * 1024 * 1024) });
+  let deliverTail;
+  waitingTail.setFetch((url) => url === '/body.json'
+    ? new Promise((resolve) => { deliverTail = resolve; }) : reply(index));
+  waitingTail.paletteModule.registerSearchTail({
+    id: 'ask-tail',
+    rows: () => [{ id: 'ask', title: 'Ask tail' }],
+    activate() {},
+  });
+  waitingTail.input.value = 'mentions';
+  waitingTail.opener.dispatch('click', { currentTarget: waitingTail.opener });
+  await tick();
+  await tick();
+  assert.deepEqual(pages(waitingTail), []);
+  assert.equal(waitingTail.controller.rows().length, 1);
+  assert.equal(waitingTail.controller.rows()[0].type, 'extension');
+  assert.ok(waitingTail.list.textContent.startsWith('Loading page text'),
+    'an empty title search with tail extensions claimed there are no results while page text loaded');
+  deliverTail(await reply(text));
+  await tick();
+  await tick();
+  assert.deepEqual(pages(waitingTail), ['/docs/other/']);
+  assert.equal(waitingTail.controller.rows().at(-1).type, 'extension');
+
   // Text beyond the limit, or any text under Save-Data, waits for the reader.
   for (const [name, bytes, saveData] of [['large', 9 * 1024 * 1024, false], ['save-data', 1024, true]]) {
     const asked = setup({ dataset: split(bytes) });

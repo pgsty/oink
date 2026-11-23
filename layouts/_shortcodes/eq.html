@@ -35,7 +35,7 @@
   {{- if and $class (not (findRE `^[A-Za-z0-9_ -]+$` $class)) }}{{ warnf "shortcode %q: class contains unsafe characters at %s; dropping the class" .Name .Position }}{{ $class = "" }}{{ end -}}
   {{- if $inner -}}
     {{- if and $num $id -}}
-      {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "eq" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+      {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "eq" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal "shortcode" .)) -}}
         {{- $id = "" -}}
       {{- end -}}
     {{- end -}}

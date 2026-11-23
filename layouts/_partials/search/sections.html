@@ -7,53 +7,57 @@
 {{- $content := .page.Content | string -}}
 {{- $content = replaceRE `(?is)<(script|style)\b[^>]*>.*?</(script|style)>` "" $content -}}
 {{- $attributes := `(?:[^>"']|"[^"]*"|'[^']*')*` -}}
-{{- $opening := printf `(?is)<h[1-6]\b%s>` $attributes -}}
-{{- $pattern := printf `%s.*?</h[1-6]>` $opening -}}
-{{- $entry := printf `(?is)<[a-z][a-z0-9]*\b%s\sdata-td-search-entry\s*=\s*(?:"[^"]*"|'[^']*')%s>` $attributes $attributes -}}
+{{- $headingPattern := printf `(?is)(<h[1-6](?:\s%s)?>).*?</h[1-6]\s*>` $attributes -}}
+{{- $value := `(?:"([^"]*)"|'([^']*)'|([^\s>]+))` -}}
+{{- $entry := printf `(?is)<[a-z][a-z0-9:._-]*%s\sdata-td-search-entry\s*=\s*%s%s>` $attributes $value $attributes -}}
+{{- $attribute := printf `(?is)\s+([^\s=/>]+)(?:\s*=\s*%s)?` $value -}}
 {{- $marker := "\x1eOINK-SEARCH\x1e" -}}
-{{- $marked := replaceRE $pattern (printf "%s${0}" $marker) $content -}}
-{{- $marked = replaceRE $entry (printf "%s${0}" $marker) $marked -}}
+{{- $marked := replaceRE $headingPattern (printf "%s${0}" $marker) $content -}}
 {{- $sections := slice -}}
 {{- $headings := slice -}}
 {{- $body := "" -}}
-{{- range split $marked $marker -}}
-  {{- $heading := "" -}}
-  {{- range findRE (printf "^%s" $pattern) . 1 }}{{ $heading = . }}{{ end -}}
+{{- range $block := split $marked $marker -}}
   {{- $tag := "" -}}
-  {{- if $heading -}}
-    {{- range findRE $opening $heading 1 }}{{ $tag = . }}{{ end -}}
-  {{- else -}}
-    {{- range findRE (printf "^%s" $entry) . 1 }}{{ $tag = . }}{{ end -}}
+  {{- $headingTitle := "" -}}
+  {{- range findRESubmatch (printf "^%s" $headingPattern) $block 1 -}}
+    {{- $tag = index . 1 -}}
+    {{- $headingTitle = index . 0 | plainify | htmlUnescape -}}
+    {{- $block = strings.TrimPrefix $tag $block -}}
   {{- end -}}
-  {{- if $tag -}}
-    {{- $id := "" -}}
-    {{- $title := "" -}}
-    {{- range findRE `\s+[^\s=/>]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?` $tag -}}
-      {{- if findRE `(?i)^\s+id\s*=` . -}}
-        {{- $id = replaceRE `(?is)^\s+id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))$` "$1$2$3" . | htmlUnescape -}}
-      {{- else if findRE `(?i)^\s+data-td-search-entry\s*=` . -}}
-        {{- $title = replaceRE `(?is)^\s+data-td-search-entry\s*=\s*(?:"([^"]*)"|'([^']*)')$` "$1$2" . | htmlUnescape -}}
+  {{- range $index, $part := split (replaceRE $entry (printf "%s${0}" $marker) $block) $marker -}}
+    {{- $isHeading := and (eq $index 0) $tag -}}
+    {{- if $index -}}
+      {{- range findRE (printf "^%s" $entry) $part 1 }}{{ $tag = . }}{{ end -}}
+    {{- end -}}
+    {{- $text := "" -}}
+    {{- if eq $.scope "content" -}}
+      {{- $text = replaceRE `(?i)</(h[1-6]|p|pre|div|li|dt|dd|tr|td|th|section|blockquote)>|<br\s*/?>` " " $part | plainify | htmlUnescape | replaceRE `\s+` " " -}}
+      {{- if hasPrefix $text " " -}}
+        {{- if and $body (not (hasSuffix $body " ")) }}{{ $body = print $body " " }}{{ end -}}
+        {{- $text = strings.TrimPrefix " " $text -}}
       {{- end -}}
     {{- end -}}
-    {{- if $heading -}}
-      {{- $title = $heading | plainify | htmlUnescape -}}
+    {{- if $tag -}}
+      {{- $id := "" -}}
+      {{- $title := "" -}}
+      {{- range findRESubmatch $attribute $tag -}}
+        {{- $name := lower (index . 1) -}}
+        {{- if eq $name "id" }}{{ $id = or (index . 2) (index . 3) (index . 4) | htmlUnescape -}}
+        {{- else if eq $name "data-td-search-entry" }}{{ $title = or (index . 2) (index . 3) (index . 4) | htmlUnescape -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if $isHeading }}{{ $title = $headingTitle }}{{ end -}}
+      {{- $title = replaceRE `\s+` " " $title | strings.TrimSpace -}}
+      {{- if and $id (or $isHeading $title) -}}
+        {{- $section := dict "id" $id "title" $title -}}
+        {{- if eq $.scope "content" }}{{ $section = merge $section (dict "start" (len $body)) }}{{ end -}}
+        {{- $sections = $sections | append $section -}}
+        {{- if $isHeading }}{{ $headings = $headings | append $title }}{{ end -}}
+      {{- else if not $isHeading -}}
+        {{- warnf "%s: a data-td-search-entry element needs an id and a non-empty title; skipping it" ($.page.Path | default $.page.RelPermalink) -}}
+      {{- end -}}
     {{- end -}}
-    {{- $title = replaceRE `\s+` " " $title | strings.TrimSpace -}}
-    {{- /* Without an id there is nothing to open; an entry also needs a name. */ -}}
-    {{- if and $id (or $heading $title) -}}
-      {{- $section := dict "id" $id "title" $title -}}
-      {{- if eq $.scope "content" }}{{ $section = merge $section (dict "start" (len $body)) }}{{ end -}}
-      {{- $sections = $sections | append $section -}}
-      {{- if $heading }}{{ $headings = $headings | append $title }}{{ end -}}
-    {{- else if not $heading -}}
-      {{- warnf "%s: a data-td-search-entry element needs an id and a non-empty title; skipping it" ($.page.Path | default $.page.RelPermalink) -}}
-    {{- end -}}
-  {{- end -}}
-  {{- if eq $.scope "content" -}}
-    {{- $text := replaceRE `(?i)</(h[1-6]|p|pre|div|li|tr|td|th|section|blockquote)>|<br\s*/?>` " " . -}}
-    {{- $text = $text | plainify | htmlUnescape -}}
-    {{- $text = replaceRE `\s+` " " $text | strings.TrimSpace -}}
-    {{- if $text }}{{ $body = printf "%s%s " $body $text }}{{ end -}}
+    {{- if $text }}{{ $body = print $body $text }}{{ end -}}
   {{- end -}}
 {{- end -}}
 {{- return (dict "sections" $sections "headings" $headings "body" $body) -}}

@@ -1,9 +1,18 @@
 # Changelog
 
-All notable changes to OINK are documented here. The project follows
-[Semantic Versioning](https://semver.org/) for published tags.
+OINK uses [Semantic Versioning](https://semver.org/) for published tags, with
+one exception. Version 1.6.0 retires public interfaces in a minor release so
+existing sites can keep the `github.com/pgsty/oink` module path.
 
 ## Unreleased
+
+## [1.6.0] — 2026-11-23
+
+OINK 1.6.0 remains on the `v1` Go module path (`github.com/pgsty/oink`) while
+shipping deliberate breaking changes to stay compatible with Hugo 0.170 and
+drop Sass, Bootstrap's JavaScript bundle, and Lunr. Review the breaking changes
+and [upgrade guide](https://oink.pgsty.com/docs/admin/upgrade/) before updating
+existing sites.
 
 ### Breaking changes
 
@@ -47,9 +56,9 @@ All notable changes to OINK are documented here. The project follows
 
 - Add `id` to the `field` shortcode. It replaces the anchor generated from the
   field name, so a reference page can keep an established anchor such as
-  `guc-work-mem`. An empty or non-string value, one with whitespace, quotes,
-  `<`, `>` or `&`, or one another field on the page already uses warns and
-  keeps the generated anchor.
+  `guc-work-mem`. An empty or non-string value, one with whitespace (including
+  leading/trailing or Unicode whitespace), quotes, `<`, `>` or `&`, or one
+  another field on the page already uses warns and keeps the generated anchor.
 - Add `partial "css/bundle.html" "<name>"`, which returns a theme stylesheet
   as a resource. `main` is the stylesheet of every OINK page. For a site-owned
   shell that does not load it: `chrome` (tokens, typography, palettes, navbar
@@ -60,6 +69,10 @@ All notable changes to OINK are documented here. The project follows
 - Add `bin/check-stylesheets.py`. It checks that every layer is listed and
   exists, that no layout calls a stylesheet compiler, and that probe sites
   built with an empty `PATH` publish the layers in order.
+- Add dedicated Print layouts for home, landing, section, and single pages
+  (`index.print.html`, `landing.print.html`, `section.print.html`,
+  `single.print.html`) backed by a shared `print/page-id.html` anchor helper
+  that also covers pages without a backing file.
 
 ### Changed
 
@@ -81,11 +94,12 @@ All notable changes to OINK are documented here. The project follows
   `fields` shortcode or a `{.fields}` table, carries
   `data-td-search-entry="<name>"`, and local search opens it by name: a query
   for a parameter lands on its definition instead of the heading above it. Any
-  rendered element with an `id` and a non-empty `data-td-search-entry` is
-  recorded the same way; one without an id or a title warns and is skipped.
-  Entries join `sections` in document order, and the page text is divided
-  among headings and entries. The `headings` index field still lists headings
-  only.
+  rendered element (including custom elements) with an `id` and a non-empty
+  quoted or unquoted `data-td-search-entry` is recorded the same way, including
+  entries nested inside headings; one without an id or a title warns and is
+  skipped. Entries join `sections` in document order, and the page text is
+  divided among headings and entries. The `headings` index field still lists
+  headings only.
 - Split a local-search index larger than 2 MiB. The index keeps titles,
   headings, anchors, keywords and descriptions, and the page text moves to
   `offline-search-body.<lang>.json`. The palette shows results from the index
@@ -113,13 +127,17 @@ All notable changes to OINK are documented here. The project follows
   single-line label), and any entries that still do not fit fold into a
   trailing `…` overflow disclosure panel (`ui_nav_more`) with their full icon,
   label, and child links.
-- Proofread and tighten all 32 native interface catalogs (`i18n/*.yaml`, 240
-  keys) for idiomatic phrasing and real-font UI widths, adding `ui_nav_more`,
-  `comments_title`, and `comments_error`, widening the Appearance panel and
-  Page Actions dropdown cleanly (while staying viewport-clamped at 200% zoom),
-  resetting positive `letter-spacing` for cursive RTL scripts (`ar`, `fa`),
-  fixing release asset copy-error labels and trailing periods in print notices,
-  and verifying template key references in `bin/check-i18n.py`.
+- Proofread and tighten all 32 native interface catalogs (`i18n/*.yaml`,
+  bringing the schema to 242 keys after adding `ui_nav_more`, `comments_title`,
+  `comments_error`, `ui_search_body_load`, and `ui_search_body_loading`, and
+  dropping three unused strings) for idiomatic phrasing and real-font UI widths,
+  widening the Appearance panel and Page Actions dropdown cleanly (while staying
+  viewport-clamped at 200% zoom), resetting positive `letter-spacing` for
+  cursive RTL scripts (`ar`, `fa`), fixing release asset copy-error labels and
+  trailing periods in print notices, and verifying template key references in
+  `bin/check-i18n.py`.
+- Make the six Giscus preset stylesheets (`giscus-{paper,ink,terminal}-{light,dark}.css`)
+  self-contained so comment frames render consistently without host variables.
 - Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
   0.169.0's improved plain-text spacing and resulting word counts in goldens.
   Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome
@@ -222,6 +240,26 @@ All notable changes to OINK are documented here. The project follows
   the root style alone while the footer is off screen.
 - Blur behind the phone drawer only while it is open. The closed scrim kept a
   full-viewport `backdrop-filter`.
+- Key page-scoped `partialCached` calls by base URL and language as well as the
+  page, and deduplicate repeated configuration and retired-SCSS warnings once
+  per build with `warnidf` (including across mixed LTR/RTL and multihost
+  builds).
+- Escape titles and URLs in the Book Markdown table of contents, omit
+  Print-excluded chapters from aggregate links, scope Book target identity by
+  source kind, `hugo.Context.MarkupScope` (`td-block/<scope>`), and shortcode
+  ordinal so targets preserve stable IDs across nested shortcodes, parallel
+  chapters, and whole-Book Print renders, and refuse `book_figures.py --write`
+  when its output is not idempotent.
+- Validate additional author input: code-block class tokens, release-asset and
+  download URLs, quick links, and notices under a base path; separate `<dt>`
+  and `<dd>` terms during local-search text extraction.
+- Fix runtime edge cases in appearance, footer collapse, keyboard navigation,
+  search scope, command palette (including preserving the "Loading page text"
+  status while split-index body text loads alongside search-tail extensions),
+  asset lists, diagrams, and Duo View.
+- Sync required minimum `go` directive bumps in `bin/update-consumers.py` when
+  upgrading consumer sites across theme releases that raise Go's minimum
+  version.
 
 
 ## [1.5.1] — 2026-11-06
@@ -2723,6 +2761,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[1.6.0]: https://github.com/pgsty/oink/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/pgsty/oink/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/pgsty/oink/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/pgsty/oink/compare/v1.3.2...v1.4.0

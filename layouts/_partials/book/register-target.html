@@ -5,10 +5,11 @@
 {{- $position := .position | default $page.Path -}}
 {{- $ordinal := .ordinal | default 0 -}}
 {{- $source := .source | default "shortcode" -}}
-{{- $blockScope := $page.Store.Get "tdRenderBlockScope" | default "" -}}
-{{- /* Source kind, nested block scope, and ordinal stay stable across full-page
-       and RenderString(RawContent) passes while separating distinct hooks. */ -}}
-{{- $identity := printf "%s:%s:%s:%d" $page.Path $blockScope $source $ordinal -}}
+{{- $block := hugo.Context.MarkupScope -}}
+{{- if not (hasPrefix $block "td-block/") }}{{ $block = "" }}{{ end -}}
+{{- $instance := printf "%d" $ordinal -}}
+{{- with .shortcode }}{{ $instance = partial "content/shortcode-ordinal.html" . }}{{ end -}}
+{{- $identity := printf "%s:%s:%s:%s" $page.Path $block $source $instance -}}
 {{- $orderKey := printf "%08d-00000" $ordinal -}}
 {{- with findRESubmatch `:(\d+):(\d+)$` (trim (printf "%v" $position) "\"") -}}
   {{- $m := index . 0 -}}

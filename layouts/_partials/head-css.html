@@ -18,7 +18,7 @@
 {{ end -}}
 {{ range slice "_variables_project" "_variables_project_after_bs" "_styles_project" -}}
   {{ if resources.Get (printf "scss/%s.scss" .) -}}
-    {{ warnf "stylesheet: assets/scss/%s.scss is ignored; site builds no longer compile Sass. Move its rules to assets/css/project.css as plain CSS: https://oink.pgsty.com/docs/admin/upgrade/#sass-hooks" . -}}
+    {{ warnidf (printf "stylesheet:retired-scss:%s" .) "stylesheet: assets/scss/%s.scss is ignored; site builds no longer compile Sass. Move its rules to assets/css/project.css as plain CSS: https://oink.pgsty.com/docs/admin/upgrade/#sass-hooks" . -}}
   {{ end -}}
 {{ end -}}
 {{/* Concatenate Font Awesome's official compiled CSS into one stable vendor

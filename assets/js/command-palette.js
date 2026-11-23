@@ -653,7 +653,10 @@
           var note = !actionCount
             ? (indexFailed
               ? (root.dataset.tdTIndexUnavailable || root.dataset.tdTEmpty || 'Page index unavailable')
-              : (root.dataset.tdTEmpty || 'No results'))
+              // Titles and headings found nothing; the page text may yet.
+              : bodyState === 'loading'
+                ? (root.dataset.tdTBodyLoading || 'Loading page text…')
+                : (root.dataset.tdTEmpty || 'No results'))
             : indexFailed ? root.dataset.tdTIndexUnavailable : '';
           renderGroups(groups, raw);
           if (note) {

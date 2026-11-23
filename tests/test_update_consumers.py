@@ -203,6 +203,39 @@ class ConsumerUpdates(unittest.TestCase):
             self.assertEqual(data, (site / name).read_bytes())
         self.assertEqual("independent edit\n", (site / "article.md").read_text())
 
+    def test_update_applies_required_go_version_bump_from_probe(self):
+        site = self.site()
+        (site / "go.mod").write_text(
+            "module example.org/site\n\ngo 1.27.0\n\n"
+            "require (\n\tgithub.com/pgsty/oink v1.5.1\n\texample.org/other v0.1.0\n)\n")
+        (site / "go.sum").write_text(
+            "example.org/other v0.1.0 h1:keep\n"
+            "github.com/pgsty/oink v1.5.1 h1:old\n"
+            "github.com/pgsty/oink v1.5.1/go.mod h1:oldmod\n")
+        real_run = updater.run
+
+        def fake_run(path, *args):
+            if args[:3] == ("hugo", "mod", "get"):
+                real_run(path, "go", "mod", "edit", "-go=1.27.4")
+                (path / "go.sum").write_text(
+                    "github.com/pgsty/oink v1.6.0 h1:new\n"
+                    "github.com/pgsty/oink v1.6.0/go.mod h1:newmod\n")
+                return "probe updated"
+            if args[:3] == ("hugo", "mod", "graph"):
+                return "example.org/site github.com/pgsty/oink@v1.6.0"
+            return real_run(path, *args)
+
+        with patch.object(updater, "run", fake_run):
+            updater.update(site, "hugo", "v1.6.0", self.root / "backup")
+        info = updater.module_info(site)
+        self.assertEqual("1.27.4", info["Go"])
+        requires = {r["Path"]: r["Version"] for r in info["Require"]}
+        self.assertEqual({"github.com/pgsty/oink": "v1.6.0", "example.org/other": "v0.1.0"}, requires)
+        sums = (site / "go.sum").read_text()
+        self.assertIn("example.org/other v0.1.0 h1:keep", sums)
+        self.assertIn("github.com/pgsty/oink v1.6.0 h1:new", sums)
+        self.assertNotIn("v1.5.1", sums)
+
     def test_graph_rejects_stale_vendor_and_replacement(self):
         for graph in ("site github.com/pgsty/oink@v1.0.0",
                       "site github.com/pgsty/oink@v1.1.0 => ../oink",

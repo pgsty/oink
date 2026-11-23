@@ -32,7 +32,7 @@
 OINK turns native Markdown into a complete knowledge-publishing site with one
 Hugo build. Its fonts, icons, search, diagrams, and feature runtimes
 ship locally and load only where they are used. Consumer sites need no Node.js,
-npm, PostCSS, bundler, or CDN.
+npm, Sass, PostCSS, bundler, or CDN.
 
 The same content can serve people and tools: responsive HTML for readers,
 print and RSS for publication, semantic Markdown for reuse, and optional
@@ -41,7 +41,8 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 ## Why OINK
 
 - **One deterministic toolchain.** Resolve the Hugo Module once, then build and
-  preview with the Hugo binary alone. The theme ships its compiled CSS.
+  preview with the Hugo binary alone. The theme assembles plain CSS with no
+  compiler.
 - **Complete publishing surfaces.** Docs, Blog, Book, Expo image albums, OpenAPI, releases,
   downloads, and data-driven landing pages share one navigation and visual
   system.
@@ -62,12 +63,15 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.5.1 keeps the Hugo-only build boundary and stabilizes Duo View, the
-two-pane reader introduced in 1.5.0. It also corrects RSS and Print aggregation,
-navigation identity, search ranking, safe fallbacks, and related accessibility
-and localization details. That release needs Hugo's Extended edition; the
-current checkout builds with any edition. See the [release notes](https://oink.pgsty.com/blog/release/1.5.1/)
-and [changelog](CHANGELOG.md) for the complete list.
+OINK 1.6.0 removes Sass, Bootstrap's JavaScript bundle, and Lunr so any Hugo
+edition (`0.169.0` or newer, including Hugo `0.170+`) builds a site with no
+external compiler. It replaces the local search engine with a scanning BM25
+engine supporting unspaced CJK queries, field-level anchors, and automatic
+split indexes; upgrades Markmap to `1.1.0` and ReDoc to `3.1.0`; adds single-line
+navbar overflow, on-approach engine and giscus loading, off-path sidebar
+caching, and WebP blog covers; and tightens all 32 native locale catalogs. See
+the [release notes](https://oink.pgsty.com/blog/release/1.6.0/) and
+[changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site
 
@@ -148,10 +152,10 @@ also read the [upgrade and migration guide](https://oink.pgsty.com/docs/admin/up
 | Area | Included capabilities |
 | --- | --- |
 | Reading shells | Docs, Blog, Book, Expo, Swagger/Redoc, releases, downloads, Print |
-| Navigation | Sidebars, breadcrumbs, TOC rail, pager, version and language menus |
-| Discovery | Local full-text search, command palette, taxonomies, backlinks |
+| Navigation | Single-line responsive navbar with overflow, sidebars, breadcrumbs, TOC rail, pager, version and language menus |
+| Discovery | Scanning BM25 local search (split indexes, field anchors), command palette, taxonomies, backlinks |
 | Authoring | Code, tabs, steps, cards, fields, images, galleries, callouts, includes |
-| Technical content | Mermaid, PlantUML, Draw.io, Markmap, ECharts, KaTeX, Asciinema |
+| Technical content | Mermaid, PlantUML, Draw.io, Markmap, ECharts, Infographic, KaTeX, Asciinema |
 | Landing pages | 22 server-rendered sections with progressive enhancement |
 | Outputs | HTML, RSS, Print, Markdown, LLMS, LLMSFULL, NAVJSON, Book manifest |
 | Operations | SEO, analytics hooks, Giscus, feedback events, sharing, deployment-safe URLs |
@@ -160,12 +164,12 @@ Interactive features remain opt-in where they express site policy. The theme
 provides the implementation; the consuming site decides which outputs,
 analytics, comments, feedback, assistant links, and image behavior to enable.
 
-In OINK 1.5.0, `params.ui.compare: true` adds a Bilingual View to Docs, Book,
+Since OINK 1.5.0, `params.ui.compare: true` adds Duo View to Docs, Book,
 and blog pages that have a same-origin HTML translation. The reader loads both
 existing pages on demand, supports shared-heading scroll sync, RTL pane order,
 responsive mobile switching, and keyboard navigation. It is off by default;
 print, Markdown, RSS, and sites that leave it disabled are unchanged. See the
-[Bilingual View guide](https://oink.pgsty.com/docs/customize/i18n/#bilingual-view).
+[Duo View guide](https://oink.pgsty.com/docs/customize/i18n/#bilingual-view).
 
 Since OINK 1.4.0, `params.plantuml: true` renders UML in the browser with two
 bundled scripts, loaded only on pages with PlantUML fences. No Java, Graphviz
@@ -231,7 +235,7 @@ assuming drop-in compatibility.
 | Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
 | Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
+| Locales | Native OINK interface text (242 messages per catalog) for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
 
 Development, preview and checks use whichever Hugo is installed, and CI
 installs the current release; none is pinned. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.

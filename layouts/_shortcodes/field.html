@@ -81,14 +81,12 @@
   {{- $idParam := index $params "id" -}}
   {{- if ne (printf "%T" $idParam) "string" -}}
     {{- warnf "shortcode %q: id must be a string at %s; using the generated anchor" .Name .Position -}}
+  {{- else if not $idParam -}}
+    {{- warnf "shortcode %q: id must not be empty at %s; using the generated anchor" .Name .Position -}}
+  {{- else if findRE `[[:space:]\p{Z}\x{85}"'<>&]` $idParam -}}
+    {{- warnf "shortcode %q: id %q contains unsupported characters at %s; using the generated anchor" .Name $idParam .Position -}}
   {{- else -}}
-    {{- $fieldID = strings.TrimSpace $idParam -}}
-    {{- if not $fieldID -}}
-      {{- warnf "shortcode %q: id must not be empty at %s; using the generated anchor" .Name .Position -}}
-    {{- else if findRE `[\s"'<>&]` $fieldID -}}
-      {{- warnf "shortcode %q: id %q contains unsupported characters at %s; using the generated anchor" .Name $fieldID .Position -}}
-      {{- $fieldID = "" -}}
-    {{- end -}}
+    {{- $fieldID = $idParam -}}
   {{- end -}}
 {{- end -}}
 

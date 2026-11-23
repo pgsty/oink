@@ -214,7 +214,7 @@
     <link rel="stylesheet" href="{{ $redocCSS.RelPermalink }}"
       {{- with $redocCSS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
   {{- else -}}
-    {{ warnf "stylesheet: resource not found: oink/redoc.css; ReDoc frames will render unstyled" -}}
+    {{ warnf "stylesheet: resource not found: assets/css/td/redoc.css; ReDoc frames will render unstyled" -}}
   {{ end }}
 {{ end -}}
 

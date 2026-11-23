@@ -174,7 +174,7 @@ def validate_sections(documents: list[dict[str, Any]], output: Path, prefix: str
                 # A heading opens its own text; an entry may be named differently.
                 require(entry is not None or body.startswith(section["title"]),
                         f"invalid UTF-8 section offset: {doc['ref']}")
-        require(offsets == sorted(set(offsets)), f"non-increasing offsets: {doc['ref']}")
+        require(offsets == sorted(offsets), f"section offsets out of document order: {doc['ref']}")
 
 
 def write_section_probe(site: Path) -> None:
@@ -186,6 +186,11 @@ def write_section_probe(site: Path) -> None:
         '<script>const hidden = "<h3 id=\'phantom\'>Hidden</h3>";</script>\n'
         # Any element may name itself a search entry; it needs an id and a title.
         '<p id="custom-entry" data-td-search-entry="Custom &amp;  entry">probe_custom_text follows.</p>\n'
+        '<dt data-td-search-entry=WorkMem id=work-mem>Working memory.</dt>\n'
+        '<h2 id=storage>存储 <span id=storage-alias data-td-search-entry=StorageAlias>engine</span></h2>\n'
+        '<h3 data-td-search-entry="Alias" id=runtime><span id=runtime-alias '
+        'data-td-search-entry=\'Run &amp; time\'>Post</span>greSQL</h3>\n'
+        '<h4 id=inline>pg<span data-td-search-entry=Catalog id=catalog>_catalog</span></h4>\n'
         '<p data-td-search-entry="No anchor">Not addressable.</p>\n'
         '<p id="untitled" data-td-search-entry="">No title.</p>\n'
         '<script>const decoy = "<p id=\'phantom-entry\' data-td-search-entry=\'Hidden\'></p>";</script>\n',
@@ -339,7 +344,8 @@ def main() -> int:
                             "search traversal rendered RSS source inside an HTML page")
                     ids = [section["id"] for section in probe["sections"]]
                     require(ids == ["顶层标题", "repeat", "repeat-1", "stable-id", "深层标题", "特殊&id", "重复标题", "重复标题-1", "real-id", "single-quote",
-                                    "custom-entry", "guc-work-mem", "field-maintenance_work_mem", "field-clash"],
+                                    "custom-entry", "work-mem", "storage", "storage-alias", "runtime", "runtime-alias",
+                                    "inline", "catalog", "guc-work-mem", "field-maintenance_work_mem", "field-clash"],
                             f"{lang} duplicate/Unicode/explicit/deep headings or search entries changed: {ids}")
                     titles = {section["id"]: section["title"] for section in probe["sections"]}
                     require(titles["custom-entry"] == "Custom & entry" and titles["guc-work-mem"] == "work_mem"
@@ -347,6 +353,20 @@ def main() -> int:
                             f"{lang} search entry titles changed: {titles}")
                     require("work_mem" not in probe["headings"] and "Custom" not in probe["headings"],
                             f"{lang} headings field lists search entries")
+                    require(titles["work-mem"] == "WorkMem" and titles["storage-alias"] == "StorageAlias"
+                            and titles["runtime-alias"] == "Run & time"
+                            and titles["storage"] == "存储 engine" and titles["runtime"] == "PostgreSQL"
+                            and titles["inline"] == "pg_catalog"
+                            and "存储 engine PostgreSQL pg_catalog" in probe["headings"]
+                            and "StorageAlias" not in probe["headings"],
+                            f"{lang} lost an unquoted entry or nested heading title")
+                    starts = {section["id"]: section["start"] for section in probe["sections"]}
+                    body = probe["body"].encode()
+                    require(body[starts["storage"]:starts["storage-alias"]].decode() == "存储 "
+                            and starts["runtime"] == starts["runtime-alias"]
+                            and body[starts["inline"]:starts["catalog"]] == b"pg"
+                            and body[starts["catalog"]:].startswith(b"_catalog"),
+                            f"{lang} nested entry offsets do not address the rendered text")
                     custom = probe["body"].encode()[next(s["start"] for s in probe["sections"] if s["id"] == "custom-entry"):].decode()
                     require(custom.startswith("probe_custom_text"), f"{lang} entry offset does not open its text")
                     raw_size = len(payload)

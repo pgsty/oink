@@ -25,7 +25,7 @@
 {{- if not $inner }}{{ warnf "shortcode %q requires inner content (the example body) at %s; rendering nothing" .Name .Position }}{{ end -}}
 {{- if $inner -}}
   {{- if and $num $id -}}
-    {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal)) -}}
+    {{- if not (partial "book/register-target.html" (dict "page" .Page "kind" "eg" "num" $num "id" $id "caption" $caption "position" .Position "ordinal" .Ordinal "shortcode" .)) -}}
       {{- $id = "" -}}
     {{- end -}}
   {{- end -}}

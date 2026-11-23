@@ -4,26 +4,31 @@
 {{- $byline := "" -}}
 {{- with $found.resource -}}
   {{- $src = .RelPermalink -}}
+  {{- /* The article's largest image, so it is re-encoded as WebP whatever the
+       author bundled: a PNG cover otherwise stays a PNG at full weight. An
+       animated source keeps its frames. */ -}}
   {{- if reflect.IsImageResourceProcessable . -}}
     {{- if eq $.mode "banner" -}}
-      {{- $src = (.Fill "1600x900 Center").RelPermalink -}}
+      {{- $src = (.Fill "1600x900 Center webp").RelPermalink -}}
     {{- else if eq $.mode "hero" -}}
-      {{- $src = (.Resize "1800x q70").RelPermalink -}}
+      {{- $src = (.Resize "1800x webp q70").RelPermalink -}}
     {{- else -}}
-      {{- $src = (.Resize "1200x q60").RelPermalink -}}
+      {{- $src = (.Resize "1200x webp q60").RelPermalink -}}
     {{- end -}}
   {{- end -}}
   {{- $byline = .Params.byline | default "" -}}
 {{- end -}}
+{{- /* One mode renders per article, above the fold, and it is the page's
+     largest paint: never lazy, and fetched ahead of the other images. */ -}}
 {{- if eq .mode "banner" -}}
 <figure class="td-featured-banner">
-  <img src="{{ $src }}" alt="" width="1600" height="900" decoding="async">
+  <img src="{{ $src }}" alt="" width="1600" height="900" decoding="async" fetchpriority="high">
   {{- with $byline }}
   <figcaption class="td-featured-banner__byline">{{ . }}</figcaption>
   {{- end }}
 </figure>
 {{- else if eq .mode "hero" -}}
-<div class="td-featured-hero" aria-hidden="true"><img src="{{ $src }}" alt="" decoding="async"></div>
+<div class="td-featured-hero" aria-hidden="true"><img src="{{ $src }}" alt="" decoding="async" fetchpriority="high"></div>
 {{- else -}}
-<div class="td-featured-wash" aria-hidden="true"><img src="{{ $src }}" alt="" decoding="async"></div>
+<div class="td-featured-wash" aria-hidden="true"><img src="{{ $src }}" alt="" decoding="async" fetchpriority="high"></div>
 {{- end -}}

@@ -5,8 +5,8 @@
   "trees": [
     {
       "path": "assets/third_party",
-      "files": 130,
-      "sha256": "a34f090453add4fff1935db0095dcbe6b6bfad9b7b9db69f6f2ebe7f29c5ccf5"
+      "files": 129,
+      "sha256": "b2bdeefd13420236350938f48bb34dc20d7544ee9e1400f5f1e8acb3ff411302"
     },
     {
       "path": "assets/js/third_party",
@@ -326,10 +326,6 @@
         "assets/third_party/katex/LICENSE"
       ],
       "artifacts": [
-        {
-          "path": "assets/third_party/katex/katex.min.js",
-          "sha256": "fa140498b8cfc8302cbe5e7cb1bdbc1f952bc38b3fa258ede09e73edbf9a74bc"
-        },
         {
           "path": "assets/third_party/katex/katex.min.css",
           "sha256": "00e0b094171b07f58422075f469b4feac2b2f7bce1aeec943c08da4d697f4dcf"

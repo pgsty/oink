@@ -1,7 +1,11 @@
 {{- /* Chunk names are fixed by the maintainer bundle. Publish the ESM chunks
-     together, without Hugo rewriting relative imports or minifying them. */ -}}
+     together, without Hugo rewriting relative imports or minifying them.
+     The entry is published once, below, under the URL the adapter imports.
+     A global resource's Name carries a leading slash, so compare without it:
+     otherwise production also publishes an unfingerprinted copy of the entry
+     that nothing requests. No chunk imports the entry back. */ -}}
 {{- range resources.Match "third_party/markmap/*.js" -}}
-  {{- if ne .Name "third_party/markmap/markmap.js" -}}
+  {{- if ne (strings.TrimPrefix "/" .Name) "third_party/markmap/markmap.js" -}}
     {{- $published := .Publish -}}
   {{- end -}}
 {{- end -}}

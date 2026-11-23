@@ -45,9 +45,10 @@
   }
   function schedule(entry) {
     const theme = mode();
-    if (printing || entry.error || !hasBox(entry.block) ||
-        (!nearby(entry.block) && openEntry !== entry) ||
-        entry.theme === theme || entry.requested === theme) return;
+    // Settled diagrams leave first: every scroll frame asks this of every
+    // entry, and only one still waiting to render needs its box measured.
+    if (printing || entry.error || entry.theme === theme || entry.requested === theme ||
+        !hasBox(entry.block) || (!nearby(entry.block) && openEntry !== entry)) return;
     entry.requested = theme;
     const revision = ++entry.revision;
     state(entry, 'pending');

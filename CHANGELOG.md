@@ -101,6 +101,10 @@ All notable changes to OINK are documented here. The project follows
 - Record maintainer-only, locked builds for Markmap, Pako and the SVG loader,
   including bundled-package license inventories. Ordinary sites still build
   with Hugo alone and no dependency downloads.
+- Re-encode a blog article's featured image as WebP in the `banner`, `hero`
+  and `wash` modes and request it with `fetchpriority="high"`. A bundled PNG
+  cover used to keep its format at 1600 or 1800 pixels wide. An animated
+  source keeps its frames.
 
 ### Removed
 
@@ -110,6 +114,9 @@ All notable changes to OINK are documented here. The project follows
   as plain CSS under `assets/css/td/bootstrap/`, with the theme's palette.
 - Remove the vendored Bootstrap script bundle and the Popper it embedded,
   with Popper's licence file and `VENDOR.json` entry.
+- Remove the vendored `katex.min.js`. Hugo renders formulas at build time and
+  Markmap renders its own with MathJax, so no page loaded the script. The
+  KaTeX stylesheet and fonts stay.
 
 ### Fixed
 
@@ -139,6 +146,16 @@ All notable changes to OINK are documented here. The project follows
   their numbered targets. Repeated builds now produce identical Print and
   Markdown chapter output; the `wordCount` metadata of a Print chapter could
   differ from one build to the next.
+- Publish the Markmap entry module once. A production build also published an
+  unfingerprinted `markmap.js` of 345 KB that no page requested.
+- Crop and lazy-load the linked thumbnails of term pages. Tag, category, author
+  and series lists sent each post's original image into a 250×125 frame, and a
+  phone downloaded it for a row it does not display.
+- Skip settled diagrams before measuring them on a scroll frame, lay out the
+  page outline once when it is built instead of once per heading, and leave
+  the root style alone while the footer is off screen.
+- Blur behind the phone drawer only while it is open. The closed scrim kept a
+  full-viewport `backdrop-filter`.
 
 
 ## [1.5.1] — 2026-11-06

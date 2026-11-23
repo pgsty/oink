@@ -274,6 +274,18 @@ def check_sources() -> list[str]:
     alignment = "var(--td-shell-nav-h) + var(--td-shell-content-top, 2.5rem)"
     require(alignment in layout_styles and alignment in toc_styles,
             "collapsed rail controls no longer align with the article topline", errors)
+    # The drawer scrim covers the phone viewport even while closed. Only the
+    # open state may blur, and closing keeps the blur until the fade ends.
+    closed_scrim = css_block(layout_styles, ".td-shell-drawer-backdrop {")
+    open_scrim = css_block(layout_styles, "[data-td-shell-drawer='open'] .td-shell-drawer-backdrop {")
+    require(not re.search(r"^\s*(?:-webkit-)?backdrop-filter:", closed_scrim, re.M)
+            and "backdrop-filter 0s linear var(--td-motion-duration-slow)" in closed_scrim
+            and "opacity: 0" in closed_scrim,
+            "the closed drawer scrim keeps a full-viewport blur, or closing no longer holds it through the fade", errors)
+    require("backdrop-filter: blur(4px)" in open_scrim
+            and "-webkit-backdrop-filter: blur(4px)" in open_scrim
+            and "transition-delay: 0s" in open_scrim,
+            "the open drawer scrim lost its blur or delays it", errors)
     require(not re.search(r"\b(?:width|flex-basis)\s+var\(--td-motion-", toc_styles),
             "responsive TOC widths must not animate and make the article rebound during resizing", errors)
     fixed_toc = "\n".join(re.findall(r"^\s*\.td-shell-toc__panel \{[^{}]*\}", toc_styles, re.M))
@@ -533,6 +545,18 @@ def check_sources() -> list[str]:
                 and 'partial "authors-profile.html" .' in term
                 and "td-blog-posts-list" in term,
                 f"{name} lost the shared head, the author profile, or the row list", errors)
+    # A term page can list every post of a tag. Its linked thumbnails are a
+    # 250x125 frame, hidden below `md`: a cropped, lazy image costs a phone
+    # nothing, while the original was fetched for a row nobody saw.
+    row = (ROOT / "layouts/_partials/shell/blog-row.html").read_text()
+    require('$media.resource.Fill "500x250"' in row
+            and "and $media.processable (or (gt $media.width 500) (gt $media.height 250))" in row
+            and 'width="250" height="125"' in row
+            and 'loading="lazy" decoding="async"' in row
+            and '<img src="{{ . }}"' not in row,
+            "the linked blog-row thumbnail ships the original image again, or is no longer lazy", errors)
+    require('"featured-image.html" (dict "p" $p "w" 250 "h" 125' in row,
+            "the unlinked blog-row thumbnail left the shared cropped figure", errors)
     require('"kind" "taxonomy"' in tax_head
             and "td-taxonomy-head__kicker" in tax_head
             and "td-taxonomy-head__icon" in tax_head
@@ -721,10 +745,13 @@ def check_featured_image_sources() -> list[str]:
             "the wash or the hero is no longer hidden from assistive technology", errors)
     require(article.count('alt=""') == 3 and "loading=" not in article,
             "the article featured image is no longer decorative, or defers its own LCP element", errors)
-    require('.Fill "1600x900 Center"' in article and '.Resize "1200x q60"' in article
-            and '.Resize "1800x q70"' in article
+    require('.Fill "1600x900 Center webp"' in article and '.Resize "1200x webp q60"' in article
+            and '.Resize "1800x webp q70"' in article
             and "reflect.IsImageResourceProcessable" in article,
-            "the article featured image no longer crops what Hugo can process", errors)
+            "the article featured image no longer crops what Hugo can process, "
+            "or left the source format on the page's largest image", errors)
+    require(article.count('fetchpriority="high"') == 3,
+            "a featured-image mode no longer asks for its largest paint first", errors)
     require("hasImageZoom" not in article and "Store.Set" not in article
             and "Store.Set" not in mode,
             "the article featured image writes a Page Store flag", errors)
@@ -1224,6 +1251,8 @@ def check_featured_image_output(public: Path) -> list[str]:
             and 'alt="" width="1600" height="900"' in banner
             and "td-featured-banner__byline" in banner,
             "the banner fixture lost its framed decorative figure or its resource byline", errors)
+    require(re.search(r'<figure class="td-featured-banner">\s*<img src="[^"]*_hu[^"]*\.webp"[^>]*fetchpriority="high"', banner),
+            "the banner fixture's bundled PNG was not cropped to a prioritized WebP", errors)
     require("td-featured-wash" not in banner and "td-article-header--wash" not in banner,
             "the banner fixture also rendered a wash", errors)
     require(banner.find("td-featured-banner") < banner.find("td-page-heading"),
@@ -1273,7 +1302,7 @@ def check_immersive_output(public: Path) -> list[str]:
     # column and processed by Hugo where it can be.
     require("td-shell-chrome--hero" in hero
             and '<div class="td-featured-hero" aria-hidden="true">' in hero
-            and re.search(r'class="td-featured-hero"[^>]*><img src="[^"]*_hu[^"]*"', hero),
+            and re.search(r'class="td-featured-hero"[^>]*><img src="[^"]*_hu[^"]*\.webp"', hero),
             "the immersive hero fixture lost its processed full-bleed backdrop", errors)
     require(hero.find("td-featured-hero") < hero.find("td-shell-main"),
             "the hero is no longer the shell's backdrop before the main column", errors)
@@ -1603,6 +1632,74 @@ menus:
                     and "A retained mega-menu description" not in html
                     and 'class="td-nav-menu__panel"' in html,
                     "retired columns changed the single-column panel rendering", errors)
+    return errors
+
+
+def solid_png(width: int, height: int) -> bytes:
+    """A valid one-colour PNG of the given size, without an imaging library."""
+    import struct
+    import zlib
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        body = kind + data
+        return struct.pack(">I", len(data)) + body + struct.pack(">I", zlib.crc32(body))
+
+    row = b"\x00" + b"\x2a\x6f\x97" * width
+    return (b"\x89PNG\r\n\x1a\n"
+            + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(row * height, 9))
+            + chunk(b"IEND", b""))
+
+
+def build_term_thumbnails(hugo: str) -> list[str]:
+    """A term row crops a large bundled cover and defers every thumbnail."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-shell-thumbnails-") as temporary:
+        root = Path(temporary)
+        source = root / "site"
+        (source / "content/blog").mkdir(parents=True)
+        (source / "hugo.yaml").write_text(
+            f"baseURL: https://example.org/\ntitle: Thumbnail fixture\ntheme: {ROOT.name}\n"
+            "disableKinds: [RSS, sitemap]\n",
+            encoding="utf-8",
+        )
+        (source / "content/blog/_index.md").write_text("---\ntitle: Blog\n---\n", encoding="utf-8")
+        for name, size in (("large", (1200, 600)), ("small", (64, 40))):
+            bundle = source / "content/blog" / name
+            bundle.mkdir()
+            (bundle / "index.md").write_text(
+                f"---\ntitle: {name}\ndate: 2026-01-0{1 + len(name) % 2}\ntags: [probe]\n---\n\nBody.\n",
+                encoding="utf-8",
+            )
+            (bundle / "featured.png").write_bytes(solid_png(*size))
+        result = run_hugo_process(
+            [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
+             "--destination", str(root / "public")],
+            cwd=ROOT, text=True, capture_output=True,
+        )
+        require(result.returncode == 0,
+                "thumbnail fixture failed: " + (result.stdout + result.stderr)[-800:], errors)
+        term = root / "public/tags/probe/index.html"
+        if result.returncode or not term.is_file():
+            require(term.is_file(), "thumbnail fixture rendered no term page", errors)
+            return errors
+        images = dict(re.findall(
+            r'<a href="/blog/(large|small)/"[^>]*>\s*(<img [^>]*>)', term.read_text()))
+        require(set(images) == {"large", "small"},
+                f"the term page lost a linked row thumbnail: {sorted(images)}", errors)
+        for name, tag in images.items():
+            require('width="250" height="125"' in tag
+                    and 'loading="lazy"' in tag and 'decoding="async"' in tag,
+                    f"the {name} term thumbnail lost its frame or is fetched eagerly", errors)
+        large = re.search(r'src="(/blog/large/featured_hu_[^"]+\.png)"', images.get("large", ""))
+        require(large is not None,
+                "a cover larger than the row frame reaches the term page as the original", errors)
+        if large:
+            data = (root / "public" / large.group(1).lstrip("/")).read_bytes()
+            require(data[16:24] == (500).to_bytes(4, "big") + (250).to_bytes(4, "big"),
+                    "the cropped term thumbnail is not the 500x250 frame", errors)
+        require('src="/blog/small/featured.png"' in images.get("small", ""),
+                "a cover no larger than the row frame was enlarged instead of kept", errors)
     return errors
 
 
@@ -2115,6 +2212,7 @@ def main() -> int:
               + build_root_menu_visibility(args.hugo)
               + build_featured_image_rejection(args.hugo)
               + build_navbar_menu_columns(args.hugo) + build_drawer_ownership(args.hugo)
+              + build_term_thumbnails(args.hugo)
               + build_blog_index_forms(args.hugo) + build_blog_card_fixture(args.hugo)
               + build_share_fixture(args.hugo))
     if errors:

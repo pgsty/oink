@@ -351,21 +351,26 @@
   transform: translateX(0);
 }
 
+/* The blur belongs to the open drawer only. A closed scrim is transparent
+   but still covers the phone viewport, and a blur left on it is recomputed
+   under every scrolled frame. Closing holds the blur until the fade is over,
+   then drops it. */
 .td-shell-drawer-backdrop {
   position: fixed;
   inset: 0;
   z-index: 1040;
   background: var(--td-shell-scrim);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--td-motion-duration-slow) ease;
+  transition: opacity var(--td-motion-duration-slow) ease, backdrop-filter 0s linear var(--td-motion-duration-slow), -webkit-backdrop-filter 0s linear var(--td-motion-duration-slow);
 }
 
 [data-td-shell-drawer='open'] .td-shell-drawer-backdrop {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   opacity: 1;
   pointer-events: auto;
+  transition-delay: 0s;
 }
 
 /* --------------------------------------- collapsed floating controls */

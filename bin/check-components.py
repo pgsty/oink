@@ -803,6 +803,16 @@ def check_dependency_migrations(hugo: str) -> list[str]:
             host_html = (destination / "docs/host/index.html").read_text()
             require("data-td-markmap-config" in host_html,
                     "Markmap inside include did not register hasMarkmap on the host page", errors)
+            # The adapter imports one entry URL; its chunks sit beside it under
+            # their fixed names. A second copy of the entry is dead weight.
+            vendor = destination / "third_party/markmap"
+            entries = sorted(path.name for path in vendor.glob("markmap*.js"))
+            require(len(entries) == 1,
+                    f"Markmap must publish its entry once, got {entries}", errors)
+            require(all(entry in html for entry in entries),
+                    "the published Markmap entry is not the URL the page configures", errors)
+            require(any(vendor.glob("chunk-*.js")),
+                    "Markmap lost the ESM chunks its entry imports", errors)
             for path in ("_print/docs/map/index.html", "docs/map/index.md", "docs/map/index.xml"):
                 text = (destination / path).read_text()
                 require("data-td-markmap-config" not in text and "third_party/markmap" not in text,

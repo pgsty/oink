@@ -68,6 +68,9 @@ function build(options = {}) {
   const rafQueue = [];
   const listeners = new Map();
   const registered = [];
+  // Every geometry read ('r') and DOM write ('w') the outline performs on its
+  // rows, in order.
+  const trace = [];
   let intersect = null;
 
   const html = {
@@ -108,7 +111,10 @@ function build(options = {}) {
     return {
       hash: hashes[i],
       parentElement: parent,
-      offsetTop: 12 + i * ROW,
+      get offsetTop() {
+        trace.push('r');
+        return 12 + i * ROW;
+      },
       clientHeight: ROW,
       style: styleBag(),
       classList: {
@@ -129,7 +135,9 @@ function build(options = {}) {
       getAttribute(name) {
         return attrs.has(name) ? attrs.get(name) : null;
       },
-      appendChild() {},
+      appendChild() {
+        trace.push('w');
+      },
       getBoundingClientRect() {
         return { top: 100, bottom: 130 };
       },
@@ -266,6 +274,7 @@ function build(options = {}) {
     links,
     headings,
     registered,
+    trace,
     state,
     scrollTo(y) {
       scroll.y = Math.min(Math.max(y, 0), MAX_SCROLL);
@@ -426,6 +435,18 @@ test('each entry gets a pill offset that clears its own indent', () => {
     x(2),
     '26px',
     'nested entries indent 32px, so the pill starts at 26',
+  );
+});
+
+test('the outline writes every row before it measures any', () => {
+  // A row's indent and rail change the geometry the next measurement needs,
+  // so a read between two writes costs the browser a layout per heading.
+  const toc = build();
+  const rows = toc.links.length;
+  assert.match(
+    toc.trace.join(''),
+    new RegExp('^(?:w{' + rows + '}r{' + rows * 2 + '})+$'),
+    'each build appends all rails, then reads each row top and bottom',
   );
 });
 

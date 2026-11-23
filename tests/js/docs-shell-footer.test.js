@@ -21,7 +21,7 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
   const documentListeners = new Map();
   const viewportListeners = new Map();
   const frames = new Map();
-  const measurements = { top, reads: 0 };
+  const measurements = { top, reads: 0, writes: 0 };
   const footerElement = {
     getBoundingClientRect() {
       measurements.reads += 1;
@@ -34,7 +34,10 @@ function build({ footer = true, sidebar = true, toc = true, visual = false, top 
   let frameID = 0;
   const html = {
     style: {
-      setProperty(name, value) { properties.set(name, value); },
+      setProperty(name, value) {
+        measurements.writes += 1;
+        properties.set(name, value);
+      },
     },
     hasAttribute(name) { return attrs.has(name); },
     getAttribute(name) { return attrs.get(name) || null; },
@@ -159,6 +162,27 @@ test('scroll bursts share one measurement and a resized footer is observed', () 
   env.listeners.get('resize')();
   env.flush();
   assert.equal(env.offset(), '0px');
+});
+
+test('an unchanged boundary is measured but not written to the root again', () => {
+  // The footer is off screen for most of a long page. Writing the same
+  // custom property to the root on every scroll frame invalidates styles
+  // for nothing.
+  const env = build();
+  assert.equal(env.offset(), '0px');
+  const { reads, writes } = env.measurements;
+  for (let i = 0; i < 5; i += 1) {
+    env.measurements.top = 1100 + i * 40;
+    env.listeners.get('scroll')();
+    env.flush();
+  }
+  assert.equal(env.measurements.reads, reads + 5);
+  assert.equal(env.measurements.writes, writes);
+  env.measurements.top = 700;
+  env.listeners.get('scroll')();
+  env.flush();
+  assert.equal(env.measurements.writes, writes + 1);
+  assert.equal(env.offset(), '301px');
 });
 
 test('fixed rails use layout coordinates during pinch zoom and visual panning', () => {

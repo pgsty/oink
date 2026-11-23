@@ -143,6 +143,7 @@
     );
     if (!footer || !panel) return;
     var frame = 0;
+    var applied = null;
 
     function update() {
       frame = 0;
@@ -152,6 +153,10 @@
         window.innerHeight - footer.getBoundingClientRect().top,
       );
       if (offset > 0) offset += 1;
+      // The footer is off screen for most of a long page, so nearly every
+      // scroll frame measures the same zero; leave the root's style alone.
+      if (offset === applied) return;
+      applied = offset;
       html.style.setProperty('--td-shell-footer-offset', offset + 'px');
     }
     function schedule() {
@@ -698,6 +703,9 @@
       var maxW = 0;
       var maxH = 0;
 
+      // Write every row before measuring any. Measuring inside this loop made
+      // the browser lay the outline out once per heading, because each row's
+      // indent and rail had just changed the geometry the next read needed.
       links.forEach(function (a, i) {
         var depth = depths[i];
         a.style.paddingInlineStart = itemOffset(depth) + 'px';
@@ -743,7 +751,10 @@
         seg.setAttribute('y2', '100%');
         rail.appendChild(seg);
         a.appendChild(rail);
+      });
 
+      links.forEach(function (a, i) {
+        var l1 = lineOffset(depths[i]);
         // Accent-path nodes relative to the body origin.
         var style = getComputedStyle(a);
         var top = a.offsetTop + parseFloat(style.paddingTop);

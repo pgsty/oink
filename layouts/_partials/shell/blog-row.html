@@ -25,9 +25,19 @@
     <div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1{{ if $featuredImage }} td-blog-posts-list__summary-row--with-image{{ end }}">
       {{- if $linkImage -}}
         {{- with $featuredImage }}
+        {{- /* A row shows its picture at 250x125, so ship that frame at twice
+             the density instead of the original, and let the browser skip it
+             while the row is off screen or, on a phone, not displayed at all.
+             What Hugo cannot process, and a picture already no larger than
+             the frame, keeps its own URL. */ -}}
+        {{- $thumbnail := . -}}
+        {{- $media := (partialCached "featured-image-resolve.html" $p $p.Site.BaseURL $p.Language.Lang $p.RelPermalink).media -}}
+        {{- if and $media.processable (or (gt $media.width 500) (gt $media.height 250)) -}}
+          {{- $thumbnail = ($media.resource.Fill "500x250").RelPermalink -}}
+        {{- end }}
       <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
         <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>
-          <img src="{{ . }}" alt="{{ $p.Title }}" width="250" height="125" style="object-fit: cover;">
+          <img src="{{ $thumbnail }}" alt="{{ $p.Title }}" width="250" height="125" style="object-fit: cover;" loading="lazy" decoding="async">
         </a>
       </figure>
         {{- end }}

@@ -135,15 +135,23 @@ def validate_language(
 
 
 class Headings(HTMLParser):
+    """Collect the anchors local search may open: headings and search entries."""
+
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.ids: list[str] = []
+        self.entries: dict[str, str] = {}
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        value = attributes.get("id")
+        if not value:
+            return
         if tag in {"h1", "h2", "h3", "h4", "h5", "h6"}:
-            value = dict(attrs).get("id")
-            if value:
-                self.ids.append(value)
+            self.ids.append(value)
+        elif (attributes.get("data-td-search-entry") or "").strip():
+            self.ids.append(value)
+            self.entries[value] = " ".join(attributes["data-td-search-entry"].split())
 
 
 def validate_sections(documents: list[dict[str, Any]], output: Path, prefix: str) -> None:
@@ -157,10 +165,15 @@ def validate_sections(documents: list[dict[str, Any]], output: Path, prefix: str
         offsets = []
         for section in sections:
             require(section["id"] in parser.ids, f"invented heading anchor: {doc['ref']}#{section['id']}")
+            entry = parser.entries.get(section["id"])
+            require(entry is None or entry == section["title"],
+                    f"search entry title changed: {doc['ref']}#{section['id']}")
             if "start" in section:
                 offsets.append(section["start"])
                 body = doc["body"].encode()[section["start"]:].decode()
-                require(body.startswith(section["title"]), f"invalid UTF-8 section offset: {doc['ref']}")
+                # A heading opens its own text; an entry may be named differently.
+                require(entry is not None or body.startswith(section["title"]),
+                        f"invalid UTF-8 section offset: {doc['ref']}")
         require(offsets == sorted(set(offsets)), f"non-increasing offsets: {doc['ref']}")
 
 
@@ -170,7 +183,12 @@ def write_section_probe(site: Path) -> None:
     shortcode.write_text(
         '<h3 id="real-id" data-id="not-an-anchor" aria-label="a > b id=\'fake\'">Real  heading</h3>\n'
         "<h3 id='single-quote'>Single quote</h3>\n"
-        '<script>const hidden = "<h3 id=\'phantom\'>Hidden</h3>";</script>\n',
+        '<script>const hidden = "<h3 id=\'phantom\'>Hidden</h3>";</script>\n'
+        # Any element may name itself a search entry; it needs an id and a title.
+        '<p id="custom-entry" data-td-search-entry="Custom &amp;  entry">probe_custom_text follows.</p>\n'
+        '<p data-td-search-entry="No anchor">Not addressable.</p>\n'
+        '<p id="untitled" data-td-search-entry="">No title.</p>\n'
+        '<script>const decoy = "<p id=\'phantom-entry\' data-td-search-entry=\'Hidden\'></p>";</script>\n',
         encoding="utf-8")
     for suffix, title in (("", "Search probe"), (".zh", "搜索探针")):
         (site / "content" / "docs" / f"search-probe{suffix}.md").write_text(
@@ -184,7 +202,12 @@ def write_section_probe(site: Path) -> None:
             '## 重复标题\n\nFirst Chinese section.\n\n'
             '## 重复标题\n\nSecond Chinese section.\n\n'
             '{{< search-headings >}}\n\n'
-            '```filetree {title="Search output probe"}\n- docs/\n  - search.md # Local search\n```\n', encoding="utf-8")
+            '```filetree {title="Search output probe"}\n- docs/\n  - search.md # Local search\n```\n\n'
+            '{{< fields >}}\n'
+            '{{< field name="work_mem" type="integer" id="guc-work-mem" >}}\nBase memory for one sort.\n{{< /field >}}\n'
+            '{{< field name="maintenance_work_mem" type="integer" >}}\nMemory for maintenance.\n{{< /field >}}\n'
+            '{{< field name="clash" id="guc-work-mem" >}}\nAn id another field already uses.\n{{< /field >}}\n'
+            '{{< /fields >}}\n', encoding="utf-8")
 
 
 def write_large_page(site: Path) -> None:
@@ -279,9 +302,12 @@ def main() -> int:
                 write_section_probe(site)
                 log = helper.run_hugo(site, output, workspace / "cache")
                 warnings = theme_warnings(log)
+                expected_warnings = ("invalid search_boost", "data-td-search-entry element needs an id",
+                                     'id "guc-work-mem" is already used')
                 require(
-                    warnings and all("invalid search_boost" in line for line in warnings),
-                    f"{deployment} build did not emit only invalid-boost warnings: {warnings}",
+                    all(any(text in line for line in warnings) for text in expected_warnings)
+                    and all(any(text in line for text in expected_warnings) for line in warnings),
+                    f"{deployment} build did not emit only the expected warnings: {warnings}",
                 )
 
                 for lang in helper.LANGUAGES:
@@ -312,8 +338,17 @@ def main() -> int:
                     require('class="td-filetree' in probe_html and 'class="td-filetree-source"' not in probe_html,
                             "search traversal rendered RSS source inside an HTML page")
                     ids = [section["id"] for section in probe["sections"]]
-                    require(ids == ["顶层标题", "repeat", "repeat-1", "stable-id", "深层标题", "特殊&id", "重复标题", "重复标题-1", "real-id", "single-quote"],
-                            f"{lang} duplicate/Unicode/explicit/deep headings changed: {ids}")
+                    require(ids == ["顶层标题", "repeat", "repeat-1", "stable-id", "深层标题", "特殊&id", "重复标题", "重复标题-1", "real-id", "single-quote",
+                                    "custom-entry", "guc-work-mem", "field-maintenance_work_mem", "field-clash"],
+                            f"{lang} duplicate/Unicode/explicit/deep headings or search entries changed: {ids}")
+                    titles = {section["id"]: section["title"] for section in probe["sections"]}
+                    require(titles["custom-entry"] == "Custom & entry" and titles["guc-work-mem"] == "work_mem"
+                            and titles["field-maintenance_work_mem"] == "maintenance_work_mem",
+                            f"{lang} search entry titles changed: {titles}")
+                    require("work_mem" not in probe["headings"] and "Custom" not in probe["headings"],
+                            f"{lang} headings field lists search entries")
+                    custom = probe["body"].encode()[next(s["start"] for s in probe["sections"] if s["id"] == "custom-entry"):].decode()
+                    require(custom.startswith("probe_custom_text"), f"{lang} entry offset does not open its text")
                     raw_size = len(payload)
                     gzip_size = len(gzip.compress(payload, mtime=0))
                     require(raw_size <= budget["uncompressed_bytes"], f"{lang} raw index exceeds budget")

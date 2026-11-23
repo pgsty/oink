@@ -8,6 +8,17 @@
 {{- $base := cond (ne $blockScope "") (printf "field-%s-%s" $blockScope $slug) (printf "field-%s" $slug) -}}
 {{- $registry := $page.Store.Get "tdFieldAnchors" | default (dict) -}}
 {{- $id := "" -}}
+{{- /* An author-chosen anchor is used as written unless the page already has it. */ -}}
+{{- with .id -}}
+  {{- $key := printf "%s|%s" $format . -}}
+  {{- $taken := printf "%v" (index $registry $key | default "") -}}
+  {{- if or (not $taken) (eq $taken $identity) -}}
+    {{- $id = . -}}
+    {{- $page.Store.SetInMap "tdFieldAnchors" $key $identity -}}
+  {{- else -}}
+    {{- warnf "fields: id %q is already used on %s; %q falls back to a generated anchor" . $page.Path $.name -}}
+  {{- end -}}
+{{- end -}}
 {{- range $i := seq 1 64 -}}
   {{- if not $id -}}
     {{- $candidate := cond (eq $i 1) $base (printf "%s-%d" $base $i) -}}

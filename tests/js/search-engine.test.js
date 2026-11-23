@@ -281,6 +281,22 @@ assert.deepEqual(refs(split.query('alpha beta')), ['/two/', '/one/'],
   'one section that covers the query leads a page that needs two');
 assert.equal(split.query('alpha beta')[1].partial, false);
 
+// A definition below heading level is an entry: its own unit, opened by name.
+const reference = { ref: '/config/', title: 'Resource settings',
+  body: 'Memory Limits for sorts and hashes. work_mem Base memory for one sort. ' +
+    'maintenance_work_mem Memory for VACUUM and CREATE INDEX; larger than work_mem. ',
+  sections: [{ id: 'memory', title: 'Memory', start: 0 },
+    { id: 'guc-work-mem', title: 'work_mem', start: 36 },
+    { id: 'guc-maintenance-work-mem', title: 'maintenance_work_mem', start: 71 }] };
+const entries = engineModule.create([reference,
+  { ref: '/tips/', title: 'Tips', body: 'Raise work_mem for large sorts. work_mem is per operation.' }], 10);
+assert.equal(entries.query('work_mem')[0].ref, '/config/#guc-work-mem', 'the entry named exactly leads');
+assert.equal(entries.query('work_mem')[0].heading, 'work_mem');
+assert.equal(entries.query('maintenance_work_mem')[0].ref, '/config/#guc-maintenance-work-mem');
+assert.equal(entries.query('vacuum')[0].ref, '/config/#guc-maintenance-work-mem',
+  'text inside an entry opens that entry, not the section above it');
+assert.equal(entries.query('limits')[0].ref, '/config/#memory');
+
 // A split index carries section offsets before the page text arrives.
 const navigation = { ref: '/split/', title: 'Tuning', description: 'Memory settings.',
   sections: [{ id: 'memory', title: 'Memory', start: 0 }, { id: 'disk', title: 'Disk', start: 27 }] };
@@ -386,6 +402,17 @@ if (process.argv.length > 2) {
     zhResults.slice(0, 2).map((result) => result.doc.ref.split('/').at(-2)),
     ['advanced', 'tutorial'],
   );
+  // A field of the built probe page is opened by name, not by its heading.
+  for (const index of [en, zh]) {
+    if (!index.some((doc) => doc.ref.endsWith('/docs/search-probe/'))) continue;
+    const built = engineModule.create(index, 20);
+    assert.ok(built.query('work_mem')[0].ref.endsWith('/docs/search-probe/#guc-work-mem'));
+    assert.equal(built.query('work_mem')[0].heading, 'work_mem');
+    assert.ok(built.query('maintenance_work_mem')[0].ref.endsWith('#field-maintenance_work_mem'));
+    // A split index names its entries before their text has loaded.
+    if (index.some((doc) => doc.body))
+      assert.ok(built.query('probe_custom_text')[0].ref.endsWith('#custom-entry'));
+  }
 }
 
 console.log('search engine ranking checks passed');

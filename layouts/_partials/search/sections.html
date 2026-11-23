@@ -1,31 +1,52 @@
-{{- /* Read heading IDs from rendered HTML, including render hooks/shortcodes.
-     Offsets are UTF-8 bytes in the emitted body, not guessed heading slugs or
-     JavaScript character positions. Body text is stored once per page. */ -}}
+{{- /* Read the anchors of a page from its rendered HTML: every heading, and
+     every element that names itself a search entry with
+     `data-td-search-entry="Title"`, such as a field. IDs are the rendered
+     ones, including render hooks and shortcodes, never guessed slugs. Offsets
+     are UTF-8 bytes in the emitted body, not JavaScript character positions.
+     Body text is stored once per page, divided among the anchors in order. */ -}}
 {{- $content := .page.Content | string -}}
 {{- $content = replaceRE `(?is)<(script|style)\b[^>]*>.*?</(script|style)>` "" $content -}}
-{{- $opening := `(?is)<h[1-6]\b(?:[^>"']|"[^"]*"|'[^']*')*>` -}}
+{{- $attributes := `(?:[^>"']|"[^"]*"|'[^']*')*` -}}
+{{- $opening := printf `(?is)<h[1-6]\b%s>` $attributes -}}
 {{- $pattern := printf `%s.*?</h[1-6]>` $opening -}}
+{{- $entry := printf `(?is)<[a-z][a-z0-9]*\b%s\sdata-td-search-entry\s*=\s*(?:"[^"]*"|'[^']*')%s>` $attributes $attributes -}}
 {{- $marker := "\x1eOINK-SEARCH\x1e" -}}
-{{- $chunks := split (replaceRE $pattern (printf "%s${0}" $marker) $content) $marker -}}
+{{- $marked := replaceRE $pattern (printf "%s${0}" $marker) $content -}}
+{{- $marked = replaceRE $entry (printf "%s${0}" $marker) $marked -}}
 {{- $sections := slice -}}
+{{- $headings := slice -}}
 {{- $body := "" -}}
-{{- range $chunks -}}
+{{- range split $marked $marker -}}
   {{- $heading := "" -}}
   {{- range findRE (printf "^%s" $pattern) . 1 }}{{ $heading = . }}{{ end -}}
+  {{- $tag := "" -}}
   {{- if $heading -}}
+    {{- range findRE $opening $heading 1 }}{{ $tag = . }}{{ end -}}
+  {{- else -}}
+    {{- range findRE (printf "^%s" $entry) . 1 }}{{ $tag = . }}{{ end -}}
+  {{- end -}}
+  {{- if $tag -}}
     {{- $id := "" -}}
-    {{- range findRE $opening $heading 1 -}}
-      {{- range findRE `\s+[^\s=/>]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?` . -}}
-        {{- if findRE `(?i)^\s+id\s*=` . -}}
-          {{- $id = replaceRE `(?is)^\s+id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))$` "$1$2$3" . | htmlUnescape -}}
-        {{- end -}}
+    {{- $title := "" -}}
+    {{- range findRE `\s+[^\s=/>]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?` $tag -}}
+      {{- if findRE `(?i)^\s+id\s*=` . -}}
+        {{- $id = replaceRE `(?is)^\s+id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))$` "$1$2$3" . | htmlUnescape -}}
+      {{- else if findRE `(?i)^\s+data-td-search-entry\s*=` . -}}
+        {{- $title = replaceRE `(?is)^\s+data-td-search-entry\s*=\s*(?:"([^"]*)"|'([^']*)')$` "$1$2" . | htmlUnescape -}}
       {{- end -}}
     {{- end -}}
-    {{- $title := $heading | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace -}}
-    {{- if $id -}}
-      {{- $entry := dict "id" $id "title" $title -}}
-      {{- if eq $.scope "content" }}{{ $entry = merge $entry (dict "start" (len $body)) }}{{ end -}}
-      {{- $sections = $sections | append $entry -}}
+    {{- if $heading -}}
+      {{- $title = $heading | plainify | htmlUnescape -}}
+    {{- end -}}
+    {{- $title = replaceRE `\s+` " " $title | strings.TrimSpace -}}
+    {{- /* Without an id there is nothing to open; an entry also needs a name. */ -}}
+    {{- if and $id (or $heading $title) -}}
+      {{- $section := dict "id" $id "title" $title -}}
+      {{- if eq $.scope "content" }}{{ $section = merge $section (dict "start" (len $body)) }}{{ end -}}
+      {{- $sections = $sections | append $section -}}
+      {{- if $heading }}{{ $headings = $headings | append $title }}{{ end -}}
+    {{- else if not $heading -}}
+      {{- warnf "%s: a data-td-search-entry element needs an id and a non-empty title; skipping it" ($.page.Path | default $.page.RelPermalink) -}}
     {{- end -}}
   {{- end -}}
   {{- if eq $.scope "content" -}}
@@ -35,4 +56,4 @@
     {{- if $text }}{{ $body = printf "%s%s " $body $text }}{{ end -}}
   {{- end -}}
 {{- end -}}
-{{- return (dict "sections" $sections "body" $body) -}}
+{{- return (dict "sections" $sections "headings" $headings "body" $body) -}}

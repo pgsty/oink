@@ -82,7 +82,7 @@
       "hasDefault" $entry.hasDefault
       "default" $entry.default
     ) -}}
-    {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "identity" (printf "sc%s#%s" (partial "content/shortcode-ordinal.html" $) $key)) -}}
+    {{- $anchor := partial "content/field-anchor.html" (dict "page" $.Page "name" $entry.name "id" $entry.id "identity" (printf "sc%s#%s" (partial "content/shortcode-ordinal.html" $) $key)) -}}
     {{- /* The collision-resolved anchor is also the render scope. */ -}}
     {{- $items = $items | append (dict "name" (htmlEscape $entry.name) "anchor" $anchor "meta" $meta "description" (partial "content/render-block.html" (dict "page" $.Page "scope" $anchor "content" $entry.description "origin" (printf "shortcode %q at %s" $.Name $.Position))) "descriptionMarkdown" false) -}}
   {{- end -}}

@@ -45,6 +45,11 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add `id` to the `field` shortcode. It replaces the anchor generated from the
+  field name, so a reference page can keep an established anchor such as
+  `guc-work-mem`. An empty or non-string value, one with whitespace, quotes,
+  `<`, `>` or `&`, or one another field on the page already uses warns and
+  keeps the generated anchor.
 - Add `partial "css/bundle.html" "<name>"`, which returns a theme stylesheet
   as a resource. `main` is the stylesheet of every OINK page. For a site-owned
   shell that does not load it: `chrome` (tokens, typography, palettes, navbar
@@ -72,6 +77,15 @@ All notable changes to OINK are documented here. The project follows
   adjacent phrase, then by BM25 per section. A phrase no longer outranks every
   other match, and function words such as "how" or `如何` are not required of
   a page.
+- Record search entries below heading level. Every anchored field, from the
+  `fields` shortcode or a `{.fields}` table, carries
+  `data-td-search-entry="<name>"`, and local search opens it by name: a query
+  for a parameter lands on its definition instead of the heading above it. Any
+  rendered element with an `id` and a non-empty `data-td-search-entry` is
+  recorded the same way; one without an id or a title warns and is skipped.
+  Entries join `sections` in document order, and the page text is divided
+  among headings and entries. The `headings` index field still lists headings
+  only.
 - Split a local-search index larger than 2 MiB. The index keeps titles,
   headings, anchors, keywords and descriptions, and the page text moves to
   `offline-search-body.<lang>.json`. The palette shows results from the index

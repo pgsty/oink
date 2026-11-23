@@ -555,8 +555,8 @@ def check_field_parity(html: str) -> list[str]:
         '<span class="td-field__default"><span class="td-field__meta-label">default</span><span class="td-field__meta-value"><code>x</code></span></span>',
         '<span class="td-field__meta"><span class="td-field__meta-label">Note</span><span class="td-field__meta-value">备注</span></span>',
         '<div class="td-fields site-fields" id="sc-fields" data-fixture="shortcode">',
-        '<div class="td-field" id="field-alpha">',
-        '<div class="td-field" id="field-alpha-2">',
+        '<div class="td-field" id="field-alpha" data-td-search-entry="alpha">',
+        '<div class="td-field" id="field-alpha-2" data-td-search-entry="alpha">',
         '<a class="td-heading-self-link td-field__self-link" href="#field-alpha" aria-label="Link to this field"></a>',
     ):
         require(marker in html, f"fields parity fixture missing {marker}", errors)
@@ -581,7 +581,25 @@ def check_field_anchors(html: str) -> list[str]:
         ("baseURL", "field-baseurl"),
         ("搜索模式", "field-搜索模式"),
     ):
-        require(f'<div class="td-field" id="{anchor}">' in html, f"field {name!r} did not anchor as {anchor!r}", errors)
+        # An anchored field names itself, so local search can open it by name.
+        require(f'<div class="td-field" id="{anchor}" data-td-search-entry="{name}">' in html,
+                f"field {name!r} did not anchor as {anchor!r} or lost its search-entry name", errors)
+    return errors
+
+
+def check_field_ids(html: str, log: str) -> list[str]:
+    """An author-chosen field id is used as written; a bad one falls back."""
+    errors: list[str] = []
+    for marker in (
+        '<div class="td-field" id="guc-work-mem" data-td-search-entry="work_mem">',
+        'href="#guc-work-mem" aria-label="Link to this field"',
+        '<div class="td-field" id="field-copy" data-td-search-entry="copy">',
+        '<div class="td-field" id="field-spaced" data-td-search-entry="spaced">',
+    ):
+        require(marker in html, f"explicit field id fixture missing {marker}", errors)
+    require(html.count('id="guc-work-mem"') == 1, "a repeated field id reached the page twice", errors)
+    for warning in ('id "guc-work-mem" is already used', 'id "has space" contains unsupported characters'):
+        require(warning in log, f"explicit field id fixture did not warn: {warning}", errors)
     return errors
 
 
@@ -600,7 +618,8 @@ def check_field_scopes(html: str) -> list[str]:
     """
     errors: list[str] = []
     for anchor in ("field-a-b", "field-ab", "field-a-b-2"):
-        require(f'<div class="td-field" id="{anchor}">' in html, f"the scope fixture lost its {anchor} entry", errors)
+        require(re.search(rf'<div class="td-field" id="{anchor}" data-td-search-entry="[^"]+">', html) is not None,
+                f"the scope fixture lost its {anchor} entry", errors)
     generated = CODE_BLOCK_ID.findall(html)
     duplicates = sorted({value for value in generated if generated.count(value) > 1})
     require(not duplicates, f"field descriptions generated duplicate ids: {duplicates}", errors)
@@ -675,6 +694,12 @@ def check_table_family(hugo: str) -> list[str]:
             '{{< field name="a-b" >}}\n'
             "```text\nthird\n```\n"
             "{{< /field >}}\n"
+            "{{< /fields >}}\n\n"
+            "## An author may choose a field's anchor\n\n"
+            "{{< fields >}}\n"
+            '{{< field name="work_mem" type="integer" id="guc-work-mem" >}}Chosen{{< /field >}}\n'
+            '{{< field name="copy" id="guc-work-mem" >}}Repeated{{< /field >}}\n'
+            '{{< field name="spaced" id="has space" >}}Unsupported{{< /field >}}\n'
             "{{< /fields >}}\n",
             encoding="utf-8",
         )
@@ -715,6 +740,7 @@ def check_table_family(hugo: str) -> list[str]:
         errors += check_field_parity(parity)
         errors += check_field_anchors(parity)
         errors += check_field_scopes(parity)
+        errors += check_field_ids(parity, result.stdout + result.stderr)
         require(html.count('data-td-language="yaml"') == 2 and 'data-td-language="js"' in html, "include code=true did not highlight the included files", errors)
         require("td-table--matrix" not in html and "<p>{.matrix}</p>" not in html, "an orphan attribute line was applied or printed", errors)
         require(html.count("<table") == 3, "table family fixture rendered a wrong number of tables", errors)

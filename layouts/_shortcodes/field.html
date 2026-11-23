@@ -1,5 +1,5 @@
 {{- /* Register one validated field with the enclosing fields collector. */ -}}
-{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "name" "type" "required" "default")) -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "name" "type" "required" "default" "id")) -}}
 {{- $params := dict -}}
 {{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
 {{- /* A field that cannot be registered warns and is skipped; its siblings in
@@ -75,6 +75,23 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* An explicit anchor replaces the one generated from the name. */ -}}
+{{- $fieldID := "" -}}
+{{- if and .IsNamedParams (isset $params "id") -}}
+  {{- $idParam := index $params "id" -}}
+  {{- if ne (printf "%T" $idParam) "string" -}}
+    {{- warnf "shortcode %q: id must be a string at %s; using the generated anchor" .Name .Position -}}
+  {{- else -}}
+    {{- $fieldID = strings.TrimSpace $idParam -}}
+    {{- if not $fieldID -}}
+      {{- warnf "shortcode %q: id must not be empty at %s; using the generated anchor" .Name .Position -}}
+    {{- else if findRE `[\s"'<>&]` $fieldID -}}
+      {{- warnf "shortcode %q: id %q contains unsupported characters at %s; using the generated anchor" .Name $fieldID .Position -}}
+      {{- $fieldID = "" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- $description := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
 {{- if not $description -}}
   {{- warnf "shortcode %q requires a non-empty description at %s; skipping the field" .Name .Position -}}
@@ -88,6 +105,7 @@
   "hasDefault" $hasDefault
   "default" $defaultDisplay
   "description" $description
+  "id" $fieldID
   "position" .Position
 -}}
 {{- .Parent.Scratch.SetInMap "fieldEntries" (printf "%06d" .Ordinal) $entry -}}

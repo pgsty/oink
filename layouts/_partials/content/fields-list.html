@@ -9,7 +9,9 @@
 <dl class="td-fields__list"{{ if $label }} aria-labelledby="{{ $labelID }}"{{ end }}>
 {{- $anchored := eq $format "html" -}}
 {{- range .entries }}
-<div class="td-field"{{ if $anchored }}{{ with .anchor }} id="{{ . }}"{{ end }}{{ end }}>
+{{- /* An anchored field is a search entry: local search opens it by name. */ -}}
+{{- $entryName := .name | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace }}
+<div class="td-field"{{ if $anchored }}{{ with .anchor }} id="{{ . }}"{{ with $entryName }} data-td-search-entry="{{ . }}"{{ end }}{{ end }}{{ end }}>
 <dt class="td-field__term"><code class="td-field__name">{{ .name | safeHTML }}</code>
 {{- range .meta }}
 {{- $class := .class | default "td-field__meta" }}

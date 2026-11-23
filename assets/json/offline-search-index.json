@@ -30,9 +30,7 @@
 {{- $sections := dict -}}
 {{- if ne $scope "title" -}}
   {{- $sections = partial "search/sections.html" (dict "page" . "scope" $scope) -}}
-  {{- $titles := slice -}}
-  {{- range $sections.sections }}{{ $titles = $titles | append .title }}{{ end -}}
-  {{- $headings = delimit $titles " " -}}
+  {{- $headings = delimit $sections.headings " " -}}
 {{- end -}}
 {{- $plain := "" -}}
 {{- if or (not $summary) (eq $scope "content") -}}

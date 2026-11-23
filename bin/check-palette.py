@@ -112,6 +112,11 @@ def main() -> int:
                     )
                     require(any("registerSearchTail" in bundle for bundle in bundles),
                             f"{deployment}/{lang} Palette omitted the search-tail API")
+                    require(
+                        "lunr" not in html.lower()
+                        and not any("lunr" in bundle.lower() for bundle in bundles),
+                        f"{deployment}/{lang} page still loads the retired Lunr runtime",
+                    )
 
             output, _ = actions.build(
                 helper,
@@ -123,7 +128,6 @@ def main() -> int:
                 encoding="utf-8"
             )
             require('id="td-shell-search"' not in html, "search-off page emitted Palette markup")
-            require("lunr.min.js" not in html, "search-off page emitted Lunr")
             for bundle in referenced_bundles(output, html):
                 require("OinkPaletteModel =" not in bundle, "search-off page loaded Palette model")
                 # keyboard-nav.js may *reference* the palette global as a

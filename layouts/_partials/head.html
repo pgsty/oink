@@ -148,12 +148,6 @@ rendered, so read that instead of re-deriving it from the output-format lists. *
 {{ partialCached "font-roles.html" . (printf "font-roles-%s-%s" .Site.BaseURL .Site.Language.Lang) -}}
 {{ partial "theme-color.html" . -}}
 {{ partial "shell/prepaint.html" . -}}
-{{ if partial "shell/search-enabled.html" . -}}
-{{ $lunr := resources.Get "js/third_party/lunr.min.js" -}}
-{{ if hugo.IsProduction }}{{ $lunr = $lunr | fingerprint }}{{ end -}}
-<script defer src="{{ $lunr.RelPermalink }}"
-  {{- with $lunr.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
-{{ end -}}
 
 {{ template "algolia/head" . -}}
 

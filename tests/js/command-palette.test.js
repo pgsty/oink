@@ -244,8 +244,6 @@ function setup({ controlledAnimationFrame = false } = {}) {
     location: { assign(url) { assigned.push(url); } },
     open(url, target, features) { opened.push({ url, target, features }); return null; },
   };
-  global.lunr = () => {};
-  global.window.lunr = global.lunr;
   const modelPath = path.join(__dirname, '..', '..', 'assets/js/palette-model.js');
   delete require.cache[require.resolve(modelPath)];
   global.window.OinkPaletteModel = require(modelPath);

@@ -59,8 +59,8 @@ def main() -> int:
             "search-enabled.html is not the complete build/surface capability predicate",
         )
         require(
-            '{{ if partial "shell/search-enabled.html" . -}}' in head,
-            "Lunr is not gated by the canonical capability",
+            "search-enabled.html" not in head and "lunr" not in head.lower(),
+            "head.html loads a search runtime; the Palette chunk owns all of it",
         )
         require(
             '$outputFormat := lower (.Store.Get "tdOutputFormat"' in head

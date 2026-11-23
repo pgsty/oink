@@ -225,7 +225,7 @@
         "panels": []
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
           "docs",
           "blog",
@@ -588,11 +588,11 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
-        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+        "{\"dialog\": true, \"index_reference\": true, \"opener\": true, \"palette_controller\": true}": [
           "home",
           "docs",
           "blog"
@@ -994,7 +994,7 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
           "docs",
           "blog",
@@ -1401,11 +1401,11 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
-        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+        "{\"dialog\": true, \"index_reference\": true, \"opener\": true, \"palette_controller\": true}": [
           "home",
           "docs",
           "blog"
@@ -1626,11 +1626,11 @@
         "panels": []
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
-        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+        "{\"dialog\": true, \"index_reference\": true, \"opener\": true, \"palette_controller\": true}": [
           "home",
           "docs",
           "blog"
@@ -1988,7 +1988,7 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
           "docs",
           "blog",
@@ -2351,11 +2351,11 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
-        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+        "{\"dialog\": true, \"index_reference\": true, \"opener\": true, \"palette_controller\": true}": [
           "home",
           "docs",
           "blog"
@@ -2757,7 +2757,7 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
           "docs",
           "blog",
@@ -3164,11 +3164,11 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
-        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+        "{\"dialog\": true, \"index_reference\": true, \"opener\": true, \"palette_controller\": true}": [
           "home",
           "docs",
           "blog"
@@ -3386,7 +3386,7 @@
         "panels": []
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
           "docs",
           "blog",
@@ -3609,11 +3609,11 @@
         "panels": []
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
-        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+        "{\"dialog\": true, \"index_reference\": true, \"opener\": true, \"palette_controller\": true}": [
           "home",
           "docs",
           "blog"
@@ -3971,7 +3971,7 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
           "docs",
           "blog",

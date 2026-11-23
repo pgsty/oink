@@ -11,7 +11,7 @@ params:
   # `hugo server` builds the local index and search runtime too, so a preview
   # behaves like the deployed site. Set false to skip it on very large sites.
   offline_search_on_serve: true
-  # Local Lunr search. Off by default; a site opts in.
+  # Local search. Off by default; a site opts in.
   offline_search: false
   offline_search_index: content # content | summary
   offline_search_summary_length: 70

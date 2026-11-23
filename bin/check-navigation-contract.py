@@ -256,7 +256,7 @@ def validate_contract(contract: dict[str, Any]) -> None:
     )
 
     runtime = contract.get("runtime", {})
-    expected_omissions = {"dialog", "local_index", "lunr", "palette_controller"}
+    expected_omissions = {"dialog", "local_index", "palette_controller"}
     require(
         runtime.get("enabled_when")
         == ["params.offline_search", "home_or_shell_surface", "not_print"],
@@ -590,11 +590,9 @@ def current_root(html: str) -> str:
 
 
 def runtime_markers(html: str, palette_controller_in_bundle: bool) -> dict[str, bool]:
-    script_sources = re.findall(r'<script\b[^>]*\bsrc="([^"]+)"', html)
     return {
         "dialog": 'id="td-shell-search"' in html,
         "opener": "data-td-shell-search-open" in html,
-        "lunr": any("lunr" in source for source in script_sources),
         "index_reference": "data-td-index-src=" in html,
         "palette_controller": palette_controller_in_bundle,
     }
@@ -950,7 +948,6 @@ def validate_observation(
                             require(
                                 not runtime["dialog"]
                                 and not runtime["opener"]
-                                and not runtime["lunr"]
                                 and not runtime["index_reference"]
                                 and not runtime["palette_controller"],
                                 f"{deployment}/{variant}/{lang}/{surface} emits "
@@ -960,7 +957,6 @@ def validate_observation(
                             require(
                                 runtime["dialog"]
                                 and runtime["opener"]
-                                and runtime["lunr"]
                                 and runtime["index_reference"],
                                 f"{deployment}/{variant}/{lang}/{surface} "
                                 "search-enabled characterization changed",
@@ -974,7 +970,6 @@ def validate_observation(
                             require(
                                 not runtime["dialog"]
                                 and not runtime["opener"]
-                                and not runtime["lunr"]
                                 and not runtime["index_reference"]
                                 and not runtime["palette_controller"],
                                 f"{deployment}/{variant}/{lang}/{surface} "
@@ -1009,8 +1004,8 @@ def validate_runtime_source_contract() -> None:
         encoding="utf-8"
     )
     require(
-        'resources.Get "js/third_party/lunr.min.js"' in head,
-        "Lunr source marker changed",
+        "lunr" not in head.lower(),
+        "head.html loads the retired Lunr runtime",
     )
     require(
         'resources.Get "js/command-palette.js"' in scripts,

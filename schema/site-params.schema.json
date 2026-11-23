@@ -20,7 +20,7 @@
           "default": true
         },
         "offline_search": {
-          "description": "Local Lunr search. Off by default; a site opts in.",
+          "description": "Local search. Off by default; a site opts in.",
           "type": "boolean",
           "default": false
         },

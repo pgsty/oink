@@ -39,6 +39,9 @@ All notable changes to OINK are documented here. The project follows
   `shown.bs.tab` listeners to `td:tab-shown`. It bubbles from the newly
   visible panel. For version-menu styles, change `.td-version-menu .dropdown-menu`
   to `.td-version-menu__list`.
+- Stop loading Lunr. `window.lunr` is undefined on OINK pages, and
+  `OinkSearchEngine.create` takes `(documents, maxResults)` without the Lunr
+  argument. A site that used the theme's copy of Lunr must load its own.
 
 ### Added
 
@@ -55,6 +58,20 @@ All notable changes to OINK are documented here. The project follows
 
 ### Changed
 
+- Replace the local search engine. One engine scans the index text and builds
+  no index in the browser; the first English query no longer waits for one.
+  Configuration, index files and front matter keys are unchanged. A word
+  matches at a word boundary, so `port` no longer finds "support"; it still
+  matches longer words it begins, other inflections, and, from five
+  characters, the inside of a compound. A run of Chinese, Japanese or Korean
+  characters matches as overlapping bigrams, so `连接池超时` needs no space, and
+  a letter or digit beside such a run starts a new piece. Symbol runs such as
+  `->>` are searchable. Spelling fallback counts a transposition as one edit
+  and highlights the word it found. Ranking orders complete matches by the
+  fields that hold the query, scaled by `search_boost` and by 1.5 for an
+  adjacent phrase, then by BM25 per section. A phrase no longer outranks every
+  other match, and function words such as "how" or `如何` are not required of
+  a page.
 - Raise the module baseline to Go 1.27.4 and Hugo 0.169.0. Refresh the
   documentation test dependencies and maintainer build lock to current
   compatible releases.
@@ -140,6 +157,8 @@ All notable changes to OINK are documented here. The project follows
 - Remove the vendored `katex.min.js`. Hugo renders formulas at build time and
   Markmap renders its own with MathJax, so no page loaded the script. The
   KaTeX stylesheet and fonts stay.
+- Remove the vendored Lunr script, its licence file and `VENDOR.json` entry.
+  `assets/js/third_party/` no longer exists.
 
 ### Fixed
 

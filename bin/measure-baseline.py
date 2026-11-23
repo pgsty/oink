@@ -393,7 +393,6 @@ THIRD_PARTY_MARKERS = {
     "swagger-ui": "SwaggerUI",
     "redoc": "Redoc",
     "infographic": "infographic",
-    "lunr": "lunr.Builder",
     "docsearch": "docsearch",
     "pako": "pako",
 }

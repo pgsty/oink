@@ -217,7 +217,7 @@
         })
         .then(function (data) {
           if (request !== indexRequest) return;
-          engine = searchApi.create(data, lunr, maxResults);
+          engine = searchApi.create(data, maxResults);
           loading = false;
           syncBusy();
           if (isOpen()) render(input.value);
@@ -342,11 +342,13 @@
       return query && query.charAt(0) !== COMMAND_PREFIX;
     }
 
-    function highlight(text, query) {
+    // A page row marks what the engine found, which may be an inflection or
+    // a corrected spelling; every other row marks the query as typed.
+    function highlight(text, query, marks) {
       text = String(text || '');
       query = String(query || '').trim();
       var fragment = document.createDocumentFragment();
-      var needles = searchApi.terms ? searchApi.terms(query) : [query.toLowerCase()];
+      var needles = marks || (searchApi.terms ? searchApi.terms(query) : [query.toLowerCase()]);
       var merged = searchApi.matchRanges ? searchApi.matchRanges(text, needles) : [];
       var cursor = 0;
       merged.forEach(function (range) {
@@ -523,7 +525,8 @@
           meta.className = 'td-shell-search__item-meta';
           var title = document.createElement('div');
           title.className = 'td-shell-search__item-title';
-          title.appendChild(highlight(rowData.title, query));
+          var marks = rowData.page && rowData.page.marks;
+          title.appendChild(highlight(rowData.title, query, marks));
           meta.appendChild(title);
           if (rowData.page && rowData.page.partial) {
             var coverage = document.createElement('div');
@@ -539,7 +542,7 @@
             description.className = rowData.type === 'page'
               ? 'td-shell-search__item-excerpt'
               : 'td-shell-search__item-ref';
-            description.appendChild(highlight(detail, query));
+            description.appendChild(highlight(detail, query, marks));
             meta.appendChild(description);
             if (!rowData.available)
               row.setAttribute('aria-describedby', description.id);

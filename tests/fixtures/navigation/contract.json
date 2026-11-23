@@ -119,13 +119,11 @@
     "disabled_must_omit": [
       "dialog",
       "local_index",
-      "lunr",
       "palette_controller"
     ],
     "print_must_omit": [
       "dialog",
       "local_index",
-      "lunr",
       "palette_controller"
     ]
   },

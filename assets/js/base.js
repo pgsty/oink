@@ -69,214 +69,102 @@ limitations under the License.
         }, true);
     }
 
-    function dismissMenuOnEscape(menu, trigger, close) {
+    function initHoverMenu(menu, trigger, surfaceName) {
+        if (!trigger) return;
         menu.setAttribute('data-td-menu-ready', '');
-        // Bootstrap delegates dropdown keydown in document capture. Its
-        // Escape handler stops propagation and focuses the trigger, whose
-        // focusin can reopen the menu. Finish dismissal on that same target.
-        const escapeTarget = menu.hasAttribute('data-td-version-menu') ? document : menu;
-        escapeTarget.addEventListener('keydown', function(event) {
-            if (event.key !== 'Escape' || !menu.contains(event.target)) return;
+        let closeTimer = 0;
+        let activatedOpen = false;
+        // A floating list closes on the press: iOS sends no click for a tap
+        // on plain content. The phone drawer's list sits in the flow, so it
+        // waits for the click and the row under the finger stays in place.
+        const inFlow = Boolean(menu.closest('.td-site-drawer'));
+        const outsidePress = inFlow ? 'click' : 'pointerdown';
+
+        function dismissOutside(event) {
+            if (!menu.contains(event.target)) close();
+        }
+
+        function dismissOnEscape(event) {
+            if (event.key !== 'Escape' || event.defaultPrevented) return;
             event.preventDefault();
             event.stopPropagation();
-            // Focusing the trigger may run focusin/open. Close afterwards so
-            // the restored focus cannot reopen the dismissed surface.
-            if (trigger && menu.contains(document.activeElement)) trigger.focus();
+            if (document.activeElement === document.body || menu.contains(document.activeElement)) {
+                trigger.focus({preventScroll: true});
+            }
             close();
-        }, true);
-    }
+        }
 
-    function initLanguageMenus() {
-        document.querySelectorAll('.td-language-selector--menu').forEach(function(menu, index) {
-            const trigger = menu.querySelector('.td-language-selector__trigger');
-            const surfaceName = 'language-menu-' + index;
-            let closeTimer = 0;
-
-            function open() {
-                if (window.OinkSurfaceCoordinator) {
-                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
-                        : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
-                    window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
-                }
-                window.clearTimeout(closeTimer);
-                menu.classList.add('td-is-open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'true');
-            }
+        function open() {
+            window.clearTimeout(closeTimer);
+            if (menu.classList.contains('td-is-open')) return;
             if (window.OinkSurfaceCoordinator) {
-                window.OinkSurfaceCoordinator.register(surfaceName, close);
+                const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
+                    : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
+                window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
             }
+            menu.classList.add('td-is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+            document.addEventListener(outsidePress, dismissOutside, true);
+            document.addEventListener('keydown', dismissOnEscape, true);
+        }
 
-            function close() {
-                menu.classList.remove('td-is-open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'false');
-            }
+        function close() {
+            window.clearTimeout(closeTimer);
+            menu.classList.remove('td-is-open');
+            trigger.setAttribute('aria-expanded', 'false');
+            activatedOpen = false;
+            document.removeEventListener(outsidePress, dismissOutside, true);
+            document.removeEventListener('keydown', dismissOnEscape, true);
+        }
 
-            function closeSoon() {
-                window.clearTimeout(closeTimer);
-                closeTimer = window.setTimeout(close, 140);
-            }
+        function closeSoon() {
+            window.clearTimeout(closeTimer);
+            closeTimer = window.setTimeout(close, 140);
+        }
 
-            menu.addEventListener('pointerenter', function(event) {
-                if (event.pointerType !== 'touch') open();
-            });
-            menu.addEventListener('pointerleave', function(event) {
-                if (event.pointerType !== 'touch') closeSoon();
-            });
-            dismissMenuOnEscape(menu, trigger, close);
-            menu.addEventListener('focusin', open);
-            menu.addEventListener('focusout', function(event) {
-                if (!menu.contains(event.relatedTarget)) closeSoon();
-            });
+        if (window.OinkSurfaceCoordinator) window.OinkSurfaceCoordinator.register(surfaceName, close);
+        menu.addEventListener('pointerenter', function(event) {
+            if (event.pointerType !== 'touch') open();
         });
-    }
-
-    function initVersionMenus() {
-        document.querySelectorAll('[data-td-version-menu]').forEach(function(menu, index) {
-            const trigger = menu.querySelector('[data-bs-toggle="dropdown"]');
-            const surfaceName = 'version-menu-' + index;
-            let closeTimer = 0;
-            let activatedOpen = false;
-            if (!trigger || !window.bootstrap || !bootstrap.Dropdown) return;
-            const dropdown = bootstrap.Dropdown.getOrCreateInstance(trigger);
-
-            function isOpen() {
-                return trigger.getAttribute('aria-expanded') === 'true';
-            }
-
-            function open() {
-                window.clearTimeout(closeTimer);
-                dropdown.show();
-            }
-
-            function close() {
-                window.clearTimeout(closeTimer);
-                dropdown.hide();
-                activatedOpen = false;
-            }
-
-            function closeSoon() {
-                window.clearTimeout(closeTimer);
-                closeTimer = window.setTimeout(close, 140);
-            }
-
-            menu.addEventListener('show.bs.dropdown', function() {
-                if (window.OinkSurfaceCoordinator) {
-                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
-                        : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
-                    window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
-                }
-            });
-            menu.addEventListener('hidden.bs.dropdown', function() {
-                activatedOpen = false;
-            });
-            if (window.OinkSurfaceCoordinator) {
-                window.OinkSurfaceCoordinator.register(surfaceName, close);
-            }
-
-            // Mouse and keyboard users should not have to aim for a small
-            // disclosure arrow. The trigger click below preserves Bootstrap's
-            // disclosure behavior without its focusin/toggle race.
-            menu.addEventListener('pointerenter', function(event) {
-                if (event.pointerType !== 'touch') open();
-            });
-            menu.addEventListener('pointerleave', function(event) {
-                if (event.pointerType !== 'touch') closeSoon();
-            });
-            dismissMenuOnEscape(menu, trigger, close);
-            menu.addEventListener('focusin', open);
-            menu.addEventListener('focusout', function(event) {
-                if (!menu.contains(event.relatedTarget)) closeSoon();
-            });
-            trigger.addEventListener('click', function(event) {
-                // Bootstrap's delegated click runs after focusin. Without
-                // owning this activation, focusin opens and Bootstrap
-                // immediately toggles the first touch/click closed again.
-                // Hover may also have opened the surface before pointerdown,
-                // so track explicit activation rather than event-order state.
-                event.preventDefault();
-                event.stopPropagation();
-                if (activatedOpen && isOpen()) {
-                    close();
-                } else {
-                    open();
-                    activatedOpen = true;
-                }
-            });
+        menu.addEventListener('pointerleave', function(event) {
+            if (event.pointerType !== 'touch') closeSoon();
         });
-    }
-
-    // Hover popovers (version, keyboard help, and any site markup that still
-    // uses the pattern): hover or focus reveals the options while the trigger
-    // keeps its own click action. The Appearance menu is a click disclosure
-    // owned by appearance.js instead.
-    function initThemeMenus() {
-        document.querySelectorAll('[data-td-nav-hover]').forEach(function(menu, index) {
-            const trigger = menu.querySelector('[data-td-nav-hover-trigger], .td-nav-util');
-            const surfaceName = 'theme-menu-' + index;
-            let closeTimer = 0;
-            let activatedOpen = false;
-
-            function open() {
-                if (window.OinkSurfaceCoordinator) {
-                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer']
-                        : menu.closest('[data-td-landing-menu]') ? ['mobile-menu'] : [];
-                    window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
-                }
-                window.clearTimeout(closeTimer);
-                menu.classList.add('td-is-open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'true');
+        menu.addEventListener('focusin', open);
+        menu.addEventListener('focusout', function(event) {
+            if (!menu.contains(event.relatedTarget)) closeSoon();
+        });
+        if (!trigger.hasAttribute('data-td-nav-hover-open')) return;
+        trigger.addEventListener('click', function() {
+            if (activatedOpen) {
+                close();
+            } else {
+                open();
+                activatedOpen = true;
+                if (inFlow) menu.scrollIntoView({block: 'nearest', inline: 'nearest'});
             }
-
-            function close() {
-                menu.classList.remove('td-is-open');
-                if (trigger) trigger.setAttribute('aria-expanded', 'false');
-                activatedOpen = false;
-            }
-
-            function closeSoon() {
-                window.clearTimeout(closeTimer);
-                closeTimer = window.setTimeout(close, 140);
-            }
-
-            if (window.OinkSurfaceCoordinator) {
-                window.OinkSurfaceCoordinator.register(surfaceName, close);
-            }
-
-            menu.addEventListener('pointerenter', function(event) {
-                if (event.pointerType !== 'touch') open();
-            });
-            menu.addEventListener('pointerleave', function(event) {
-                if (event.pointerType !== 'touch') closeSoon();
-            });
-            dismissMenuOnEscape(menu, trigger, close);
-            menu.addEventListener('focusin', open);
-            menu.addEventListener('focusout', function(event) {
-                if (!menu.contains(event.relatedTarget)) closeSoon();
-            });
-            // Triggers without their own click action (the version menu)
-            // toggle on tap, so touch reaches the options too.
-            if (trigger && trigger.hasAttribute('data-td-nav-hover-open')) {
-                trigger.addEventListener('click', function() {
-                    // focus or hover may already have opened the menu before
-                    // this activation. Keep the first explicit activation
-                    // open; a second one behaves like a disclosure toggle.
-                    if (activatedOpen && menu.classList.contains('td-is-open')) {
-                        close();
-                    } else {
-                        open();
-                        activatedOpen = true;
-                    }
-                });
-            }
+        });
+        menu.addEventListener('keydown', function(event) {
+            if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+            const links = Array.from(menu.querySelectorAll('a[href]'));
+            if (!links.length) return;
+            event.preventDefault();
+            open();
+            const index = links.indexOf(document.activeElement);
+            const next = event.key === 'ArrowDown' ? Math.min(index + 1, links.length - 1)
+                : index < 0 ? links.length - 1 : Math.max(index - 1, 0);
+            links[next].focus();
         });
     }
 
     initReadingFocus();
     if (!window.OinkComparePane) {
         initHeaderScroll();
-        initLanguageMenus();
-        initVersionMenus();
-        initThemeMenus();
+        document.querySelectorAll('.td-language-selector--menu').forEach(function(menu, index) {
+            initHoverMenu(menu, menu.querySelector('.td-language-selector__trigger'), 'language-menu-' + index);
+        });
+        document.querySelectorAll('[data-td-nav-hover]').forEach(function(menu, index) {
+            initHoverMenu(menu, menu.querySelector('[data-td-nav-hover-trigger], .td-nav-util'), 'theme-menu-' + index);
+        });
     }
 
 }());

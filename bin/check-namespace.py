@@ -23,6 +23,7 @@ import argparse
 import re
 import sys
 from collections import Counter
+from html.parser import HTMLParser
 from pathlib import Path
 
 from test_site import checker_fixture_public
@@ -47,6 +48,11 @@ FIXTURE_DATA = {"data-probe", "data-z"}
 # break a consumer override for no gain. They stayed invisible until the
 # example declared taxonomies of its own.
 DOCSY_HERITAGE_CLASS = re.compile(r"^(taxonomy|taxo-[a-z0-9-]+)$")
+
+BLOG_GALLERY_DATA = {
+    "data-gallery-controls", "data-gallery-grid", "data-gallery-item",
+    "data-gallery-mode", "data-gallery-size",
+}
 
 # Classes emitted by third-party runtimes or by Hugo/Goldmark itself.
 THIRD_PARTY_CLASS = re.compile(
@@ -90,10 +96,9 @@ THIRD_PARTY_DATA = {
     "data-repo", "data-repo-id", "data-category", "data-category-id", "data-mapping",
     "data-strict", "data-reactions-enabled", "data-emit-metadata", "data-input-position",
     "data-theme", "data-lang", "data-loading",
-    # Bootstrap
-    "data-bs-theme", "data-bs-toggle", "data-bs-target", "data-bs-placement",
-    "data-bs-container", "data-bs-original-title", "data-bs-theme-value", "data-bs-dismiss",
-    "data-bs-parent", "data-bs-slide", "data-bs-slide-to", "data-bs-ride", "data-bs-backdrop",
+    # Bootstrap's colour mode, which its stylesheet reads. The theme runs none
+    # of Bootstrap's scripts, so no other data-bs-* attribute has a meaning.
+    "data-bs-theme", "data-bs-theme-value",
     # html-proofer opt-out honoured by consuming sites' CI
     "data-proofer-ignore",
     # documented author opt-out, in the same family as the {.cards} markers
@@ -119,28 +124,34 @@ PLAYER_THEME_RE = re.compile(
     r"asciinema-player-theme-(td-light|td-dark)\s*\{[^}]*--term-color-background\s*:"
 )
 
-CLASS_RE = re.compile(r'class="([^"]*)"')
-# Only a real attribute assignment counts; prose such as "data-driven
-# sections" in page copy is not markup.
-DATA_RE = re.compile(r"[\s<](data-[a-z0-9-]+)=")
 CUSTOM_PROPERTY_RE = re.compile(r"(?:^|[;{\s])(--[a-z][a-z0-9-]*)\s*:")
 # Font Awesome sets a bare `--fa` plus its `--fa-*` family.
 ALLOWED_PROPERTY_PREFIX = ("--td-", "--bs-", "--fa")
 
 
+class Namespaces(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.classes: Counter[str] = Counter()
+        self.attributes: Counter[str] = Counter()
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        for name, value in attrs:
+            if name == "class" and value:
+                self.classes.update(value.split())
+            elif name.startswith("data-"):
+                self.attributes[name] += 1
+
+
 def scan_html(public: Path) -> tuple[Counter[str], Counter[str], int]:
-    classes: Counter[str] = Counter()
-    attributes: Counter[str] = Counter()
+    parser = Namespaces()
     pages = 0
     for path in sorted(public.rglob("*.html")):
-        text = path.read_text(encoding="utf-8", errors="ignore")
+        parser.feed(path.read_text(encoding="utf-8", errors="ignore"))
+        parser.close()
+        parser.reset()
         pages += 1
-        for match in CLASS_RE.finditer(text):
-            for token in match.group(1).split():
-                classes[token] += 1
-        for match in DATA_RE.finditer(text):
-            attributes[match.group(1)] += 1
-    return classes, attributes, pages
+    return parser.classes, parser.attributes, pages
 
 
 def check_html(public: Path) -> list[str]:
@@ -166,8 +177,9 @@ def check_html(public: Path) -> list[str]:
     stray_attributes = sorted(
         name
         for name in attributes
-        if not name.startswith(("data-td-", "data-bs-"))
+        if not name.startswith("data-td-")
         and name not in THIRD_PARTY_DATA
+        and name not in BLOG_GALLERY_DATA
         and name not in FIXTURE_DATA
     )
     for name in stray_attributes:

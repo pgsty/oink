@@ -75,7 +75,6 @@ def check_sources() -> list[str]:
     feedback_js = (ROOT / "assets/js/feedback.js").read_text()
     giscus = (ROOT / "layouts/_partials/giscus.html").read_text()
     keyboard = (ROOT / "assets/js/keyboard-nav.js").read_text()
-    base_js = (ROOT / "assets/js/base.js").read_text()
     navbar = (ROOT / "layouts/_partials/navbar.html").read_text()
     version = (ROOT / "layouts/_partials/navbar-version-selector.html").read_text()
     icons = (ROOT / "layouts/_partials/shell/icon.html").read_text()
@@ -236,18 +235,11 @@ def check_sources() -> list[str]:
             and "color: var(--td-accent)" in css_family(sidebar_styles, ".td-shell-root__check"),
             "a sidebar selected-state mark went back to the brand color instead of "
             "the section's", errors)
-    require('"dropup" true "iconOnly" true' in footer_line
-            and "td-version-menu--icon-only" in version
-            and "if not $iconOnly" in version
-            and ".td-version-menu--icon-only" in (ROOT / "assets/css/td/version-selector.css").read_text(),
-            "bottom-bar version switcher exposes text or lost its dropup", errors)
     require('"icon" "shell"' in footer_line
             and '"mode" "list"' not in footer_line
             and ".td-shell-footline .td-language-selector--menu" in language_styles
             and "inset-inline-end: 0" in language_styles,
             "bottom-bar language control is expanded or no longer opens upward", errors)
-    require("dropdown.show()" in base_js and "menu.addEventListener('pointerenter'" in base_js,
-            "bottom-bar version menu no longer opens on pointer hover", errors)
     appearance = (ROOT / "layouts/_partials/shell/appearance-menu.html").read_text()
     require('shell/appearance-menu.html' in footer_line
             and 'type="radio"' in appearance and '<fieldset' in appearance
@@ -1176,12 +1168,27 @@ languages:
         require(start >= 0 and end >= 0 and all(index >= 0 for index in order)
                 and order == sorted(order),
                 "rendered slim footer order is not version/language/theme/help", errors)
-        version_start = footline.find("td-version-menu--icon-only")
-        version_end = footline.find("</button>", version_start)
-        version_trigger = footline[version_start:version_end]
-        require("td-shell-icon--code-branch" in version_trigger
-                and "td-version-menu__title-text" not in version_trigger,
-                "rendered footer version trigger is not icon-only", errors)
+        version_tags: list[tuple[str, dict]] = []
+
+        class VersionTags(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                version_tags.append((tag, dict(attrs)))
+
+        VersionTags().feed(footline[order[0]:order[1]])
+        menu = next((attrs for _, attrs in version_tags if "data-td-version-menu" in attrs), {})
+        trigger = next((attrs for tag, attrs in version_tags if tag == "button"), {})
+        lists = [attrs.get("class", "").split() for tag, attrs in version_tags if tag == "ul"]
+        links = [attrs for tag, attrs in version_tags if tag == "a"]
+        classes = {name for _, attrs in version_tags for name in attrs.get("class", "").split()}
+        require("data-td-nav-hover" in menu and "td-version-menu--up" in menu.get("class", "").split()
+                and {"data-td-nav-hover-trigger", "data-td-nav-hover-open"} <= trigger.keys()
+                and trigger.get("aria-expanded") == "false" and trigger.get("aria-label") == "Version 1"
+                and "td-shell-icon--code-branch" in classes and "td-version-menu__title-text" not in classes,
+                "rendered footer version disclosure lost its name, behavior or compact trigger", errors)
+        require(len(lists) == 1 and "td-version-menu__list" in lists[0] and "dropdown-menu" not in classes
+                and any(link.get("aria-current") == "page" for link in links)
+                and any(link.get("href", "").rstrip("/") == "https://v2.example.org" for link in links),
+                "rendered version list lost its active or alternative link, or exposes a Bootstrap hook", errors)
         require('aria-label="GitHub"' not in footline
                 and "td-shell-footline__toggle" not in footline,
                 "slim footer gained GitHub or the fat-footer chevron", errors)

@@ -1,11 +1,14 @@
 .td-version-menu {
   position: relative;
+  min-inline-size: 0;
 }
 
 .td-version-menu__title {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
   min-height: 34px;
   padding: 0.45rem 0.65rem;
   border: 1px solid transparent;
@@ -24,17 +27,6 @@
   color: var(--td-shell-primary-hover);
 }
 
-.td-version-menu__title > .td-shell-icon--chevron-down {
-  --td-shell-icon-size: 14px;
-  margin-inline-start: auto;
-  color: var(--bs-tertiary-color);
-  transition: transform var(--td-motion-duration-fast) ease;
-}
-
-.td-version-menu__title[aria-expanded='true'] > .td-shell-icon--chevron-down {
-  transform: rotate(180deg);
-}
-
 .td-version-menu__title > .td-shell-icon--code-branch {
   --td-shell-icon-size: 16px;
 }
@@ -43,24 +35,58 @@
   margin: 0;
 }
 
-.td-version-menu .dropdown-menu {
-  min-width: 13rem;
+/* The list opens under its trigger and lines up with its start edge. The
+   bottom bar raises it and the phone drawer keeps it in the flow. */
+.td-version-menu__list {
+  position: absolute;
+  z-index: 1000;
+  display: none;
+  inset-block-start: calc(100% + 0.125rem);
+  inset-inline-start: 0;
+  box-sizing: border-box;
+  inline-size: 13rem;
+  max-inline-size: min(13rem, 100vi);
+  grid-template-columns: minmax(0, 13rem);
+  margin: 0;
   padding: 0.4rem;
-  border-color: var(--bs-border-color);
+  border: 1px solid var(--bs-border-color);
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--bs-body-bg) 94%, transparent);
   box-shadow: var(--td-brand-shadow-md, var(--bs-box-shadow));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  list-style: none;
+  font-size: 1rem;
+  text-align: start;
+}
+
+.td-version-menu.td-is-open > .td-version-menu__list {
+  display: grid;
+}
+
+.td-version-menu--up .td-version-menu__list {
+  inset-block: auto calc(100% + 0.125rem);
+}
+
+.td-version-menu .dropdown-divider {
+  margin: 0.5rem 0;
+  border: 0;
+  border-block-start: 1px solid var(--bs-border-color-translucent);
+  opacity: 1;
 }
 
 .td-version-menu .dropdown-item {
   position: relative;
+  display: block;
+  box-sizing: border-box;
   padding-block: 0.5rem;
   padding-inline: 2rem 0.65rem;
   border-radius: 0.5rem;
   color: var(--bs-secondary-color);
   font-size: 0.8125rem;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .td-version-menu .dropdown-item:hover, .td-version-menu .dropdown-item:focus-visible {
@@ -98,20 +124,8 @@
   margin: 0;
 }
 
-.td-version-menu.dropup
-.td-version-menu__title
-> .td-shell-icon--chevron-down {
-  transform: rotate(180deg);
-}
-
-.td-version-menu.dropup
-.td-version-menu__title[aria-expanded='true']
-> .td-shell-icon--chevron-down {
-  transform: none;
-}
-
-/* Icon-only triggers are used in the persistent bottom bar. The menu remains
-   a dropup and keeps the full configured labels inside its choices. */
+/* Icon-only triggers are used in the persistent bottom bar. The menu still
+   rises above it and keeps the full configured labels inside its choices. */
 .td-version-menu--icon-only .td-version-menu__title {
   width: 24px;
   min-width: 24px;

@@ -190,9 +190,25 @@
   color: var(--bs-tertiary-color);
 }
 
-.td-shell-footline__version .dropdown-menu {
+/* The dock sits at the end of the bar, so the version list grows back toward
+   the start; once the bar stacks and centres, it grows from the trigger. */
+.td-shell-footline__version .td-version-menu__list {
+  inset-inline: auto 0;
   max-height: min(26rem, calc(100dvh - 5rem));
   overflow-y: auto;
+}
+
+@media (max-width: 991.98px) {
+  .td-shell-footline__right {
+    position: relative;
+  }
+  .td-shell-footline__version .td-version-menu {
+    position: static;
+  }
+  .td-shell-footline__version .td-version-menu__list {
+    inset-inline: auto;
+    inline-size: auto;
+  }
 }
 
 /* The collapse arrow at the right edge of the copyright line. It hides the

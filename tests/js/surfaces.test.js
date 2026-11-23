@@ -366,6 +366,7 @@ function testHoverTriggerClickAfterFocus() {
   });
   global.document = {
     addEventListener() {},
+    removeEventListener() {},
     querySelector() { return null; },
     querySelectorAll(selector) {
       return selector === '[data-td-nav-hover]' ? [menu] : [];
@@ -407,66 +408,92 @@ function testHoverTriggerClickAfterFocus() {
   assert.equal(menu.classList.contains('td-is-open'), false);
 }
 
-function testBootstrapVersionTriggerAfterFocus() {
+// The version lists in the bottom bar and the phone drawer are hover popovers
+// like the navbar one: no dropdown library opens, places or dismisses them.
+function testHoverMenuDismissal() {
+  [false, true].forEach(hoverMenuDismissal);
+}
+
+function hoverMenuDismissal(inDrawer) {
   const trigger = element();
+  trigger.setAttribute('data-td-nav-hover-open', '');
+  const option = element();
+  const revealed = [];
   const menu = element({
-    closest() { return null; },
+    closest(selector) { return inDrawer && selector === '.td-site-drawer' ? element() : null; },
+    contains(candidate) { return candidate === menu || candidate === trigger || candidate === option; },
     querySelector(selector) {
-      return selector === '[data-bs-toggle="dropdown"]' ? trigger : null;
+      return selector === '[data-td-nav-hover-trigger], .td-nav-util' ? trigger : null;
     },
+    scrollIntoView(options) { revealed.push(options); },
   });
-  const dropdown = {
-    show() { trigger.setAttribute('aria-expanded', 'true'); },
-    hide() { trigger.setAttribute('aria-expanded', 'false'); },
-  };
+  const documentListeners = new Map();
   global.document = {
-    addEventListener() {},
+    body: element(),
+    addEventListener(type, callback, capture) {
+      assert.equal(capture, true);
+      if (!documentListeners.has(type)) documentListeners.set(type, new Set());
+      documentListeners.get(type).add(callback);
+    },
+    removeEventListener(type, callback) {
+      documentListeners.get(type)?.delete(callback);
+    },
     querySelector() { return null; },
     querySelectorAll(selector) {
-      return selector === '[data-td-version-menu]' ? [menu] : [];
+      return selector === '[data-td-nav-hover]' ? [menu] : [];
     },
   };
-  global.bootstrap = {
-    Dropdown: { getOrCreateInstance() { return dropdown; } },
-  };
   global.window = {
-    bootstrap: global.bootstrap,
     addEventListener() {},
     clearTimeout() {},
     setTimeout(callback) { callback(); return 1; },
   };
+  const dispatch = (type, event) => documentListeners.get(type)?.forEach((callback) => callback(event));
+  const isOpen = () => menu.classList.contains('td-is-open');
 
   load('assets/js/base.js');
+  document.body.focus();
+  trigger.dispatch('click');
+  assert.equal(isOpen(), true);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'true');
+  // Only the drawer's list is in the flow and may need scrolling into view.
+  assert.deepEqual(revealed, inDrawer ? [{ block: 'nearest', inline: 'nearest' }] : []);
 
-  const activation = () => ({
-    defaultPrevented: false,
-    propagationStopped: false,
-    preventDefault() { this.defaultPrevented = true; },
-    stopPropagation() { this.propagationStopped = true; },
-  });
+  dispatch('pointerdown', { target: option });
+  dispatch('click', { target: option });
+  assert.equal(isOpen(), true);
+  // A floating list closes on the press, because iOS sends no click for a
+  // tap on plain content. The drawer's list waits for the click: closing on
+  // the press would move the row the finger is on.
+  const outside = element();
+  dispatch('pointerdown', { target: outside });
+  assert.equal(isOpen(), inDrawer);
+  dispatch('click', { target: outside });
+  assert.equal(isOpen(), false);
+  assert.equal(trigger.getAttribute('aria-expanded'), 'false');
+  trigger.dispatch('click');
+  assert.equal(isOpen(), true, 'an outside press must reset the toggle state');
 
-  trigger.dispatch('pointerdown', { pointerType: 'touch' });
-  menu.dispatch('focusin');
-  const first = activation();
-  trigger.dispatch('click', first);
-  assert.equal(trigger.getAttribute('aria-expanded'), 'true', 'first touch activation remains open');
-  assert.equal(first.defaultPrevented, true);
-  assert.equal(first.propagationStopped, true, 'Bootstrap delegated click must not toggle it closed');
-
-  trigger.dispatch('pointerdown', { pointerType: 'touch' });
-  trigger.dispatch('click', activation());
-  assert.equal(trigger.getAttribute('aria-expanded'), 'false', 'second touch activation closes');
-
-  menu.dispatch('focusin');
-  trigger.dispatch('click', activation());
-  assert.equal(trigger.getAttribute('aria-expanded'), 'true', 'first keyboard activation remains open after focusin');
-  trigger.dispatch('click', activation());
-  assert.equal(trigger.getAttribute('aria-expanded'), 'false', 'second keyboard activation closes the focused menu');
+  // Escape on an option closes the list, returns focus to the trigger, and
+  // stops there: a drawer that holds the menu stays open.
+  for (const focused of [document.body, option, outside]) {
+    focused.focus();
+    menu.dispatch('pointerenter', { pointerType: 'mouse' });
+    const escape = { ...keyboardEvent('Escape'), stopPropagation() { this.stopped = true; } };
+    dispatch('keydown', escape);
+    assert.equal(isOpen(), false);
+    assert.equal(document.activeElement, focused === outside ? outside : trigger);
+    assert.equal(escape.defaultPrevented, true);
+    assert.equal(escape.stopped, true);
+    const next = keyboardEvent('Escape');
+    dispatch('keydown', next);
+    assert.equal(next.defaultPrevented, false, 'the drawer receives the second Escape');
+  }
 }
 
 testCoordinatorCompatibility();
 testPaletteFocusFromDrawer();
 testNavbarHoverPanel();
 testHoverTriggerClickAfterFocus();
-testBootstrapVersionTriggerAfterFocus();
+testHoverMenuDismissal();
 console.log('surface behavior checks passed');

@@ -94,7 +94,6 @@
 {{ end -}}
 {{ if $interactiveOutput -}}
   {{ $core := slice
-    (resources.Get "third_party/bootstrap/dist/js/bootstrap.bundle.js")
     (resources.Get "js/base.js")
     (resources.Get "js/navbar-menu.js")
     (resources.Get "js/sidebar-state.js")

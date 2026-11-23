@@ -138,17 +138,35 @@ def main() -> int:
             ),
             "surface coordinator API is incomplete",
         )
+        # Every version menu is a hover popover, registered as a theme menu.
         for surface in (
             "palette",
             "drawer",
             "root-menu",
             "language-menu-",
-            "version-menu-",
+            "theme-menu-",
         ):
             require(
                 surface in palette + docs_shell + base,
                 f"surface coordinator is missing {surface}",
             )
+        # The theme styles with Bootstrap and runs none of its scripts: a
+        # dropdown, tab or collapse hook in a layout would do nothing, and no
+        # `shown.bs.tab` or other `*.bs.*` event is ever sent.
+        library_hook = re.compile(
+            r"(?i:\bdata-bs-(?!theme(?:-value)?(?![\w-]))[\w-]+)"
+            r"|\bbootstrap\.[A-Z]\w+|window\.bootstrap\b|third_party/bootstrap/dist/js"
+            r"|\w\.bs\.[a-z]"
+        )
+        callers = sorted(
+            f"{path.relative_to(ROOT)}:{number}"
+            for folder, pattern in (("layouts", "*.html"), ("assets/js", "*.js"))
+            for path in (ROOT / folder).rglob(pattern)
+            if "third_party" not in path.parts
+            for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
+            if library_hook.search(line)
+        )
+        require(not callers, f"Bootstrap's script is not loaded, but something still asks for it: {callers}")
         require(
             not re.search(r"\x1b|\r", palette + coordinator),
             "runtime source contains terminal/control characters",
@@ -159,7 +177,7 @@ def main() -> int:
             "Palette does not promote a hidden drawer opener",
         )
         behavior = subprocess.run(
-            ["node", str(ROOT / "tests/js/surfaces.test.js")],
+            ["node", "--test", "tests/js/surfaces.test.js", "tests/js/landing.test.js"],
             cwd=ROOT,
             capture_output=True,
             check=False,
@@ -167,7 +185,7 @@ def main() -> int:
         )
         require(
             behavior.returncode == 0,
-            "surface behavior test failed:\n"
+            "runtime behavior test failed:\n"
             + (behavior.stdout + behavior.stderr).strip(),
         )
     except (OSError, RuntimeError) as exc:

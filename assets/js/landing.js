@@ -206,6 +206,58 @@
     return true;
   }
 
+  // Download channels: one tablist per product. A click or an arrow key
+  // selects a channel; one that is not published yet cannot be selected.
+  function initDownloadTabs(root, doc) {
+    var sets = Array.from(root.querySelectorAll('[data-td-download-tabs]'));
+    sets.forEach(function (set) {
+      var list = set.querySelector(':scope > [role="tablist"]');
+      if (!list || !list.hidden) return;
+      var tabs = Array.from(list.children);
+      var panels = Array.from(set.querySelectorAll(':scope > .tab-content > .tab-pane'));
+      var enabled = tabs.filter(function (tab) { return !tab.disabled; });
+      if (!enabled.length) return;
+      var selected;
+      panels.forEach(function (panel, index) {
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tabs[index].id);
+        panel.tabIndex = 0;
+      });
+      function select(tab, focus) {
+        if (tab === selected) return;
+        tabs.forEach(function (item, index) {
+          var active = item === tab;
+          item.classList.toggle('active', active);
+          item.setAttribute('aria-selected', active ? 'true' : 'false');
+          item.setAttribute('tabindex', active ? '0' : '-1');
+          panels[index].hidden = !active;
+          panels[index].classList.toggle('active', active);
+        });
+        var previous = selected;
+        selected = tab;
+        if (focus) tab.focus();
+        if (previous) panels[tabs.indexOf(tab)].dispatchEvent(new CustomEvent('td:tab-shown', { bubbles: true }));
+      }
+      enabled.forEach(function (tab, index) {
+        tab.addEventListener('click', function () { select(tab, false); });
+        tab.addEventListener('keydown', function (event) {
+          var rtl = doc.defaultView.getComputedStyle(list).direction === 'rtl';
+          var next = index;
+          if (event.key === 'Home') next = 0;
+          else if (event.key === 'End') next = enabled.length - 1;
+          else if (event.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) next = (index + 1) % enabled.length;
+          else if (event.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) next = (index - 1 + enabled.length) % enabled.length;
+          else return;
+          event.preventDefault();
+          select(enabled[next], true);
+        });
+      });
+      select(enabled[0], false);
+      list.hidden = false;
+    });
+    return sets.length;
+  }
+
   function init(root, win, doc, nav) {
     root = root || doc;
     return {
@@ -214,6 +266,7 @@
       copy: initCopy(root, win, doc, nav),
       themeImages: initThemeImages(root, win, doc),
       mobileMenu: initMobileMenu(root, win, doc),
+      downloadTabs: initDownloadTabs(root, doc),
     };
   }
 
@@ -234,6 +287,7 @@
     syncThemeImages: syncThemeImages,
     initThemeImages: initThemeImages,
     initMobileMenu: initMobileMenu,
+    initDownloadTabs: initDownloadTabs,
     init: init,
   };
 });

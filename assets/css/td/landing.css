@@ -2393,8 +2393,17 @@
   margin-top: 48px;
 }
 
-.td-landing-download-tabs .tab-content {
+.td-landing-download-tabs > .tab-content {
   padding: 24px 0;
+}
+
+.td-landing-download-tabs > .tab-content > .tab-pane:not([hidden]) {
+  display: block;
+}
+
+.td-landing-download-tabs > [hidden],
+.td-landing-download-tabs > .tab-content > [role='tabpanel'] > :is(h3, h4):first-child {
+  display: none;
 }
 
 .td-landing-download-print + .td-landing-download-print {

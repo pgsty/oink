@@ -539,6 +539,7 @@ body.td-shell-chrome--navbar:has(#td-shell-sidebar)
 
 .td-site-drawer {
   position: fixed;
+  box-sizing: border-box;
   inset: 50px 0 auto;
   z-index: 99;
   max-height: calc(100dvh - 50px);
@@ -617,6 +618,14 @@ body.td-shell-chrome--navbar:has(#td-shell-sidebar)
 
 .td-site-drawer__children {
   padding-inline-start: 18px;
+}
+
+/* The drawer scrolls, so its version list opens in the flow under the trigger
+   where a floating list could be cut off by the drawer's edge. */
+.td-site-drawer .td-version-menu__list {
+  position: static;
+  max-inline-size: 100%;
+  margin-block-start: 0.125rem;
 }
 
 /* Wordmark sites keep a plain logo in reserve for the compact state.

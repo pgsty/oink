@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "generated": "2026-11-22",
+  "generated": "2026-11-23",
   "hash": "sha256",
   "trees": [
     {
       "path": "assets/third_party",
-      "files": 132,
-      "sha256": "bdfadcbef586f0a26caa871495cb6d04cd817051535a2476b877156f77eb392a"
+      "files": 130,
+      "sha256": "a34f090453add4fff1935db0095dcbe6b6bfad9b7b9db69f6f2ebe7f29c5ccf5"
     },
     {
       "path": "assets/js/third_party",
@@ -32,25 +32,6 @@
         {
           "path": "assets/third_party/bootstrap/dist/css/bootstrap.rtl.min.css",
           "sha256": "b9048c83571ab73da54395b6b307219f9eb9c5447f4f8edb17a069eb0f19465a"
-        },
-        {
-          "path": "assets/third_party/bootstrap/dist/js/bootstrap.bundle.js",
-          "sha256": "69566344cf5722be51acbc90fdb26c24eb01cc1c153f738b16b2fa87ccd3b510"
-        }
-      ]
-    },
-    {
-      "name": "@popperjs/core",
-      "version": "2.11.8",
-      "source": "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz",
-      "license": "MIT",
-      "licenseFiles": [
-        "assets/third_party/bootstrap/LICENSE.popper"
-      ],
-      "artifacts": [
-        {
-          "path": "assets/third_party/bootstrap/dist/js/bootstrap.bundle.js",
-          "sha256": "69566344cf5722be51acbc90fdb26c24eb01cc1c153f738b16b2fa87ccd3b510"
         }
       ]
     },

@@ -5,15 +5,15 @@
 {{- $menuName := $page.Site.Params.version_menu | default "Version" -}}
 {{- $baseURL := strings.TrimSuffix "/" $page.Site.BaseURL -}}
 
-<div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}{{ if $iconOnly }} td-version-menu--icon-only{{ end }}" data-td-version-menu>
-  <button class="td-version-menu__title" type="button" data-bs-toggle="dropdown"
-    aria-haspopup="true" aria-expanded="false" aria-label="{{ $menuName | plainify }}">
+<div class="td-version-menu{{ if $dropup }} td-version-menu--up{{ end }}{{ if $iconOnly }} td-version-menu--icon-only{{ end }}" data-td-version-menu data-td-nav-hover>
+  <button class="td-version-menu__title" type="button" data-td-nav-hover-trigger data-td-nav-hover-open
+    aria-expanded="false" aria-label="{{ $menuName | plainify }}">
     {{- partialCached "shell/icon.html" "code-branch" "version-code-branch" -}}
     {{- if not $iconOnly }}
     <span class="td-version-menu__title-text">{{ $menuName | markdownify }}</span>
     {{- end }}
   </button>
-  <ul class="dropdown-menu{{ if $dropup }} dropdown-menu-up{{ end }}">
+  <ul class="td-version-menu__list">
     {{- range $page.Site.Params.versions -}}
       {{- $isSeparator := eq .name "---" -}}
       <li>

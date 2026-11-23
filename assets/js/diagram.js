@@ -173,7 +173,6 @@
   addEventListener('resize', wake, { passive: true });
   document.addEventListener('toggle', wake, true);
   document.addEventListener('td:tab-shown', wake);
-  document.addEventListener('shown.bs.tab', wake);
   let suppressRestoreFocus = false;
   function beginPrint() {
     if (printing) return;

@@ -137,6 +137,77 @@ for (const [value, display] of [['2189', '2.2k'], ['32', '32+'], ['12.50', '$12.
   docListeners.get('keydown')({ key: 'Escape' });
   assert.equal(toggle.focused, true);
 
+  // Download channels switch without a tab library: a click or an arrow key
+  // moves the selection, and an unpublished channel is never selected.
+  const panels = new Map();
+  const events = [];
+  const channel = (id, state = {}) => {
+    const tab = element({ 'aria-controls': id, 'aria-selected': 'false' });
+    tab.id = id + '-tab';
+    tab.disabled = Boolean(state.disabled);
+    const panel = element();
+    panel.hidden = false;
+    panel.dispatchEvent = event => events.push([id, event.type, event.bubbles]);
+    panels.set(id, panel);
+    return tab;
+  };
+  const script = channel('script');
+  const candidate = channel('candidate', { disabled: true });
+  const source = channel('source');
+  const pending = channel('pending', { disabled: true });
+  function product(tabs) {
+    const list = { children: tabs, hidden: true, direction: 'ltr' };
+    const set = {
+      querySelector: selector => selector === ':scope > [role="tablist"]' ? list : null,
+      querySelectorAll: selector => selector === ':scope > .tab-content > .tab-pane'
+        ? tabs.map(tab => panels.get(tab.getAttribute('aria-controls'))) : [],
+    };
+    return { set, list };
+  }
+  const demo = product([script, candidate, source]);
+  const unpublished = product([pending]);
+  const tabsRoot = {
+    querySelector() { return null; },
+    querySelectorAll: selector => selector === '[data-td-download-tabs]' ? [demo.set, unpublished.set] : [],
+  };
+  const tabsDoc = { documentElement: element(), defaultView: { getComputedStyle: list => list } };
+  const shown = () => ['script', 'candidate', 'source'].filter(id => !panels.get(id).hidden);
+  const key = (name) => ({ key: name, prevented: false, preventDefault() { this.prevented = true; } });
+
+  landing.init(tabsRoot, {}, tabsDoc, {});
+  assert.equal(demo.list.hidden, false);
+  assert.equal(unpublished.list.hidden, true);
+  assert.equal(panels.get('pending').hidden, false);
+  assert.deepEqual([script, candidate, source].map((tab) => tab.getAttribute('tabindex')), ['0', '-1', '-1']);
+  assert.deepEqual(shown(), ['script']);
+
+  source.dispatch('click');
+  assert.deepEqual(shown(), ['source']);
+  assert.deepEqual(events, [['source', 'td:tab-shown', true]]);
+  assert.equal(source.getAttribute('aria-selected'), 'true');
+  assert.equal(script.getAttribute('aria-selected'), 'false');
+  assert.equal(script.classList.contains('active'), false);
+  assert.equal(source.focused, undefined, 'a click must not move focus by script');
+
+  const right = key('ArrowRight');
+  source.dispatch('keydown', right);
+  assert.equal(right.prevented, true);
+  assert.deepEqual(shown(), ['script'], 'the arrow wraps past the unpublished channel');
+  assert.equal(script.focused, true);
+  script.dispatch('keydown', key('End'));
+  assert.deepEqual(shown(), ['source']);
+  source.dispatch('keydown', key('Home'));
+  assert.deepEqual(shown(), ['script']);
+  demo.list.direction = 'rtl';
+  script.dispatch('keydown', key('ArrowLeft'));
+  assert.deepEqual(shown(), ['source'], 'right-to-left pages mirror the arrows');
+  const other = key('a');
+  source.dispatch('keydown', other);
+  assert.equal(other.prevented, false);
+  candidate.dispatch('click');
+  assert.deepEqual(shown(), ['source'], 'an unpublished channel has no listener to select it');
+  assert.equal(candidate.getAttribute('tabindex'), '-1');
+
   console.log('landing runtime checks passed');
 })().catch((error) => {
   console.error(error);

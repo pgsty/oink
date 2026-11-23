@@ -15,10 +15,23 @@
     <article class="td-landing-download-product" data-td-download-key="{{ $key }}">
       {{- if gt (len $seen) 1 }}<h3>{{ $key }}</h3>{{ end }}
       {{- if eq $format "html" }}
-        {{- $enabledSet := false -}}
-      <div class="td-landing-download-tabs">
-        <div class="nav nav-tabs" role="tablist" aria-label="{{ $section.title | default $key }}">{{ range $index, $channel := $data.channels }}{{ $enabled := or $data.published (eq $channel.kind "rolling") }}{{ $active := and $enabled (not $enabledSet) }}{{ if $active }}{{ $enabledSet = true }}{{ end }}<button class="nav-link{{ if $active }} active{{ end }}{{ if not $enabled }} disabled{{ end }}" id="{{ $owner }}-{{ $channel.id }}-tab" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#{{ $owner }}-{{ $channel.id }}" aria-controls="{{ $owner }}-{{ $channel.id }}" aria-selected="{{ $active }}"{{ if not $enabled }} disabled aria-disabled="true"{{ end }}>{{ with $channel.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ $channel.title }}</button>{{ end }}</div>
-        {{- $activeSet := false }}<div class="tab-content">{{ range $index, $channel := $data.channels }}{{ $enabled := or $data.published (eq $channel.kind "rolling") }}{{ $active := and $enabled (not $activeSet) }}{{ if $active }}{{ $activeSet = true }}{{ end }}<div class="tab-pane fade{{ if $active }} show active{{ end }}" id="{{ $owner }}-{{ $channel.id }}" role="tabpanel" aria-labelledby="{{ $owner }}-{{ $channel.id }}-tab" tabindex="0">{{ partial "download/channel.html" (dict "page" $page "data" $data "channel" $channel "format" $format "owner" $owner) }}</div>{{ end }}</div>
+      <div class="td-landing-download-tabs" data-td-download-tabs>
+        <div class="nav nav-tabs" role="tablist" aria-label="{{ if gt (len $seen) 1 }}{{ $key }}{{ else }}{{ $section.title | default $key }}{{ end }}" hidden>
+          {{- range $data.channels }}
+          {{- $disabled := and (not $data.published) (eq .kind "pinned") }}
+          <button class="nav-link{{ if $disabled }} disabled{{ end }}" id="{{ $owner }}-{{ .id }}-tab" type="button" role="tab" aria-controls="{{ $owner }}-{{ .id }}" aria-selected="false"{{ if $disabled }} disabled{{ end }}>
+            {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}{{ .title -}}
+          </button>
+          {{- end }}
+        </div>
+        <div class="tab-content">
+          {{- range $data.channels }}
+          <section class="tab-pane" id="{{ $owner }}-{{ .id }}">
+            {{ if gt (len $seen) 1 }}<h4>{{ .title }}</h4>{{ else }}<h3>{{ .title }}</h3>{{ end }}
+            {{ partial "download/channel.html" (dict "page" $page "data" $data "channel" . "format" $format "owner" $owner) }}
+          </section>
+          {{- end }}
+        </div>
       </div>
       {{- else if eq $format "print" }}
         {{- range $data.channels }}<section class="td-landing-download-print"><h4>{{ .title }}</h4>{{ partial "download/channel.html" (dict "page" $page "data" $data "channel" . "format" $format "owner" $owner) }}</section>{{ end -}}

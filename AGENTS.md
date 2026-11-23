@@ -166,6 +166,9 @@ python3 -m unittest discover -s tests/migrations -t .
   (`.td-table`, the draw.io buttons, `.h1`–`.h6` beside headings) are written
   into that rule. It is theme source, split by Bootstrap component. Upgrading
   Bootstrap is a deliberate rewrite of those files, not a vendor refresh.
+- Bootstrap is styles only. The theme loads none of its JavaScript, so
+  `data-bs-toggle` and the other script hooks do nothing; menus, tabs and
+  dialogs are the theme's own runtime under `assets/js/`.
 - Consumers style a site with plain CSS in `assets/css/project.css` and
   `assets/css/project/*.css`. A site-owned shell asks for `chrome`, `landing`,
   `search` or `compare` with `partial "css/bundle.html"`. The three SCSS hooks

@@ -30,6 +30,15 @@ All notable changes to OINK are documented here. The project follows
   variable the site changed as the custom property or rule it produced.
 - A site that compiled the theme's SCSS partials in its own templates must ask
   for a stylesheet by name instead; the partials were never a public interface.
+- Stop loading Bootstrap's JavaScript. The theme ships neither
+  `bootstrap.bundle.js` nor Popper, `window.bootstrap` is undefined, and
+  `data-bs-toggle`, `data-bs-dismiss` and Bootstrap's other script hooks do
+  nothing. A site whose own layouts or content use a Bootstrap script
+  component (collapse, modal, offcanvas, tooltip, popover, carousel, dropdown
+  or tab) must supply its own script. For Landing channel changes, migrate
+  `shown.bs.tab` listeners to `td:tab-shown`. It bubbles from the newly
+  visible panel. For version-menu styles, change `.td-version-menu .dropdown-menu`
+  to `.td-version-menu__list`.
 
 ### Added
 
@@ -52,6 +61,10 @@ All notable changes to OINK are documented here. The project follows
 - Stop pinning Hugo. Development and checks use the installed release, CI
   installs the current one, as a consumer would, and documentation no longer
   prescribes a release.
+- Version links open above the bottom bar and expand in the phone drawer.
+  Tab and the up/down arrows reach the links. Escape closes the list first.
+  Landing `download` shows labelled channels in HTML and switches them
+  without a fade once the Landing script loads.
 - Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
   0.169.0's improved plain-text spacing and resulting word counts in goldens.
   Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome
@@ -81,6 +94,8 @@ All notable changes to OINK are documented here. The project follows
   vendored SCSS of Bootstrap, Font Awesome, Inter and IBM Plex Sans, and with
   them every Sass variable, mixin and override layer. Bootstrap 5.3.8 remains
   as plain CSS under `assets/css/td/bootstrap/`, with the theme's palette.
+- Remove the vendored Bootstrap script bundle and the Popper it embedded,
+  with Popper's licence file and `VENDOR.json` entry.
 
 ### Fixed
 

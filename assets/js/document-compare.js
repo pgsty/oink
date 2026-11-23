@@ -545,7 +545,6 @@
           // OINK tabs announce td:tab-shown; equal-height panels change the
           // visible headings without resizing the article.
           doc.addEventListener('td:tab-shown', scheduleMeasure, { signal: paneSignal });
-          doc.addEventListener('shown.bs.tab', scheduleMeasure, { signal: paneSignal });
           doc.fonts?.ready.then(() => { if (!paneSignal.aborted) scheduleMeasure(); });
           measure();
         } catch (_) { fail(); }

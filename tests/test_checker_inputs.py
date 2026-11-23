@@ -4,6 +4,7 @@
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -55,6 +56,25 @@ class CheckerFixtureInputTests(unittest.TestCase):
         self.assertEqual(public, supplied)
         self.assertIsNone(result)
         build.assert_not_called()
+
+    def test_bootstrap_hooks_are_checked_as_html_attributes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            public = Path(directory)
+            (public / "probe.css").write_text(".td-probe {}")
+            (public / "index.html").write_text(
+                """<div DATA-BS-TOGGLE = 'tab' data-bs-target=#one data-bs-dismiss
+                    data-bs-theme=dark DATA-BS-THEME-VALUE="light">
+                    <code>data-bs-example="text"</code></div>"""
+            )
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "bin/check-namespace.py"), "--public", directory],
+                capture_output=True, text=True,
+            )
+            self.assertEqual(result.returncode, 1)
+            errors = [line for line in result.stdout.splitlines() if "attribute '" in line]
+            self.assertEqual(len(errors), 3, result.stdout)
+            for hook in ("toggle", "target", "dismiss"):
+                self.assertIn(f"attribute 'data-bs-{hook}'", result.stdout)
 
 
 if __name__ == "__main__":

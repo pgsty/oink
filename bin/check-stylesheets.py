@@ -203,6 +203,8 @@ def main() -> None:
             assert (public / f"css/{name}.css").read_text(encoding="utf-8") == \
                 "".join(layer_file(layer).read_text(encoding="utf-8") for layer in lists[name]), \
                 f"css/{name}.css is not its layers in their listed order"
+        assert (TD / "version-selector.css").read_text() in (public / "css/chrome.css").read_text(), \
+            "a site-owned navbar lacks the version disclosure stylesheet"
         page = (public / "docs/api/index.html").read_text(encoding="utf-8")
         assert stylesheet_links(page)[:2] == ["/css/fontawesome.css", "/css/main.css"]
         assert not any("oink-retired" in path.read_text(encoding="utf-8", errors="ignore")

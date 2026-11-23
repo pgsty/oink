@@ -807,6 +807,18 @@ function press(harness, values) {
   press(extTree, { key: 'e' });
   assert.deepEqual(extTree.win.assigned, ['/docs/c/']);
 
+  // A preview host, a LAN address or a mirror serves the page from another
+  // origin than the canonical link names. Before a cached sidebar marks its
+  // active link, the canonical path alone still locates the page.
+  const mirror = setup();
+  mirror.tree.active.classList.remove('active');
+  const mirrorCanonical = new Element('link');
+  mirrorCanonical.setAttribute('rel', 'canonical');
+  mirrorCanonical.href = 'https://www.example.test/docs/b/one/';
+  mirror.root.appendChild(mirrorCanonical);
+  press(mirror, { key: 'e' });
+  assert.deepEqual(mirror.win.assigned, ['/docs/c/'], 'e pages from a canonical link on another origin');
+
   // ---------------------------------------------------------- h zen mode
   const zen = setup();
   press(zen, { key: 'h' });

@@ -3,10 +3,13 @@
   'use strict';
   if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
-  function pathOf(url) {
+  // A link that leaves the site has no path here. The page's own address is
+  // exempt: its canonical link names the configured base URL, and a preview
+  // host, a LAN address or a mirror serves the page from another origin.
+  function pathOf(url, own) {
     try {
       var parsed = new URL(url, window.location.href);
-      if (parsed.origin !== window.location.origin) return '';
+      if (!own && parsed.origin !== window.location.origin) return '';
       var path = parsed.pathname;
       return path.endsWith('/') ? path : path + '/';
     } catch (_) {
@@ -19,7 +22,7 @@
     if (!menu || !menu.hasAttribute('data-td-sidebar-hydrate-active')) return;
 
     var canonical = document.querySelector('link[rel="canonical"]');
-    var current = pathOf(canonical ? canonical.href : window.location.href);
+    var current = pathOf(canonical ? canonical.href : window.location.href, true);
     var active = null;
     var ancestor = null;
 

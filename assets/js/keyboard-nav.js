@@ -93,11 +93,11 @@
         links[i].getAttribute('aria-current') === 'page'
       ) return i;
     }
+    // The canonical link names the configured base URL, another origin on a
+    // preview host, a LAN address or a mirror. Its path is still this page.
     var canonical = doc.querySelector('link[rel="canonical"]');
-    var here = pathOf(
-      canonical ? canonical.href : win.location.href,
-      win.location.href,
-    );
+    var own = canonical ? canonical.href : win.location.href;
+    var here = pathOf(own, own);
     if (!here) return -1;
     for (var n = 0; n < links.length; n += 1) {
       if (pathOf(links[n].getAttribute('href') || '', win.location.href) === here)

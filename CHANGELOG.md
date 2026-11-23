@@ -204,6 +204,9 @@ existing sites.
 
 ### Fixed
 
+- Open a collapsed desktop sidebar when the pointer reaches its edge during the
+  collapse animation. Keep Duo View's first scroll key working when a pane
+  finishes loading an image or font at the same time.
 - Include the visible Esc key in the localized search close-button name and
   expose its Escape shortcut, preserving speech-input access under axe 4.14.
 - Preserve Duo View's language-menu focus when browser media-query rendering

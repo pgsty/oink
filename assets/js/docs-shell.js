@@ -326,13 +326,13 @@
     if (!panel) return;
     var mdQuery = window.matchMedia(MD);
     var lockUntil = 0;
-    var closeTimer = 0;
+    var hoverTimer = 0;
 
     function collapsed() {
       return html.getAttribute('data-td-shell-sidebar') === 'collapsed';
     }
     function setCollapsed(value) {
-      window.clearTimeout(closeTimer);
+      window.clearTimeout(hoverTimer);
       aside.classList.remove('td-shell-sidebar--overlay');
       if (value) {
         html.setAttribute('data-td-shell-sidebar', 'collapsed');
@@ -361,21 +361,32 @@
         });
       });
 
-    // The collapsed panel leaves a 16px transparent hover target.
-    panel.addEventListener('pointerenter', function (e) {
-      if (e.pointerType === 'touch' || !mdQuery.matches) return;
-      if (!collapsed() || performance.now() < lockUntil) return;
-      window.clearTimeout(closeTimer);
+    function openOverlay() {
+      if (!collapsed() || !mdQuery.matches || !panel.matches(':hover')) return;
       aside.classList.add('td-shell-sidebar--overlay');
       syncSidebarIsolation();
-    });
+    }
+    function hoverPanel(e) {
+      if (e.pointerType === 'touch' || !mdQuery.matches || !collapsed()) return;
+      window.clearTimeout(hoverTimer);
+      if (aside.classList.contains('td-shell-sidebar--overlay')) return;
+      // During collapse the moving panel can pass under a stationary pointer.
+      // Remember a pointer deliberately moved onto the 16px edge during that interval.
+      var distanceFromStart = html.dir === 'rtl' ? html.clientWidth - e.clientX : e.clientX;
+      if (distanceFromStart > 16) return;
+      var delay = lockUntil - performance.now();
+      if (delay <= 0) openOverlay();
+      else if (e.type === 'pointermove') hoverTimer = window.setTimeout(openOverlay, delay);
+    }
+    panel.addEventListener('pointerenter', hoverPanel);
+    panel.addEventListener('pointermove', hoverPanel);
     panel.addEventListener('pointerleave', function (e) {
       if (e.pointerType === 'touch' || !collapsed()) return;
       // Near a viewport edge, allow extra time for the pointer to return.
       var nearEdge =
         Math.min(e.clientX, document.body.clientWidth - e.clientX) <= 100;
-      window.clearTimeout(closeTimer);
-      closeTimer = window.setTimeout(
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(
         function () {
           aside.classList.remove('td-shell-sidebar--overlay');
           syncSidebarIsolation();

@@ -69,7 +69,9 @@
     const a = mark.before ? rows.get(mark.before) : 0;
     const b = mark.after ? rows.get(mark.after) : win.document.documentElement.scrollHeight;
     if (a === undefined || b === undefined) return;
-    scroll(pane, mark.top ? 0 : a + mark.fraction * (b - a) - 24);
+    const y = geometry.clamp(mark.top ? 0 : a + mark.fraction * (b - a) - 24, 0, maxScroll(win));
+    // Even an instant scroll to the current pixel cancels native smooth scrolling.
+    if (Math.abs(y - win.scrollY) >= 1) scroll(pane, y);
   }
   function scroll(pane, y, behavior = 'instant') {
     const win = pane.frame.contentWindow;

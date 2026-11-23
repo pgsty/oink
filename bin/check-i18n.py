@@ -78,7 +78,7 @@ FALLBACK_MARKERS = (
 UNIVERSAL_IDENTICAL = {"ui_preview_source", "ui_list_separator", "ui_preset_paper", "ui_preset_slate", "ui_preset_ink", "ui_preset_terminal"}
 REVIEWED_IDENTICAL = {
     "de": {"callout_details", "ui_theme_auto", "post_meta_in"},
-    "es": {"ui_preset_experimental", "post_translated_original", "post_reading_minutes", "feedback_negative"},
+    "es": {"post_translated_original", "post_reading_minutes", "feedback_negative"},
     "et": {"post_reading_minutes"},
     "fi": {"post_reading_minutes"},
     "fr": {
@@ -95,24 +95,26 @@ REVIEWED_IDENTICAL = {
     "nl": {
         "callout_tip", "callout_details", "ui_home", "ui_tags_title",
         "ui_tag_title", "ui_modules_title", "ui_module_title",
-        "ui_open_in_chatgpt", "ui_open_in_claude", "ui_tabs_label",
-        "post_meta_in", "post_reading_minutes",
+        "ui_tabs_label", "post_meta_in", "post_reading_minutes",
     },
     "no": {"ui_theme_auto", "post_reading_minutes"},
     "oc": {
-        "ui_preset_experimental",
         "callout_important", "callout_question", "post_translated_original",
         "post_reading_minutes", "contributors_count",
     },
     "pl": {"ui_tag_title", "ui_theme_auto", "post_reading_minutes"},
-    "pt-br": {"ui_preset_experimental", "post_translated_original", "post_reading_minutes"},
+    "pt-br": {"post_translated_original", "post_reading_minutes"},
     "ro": {
-        "ui_preset_experimental",
         "callout_important", "ui_share_email", "post_translated_original",
         "post_reading_minutes",
     },
     "sr-latn": {"post_translated_original", "post_reading_minutes"},
     "sv": {"ui_theme_auto", "post_reading_minutes"},
+}
+# Lexical CLDR plural categories (such as Arabic dual "صفحتان") express the
+# exact count in the word itself rather than repeating the digit.
+LEXICAL_PLURAL_FORMS = {
+    ("ar", "two"),
 }
 SERBIAN_CYRILLIC = "АБВГДЂЕЖЗИЈКЛЉМНЊОПРСТЋУФХЦЧЏШабвгдђежзијклљмнњопрстћуфхцчџш"
 SERBIAN_LATIN = (
@@ -247,7 +249,9 @@ def leaf_values(value: str | dict[str, str]) -> list[str]:
 
 
 def placeholder_mismatch(
-    expected: str | dict[str, str], actual: str | dict[str, str]
+    expected: str | dict[str, str],
+    actual: str | dict[str, str],
+    locale: str = "",
 ) -> str | None:
     """Return a useful mismatch description for scalar/plural placeholders."""
 
@@ -263,6 +267,8 @@ def placeholder_mismatch(
     assert isinstance(actual, dict)
     fallback = expected.get("other", "")
     for form, text in actual.items():
+        if (locale, form) in LEXICAL_PLURAL_FORMS and not any(placeholders(text)):
+            continue
         baseline = expected.get(form, fallback)
         expected_placeholders = placeholders(baseline)
         actual_placeholders = placeholders(text)
@@ -388,7 +394,8 @@ def check_hugo_runtime(
                 if isinstance(expected, dict):
                     for count in (0, 1, 2, 3, 5, 11, 21, 22, 25, 100, 1000000):
                         rendered = parser.values.get(f"{key}@{count}", "")
-                        if not rendered or str(count) not in rendered:
+                        lexical_dual = locale == "ar" and count == 2 and expected.get("two") == rendered
+                        if not rendered or (not lexical_dual and str(count) not in rendered):
                             wrong_values.append(f"{locale}.{key}@{count}")
                     continue
                 if any(placeholders(expected)):
@@ -489,7 +496,7 @@ def check() -> int:
             actual = values.get(key)
             if expected is None or actual is None:
                 continue
-            mismatch = placeholder_mismatch(expected, actual)
+            mismatch = placeholder_mismatch(expected, actual, path.stem)
             if mismatch:
                 failed = True
                 print(path.relative_to(ROOT))
@@ -519,6 +526,23 @@ def check() -> int:
             failed = True
             print("i18n/sr-latn.yaml")
             print(f"  differs from standard sr-cyrl transliteration: {', '.join(mismatched)}")
+    template_key_re = re.compile(r'\b(?:T|i18n)\s+(?:"([A-Za-z0-9_]+)"|\'([A-Za-z0-9_]+)\')')
+    missing_template_keys: dict[str, list[str]] = {}
+    for layout in sorted((ROOT / "layouts").rglob("*")):
+        if not layout.is_file():
+            continue
+        text = layout.read_text(encoding="utf-8", errors="replace")
+        for match in template_key_re.finditer(text):
+            key = match.group(1) or match.group(2)
+            if key not in english:
+                missing_template_keys.setdefault(key, []).append(
+                    str(layout.relative_to(ROOT))
+                )
+    if missing_template_keys:
+        failed = True
+        print("layouts/ references missing i18n keys")
+        for key, paths_list in sorted(missing_template_keys.items()):
+            print(f"  {key}: {', '.join(sorted(set(paths_list)))}")
     if not failed:
         runtime_errors = check_hugo_runtime(english_order, catalog_values)
         if runtime_errors:

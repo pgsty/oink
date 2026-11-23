@@ -177,7 +177,7 @@ post_reading_time: minute read
 post_less_than_a_minute_read: less than a minute
 post_word_count: '{{ .Count }} words'
 post_reading_minutes: '{{ .Minutes }} min'
-post_read_original: Read More
+post_read_original: "Read original"
 
 # Print support
 print_printable_section: This is the multi-page printable view of this section.
@@ -199,7 +199,7 @@ feedback_details: Add details in the comments
 feedback_change: Change response
 
 # Table of contents
-toc_on_this_page: Content
+toc_on_this_page: "On this page"
 
 # Error pages
 error_404_title: Page not found
@@ -215,6 +215,8 @@ version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
 version_banner_latest_link: latest version
 
 # Comments
+comments_title: "Comments"
+comments_error: "Comments could not be loaded."
 comments_noscript: JavaScript is required to load comments.
 comments_noscript_link: View discussions on GitHub.
 
@@ -272,3 +274,4 @@ ui_compare_retry: 'Retry'
 
 ui_pagination: Pagination
 ui_breadcrumb: Breadcrumb
+ui_nav_more: "More navigation"

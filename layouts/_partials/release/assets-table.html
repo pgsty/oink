@@ -11,7 +11,7 @@
   {{- partial "content/attrs.html" (.generic | default dict) }}>
   {{- if $interactive }}
   <div class="td-asset-list__toolbar">
-    <button class="td-asset-list__copy-all" type="button" data-td-asset-copy-all data-td-label-copy="{{ T "ui_assets_copy_all" }}" data-td-label-copied="{{ T "ui_assets_copied" }}" data-td-label-error="{{ T "ui_copy_error" }}" hidden>
+    <button class="td-asset-list__copy-all" type="button" data-td-asset-copy-all data-td-label-copy="{{ T "ui_assets_copy_all" }}" data-td-label-copied="{{ T "ui_assets_copied" }}" data-td-label-error="{{ T "ui_code_copy_error" }}" hidden>
       <i class="fa-regular fa-copy" aria-hidden="true"></i><span>{{ T "ui_assets_copy_all" }}</span>
     </button>
     <span class="visually-hidden" aria-live="polite" data-td-asset-status></span>
@@ -52,7 +52,7 @@
           </td>
           {{- if $interactive }}
           <td class="td-asset-list__action">
-            <button type="button" data-td-asset-copy data-td-label-copy="{{ T "ui_assets_copy" }}" data-td-aria-copy="{{ T "ui_assets_copy" }}: {{ .name }}" data-td-label-copied="{{ T "ui_assets_copied" }}" data-td-label-error="{{ T "ui_copy_error" }}" aria-label="{{ T "ui_assets_copy" }}: {{ .name }}" title="{{ T "ui_assets_copy" }}" hidden><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
+            <button type="button" data-td-asset-copy data-td-label-copy="{{ T "ui_assets_copy" }}" data-td-aria-copy="{{ T "ui_assets_copy" }}: {{ .name }}" data-td-label-copied="{{ T "ui_assets_copied" }}" data-td-label-error="{{ T "ui_code_copy_error" }}" aria-label="{{ T "ui_assets_copy" }}: {{ .name }}" title="{{ T "ui_assets_copy" }}" hidden><i class="fa-regular fa-copy" aria-hidden="true"></i></button>
           </td>
           {{- end }}
         </tr>

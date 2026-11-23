@@ -16,7 +16,7 @@ ui_pager_prev: 上一頁
 ui_pager_next: 下一頁
 ui_search: 搜尋…
 ui_search_scope: 搜尋範圍
-ui_search_scope_all: 全部欄目
+ui_search_scope_all: "全部分區"
 ui_search_partial: '部分符合：{matched}/{total} 個關鍵字'
 ui_search_partial_results: 沒有頁面包含全部關鍵字，以下為部分符合
 ui_search_empty: 找不到結果
@@ -35,7 +35,7 @@ ui_palette_action_failed: 無法完成此操作
 ui_palette_pages: 頁面
 ui_palette_index_unavailable: 頁面索引暫時無法使用，操作仍可使用
 ui_sidebar_nav: 章節導覽
-ui_heading_self_link: 標題錨點
+ui_heading_self_link: "連結至此標題"
 ui_field_self_link: 連結至此欄位
 ui_preview_source: Markdown
 ui_preview_rendered: 渲染結果
@@ -45,7 +45,7 @@ ui_sidebar_expand: 展開側欄
 ui_sidebar_collapse: 收合側欄
 ui_drawer_open: 開啟導覽
 ui_drawer_close: 關閉導覽
-ui_root_menu_label: 選擇欄目
+ui_root_menu_label: "選擇分區"
 ui_tags_title: 標籤
 ui_tag_title: 標籤
 ui_categories_title: 分類
@@ -57,10 +57,10 @@ ui_author_title: 作者
 ui_taxonomy_pages:
   other: '{{ . }} 篇'
 ui_taxonomies_title: '分類法'
-ui_theme_toggle: 切換配色
-ui_theme_auto: 跟隨系統
-ui_theme_light: 亮色
-ui_theme_dark: 暗色
+ui_theme_toggle: "切換主題"
+ui_theme_auto: "系統"
+ui_theme_light: "淺色"
+ui_theme_dark: "深色"
 ui_appearance: "外觀"
 ui_appearance_style: "風格"
 ui_appearance_mode: "明暗"
@@ -84,8 +84,8 @@ ui_language_switch: 切換語言
 # Footer text
 footer_all_rights_reserved: 保留所有權利
 
-ui_footer_collapse: 收起頁腳連結
-ui_footer_expand: 展開頁腳連結
+ui_footer_collapse: "隱藏頁尾連結"
+ui_footer_expand: "顯示頁尾連結"
 
 # Post (blog, article, etc.)
 post_last_mod: 最後更新於
@@ -101,8 +101,8 @@ post_view_markdown: 檢視 Markdown 原始碼
 post_create_child_page: 建立子頁面
 post_create_issue: 建立文件議題
 post_create_project_issue: 建立專案議題
-post_reading_time: ' 分鐘閱讀時間'
-post_less_than_a_minute_read: 1 分鐘內可讀完
+post_reading_time: "分鐘閱讀"
+post_less_than_a_minute_read: "不足 1 分鐘"
 post_word_count: '{{ .Count }} 字'
 post_reading_minutes: '{{ .Minutes }} 分鐘'
 post_read_original: 閱讀原文
@@ -114,11 +114,11 @@ print_show_regular: 返回此頁面的標準檢視
 print_entire_section: 列印完整章節
 
 # Feedback
-feedback_question: 這篇文件解決了你的問題嗎？
+feedback_question: "本頁對你有幫助嗎？"
 feedback_positive: 是
 feedback_negative: 否
-feedback_thanks: 感謝回饋，我們會據此改進這篇文件。
-feedback_reason_prompt: 哪裡沒有解決？（選填）
+feedback_thanks: "感謝回饋，我們會據此改進本頁內容。"
+feedback_reason_prompt: "遇到什麼問題？（選填）"
 feedback_reason_missing: 缺少必要資訊
 feedback_reason_outdated: 內容錯誤或已過時
 feedback_reason_failed: 操作步驟沒有生效
@@ -138,7 +138,7 @@ error_404_home: 返回首頁
 # OINK UI additions.
 ui_search_results: '找到 {count} 筆結果'
 ui_skip_to_content: 跳至主要內容
-ui_copy_markdown: 複製 Markdown 文字
+ui_copy_markdown: "複製 Markdown"
 ui_copy_success: 已複製 Markdown
 ui_copy_error: 無法複製 Markdown
 ui_share: 分享
@@ -157,7 +157,7 @@ ui_pricing_included: 包含
 ui_pricing_excluded: 不包含
 ui_marquee_pause: 暫停捲動
 ui_kbd_with: 加
-ui_keyboard_shortcuts: 鍵盤快捷鍵
+ui_keyboard_shortcuts: "鍵盤快速鍵"
 ui_shortcut_tree_move: 在側欄中移動
 ui_shortcut_tree_toggle: 收合或展開章節
 ui_shortcut_tree_open: 開啟目前頁面
@@ -171,9 +171,9 @@ ui_shortcut_theme: 切換主題
 ui_shortcut_route: 切換頂層頁面
 ui_page_annotation: 頁面資訊
 ui_backlinks: 反向連結
-ui_backlinks_more: "再顯示 {{ . }} 條"
+ui_backlinks_more: "再顯示 {{ . }} 筆"
 ui_field_required: 必填
-ui_action_unavailable: 暫不可用
+ui_action_unavailable: "暫時無法使用"
 ui_image_zoom_dialog: 圖片預覽
 ui_image_zoom_open: 開啟圖片預覽
 ui_image_zoom_close: 關閉圖片預覽
@@ -182,25 +182,26 @@ ui_sidebar_expand_section: 展開章節
 ui_sidebar_collapse_section: 收合章節
 ui_asciinema_timer: 播放時間
 ui_openapi_spec: OpenAPI 規格檔案
-ui_release_view: 檢視發布
+ui_release_view: "檢視版本"
 ui_release_source: 原始碼
 ui_release_released: 發布於
 ui_assets_file: 檔案
-ui_assets_checksum: 校驗和
-ui_assets_copy: 複製校驗和
+ui_assets_checksum: "檢查碼"
+ui_assets_copy: "複製檢查碼"
 ui_assets_copied: 已複製
-ui_assets_copy_all: 複製全部校驗和
-ui_assets_download: 下載資產
-ui_download_channels: 下載渠道
+ui_assets_copy_all: "複製全部檢查碼"
+ui_assets_download: "下載檔案"
+ui_download_channels: "下載管道"
 ui_download_unpublished: 待發布
 
 # Version banner
-version_banner_archived: >-
-  說明文件 {{ .Version }} 版本已不再積極維護，您目前瀏覽的是一份封存快照。
+version_banner_archived: "說明文件 {{ .Version }} 版本已不再積極維護，你目前瀏覽的是一份封存快照。"
 version_banner_latest: 最新說明文件請參閱 {{ .Link }}。
 version_banner_latest_link: 最新版本
 
 # Comments
+comments_title: "留言"
+comments_error: "無法載入留言。"
 comments_noscript: 載入留言需要啟用 JavaScript。
 comments_noscript_link: 在 GitHub 上檢視討論。
 
@@ -223,13 +224,13 @@ contributors_count: 位貢獻者
 
 # Article series
 ui_series_title: 系列
-ui_series_part: 第 {{ .Part }} / 共 {{ .Total }} 篇
+ui_series_part: "第 {{ .Part }}/{{ .Total }} 篇"
 
 ui_list_separator: 、
 
 # Footer text
-post_meta_by_in: "{{ .Authors }} 發佈於 {{ .Section }}"
-post_meta_in: "發佈於 {{ .Section }}"
+post_meta_by_in: "{{ .Authors }} 發布於 {{ .Section }}"
+post_meta_in: "發布於 {{ .Section }}"
 
 ui_blog_index_toggle: 切換版面配置
 
@@ -250,7 +251,7 @@ ui_diagram_download_started: 已開始下載 SVG
 ui_diagram_download_error: 無法下載 SVG
 
 # Expo icon tooltips and accessible names.
-ui_expo_layout: "圖片佈局"
+ui_expo_layout: "圖片版面配置"
 ui_expo_wall: "展牆"
 ui_expo_cards: "卡片"
 ui_expo_seamless: "無縫"
@@ -277,3 +278,4 @@ ui_compare_retry: '重試'
 
 ui_pagination: 分頁導覽
 ui_breadcrumb: 麵包屑導覽
+ui_nav_more: "更多導覽"

@@ -65,6 +65,13 @@ All notable changes to OINK are documented here. The project follows
   Tab and the up/down arrows reach the links. Escape closes the list first.
   Landing `download` shows labelled channels in HTML and switches them
   without a fade once the Landing script loads.
+- Proofread and tighten all 32 native interface catalogs (`i18n/*.yaml`, 240
+  keys) for idiomatic phrasing and real-font UI widths, adding `ui_nav_more`,
+  `comments_title`, and `comments_error`, widening the Appearance panel and
+  Page Actions dropdown cleanly (while staying viewport-clamped at 200% zoom),
+  resetting positive `letter-spacing` for cursive RTL scripts (`ar`, `fa`),
+  fixing release asset copy-error labels and trailing periods in print notices,
+  and verifying template key references in `bin/check-i18n.py`.
 - Read authored blog summaries through Hugo's `RawSummary` API. Accept Hugo
   0.169.0's improved plain-text spacing and resulting word counts in goldens.
   Update publication CI to Pandoc 3.13, EPUBCheck 5.4.0, Java 27 and Chrome

@@ -188,8 +188,9 @@
   inset-block-start: calc(100% + 0.35rem);
   inset-inline-end: 0;
   z-index: 45;
-  width: 13.5rem;
-  max-width: calc(100vw - 2rem);
+  min-width: min(13.5rem, calc(100vw - 2rem));
+  width: max-content;
+  max-width: min(19rem, calc(100vw - 2rem));
   margin: 0;
   padding: 0.35rem;
   font-weight: 400;

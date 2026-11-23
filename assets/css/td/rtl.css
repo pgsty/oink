@@ -26,3 +26,16 @@
   text-align: left;
   unicode-bidi: plaintext;
 }
+
+/* Cursive Arabic and Persian scripts break letter joining under positive
+   letter-spacing; zero out tracked uppercase and display labels in RTL. */
+:is(:lang(ar), :lang(fa)) :is(
+  .td-site-header .td-nav-title,
+  .td-site-footer__column h2,
+  .td-site-footer__column .h2,
+  .td-shell-tree__heading-label,
+  .td-taxonomy-head__kicker,
+  .td-version-menu .dropdown-item.disabled
+) {
+  letter-spacing: 0;
+}

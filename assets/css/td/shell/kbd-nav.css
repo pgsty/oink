@@ -88,7 +88,7 @@ html[data-td-kbd-zen] .td-shell-subnav {
   font-family: var(--td-meta-font-family);
   font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 

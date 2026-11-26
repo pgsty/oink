@@ -390,8 +390,13 @@ def check_sources() -> list[str]:
             "feedback runtime collects more than structured analytics", errors)
     require('id="td-comments"' in giscus,
             "detailed feedback no longer has a stable Giscus target", errors)
-    require("key === 'l' || key === 'y'" in keyboard,
-            "y is no longer the l language alias", errors)
+    require("if (key === 'l') return cycleLanguage();" in keyboard,
+            "l no longer cycles the language", errors)
+    require("if (key === 't' || key === 'y') return cycleTheme();" in keyboard,
+            "t and y no longer toggle the color mode", errors)
+    require("if (key === 'v') return cyclePreset();" in keyboard
+            and "actions.run('switch_preset'" in keyboard,
+            "v no longer steps through the offered presets", errors)
     # Blog form and width remain page-overridable parameters.
     require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_state
             and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_state,

@@ -252,16 +252,18 @@
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content .chroma {
     box-shadow: none;
   }
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content .td-kbd-sequence kbd {
+  :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content kbd {
     box-shadow: none;
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content .chroma :is(.ln, .lnt, .lnlinks) {
     color: var(--bs-tertiary-color);
   }
+  /* The quote rule is the one mark of color a page of prose always has:
+     Ink's red, Terminal's amber, as on paper and in a typeset copy. */
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content blockquote {
     border-radius: 0;
     background: none;
-    border-inline-start: 2px solid var(--td-brand-line-strong);
+    border-inline-start: 2px solid var(--td-brand-copper);
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content table:not(.td-initial) thead th {
     background: var(--bs-secondary-bg);
@@ -299,17 +301,20 @@
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-button {
     font-family: var(--td-ui-font-family);
   }
+  /* 700 is the heaviest weight the platform CJK faces carry. A heavier
+     Latin beside them reads as two voices in one heading. */
   [data-td-preset='ink'] .td-content h1, [data-td-preset='ink'] .td-content .h1 {
-    font-weight: 800;
-    letter-spacing: -0.035em;
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
   [data-td-preset='ink'] .td-content h2, [data-td-preset='ink'] .td-content .h2, [data-td-preset='ink'] .td-content h3, [data-td-preset='ink'] .td-content .h3 {
-    font-weight: 750;
-    letter-spacing: -0.025em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
+  /* One hairline of full ink opens a section; a heavier rule shouts. */
   [data-td-preset='ink'] .td-content > h2, [data-td-preset='ink'] .td-content > .h2 {
-    border-top: 2px solid var(--bs-emphasis-color);
-    padding-top: 0.8rem;
+    border-top: 1px solid var(--bs-emphasis-color);
+    padding-top: 1rem;
   }
   [data-td-preset='ink'] .td-content h4, [data-td-preset='ink'] .td-content .h4, [data-td-preset='ink'] .td-content table:not(.td-initial) thead th {
     text-transform: uppercase;
@@ -324,6 +329,8 @@
     text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
     text-decoration-skip-ink: auto;
+    /* The underline is the cue; bold on top of it was a second voice. */
+    font-weight: inherit;
   }
   [data-td-preset='ink'] .td-callout {
     background: var(--bs-body-bg);
@@ -346,8 +353,8 @@
     background: var(--td-accent);
   }
   [data-td-preset='ink'] .td-landing-hero__title {
-    font-weight: 800;
-    letter-spacing: -0.045em;
+    font-weight: 700;
+    letter-spacing: -0.04em;
   }
   /* Tables and prose remain sans. Only labels/headings take mono. */
   /* Field names, metadata chips, and checksum chips are structural labels, not prose code chips. */
@@ -364,6 +371,14 @@
   }
   [data-td-preset='terminal'] .td-content :not(pre, .td-field__type, .td-field__default, .td-field__meta-value) > code:not(.td-field__name):not(.td-asset-list__checksum) {
     border: 1px solid var(--bs-border-color);
+  }
+  /* A bordered chip needs no extra weight to read as code. */
+  :where([data-td-preset='terminal'] .td-content :not(pre)) > code {
+    font-weight: 400;
+  }
+  :where([data-td-preset='terminal'] .td-content) :is(strong, b) code,
+:where([data-td-preset='terminal'] .td-content) code :is(strong, b) {
+    font-weight: 600;
   }
   [data-td-preset='terminal'] .td-callout {
     border: 1px solid var(--td-brand-line-strong);
@@ -436,13 +451,19 @@
   /* Empty alternative text keeps the optional marks out of accessible names.
      Engines without CSS content alternatives simply omit these decorations. */
   @supports (content: "## "/"") {
+    /* The marks are set light and a little apart: Plex Mono's hash has wide
+       bars, and at the heading's own weight and pitch two of them fuse. */
     [data-td-preset='terminal'] .td-content > h2::before, [data-td-preset='terminal'] .td-content > .h2::before {
       content: '## ' / '';
       color: var(--td-brand-copper);
+      font-weight: 400;
+      letter-spacing: 0.12em;
     }
     [data-td-preset='terminal'] .td-content > h3::before, [data-td-preset='terminal'] .td-content > .h3::before {
       content: '### ' / '';
       color: var(--td-brand-copper);
+      font-weight: 400;
+      letter-spacing: 0.12em;
     }
     [data-td-preset='terminal'] .td-callout__title::before {
       content: '[' / '';

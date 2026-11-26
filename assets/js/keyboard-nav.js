@@ -634,6 +634,43 @@
       return true;
     }
 
+    /** Step to the next visual preset the site offers, wrapping at the end.
+     *  The Appearance runtime owns the change; without it the menu's own
+     *  radios are the fallback. */
+    function cyclePreset() {
+      var current = html.getAttribute('data-td-preset') || '';
+      var actions = registry();
+      if (actions && actions.get && actions.run) {
+        var action = actions.get('switch_preset');
+        if (action && action.available !== false) {
+          var names = (action.options || [])
+            .filter(function (option) { return option && option.available !== false; })
+            .map(function (option) { return option.value || option.id; });
+          if (names.length > 1) {
+            var result = actions.run('switch_preset', {
+              value: names[(names.indexOf(current) + 1) % names.length],
+            });
+            if (result && result.then) result.then(null, function () {});
+            return true;
+          }
+        }
+      }
+      if (!doc.querySelectorAll) return false;
+      var inputs = Array.prototype.slice.call(doc.querySelectorAll('input[data-td-preset-value]'));
+      var seen = [];
+      inputs = inputs.filter(function (input) {
+        var name = input.getAttribute('data-td-preset-value');
+        if (seen.indexOf(name) >= 0) return false;
+        seen.push(name);
+        return true;
+      });
+      if (inputs.length < 2) return false;
+      var next = inputs[(seen.indexOf(current) + 1) % inputs.length];
+      if (typeof next.click !== 'function') return false;
+      next.click();
+      return true;
+    }
+
     function navbarRoutes() {
       if (!doc.querySelectorAll) return [];
       var seen = Object.create(null);
@@ -794,8 +831,9 @@
         return setZen(!html.hasAttribute('data-td-kbd-zen'));
       }
       if (key === 'b') return openCompare(event);
-      if (key === 'l' || key === 'y') return cycleLanguage();
-      if (key === 't') return cycleTheme();
+      if (key === 'l') return cycleLanguage();
+      if (key === 't' || key === 'y') return cycleTheme();
+      if (key === 'v') return cyclePreset();
       if (key === 'r') {
         if (cycleNavbar()) event.preventDefault();
         return;

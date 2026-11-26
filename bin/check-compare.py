@@ -25,7 +25,7 @@ PANE_RUNS = {
     'clipboard', 'code-block', 'content-components', 'dark-mode', 'diagram', 'drawio', 'expo',
     'expo-geometry', 'filetree', 'image-zoom', 'landing', 'markmap', 'mermaid', 'palette-model',
     'plantuml', 'plantuml-browser', 'search-engine', 'surface-coordinator', 'swagger-init',
-    'table-reader', 'tabs', 'redoc-frame',
+    'table-reader', 'tabs', 'redoc-frame', 'rich-copy',
 }
 HOST_ONLY = {'compare-scroll', 'document-compare'}
 # Every visible reader string is localized in Hugo and handed to the runtime.

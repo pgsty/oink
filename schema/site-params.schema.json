@@ -508,6 +508,11 @@
               "type": "boolean",
               "default": true
             },
+            "rich_copy": {
+              "description": "Typeset copy. A selection copied out of article prose leaves the page as clean rich text in the preset's print palette, instead of the browser's own markup, which carries the page canvas as a background on every block. Plain-text copies are unchanged. Set false to keep the browser's behavior; pages can also opt out via front matter or a section cascade.",
+              "type": "boolean",
+              "default": true
+            },
             "keyboard_nav": {
               "description": "Single-key keyboard navigation (WASD/arrow tree focus, j/k outline jumps, q/e paging, and shell/palette toggles). Set false to drop the runtime from the bundle; pages can also opt out via front matter or a section cascade.",
               "type": "boolean",

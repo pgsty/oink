@@ -113,6 +113,7 @@ ui_shortcut_commands: 命令面板
 ui_shortcut_reading_mode: 专注阅读模式
 ui_shortcut_language: 切换语言
 ui_shortcut_theme: 切换主题
+ui_shortcut_style: 切换风格
 ui_shortcut_route: 切换顶层页面
 ui_page_annotation: 页面信息
 ui_backlinks: "反链"

@@ -114,6 +114,7 @@ ui_shortcut_commands: Command palette
 ui_shortcut_reading_mode: Reading mode
 ui_shortcut_language: Switch language
 ui_shortcut_theme: Switch theme
+ui_shortcut_style: Switch style
 ui_shortcut_route: Cycle top-level pages
 ui_page_annotation: Page information
 ui_backlinks: Backlinks

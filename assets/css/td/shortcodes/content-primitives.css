@@ -390,6 +390,7 @@ a.td-badge--solid:focus-visible {
 
 @media (forced-colors: active) {
   .td-badge,
+.td-content kbd,
 .td-kbd-sequence kbd,
 .td-field {
     border-color: currentColor;
@@ -415,6 +416,7 @@ a.td-badge--solid:focus-visible {
 
 @media print {
   .td-badge,
+.td-content kbd,
 .td-kbd-sequence kbd,
 .td-field,
 .td-field__name,

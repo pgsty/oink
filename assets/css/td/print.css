@@ -1,3 +1,9 @@
+/* The paper palette: a preset's light colors on white, whatever mode the
+   screen is in. Print reads it below, and the typeset copy runtime
+   (`js/rich-copy.js`) dresses the clipboard in it, so a pasted passage and a
+   printed page agree. Two more tokens belong to the clipboard alone:
+   `--td-copy-heading-rule` (under | over | none) places the hairline of a
+   second-level heading, and `--td-copy-heading-font` names a heading face. */
 :root {
   --td-print-muted: #70757d;
   --td-print-ink: #171717;
@@ -14,18 +20,18 @@
 }
 
 [data-td-preset='paper'] {
-  --td-print-ink: #21201c;
-  --td-print-strong: #1a1916;
-  --td-print-muted: #6b665d;
-  --td-print-line: #d4d0c7;
+  --td-print-ink: #1f1e1c;
+  --td-print-strong: #141413;
+  --td-print-muted: #6b6860;
+  --td-print-line: #d6d2c6;
   --td-print-link: #2b5f8c;
-  --td-print-code-bg: #f7f6f3;
-  --td-print-table-line: #c4bfb5;
-  --td-print-quote-line: #9c5530;
-  --td-print-quote-bg: #f7f6f3;
-  --td-print-quote-ink: #21201c;
-  --td-print-meta: #56534c;
-  --td-print-header-bg: #efede8;
+  --td-print-code-bg: #f5f4ee;
+  --td-print-table-line: #c9c4b6;
+  --td-print-quote-line: #9b4a28;
+  --td-print-quote-bg: #faf9f5;
+  --td-print-quote-ink: #1f1e1c;
+  --td-print-meta: #55534d;
+  --td-print-header-bg: #f0eee6;
 }
 
 [data-td-preset='ink'] {
@@ -41,6 +47,7 @@
   --td-print-quote-ink: #141414;
   --td-print-meta: #474747;
   --td-print-header-bg: #f4f4f4;
+  --td-copy-heading-rule: over;
 }
 
 [data-td-preset='terminal'] {
@@ -56,6 +63,8 @@
   --td-print-quote-ink: #1d211f;
   --td-print-meta: #4a514d;
   --td-print-header-bg: #e9ebe6;
+  --td-copy-heading-rule: none;
+  --td-copy-heading-font: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
 @page {

@@ -146,6 +146,9 @@
     "release_url": {
       "description": "Front matter key read by the theme's templates."
     },
+    "rich_copy": {
+      "description": "Typeset copy. A selection copied out of article prose leaves the page as clean rich text in the preset's print palette, instead of the browser's own markup, which carries the page canvas as a background on every block. Plain-text copies are unchanged. Set false to keep the browser's behavior; pages can also opt out via front matter or a section cascade."
+    },
     "scroll_spy": {
       "description": "Compatibility no-op in 1.x. The normal shell runtime always tracks the active outline heading; keep this key quiet until a breaking release."
     },

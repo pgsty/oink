@@ -6,6 +6,55 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ## Unreleased
 
+### Added
+
+- Typeset copy. A selection copied out of article prose now leaves the page as
+  clean rich text: semantic tags with a small inline style sheet drawn from the
+  preset's print palette, in pixel sizes, without the page canvas, heading
+  anchors, copy buttons, line numbers or other interface. A browser's own
+  serialization inlined the canvas color as a background on every block, which
+  rich-text editors such as WeChat's kept as grey boxes, and carried the dark
+  palette out of dark mode. Selecting the whole page copies the article alone;
+  a phrase inside one line travels as bare markup; a source line break between
+  two CJK characters no longer pastes as a space; code blocks keep their token
+  colors, and a dark code card stays dark. `text/plain` is unchanged.
+  `params.ui.rich_copy: false`, or the same key in front matter, keeps the
+  browser's behavior. The runtime is `js/chunks/rich-copy.js`.
+
+- The `v` key steps to the next visual preset the site offers and wraps after
+  the last. It does nothing when `preset_menu` offers no choice. The shortcut
+  panel lists it as "Switch style" in all 32 interface languages.
+
+### Changed
+
+- The `y` key toggles light and dark, like `t`. It no longer switches the
+  language; `l` still does.
+- Paper is an ivory sheet with a clay accent. The canvas moves from the grey
+  `#f7f6f3` to `#faf9f5`, with ink `#1f1e1c` and surfaces to match, and the
+  preset now sets its own accent (`#9b4a28`, dark `#de8460`) for selected rows,
+  the outline cursor, selections and the quote rule. Links stay blue, and a
+  published `theme_color` still replaces the accent. Dark Paper keeps its
+  canvas. A site that wants the previous blue accent sets
+  `theme_color: '#2b5f8c'`.
+- Paper sets links in running text at the weight of the sentence with a
+  hairline underline, instead of semibold without one, and inline code at
+  weight 400 on its chip; bold code stays semibold. Ink links keep their
+  underline and drop the extra weight. Terminal inline code is weight 400.
+- Table figures use tabular numerals, and a table's header band takes rounded
+  top corners in Slate. Dark mode uses grayscale font smoothing so light text
+  keeps its drawn weight.
+- A bare `<kbd>` in Markdown draws the keycap the `kbd` shortcode draws,
+  instead of Bootstrap's inverse bar. List markers take the tertiary ink.
+- Headings in Chinese, Japanese and Korean passages sit at zero tracking in
+  every preset; the negative tracking each preset applies remains for Latin.
+  Prose takes `text-autospace: normal` and `text-wrap: pretty` where the
+  browser supports them.
+- Ink headings use weight 700, the heaviest the platform CJK faces carry, and a
+  one-pixel rule above second-level headings instead of two. Ink and Terminal
+  quotes take the preset's accent rule, as they already did in print.
+- Terminal's `##` and `###` heading marks are set light and slightly apart, so
+  the hashes no longer fuse at the heading's weight.
+
 ## [1.6.0] — 2026-11-23
 
 OINK 1.6.0 remains on the `v1` Go module path (`github.com/pgsty/oink`) while

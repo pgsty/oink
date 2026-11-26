@@ -6,6 +6,20 @@
   order: 1;
   font-family: var(--td-body-font-family);
   overflow-wrap: anywhere;
+  /* Chinese and Japanese set beside Latin letters and digits take a thin
+     space at the seam, the way a compositor sets them. Engines without the
+     property keep whatever spaces the author typed. */
+  text-autospace: normal;
+}
+
+/* Code is a grid of characters: nothing may be nudged apart inside it. */
+.td-content :where(pre, code, kbd, samp) {
+  text-autospace: no-autospace;
+}
+
+/* The last line of a paragraph should not be a single stranded word. */
+.td-content :where(p, li, dd, blockquote, figcaption) {
+  text-wrap: pretty;
 }
 
 /* Prose heading scale. Bootstrap's fluid 2.5rem/2rem/1.75rem headings are
@@ -63,6 +77,14 @@
   font-weight: 400;
 }
 
+/* Negative tracking is a Latin habit: it closes gaps between letterforms that
+   were drawn apart. Han, kana and Hangul fill their square already, so in a
+   Chinese, Japanese or Korean passage a heading sits at its natural pitch,
+   whatever the preset tightens for Latin. */
+.td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6):is(:lang(zh), :lang(ja), :lang(ko)) {
+  letter-spacing: 0;
+}
+
 .td-content > h1, .td-content > .h1 {
   margin-bottom: 1rem;
 }
@@ -105,6 +127,27 @@
 
 .td-content :where(ul, ol):not([class]) > li {
   margin-bottom: 0.25rem;
+}
+
+/* Bullets and numerals are scaffolding: one step quieter than the text they
+   introduce, so a list reads as its items. */
+.td-content :where(ul, ol):not([class]) > li::marker {
+  color: var(--bs-tertiary-color);
+}
+
+/* A key the reader presses, not a bar of inverse video: a bare <kbd> in
+   Markdown takes the keycap the kbd shortcode draws. */
+.td-content kbd {
+  padding: 0.08em 0.42em;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-tertiary-bg);
+  box-shadow: 0 1px 0 var(--bs-border-color);
+  color: var(--bs-body-color);
+  font-size: 0.82em;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
 }
 
 .td-content strong {

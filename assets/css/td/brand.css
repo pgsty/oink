@@ -252,6 +252,15 @@ a {
 .td-content table:not(.td-initial) {
   --bs-table-bg: transparent;
   --bs-table-striped-bg: transparent;
+  /* Figures in a column line up digit under digit. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* The header band takes the corner of the cards around it instead of ending
+   in two hard points on the canvas. */
+.td-content .td-table-scroll {
+  border-start-start-radius: 8px;
+  border-start-end-radius: 8px;
 }
 
 .td-content table:not(.td-initial) > :not(caption) > * > th,

@@ -152,7 +152,7 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  preset: terminal\n  preset_menu: [paper, slate, ink, terminal]",
     "ui:\n  preset: paper\n  preset_menu: [paper, slate]\n  fonts:\n    brand: sans-serif",
     "ui:\n  preset: slate\n  preset_menu: [slate]",
-    "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  docs_sidebar_root: home",
+    "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  rich_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
     "ui:\n  dark_mode: {enable: true, show_menu: true}\n  expo: {mode: cards, size: 200}",
@@ -165,7 +165,7 @@ ACCEPTED_SITE_CASES = [
 ]
 ACCEPTED_PAGE_CASES = [
     "image_zoom: true\nreading_time: false\nannotation: false\npage_context_menu: false\nreading_width: wide\ntranslation_notice: false\nscroll_spy: true",
-    "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
+    "page_context_menu:\n  enable: true\n  assistant_links: false\nsection_index: cards\nsidebar_menu_compact: false\nkeyboard_nav: false\nrich_copy: false\nbreadcrumb: false\nmanual_link: https://example.org/\nmanual_link_title: Example",
     "body_class: product-td-no-left-sidebar-preview",
     "blog_index: cards\nblog_index_columns: 4",
     "blog_index: table\nblog_index_toggle: true",
@@ -235,6 +235,8 @@ INVALID_SITE_CASES = [
     ("ui:\n  sidebar_width_min: 600", "is larger than sidebar_width_max"),
     ("ui:\n  sidebar_item_overflow: clip", "invalid params.ui.sidebar_item_overflow"),
     ("ui:\n  sidebar_menu_foldable: definitely", "params.ui.sidebar_menu_foldable must be true or false"),
+    # Typeset copy is a bare switch; anything else warns and stays on.
+    ("ui:\n  rich_copy: definitely", "params.ui.rich_copy must be a boolean"),
     ("ui:\n  sidebar_expand_levels: nope", 'params.ui.sidebar_expand_levels "nope" is not a whole number'),
     ("ui:\n  sidebar_menu_truncate: nope", 'params.ui.sidebar_menu_truncate "nope" is not a whole number'),
     ("ui:\n  sidebar_cache_limit: nope", 'params.ui.sidebar_cache_limit "nope" is not a whole number'),
@@ -255,6 +257,7 @@ INVALID_PAGE_CASES = [
     # front matter value must warn with the page's path, not fail the build.
     ("sidebar_width_min: nope", 'params.ui.sidebar_width_min "nope" is not a whole number'),
     ("sidebar_menu_foldable: definitely", "params.ui.sidebar_menu_foldable must be true or false"),
+    ("rich_copy: definitely", "params.ui.rich_copy must be a boolean"),
 ]
 
 

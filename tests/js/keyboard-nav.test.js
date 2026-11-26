@@ -854,9 +854,9 @@ function press(harness, values) {
   press(lang, { key: 'l' });
   assert.deepEqual(lang.win.assigned, ['/zh/docs/b/one/'], 'l cycles to the next language');
 
-  const langAlias = setup({ registry: langRegistry });
-  press(langAlias, { key: 'y' });
-  assert.deepEqual(langAlias.win.assigned, ['/zh/docs/b/one/'], 'y is the global language alias');
+  const langFormerAlias = setup({ registry: langRegistry });
+  press(langFormerAlias, { key: 'y' });
+  assert.deepEqual(langFormerAlias.win.assigned, [], 'y no longer switches the language');
 
   const singleLang = setup({
     registry: { get: () => ({ available: false, options: [] }) },
@@ -875,6 +875,41 @@ function press(harness, values) {
   theme.html.setAttribute('data-bs-theme', 'dark');
   press(theme, { key: 't' });
   assert.deepEqual(themeRuns[1], ['switch_theme', 'light'], 'a dark theme flips to light');
+  press(theme, { key: 'y' });
+  assert.deepEqual(themeRuns[2], ['switch_theme', 'light'], 'y toggles the color mode like t');
+
+  // ------------------------------------------------------- v cycles styles
+  const presetRuns = [];
+  const presetRegistry = {
+    get: (id) => (id === 'switch_preset'
+      ? {
+        available: true,
+        options: [
+          { id: 'paper', value: 'paper', available: true },
+          { id: 'slate', value: 'slate', available: true },
+          { id: 'ink', value: 'ink', available: true },
+        ],
+      }
+      : null),
+    run(id, context) { presetRuns.push([id, context.value]); return { then() {} }; },
+  };
+  const preset = setup({ registry: presetRegistry });
+  preset.html.setAttribute('data-td-preset', 'paper');
+  press(preset, { key: 'v' });
+  assert.deepEqual(presetRuns, [['switch_preset', 'slate']], 'v steps to the next offered style');
+  preset.html.setAttribute('data-td-preset', 'ink');
+  press(preset, { key: 'v' });
+  assert.deepEqual(presetRuns[1], ['switch_preset', 'paper'], 'v wraps from the last style to the first');
+
+  const fixedRuns = [];
+  const fixedPreset = setup({
+    registry: {
+      get: (id) => (id === 'switch_preset' ? { available: false, options: [] } : null),
+      run(id, context) { fixedRuns.push([id, context.value]); },
+    },
+  });
+  press(fixedPreset, { key: 'v' });
+  assert.deepEqual(fixedRuns, [], 'a site without a style menu keeps v silent');
 
   // ------------------------------------------------------------- f and c
   const opens = [];
@@ -971,7 +1006,8 @@ function press(harness, values) {
   );
   landing.win.assigned.length = 0;
   press(landing, { key: 'y' });
-  assert.deepEqual(landing.win.assigned, ['/zh/'], 'y works outside the shell');
+  assert.deepEqual(landing.win.assigned, [], 'y leaves the language alone outside the shell');
+  assert.deepEqual(landingRuns.at(-1), ['switch_theme', 'dark'], 'y toggles the color mode outside the shell');
   press(landing, { key: 'j' });
   assert.equal(landing.win.scrolledTo.at(-1), 576, 'homepage j jumps to the next top-level section');
   assert.equal(landing.win.hashes.at(-1), '#release', 'homepage section jump updates the hash');

@@ -73,14 +73,20 @@
         {{- end }}
         {{- if gt (len $targets) 1 }}
         <div class="td-shell-keyboard-help__row">
-          <dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>Y</kbd></span></dt>
+          <dt><span class="td-kbd-sequence"><kbd>L</kbd></span></dt>
           <dd>{{ T "ui_shortcut_language" }}</dd>
         </div>
         {{- end }}
         {{- if $darkMode.showMenu }}
         <div class="td-shell-keyboard-help__row">
-          <dt><span class="td-kbd-sequence"><kbd>T</kbd></span></dt>
+          <dt><span class="td-kbd-sequence"><kbd>T</kbd><kbd>Y</kbd></span></dt>
           <dd>{{ T "ui_shortcut_theme" }}</dd>
+        </div>
+        {{- end }}
+        {{- if (partialCached "preset-config.html" "preset-global" .Site.Language.Lang).menu }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>V</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_style" }}</dd>
         </div>
         {{- end }}
         {{- with .Site.Menus.main }}

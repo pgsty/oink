@@ -59,6 +59,10 @@
 
 [data-bs-theme='dark'] {
   color-scheme: dark;
+  /* Light text on a dark ground blooms under the platform's stem darkening.
+     Grayscale smoothing sets it at the weight it was drawn. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 :root,

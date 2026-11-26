@@ -617,14 +617,44 @@
       return true;
     }
 
+    var COLOR_MODES = ['light', 'dark', 'auto'];
+
+    function currentColorMode() {
+      var attr = html.getAttribute('data-td-color-mode');
+      if (attr && COLOR_MODES.indexOf(attr) >= 0) return attr;
+      if (doc.querySelector) {
+        var checked = doc.querySelector('input[data-bs-theme-value]:checked');
+        var radio = checked && checked.getAttribute('data-bs-theme-value');
+        if (radio && COLOR_MODES.indexOf(radio) >= 0) return radio;
+      }
+      try {
+        var stored = win.localStorage && win.localStorage.getItem('td-color-theme');
+        if (stored && COLOR_MODES.indexOf(stored) >= 0) return stored;
+      } catch (_) {
+        /* storage may be unavailable */
+      }
+      var resolved = html.getAttribute('data-bs-theme');
+      if (resolved === 'light' || resolved === 'dark') return resolved;
+      return 'auto';
+    }
+
+    /** Step through light, dark, and system (auto) color modes in order. */
     function cycleTheme() {
+      var current = currentColorMode();
+      var next = COLOR_MODES[(COLOR_MODES.indexOf(current) + 1) % COLOR_MODES.length];
       var actions = registry();
       if (actions && actions.get && actions.run) {
         var action = actions.get('switch_theme');
         if (action && action.available !== false) {
-          var next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
           var result = actions.run('switch_theme', { value: next });
           if (result && result.then) result.then(null, function () {});
+          return true;
+        }
+      }
+      if (doc.querySelector) {
+        var radio = doc.querySelector('[data-bs-theme-value="' + next + '"]');
+        if (radio && typeof radio.click === 'function') {
+          radio.click();
           return true;
         }
       }
@@ -832,8 +862,8 @@
       }
       if (key === 'b') return openCompare(event);
       if (key === 'l') return cycleLanguage();
-      if (key === 't' || key === 'y') return cycleTheme();
-      if (key === 'v') return cyclePreset();
+      if (key === 't') return cyclePreset();
+      if (key === 'y') return cycleTheme();
       if (key === 'r') {
         if (cycleNavbar()) event.preventDefault();
         return;

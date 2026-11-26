@@ -58,6 +58,7 @@
     const resolved = theme === 'auto'
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
       : theme
+    document.documentElement.setAttribute('data-td-color-mode', preference)
     document.documentElement.setAttribute('data-bs-theme', resolved)
     mirrorVendorTheme(resolved)
     document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {

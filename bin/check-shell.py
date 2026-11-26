@@ -392,11 +392,12 @@ def check_sources() -> list[str]:
             "detailed feedback no longer has a stable Giscus target", errors)
     require("if (key === 'l') return cycleLanguage();" in keyboard,
             "l no longer cycles the language", errors)
-    require("if (key === 't' || key === 'y') return cycleTheme();" in keyboard,
-            "t and y no longer toggle the color mode", errors)
-    require("if (key === 'v') return cyclePreset();" in keyboard
+    require("if (key === 't') return cyclePreset();" in keyboard
             and "actions.run('switch_preset'" in keyboard,
-            "v no longer steps through the offered presets", errors)
+            "t no longer steps through the offered presets", errors)
+    require("if (key === 'y') return cycleTheme();" in keyboard
+            and "['light', 'dark', 'auto']" in keyboard,
+            "y no longer cycles light, dark, and system color modes", errors)
     # Blog form and width remain page-overridable parameters.
     require('partial "ui-param.html" (dict "page" . "key" "blog_index")' in blog_state
             and 'partial "ui-param.html" (dict "page" . "key" "blog_index_columns")' in blog_state,
@@ -423,9 +424,10 @@ def check_sources() -> list[str]:
             and 'or (eq $mode "table") $toggle' in blog_list
             and 'or (ne $mode "table") $toggle' in blog_list,
             "the index does not render every form for the switch, or lost its published default", errors)
-    require("$tablePages = $pager.Pages" in blog_list
+    require("$tablePages = $blogPages.ByDate.Reverse" in blog_list
+            and "$tablePages = $pager.Pages" not in blog_list
             and "PageGroups" not in blog_list,
-            "toggle mode no longer limits the table to the current pager slice, "
+            "table view must always list the complete unpaginated section, "
             "or the flat list regrew year groups", errors)
     require(title_menu_source.index("data-td-blog-index-toggle")
             < title_menu_source.index('title="RSS"'),
@@ -2016,7 +2018,7 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         require('data-td-blog-forms="all"' in rendered["toggle"],
                 "the toggle index does not mark that it carries every form", errors)
 
-        # Toggle mode must not repeat the complete table on every pager page.
+        # Toggle mode paginates list, cards, and gallery; table stays a complete unpaginated archive.
         toggle = rendered["toggle"]
         toggle_rows = re.findall(
             r'<li class="td-blog-posts-list__item">.*?<a href="([^"]+)"', toggle, re.S)
@@ -2025,8 +2027,11 @@ def build_blog_index_forms(hugo: str) -> list[str]:
             r'<a class="td-content-card__title" href="([^"]+)"', toggle, re.S)
         toggle_table = re.findall(
             r'<td class="td-blog-table__title"><a href="([^"]+)"', toggle)
-        require(toggle_rows == toggle_cards == toggle_table == re.findall(gallery_pattern, toggle),
-                "toggle forms do not share the first pager slice", errors)
+        require(toggle_rows == toggle_cards == re.findall(gallery_pattern, toggle),
+                "paged toggle forms do not share the first pager slice", errors)
+        require(toggle_table == row_links,
+                f"toggle table truncated the archive instead of listing all posts: {toggle_table} vs {row_links}",
+                errors)
         second_path = root / "toggle/blog/oink/page/2/index.html"
         require(second_path.is_file(), "toggle fixture did not generate a second page", errors)
         if second_path.is_file():
@@ -2040,10 +2045,10 @@ def build_blog_index_forms(hugo: str) -> list[str]:
                 r'<li class="td-blog-posts-list__item">.*?<a href="([^"]+)"', second, re.S)
             second_table = re.findall(
                 r'<td class="td-blog-table__title"><a href="([^"]+)"', second)
-            require(second_rows == second_table == re.findall(gallery_pattern, second),
-                    "toggle forms do not share the second pager slice", errors)
-            require(set(toggle_table).isdisjoint(second_table),
-                    "toggle table repeats first-page posts on page two", errors)
+            require(second_rows == re.findall(gallery_pattern, second),
+                    "paged toggle forms do not share the second pager slice", errors)
+            require(second_table == row_links,
+                    "toggle table on page two no longer lists the complete archive", errors)
     return errors
 
 

@@ -12,13 +12,9 @@
 {{ $pager := $index.pager -}}
 {{ $tablePages := slice -}}
 {{ if or (eq $mode "table") $toggle }}{{ $tablePages = $blogPages.ByDate.Reverse }}{{ end -}}
-{{ if $toggle -}}
-  {{/* Toggle views share one page of posts across all four forms. */ -}}
-  {{ $tablePages = $pager.Pages -}}
-{{ end -}}
 {{ if .Pages -}}
 <div class="td-blog-posts" data-td-blog-default="{{ $mode }}"{{ if $toggle }} data-td-blog-forms="all"{{ end }}>
-  {{/* Standalone tables are complete archives; toggle views share one page. */ -}}
+  {{/* Table view is always a complete, unpaginated archive across the section. */ -}}
   {{ if or (eq $mode "table") $toggle -}}
   <table class="td-blog-table" data-td-blog-form="table">
     <caption class="visually-hidden">{{ .Title }}</caption>

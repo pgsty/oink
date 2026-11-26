@@ -870,15 +870,19 @@ function press(harness, values) {
     run(id, context) { themeRuns.push([id, context.value]); return { then() {} }; },
   };
   const theme = setup({ registry: themeRegistry });
-  press(theme, { key: 't' });
-  assert.deepEqual(themeRuns, [['switch_theme', 'dark']], 'an unset theme flips to dark');
-  theme.html.setAttribute('data-bs-theme', 'dark');
-  press(theme, { key: 't' });
-  assert.deepEqual(themeRuns[1], ['switch_theme', 'light'], 'a dark theme flips to light');
   press(theme, { key: 'y' });
-  assert.deepEqual(themeRuns[2], ['switch_theme', 'light'], 'y toggles the color mode like t');
+  assert.deepEqual(themeRuns, [['switch_theme', 'light']], 'y steps from default auto to light');
+  theme.html.setAttribute('data-td-color-mode', 'light');
+  press(theme, { key: 'y' });
+  assert.deepEqual(themeRuns[1], ['switch_theme', 'dark'], 'y steps from light to dark');
+  theme.html.setAttribute('data-td-color-mode', 'dark');
+  press(theme, { key: 'y' });
+  assert.deepEqual(themeRuns[2], ['switch_theme', 'auto'], 'y steps from dark to system (auto)');
+  theme.html.setAttribute('data-td-color-mode', 'auto');
+  press(theme, { key: 'y' });
+  assert.deepEqual(themeRuns[3], ['switch_theme', 'light'], 'y wraps from system back to light');
 
-  // ------------------------------------------------------- v cycles styles
+  // ------------------------------------------------------- t cycles styles
   const presetRuns = [];
   const presetRegistry = {
     get: (id) => (id === 'switch_preset'
@@ -895,11 +899,13 @@ function press(harness, values) {
   };
   const preset = setup({ registry: presetRegistry });
   preset.html.setAttribute('data-td-preset', 'paper');
-  press(preset, { key: 'v' });
-  assert.deepEqual(presetRuns, [['switch_preset', 'slate']], 'v steps to the next offered style');
+  press(preset, { key: 't' });
+  assert.deepEqual(presetRuns, [['switch_preset', 'slate']], 't steps to the next offered style');
   preset.html.setAttribute('data-td-preset', 'ink');
+  press(preset, { key: 't' });
+  assert.deepEqual(presetRuns[1], ['switch_preset', 'paper'], 't wraps from the last style to the first');
   press(preset, { key: 'v' });
-  assert.deepEqual(presetRuns[1], ['switch_preset', 'paper'], 'v wraps from the last style to the first');
+  assert.equal(presetRuns.length, 2, 'v is no longer bound to style cycling');
 
   const fixedRuns = [];
   const fixedPreset = setup({
@@ -908,8 +914,8 @@ function press(harness, values) {
       run(id, context) { fixedRuns.push([id, context.value]); },
     },
   });
-  press(fixedPreset, { key: 'v' });
-  assert.deepEqual(fixedRuns, [], 'a site without a style menu keeps v silent');
+  press(fixedPreset, { key: 't' });
+  assert.deepEqual(fixedRuns, [], 'a site without a style menu keeps t silent');
 
   // ------------------------------------------------------------- f and c
   const opens = [];
@@ -951,6 +957,15 @@ function press(harness, values) {
     registry: {
       get(id) {
         if (id === 'switch_theme') return { available: true };
+        if (id === 'switch_preset') {
+          return {
+            available: true,
+            options: [
+              { id: 'paper', value: 'paper', available: true },
+              { id: 'slate', value: 'slate', available: true },
+            ],
+          };
+        }
         if (id === 'switch_language') {
           return {
             available: true,
@@ -996,8 +1011,9 @@ function press(harness, values) {
   landing.win.location.href = 'https://example.test/blog/post/';
   press(landing, { key: 'r' });
   assert.deepEqual(landing.win.assigned, ['/'], 'r wraps the navbar cycle to home');
+  landing.html.setAttribute('data-td-preset', 'paper');
   press(landing, { key: 't' });
-  assert.deepEqual(landingRuns, [['switch_theme', 'dark']], 't works outside the shell');
+  assert.deepEqual(landingRuns, [['switch_preset', 'slate']], 't steps styles outside the shell');
   press(landing, { key: 'l' });
   assert.deepEqual(
     landing.win.assigned,
@@ -1007,7 +1023,7 @@ function press(harness, values) {
   landing.win.assigned.length = 0;
   press(landing, { key: 'y' });
   assert.deepEqual(landing.win.assigned, [], 'y leaves the language alone outside the shell');
-  assert.deepEqual(landingRuns.at(-1), ['switch_theme', 'dark'], 'y toggles the color mode outside the shell');
+  assert.deepEqual(landingRuns.at(-1), ['switch_theme', 'light'], 'y cycles the color mode outside the shell');
   press(landing, { key: 'j' });
   assert.equal(landing.win.scrolledTo.at(-1), 576, 'homepage j jumps to the next top-level section');
   assert.equal(landing.win.hashes.at(-1), '#release', 'homepage section jump updates the hash');
@@ -1055,8 +1071,8 @@ function press(harness, values) {
   bridgeSearch.setAttribute('data-td-keyboard-search-route', '');
   bridgeSearch.setAttribute('href', '/docs/');
   bridge.root.appendChild(bridgeSearch);
-  press(bridge, { key: 't' });
-  assert.equal(bridgeTheme.clicks, 1, 't clicks a standalone homepage theme bridge');
+  press(bridge, { key: 'y' });
+  assert.equal(bridgeTheme.clicks, 1, 'y clicks a standalone homepage theme bridge');
   press(bridge, { key: 'l' });
   assert.deepEqual(bridge.win.assigned, ['/zh/'], 'l follows a standalone language bridge');
   bridge.win.assigned.length = 0;
@@ -1089,16 +1105,16 @@ function press(harness, values) {
   const appearanceDialog = new Element('dialog', 'td-appearance__panel');
   appearanceDialog.setAttribute('open', '');
   appearanceKeys.root.appendChild(appearanceDialog);
-  press(appearanceKeys, { key: 't' });
+  press(appearanceKeys, { key: 'y' });
   assert.equal(appearanceBridge.clicks, 1, 'nonmodal Appearance blocked reading shortcuts');
   appearanceDialog.modal = true;
-  press(appearanceKeys, { key: 't' });
+  press(appearanceKeys, { key: 'y' });
   assert.equal(appearanceBridge.clicks, 1, 'modal Appearance lost shortcut ownership');
   appearanceDialog.modal = false;
   const secondDialog = new Element('dialog');
   secondDialog.setAttribute('open', '');
   appearanceKeys.root.appendChild(secondDialog);
-  press(appearanceKeys, { key: 't' });
+  press(appearanceKeys, { key: 'y' });
   assert.equal(appearanceBridge.clicks, 1, 'a second native dialog was ignored');
 
   // -------------------------------------------------- collapsed desktop tree

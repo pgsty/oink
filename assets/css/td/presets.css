@@ -161,8 +161,12 @@ html[data-td-preset-switching] *::after {
   }
   /* A link in running text is underlined, not bold: a cue a reader can see
      without color, at the weight of the sentence around it. The rule is a
-     hairline at half strength and takes full ink under the pointer. */
-  [data-td-preset='paper'] .td-content :is(p, li, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
+     hairline at half strength and takes full ink under the pointer. Running
+     text is a paragraph, a table cell, a caption, or an item of a plain or
+     stepped list: a list that carries any other class is a component, and
+     its labels keep the weight cue instead. */
+  [data-td-preset='paper'] .td-content :is(p, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+[data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
     font-weight: inherit;
     text-decoration-line: underline !important;
     text-decoration-thickness: 1px;
@@ -170,7 +174,8 @@ html[data-td-preset-switching] *::after {
     text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
     text-decoration-skip-ink: auto;
   }
-  [data-td-preset='paper'] .td-content :is(p, li, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible) {
+  [data-td-preset='paper'] .td-content :is(p, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
+[data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible) {
     text-decoration-color: currentColor;
   }
   /* The chip already says "code". At the weight of prose it stops competing

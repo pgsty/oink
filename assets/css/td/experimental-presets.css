@@ -321,8 +321,11 @@
     letter-spacing: 0.055em;
     font-weight: 700;
   }
-  /* Underlines belong to prose, not card/control labels or heading anchors. */
-  [data-td-preset='ink'] .td-content :is(p, li, td, dd, figcaption) a:not(.td-heading-self-link):not(.td-badge) {
+  /* Underlines belong to prose, not card/control labels or heading anchors:
+     a paragraph, a table cell, a caption, or an item of a plain or stepped
+     list. A list that carries any other class is a component. */
+  [data-td-preset='ink'] .td-content :is(p, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+[data-td-preset='ink'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
     /* The shared accessibility sheet suppresses underlines with !important.
        Ink intentionally restores this non-color prose affordance. */
     text-decoration-line: underline !important;

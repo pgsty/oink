@@ -40,6 +40,10 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   hairline underline, instead of semibold without one, and inline code at
   weight 400 on its chip; bold code stays semibold. Ink links keep their
   underline and drop the extra weight. Terminal inline code is weight 400.
+  In both presets the underline now applies to running text only: paragraphs,
+  table cells, captions, and items of plain, stepped or task lists. Links in
+  component lists, such as card titles, Book contents and file tree entries,
+  no longer take it in Ink.
 - Table figures use tabular numerals, and a table's header band takes rounded
   top corners in Slate. Dark mode uses grayscale font smoothing so light text
   keeps its drawn weight.

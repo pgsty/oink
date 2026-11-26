@@ -31,6 +31,28 @@
   src: url(../webfonts/brand/ibm-plex-mono-latin-600-normal.woff2) format("woff2");
 }
 
+/* Kai from the reader's own system, for Han, kana and CJK punctuation only:
+   no file, no request. The italic face is the same upright Kai, declared
+   italic so nothing slants it -- Han has no italic, and its emphasis is a
+   change of hand. Kai is drawn small in its em box; `size-adjust` sets it
+   level with the Hei or Song around it. Where no Kai is installed the face
+   never loads and the stack behind it answers as before. */
+@font-face {
+  font-family: 'OINK Kai';
+  font-style: normal;
+  src: local("Kaiti SC"), local("STKaitiSC-Regular"), local("STKaiti"), local("KaiTi"), local("楷体");
+  size-adjust: 114%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'OINK Kai';
+  font-style: italic;
+  src: local("Kaiti SC"), local("STKaitiSC-Regular"), local("STKaiti"), local("KaiTi"), local("楷体");
+  size-adjust: 114%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
 :root,
 [data-bs-theme='light'] {
   --bs-body-bg: #f1f4f8;

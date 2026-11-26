@@ -16,42 +16,86 @@
   /* Print keeps its own role so a site can give paper a different face, but
      the theme ships no print-only font: it follows the body role. */
   --td-print-font-family: var(--td-body-font-family);
+  /* Emphasis and citation. `OINK Kai` answers only for CJK code points, so
+     Latin in the same phrase keeps the true italic of the role behind it and
+     Han takes Kai upright instead of a synthesized slant. */
+  --td-emphasis-font-family: 'OINK Kai', var(--td-body-font-family);
+  --td-heading-emphasis-font-family: 'OINK Kai', var(--td-heading-font-family);
+  /* Quotations follow the body role unless a preset gives them a hand of
+     their own. */
+  --td-quote-font-family: var(--td-body-font-family);
 }
 
 /* Visual presets restate font roles at (0,1,0). They precede the system
    block, so `typography: system` still collapses every role to platform faces
    in every preset, and `params.ui.fonts`, emitted inline after this
-   stylesheet, still beats both. Slate is the `:root` block above. */
+   stylesheet, still beats both. Slate is the `:root` block above.
+
+   Chinese has four skeletons -- Song, Hei, Kai, Fangsong -- and each preset
+   arranges them differently, from fonts the reader already has: no CJK file
+   ships with the theme. Latin and Han agree in class wherever they share a
+   line: a sans with Hei, a serif with Song. A stack names the Latin face
+   first, then the Han faces platform by platform. */
 [data-td-preset='paper'] {
-  /* IBM Plex Sans for UI, prose, headings, and display; Latin first, then the
-     platform CJK sans faces, so Chinese reads in PingFang/YaHei/Noto, never a
-     synthesized fallback. The wordmark keeps the brand face. */
+  /* A published essay: Song headings over a Hei text. IBM Plex Sans carries
+     UI and prose; Han beside it prefers Hiragino Sans GB, whose open forms
+     read like print, then the platform Hei. The wordmark keeps the brand
+     face. */
   --td-ui-font-family:
-      'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC',
-      'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC',
+      'IBM Plex Sans', 'Hiragino Sans GB', -apple-system, BlinkMacSystemFont,
+      'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC',
       'Segoe UI', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   --td-body-font-family: var(--td-ui-font-family);
-  --td-heading-font-family: var(--td-body-font-family);
+  /* Headings: a system serif for Latin, Song for Han. Microsoft YaHei stands
+     before the generic so a Windows without a Song that has a real bold gets
+     a bold Hei rather than a smeared SimSun; Android reaches its Noto Serif
+     CJK through `serif`. */
+  --td-heading-font-family:
+      Charter, 'Bitstream Charter', 'Iowan Old Style', Cambria, Georgia,
+      'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
+      'Microsoft YaHei', serif;
   --td-display-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
   --td-brand-font-family: 'Chakra Petch', var(--td-ui-font-family);
+  --td-quote-font-family: 'OINK Kai', var(--td-body-font-family);
 }
 
 [data-td-preset='ink'] {
-  --td-display-font-family: var(--td-heading-font-family);
-  --td-brand-font-family: var(--td-ui-font-family);
-  --td-meta-font-family: var(--td-ui-font-family);
-}
-
-[data-td-preset='terminal'] {
-  /* Mono belongs to the controls and headings; prose keeps a reading face.
-     Explicit `params.ui.fonts` roles remain authoritative. */
-  --td-ui-font-family: var(--td-code-font-family);
-  --td-body-font-family: 'IBM Plex Sans', var(--bs-body-font-family);
+  /* A printed page: Hei headlines over a Song text, the newspaper's
+     arrangement. Inter stays in the chrome and the headings; prose reads in
+     a system serif with Song beside it. */
+  --td-body-font-family:
+      Charter, 'Bitstream Charter', 'Iowan Old Style', Cambria, Georgia,
+      'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
+      STSong, SimSun, serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   --td-heading-font-family: var(--td-ui-font-family);
   --td-display-font-family: var(--td-heading-font-family);
   --td-brand-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
+  --td-quote-font-family: 'OINK Kai', var(--td-body-font-family);
+}
+
+[data-td-preset='terminal'] {
+  /* One voice, the terminal's: mono in the chrome, the headings and the
+     prose. Han has no mono on most systems, so the prose stack names the
+     platform Hei before the generic, which on Windows would answer with a
+     bitmap Song. Paper output keeps a reading face. Explicit
+     `params.ui.fonts` roles remain authoritative. */
+  --td-ui-font-family: var(--td-code-font-family);
+  --td-body-font-family:
+      'IBM Plex Mono', SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo,
+      Consolas, 'Liberation Mono', 'Sarasa Mono SC', 'Noto Sans Mono CJK SC',
+      'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC',
+      monospace;
+  --td-heading-font-family: var(--td-ui-font-family);
+  --td-display-font-family: var(--td-heading-font-family);
+  --td-brand-font-family: var(--td-ui-font-family);
+  --td-meta-font-family: var(--td-ui-font-family);
+  --td-print-font-family: 'IBM Plex Sans', var(--bs-body-font-family);
+  /* A terminal has no second hand to change to: emphasis keeps the text
+     face and takes the accent in `experimental-presets.css`. */
+  --td-emphasis-font-family: var(--td-body-font-family);
+  --td-heading-emphasis-font-family: var(--td-heading-font-family);
 }
 
 [data-td-typography='system'] {

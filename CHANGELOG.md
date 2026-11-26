@@ -44,6 +44,17 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   table cells, captions, and items of plain, stepped or task lists. Links in
   component lists, such as card titles, Book contents and file tree entries,
   no longer take it in Ink.
+- Each preset sets Chinese in its own arrangement, from fonts already on the
+  reader's system; no CJK file ships. Paper sets Song headings in a system
+  serif (Charter, Iowan Old Style, Cambria, Georgia) over Plex Sans text with
+  Hiragino Sans GB before the platform Hei. Ink sets Inter and Hei headings
+  over system-serif and Song prose at 17 px. Slate stays Inter and Hei.
+  Terminal sets prose in IBM Plex Mono too and keeps Plex Sans in print.
+  Emphasis, citations and quotations use Kai through `OINK Kai`, a
+  `local()`-only face limited to CJK code points, so Han is never slanted
+  while Latin keeps its italic; Terminal colors emphasis instead. New roles:
+  `--td-emphasis-font-family`, `--td-heading-emphasis-font-family` and
+  `--td-quote-font-family`.
 - Table figures use tabular numerals, and a table's header band takes rounded
   top corners in Slate. Dark mode uses grayscale font smoothing so light text
   keeps its drawn weight.

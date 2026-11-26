@@ -312,6 +312,11 @@
     letter-spacing: -0.02em;
   }
   /* One hairline of full ink opens a section; a heavier rule shouts. */
+  /* Song is lighter on the page than the Hei it replaces; one step up in
+     size keeps the text at the same color. */
+  [data-td-preset='ink'] .td-content {
+    font-size: 1.0625rem;
+  }
   [data-td-preset='ink'] .td-content > h2, [data-td-preset='ink'] .td-content > .h2 {
     border-top: 1px solid var(--bs-emphasis-color);
     padding-top: 1rem;
@@ -359,7 +364,12 @@
     font-weight: 700;
     letter-spacing: -0.04em;
   }
-  /* Tables and prose remain sans. Only labels/headings take mono. */
+  /* Emphasis keeps the text face and takes the accent: upright, as a
+     terminal would show it. */
+  [data-td-preset='terminal'] .td-content :is(em, cite, dfn, i:not([class])) {
+    font-style: normal;
+    color: var(--td-brand-copper);
+  }
   /* Field names, metadata chips, and checksum chips are structural labels, not prose code chips. */
   [data-td-preset='terminal'] .td-content h1, [data-td-preset='terminal'] .td-content .h1, [data-td-preset='terminal'] .td-content h2, [data-td-preset='terminal'] .td-content .h2, [data-td-preset='terminal'] .td-content h3, [data-td-preset='terminal'] .td-content .h3, [data-td-preset='terminal'] .td-content h4, [data-td-preset='terminal'] .td-content .h4 {
     letter-spacing: -0.02em;

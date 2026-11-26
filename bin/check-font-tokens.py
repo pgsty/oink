@@ -37,7 +37,7 @@ SEMANTIC_VALUE = re.compile(
     r"^var\(--td-[\w-]*font-family(?:\s*,[^)]*)?\)(?:\s*!important)?$"
 )
 LITERAL_DECLARATION_ALLOWLIST = {
-    TD_ROOT / "brand.css": {"'Chakra Petch'", "'IBM Plex Mono'"},
+    TD_ROOT / "brand.css": {"'Chakra Petch'", "'IBM Plex Mono'", "'OINK Kai'"},  # 'OINK Kai' is local()-only.
     TD_ROOT / "landing.css": {"Georgia, serif"},  # Decorative quote glyph.
 }
 SPECIAL_DECLARATION_VALUES = {

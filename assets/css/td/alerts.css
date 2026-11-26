@@ -109,6 +109,7 @@
 
 .td-callout--quote .td-callout__body {
   color: var(--bs-secondary-color);
+  font-family: var(--td-emphasis-font-family);
   font-style: italic;
 }
 

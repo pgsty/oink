@@ -154,6 +154,21 @@
   font-weight: 700;
 }
 
+/* Emphasis, citation and quotation read through their own roles, so Han is
+   set in Kai where a preset or the default asks for it. An `<i>` that carries
+   a class is an icon, not emphasis. */
+.td-content :is(em, cite, dfn, i:not([class])) {
+  font-family: var(--td-emphasis-font-family);
+}
+
+.td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) :is(em, cite, dfn, i:not([class])) {
+  font-family: var(--td-heading-emphasis-font-family);
+}
+
+.td-content blockquote {
+  font-family: var(--td-quote-font-family);
+}
+
 .td-content details:not(:last-child) {
   margin-bottom: 1rem;
 }

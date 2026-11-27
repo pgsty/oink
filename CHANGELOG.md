@@ -25,9 +25,12 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   - **Audio**: a block image whose destination is an audio file renders a titled
     native player. No runtime.
   - **Social posts**: the `social` shortcode quotes a post (X by default;
-    Bluesky, Mastodon, Threads, Weibo, LinkedIn) entirely from the page, with a
-    Markdown body that composes images, galleries and a nested quoted post.
-    Nothing is fetched at build or view time. Hugo's own `x` is untouched.
+    Bluesky, Mastodon, Threads, Weibo, Zhihu, Telegram, LinkedIn, or `none`,
+    the default for a nested quote) entirely from the page, with a Markdown
+    body that composes images, galleries and a nested quoted post. Nothing is
+    fetched at build or view time. A static avatar missing from the project's
+    `static/` warns with the suppressible ID `social:avatar-static`. Hugo's own
+    `x` is untouched.
   - **Map**: a `map` fence of places always renders a numbered place list with
     OpenStreetMap links; with a complete new `params.map` (an HTTPS `tiles`
     template and its `attribution`), HTML adds an interactive map through

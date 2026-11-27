@@ -4,11 +4,12 @@
 {{- if eq $name "image" }}{{ $label = "image" }}{{ else if eq $name "gallery" }}{{ $label = "gallery fence" }}{{ end -}}
 {{- with .label }}{{ $label = . }}{{ end -}}
 {{- $position := .position | default "unknown position" -}}
+{{- $parameter := .parameter | default "src" -}}
 {{- $page := .page -}}
 {{- $sourceValue := .src -}}
 {{- if eq (printf "%T" $sourceValue) "string" }}{{ $sourceValue = strings.TrimSpace $sourceValue }}{{ end -}}
 {{- $validated := partial "content/url.html" (dict
-  "name" $name "label" $label "parameter" "src" "position" $position "value" $sourceValue "kind" "image"
+  "name" $name "label" $label "parameter" $parameter "position" $position "value" $sourceValue "kind" "image"
 ) -}}
 {{- $source := $validated.raw -}}
 {{- $scheme := $validated.scheme -}}
@@ -27,7 +28,7 @@
 {{- $byline := "" -}}
 {{- if $resource -}}
   {{- if not (reflect.IsImageResource $resource) -}}
-    {{- warnf "%s: src %q resolved to a non-image %s resource at %s; dropping the image" $label $source $kind $position -}}
+    {{- warnf "%s: %s %q resolved to a non-image %s resource at %s; dropping the image" $label $parameter $source $kind $position -}}
     {{- /* The same drop the URL policy uses: an empty src, never a repaired
          one -- and never a field read off the dropped resource, which is
          what used to stop the build here instead of degrading. */ -}}

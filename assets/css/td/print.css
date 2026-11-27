@@ -230,7 +230,7 @@
     border-color: var(--td-print-table-line) !important;
     background: transparent !important;
   }
-  .td-content blockquote {
+  .td-content blockquote:not(.td-social__body) {
     border-inline-start: 2pt solid var(--td-print-quote-line);
     background: var(--td-print-quote-bg) !important;
     color: var(--td-print-quote-ink) !important;

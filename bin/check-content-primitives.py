@@ -931,10 +931,21 @@ INVALID_CASES = (
     # Offline social posts: every invalid input warns at its position and keeps
     # the quoted words whenever a body exists.
     ("social-platform", '{{< social author="A" platform="myspace" >}}Hi{{< /social >}}\n', "platform must be one of"),
+    ("social-platform-empty", '{{< social author="A" platform="" >}}Hi{{< /social >}}\n', "platform must be one of"),
+    ("social-platform-type", '{{< social author="A" platform=true >}}Hi{{< /social >}}\n', "platform must be a string"),
+    ("social-author-type", '{{< social author=true handle="@a" >}}Hi{{< /social >}}\n', "author must be a string"),
+    ("social-handle-type", '{{< social author="A" handle=123 >}}Hi{{< /social >}}\n', "handle must be a string"),
+    ("social-date-type", '{{< social author="A" date=2026 >}}Hi{{< /social >}}\n', "date must be a string"),
     ("social-empty", '{{< social author="A" />}}\n', "has no body and no url"),
     ("social-empty-link", '{{< social author="A" url="https://x.com/a/status/1" />}}\n', "rendering a link to the original post"),
     ("social-anonymous", '{{< social >}}Hi{{< /social >}}\n', "requires author or handle"),
+    ("social-anon-empty-link", '{{< social url="https://example.com/1" />}}\n', "requires author or handle and has no body"),
     ("social-url", '{{< social author="A" url="javascript:alert(1)" >}}Hi{{< /social >}}\n', "unsupported url scheme"),
+    ("social-avatar-scheme", '{{< social author="A" avatar="javascript:alert(1)" >}}Hi{{< /social >}}\n', "unsupported avatar scheme"),
+    ("social-avatar-missing", '{{< social author="A" avatar="/images/does-not-exist-social.png" >}}Hi{{< /social >}}\n', "was not found as a page/assets resource or under static/"),
+    ("social-avatar-missing-dotdot", '{{< social author="A" avatar="/images/../images/does-not-exist-social.png" >}}Hi{{< /social >}}\n', "was not found as a page/assets resource or under static/"),
+    ("social-avatar-parent", '{{< social author="A" avatar="../images/oink.webp" >}}Hi{{< /social >}}\n', "climbs above the site root"),
+    ("social-deep-nesting", '{{< social author="A" >}}L1\n{{< social author="B" >}}L2\n{{< social author="C" >}}L3{{< /social >}}{{< /social >}}{{< /social >}}\n', "nested deeper than one quoted post"),
     ("social-unknown", '{{< social author="A" likes="1K" >}}Hi{{< /social >}}\n', "unsupported parameter"),
     # Map fences: invalid places are skipped with a warning; valid siblings stay.
     ("map-empty", '```map\n```\n', "requires a list of places"),
@@ -946,6 +957,139 @@ INVALID_CASES = (
     ("map-zoom", '```map {zoom=40}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
     ("map-route", '```map {route=maybe}\n- {name: A, lat: 1, lng: 2}\n```\n', "route must be true or false"),
 )
+
+
+def check_social_posts(hugo: str) -> list[str]:
+    """Social shortcode: platforms, nested symmetry, grapheme initials, dates,
+    internal URLs, degraded outputs, and context-aware Markdown/RSS escaping."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-primitives-social-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs"
+        content.mkdir(parents=True)
+        (content / "_index.md").write_text("---\ntitle: Social tests\n---\n")
+        (content / "cases.md").write_text(
+            "---\n"
+            "title: Social edge cases\n"
+            "date: 2026-11-26\n"
+            "outputs: [HTML, print, markdown]\n"
+            "---\n\n"
+            '{{< social author="Lin Shu" handle="@linshu" platform="zhihu" date="2026-02" url="/docs/cases/" >}}\n'
+            "Internal link and year-month date.\n"
+            "{{< /social >}}\n\n"
+            '{{< social author="Maya" handle="@maya_dev" platform="telegram" date="2026-02-15T08:30+08:00" >}}\n'
+            "Timezone offset datetime.\n"
+            "{{< /social >}}\n\n"
+            '{{< social author="Nadia" handle="@nadia" platform="none" date="Feb 15, 2026" >}}\n'
+            "No platform icon and non-ISO date.\n"
+            "{{< /social >}}\n\n"
+            '{{< social author="Leap" date="2026-02-29" >}}Invalid calendar date.{{< /social >}}\n\n'
+            '{{< social author="👩‍💻 Dev" handle="@dev" >}}ZWJ grapheme initial.{{< /social >}}\n\n'
+            '{{< social author="🇨🇳 Lab" handle="@lab" >}}Flag grapheme initial.{{< /social >}}\n\n'
+            '{{< social handle="@" >}}Bare at-sign fallback.{{< /social >}}\n\n'
+            '{{< social handle="@@double" >}}Double at-sign initial.{{< /social >}}\n\n'
+            '{{< social author="Outer" handle="@outer" platform="mastodon" >}}\n'
+            "Quoting two posts.\n\n"
+            '{{< social author="Implicit" handle="@imp" >}}No platform set.{{< /social >}}\n\n'
+            '{{< social author="Explicit" handle="@exp" platform="bluesky" >}}Cross-platform quote.{{< /social >}}\n'
+            "{{< /social >}}\n\n"
+            '{{< social author="A *B* [C](x) <img src=x> &lt; a@b.co https://e.co" handle="@u`1" date="2026-11-26" url="https://example.com/1" >}}\n'
+            "Markdown escaping stress test.\n"
+            "{{< /social >}}\n\n"
+            '{{< social author="Link Only" url="/docs/cases/" />}}\n\n'
+            '{{< social url="https://example.com/anon" />}}\n\n'
+            # Invisible leading characters never become the drawn initial.
+            '{{< social handle="@\u200bghost" >}}Zero-width space after the at-sign.{{< /social >}}\n\n'
+            '{{< social author="\ufeff\u2066Zed\u2069" >}}BOM and bidi isolate before the name.{{< /social >}}\n\n'
+            '{{< social handle="@\u3000\u00a0\u200b" >}}Only invisible characters after the at-sign.{{< /social >}}\n\n'
+            # Static avatars are checked by their decoded, cleaned path.
+            '{{< social author="Encoded" avatar="/images/%6Fink.webp?v=2" >}}Percent-encoded static avatar.{{< /social >}}\n\n'
+            '{{< social author="Dotted" avatar="/images/../images/oink.webp" >}}Dot segments in a static avatar.{{< /social >}}\n\n'
+            '{{< social author="Missing" avatar="/images/missing-social-avatar.png" >}}Missing static avatar.{{< /social >}}\n\n'
+            # Cards on consecutive lines stay separate quotations in Markdown.
+            '{{< social author="Adjacent One" >}}First adjacent post.{{< /social >}}\n'
+            '{{< social author="Adjacent Two" >}}Second adjacent post.{{< /social >}}\n'
+            "\n<!--more-->\n"
+        )
+        result = run_hugo_process(
+            [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"),
+             "--logLevel", "warn", "--destination", str(temp_path / "public")],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode == 0, f"social edge cases failed to build: {output.strip()[-400:]}", errors)
+        # Anonymous empty+url must emit one unified warning, not two contradictory ones.
+        anon_lines = [line for line in output.splitlines() if "requires author or handle and has no body" in line]
+        require(len(anon_lines) >= 1, "anonymous empty+url did not emit unified warning", errors)
+        html = unescape((temp_path / "public/docs/cases/index.html").read_text())
+        print_html = unescape((temp_path / "public/_print/docs/cases/index.html").read_text())
+        md = (temp_path / "public/docs/cases/index.md").read_text()
+        rss = unescape((temp_path / "public/docs/index.xml").read_text())
+
+        # Platforms: zhihu, telegram, none, and nested platform symmetry.
+        require("fa-brands fa-zhihu" in html and " · Zhihu" in html, "zhihu platform icon or label missing", errors)
+        require("fa-brands fa-telegram" in html and " · Telegram" in html, "telegram platform icon or label missing", errors)
+        require("td-social--none" in html, "platform=none class missing", errors)
+        # Nested quote without platform must not fabricate X; explicit nested platform must render icon + label.
+        require('<figure class="td-social td-social--none td-social--nested">' in html, "nested quote without platform did not default to none", errors)
+        require('<figure class="td-social td-social--bluesky td-social--nested">' in html
+                and 'fa-brands fa-bluesky' in html, "nested explicit cross-platform quote lost icon/class", errors)
+        # Dates: valid YYYY-MM and offset datetime get <time datetime>; non-ISO and invalid calendar date get <span class="td-social__date">.
+        require('<time datetime="2026-02">2026-02</time>' in html, "YYYY-MM date lost <time datetime>", errors)
+        require('<time datetime="2026-02-15T08:30+08:00">2026-02-15T08:30+08:00</time>' in html, "offset datetime lost <time datetime>", errors)
+        require('<span class="td-social__date">Feb 15, 2026</span>' in html and '<time>Feb 15, 2026</time>' not in html,
+                "non-ISO date emitted invalid <time> without datetime", errors)
+        require('<span class="td-social__date">2026-02-29</span>' in html and 'datetime="2026-02-29"' not in html,
+                "impossible calendar date emitted <time datetime>", errors)
+        # Grapheme initials & fallback icon.
+        require('>👩‍💻</span>' in html, "ZWJ emoji initial was split", errors)
+        require('>🇨🇳</span>' in html, "flag emoji initial was split", errors)
+        require('><i class="fa-solid fa-user" aria-hidden="true"></i></span>' in html, "bare @ handle did not fall back to user icon", errors)
+        require('>D</span>' in html, "double @@ handle did not strip all leading @", errors)
+        require('aria-hidden="true">G</span>' in html and 'aria-hidden="true">\u200b</span>' not in html,
+                "zero-width space after @ became an invisible initial", errors)
+        require('aria-hidden="true">Z</span>' in html, "BOM/bidi isolate before the name became the initial", errors)
+        require(html.count('><i class="fa-solid fa-user" aria-hidden="true"></i></span>') >= 2,
+                "space-only handle did not fall back to the user icon", errors)
+        # Static avatar check: decoded and cleaned paths resolve; a missing file
+        # warns with an ID that a site using mounts or staticDir can ignore.
+        static_warnings = [line for line in output.splitlines() if "was not found as a page/assets resource or under static/" in line]
+        require(not any("%6Fink" in line or "/images/../images/oink" in line for line in static_warnings),
+                f"existing static avatar reported missing: {static_warnings}", errors)
+        require(any("missing-social-avatar.png" in line for line in static_warnings),
+                "missing static avatar did not warn", errors)
+        require("ignoreLogs = ['social:avatar-static']" in output,
+                "missing static avatar warning is not suppressible by ID", errors)
+        # Markdown: a card on the next line starts a new quotation.
+        require("> — Adjacent One · X\n\n> Second adjacent post." in md,
+                "adjacent cards merged into one Markdown blockquote", errors)
+        # Accessible spacing, RTL bidi attributes, link author context, and internal URL rel="external" policy.
+        require('<span class="td-social__name" dir="auto">Lin Shu</span> <span class="td-social__handle" dir="ltr">@linshu</span>' in html,
+                "name/handle spacing or dir attributes missing", errors)
+        require('<a href="/docs/cases/">' in html and '<a href="/docs/cases/" rel="external">' not in html,
+                "internal url incorrectly emitted rel=external", errors)
+        require('<span class="visually-hidden"> — Lin Shu</span></a>' in html, "meta link missing author context for screen readers", errors)
+        # Anonymous empty+url renders a link in HTML, Print, RSS, and Markdown.
+        anon_link = '<blockquote class="td-social-quote" cite="https://example.com/anon"><p><a href="https://example.com/anon" rel="external">View original</a></p></blockquote>'
+        require(anon_link in html and anon_link in print_html, "anonymous empty+url lost link in HTML/Print", errors)
+        require('<blockquote class="td-social-quote" cite="https://example.com/anon"><p><a href="https://example.com/anon">View original</a></p></blockquote>' in rss,
+                "anonymous empty+url lost link in RSS", errors)
+        require('> [View original](https://example.com/anon)' in md, "anonymous empty+url lost link in Markdown", errors)
+        # RSS: no empty <blockquote> on link-only card, and internal URL is absolute.
+        require('<figure class="td-social"><figcaption>— Link Only · X · <a href="https://example.org/docs/cases/">View original</a></figcaption></figure>' in rss,
+                "RSS link-only card emitted empty blockquote or relative URL", errors)
+        require('cite="https://example.org/docs/cases/"' in rss, "RSS internal cite URL was not absolutized", errors)
+        # Markdown: clean readable attribution without backslash spam, while escaping dangerous syntax.
+        require('> — Lin Shu (`@linshu`) · Zhihu · 2026-02 · [View original](/docs/cases/)' in md,
+                f"Markdown attribution format mismatch: {md}", errors)
+        require('> — Nadia (`@nadia`) · Feb 15, 2026' in md, "platform=none leaked platform into Markdown", errors)
+        require('> > — Implicit (`@imp`)' in md and 'Implicit (`@imp`) · X' not in md,
+                "nested implicit quote fabricated X in Markdown", errors)
+        require('> > — Explicit (`@exp`) · Bluesky' in md, "nested explicit quote lost platform in Markdown", errors)
+        require(r'A \*B\* \[C\](x) \<img src=x\> \&lt; a\@b.co https\://e.co (\@u\`1)' in md
+                or r'A \*B\* \[C\](x) \<img src=x\> \&lt; a\@b.co https\://e.co (@u\`1)' in md,
+                f"Markdown inline escape failed on adversarial attribution: {md}", errors)
+    return errors
 
 
 def check_update_headings(hugo: str) -> list[str]:
@@ -1175,6 +1319,39 @@ def check_template_contracts() -> list[str]:
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("initFileTree" not in runtime and "initCarousel" not in runtime, "content-components.js keeps removed runtimes", errors)
     require("hasDocCarousel" not in scripts, "scripts.html keeps removed runtime flags", errors)
+    social = (ROOT / "layouts/_shortcodes/social.html").read_text()
+    for marker in (
+        "Page.Store.Set",
+    ):
+        require(marker not in social, f"social.html sets a runtime flag ({marker})", errors)
+    for marker in (
+        'partial "content/shortcode-params.html"',
+        'partial "content/url.html"',
+        'partial "content/image-resolve.html"',
+        'partial "content/render-block.html"',
+        'partial "content/markdown-escape-inline.html"',
+        '"zhihu"',
+        '"telegram"',
+        '"none"',
+        "time.AsTime",
+        'class="td-social__date"',
+        'dir="auto"',
+        'dir="ltr"',
+    ):
+        require(marker in social, f"social.html lacks {marker}", errors)
+    social_styles = (ROOT / "assets/css/td/social.css").read_text()
+    for marker in (
+        ".td-social",
+        ".td-social__avatar--initial",
+        "unicode-bidi: isolate",
+        "figure:not(.td-social)",
+        ".td-social .td-gallery",
+        "@media (forced-colors: active)",
+        "@media print",
+        "var(--td-print-ink)",
+        "var(--td-print-line)",
+    ):
+        require(marker in social_styles, f"social.css lacks {marker}", errors)
     source = (ROOT / "layouts/_partials/print/page-content.html").read_text()
     store = source.find('.Store.Set "tdOutputFormat" "print"')
     content = source.find("$page.RawContent", store)
@@ -1204,6 +1381,7 @@ def main() -> int:
         + check_table_family(args.hugo)
         + check_table_reader(args.hugo)
         + check_invalid_cases(args.hugo)
+        + check_social_posts(args.hugo)
         + check_update_headings(args.hugo)
         + check_template_contracts()
     )

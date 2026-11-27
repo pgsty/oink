@@ -172,6 +172,8 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ### Fixed
 
+- An explicit `params.ui.fonts.ui` applies to headings in Paper as well as
+  prose. A site can still choose a separate `fonts.heading` in any preset.
 - The sidebar section switcher, previous/next links and blog gallery links
   include their visible text in their accessible names for voice control.
 - Readers can turn off global single-key shortcuts from shortcut help or the

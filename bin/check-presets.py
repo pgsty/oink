@@ -79,6 +79,8 @@ def main():
         ('default', '', 'paper', False, False),
         ('slate', '    preset: slate\n    dark_mode: true\n    preset_menu: true\n', 'slate', True, True),
         ('style-only', '    preset_menu: [paper, slate]\n    typography: system\n    fonts:\n      brand: serif\n', 'paper', True, False),
+        ('main-face', '    fonts: {ui: serif}\n', 'paper', False, False),
+        ('separate-faces', '    fonts: {ui: sans-serif, body: serif, heading: monospace}\n', 'paper', False, False),
         ('fixed', '    preset: slate\n    preset_menu: [slate]\n', 'slate', False, False),
         ('ink-default', "    preset: ink\n    preset_menu: true\n    theme_color: '#245f94'\n", 'ink', True, False),
         ('terminal-fixed', "    preset: terminal\n    theme_color: '#245f94'\n", 'terminal', False, False),
@@ -111,6 +113,13 @@ def main():
             if name == 'style-only':
                 assert 'data-td-typography="system"' in html
                 assert '--td-brand-font-family:serif' in html.replace(' ', '')
+            if name == 'main-face':
+                assert '--td-body-font-family:var(--td-ui-font-family)' in html
+                assert '--td-heading-font-family:var(--td-body-font-family)' in html
+            if name == 'separate-faces':
+                assert '--td-body-font-family:serif' in html
+                assert '--td-heading-font-family:monospace' in html
+                assert '--td-heading-font-family:var(--td-body-font-family)' not in html
     print(f'Preset check passed: Paper/Ink/Terminal AA on 3 surfaces and token parity; Slate v1.1.0 palette; {len(cases)} configuration builds and {len(cases)*4} root outputs')
 
 

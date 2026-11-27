@@ -11,9 +11,8 @@
              ui: "'Source Han Sans SC', sans-serif"
              code: "'Sarasa Mono SC', monospace"
 
-     `ui` is the main face: `--td-body-font-family` and, unless the project
-     assigned `$headings-font-family`, `--td-heading-font-family` both resolve
-     through it, so one line changes chrome, prose and headings together. The
+     An explicit `ui` is the main face. Prose follows it and headings follow
+     prose unless the site supplies a more specific role. The
      other keys -- body, heading, code, display, meta, brand, print -- narrow
      from there. `brand` is the wordmark face; it follows `display` unless a
      visual preset or this key separates them.
@@ -71,11 +70,15 @@
         (delimit $roles " | ") -}}
   {{- end -}}
 {{- end -}}
-{{- /* An explicit UI face remains the main face even in Terminal, whose
-       default prose face differs from its mono controls. A valid body role
-       is more specific and must keep its own value. */ -}}
-{{- if and (in $valid "ui") (not (in $valid "body")) -}}
-  {{- $decls = $decls | append "--td-body-font-family:var(--td-ui-font-family)" -}}
+{{- /* Reconnect the role chain when a site chooses its main face. Presets
+       can otherwise give prose and headings their own default stacks. */ -}}
+{{- if in $valid "ui" -}}
+  {{- if not (in $valid "body") -}}
+    {{- $decls = $decls | append "--td-body-font-family:var(--td-ui-font-family)" -}}
+  {{- end -}}
+  {{- if not (in $valid "heading") -}}
+    {{- $decls = $decls | append "--td-heading-font-family:var(--td-body-font-family)" -}}
+  {{- end -}}
 {{- end -}}
 {{- with $decls -}}
 <style>{{ printf ":root{%s}" (delimit . ";") | safeCSS }}</style>

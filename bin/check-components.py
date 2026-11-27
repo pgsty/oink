@@ -542,7 +542,7 @@ def check_media_output_states(hugo: str) -> list[str]:
     errors: list[str] = []
     page = (
         "---\ntitle: Media states\noutputs: [HTML, print, markdown, RSS]\n---\n\n"
-        '{{< asciinema file="images/install.cast" title="Walkthrough" speed="2" markers="10:Boot" >}}\n\n'
+        '{{< asciinema file="images/install.cast" title="Walkthrough" speed="2" markers="10:Boot, 25.5: Configure: all,40" >}}\n\n'
         '{{< redoc "/spec-a.yaml" >}}\n\n'
         '{{< swagger src="/spec-a.yaml" >}}\n'
     )
@@ -566,6 +566,10 @@ def check_media_output_states(hugo: str) -> list[str]:
                 "the HTML output does not load the three runtimes", errors)
         require('<div data-td-asciinema-player><a href="/images/install.cast">Walkthrough</a></div>' in html,
                 "Asciinema lost its recording link before JavaScript enhancement", errors)
+        # The player accepts only numbers or [time, label] pairs; a flat list
+        # makes it throw and fall back to the recording link.
+        require('"markers":[[10,"Boot"],[25.5,"Configure: all"],[40,""]]' in html,
+                "asciinema markers no longer reach the player as [time, label] pairs", errors)
         for name, text in (("markdown", markdown), ("rss", rss)):
             require("<script" not in text and 'class="td-' not in text
                     and "data-td-asciinema" not in text and "td-redoc__frame" not in text,
@@ -806,6 +810,14 @@ def check_template_contracts() -> list[str]:
         require(marker in styles, f"callout styles lack {marker}", errors)
     for kind in CANONICAL_TYPES:
         require(f"--{kind}" in styles, f"callout styles lack the {kind} accent", errors)
+    # The archived-version banner and the Print output's notice share
+    # td-page-notice; unstyled, both read as a stray paragraph.
+    notice = styles[styles.find("/* Page notice"):]
+    require(".td-page-notice {" in notice and "border-inline-start:" in notice
+            and "border-left" not in notice and ".td-main > .td-page-notice" in notice
+            and re.search(r"@media \(forced-colors: active\) \{\s*\.td-page-notice \{", notice) is not None
+            and re.search(r"@media print \{\s*\.td-page-notice \{", notice) is not None,
+            "page notice styles lost their logical border, landing gutter, forced-colors or print rules", errors)
     config = (ROOT / "hugo.yaml").read_text()
     require("oink:" not in config, "theme hugo.yaml declares a params.oink tree", errors)
     for removed in ("filetree", "gallery", "carousel", "tabpane", "readfile", "imgproc"):

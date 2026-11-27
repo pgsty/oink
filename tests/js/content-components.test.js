@@ -41,9 +41,10 @@ function element(tag) {
   return node;
 }
 
-function build({ observer = true, preloaded = false } = {}) {
+function build({ observer = true, preloaded = false, themes = null, theme = null } = {}) {
   const requests = [];
   const mounted = [];
+  const calls = [];
   const listeners = new Map();
   const observed = new Set();
   let intersect = null;
@@ -54,7 +55,7 @@ function build({ observer = true, preloaded = false } = {}) {
     const canvas = element('div');
     root.name = name;
     root.canvas = canvas;
-    root.getAttribute = () => null;
+    root.getAttribute = (name) => (name === 'data-theme' ? theme : null);
     root.querySelector = (selector) => {
       if (selector === '[data-td-echarts-options]') {
         return { textContent: '{"series":[{"type":"bar","data":[1,2]}]}' };
@@ -70,7 +71,11 @@ function build({ observer = true, preloaded = false } = {}) {
   player.querySelector = () => null;
 
   const echarts = {
-    init(target) {
+    registerTheme(name, value) {
+      calls.push(['registerTheme', name, value]);
+    },
+    init(target, chosen) {
+      calls.push(['init', chosen]);
       mounted.push(charts.find((root) => root.canvas === target).name);
       return { setOption() {}, resize() {}, dispose() {} };
     },
@@ -105,6 +110,7 @@ function build({ observer = true, preloaded = false } = {}) {
     },
   };
   if (preloaded) window.echarts = echarts;
+  if (themes) window.OinkEchartsThemes = themes;
 
   const context = {
     window,
@@ -140,6 +146,7 @@ function build({ observer = true, preloaded = false } = {}) {
     player,
     requests,
     mounted,
+    calls,
     observed,
     margin: () => margin,
     // Promise reactions of the adapter run before this resolves.
@@ -249,4 +256,26 @@ test('without IntersectionObserver every component is due at load', () => {
     page.requests.map((script) => script.src).sort(),
     [ENGINES.asciinema.src, ENGINES.echarts.src].sort(),
   );
+});
+
+test('site themes are registered before a chart draws with one', async () => {
+  // ECharts loads only when a chart is due, so the site names its themes on
+  // window.OinkEchartsThemes and the adapter registers them first.
+  const brand = { color: ['#0b5394'] };
+  const page = build({ themes: { brand, broken: 'not a theme' }, theme: 'brand' });
+  page.due(page.charts[0]);
+  page.arrive();
+  await page.settle();
+  assert.deepEqual(page.calls, [
+    ['registerTheme', 'brand', brand],
+    ['init', 'brand'],
+  ]);
+});
+
+test('without site themes a chart draws with the colour scheme alone', async () => {
+  const page = build();
+  page.due(page.charts[0]);
+  page.arrive();
+  await page.settle();
+  assert.deepEqual(page.calls, [['init', null]]);
 });

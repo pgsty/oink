@@ -105,6 +105,11 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 - Eighteen locale keys were added to all 32 catalogs for the shortcut groups,
   history and Gemini; `ui_shortcut_heading_prev` and `ui_shortcut_heading_next`
   were replaced by `ui_shortcut_heading_move`.
+- ECharts fences can use a site's own theme: define it on
+  `window.OinkEchartsThemes` under the name the fence's `theme` gives, and each
+  chart registers it before drawing. ECharts loads only when a chart comes on
+  screen, so a site script had no point at which to call
+  `echarts.registerTheme()` itself.
 
 ### Changed
 
@@ -154,6 +159,21 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   quotes take the preset's accent rule, as they already did in print.
 - Terminal's `##` and `###` heading marks are set light and slightly apart, so
   the hashes no longer fuse at the heading's weight.
+
+### Fixed
+
+- Asciinema `markers` reach the player as `[time, label]` pairs. The theme
+  spread them into one flat list, which asciinema-player 3.18 rejects, so a
+  recording with markers showed only its link. Labels are trimmed and keep
+  their colons.
+- The archived-version banner (`params.archived_version`) is styled: a tinted
+  band with an archive icon and `role="note"`, covering dark mode, forced
+  colors, print and right-to-left pages. The Print output's printable-section
+  notice, which shares the `td-page-notice` class, is styled too. An archived
+  site without `params.version` now warns once and omits the banner instead of
+  rendering an empty element.
+- The `params.ui.taxonomy_icons` comment in `hugo.yaml` describes both icons of
+  a taxonomy (`taxonomy` and `term`) and both override forms.
 
 ## [1.6.0] — 2026-11-23
 

@@ -8,20 +8,26 @@
       "position" "site configuration" "value" . "kind" "web") -}}
     {{ if $validated.valid }}{{ $latestVersion = $validated.href }}{{ end -}}
   {{ end -}}
-  {{ $currentVersion := .Site.Params.version -}}
-  <div class="td-page-notice td-page-notice--primary">
-    {{ with $currentVersion -}}
-      <p>
-        {{ T "version_banner_archived" (dict "Version" (. | markdownify)) | safeHTML }}
-        {{ with $latestVersion -}}
-          {{/* Build the anchor here so translators localize word order without
-               editing markup. htmlEscape, not %q: %q escapes for Go, not for
-               an HTML attribute, so a quote in the URL would break out of it
-               even after the shared URL policy has cleared the scheme/host. */ -}}
-          {{ $link := printf "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">%s</a>" (htmlEscape .) (T "version_banner_latest_link") -}}
-          {{ T "version_banner_latest" (dict "Link" $link) | safeHTML -}}
-        {{ end -}}
-      </p>
-    {{ end -}}
+  {{ with .Site.Params.version -}}
+  {{/* A note, not a status region: the banner is part of every page as it
+       loads and never changes while the reader is on it. */ -}}
+  <div class="td-page-notice td-page-notice--primary" role="note">
+    <p>
+      <i class="fa-solid fa-box-archive td-page-notice__icon" aria-hidden="true"></i>
+      {{ T "version_banner_archived" (dict "Version" (. | markdownify)) | safeHTML }}
+      {{ with $latestVersion -}}
+        {{/* Build the anchor here so translators localize word order without
+             editing markup. htmlEscape, not %q: %q escapes for Go, not for
+             an HTML attribute, so a quote in the URL would break out of it
+             even after the shared URL policy has cleared the scheme/host. */ -}}
+        {{ $link := printf "<a href=\"%s\" target=\"_blank\" rel=\"noopener\">%s</a>" (htmlEscape .) (T "version_banner_latest_link") -}}
+        {{ T "version_banner_latest" (dict "Link" $link) | safeHTML -}}
+      {{ end -}}
+    </p>
   </div>
+  {{ else -}}
+    {{/* The sentence names the version it archives; without one there is
+         nothing to say, so the banner is left out rather than drawn empty. */ -}}
+    {{ warnf "params.archived_version is true but params.version is empty; the archive banner names the version, so it is omitted" -}}
+  {{ end -}}
 {{ end -}}

@@ -109,8 +109,13 @@
       {{- warnf "%s: asciinema marker %q needs a numeric time before its label; skipping it" $.Position . -}}
       {{- continue -}}
     {{- end -}}
-    {{- $label := delimit (after 1 $parts) ":" -}}
-    {{- $markers = $markers | append (slice (float $time) $label) -}}
+    {{- $label := strings.TrimSpace (delimit (after 1 $parts) ":") -}}
+    {{- /* One [time, label] pair per marker, the shape the player requires.
+           Appending a pair to an empty list would spread it into a flat
+           list, which the player rejects and replaces with its link; once
+           the list holds a pair, append adds the next pair whole. */ -}}
+    {{- $pair := slice (float $time) $label -}}
+    {{- if $markers }}{{ $markers = $markers | append $pair }}{{ else }}{{ $markers = slice $pair }}{{ end -}}
   {{- end -}}
   {{- with $markers }}{{ $options = merge $options (dict "markers" .) }}{{ end -}}
 {{- end -}}

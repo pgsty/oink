@@ -208,9 +208,15 @@ params:
 
     # Sidebar icon density: all | groups | none.
     sidebar_icon_policy: all
-    # Taxonomy sidebar icons default to built-in categories/tags glyphs; a
-    # site adds or overrides one entry per taxonomy plural name.
-    # taxonomy_icons: { categories: fa-solid fa-folder, tags: fa-solid fa-tag }
+    # Each taxonomy has two icons: `taxonomy` for the whole classification
+    # (cloud head, taxonomy page head, switcher) and `term` for one term's
+    # badge. Built-in pairs cover categories, tags, modules, authors and
+    # series; any other plural uses a generic shapes glyph. Key an override by
+    # plural name: a string sets both icons, a map sets either one and a key
+    # it leaves out keeps the built-in.
+    # taxonomy_icons:
+    #   tags: fa-solid fa-hashtag
+    #   categories: { taxonomy: fa-solid fa-sitemap, term: fa-solid fa-folder }
 
     # Sequential navigation is on by default for reading-oriented content.
     # Override this list site-wide, or set `pager: false` in front matter.

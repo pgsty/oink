@@ -248,12 +248,27 @@
     return value;
   }
 
+  // ECharts arrives only when a chart comes due, so a site script has no
+  // moment to call registerTheme itself. It names its themes the way it names
+  // $fn: functions, and each chart registers them before it draws.
+  function registerThemes() {
+    var themes = window.OinkEchartsThemes;
+    if (!themes || typeof themes !== 'object') return;
+    Object.keys(themes).forEach(function (name) {
+      var theme = themes[name];
+      if (theme && typeof theme === 'object') {
+        window.echarts.registerTheme(name, theme);
+      }
+    });
+  }
+
   function initEcharts(root) {
     if (!window.echarts) return;
     var options = configOf(root, '[data-td-echarts-options]');
     var target = root.querySelector('[data-td-echarts-canvas]');
     if (!options || !target) return;
     options = replaceFunctions(options);
+    registerThemes();
     var configuredTheme = root.getAttribute('data-theme');
     var chart;
 

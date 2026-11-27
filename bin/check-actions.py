@@ -614,6 +614,26 @@ def validate_custom_url_policy(helper: Any, workspace: Path) -> None:
         text = page.read_text(errors="ignore")
         require("onmouseover=alert(1)>" not in text,
                 f"the archived-version URL broke out of its attribute in {page}")
+    # The Print output's own notice shares the class; the archive banner is
+    # the one with the archive glyph, and it heads every HTML page.
+    docs_home = (output_arch / "en/docs/index.html").read_text(errors="ignore")
+    require('<div class="td-page-notice td-page-notice--primary" role="note">' in docs_home
+            and '<i class="fa-solid fa-box-archive td-page-notice__icon" aria-hidden="true"></i>' in docs_home,
+            "the archived-version banner lost its note role or decorative icon")
+
+    # The banner's sentence names the archived version. Without one it warns
+    # once and leaves the banner out instead of drawing an empty band.
+    unversioned = base.replace(
+        "  version: v1\n",
+        "  archived_version: true\n",
+        1,
+    )
+    output_bare, log_bare = build(helper, workspace, "archived-unversioned", unversioned)
+    require(log_bare.count("params.archived_version is true but params.version is empty") == 1,
+            f"an archived site without params.version did not warn exactly once:\n{log_bare[-800:]}")
+    require(not [p for p in output_bare.rglob("index.html")
+                 if "fa-box-archive" in p.read_text(errors="ignore")],
+            "an archived site without params.version still rendered a banner")
 
 
 def main() -> int:

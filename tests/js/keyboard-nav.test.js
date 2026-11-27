@@ -158,6 +158,9 @@ class Element {
     if (selector === '[data-td-shortcut-state]') return this.hasAttribute('data-td-shortcut-state');
     if (selector === 'dd') return this.tagName === 'DD';
     if (selector === 'details') return this.tagName === 'DETAILS';
+    if (selector === '[data-td-map-canvas], .td-map__canvas') {
+      return this.hasAttribute('data-td-map-canvas') || this.classList.contains('td-map__canvas');
+    }
     if (selector === '[data-td-shell-tree-toggle][aria-controls]') {
       return this.hasAttribute('data-td-shell-tree-toggle') && this.hasAttribute('aria-controls');
     }
@@ -1865,6 +1868,22 @@ function press(harness, values) {
     drawer.doc.activeElement,
     'Escape with an open drawer is left to docs-shell',
   );
+
+  // ------------------------------------------------ embedded map canvas guard
+  const mapHost = setup();
+  const mapCanvas = new Element('div', 'td-map__canvas');
+  mapCanvas.setAttribute('data-td-map-canvas', '');
+  const mapMarker = new Element('div', 'td-map__marker');
+  mapCanvas.appendChild(mapMarker);
+  mapHost.root.appendChild(mapCanvas);
+  for (const key of ['-', '=', '+', 'w', 'j']) {
+    const ev = press(mapHost, { key, shiftKey: key === '+', target: mapMarker });
+    assert.notEqual(ev.defaultPrevented, true, `key ${key} yields while focus is inside an interactive map`);
+  }
+  assert.equal(mapHost.html.hasAttribute('data-td-shell-article-w'), false,
+    '+ / - inside a map must not resize the reading column');
+  // The same tree key outside the map still belongs to keyboard navigation.
+  assert.equal(press(mapHost, { key: 'w' }).defaultPrevented, true, 'w outside the map moves in the tree');
 
   console.log('keyboard navigation checks passed');
 })();

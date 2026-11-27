@@ -75,10 +75,18 @@
     {{- warnf "map: place %q requires numeric lat and lng at %s; skipping it" $name $position -}}
     {{- continue -}}
   {{- end -}}
-  {{- if or (lt (float $lat) -90.0) (gt (float $lat) 90.0) (lt (float $lng) -180.0) (gt (float $lng) 180.0) -}}
+  {{- $latF := float $lat -}}
+  {{- $lngF := float $lng -}}
+  {{- /* Negated closed-interval check rejects NaN alongside ±Inf and out-of-range
+         numbers, because every IEEE 754 comparison with NaN is false. */ -}}
+  {{- if not (and (ge $latF -90.0) (le $latF 90.0) (ge $lngF -180.0) (le $lngF 180.0)) -}}
     {{- warnf "map: place %q has lat %v and lng %v outside -90..90 and -180..180 at %s; skipping it" $name $lat $lng $position -}}
     {{- continue -}}
   {{- end -}}
+  {{- $latStr := strings.TrimRight "." (strings.TrimRight "0" (printf "%.6f" $latF)) -}}
+  {{- if eq $latStr "-0" }}{{ $latStr = "0" }}{{ end -}}
+  {{- $lngStr := strings.TrimRight "." (strings.TrimRight "0" (printf "%.6f" $lngF)) -}}
+  {{- if eq $lngStr "-0" }}{{ $lngStr = "0" }}{{ end -}}
   {{- $text := "" -}}
   {{- with index $item "text" }}{{ $text = strings.TrimSpace (printf "%v" .) }}{{ end -}}
   {{- $thumb := dict -}}
@@ -98,7 +106,7 @@
     {{- $link := partial "content/url.html" (dict "name" "map" "label" "map fence" "parameter" (printf "place %d link" $n) "position" $position "value" . "kind" "link") -}}
     {{- $href = $link.href -}}
   {{- end -}}
-  {{- $places = $places | append (dict "name" $name "lat" (float $lat) "lng" (float $lng) "label" (printf "%v, %v" $lat $lng) "text" $text "thumb" $thumb "href" $href) -}}
+  {{- $places = $places | append (dict "name" $name "lat" $latF "lng" $lngF "latStr" $latStr "lngStr" $lngStr "label" (printf "%s, %s" $latStr $lngStr) "text" $text "thumb" $thumb "href" $href) -}}
 {{- end -}}
 {{- if and $items (not $places) }}{{ warnf "map: no valid place at %s; rendering nothing" $position }}{{ end -}}
 
@@ -114,7 +122,7 @@
 {{- $classes = $classes | append $policy.classes -}}
 {{- $rows := slice -}}
 {{- range $place := $places -}}
-  {{- $osm := printf "https://www.openstreetmap.org/?mlat=%v&mlon=%v#map=16/%v/%v" .lat .lng .lat .lng -}}
+  {{- $osm := printf "https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=16/%s/%s" .latStr .lngStr .latStr .lngStr -}}
   {{- $nameHTML := htmlEscape .name -}}
   {{- with .href }}{{ $nameHTML = printf `<a href="%s">%s</a>` (htmlEscape .) $nameHTML }}{{ end -}}
   {{- $thumbHTML := "" -}}
@@ -123,10 +131,10 @@
       (cond (gt ($place.thumb.width | default 0) 0) (printf ` width="%d"` $place.thumb.width) "")
       (cond (gt ($place.thumb.height | default 0) 0) (printf ` height="%d"` $place.thumb.height) "") -}}
   {{- end -}}
-  {{- $row := printf `<li>%s<span class="td-map__place"><span class="td-map__name">%s</span>%s<a class="td-map__coords" href="%s" rel="external" title="%s">%s</a></span></li>`
-    $thumbHTML $nameHTML
+  {{- $row := printf `<li><span class="td-map__place"><span class="td-map__name">%s</span>%s<a class="td-map__coords" dir="ltr" href="%s" rel="external" title="%s">%s</a></span>%s</li>`
+    $nameHTML
     (cond (ne .text "") (printf ` <span class="td-map__text">%s</span>` (htmlEscape .text)) "")
-    (htmlEscape $osm) (htmlEscape (T "ui_map_open_osm")) (htmlEscape .label) -}}
+    (htmlEscape $osm) (htmlEscape (T "ui_map_open_osm")) (htmlEscape .label) $thumbHTML -}}
   {{- $rows = $rows | append $row -}}
 {{- end -}}
 {{- $html := "" -}}

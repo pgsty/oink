@@ -39,14 +39,20 @@ params:
   # vimeo. Empty: cards only link out, and no third-party request happens.
   video_embeds: []
   # Interactive maps above ```map place lists. Off until a site names its tile
-  # service: `tiles` is an https:// template with {z}, {x} and {y}, and
-  # `attribution` is the text that service requires. The theme names none.
+  # service: `tiles` is an https:// template with {z}, {x} and {y} ({s}, {r} and
+  # {-y} allowed), and `attribution` is the text that service requires. Optional
+  # `attribution_url` links the attribution text, `subdomains` overrides Leaflet's
+  # default "abc" when `tiles` uses `{s}`, and `loading` is `lazy` (viewport) or
+  # `click` (button before any tile request). The theme names no tile service.
   map:
     enable: false
     tiles: ""
     attribution: ""
+    attribution_url: ""
     dark_tiles: ""
+    subdomains: ""
     max_zoom: 19
+    loading: lazy # lazy | click
   print:
     toc: true # section print views start with a table of contents
     section_break_wordcount: 50 # pages longer than this start a new print page

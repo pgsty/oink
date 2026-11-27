@@ -157,7 +157,7 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  rich_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "map: false\nvideo_embeds: []",
-    "video_embeds: [bilibili, youtube]\nmap:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example tiles\n  dark_tiles: https://tile.example.org/dark/{z}/{x}/{y}.png\n  max_zoom: 18",
+    "video_embeds: [bilibili, youtube]\nmap:\n  enable: true\n  tiles: https://{s}.tile.example.org/{z}/{x}/{y}{r}.png\n  attribution: Example tiles\n  attribution_url: https://example.org/copyright\n  dark_tiles: https://{s}.tile.example.org/dark/{z}/{x}/{-y}.png\n  subdomains: abcd\n  max_zoom: 18\n  loading: click",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
     "ui:\n  dark_mode: {enable: true, show_menu: true}\n  expo: {mode: cards, size: 200}",
     "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
@@ -208,6 +208,15 @@ INVALID_SITE_CASES = [
     ("map:\n  enable: true\n  tiles: http://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example", "params.map.tiles must be an https:// tile URL"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/tiles.png\n  attribution: Example", "params.map.tiles must contain {z}, {x} and {y}"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: 40", "params.map.max_zoom must be a whole number from 1 to 22"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  attribution_url: http://example.org/copyright", "params.map.attribution_url must be an https:// URL"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  subdomains: 'a b'", "params.map.subdomains must be 1 to 32 letters or digits"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading: eager", "params.map.loading must be lazy or click"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading: [click]", "params.map.loading must be lazy or click"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading:\n    mode: click", "params.map.loading must be lazy or click"),
+    ("map:\n  enable: true\n  tiles: https://{bad}.tile.example.org/{z}/{x}/{y}.png\n  attribution: Example", "params.map.tiles may use only the {s}, {z}, {x}, {y}, {-y} and {r} placeholders; got {bad}"),
+    # Leaflet throws on a placeholder it cannot fill, wherever it appears.
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png?key={apikey}\n  attribution: Example", "params.map.tiles may use only the {s}, {z}, {x}, {y}, {-y} and {r} placeholders; got {apikey}"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  dark_tiles: https://api.example.org/styles/{id}/{z}/{x}/{y}\n  attribution: Example", "params.map.dark_tiles may use only the {s}, {z}, {x}, {y}, {-y} and {r} placeholders; got {id}"),
     # Discord publishes no share-intent URL, so it stays outside the set no
     # matter how often it is asked for; WeChat below is the same case.
     ("ui:\n  share: [x, discord]", 'invalid params.ui.share entry "discord"'),
@@ -551,6 +560,10 @@ def check_builds(hugo: str) -> list[str]:
                 if "scroll_spy" in label:
                     require(not theme_warnings(output),
                             f"scroll_spy compatibility input emitted a warning: {output[-400:]}", errors)
+                if "map:\n  enable: true" in params:
+                    # A complete map configuration, placeholders included, is silent.
+                    require("params.map" not in output,
+                            f"a complete params.map warned ({label}): {output[-400:]}", errors)
                 continue
             if name.startswith("invalid-"):
                 require(code == 0,

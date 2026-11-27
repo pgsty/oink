@@ -117,7 +117,7 @@
             "boolean",
             "object"
           ],
-          "description": "Interactive maps above ```map place lists. Off until a site names its tile service: `tiles` is an https:// template with {z}, {x} and {y}, and `attribution` is the text that service requires. The theme names none.",
+          "description": "Interactive maps above ```map place lists. Off until a site names its tile service: `tiles` is an https:// template with {z}, {x} and {y} ({s}, {r} and {-y} allowed), and `attribution` is the text that service requires. Optional `attribution_url` links the attribution text, `subdomains` overrides Leaflet's default \"abc\" when `tiles` uses `{s}`, and `loading` is `lazy` (viewport) or `click` (button before any tile request). The theme names no tile service.",
           "additionalProperties": true,
           "properties": {
             "enable": {
@@ -132,13 +132,25 @@
               "type": "string",
               "default": ""
             },
+            "attribution_url": {
+              "type": "string",
+              "default": ""
+            },
             "dark_tiles": {
+              "type": "string",
+              "default": ""
+            },
+            "subdomains": {
               "type": "string",
               "default": ""
             },
             "max_zoom": {
               "type": "integer",
               "default": 19
+            },
+            "loading": {
+              "type": "string",
+              "default": "lazy"
             }
           }
         },

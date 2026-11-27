@@ -34,9 +34,16 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   - **Map**: a `map` fence of places always renders a numbered place list with
     OpenStreetMap links; with a complete new `params.map` (an HTTPS `tiles`
     template and its `attribution`), HTML adds an interactive map through
-    vendored Leaflet 1.9.4. The theme names no tile service.
+    vendored Leaflet 1.9.4. The theme names no tile service. Tile templates
+    may also use `{s}`, `{r}` and `{-y}`; any other placeholder warns and the
+    template is ignored. Optional `attribution_url` links the credit,
+    `subdomains` chooses the `{s}` values, and `loading: click` waits for a
+    button that names every tile host before any request. Failing `dark_tiles`
+    fall back to the dimmed light tiles; failing light tiles or Leaflet hide
+    the map and keep the list. A finger keeps scrolling the page; a mouse or
+    pen drags the map, and a popup opened with Enter takes keyboard focus.
   The image hook and image resolver now share `content/resource-lookup.html`;
-  image output is unchanged. Five locale keys were added to all 32 catalogs.
+  image output is unchanged. Six locale keys were added to all 32 catalogs.
 
 - Typeset copy. A selection copied out of article prose now leaves the page as
   clean rich text: semantic tags with a small inline style sheet drawn from the

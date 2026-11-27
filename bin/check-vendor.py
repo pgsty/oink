@@ -19,6 +19,7 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 PREMINIFIED_STANDALONE_ASSETS = {
     "third_party/asciinema/asciinema-player.min.js": "asciinemaJS",
     "third_party/infographic/infographic.min.js": "infographicJS",
+    "third_party/leaflet/leaflet.js": "leafletJS",
 }
 
 

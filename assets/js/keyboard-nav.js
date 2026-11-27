@@ -67,6 +67,13 @@
       : false;
   }
 
+  // Interactive widgets that own their own arrow / +/- / single-key controls
+  // (such as an embedded Leaflet map) take priority while focus sits inside.
+  function isInteractiveWidget(target) {
+    if (!target || target.nodeType !== 1 || typeof target.closest !== 'function') return false;
+    return target.closest('[data-td-map-canvas], .td-map__canvas') !== null;
+  }
+
   function closestByClass(node, className) {
     for (; node; node = node.parentNode) {
       if (node.classList && node.classList.contains(className)) return node;
@@ -319,7 +326,8 @@
         event.metaKey || event.ctrlKey || event.altKey ||
         (event.shiftKey && !allowShiftKey(event.key)) ||
         event.defaultPrevented ||
-        isTypingTarget(event.target),
+        isTypingTarget(event.target) ||
+        isInteractiveWidget(event.target),
       );
     }
 

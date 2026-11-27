@@ -1,16 +1,22 @@
 {{- /* Resolve params.map, the site's opt-in to interactive maps. Tiles are
        third-party requests from the reader's browser, so, as with Draw.io,
        the theme names no default service: `enable` needs an HTTPS `tiles`
-       template with {z}, {x} and {y}, and the `attribution` that service
-       requires. Anything incomplete warns and leaves maps off; a map fence
-       then renders only its place list. Returns dict: enable, tiles,
-       darkTiles, attribution, maxZoom. */ -}}
+       template with {z}, {x} and {y} ({s}, {r} and {-y} allowed), and the
+       `attribution` that service requires. Optional `attribution_url` links
+       the attribution text, `subdomains` selects {s} values (default "abc"),
+       and `loading` is "lazy" (viewport) or "click" (explicit button).
+       Anything incomplete warns and leaves maps off; a map fence then renders
+       only its place list. Returns dict: enable, tiles, darkTiles,
+       attribution, attributionUrl, subdomains, maxZoom, loading. */ -}}
 {{- $value := site.Params.map -}}
 {{- $enabled := partial "config-enabled.html" (dict "value" $value "key" "params.map") -}}
 {{- $tiles := "" -}}
 {{- $darkTiles := "" -}}
 {{- $attribution := "" -}}
+{{- $attributionUrl := "" -}}
+{{- $subdomains := "" -}}
 {{- $maxZoom := 19 -}}
+{{- $loading := "lazy" -}}
 {{- if $enabled -}}
   {{- $map := dict -}}
   {{- if reflect.IsMap $value }}{{ $map = $value }}{{ end -}}
@@ -18,20 +24,54 @@
     {{- $raw := index $map $key | default "" -}}
     {{- $valid := "" -}}
     {{- if $raw -}}
-      {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" $key "position" "site configuration" "value" $raw "kind" "image") -}}
-      {{- if not $url.valid -}}
-      {{- else if ne $url.scheme "https" -}}
-        {{- warnf "params.map.%s must be an https:// tile URL; got %q; ignoring it" $key $raw -}}
-      {{- else if not (and (strings.Contains $url.raw "{z}") (strings.Contains $url.raw "{x}") (strings.Contains $url.raw "{y}")) -}}
-        {{- warnf "params.map.%s must contain {z}, {x} and {y}; got %q; ignoring it" $key $raw -}}
+      {{- /* Substitute the placeholders the theme supplies before URL parsing
+             so host templates such as https://{s}.tile.example.org/{z}/{x}/{y}{r}.png
+             validate cleanly. Any other placeholder Leaflet would try to fill
+             (its pattern is { word }) has no value, so Leaflet would throw
+             while drawing tiles: reject it here, in the path and query too. */ -}}
+      {{- $probe := $raw -}}
+      {{- $unknown := "" -}}
+      {{- if eq (printf "%T" $raw) "string" -}}
+        {{- $probe = replace $probe "{s}" "s" -}}
+        {{- range slice "{z}" "{x}" "{y}" "{-y}" "{r}" -}}
+          {{- $probe = replace $probe . "0" -}}
+        {{- end -}}
+        {{- with findRE `\{ *[\w -]+ *\}` $probe 1 }}{{ $unknown = index . 0 }}{{ end -}}
+      {{- end -}}
+      {{- if $unknown -}}
+        {{- warnf "params.map.%s may use only the {s}, {z}, {x}, {y}, {-y} and {r} placeholders; got %s in %q; ignoring it" $key $unknown $raw -}}
       {{- else -}}
-        {{- $valid = $url.raw -}}
+        {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" $key "position" "site configuration" "value" $probe "kind" "image") -}}
+        {{- if not $url.valid -}}
+        {{- else if ne $url.scheme "https" -}}
+          {{- warnf "params.map.%s must be an https:// tile URL; got %q; ignoring it" $key $raw -}}
+        {{- else if not (and (strings.Contains $raw "{z}") (strings.Contains $raw "{x}") (or (strings.Contains $raw "{y}") (strings.Contains $raw "{-y}"))) -}}
+          {{- warnf "params.map.%s must contain {z}, {x} and {y} (or {-y}); got %q; ignoring it" $key $raw -}}
+        {{- else -}}
+          {{- $valid = $raw -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
     {{- if eq $key "tiles" }}{{ $tiles = $valid }}{{ else }}{{ $darkTiles = $valid }}{{ end -}}
   {{- end -}}
   {{- with index $map "attribution" -}}
     {{- if eq (printf "%T" .) "string" }}{{ $attribution = strings.TrimSpace . }}{{ else }}{{ warnf "params.map.attribution must be a string; got %v; ignoring it" . }}{{ end -}}
+  {{- end -}}
+  {{- with index $map "attribution_url" -}}
+    {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" "attribution_url" "position" "site configuration" "value" . "kind" "web") -}}
+    {{- if not $url.valid -}}
+    {{- else if ne $url.scheme "https" -}}
+      {{- warnf "params.map.attribution_url must be an https:// URL; got %q; ignoring it" . -}}
+    {{- else -}}
+      {{- $attributionUrl = $url.raw -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with index $map "subdomains" -}}
+    {{- if and (eq (printf "%T" .) "string") (findRE `^[A-Za-z0-9]{1,32}$` .) -}}
+      {{- $subdomains = . -}}
+    {{- else -}}
+      {{- warnf "params.map.subdomains must be 1 to 32 letters or digits (for example \"abc\" or \"01234567\"); got %v; using default" . -}}
+    {{- end -}}
   {{- end -}}
   {{- with index $map "max_zoom" -}}
     {{- $raw := printf "%v" . -}}
@@ -41,9 +81,19 @@
       {{- warnf "params.map.max_zoom must be a whole number from 1 to 22; got %v; using 19" . -}}
     {{- end -}}
   {{- end -}}
+  {{- with index $map "loading" -}}
+    {{- /* Not `cond`: it evaluates both branches, and TrimSpace fails on a list or map. */ -}}
+    {{- $raw := "" -}}
+    {{- if eq (printf "%T" .) "string" }}{{ $raw = lower (strings.TrimSpace .) }}{{ end -}}
+    {{- if in (slice "lazy" "click") $raw -}}
+      {{- $loading = $raw -}}
+    {{- else -}}
+      {{- warnf "params.map.loading must be lazy or click; got %v; using lazy" . -}}
+    {{- end -}}
+  {{- end -}}
   {{- if not (and $tiles $attribution) -}}
     {{- warnf "params.map.enable requires params.map.tiles (an https:// template with {z}, {x} and {y}) and params.map.attribution; the theme names no tile service, so maps stay off and map fences show their place lists" -}}
     {{- $enabled = false -}}
   {{- end -}}
 {{- end -}}
-{{- return (dict "enable" $enabled "tiles" $tiles "darkTiles" $darkTiles "attribution" $attribution "maxZoom" $maxZoom) -}}
+{{- return (dict "enable" $enabled "tiles" $tiles "darkTiles" $darkTiles "attribution" $attribution "attributionUrl" $attributionUrl "subdomains" $subdomains "maxZoom" $maxZoom "loading" $loading) -}}

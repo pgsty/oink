@@ -21,7 +21,7 @@
   // crosses one of these drops it; a selection wholly inside one stays native.
   var CHROME = ['td-page-end', 'td-article-meta', 'td-article-info', 'td-byline', 'td-series-strip',
     'td-page-actions', 'td-breadcrumbs', 'td-heading-self-link', 'footnote-backref',
-    'td-code__utilities', 'td-code__expand', 'visually-hidden'];
+    'td-code__utilities', 'td-code__expand', 'td-map__canvas', 'td-map__load', 'visually-hidden'];
   var LINE_NUMBERS = ['ln', 'lnt', 'lnlinks'];
   var DEFAULTS = {
     ink: '#171717', strong: '#111111', muted: '#70757d', meta: '#4e555c', line: '#c9ced4',

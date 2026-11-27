@@ -952,7 +952,10 @@ INVALID_CASES = (
     ("map-not-list", '```map\nname: A\n```\n', "must hold a list of places"),
     ("map-no-name", '```map\n- {lat: 1, lng: 2}\n- {name: B, lat: 1, lng: 2}\n```\n', "requires a name"),
     ("map-range", '```map\n- {name: A, lat: 95, lng: 2}\n```\n', "outside -90..90"),
+    ("map-nan", '```map\n- {name: A, lat: .nan, lng: 2}\n- {name: B, lat: 0.00001, lng: -0.00002}\n```\n', "outside -90..90"),
+    ("map-inf", '```map\n- {name: A, lat: .inf, lng: 2}\n```\n', "outside -90..90"),
     ("map-string-lat", '```map\n- {name: A, lat: "1", lng: 2}\n```\n', "requires numeric lat and lng"),
+    ("map-bad-link", '```map\n- {name: A, lat: 1, lng: 2, link: "javascript:alert(1)"}\n```\n', "unsupported place 1 link scheme"),
     ("map-unknown-field", '```map\n- {name: A, lat: 1, lng: 2, icon: x}\n```\n', "unknown field"),
     ("map-zoom", '```map {zoom=40}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
     ("map-route", '```map {route=maybe}\n- {name: A, lat: 1, lng: 2}\n```\n', "route must be true or false"),
@@ -1209,6 +1212,30 @@ def check_invalid_cases(hugo: str) -> list[str]:
             rendered = (temp_path / f"public/docs/{name}/index.html").read_text()
             require("td-filetree--wrap" not in rendered,
                     f"{name} must fall back to compact comments", errors)
+        map_no_name_html = (temp_path / "public/docs/map-no-name/index.html").read_text()
+        require(
+            'class="td-map__name">B</span>' in map_no_name_html
+            and map_no_name_html.count('class="td-map__coords"') == 1,
+            "map-no-name must skip only the nameless entry and keep valid sibling B",
+            errors,
+        )
+        map_nan_html = (temp_path / "public/docs/map-nan/index.html").read_text()
+        require(
+            'class="td-map__name">B</span>' in map_nan_html
+            and '0.00001, -0.00002' in map_nan_html
+            and '1e-05' not in map_nan_html,
+            "map-nan must skip NaN without failing the build and format small decimal coordinates cleanly",
+            errors,
+        )
+        for empty_map in ("map-empty", "map-not-list", "map-range", "map-inf", "map-string-lat"):
+            empty_html = (temp_path / f"public/docs/{empty_map}/index.html").read_text()
+            require("td-map__places" not in empty_html, f"{empty_map} must render no map figure", errors)
+        map_bad_link_html = (temp_path / "public/docs/map-bad-link/index.html").read_text()
+        require(
+            "javascript:" not in map_bad_link_html and 'class="td-map__name">A</span>' in map_bad_link_html,
+            "map-bad-link must drop unsafe href while keeping the place",
+            errors,
+        )
         param_output = "\n".join(line for line in output.splitlines() if "content/docs/param-map.md:" in line)
         require("only scalar values" in param_output, f"param map did not report the scalar rule at its position: {param_output or output.strip()}", errors)
         param_page = temp_path / "public/docs/param-map/index.html"

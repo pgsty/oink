@@ -379,10 +379,39 @@
   // enhancement above it. Popups and the attribution are built from text,
   // never from author HTML. Scroll-wheel zoom stays off so reading never
   // zooms the map; buttons, keyboard and pinch remain.
-  function textHTML(text) {
-    var node = document.createElement('div');
-    node.textContent = text || '';
-    return node.innerHTML;
+  function attributionHTML(text, url) {
+    var box = document.createElement('div');
+    if (url && /^https:\/\//i.test(url)) {
+      var link = document.createElement('a');
+      link.href = url;
+      link.rel = 'external';
+      link.textContent = text || '';
+      box.appendChild(link);
+    } else {
+      box.textContent = text || '';
+    }
+    return box.innerHTML;
+  }
+
+  // The hosts a click-to-load map may contact: light and dark tiles alike, with
+  // `{s}` shown as `*` because the request rotates through every subdomain.
+  // Browsers percent-encode `*` in a parsed hostname, so `{s}` parses as a
+  // plain label and becomes `*` afterwards.
+  var SUBDOMAIN_LABEL = 'tdsubdomain';
+  function tileHosts(site) {
+    var hosts = [];
+    [site && site.tiles, site && site.darkTiles].forEach(function (template) {
+      if (!template) return;
+      try {
+        var host = new URL(
+          String(template).replace(/\{s\}/g, SUBDOMAIN_LABEL).replace(/\{[^{}]*\}/g, '0'),
+        ).hostname.split(SUBDOMAIN_LABEL).join('*');
+        if (host && hosts.indexOf(host) < 0) hosts.push(host);
+      } catch (_) {
+        // An unparsable template names no host; the button keeps its label.
+      }
+    });
+    return hosts;
   }
 
   function mapPopup(place) {
@@ -417,44 +446,204 @@
     var places = Array.isArray(data.places) ? data.places : [];
     if (!places.length) return;
     canvas.hidden = false;
+    if (!site.darkTiles && typeof canvas.setAttribute === 'function') {
+      canvas.setAttribute('data-td-map-light-tiles', '');
+    }
+    var reduced = !!(
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+    var touch = !!(L.Browser && L.Browser.touch);
     var map = L.map(canvas, {
       scrollWheelZoom: false,
+      dragging: !touch,
+      fadeAnimation: !reduced,
+      zoomAnimation: !reduced,
+      markerZoomAnimation: !reduced,
       zoomControl: false,
       attributionControl: false,
       maxZoom: site.maxZoom || 19,
     });
+    // Leaflet reports touch wherever Pointer Events exist, desktops included,
+    // so drag starts off: a finger on the map keeps scrolling the page (two
+    // fingers still pinch, zoom and pan). A mouse or a pen turns drag on as it
+    // enters or presses the map; a finger turns it off again.
+    function dragsMap(event) {
+      return event.pointerType === 'mouse' || event.pointerType === 'pen';
+    }
+    if (touch && map.dragging && typeof canvas.addEventListener === 'function') {
+      canvas.addEventListener(
+        'pointerdown',
+        function (event) {
+          if (dragsMap(event)) map.dragging.enable();
+          else if (event.pointerType === 'touch') map.dragging.disable();
+        },
+        true,
+      );
+      canvas.addEventListener('pointerenter', function (event) {
+        if (dragsMap(event)) map.dragging.enable();
+      });
+    }
     L.control
       .zoom({ zoomInTitle: site.zoomIn || 'Zoom in', zoomOutTitle: site.zoomOut || 'Zoom out' })
       .addTo(map);
-    L.control.attribution({ prefix: false }).addTo(map).addAttribution(textHTML(site.attribution));
+    L.control
+      .attribution({ prefix: false })
+      .addTo(map)
+      .addAttribution(attributionHTML(site.attribution, site.attributionUrl));
     var layer = null;
+    var hidden = false;
+    var darkFailed = false;
+    // A layer whose first tiles all fail: dark tiles fall back to the light
+    // ones; light tiles hide the canvas and leave the list. Leaflet is still
+    // dispatching the failing layer's 'load' when this runs and reads the
+    // layer's map afterwards, so removing a layer or the map waits a turn.
+    function layerFailed(dark) {
+      if (dark) {
+        darkFailed = true;
+        if (typeof canvas.setAttribute === 'function') {
+          canvas.setAttribute('data-td-map-light-tiles', '');
+        }
+        setTimeout(tiles, 0);
+        return;
+      }
+      hidden = true;
+      canvas.hidden = true;
+      if (root.classList) root.classList.remove('td-map--mounted');
+      setTimeout(function () {
+        if (typeof map.remove === 'function') map.remove();
+      }, 0);
+    }
     function tiles() {
-      var url = currentTheme() === 'dark' && site.darkTiles ? site.darkTiles : site.tiles;
+      if (hidden) return;
+      var dark = currentTheme() === 'dark' && !!site.darkTiles && !darkFailed;
       if (layer) map.removeLayer(layer);
-      layer = L.tileLayer(url, { maxZoom: site.maxZoom || 19 }).addTo(map);
+      var tileOpts = { maxZoom: site.maxZoom || 19 };
+      if (site.subdomains) tileOpts.subdomains = site.subdomains;
+      var loaded = 0;
+      var failed = 0;
+      var current = L.tileLayer(dark ? site.darkTiles : site.tiles, tileOpts);
+      layer = current;
+      if (typeof current.on === 'function') {
+        current.on('tileload', function () {
+          loaded += 1;
+        });
+        current.on('tileerror', function () {
+          failed += 1;
+        });
+        current.on('load', function () {
+          if (!hidden && current === layer && loaded === 0 && failed > 0) layerFailed(dark);
+        });
+      }
+      current.addTo(map);
     }
     tiles();
     if (site.darkTiles) watchTheme(tiles);
     var points = [];
+    var markers = [];
     places.forEach(function (place, index) {
       var point = [place.lat, place.lng];
       points.push(point);
-      L.marker(point, {
+      var markerLabel = index + 1 + '. ' + place.name;
+      var marker = L.marker(point, {
         title: place.name,
         alt: place.name,
         icon: L.divIcon({
           className: 'td-map__marker',
-          html: '<span>' + (index + 1) + '</span>',
+          html: '<span aria-hidden="true">' + (index + 1) + '</span>',
           iconSize: [28, 28],
           iconAnchor: [14, 14],
           popupAnchor: [0, -14],
         }),
-      })
-        .bindPopup(mapPopup(place))
-        .addTo(map);
+      }).bindPopup(mapPopup(place));
+      // Leaflet creates the divIcon element inside onAdd (which waits for the
+      // first setView/fitBounds), so label on 'add' as well as immediately.
+      function labelMarker() {
+        var markerEl = typeof marker.getElement === 'function' ? marker.getElement() : null;
+        if (markerEl && typeof markerEl.setAttribute === 'function') {
+          markerEl.setAttribute('aria-label', markerLabel);
+        }
+      }
+      if (typeof marker.on === 'function') marker.on('add', labelMarker);
+      marker.addTo(map);
+      labelMarker();
+      markers.push(marker);
     });
     if (data.route && points.length > 1) {
       L.polyline(points, { className: 'td-map__route', weight: 3, interactive: false }).addTo(map);
+    }
+    var lastTrigger = null;
+    var keyboardOpen = false;
+    var closingFromButton = false;
+    function popupElement(event) {
+      var popup = event && event.popup;
+      return popup && typeof popup.getElement === 'function' ? popup.getElement() : null;
+    }
+    if (typeof map.on === 'function') {
+      map.on('popupopen', function (event) {
+        var source = event && event.popup && event.popup._source;
+        lastTrigger = source && typeof source.getElement === 'function' ? source.getElement() : null;
+        var close = canvas.querySelector && canvas.querySelector('.leaflet-popup-close-button');
+        if (close && site.closePopup) {
+          close.setAttribute('aria-label', site.closePopup);
+          close.setAttribute('title', site.closePopup);
+        }
+        // The popup sits after every marker in the DOM. Opened from the
+        // keyboard, it takes focus so its link and close button come next.
+        if (!keyboardOpen) return;
+        keyboardOpen = false;
+        var scope = popupElement(event) || canvas;
+        var target =
+          (scope.querySelector && scope.querySelector('a.td-map__popup-name')) ||
+          (scope.querySelector && scope.querySelector('.leaflet-popup-close-button'));
+        if (target && typeof target.focus === 'function') target.focus({ preventScroll: true });
+      });
+      map.on('popupclose', function () {
+        // The close button disappears with its popup and would leave focus
+        // on nothing: return it to the marker that opened the popup. Other
+        // closes (a map click, another popup) already put focus somewhere.
+        if (!closingFromButton) return;
+        closingFromButton = false;
+        if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus({ preventScroll: true });
+      });
+    }
+    if (typeof canvas.addEventListener === 'function') {
+      // Capture runs before Leaflet's own handler on the close button, by
+      // pointer or by Enter, so the flag is set when 'popupclose' fires.
+      canvas.addEventListener(
+        'click',
+        function (event) {
+          var target = event.target;
+          if (target && typeof target.closest === 'function' && target.closest('.leaflet-popup-close-button')) {
+            closingFromButton = true;
+            setTimeout(function () {
+              closingFromButton = false;
+            }, 0);
+          }
+        },
+        true,
+      );
+      canvas.addEventListener('keydown', function (event) {
+        // Leaflet opens a marker's popup on Enter. Remember that the next
+        // popup comes from the keyboard, for this key press only.
+        var target = event.target;
+        if (event.key === 'Enter' && target && target.classList && target.classList.contains('td-map__marker')) {
+          keyboardOpen = true;
+          setTimeout(function () {
+            keyboardOpen = false;
+          }, 0);
+        }
+        if (
+          event.key === 'Escape' &&
+          map._popup &&
+          (!map._popup.isOpen || map._popup.isOpen()) &&
+          typeof map.closePopup === 'function'
+        ) {
+          event.preventDefault();
+          event.stopPropagation();
+          map.closePopup();
+          if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus({ preventScroll: true });
+        }
+      });
     }
     function frame() {
       if (points.length === 1) {
@@ -466,9 +655,21 @@
         map.fitBounds(points, { padding: [32, 32], maxZoom: 16 });
       }
     }
-    frame();
+    function hasBox() {
+      return typeof canvas.clientWidth !== 'number' || (canvas.clientWidth > 0 && canvas.clientHeight > 0);
+    }
+    var framed = false;
+    if (hasBox()) {
+      frame();
+      framed = true;
+    }
     var resize = function () {
+      if (hidden) return;
       map.invalidateSize();
+      if (!framed && hasBox()) {
+        frame();
+        framed = true;
+      }
     };
     if (window.ResizeObserver) {
       new ResizeObserver(resize).observe(canvas);
@@ -477,52 +678,113 @@
     }
     document.addEventListener('td:tab-shown', resize);
     document.addEventListener('toggle', resize, true);
+    if (root.classList) root.classList.add('td-map--mounted');
+    var listItems =
+      typeof root.querySelectorAll === 'function' ? root.querySelectorAll('.td-map__places > li') : [];
+    markers.forEach(function (marker, index) {
+      var item = listItems[index];
+      if (!item || typeof item.addEventListener !== 'function') return;
+      item.addEventListener('click', function (event) {
+        if (hidden) return;
+        if (event.target && typeof event.target.closest === 'function' && event.target.closest('a, button')) {
+          return;
+        }
+        if (typeof map.panTo === 'function' && typeof marker.getLatLng === 'function') {
+          map.panTo(marker.getLatLng(), { animate: !reduced });
+        }
+        if (typeof marker.openPopup === 'function') marker.openPopup();
+        if (typeof canvas.scrollIntoView === 'function') {
+          canvas.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
+        }
+      });
+    });
   }
 
-  // An unmounted player is its recording link, which is already its static
-  // form. A chart or an infographic has only its declared source.
-  document.querySelectorAll('[data-td-asciinema]').forEach(function (root) {
-    defer(root, {
-      engine: 'asciinema',
-      ready: function () {
-        return !!window.AsciinemaPlayer;
-      },
-      mount: initAsciinema,
+  function registerAll() {
+    // An unmounted player is its recording link, which is already its static
+    // form. A chart or an infographic has only its declared source.
+    document.querySelectorAll('[data-td-asciinema]').forEach(function (root) {
+      defer(root, {
+        engine: 'asciinema',
+        ready: function () {
+          return !!window.AsciinemaPlayer;
+        },
+        mount: initAsciinema,
+      });
     });
-  });
-  document.querySelectorAll('[data-td-echarts]').forEach(function (root) {
-    defer(root, {
-      engine: 'echarts',
-      ready: function () {
-        return !!window.echarts;
-      },
-      mount: initEcharts,
-      source: function () {
-        var options = configOf(root, '[data-td-echarts-options]');
-        return options ? JSON.stringify(options, null, 2) : '';
-      },
+    document.querySelectorAll('[data-td-echarts]').forEach(function (root) {
+      defer(root, {
+        engine: 'echarts',
+        ready: function () {
+          return !!window.echarts;
+        },
+        mount: initEcharts,
+        source: function () {
+          var options = configOf(root, '[data-td-echarts-options]');
+          return options ? JSON.stringify(options, null, 2) : '';
+        },
+      });
     });
-  });
-  document.querySelectorAll('[data-td-map]').forEach(function (root) {
-    defer(root, {
-      engine: 'leaflet',
-      ready: function () {
-        return !!window.L;
-      },
-      mount: initMap,
+    var mapSite = configOf(document, '[data-td-map-config]');
+    var mapClickOnly = !!(mapSite && mapSite.loading === 'click');
+    var mapHost = mapClickOnly ? tileHosts(mapSite).join(', ') : '';
+    document.querySelectorAll('[data-td-map]').forEach(function (root) {
+      var component = {
+        engine: 'leaflet',
+        ready: function () {
+          return !!window.L;
+        },
+        mount: initMap,
+      };
+      if (mapClickOnly) {
+        var canvas = root.querySelector('[data-td-map-canvas]');
+        if (!canvas || typeof root.insertBefore !== 'function') return;
+        unmounted.set(root, component);
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'td-map__load';
+        if (typeof button.setAttribute === 'function') button.setAttribute('data-td-map-load', '');
+        var label = (mapSite && mapSite.loadMap) || 'Load map';
+        // Hostnames are left-to-right: isolate them (LRI … PDI) so an RTL
+        // label cannot move the leading `*` or trailing dots.
+        button.textContent = mapHost ? label + ' (\u2066' + mapHost + '\u2069)' : label;
+        button.addEventListener('click', function () {
+          // The button disappears; keyboard focus moves to the map it loads.
+          if (document.activeElement === button) {
+            component.mount = function (target) {
+              initMap(target);
+              if (!canvas.hidden && typeof canvas.focus === 'function') canvas.focus({ preventScroll: true });
+            };
+          }
+          if (typeof button.remove === 'function') button.remove();
+          else if (button.parentNode) button.parentNode.removeChild(button);
+          begin(root);
+        });
+        root.insertBefore(button, canvas);
+      } else {
+        defer(root, component);
+      }
     });
-  });
-  document.querySelectorAll('[data-td-infographic]').forEach(function (root) {
-    defer(root, {
-      engine: 'infographic',
-      ready: function () {
-        return !!window.AntVInfographic;
-      },
-      mount: initInfographic,
-      source: function () {
-        var syntax = configOf(root, '[data-td-infographic-syntax]');
-        return typeof syntax === 'string' ? syntax : '';
-      },
+    document.querySelectorAll('[data-td-infographic]').forEach(function (root) {
+      defer(root, {
+        engine: 'infographic',
+        ready: function () {
+          return !!window.AntVInfographic;
+        },
+        mount: initInfographic,
+        source: function () {
+          var syntax = configOf(root, '[data-td-infographic-syntax]');
+          return typeof syntax === 'string' ? syntax : '';
+        },
+      });
     });
-  });
+  }
+
+  // Wait for DOMContentLoaded while parsing so tabs.js (loaded ahead of this
+  // chunk) can group and hide inactive panels before IntersectionObserver runs.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', registerAll, { once: true });
+  } else {
+    registerAll();
+  }
 })();

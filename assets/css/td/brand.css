@@ -92,6 +92,7 @@
   --td-accent: var(--td-preset-accent, var(--bs-link-color));
   --td-accent-rgb: var(--td-preset-accent-rgb, var(--bs-link-color-rgb));
   --td-accent-hover: var(--td-preset-accent-hover, var(--bs-link-hover-color));
+  --td-on-link: #fff;
   /* Keyboard focus uses the opaque, contrast-checked link color. */
   --bs-focus-ring-color: var(--bs-link-color);
   /* Inline code ink, shared by prose (through --td-code-inline-fg) and by
@@ -142,6 +143,7 @@
   --bs-link-color-rgb: 93, 162, 221;
   --bs-link-hover-color: #7fb8e8;
   --bs-link-hover-color-rgb: 127, 184, 232;
+  --td-on-link: #0b1119;
   --td-accent: var(--td-preset-accent, var(--bs-link-color));
   --td-accent-rgb: var(--td-preset-accent-rgb, var(--bs-link-color-rgb));
   --td-accent-hover: var(--td-preset-accent-hover, var(--bs-link-hover-color));

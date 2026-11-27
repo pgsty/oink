@@ -193,14 +193,14 @@
   {{ if hugo.IsProduction }}{{ $leafletJS = $leafletJS | fingerprint }}{{ end -}}
   {{ $engines = merge $engines (dict "leaflet" (dict "src" $leafletJS.RelPermalink "integrity" ($leafletJS.Data.Integrity | default ""))) -}}
 <script type="application/json" data-td-map-config>{{ dict
-  "tiles" $mapConfig.tiles "darkTiles" $mapConfig.darkTiles "attribution" $mapConfig.attribution "maxZoom" $mapConfig.maxZoom
-  "zoomIn" (T "ui_diagram_zoom_in") "zoomOut" (T "ui_diagram_zoom_out") | jsonify | safeJS }}</script>
+  "tiles" $mapConfig.tiles "darkTiles" $mapConfig.darkTiles "attribution" $mapConfig.attribution
+  "attributionUrl" $mapConfig.attributionUrl "subdomains" $mapConfig.subdomains
+  "maxZoom" $mapConfig.maxZoom "loading" $mapConfig.loading
+  "zoomIn" (T "ui_diagram_zoom_in") "zoomOut" (T "ui_diagram_zoom_out")
+  "closePopup" (T "ui_search_close") "loadMap" (T "ui_map_load") | jsonify | safeJS }}</script>
 {{ end -}}
 {{ with $engines -}}
 <script type="application/json" data-td-component-engines>{{ . | jsonify | safeJS }}</script>
-{{ end -}}
-{{ if or $hasAsciinema $hasEcharts $hasInfographic $hasMap -}}
-  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/content-components.js" "members" (slice (resources.Get "js/content-components.js"))) -}}
 {{ end -}}
 {{ if $shell -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/shell.js" "members" (slice (resources.Get "js/docs-shell.js"))) -}}
@@ -301,6 +301,11 @@
 {{ end -}}
 {{ if $hasTabRuntime -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/tabs.js" "members" (slice (resources.Get "js/tabs.js"))) -}}
+{{ end -}}
+{{/* After tabs.js so inactive tab panels are hidden before IntersectionObserver
+     observes maps, charts or players inside them. */ -}}
+{{ if or $hasAsciinema $hasEcharts $hasInfographic $hasMap -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/content-components.js" "members" (slice (resources.Get "js/content-components.js"))) -}}
 {{ end -}}
 {{ if $hasImageZoom -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/image-zoom.js" "members" (slice (resources.Get "js/image-zoom.js"))) -}}

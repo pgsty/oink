@@ -147,6 +147,24 @@ test('hidden content, icons and math sources', () => {
   assert.match(html, /<li[^>]*>☐ todo<\/li>/);
 });
 
+test('a mounted map drops its interactive canvas and load button, keeping the place list', () => {
+  const html = typeset(el('div', { class: 'td-content' },
+    el('figure', { class: 'td-map td-map--interactive' },
+      el('button', { class: 'td-map__load' }, 'Load map (tile.example.org)'),
+      el('div', { class: 'td-map__canvas leaflet-container' },
+        el('div', { class: 'leaflet-popup' }, el('p', null, 'Popup text')),
+        el('div', { class: 'leaflet-control-attribution' }, '© OpenStreetMap contributors')),
+      el('ol', { class: 'td-map__places' },
+        el('li', null, el('span', { class: 'td-map__place' },
+          el('span', { class: 'td-map__name' }, 'Kyoto Station'),
+          ' ',
+          el('a', { class: 'td-map__coords', href: 'https://www.openstreetmap.org/' }, '34.9858, 135.7589')))),
+      el('figcaption', null, 'Kyoto'))));
+  assert.match(html, /<ol[^>]*><li[^>]*>Kyoto Station/);
+  assert.match(html, /<figcaption[^>]*>Kyoto<\/figcaption>/);
+  assert.doesNotMatch(html, /Popup text|OpenStreetMap contributors|Load map/);
+});
+
 test('update metadata copies as separated tokens instead of glued text', () => {
   const meta = el('div', { class: 'td-update-meta' },
     el('time', { datetime: '2026-11-23' }, '2026-11-23'),

@@ -317,9 +317,15 @@
   [data-td-preset='ink'] .td-content {
     font-size: 1.0625rem;
   }
-  [data-td-preset='ink'] .td-content > h2, [data-td-preset='ink'] .td-content > .h2 {
+  [data-td-preset='ink'] .td-content > h2:not(.update), [data-td-preset='ink'] .td-content > .h2:not(.update) {
     border-top: 1px solid var(--bs-emphasis-color);
     padding-top: 1rem;
+  }
+  [data-td-preset='ink'] .td-content > h2.update {
+    border-block-start: 1px solid var(--bs-emphasis-color);
+  }
+  [data-td-preset='ink'] .td-update-tag {
+    background: transparent;
   }
   [data-td-preset='ink'] .td-content h4, [data-td-preset='ink'] .td-content .h4, [data-td-preset='ink'] .td-content table:not(.td-initial) thead th {
     text-transform: uppercase;

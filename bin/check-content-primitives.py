@@ -10,6 +10,7 @@ forms (`{.steps}`, `{.cards}`), the `filetree` fence, the table family (`.matrix
 from __future__ import annotations
 
 import argparse
+import json
 import xml.etree.ElementTree as ET
 from html import escape, unescape
 from pathlib import Path
@@ -289,6 +290,27 @@ def check_outputs(public: Path) -> list[str]:
     for marker in ("| 参数 | 类型 | 默认值 | 说明 |", '{.fields caption="搜索参数"}', "{.matrix}", '{caption="Release facts"}', '{#tab_iso num="9-1" caption="Anomalies allowed by isolation level"}', '{tab="PG 17" group="pgver" value="pg17"}', "{.full-width}"):
         require(marker in tables_markdown, f"tables Markdown missing {marker}", errors)
     require("<table" not in tables_markdown and "td-" not in tables_markdown, "tables Markdown contains HTML", errors)
+
+    # --- Update headings (timeline-update fixture) ---------------------------
+    updates_html = (public / "fixtures/timeline-update/index.html").read_text()
+    updates_md = (public / "fixtures/timeline-update/index.md").read_text()
+    require(
+        '<div class="td-update-meta"><time datetime="2026-11-23">2026-11-23</time><span class="td-update-sep">, </span><span class="td-update-tag">Breaking</span><span class="td-update-sep">, </span><span class="td-update-tag">Performance</span></div>' in updates_html,
+        "timeline-update HTML missing separated update metadata",
+        errors,
+    )
+    require(
+        re.search(r'<h2 id="pg-[0-9a-f]+--v160--plain-css-stylesheets" class="update">', print_page) is not None,
+        "multi-page Print did not namespace the .update heading ID",
+        errors,
+    )
+    require(
+        '## v1.6.0 — Plain CSS stylesheets {.update date="2026-11-23" tags="Breaking, Performance"}' in updates_md
+        and "td-update-meta" not in updates_md
+        and "<time" not in updates_md,
+        "timeline-update Markdown lost authored update syntax or leaked HTML",
+        errors,
+    )
     return errors
 
 
@@ -927,39 +949,95 @@ INVALID_CASES = (
 
 
 def check_update_headings(hugo: str) -> list[str]:
-    """`.update` headings: valid metadata renders, invalid input warns and keeps
-    the entry, and date/tags without the marker stay unsupported attributes.
-    The heading hook has no source position, so it names the page path."""
+    """`.update` headings: valid metadata renders with accessible/search separators,
+    invalid dates or non-string attributes warn and drop safely while keeping the
+    entry and remaining valid metadata, and date/tags without the marker stay
+    unsupported attributes. The heading hook has no source position, so it names
+    the page path."""
     errors: list[str] = []
     with tempfile.TemporaryDirectory(prefix="oink-primitives-update-") as temp:
         temp_path = Path(temp)
         content = temp_path / "content/docs"
         content.mkdir(parents=True)
+        (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
         (content / "updates.md").write_text(
             "---\ntitle: Updates\n---\n\n"
-            '## v2 {.update date="2026-11" tags="Added, , Fixed"}\n\nBody.\n\n'
-            '## Bad date {.update date="2026-13-01"}\n\nBody.\n\n'
-            '## No marker {date="2026-01-01"}\n\nBody.\n'
+            '## v2 {#v2 .update date="2026-11" tags="Added, , Fixed"}\n\nBody.\n\n'
+            '## Year only {#y2026 .update date="2026"}\n\nBody.\n\n'
+            '## Leap day {#leap .update date="2024-02-29" tags="修复，性能， , 安全"}\n\nBody.\n\n'
+            '## Tags only {#tags-only .update tags="Alpha, Beta"}\n\nBody.\n\n'
+            '## Bad month {#bad-month .update date="2026-13-01"}\n\nBody.\n\n'
+            '## Bad calendar {#bad-cal .update date="2026-02-30" tags="Kept"}\n\nBody.\n\n'
+            '## Non-leap {#non-leap .update date="2025-02-29"}\n\nBody.\n\n'
+            '## Timestamp {#bad-ts .update date="2026-11-23T12:00:00Z"}\n\nBody.\n\n'
+            '## Numeric date {#num-date .update date=2026 tags=true}\n\nBody.\n\n'
+            '## Escaped tags {#escaped .update tags="A&B, <script>x</script>, **bold**"}\n\nBody.\n\n'
+            '## No marker date {date="2026-01-01"}\n\nBody.\n\n'
+            '## No marker tags {tags="Breaking"}\n\nBody.\n'
         )
+        override_cfg = temp_path / "update-search.yaml"
+        override_cfg.write_text("params:\n  offline_search_index: content\n")
         result = run_hugo_process(
-            [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn",
+            [hugo, "--source", str(FIXTURE), "--config", f"{FIXTURE / 'hugo.yaml'},{override_cfg}",
+             "--contentDir", str(temp_path / "content"), "--logLevel", "warn",
              "--destination", str(temp_path / "public")],
             cwd=ROOT, capture_output=True, text=True, check=False,
         )
         output = result.stdout + result.stderr
         require(result.returncode == 0, f"update headings failed to build: {output.strip()[-400:]}", errors)
-        require("update date must be YYYY, YYYY-MM or YYYY-MM-DD" in output and "/docs/updates" in output,
-                f"an invalid update date did not warn with the page path: {output.strip()[-400:]}", errors)
-        require('unknown attribute "date"' in output, "date without the .update marker was accepted", errors)
+        for snippet, label in (
+            ('got "2026-13-01" in /docs/updates', "invalid month"),
+            ('got "2026-02-30" in /docs/updates', "invalid calendar date 2026-02-30"),
+            ('got "2025-02-29" in /docs/updates', "non-leap date 2025-02-29"),
+            ('got "2026-11-23T12:00:00Z" in /docs/updates', "timestamp date"),
+            ("update date must be YYYY, YYYY-MM or YYYY-MM-DD (string)", "non-string date"),
+            ("update tags must be a string", "non-string tags"),
+            ('unknown attribute "date"', "orphan date without .update"),
+            ('unknown attribute "tags"', "orphan tags without .update"),
+        ):
+            require(snippet in output, f"update headings missing warning for {label}: {output.strip()[-600:]}", errors)
         page = temp_path / "public/docs/updates/index.html"
         if page.is_file():
             html = page.read_text()
-            require('<div class="td-update-meta"><time datetime="2026-11">2026-11</time><span class="td-update-tag">Added</span><span class="td-update-tag">Fixed</span></div>' in html,
-                    "update metadata line is missing or malformed", errors)
-            require('id="bad-date" class="update"' in html and html.count('class="td-update-meta"') == 1,
-                    "an invalid date must keep the entry and drop only its metadata", errors)
+            for expected, label in (
+                ('<div class="td-update-meta"><time datetime="2026-11">2026-11</time><span class="td-update-sep">, </span><span class="td-update-tag">Added</span><span class="td-update-sep">, </span><span class="td-update-tag">Fixed</span></div>', "date + tags with separators"),
+                ('<div class="td-update-meta"><time datetime="2026">2026</time></div>', "year-only date without stray comma"),
+                ('<div class="td-update-meta"><time datetime="2024-02-29">2024-02-29</time><span class="td-update-sep">, </span><span class="td-update-tag">修复</span><span class="td-update-sep">, </span><span class="td-update-tag">性能</span><span class="td-update-sep">, </span><span class="td-update-tag">安全</span></div>', "leap day and full-width Chinese comma tags"),
+                ('<div class="td-update-meta"><span class="td-update-tag">Alpha</span><span class="td-update-sep">, </span><span class="td-update-tag">Beta</span></div>', "tags-only without leading comma"),
+                ('<div class="td-update-meta"><span class="td-update-tag">Kept</span></div>', "invalid calendar date drops date while keeping valid tags"),
+                ('<div class="td-update-meta"><span class="td-update-tag">A&amp;B</span><span class="td-update-sep">, </span><span class="td-update-tag">&lt;script&gt;x&lt;/script&gt;</span><span class="td-update-sep">, </span><span class="td-update-tag">**bold**</span></div>', "plain-text escaping in tags"),
+            ):
+                require(expected in html, f"update metadata mismatch for {label}", errors)
+            require('id="bad-month" class="update"' in html and 'id="non-leap" class="update"' in html and 'id="num-date" class="update"' in html,
+                    "invalid metadata dropped the update heading itself", errors)
+            require(html.count('class="td-update-meta"') == 6,
+                    f"expected 6 update metadata rows, found {html.count('class=\"td-update-meta\"')}", errors)
+            require("<script>x</script>" not in html and "<strong>bold</strong>" not in html,
+                    "update tags did not stay escaped plain text", errors)
         else:
             errors.append("update headings lost their safe output")
+
+        # Verify offline search index keeps date and tags separated instead of glued.
+        search_indices = sorted((temp_path / "public").glob("offline-search-index*.json"))
+        if search_indices:
+            records = json.loads(search_indices[0].read_text())
+            updates_rec = next((r for r in records if r.get("ref") == "/docs/updates/"), None)
+            require(updates_rec is not None, "updates page missing from offline search index", errors)
+            if updates_rec:
+                body = updates_rec.get("body", "")
+                require("2026-11, Added, Fixed" in body and "2026-11AddedFixed" not in body,
+                        f"offline search index glued update metadata: {body[:200]!r}", errors)
+                require("2024-02-29, 修复, 性能, 安全" in body,
+                        f"offline search index lost separated CJK update tags: {body[:300]!r}", errors)
+        else:
+            errors.append("offline search index missing for update headings check")
+
+        # Verify RSS keeps separated metadata so feed readers do not glue tokens.
+        rss_path = temp_path / "public/docs/index.xml"
+        if rss_path.is_file():
+            rss = rss_path.read_text()
+            require("2026-11&lt;/time&gt;&lt;span class=&#34;td-update-sep&#34;&gt;, &lt;/span&gt;&lt;span class=&#34;td-update-tag&#34;&gt;Added" in rss,
+                    "RSS output missing update metadata separator", errors)
     return errors
 
 
@@ -1083,6 +1161,16 @@ def check_template_contracts() -> list[str]:
     styles = (ROOT / "assets/css/td/shortcodes/content-primitives.css").read_text()
     require("@media print" in styles and "@media (forced-colors: active)" in styles, "content primitives lack print / forced-colors styles", errors)
     require(".td-filetree" not in styles and ".td-gallery" not in styles and ".td-imgproc" not in styles, "content primitives styles keep removed component selectors", errors)
+    update_styles = (ROOT / "assets/css/td/update.css").read_text()
+    for marker in (".td-content :where(h1, h2, h3, h4, h5, h6).update", ":has(+ .td-update-meta)", ".td-update-meta", ".td-update-tag", ".td-update-sep", "font-size: 0", "unicode-bidi: isolate", "@media (forced-colors: active)", "@media print", "--td-print-line", "--td-print-strong", "border-block-end: 0"):
+        require(marker in update_styles, f"update.css lacks {marker}", errors)
+    # Flex items are blockified and user-select: none drops text, so either one
+    # makes a browser copy the metadata line as glued or broken tokens.
+    require("display: flex" not in update_styles and "inline-flex" not in update_styles and "user-select" not in update_styles,
+            "update.css must keep the metadata line inline so plain-text copy keeps its separators", errors)
+    heading_hook = (ROOT / "layouts/_markup/render-heading.html").read_text()
+    for marker in ('(eq (len .Attributes) 1) (eq (index .Attributes "id") .Anchor)', 'printf "%T"', "time.AsTime", "td-update-sep"):
+        require(marker in heading_hook, f"render-heading.html lacks {marker}", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("initFileTree" not in runtime and "initCarousel" not in runtime, "content-components.js keeps removed runtimes", errors)

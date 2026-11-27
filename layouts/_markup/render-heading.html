@@ -4,13 +4,26 @@
      data-* / aria-* pass through, and unsupported attributes warn and drop.
 
      The `.update` author marker makes the heading a changelog entry: it also
-     accepts `date` (YYYY, YYYY-MM or YYYY-MM-DD) and `tags` (comma-separated
-     plain text), rendered as a metadata line after the heading so the heading
-     text, its TOC entry, anchor and search title stay exactly as authored. */ -}}
+     accepts string `date` (valid calendar YYYY, YYYY-MM or YYYY-MM-DD) and
+     `tags` (comma-separated plain text), rendered as a metadata line after the
+     heading so the heading text, its TOC entry, anchor and search title stay
+     exactly as authored. Its items are separated by in-flow `, ` text that the
+     styles shrink to nothing, so plain-text copy, search, feeds and screen
+     readers keep them apart.
+
+     Goldmark gives every heading an `id` attribute. A heading whose only
+     attribute is that id needs no policy, so it skips both partials and emits
+     the same bytes the full path would. */ -}}
+{{- if and (eq (len .Attributes) 1) (eq (index .Attributes "id") .Anchor) -}}
+<h{{ .Level }} id="{{ .Anchor }}">
+  {{- .Text -}}
+  <a class="td-heading-self-link" href="#{{ .Anchor | safeURL }}" aria-label="{{ T "ui_heading_self_link" }}"></a>
+</h{{ .Level }}>
+{{ else -}}
 {{- $allowed := slice "id" -}}
 {{- $update := false -}}
 {{- with index .Attributes "class" -}}
-  {{- if in (split (printf "%v" .) " ") "update" -}}
+  {{- if in (findRE `\S+` (printf "%v" .)) "update" -}}
     {{- $update = true -}}
     {{- $allowed = slice "id" "date" "tags" -}}
   {{- end -}}
@@ -24,19 +37,45 @@
   <a class="td-heading-self-link" href="#{{ $id | safeURL }}" aria-label="{{ T "ui_heading_self_link" }}"></a>
 </h{{ .Level }}>
 {{ if $update -}}
-  {{- $date := strings.TrimSpace (index $policy.consumed "date" | default "") -}}
-  {{- if and $date (not (findRE `^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$` $date)) -}}
-    {{- warnf "heading %q: update date must be YYYY, YYYY-MM or YYYY-MM-DD; got %q in %s; dropping the date" .PlainText $date .Page.Path -}}
-    {{- $date = "" -}}
+  {{- $date := "" -}}
+  {{- $rawDate := index .Attributes "date" -}}
+  {{- if ne $rawDate nil -}}
+    {{- if ne (printf "%T" $rawDate) "string" -}}
+      {{- warnf "heading %q: update date must be YYYY, YYYY-MM or YYYY-MM-DD (string); got %T in %s; dropping the date" .PlainText $rawDate .Page.Path -}}
+    {{- else -}}
+      {{- $candidate := strings.TrimSpace $rawDate -}}
+      {{- if $candidate -}}
+        {{- $validDate := findRE `^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$` $candidate -}}
+        {{- if and $validDate (eq (len $candidate) 10) -}}
+          {{- if (try (time.AsTime $candidate)).Err -}}
+            {{- $validDate = false -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $validDate -}}
+          {{- $date = $candidate -}}
+        {{- else -}}
+          {{- warnf "heading %q: update date must be YYYY, YYYY-MM or YYYY-MM-DD (valid calendar date); got %q in %s; dropping the date" .PlainText $candidate .Page.Path -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
   {{- $tags := slice -}}
-  {{- range split (index $policy.consumed "tags" | default "") "," -}}
-    {{- with strings.TrimSpace . }}{{ $tags = $tags | append . }}{{ end -}}
+  {{- $rawTags := index .Attributes "tags" -}}
+  {{- if ne $rawTags nil -}}
+    {{- if ne (printf "%T" $rawTags) "string" -}}
+      {{- warnf "heading %q: update tags must be a string; got %T in %s; dropping tags" .PlainText $rawTags .Page.Path -}}
+    {{- else -}}
+      {{- range split (replace $rawTags "，" ",") "," -}}
+        {{- with strings.TrimSpace . }}{{ $tags = $tags | append . }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
   {{- if or $date $tags -}}
+{{- $sep := false -}}
 <div class="td-update-meta">
-  {{- with $date }}<time datetime="{{ . }}">{{ . }}</time>{{ end -}}
-  {{- range $tags }}<span class="td-update-tag">{{ . }}</span>{{ end -}}
+  {{- with $date }}<time datetime="{{ . }}">{{ . }}</time>{{ $sep = true }}{{ end -}}
+  {{- range $tags }}{{ if $sep }}<span class="td-update-sep">, </span>{{ end }}<span class="td-update-tag">{{ . }}</span>{{ $sep = true }}{{ end -}}
 </div>
 {{ end -}}
+{{- end -}}
 {{- end -}}

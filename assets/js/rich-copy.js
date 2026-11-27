@@ -251,6 +251,23 @@
       return [{ t: 'callout', tone: tone, title: title, kids: body }];
     }
 
+    // The date and the tag chips; the `, ` separators between them are plain
+    // text for the clipboard's text/plain and are drawn here as spacing.
+    function updateMeta(node) {
+      var items = [];
+      var kids = node.childNodes || [];
+      for (var i = 0; i < kids.length; i += 1) {
+        var kid = kids[i];
+        if (kid.nodeType !== 1 || !inRange(kid) || isChrome(kid) || unseen(kid)) continue;
+        var time = tagOf(kid) === 'TIME';
+        if (!time && !has(kid, 'td-update-tag')) continue;
+        var text = treeText(kidsOf(kid)).trim();
+        if (!text) continue;
+        items.push({ kind: time ? 'time' : 'tag', v: text });
+      }
+      return items.length ? [{ t: 'update-meta', items: items }] : [];
+    }
+
     function cell(node, tag) {
       var style = styleOf(node);
       var align = (style && style.textAlign) || attr(node, 'align') || '';
@@ -281,7 +298,8 @@
       if (tag === 'MATH' || has(node, 'katex')) return math(node, attr(node, 'display') === 'block');
       if (has(node, 'td-code') || has(node, 'lntable') || (tag === 'DIV' && has(node, 'highlight'))) return shell(node);
       if (has(node, 'td-callout')) return callout(node);
-      if (/^H[1-6]$/.test(tag)) return [{ t: 'h', level: +tag.charAt(1), kids: kidsOf(node) }];
+      if (has(node, 'td-update-meta')) return updateMeta(node);
+      if (/^H[1-6]$/.test(tag)) return [{ t: 'h', level: +tag.charAt(1), update: has(node, 'update'), kids: kidsOf(node) }];
       switch (tag) {
         case 'P': return [{ t: 'p', lead: has(node, 'lead'), kids: kidsOf(node) }];
         case 'BR': return [{ t: 'br' }];
@@ -350,7 +368,7 @@
       var n = nodes[i];
       if (n.t === 'text') { if (SPACE.test(n.v)) return false; continue; }
       if (n.t === 'br') continue;
-      if (n.t === 'img' || n.t === 'hr' || n.t === 'math' || n.t === 'pre' || n.t === 'cell') return false;
+      if (n.t === 'img' || n.t === 'hr' || n.t === 'math' || n.t === 'pre' || n.t === 'cell' || (n.t === 'update-meta' && n.items && n.items.length)) return false;
       if (!blank(n.kids || [])) return false;
     }
     return true;
@@ -481,11 +499,16 @@
       return out;
     }
 
-    function heading(n) {
+    function heading(n, hasUpdateMeta) {
       var i = n.level - 1;
-      var style = 'margin:' + top([0, 36, 28, 24, 20, 20][i]) + 'px 0 ' + [20, 16, 12, 10, 8, 8][i] + 'px;';
-      if (n.level === 2 && skin.headingRule === 'under') style += 'padding:0 0 8px;border-bottom:1px solid ' + skin.line + ';';
-      if (n.level === 2 && skin.headingRule === 'over') style += 'padding:12px 0 0;border-top:1px solid ' + skin.strong + ';';
+      var above = top([0, 36, 28, 24, 20, 20][i]);
+      var style = 'margin:' + above + 'px 0 ' + (hasUpdateMeta ? 6 : [20, 16, 12, 10, 8, 8][i]) + 'px;';
+      if (n.update) {
+        if (above > 0) style += 'padding:16px 0 0;border-top:1px solid ' + (skin.headingRule === 'over' ? skin.strong : skin.line) + ';';
+      } else {
+        if (n.level === 2 && skin.headingRule === 'under') style += 'padding:0 0 8px;border-bottom:1px solid ' + skin.line + ';';
+        if (n.level === 2 && skin.headingRule === 'over') style += 'padding:12px 0 0;border-top:1px solid ' + skin.strong + ';';
+      }
       style += 'font-size:' + [26, 21, 18, 16, 15, 15][i] + 'px;line-height:' + (n.level < 3 ? 1.35 : 1.5) + ';font-weight:700;color:' +
         (n.level > 4 ? skin.meta : skin.strong) + ';';
       if (skin.headingFont) style += 'font-family:' + skin.headingFont + ';';
@@ -624,6 +647,26 @@
       return body ? '<figure' + css('margin:' + above + 'px 0 ' + below(ctx) + 'px;text-align:center;') + '>' + body + '</figure>' : '';
     }
 
+    function renderUpdateMeta(n) {
+      var parts = n.items.map(function (item) {
+        if (item.kind === 'time') {
+          return '<span' + css('font-weight:600;color:' + skin.strong + ';') + '>' + esc(item.v) + '</span>';
+        }
+        return '<span' + css('padding:1px 6px;border:1px solid ' + skin.line + ';border-radius:' + chip +
+          ';color:' + skin.meta + ';font-size:12px;font-weight:600;') + '>' + esc(item.v) + '</span>';
+      });
+      return '<p' + css('margin:' + top(0) + 'px 0 12px;font-size:13px;line-height:1.6;color:' + skin.meta + ';') + '>' +
+        parts.join(' ') + '</p>';
+    }
+
+    function nextBlock(nodes, index) {
+      for (var j = index + 1; j < nodes.length; j += 1) {
+        if (nodes[j].t === 'text' && !SPACE.test(nodes[j].v)) continue;
+        return nodes[j];
+      }
+      return null;
+    }
+
     function blocks(nodes, ctx) {
       var out = '';
       var run = [];
@@ -631,17 +674,22 @@
         if (run.length) out += paragraph(run, ctx, {});
         run = [];
       }
-      nodes.forEach(function (n) {
+      nodes.forEach(function (n, index) {
         if (INLINE[n.t] && !(n.t === 'math' && n.block)) { run.push(n); return; }
         flush();
         switch (n.t) {
-          case 'h': out += heading(n); break;
+          case 'h': {
+            var next = n.update ? nextBlock(nodes, index) : null;
+            out += heading(n, !!(next && next.t === 'update-meta'));
+            break;
+          }
           case 'p': out += paragraph(n.kids, ctx, n); break;
           case 'math': out += paragraph([{ t: 'text', v: '$$' + n.v + '$$' }], ctx, {}); break;
           case 'hr': out += '<hr' + css('margin:' + top(28) + 'px 0 28px;border:0;border-top:1px solid ' + skin.line + ';height:0;') + '>'; break;
           case 'pre': out += codeBlock(n, ctx); break;
           case 'quote': out += aside(n, ctx, skin.quoteLine, ''); break;
           case 'callout': out += aside(n, ctx, n.tone || skin.quoteLine, inline(n.title)); break;
+          case 'update-meta': out += renderUpdateMeta(n); break;
           case 'list': out += list(n, ctx); break;
           case 'li': out += list({ kids: [n] }, ctx); break;
           case 'table': out += table(n, ctx); break;
@@ -669,6 +717,7 @@
     var n = nodes[0];
     var flat = function (kids) { return kids.every(function (k) { return INLINE[k.t] && !(k.t === 'math' && k.block); }); };
     if ((n.t === 'p' || n.t === 'h' || n.t === 'cell' || n.t === 'caption' || n.t === 'group') && flat(n.kids)) return n.kids;
+    if (n.t === 'update-meta') return [{ t: 'text', v: n.items.map(function (item) { return item.v; }).join(', ') }];
     if (n.t === 'list' && n.kids.length === 1 && n.kids[0].t === 'li' && flat(n.kids[0].kids)) return n.kids[0].kids;
     if (n.t === 'pre' && !n.title) {
       var text = n.toks.map(function (tok) { return tok.v; }).join('').replace(/\n+$/, '');

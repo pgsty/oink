@@ -146,3 +146,26 @@ test('hidden content, icons and math sources', () => {
   assert.match(html, />Mass \$E=mc\^2\$<\/p>/);
   assert.match(html, /<li[^>]*>☐ todo<\/li>/);
 });
+
+test('update metadata copies as separated tokens instead of glued text', () => {
+  const meta = el('div', { class: 'td-update-meta' },
+    el('time', { datetime: '2026-11-23' }, '2026-11-23'),
+    el('span', { class: 'td-update-sep' }, ', '),
+    el('span', { class: 'td-update-tag' }, 'Breaking'),
+    el('span', { class: 'td-update-sep' }, ', '),
+    el('span', { class: 'td-update-tag' }, 'Performance'));
+  const block = typeset(el('div', { class: 'td-content' },
+    el('h2', { id: 'v1-6-0', class: 'update' }, 'v1.6.0'),
+    '\n',
+    meta,
+    '\n',
+    el('p', null, 'Body.'),
+    el('h2', { id: 'v1-5-1', class: 'update' }, 'v1.5.1'),
+    el('p', null, 'Older.')));
+  assert.match(block, /<h2 style="margin:0px 0 6px;font-size:21px;[^"]*">v1\.6\.0<\/h2><p style="margin:0px 0 12px;font-size:13px;line-height:1\.6;color:#4e555c;"><span style="font-weight:600;color:#141413;">2026-11-23<\/span> <span style="padding:1px 6px;border:1px solid #c9ced4;border-radius:4px;color:#4e555c;font-size:12px;font-weight:600;">Breaking<\/span> <span style="padding:1px 6px;border:1px solid #c9ced4;border-radius:4px;color:#4e555c;font-size:12px;font-weight:600;">Performance<\/span><\/p><p/);
+  assert.match(block, /<h2 style="margin:36px 0 16px;padding:16px 0 0;border-top:1px solid #141413;[^"]*">v1\.5\.1<\/h2>/);
+  assert.doesNotMatch(block, /border-bottom:1px solid/);
+  assert.doesNotMatch(block, /2026-11-23Breaking|BreakingPerformance/);
+  assert.doesNotMatch(block, />,\s*<\/span>|td-update-sep/, 'separators are spacing, not chips');
+  assert.equal(typeset(meta), '2026-11-23, Breaking, Performance');
+});

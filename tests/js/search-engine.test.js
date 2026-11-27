@@ -388,6 +388,24 @@ const question = engineModule.create([
 assert.deepEqual(refs(question.query('how to vacuum')), ['/vacuum/']);
 assert.equal(question.query('how to')[0].doc.ref, '/howto/');
 
+// Separated update metadata tokens stay searchable as whole words, including short tags.
+const updateHead = 'v1.5.1 ';
+const updateMeta = '2026-10, Fix, Docs A month-precision entry.';
+const updateEngine = engineModule.create([
+  {
+    ref: '/docs/changelog/',
+    title: 'Changelog',
+    body: updateHead + updateMeta,
+    sections: [{ id: 'v1-5-1', title: 'v1.5.1', start: 0 }],
+  },
+], 10);
+for (const token of ['2026-10', 'Fix', 'Docs']) {
+  const hits = updateEngine.query(token);
+  assert.equal(hits.length, 1, `separated update token ${token} must match`);
+  assert.equal(hits[0].ref, '/docs/changelog/#v1-5-1');
+  assert.equal(hits[0].strength, 1, `separated update token ${token} must match at word strength`);
+}
+
 if (process.argv.length > 2) {
   assert.equal(process.argv.length, 4, 'expected EN and ZH built index paths');
   const en = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));

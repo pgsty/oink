@@ -13,7 +13,7 @@
   {{- end -}}
 {{- end -}}
 <article class="td-blog-gallery__item{{ if not $src }} is-missing{{ end }}" data-gallery-item data-td-width="{{ $image.width }}" data-td-height="{{ $image.height }}">
-  <a class="td-blog-gallery__link" href="{{ $link }}" aria-label="{{ .Title }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+  <a class="td-blog-gallery__link" href="{{ $link }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
     <span class="td-blog-gallery__media">
       <span class="td-blog-gallery__placeholder" aria-hidden="true">{{ partial "shell/icon.html" "image" }}</span>
       {{- with $src }}<img src="{{ . }}" alt=""{{ if and $image.width $image.height }} width="{{ $image.width }}" height="{{ $image.height }}"{{ end }} loading="lazy" decoding="async">{{ end }}

@@ -141,6 +141,9 @@ def check_sources() -> list[str]:
             and 'title="{{ .LinkTitle }}"' in pager
             and pager.count("td-pager__arrow") == 2,
             "pager links lost their arrow/title/full-title structure", errors)
+    for key in ("ui_pager_prev", "ui_pager_next"):
+        require('aria-label="{{ T "' + key + '" }} - {{ .LinkTitle }}"' in pager,
+                f"{key} must announce the link title visible in the pager", errors)
     require(".td-page-end > .td-pager:first-child" in pager_styles,
             "a pager that opens the page end lost its separating rule", errors)
     # The prev/next placement must stay logical properties: the Playwright
@@ -2019,6 +2022,9 @@ def build_blog_index_forms(hugo: str) -> list[str]:
         gallery_pattern = r'<a class="td-blog-gallery__link" href="([^"]+)"'
         require(re.findall(gallery_pattern, gallery) == row_links,
                 "gallery changed the page selection or its ordering", errors)
+        require(not re.search(r'<a class="td-blog-gallery__link"[^>]*\baria-label=', gallery)
+                and 'class="td-blog-gallery__caption"' in gallery,
+                "gallery links must take their names from their caption text", errors)
         require('data-td-mode="seamless" data-td-size="280"' in gallery
                 and 'js/chunks/blog-gallery.' in gallery
                 and 'data-td-expo-viewer' not in gallery,

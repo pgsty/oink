@@ -563,12 +563,15 @@ class RootMenuParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.current = ""
+        self.toggle_label: str | None = None
         self._inside_current = False
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         attributes = {name: value or "" for name, value in attrs}
+        if tag == "button" and "data-td-shell-root-toggle" in attributes:
+            self.toggle_label = attributes.get("aria-label", "")
         if tag == "span" and "td-shell-root__title" in attributes.get(
             "class", ""
         ).split():
@@ -586,7 +589,12 @@ class RootMenuParser(HTMLParser):
 def current_root(html: str) -> str:
     parser = RootMenuParser()
     parser.feed(html)
-    return " ".join(parser.current.split())
+    current = " ".join(parser.current.split())
+    if parser.toggle_label is not None:
+        label = " ".join(parser.toggle_label.split())
+        require(bool(current) and label.startswith(current),
+                f"root switcher label {label!r} must start with its visible title {current!r}")
+    return current
 
 
 def runtime_markers(html: str, palette_controller_in_bundle: bool) -> dict[str, bool]:

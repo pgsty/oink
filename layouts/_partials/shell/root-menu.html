@@ -19,7 +19,7 @@
     {{- if or (not $current) $current.IsHome }}{{ $current = index $entries 0 }}{{ end -}}
 <div class="td-shell-root">
   <button type="button" class="td-shell-root__trigger" data-td-shell-root-toggle
-    aria-haspopup="true" aria-expanded="false" aria-label="{{ T "ui_root_menu_label" }}">
+    aria-haspopup="true" aria-expanded="false" aria-label="{{ $current.LinkTitle }} · {{ T "ui_root_menu_label" }}">
     <span class="td-shell-root__icon">{{ with $current.Params.icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}</span>
     <span class="td-shell-root__title">{{ $current.LinkTitle }}</span>
     {{ partialCached "shell/icon.html" "chevrons-up-down" "chevrons-up-down" }}

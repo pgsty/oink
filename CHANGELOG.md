@@ -172,6 +172,8 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ### Fixed
 
+- The sidebar section switcher, previous/next links and blog gallery links
+  include their visible text in their accessible names for voice control.
 - Readers can turn off global single-key shortcuts from shortcut help or the
   focus stop after “Skip to content”. The choice also covers the palette’s
   punctuation shortcuts and persists across languages on the same site.

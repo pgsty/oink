@@ -5,13 +5,13 @@
   aria-label="{{ T "ui_pager_prev" }} / {{ T "ui_pager_next" }}">
   {{- with $state.prev }}
   <a class="td-pager__link td-pager__link--prev" href="{{ .RelPermalink }}"
-    aria-label="{{ T "ui_pager_prev" }} - {{ .Title }}" title="{{ .LinkTitle }}" data-td-pager-prev>
+    aria-label="{{ T "ui_pager_prev" }} - {{ .LinkTitle }}" title="{{ .LinkTitle }}" data-td-pager-prev>
     <span class="td-pager__arrow" aria-hidden="true">←</span><span class="td-pager__title" dir="auto">{{ .LinkTitle }}</span>
   </a>
   {{- end }}
   {{- with $state.next }}
   <a class="td-pager__link td-pager__link--next" href="{{ .RelPermalink }}"
-    aria-label="{{ T "ui_pager_next" }} - {{ .Title }}" title="{{ .LinkTitle }}" data-td-pager-next>
+    aria-label="{{ T "ui_pager_next" }} - {{ .LinkTitle }}" title="{{ .LinkTitle }}" data-td-pager-next>
     <span class="td-pager__title" dir="auto">{{ .LinkTitle }}</span><span class="td-pager__arrow" aria-hidden="true">→</span>
   </a>
   {{- end }}

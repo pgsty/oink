@@ -123,6 +123,8 @@ class Element {
     if (selector === '[data-td-landing]') return this.hasAttribute('data-td-landing');
     if (selector === '[data-td-theme-toggle]') return this.hasAttribute('data-td-theme-toggle');
     if (selector === '.td-shell-keyboard-help') return this.classList.contains('td-shell-keyboard-help');
+    if (selector === '.td-shell-keyboard__trigger') return this.classList.contains('td-shell-keyboard__trigger');
+    if (selector === '[data-td-nav-hover]') return this.hasAttribute('data-td-nav-hover');
     if (selector === '.td-shell-keyboard-help__section') return this.classList.contains('td-shell-keyboard-help__section');
     if (selector === '.td-shell-keyboard-help__header .td-shell-icon') {
       return this.classList.contains('td-shell-icon') &&
@@ -161,6 +163,12 @@ class Element {
   contains(candidate) {
     return candidate === this ||
       this.children.some((child) => child.contains && child.contains(candidate));
+  }
+  closest(selector) {
+    for (let node = this; node; node = node.parentNode) {
+      if (node.matches && node.matches(selector)) return node;
+    }
+    return null;
   }
   focus() { if (this.ownerDocument) this.ownerDocument.activeElement = this; }
   blur() { if (this.ownerDocument) this.ownerDocument.activeElement = null; }
@@ -424,15 +432,32 @@ function press(harness, values) {
 (() => {
   // ---------------------------------------------------------- typing guard
   const input = new Element('input');
+  const textInput = new Element('input');
+  textInput.setAttribute('type', 'search');
+  const numInput = new Element('input');
+  numInput.setAttribute('type', 'number');
+  const radioInput = new Element('input');
+  radioInput.setAttribute('type', 'radio');
+  const rangeInput = new Element('input');
+  rangeInput.setAttribute('type', 'range');
+  const checkboxInput = new Element('input');
+  checkboxInput.setAttribute('type', 'checkbox');
   const textarea = new Element('textarea');
+  const select = new Element('select');
   const editable = new Element('div');
   editable.closest = (selector) =>
     selector.includes('contenteditable') ? editable : null;
   const plain = new Element('div');
   plain.closest = () => null;
   assert.equal(nav.isTypingTarget(input), true);
+  assert.equal(nav.isTypingTarget(textInput), true);
+  assert.equal(nav.isTypingTarget(numInput), true);
   assert.equal(nav.isTypingTarget(textarea), true);
+  assert.equal(nav.isTypingTarget(select), true);
   assert.equal(nav.isTypingTarget(editable), true);
+  assert.equal(nav.isTypingTarget(radioInput), false);
+  assert.equal(nav.isTypingTarget(rangeInput), false);
+  assert.equal(nav.isTypingTarget(checkboxInput), false);
   assert.equal(nav.isTypingTarget(plain), false);
   assert.equal(nav.isTypingTarget(null), false);
 
@@ -1134,6 +1159,46 @@ function press(harness, values) {
   helpRun.win.dispatchEvent({ type: 'beforeprint' });
   assert.equal(helpDialog.open, false, 'beforeprint closes the help dialog');
 
+  // Clicking the bottom-bar ? trigger promotes to the centered modal dialog and
+  // suppresses hover-reopen when restoring focus on close.
+  const triggerMenu = new Element('div', 'td-shell-keyboard td-nav-hover-menu');
+  triggerMenu.setAttribute('data-td-nav-hover', '');
+  const triggerBtn = new Element('button', 'td-shell-iconbtn td-shell-keyboard__trigger');
+  const triggerIcon = new Element('i', 'td-shell-icon');
+  triggerBtn.appendChild(triggerIcon);
+  triggerMenu.appendChild(triggerBtn);
+  helpRun.root.appendChild(triggerMenu);
+  triggerMenu.ownerDocument = helpRun.doc;
+  triggerBtn.ownerDocument = helpRun.doc;
+  triggerIcon.ownerDocument = helpRun.doc;
+  let focusSuppressedDuringRestore = null;
+  triggerBtn.focus = () => {
+    focusSuppressedDuringRestore = triggerMenu.hasAttribute('data-td-suppress-focus-open');
+    helpRun.doc.activeElement = triggerBtn;
+  };
+  let clickStopped = false;
+  const triggerClickEvent = {
+    type: 'click',
+    target: triggerIcon,
+    button: 0,
+    preventDefault() { this.defaultPrevented = true; },
+    stopPropagation() { clickStopped = true; },
+  };
+  (helpRun.doc.listeners.get('click') || []).forEach((fn) => fn(triggerClickEvent));
+  assert.equal(triggerClickEvent.defaultPrevented, true, 'clicking ? prevents default hover toggle');
+  assert.equal(clickStopped, true, 'clicking ? stops propagation to base.js hover click handler');
+  assert.equal(helpDialog.open, true, 'clicking ? opens the centered shortcut help dialog');
+  press(helpRun, { key: 'Escape' });
+  assert.equal(helpDialog.open, false, 'Escape closes dialog opened via ? trigger');
+  assert.equal(helpRun.doc.activeElement, triggerBtn, 'closing restores focus to ? trigger');
+  assert.equal(focusSuppressedDuringRestore, true, 'focus restore suppresses hover popover reopen');
+  assert.equal(triggerMenu.hasAttribute('data-td-suppress-focus-open'), false, 'focus suppress attribute cleans up synchronously');
+  assert.equal(triggerMenu.hasAttribute('data-td-suppress-hover-open'), true, 'hover suppress attribute guards post-close synthetic pointerenter');
+  helpRun.frames.splice(0).forEach((fn) => fn());
+  helpRun.frames.splice(0).forEach((fn) => fn());
+  helpRun.timeouts.splice(0).forEach((fn) => fn());
+  assert.equal(triggerMenu.hasAttribute('data-td-suppress-hover-open'), false, 'hover suppress attribute clears after post-close frames');
+
   // footer_style: none fallback template still powers ;.
   const templateHelp = setup({ withTree: false, withHelpTemplate: true });
   press(templateHelp, { key: ';' });
@@ -1182,6 +1247,7 @@ function press(harness, values) {
   const modeEvents = [];
   const modeRadios = ['wall', 'cards', 'seamless'].map((modeName, idx) => {
     const radio = new Element('input');
+    radio.setAttribute('type', 'radio');
     radio.setAttribute('data-td-expo-mode', modeName);
     radio.value = modeName;
     radio.checked = idx === 0;
@@ -1191,6 +1257,7 @@ function press(harness, values) {
   });
   const sizeEvents = [];
   const sizeSlider = new Element('input');
+  sizeSlider.setAttribute('type', 'range');
   sizeSlider.setAttribute('data-td-expo-size', '');
   sizeSlider.setAttribute('min', '160');
   sizeSlider.setAttribute('max', '360');
@@ -1233,13 +1300,27 @@ function press(harness, values) {
   assert.equal(sizeSlider.value, '360');
   assert.deepEqual(sizeEvents, [], 'max bound emits no redundant input');
 
+  // Focused Expo toolbar radio or range slider must not block m/,/. shortcuts.
+  sizeSlider.value = '240';
+  assert.equal(press(expoPage, { key: 'm', target: modeRadios[0] }).defaultPrevented, true, 'm still works while a mode radio has focus');
+  assert.equal(modeEvents.at(-1), 'cards');
+  assert.equal(press(expoPage, { key: '.', target: sizeSlider }).defaultPrevented, true, '. still works while the size slider has focus');
+  assert.equal(sizeSlider.value, '260');
+  assert.equal(press(expoPage, { key: ',', target: sizeSlider }).defaultPrevented, true, ', still works while the size slider has focus');
+  assert.equal(sizeSlider.value, '240');
+  // Reset back to wall for following assertions.
+  press(expoPage, { key: 'm' });
+  press(expoPage, { key: 'm' });
+  assert.equal(modeEvents.at(-1), 'wall');
+
   // Typing targets and modifiers still guard < and >.
   sizeSlider.value = '240';
+  const beforeGuardedModes = modeEvents.length;
   press(expoPage, { key: '<', shiftKey: true, target: input });
   press(expoPage, { key: '>', shiftKey: true, ctrlKey: true });
   press(expoPage, { key: 'M', shiftKey: true });
   assert.equal(sizeSlider.value, '240', 'typing and Ctrl/Meta/Alt guard < and >');
-  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], 'Shift+M stays guarded');
+  assert.equal(modeEvents.length, beforeGuardedModes, 'Shift+M stays guarded');
 
   // Open Expo viewer dialog suppresses page-level Expo shortcuts.
   const expoViewer = new Element('dialog');
@@ -1248,7 +1329,7 @@ function press(harness, values) {
   press(expoPage, { key: 'm' });
   press(expoPage, { key: '.' });
   assert.equal(sizeSlider.value, '240', 'open viewer dialog suppresses page-level Expo size shortcuts');
-  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], 'open viewer dialog suppresses page-level Expo mode shortcut');
+  assert.equal(modeEvents.length, beforeGuardedModes, 'open viewer dialog suppresses page-level Expo mode shortcut');
   expoPage.root.children.pop();
 
   // Blog/Case/Release gallery form ([data-td-blog-gallery]) uses the same m / , / . shortcuts when visible.

@@ -10,7 +10,19 @@
   // Typing this prefix, or pressing "\\" outside a field, restricts the
   // palette to commands. "/" opens the full search surface.
   var COMMAND_PREFIX = '>';
-  var TYPING_TAGS = { INPUT: true, TEXTAREA: true, SELECT: true };
+  var TYPING_TAGS = { TEXTAREA: true, SELECT: true };
+  var NON_TYPING_INPUT_TYPES = {
+    button: true,
+    checkbox: true,
+    color: true,
+    file: true,
+    hidden: true,
+    image: true,
+    radio: true,
+    range: true,
+    reset: true,
+    submit: true,
+  };
   var extensions = new Map();
   var extensionsChanged = function () {};
   var SAFE_ID = /^[a-zA-Z0-9][a-zA-Z0-9_-]*$/;
@@ -31,9 +43,16 @@
   }
 
   // A bare single-character shortcut must yield to anything the reader could be
-  // typing into, including author-supplied editable regions.
+  // typing into, including author-supplied editable regions, while allowing
+  // non-text controls like gallery radios and range sliders.
   function isTypingTarget(target) {
     if (!target || target.nodeType !== 1) return false;
+    if (target.tagName === 'INPUT') {
+      var inputType = String(
+        target.type || (target.getAttribute && target.getAttribute('type')) || 'text',
+      ).toLowerCase();
+      return !NON_TYPING_INPUT_TYPES[inputType];
+    }
     if (TYPING_TAGS[target.tagName]) return true;
     return typeof target.closest === 'function'
       ? target.closest('[contenteditable]:not([contenteditable="false"])') !== null

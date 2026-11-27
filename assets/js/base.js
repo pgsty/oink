@@ -124,12 +124,17 @@ limitations under the License.
 
         if (window.OinkSurfaceCoordinator) window.OinkSurfaceCoordinator.register(surfaceName, close);
         menu.addEventListener('pointerenter', function(event) {
-            if (event.pointerType !== 'touch') open();
+            if (event.pointerType === 'touch') return;
+            if (menu.hasAttribute('data-td-suppress-hover-open')) return;
+            open();
         });
         menu.addEventListener('pointerleave', function(event) {
+            menu.removeAttribute('data-td-suppress-hover-open');
             if (event.pointerType !== 'touch') closeSoon();
         });
-        menu.addEventListener('focusin', open);
+        menu.addEventListener('focusin', function() {
+            if (!menu.hasAttribute('data-td-suppress-focus-open')) open();
+        });
         menu.addEventListener('focusout', function(event) {
             if (!menu.contains(event.relatedTarget)) closeSoon();
         });

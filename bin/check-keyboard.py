@@ -324,7 +324,7 @@ def main() -> int:
             )
             require(
                 "data-td-keyboard-help-source" in html,
-                "footer_style: none with keyboard_nav on omitted the V shortcut help source template",
+                "footer_style: none with keyboard_nav on omitted the ; shortcut help source template",
             )
             output, _ = actions.build(
                 helper,

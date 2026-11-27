@@ -121,6 +121,7 @@ html[data-td-kbd-zen] .td-shell-subnav {
   color: var(--bs-secondary-color);
   font-size: 0.78rem;
   line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .td-shell-keyboard-help__row .td-kbd-sequence {
@@ -147,8 +148,30 @@ html[data-td-kbd-zen] .td-shell-subnav {
   }
 }
 
-/* Modal shortcut cheat sheet opened by V from anywhere on the page, including
-   scrolled articles, Hide/reading mode, and footer_style: none pages. */
+/* On tablet and desktop widths, lay out the two-section hover cheat sheet in
+   two columns (Navigation / Actions) so every shortcut fits without a long
+   single-column scroll. The selector beats site-navbar.css's .td-is-open rule
+   which loads later in the layer order. */
+@media (min-width: 768px) {
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--split {
+    width: min(40rem, calc(100vw - 2rem));
+  }
+  .td-shell-footline .td-shell-keyboard.td-is-open .td-shell-keyboard-help--split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--split .td-shell-keyboard-help__header {
+    grid-column: 1 / -1;
+  }
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--split .td-shell-keyboard-help__section + .td-shell-keyboard-help__section {
+    border-top: 0;
+    border-inline-start: 1px solid var(--bs-border-color);
+  }
+}
+
+/* Modal shortcut cheat sheet opened by ; or clicking the bottom-bar trigger
+   from anywhere on the page, including scrolled articles, Zen Mode, and
+   footer_style: none pages. */
 .td-shell-keyboard-dialog {
   box-sizing: border-box;
   width: min(23rem, calc(100vw - 1.5rem));

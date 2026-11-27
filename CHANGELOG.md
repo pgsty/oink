@@ -21,15 +21,20 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   `params.ui.rich_copy: false`, or the same key in front matter, keeps the
   browser's behavior. The runtime is `js/chunks/rich-copy.js`.
 
-- The `;` key opens or closes the shortcut help dialog in the browser top layer
-  from anywhere on the page, including Zen Mode and pages with
-  `footer_style: none`. It dismisses on a second `;`, `Escape`, the close
-  button, or a backdrop click, and coordinates with other open surfaces.
+- The `;` key and clicking the bottom-bar `?` button open or close the centered
+  two-column shortcut help dialog in the browser top layer from anywhere on the
+  page, including Zen Mode and pages with `footer_style: none`. On desktop
+  (`≥ 768 px`), hovering or focusing `?` previews the two-column cheat sheet
+  above the footer, and closing the modal restores focus without reopening the
+  hover card. It dismisses on a second `;`, `Escape`, the close button, or a
+  backdrop click, and coordinates with other open surfaces.
 - The `v` key switches the layout form (`list`, `cards`, `table`, `gallery`) on
   index pages that enable `blog_index_toggle`.
 - On Expo album pages and in blog/case/release gallery mode, `m` cycles gallery
   layout modes (`wall`, `cards`, `seamless`), and `,` / `<` and `.` / `>`
-  shrink or enlarge the tile size slider in 20 px steps.
+  shrink or enlarge the tile size slider in 20 px steps; focusing non-text
+  `<input>` controls such as gallery layout radios or range sliders no longer
+  suppresses single-key shortcuts.
 - The `x` key cycles languages like `l`, and the `z` key toggles Zen Mode like
   `h`, keeping the full shortcut set within easy left-hand reach.
 - The shortcut help panel splits `K` (Previous heading) and `J` (Next heading)

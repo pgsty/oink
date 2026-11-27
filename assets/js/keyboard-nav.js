@@ -24,10 +24,31 @@
   var ZEN_KEY = 'td-kbd-zen';
   var PALETTE_KEY = 'td-kbd-palette';
 
-  var TYPING_TAGS = { INPUT: true, TEXTAREA: true, SELECT: true };
+  var TYPING_TAGS = { TEXTAREA: true, SELECT: true };
+  // Non-text <input> controls (such as Expo/gallery layout radios and tile-size
+  // sliders) do not consume character keystrokes, so bare shortcuts keep working
+  // after a reader clicks a toolbar control.
+  var NON_TYPING_INPUT_TYPES = {
+    button: true,
+    checkbox: true,
+    color: true,
+    file: true,
+    hidden: true,
+    image: true,
+    radio: true,
+    range: true,
+    reset: true,
+    submit: true,
+  };
 
   function isTypingTarget(target) {
     if (!target || target.nodeType !== 1) return false;
+    if (target.tagName === 'INPUT') {
+      var inputType = String(
+        target.type || (target.getAttribute && target.getAttribute('type')) || 'text',
+      ).toLowerCase();
+      return !NON_TYPING_INPUT_TYPES[inputType];
+    }
     if (TYPING_TAGS[target.tagName]) return true;
     return typeof target.closest === 'function'
       ? target.closest('[contenteditable]:not([contenteditable="false"])') !== null
@@ -934,6 +955,33 @@
       for (var i = 0; i < children.length; i += 1) suffixDialogIds(children[i]);
     }
 
+    function suppressTriggerHover(target) {
+      var hoverHost = target && typeof target.closest === 'function'
+        ? target.closest('[data-td-nav-hover]')
+        : null;
+      if (!hoverHost || !hoverHost.setAttribute) return null;
+      hoverHost.setAttribute('data-td-suppress-focus-open', '');
+      hoverHost.setAttribute('data-td-suppress-hover-open', '');
+      var clearHover = function () {
+        if (hoverHost && hoverHost.removeAttribute) {
+          hoverHost.removeAttribute('data-td-suppress-hover-open');
+        }
+      };
+      if (typeof win.requestAnimationFrame === 'function') {
+        win.requestAnimationFrame(function () {
+          win.requestAnimationFrame(function () {
+            if (typeof win.setTimeout === 'function') win.setTimeout(clearHover, 60);
+            else clearHover();
+          });
+        });
+      } else if (typeof win.setTimeout === 'function') {
+        win.setTimeout(clearHover, 100);
+      } else {
+        clearHover();
+      }
+      return hoverHost;
+    }
+
     function finishHelpClose() {
       if (isHelpOpen()) return;
       var target = helpReturnFocus;
@@ -952,10 +1000,15 @@
         target !== doc.body && target !== doc.documentElement &&
         doc.contains(target)
       ) {
+        var hoverHost = suppressTriggerHover(target);
         try {
           target.focus({ preventScroll: true });
         } catch (_) {
           target.focus();
+        } finally {
+          if (hoverHost && hoverHost.removeAttribute) {
+            hoverHost.removeAttribute('data-td-suppress-focus-open');
+          }
         }
       }
     }
@@ -963,13 +1016,23 @@
     function closeHelp(restoreFocus) {
       if (!isHelpOpen()) return;
       suppressHelpFocus = restoreFocus === false;
-      if (typeof helpDialog.close === 'function') {
-        helpDialog.close();
-      } else {
-        helpDialog.open = false;
-        helpDialog.removeAttribute('open');
+      // Native dialog.close() synchronously restores focus to the trigger
+      // before returning, which would fire focusin on base.js's hover menu.
+      // Suppress both that focusin and any post-close synthetic pointerenter.
+      var hoverHost = suppressTriggerHover(helpReturnFocus);
+      try {
+        if (typeof helpDialog.close === 'function') {
+          helpDialog.close();
+        } else {
+          helpDialog.open = false;
+          helpDialog.removeAttribute('open');
+        }
+        finishHelpClose();
+      } finally {
+        if (hoverHost && hoverHost.removeAttribute) {
+          hoverHost.removeAttribute('data-td-suppress-focus-open');
+        }
       }
-      finishHelpClose();
     }
 
     function buildHelpDialog(source) {
@@ -1065,13 +1128,13 @@
       return dialog;
     }
 
-    function openHelp(event) {
+    function openHelp(event, returnTarget) {
       var source = helpSource();
       if (!source) return false;
       var dialog = buildHelpDialog(source);
       if (!dialog) return false;
       if (event && typeof event.preventDefault === 'function') event.preventDefault();
-      helpReturnFocus = doc.activeElement;
+      helpReturnFocus = returnTarget || doc.activeElement;
       suppressHelpFocus = false;
       var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
       if (coordinator && typeof coordinator.closeOthers === 'function') {
@@ -1100,6 +1163,22 @@
         return true;
       }
       return openHelp(event);
+    }
+
+    // Hovering the bottom-bar ? button previews the cheat sheet; clicking it
+    // promotes to the centered modal dialog (same as pressing ;) and stops
+    // base.js's hover-menu click handler from reopening the floating card.
+    function onTriggerClick(event) {
+      var target = event && event.target;
+      var trigger = target && typeof target.closest === 'function'
+        ? target.closest('.td-shell-keyboard__trigger')
+        : null;
+      if (!trigger) return;
+      if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      if (event.button && event.button !== 0) return;
+      if (openHelp(event, trigger) && typeof event.stopPropagation === 'function') {
+        event.stopPropagation();
+      }
     }
 
     /* ------------------------------------------------------------ keymap */
@@ -1232,6 +1311,7 @@
     }
 
     doc.addEventListener('keydown', onKeydown);
+    doc.addEventListener('click', onTriggerClick, true);
     doc.addEventListener('focusin', function (event) {
       var ring = doc.querySelector('.td-kbd-focus');
       if (ring && event.target && !ring.contains(event.target)) {

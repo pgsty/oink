@@ -36,7 +36,7 @@
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
 {{- $hasBlogIndexToggle := .Store.Get "hasBlogIndexToggle" | default false -}}
 {{- $hasGallery := or (.Store.Get "hasExpo" | default false) (.Store.Get "hasBlogGallery" | default false) -}}
-<div class="{{ if $pop }}td-nav-hover-menu__pop {{ end }}td-shell-keyboard-help" role="group"
+<div class="{{ if $pop }}td-nav-hover-menu__pop {{ end }}td-shell-keyboard-help{{ if $keyboardNav }} td-shell-keyboard-help--split{{ end }}" role="group"
   aria-label="{{ T "ui_keyboard_shortcuts" }}" data-td-close-label="{{ T "ui_search_close" }}">
     <div class="td-shell-keyboard-help__header">
       {{- partialCached "shell/icon.html" "circle-question" "keyboard-help-title" -}}

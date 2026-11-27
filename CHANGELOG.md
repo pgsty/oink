@@ -30,10 +30,11 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   - **Social posts**: the `social` shortcode quotes a post (X by default;
     Bluesky, Mastodon, Threads, Weibo, Zhihu, Telegram, LinkedIn, or `none`,
     the default for a nested quote) entirely from the page, with a Markdown
-    body that composes images, galleries and a nested quoted post. Nothing is
-    fetched at build or view time. A static avatar missing from the project's
-    `static/` warns with the suppressible ID `social:avatar-static`. Hugo's own
-    `x` is untouched.
+    body that composes images, galleries and a nested quoted post. The quote
+    requires no platform request. A reader’s browser loads any remote avatar
+    or attachment the author supplies. A static avatar missing from the
+    project's `static/` warns with the suppressible ID `social:avatar-static`.
+    Hugo's own `x` is untouched.
   - **Map**: a `map` fence of places always renders a numbered place list with
     OpenStreetMap links; with a complete new `params.map` (an HTTPS `tiles`
     template and its `attribution`), HTML adds an interactive map through
@@ -112,9 +113,8 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   under the same `page_context_menu.assistant_links` opt-in. Gemini documents
   no prompt parameter, so activating it also copies the prompt to paste.
   The action manifest gains the language home (`home`) for `G`.
-- Eighteen locale keys were added to all 32 catalogs for the shortcut groups,
-  history and Gemini (24 added in total since 1.6.0 across the new components,
-  shortcuts, history and Gemini; no existing keys were removed).
+- All 32 catalogs gained 19 labels for shortcuts, the reader preference,
+  history and Gemini, and six for the new content components.
 - ECharts fences can use a site's own theme: define it on
   `window.OinkEchartsThemes` under the name the fence's `theme` gives, and each
   chart registers it before drawing. ECharts loads only when a chart comes on
@@ -171,6 +171,19 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   the hashes no longer fuse at the heading's weight.
 
 ### Fixed
+
+- Readers can turn off global single-key shortcuts from shortcut help or the
+  focus stop after “Skip to content”. The choice also covers the palette’s
+  punctuation shortcuts and persists across languages on the same site.
+- Sites served under different paths on one host now store browsing history
+  separately, including sites with URL-encoded characters in their base path.
+- RSS links from maps and quoted posts keep the source article address when
+  the link consists of a query or fragment. Bilibili embed links keep a valid
+  `cid` so a multi-part recording opens at the selected part.
+- Typeset copy preserves step numbers when a selection begins midway through
+  an ordered list, including lists starting at zero or counting down.
+- Timeline diagnostics accept long Markdown fences and match the full
+  `timeline` class name.
 
 - Asciinema `markers` reach the player as `[time, label]` pairs. The theme
   spread them into one flat list, which asciinema-player 3.18 rejects, so a

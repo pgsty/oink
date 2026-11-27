@@ -104,6 +104,7 @@ ui_pricing_included: 包含
 ui_pricing_excluded: 不包含
 ui_marquee_pause: 暂停滚动
 ui_kbd_with: 加
+ui_single_key_shortcuts: 单键快捷键
 ui_keyboard_shortcuts: 热键说明
 ui_shortcut_tree_move: 在侧栏中移动
 ui_shortcut_tree_toggle: 收起/展开章节

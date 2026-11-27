@@ -1,4 +1,5 @@
-.td-skip-link {
+.td-skip-link,
+.td-shortcut-preference {
   position: fixed;
   inset-block-start: 0.75rem;
   inset-inline-start: 0.75rem;
@@ -15,7 +16,8 @@
   transition: opacity var(--td-motion-duration-fast) ease, transform var(--td-motion-duration-fast) ease;
 }
 
-.td-skip-link:focus-visible {
+.td-skip-link:focus-visible,
+.td-shortcut-preference:focus-within {
   color: var(--bs-white);
   opacity: 1;
   outline: 3px solid var(--bs-link-color);

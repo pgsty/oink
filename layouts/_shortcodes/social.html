@@ -1,5 +1,5 @@
-{{- /* A quoted social post, entirely from the page: nothing is fetched at
-       build or view time, so the quote outlives the original.
+{{- /* A quoted social post, from the page. The quote outlives the original and
+       needs no platform request. Authored images load from their own URLs.
 
          {{< social author="…" handle="@…" avatar="avatars/a.jpg"
                     date="2026-02-15" url="https://x.com/…" platform="x" >}}
@@ -97,13 +97,9 @@
 {{- $href := "" -}}
 {{- $external := false -}}
 {{- if isset $params "url" -}}
-  {{- $url := partial "content/url.html" (dict "name" .Name "parameter" "url" "position" .Position "value" (index $params "url") "kind" "web") -}}
+  {{- $url := partial "content/url.html" (dict "name" .Name "parameter" "url" "position" .Position "value" (index $params "url") "kind" "web" "rssPage" (cond (eq $format "rss") .Page nil)) -}}
   {{- $href = $url.href -}}
   {{- $external = $url.external -}}
-{{- end -}}
-{{- $rssHref := $href -}}
-{{- if and $rssHref (not $external) (not (hasPrefix $rssHref "#")) (not (hasPrefix $rssHref "?")) -}}
-  {{- $rssHref = absURL $rssHref -}}
 {{- end -}}
 {{- $avatar := false -}}
 {{- if isset $params "avatar" -}}
@@ -182,12 +178,12 @@
 {{- end -}}
 {{- if $anonymous -}}
   {{- if eq $format "rss" -}}
-<blockquote class="td-social-quote"{{ with $rssHref }} cite="{{ . }}"{{ end }}>{{ if $rendered }}{{ $rendered }}{{ else if $rssHref }}<p><a href="{{ $rssHref }}">{{ $viewOriginal }}</a></p>{{ end }}</blockquote>
+<blockquote class="td-social-quote"{{ with $href }} cite="{{ . }}"{{ end }}>{{ if $rendered }}{{ $rendered }}{{ else if $href }}<p><a href="{{ $href }}">{{ $viewOriginal }}</a></p>{{ end }}</blockquote>
   {{- else -}}
 <blockquote class="td-social-quote"{{ with $href }} cite="{{ . }}"{{ end }}>{{ if $rendered }}{{ $rendered }}{{ else if $href }}<p><a href="{{ $href }}"{{ if $external }} rel="external"{{ end }}>{{ $viewOriginal }}</a></p>{{ end }}</blockquote>
   {{- end -}}
 {{- else if eq $format "rss" -}}
-<figure class="td-social">{{ with $rendered }}<blockquote{{ with $rssHref }} cite="{{ . }}"{{ end }}>{{ . }}</blockquote>{{ end }}<figcaption>— {{ $who }}{{ if and $author $handle }} ({{ $handle }}){{ end }}{{ with $brand.name }} · {{ . }}{{ end }}{{ with $date }} · {{ . }}{{ end }}{{ with $rssHref }} · <a href="{{ . }}">{{ $viewOriginal }}</a>{{ end }}</figcaption></figure>
+<figure class="td-social">{{ with $rendered }}<blockquote{{ with $href }} cite="{{ . }}"{{ end }}>{{ . }}</blockquote>{{ end }}<figcaption>— {{ $who }}{{ if and $author $handle }} ({{ $handle }}){{ end }}{{ with $brand.name }} · {{ . }}{{ end }}{{ with $date }} · {{ . }}{{ end }}{{ with $href }} · <a href="{{ . }}">{{ $viewOriginal }}</a>{{ end }}</figcaption></figure>
 {{- else -}}
 {{- /* Leading @, separators (any Unicode space), controls and invisible
        format characters (zero-width space, BOM, bidi marks) never draw. */ -}}

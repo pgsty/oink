@@ -104,6 +104,7 @@ ui_pricing_included: "Inkluderat"
 ui_pricing_excluded: "Inte inkluderat"
 ui_marquee_pause: "Pausa animation"
 ui_kbd_with: "med"
+ui_single_key_shortcuts: Kortkommandon med en enda tangent
 ui_keyboard_shortcuts: "Genvägshjälp"
 ui_shortcut_tree_move: "Navigera i sidofältet"
 ui_shortcut_tree_toggle: "Fäll ihop eller expandera avsnitt"

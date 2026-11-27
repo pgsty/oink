@@ -3,7 +3,7 @@
        history.js fills the list from this browser's localStorage, keyed by
        the site's base path. The markup varies only by language. */ -}}
 <div id="td-shell-history" class="td-shell-search td-shell-history" hidden data-td-history
-     data-td-history-scope="{{ "/" | relURL }}"
+     data-td-history-scope="{{ (urls.Parse .Site.BaseURL).EscapedPath }}"
      data-td-t-empty="{{ T "ui_history_empty" }}"
      data-td-t-no-results="{{ T "ui_search_empty" }}"
      data-td-t-results="{{ T "ui_search_results" }}"

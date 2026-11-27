@@ -9,25 +9,19 @@
 {{- $origin := $page.Path -}}
 {{- if strings.Contains $raw ".timeline" -}}
   {{- $lines := split (replace $raw "\r\n" "\n") "\n" -}}
-  {{- $inFence := false -}}
-  {{- $fenceChar := "" -}}
-  {{- $fenceLen := 0 -}}
+  {{- $fence := "" -}}
   {{- $prevBlank := true -}}
   {{- range $lines -}}
     {{- $stripped := replaceRE `^(?: {0,3}> ?)*` "" . -}}
     {{- $trimmed := strings.TrimSpace $stripped -}}
     {{- $indented := gt (len (findRE `^(?: {4}|\t)` $stripped 1)) 0 -}}
-    {{- if $inFence -}}
-      {{- $closeRe := printf `^%s{%d,}$` $fenceChar $fenceLen -}}
-      {{- if and (not $indented) (findRE $closeRe $trimmed 1) -}}
-        {{- $inFence = false -}}
+    {{- if $fence -}}
+      {{- if and (not $indented) (hasPrefix $trimmed $fence) (eq (strings.TrimLeft (substr $fence 0 1) $trimmed) "") -}}
+        {{- $fence = "" -}}
       {{- end -}}
       {{- $prevBlank = false -}}
     {{- else if and (not $indented) (findRE "^(`{3,}[^`]*|~{3,}.*)$" $trimmed 1) -}}
-      {{- $open := index (findRE "^(`{3,}|~{3,})" $trimmed 1) 0 -}}
-      {{- $inFence = true -}}
-      {{- $fenceChar = substr $open 0 1 -}}
-      {{- $fenceLen = len $open -}}
+      {{- $fence = index (findRE "^(`{3,}|~{3,})" $trimmed 1) 0 -}}
       {{- $prevBlank = false -}}
     {{- else if eq $trimmed "" -}}
       {{- $prevBlank = true -}}
@@ -44,7 +38,7 @@
   {{- end -}}
 {{- end -}}
 {{- if strings.Contains $html "timeline" -}}
-  {{- range findRESubmatch `<(ul|ol|p|blockquote|table|h[1-6])\b[^>]*\bclass="[^"]*\btimeline\b[^"]*"` $html -}}
+  {{- range findRESubmatch `<(ul|ol|p|blockquote|table|h[1-6])\b[^>]*\sclass="(?:[^"]*\s)?timeline(?:\s[^"]*)?"` $html -}}
     {{- $tag := index . 1 -}}
     {{- warnf "timeline in %s: {.timeline} applies only to a Markdown definition list (<dl>), not <%s>; check that each entry uses a marker line followed by ': event' and that markup.goldmark.extensions.definitionList is enabled" $origin $tag -}}
   {{- end -}}

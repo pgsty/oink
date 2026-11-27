@@ -105,6 +105,7 @@ ui_pricing_included: "כלול"
 ui_pricing_excluded: "לא כלול"
 ui_marquee_pause: "עצור תנועה"
 ui_kbd_with: "עם"
+ui_single_key_shortcuts: קיצורי מקלדת במקש אחד
 ui_keyboard_shortcuts: "עזרת קיצורים"
 ui_shortcut_tree_move: "נווט בסרגל הצד"
 ui_shortcut_tree_toggle: "כווץ או הרחב פרק"

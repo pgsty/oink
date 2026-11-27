@@ -161,8 +161,50 @@ limitations under the License.
         });
     }
 
+    function initShortcutPreference() {
+        const control = document.querySelector('[data-td-shortcut-preference]');
+        if (!control) return;
+        const key = 'td-single-key-shortcuts:' + control.dataset.tdShortcutPreference;
+        const skipLink = document.querySelector('a.td-skip-link');
+        if (skipLink) skipLink.after(control);
+        else document.body.prepend(control);
+        control.hidden = false;
+
+        const hints = Array.from(document.querySelectorAll('[data-td-page-shortcut]'),
+            element => [element, element.getAttribute('aria-keyshortcuts')]);
+        function apply(enabled) {
+            document.documentElement.toggleAttribute('data-td-shortcuts-off', !enabled);
+            document.querySelectorAll('[data-td-shortcut-preference] > input').forEach(input => {
+                input.checked = enabled;
+            });
+            hints.forEach(([element, keys]) => {
+                if (enabled) element.setAttribute('aria-keyshortcuts', keys);
+                else element.removeAttribute('aria-keyshortcuts');
+            });
+        }
+        function restore() {
+            try { apply(window.localStorage.getItem(key) !== 'off'); }
+            catch (_) { /* The control still works for this page. */ }
+        }
+        restore();
+        document.addEventListener('change', event => {
+            if (!event.target.matches || !event.target.matches('[data-td-shortcut-preference] > input')) return;
+            const enabled = event.target.checked;
+            apply(enabled);
+            try {
+                if (enabled) window.localStorage.removeItem(key);
+                else window.localStorage.setItem(key, 'off');
+            } catch (_) { /* Storage is optional. */ }
+        });
+        window.addEventListener('storage', event => {
+            if (event.key === key || event.key === null) restore();
+        });
+        window.addEventListener('pageshow', event => { if (event.persisted) restore(); });
+    }
+
     initReadingFocus();
     if (!window.OinkComparePane) {
+        initShortcutPreference();
         initHeaderScroll();
         document.querySelectorAll('.td-language-selector--menu').forEach(function(menu, index) {
             initHoverMenu(menu, menu.querySelector('.td-language-selector__trigger'), 'language-menu-' + index);

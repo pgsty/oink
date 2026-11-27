@@ -104,6 +104,7 @@ ui_pricing_included: "Inkludert"
 ui_pricing_excluded: "Ikke inkludert"
 ui_marquee_pause: "Sett animasjon på pause"
 ui_kbd_with: "med"
+ui_single_key_shortcuts: Snarveier med én tast
 ui_keyboard_shortcuts: "Snarveishjelp"
 ui_shortcut_tree_move: "Naviger i sidefeltet"
 ui_shortcut_tree_toggle: "Fold sammen eller utvid seksjon"

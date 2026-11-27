@@ -63,6 +63,11 @@
     {{- if not (or (hasPrefix $raw "#") (hasPrefix $raw "?")) -}}
       {{- $href = strings.TrimPrefix "/" $raw | relURL -}}
     {{- end -}}
+    {{- with .rssPage -}}
+      {{- $base := .Permalink -}}
+      {{- with .OutputFormats.Get "html" }}{{ $base = .Permalink }}{{ end -}}
+      {{- $href = ((urls.Parse $base).ResolveReference (urls.Parse $href)).String -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- $markdown := replace $href `\` `\\` -}}

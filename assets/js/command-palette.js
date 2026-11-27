@@ -895,6 +895,7 @@
         else open();
       } else if (
         (event.key === '/' || COMMAND_KEYS[event.key]) &&
+        !document.documentElement.hasAttribute('data-td-shortcuts-off') &&
         !event.metaKey && !event.ctrlKey && !event.altKey &&
         // "~" is Shift+"`" on most layouts; every other key stays unshifted.
         (!event.shiftKey || event.key === '~') &&

@@ -234,7 +234,7 @@ function clickOn(target, extra = {}) {
 
 test('a plain click swaps an enabled card for the platform player', () => {
   const page = build();
-  const link = card('https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&p=1&autoplay=1&danmaku=0');
+  const link = card('https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&cid=42&autoplay=1&danmaku=0');
   const event = clickOn(link);
   page.click(event);
   assert.equal(event.defaultPrevented, true);
@@ -243,7 +243,7 @@ test('a plain click swaps an enabled card for the platform player', () => {
   assert.equal(holder.style.getPropertyValue('--td-media-ratio'), '4 / 3');
   const frame = holder.children[0];
   assert.equal(frame.tag, 'iframe');
-  assert.equal(frame.src, 'https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&p=1&autoplay=1&danmaku=0');
+  assert.equal(frame.src, 'https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&cid=42&autoplay=1&danmaku=0');
   assert.equal(frame.title, 'Talk');
   assert.equal(frame.getAttribute('allow'), 'autoplay; picture-in-picture; fullscreen');
   assert.equal(

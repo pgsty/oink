@@ -104,6 +104,7 @@ ui_pricing_included: "Включено"
 ui_pricing_excluded: "Не е включено"
 ui_marquee_pause: "Пауза на движението"
 ui_kbd_with: "с"
+ui_single_key_shortcuts: Клавишни комбинации с един клавиш
 ui_keyboard_shortcuts: "Справка за клавишите"
 ui_shortcut_tree_move: "По страничната лента"
 ui_shortcut_tree_toggle: "Свий или разшири секция"

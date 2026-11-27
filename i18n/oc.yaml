@@ -104,6 +104,7 @@ ui_pricing_included: "Inclús"
 ui_pricing_excluded: "Pas inclús"
 ui_marquee_pause: "Metre lo movement en pausa"
 ui_kbd_with: "amb"
+ui_single_key_shortcuts: Acorchis amb una sola tòca
 ui_keyboard_shortcuts: "Ajuda dels acorchis"
 ui_shortcut_tree_move: "Navigar dins la barra laterala"
 ui_shortcut_tree_toggle: "Replegar o espandir una seccion"

@@ -84,7 +84,7 @@
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
     data-td-nav-hover-trigger data-td-nav-hover-open
     title="{{ T "ui_keyboard_shortcuts" }}" aria-label="{{ T "ui_keyboard_shortcuts" }}"
-    {{- if $keyboardNav }} aria-keyshortcuts="'" aria-haspopup="dialog"{{ end }}
+    {{- if $keyboardNav }} data-td-page-shortcut aria-keyshortcuts="'" aria-haspopup="dialog"{{ end }}
     aria-expanded="false">
     {{- partialCached "shell/icon.html" "circle-question" "sidebar-keyboard-help" -}}
   </button>

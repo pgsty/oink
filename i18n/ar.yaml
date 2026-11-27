@@ -108,6 +108,7 @@ ui_pricing_included: "مُدرج"
 ui_pricing_excluded: "غير مُدرج"
 ui_marquee_pause: "إيقاف الحركة"
 ui_kbd_with: "مع"
+ui_single_key_shortcuts: اختصارات المفتاح الواحد
 ui_keyboard_shortcuts: "دليل الاختصارات"
 ui_shortcut_tree_move: "التنقل في الشريط الجانبي"
 ui_shortcut_tree_toggle: "طي القسم أو توسيعه"

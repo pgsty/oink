@@ -106,6 +106,7 @@ ui_pricing_included: "W pakiecie"
 ui_pricing_excluded: "Poza pakietem"
 ui_marquee_pause: "Zatrzymaj ruch"
 ui_kbd_with: "z"
+ui_single_key_shortcuts: Skróty jednoklawiszowe
 ui_keyboard_shortcuts: "Pomoc skrótów"
 ui_shortcut_tree_move: "Nawiguj po pasku bocznym"
 ui_shortcut_tree_toggle: "Zwiń lub rozwiń sekcję"

@@ -11,8 +11,8 @@
        title of audio and platform cards). Block attributes: caption, num, id
        (video and platform cards), poster, track, autoplay, width, height (as
        they apply). Print and RSS receive static figures with the URL; the
-       Markdown output keeps the authored line. Nothing is fetched at build
-       time, and no third-party request happens before a reader clicks.
+       Markdown output keeps the authored line. Platform players load on click.
+       Native media and any authored poster load from their supplied URLs.
        Input: page, format, position, src, alt, isBlock, attributes, ordinal,
        detect (from media-detect.html). Returns nothing; prints HTML. */ -}}
 {{- $page := .page -}}
@@ -311,8 +311,7 @@
       {{- with findRESubmatch `(?i)^/av([0-9]{1,12})$` $path 1 }}{{ $query = printf "aid=%s" (index (index . 0) 1) }}{{ end -}}
     {{- else if eq $host "player.bilibili.com" -}}
       {{- /* Bilibili's own embed code: the IDs sit in the query, often both;
-             the BV ID wins, and the rest of that query (cid, isOutside, …)
-             never reaches the player URL the theme builds. */ -}}
+             the BV ID wins. An explicit content ID selects a part below. */ -}}
       {{- if eq $path "/player.html" -}}
         {{- $bvid := $url.Query.Get "bvid" -}}
         {{- $aid := $url.Query.Get "aid" -}}
@@ -325,7 +324,11 @@
     {{- if $query -}}
       {{- $part := $url.Query.Get "p" -}}
       {{- if not (findRE `^[1-9][0-9]{0,3}$` $part) }}{{ $part = "1" }}{{ end -}}
-      {{- $player = printf "https://player.bilibili.com/player.html?%s&p=%s&autoplay=1&danmaku=0" $query $part -}}
+      {{- $partQuery := printf "p=%s" $part -}}
+      {{- if eq $host "player.bilibili.com" -}}
+        {{- with $url.Query.Get "cid" }}{{ if findRE `^[1-9][0-9]{0,18}$` . }}{{ $partQuery = printf "cid=%s" . }}{{ end }}{{ end -}}
+      {{- end -}}
+      {{- $player = printf "https://player.bilibili.com/player.html?%s&%s&autoplay=1&danmaku=0" $query $partQuery -}}
       {{- if gt $seconds 0 }}{{ $player = printf "%s&t=%d" $player $seconds }}{{ end -}}
     {{- end -}}
   {{- else if eq $platform "vimeo" -}}

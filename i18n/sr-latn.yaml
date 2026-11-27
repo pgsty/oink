@@ -105,6 +105,7 @@ ui_pricing_included: "Uključeno"
 ui_pricing_excluded: "Nije uključeno"
 ui_marquee_pause: "Pauziraj kretanje"
 ui_kbd_with: "sa"
+ui_single_key_shortcuts: Prečice sa jednim tasterom
 ui_keyboard_shortcuts: "Pomoć za prečice"
 ui_shortcut_tree_move: "Kretanje kroz bočnu traku"
 ui_shortcut_tree_toggle: "Skupi ili proširi sekciju"

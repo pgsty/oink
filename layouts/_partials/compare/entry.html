@@ -3,7 +3,7 @@
 {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) false -}}
 <button type="button" class="td-compare-entry d-print-none" data-td-compare-open hidden
   title="{{ T "ui_shortcut_compare" }}" aria-label="{{ T "ui_shortcut_compare" }}"
-  {{- if $keyboardNav }} aria-keyshortcuts="B"{{ end }} aria-haspopup="dialog">
+  {{- if $keyboardNav }} data-td-page-shortcut aria-keyshortcuts="B"{{ end }} aria-haspopup="dialog">
   <i class="fa-solid fa-code-compare" aria-hidden="true"></i>
 </button>
 <span class="visually-hidden" role="status" data-td-compare-error></span>

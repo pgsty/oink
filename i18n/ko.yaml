@@ -103,6 +103,7 @@ ui_pricing_included: "포함됨"
 ui_pricing_excluded: "포함되지 않음"
 ui_marquee_pause: "움직임 일시 정지"
 ui_kbd_with: "및"
+ui_single_key_shortcuts: 단일 키 단축키
 ui_keyboard_shortcuts: "단축키 안내"
 ui_shortcut_tree_move: "사이드바 탐색"
 ui_shortcut_tree_toggle: "섹션 접기 또는 펼치기"

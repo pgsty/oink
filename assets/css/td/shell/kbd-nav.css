@@ -303,6 +303,16 @@ html[data-td-kbd-instant] * {
   outline-offset: -2px;
 }
 
+.td-shell-keyboard-dialog__preference {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-block-start: 1px solid var(--bs-border-color);
+  cursor: pointer;
+}
+
 /* Each group draws its own start and top rules; the body clips the ones on
    its outer edges, so the dividers follow whatever number of columns fit. */
 .td-shell-keyboard-dialog__body .td-shell-keyboard-help__section {

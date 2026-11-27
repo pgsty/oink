@@ -104,6 +104,7 @@ ui_pricing_included: "Dahil"
 ui_pricing_excluded: "Dahil değil"
 ui_marquee_pause: "Hareketi duraklat"
 ui_kbd_with: "ile"
+ui_single_key_shortcuts: Tek tuşlu kısayollar
 ui_keyboard_shortcuts: "Kısayol yardımı"
 ui_shortcut_tree_move: "Kenar çubuğunda gezin"
 ui_shortcut_tree_toggle: "Bölümü daralt veya genişlet"

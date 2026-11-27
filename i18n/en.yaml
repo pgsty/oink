@@ -105,6 +105,7 @@ ui_pricing_included: Included
 ui_pricing_excluded: Not included
 ui_marquee_pause: Pause motion
 ui_kbd_with: with
+ui_single_key_shortcuts: Single-key shortcuts
 ui_keyboard_shortcuts: Shortcut help
 ui_shortcut_tree_move: Move through sidebar
 ui_shortcut_tree_toggle: Collapse or expand section

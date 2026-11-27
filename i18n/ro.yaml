@@ -105,6 +105,7 @@ ui_pricing_included: "Inclus"
 ui_pricing_excluded: "Neinclus"
 ui_marquee_pause: "Oprește mișcarea"
 ui_kbd_with: "cu"
+ui_single_key_shortcuts: Scurtături cu o singură tastă
 ui_keyboard_shortcuts: "Ghid de scurtături"
 ui_shortcut_tree_move: "Navighează prin bara laterală"
 ui_shortcut_tree_toggle: "Restrânge sau extinde secțiunea"

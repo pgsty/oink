@@ -119,7 +119,7 @@
   {{- $href := "" -}}
   {{- $hrefExternal := false -}}
   {{- with index $item "link" -}}
-    {{- $link := partial "content/url.html" (dict "name" "map" "label" "map fence" "parameter" (printf "place %d link" $n) "position" $position "value" . "kind" "link") -}}
+    {{- $link := partial "content/url.html" (dict "name" "map" "label" "map fence" "parameter" (printf "place %d link" $n) "position" $position "value" . "kind" "link" "rssPage" (cond (eq $format "rss") $page nil)) -}}
     {{- $href = $link.href -}}
     {{- $hrefExternal = $link.external -}}
   {{- end -}}

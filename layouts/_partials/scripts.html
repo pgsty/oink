@@ -104,6 +104,9 @@
   <script src="{{ $actions.RelPermalink }}"></script>
 {{ end -}}
 {{ if $interactiveOutput -}}
+  {{ if or $hasKeyboardNav $localSearch -}}
+  <label class="td-shortcut-preference d-print-none" data-td-shortcut-preference="{{ (urls.Parse .Site.BaseURL).EscapedPath }}" hidden><input type="checkbox" checked> {{ T "ui_single_key_shortcuts" }}</label>
+  {{ end -}}
   {{ $core := slice
     (resources.Get "js/base.js")
     (resources.Get "js/navbar-menu.js")

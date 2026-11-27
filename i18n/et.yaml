@@ -104,6 +104,7 @@ ui_pricing_included: "Sisaldub"
 ui_pricing_excluded: "Ei sisaldu"
 ui_marquee_pause: "Peata liikumine"
 ui_kbd_with: "pluss"
+ui_single_key_shortcuts: Ühe klahviga kiirklahvid
 ui_keyboard_shortcuts: "Kiirklahvide spikker"
 ui_shortcut_tree_move: "Liigu külgribal"
 ui_shortcut_tree_toggle: "Ahenda või laienda jaotis"

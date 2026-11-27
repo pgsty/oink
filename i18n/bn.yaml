@@ -104,6 +104,7 @@ ui_pricing_included: "অন্তর্ভুক্ত"
 ui_pricing_excluded: "অন্তর্ভুক্ত নয়"
 ui_marquee_pause: "অ্যানিমেশন থামান"
 ui_kbd_with: "সঙ্গে"
+ui_single_key_shortcuts: এক কী দিয়ে শর্টকাট
 ui_keyboard_shortcuts: "শর্টকাট নির্দেশিকা"
 ui_shortcut_tree_move: "সাইডবারে নেভিগেট করুন"
 ui_shortcut_tree_toggle: "বিভাগ সংকুচিত বা প্রসারিত করুন"

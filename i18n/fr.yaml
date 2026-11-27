@@ -105,6 +105,7 @@ ui_pricing_included: "Inclus"
 ui_pricing_excluded: "Non inclus"
 ui_marquee_pause: "Mettre le mouvement en pause"
 ui_kbd_with: "avec"
+ui_single_key_shortcuts: Raccourcis à une seule touche
 ui_keyboard_shortcuts: "Aide des raccourcis"
 ui_shortcut_tree_move: "Naviguer dans la barre latérale"
 ui_shortcut_tree_toggle: "Réduire ou développer une section"

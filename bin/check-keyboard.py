@@ -337,6 +337,7 @@ def main() -> int:
                 "default bundle omitted the keyboard-nav runtime",
             )
             home_html = (output / "en" / "index.html").read_text(encoding="utf-8")
+            require('data-td-history-scope="/"' in home_html, "root site lost its history scope")
             require(
                 any(
                     "OinkKeyboardNav" in bundle
@@ -348,6 +349,18 @@ def main() -> int:
                 "data-td-navbar-route" in home_html,
                 "homepage omitted the navbar route-cycle hooks",
             )
+
+            subpath_config = actions.action_config(helper, True)
+            for label, path in (("subpath", "/preview/"), ("unicode", "/%E7%8C%AA/")):
+                output, _ = actions.build(helper, workspace, f"kbd-{label}", subpath_config.replace(
+                    "baseURL: https://example.org/preview/", f"baseURL: https://example.org{path}"
+                ))
+                for lang in ("en", "zh"):
+                    page = (output / lang / "index.html").read_text(encoding="utf-8")
+                    require(f'data-td-history-scope="{path}"' in page,
+                            f"{lang} history should use the site's encoded base path {path}")
+                    require(f'data-td-shortcut-preference="{path}"' in page,
+                            f"{lang} shortcut preference should use the site's base path {path}")
 
             output, _ = actions.build(helper, workspace, "kbd-off", toggle_off(config))
             html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(
@@ -394,6 +407,8 @@ def main() -> int:
                 "data-td-keyboard-help-source" in html,
                 "footer_style: none with keyboard_nav on omitted the ' shortcut help source template",
             )
+            require('data-td-shortcut-preference="/"' in html,
+                    "a footerless page must still let the reader turn single-key shortcuts back on")
             require(
                 html.count('class="td-shell-keyboard-help__row" data-td-shortcut=') == 30,
                 "the shortcut help template no longer carries thirty rows",
@@ -415,6 +430,8 @@ def main() -> int:
                 "data-td-keyboard-help-source" not in html,
                 "footer_style: none with keyboard_nav off still emitted the shortcut help template",
             )
+            require('data-td-shortcut-preference="/"' in html,
+                    "local search alone should let the reader disable the palette's character shortcuts")
             require(
                 'id="td-shell-history"' not in html,
                 "keyboard_nav off still emitted the browsing history overlay",

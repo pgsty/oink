@@ -66,7 +66,7 @@
     {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" $p "key" "keyboard_nav")) false -}}
     <button type="button" class="td-page-actions__primary td-page-actions__form" hidden
       data-td-blog-index-toggle
-      {{- if $keyboardNav }} aria-keyshortcuts="L"{{ end }}
+      {{- if $keyboardNav }} data-td-page-shortcut aria-keyshortcuts="L"{{ end }}
       title="{{ T "ui_blog_index_toggle" }}" aria-label="{{ T "ui_blog_index_toggle" }}">
       <span class="td-page-actions__icon td-page-actions__icon--form-list"><i class="fa-solid fa-list" aria-hidden="true"></i></span>
       <span class="td-page-actions__icon td-page-actions__icon--form-cards"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>

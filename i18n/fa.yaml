@@ -104,6 +104,7 @@ ui_pricing_included: "شامل می‌شود"
 ui_pricing_excluded: "شامل نمی‌شود"
 ui_marquee_pause: "توقف حرکت"
 ui_kbd_with: "با"
+ui_single_key_shortcuts: میان‌برهای تک‌کلیدی
 ui_keyboard_shortcuts: "راهنمای میانبرها"
 ui_shortcut_tree_move: "حرکت در نوار کناری"
 ui_shortcut_tree_toggle: "بسته یا باز کردن بخش"

@@ -21,7 +21,7 @@
   'use strict';
 
   var PLAYER =
-    /^https:\/\/(?:www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1(?:&start=[0-9]+)?|player\.bilibili\.com\/player\.html\?(?:bvid=BV[0-9A-Za-z]{10}|aid=[0-9]{1,12})&p=[1-9][0-9]{0,3}&autoplay=1&danmaku=0(?:&t=[0-9]+)?|player\.vimeo\.com\/video\/[0-9]{1,12}\?autoplay=1&dnt=1(?:&h=[0-9a-f]{6,20})?(?:#t=[0-9]+s)?)$/;
+    /^https:\/\/(?:www\.youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1(?:&start=[0-9]+)?|player\.bilibili\.com\/player\.html\?(?:bvid=BV[0-9A-Za-z]{10}|aid=[0-9]{1,12})&(?:p=[1-9][0-9]{0,3}|cid=[1-9][0-9]{0,18})&autoplay=1&danmaku=0(?:&t=[0-9]+)?|player\.vimeo\.com\/video\/[0-9]{1,12}\?autoplay=1&dnt=1(?:&h=[0-9a-f]{6,20})?(?:#t=[0-9]+s)?)$/;
   var reduce = window.matchMedia
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
     : null;

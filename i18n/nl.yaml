@@ -104,6 +104,7 @@ ui_pricing_included: "Inbegrepen"
 ui_pricing_excluded: "Niet inbegrepen"
 ui_marquee_pause: "Animatie pauzeren"
 ui_kbd_with: "met"
+ui_single_key_shortcuts: Sneltoetsen met één toets
 ui_keyboard_shortcuts: "Sneltoetshulp"
 ui_shortcut_tree_move: "Door de zijbalk navigeren"
 ui_shortcut_tree_toggle: "Sectie inklappen of uitvouwen"

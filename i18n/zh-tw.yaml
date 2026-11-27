@@ -161,6 +161,7 @@ ui_pricing_included: 包含
 ui_pricing_excluded: 不包含
 ui_marquee_pause: 暫停捲動
 ui_kbd_with: 加
+ui_single_key_shortcuts: 單鍵快捷鍵
 ui_keyboard_shortcuts: "熱鍵說明"
 ui_shortcut_tree_move: 在側欄中移動
 ui_shortcut_tree_toggle: 收合/展開章節

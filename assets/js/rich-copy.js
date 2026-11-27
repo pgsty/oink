@@ -282,6 +282,25 @@
       }];
     }
 
+    function orderedList(node) {
+      var items = Array.prototype.filter.call(node.childNodes, function (child) { return tagOf(child) === 'LI'; });
+      var reversed = node.hasAttribute('reversed');
+      var number = parseInt(attr(node, 'start'), 10);
+      if (!Number.isFinite(number)) number = reversed ? items.length : 1;
+      var selected = [];
+      items.forEach(function (item) {
+        var value = parseInt(attr(item, 'value'), 10);
+        if (Number.isFinite(value)) number = value;
+        var parts = walk(item);
+        if (parts.length) {
+          parts[0].number = number;
+          selected.push(parts[0]);
+        }
+        number += reversed ? -1 : 1;
+      });
+      return [{ t: 'list', ordered: true, reversed: reversed, kids: selected }];
+    }
+
     function walk(node) {
       if (!inRange(node)) return [];
       if (node.nodeType === 3) {
@@ -312,7 +331,7 @@
         case 'PRE': return code(node, '');
         case 'BLOCKQUOTE': return [{ t: 'quote', kids: kidsOf(node) }];
         case 'UL': return [{ t: 'list', kids: kidsOf(node) }];
-        case 'OL': return [{ t: 'list', ordered: true, start: parseInt(attr(node, 'start'), 10) || 0, kids: kidsOf(node) }];
+        case 'OL': return orderedList(node);
         case 'LI': return [{ t: 'li', kids: kidsOf(node) }];
         case 'TABLE': return [{ t: 'table', kids: kidsOf(node) }];
         case 'TR': return [{ t: 'row', kids: kidsOf(node) }];
@@ -587,6 +606,7 @@
       var tag = n.ordered ? 'ol' : 'ul';
       var above = top(0);
       var items = '';
+      var firstNumber, nextNumber;
       var inner = { ink: ctx.ink, size: ctx.size, tight: true, nested: true };
       n.kids.forEach(function (item) {
         if (item.t !== 'li') return;
@@ -602,10 +622,18 @@
           run = [];
         });
         body += inline(run);
-        if (body) items += '<li' + css('margin:0 0 6px;') + '>' + body + '</li>';
+        if (!body) return;
+        var value = '';
+        if (n.ordered) {
+          if (!items) firstNumber = item.number;
+          else if (item.number !== nextNumber) value = ' value="' + item.number + '"';
+          nextNumber = item.number + (n.reversed ? -1 : 1);
+        }
+        items += '<li' + value + css('margin:0 0 6px;') + '>' + body + '</li>';
       });
       if (!items) return '';
-      return '<' + tag + (n.start > 1 ? ' start="' + n.start + '"' : '') + css('margin:' + (ctx.nested ? '6px 0 0' : above + 'px 0 ' + below(ctx) + 'px') +
+      var numbering = n.ordered && (n.reversed || firstNumber !== 1) ? ' start="' + firstNumber + '"' : '';
+      return '<' + tag + numbering + (n.reversed ? ' reversed' : '') + css('margin:' + (ctx.nested ? '6px 0 0' : above + 'px 0 ' + below(ctx) + 'px') +
         ';padding-' + start + ':28px;font-size:' + (ctx.size || 16) + 'px;line-height:1.75;color:' + (ctx.ink || skin.ink) + ';') + '>' + items + '</' + tag + '>';
     }
 

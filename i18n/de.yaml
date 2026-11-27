@@ -104,6 +104,7 @@ ui_pricing_included: "Enthalten"
 ui_pricing_excluded: "Nicht enthalten"
 ui_marquee_pause: "Animation pausieren"
 ui_kbd_with: "mit"
+ui_single_key_shortcuts: Tastenkürzel mit einer einzelnen Taste
 ui_keyboard_shortcuts: "Tastenkürzel-Hilfe"
 ui_shortcut_tree_move: "In der Seitenleiste navigieren"
 ui_shortcut_tree_toggle: "Abschnitt ein- oder ausklappen"

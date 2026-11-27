@@ -76,6 +76,20 @@ test('a phrase inside one block travels bare', () => {
   assert.equal(typeset(el('ul', null, el('li', null, 'one ', el('em', null, 'item')))), 'one <em>item</em>');
 });
 
+test('a partial ordered list keeps the numbers the reader selected', () => {
+  const first = el('li', null, 'First');
+  const list = el('ol', { start: '0' }, first, el('li', null, 'Second'), el('li', { value: '8' }, 'Eighth'));
+  assert.match(typeset(list), /^<ol start="0".*<li value="8"/);
+  list.attrs.reversed = '';
+  delete list.attrs.start;
+  const range = { intersectsNode: node => node !== first };
+  const html = copy.render(copy.collector(range, {}).walk(list), paper);
+  assert.match(html, /^<ol start="2" reversed.*>Second<\/li><li value="8"/);
+  assert.doesNotMatch(html, /First/);
+  delete list.attrs.reversed;
+  assert.match(copy.render(copy.collector(range, {}).walk(list), paper), /^<ol start="2"/);
+});
+
 test('lists, quotes, callouts and tables keep their structure', () => {
   const html = typeset(el('div', { class: 'td-content' },
     el('ol', { start: '3' }, el('li', null, el('p', null, 'loose')), el('li', null, 'outer', el('ul', null, el('li', null, 'inner')))),

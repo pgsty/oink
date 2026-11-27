@@ -985,7 +985,10 @@ def check_timeline(hugo: str) -> list[str]:
             "Indented code block:\n\n"
             "    2026-03\n    : Indented example.\n\n    {.timeline}\n\n"
             "Literal JSON:\n\n"
-            '{"class": ".timeline"}\n'
+            '{"class": ".timeline"}\n\n'
+            "Project styling.\n{.release-timeline}\n\n"
+            "Project metadata.\n{data-class=\"timeline\"}\n\n"
+            + "~" * 1001 + "markdown\n~~~\n\n{.timeline}\n" + "~" * 1002 + "\n"
         )
         (content / "detached.md").write_text(
             "---\ntitle: Detached timeline\n---\n\n2024-05\n: Event.\n\n{.timeline}\n"
@@ -1101,6 +1104,9 @@ def check_social_posts(hugo: str) -> list[str]:
             "Markdown escaping stress test.\n"
             "{{< /social >}}\n\n"
             '{{< social author="Link Only" url="/docs/cases/" />}}\n\n'
+            '## Station {#station}\n\n'
+            '{{< social author="Local" url="#station" >}}Station notes.{{< /social >}}\n\n'
+            '```map\n- {name: Station, lat: 1, lng: 2, link: "?layer=3#station"}\n```\n\n'
             '{{< social url="https://example.com/anon" />}}\n\n'
             # Invisible leading characters never become the drawn initial.
             '{{< social handle="@\u200bghost" >}}Zero-width space after the at-sign.{{< /social >}}\n\n'
@@ -1183,6 +1189,12 @@ def check_social_posts(hugo: str) -> list[str]:
         require('<figure class="td-social"><figcaption>— Link Only · X · <a href="https://example.org/docs/cases/">View original</a></figcaption></figure>' in rss,
                 "RSS link-only card emitted empty blockquote or relative URL", errors)
         require('cite="https://example.org/docs/cases/"' in rss, "RSS internal cite URL was not absolutized", errors)
+        require('cite="https://example.org/docs/cases/#station"' in rss
+                and 'href="https://example.org/docs/cases/#station"' in rss
+                and 'href="https://example.org/docs/cases/?layer=3#station"' in rss,
+                "RSS citations and place links must resolve against the source article", errors)
+        require('cite="#station"' in html and 'href="?layer=3#station"' in html,
+                "HTML should retain page-local citation and place links", errors)
         # Markdown: clean readable attribution without backslash spam, while escaping dangerous syntax.
         require('> — Lin Shu (`@linshu`) · Zhihu · 2026-02 · [View original](/docs/cases/)' in md,
                 f"Markdown attribution format mismatch: {md}", errors)

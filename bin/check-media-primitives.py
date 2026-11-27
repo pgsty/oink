@@ -764,6 +764,7 @@ def check_video_matrix(hugo: str) -> list[str]:
             "![Bili uppercase AV octal](https://www.bilibili.com/video/AV170001?t=010)\n\n"
             "![Bili b23 BV](https://b23.tv/BV1xx411c7mD)\n\n"
             "![Bili embed code](https://player.bilibili.com/player.html?isOutside=true&aid=170001&bvid=BV1xx411c7mD&cid=42&p=2&t=08)\n\n"
+            "![Bili part fallback](https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&cid=unknown&p=2&t=08)\n\n"
             "![Bili embed aid](https://player.bilibili.com/player.html?aid=170002)\n\n"
             "![Vimeo query hash and fragment](https://vimeo.com/76979871?h=ABCDEF1234#t=01m08s)\n"
             '{poster="page.png" width="4" height="3" caption="Vimeo with poster and 4:3"}\n\n'
@@ -820,7 +821,8 @@ def check_video_matrix(hugo: str) -> list[str]:
             'style="--td-media-ratio: 9 / 16" data-td-media-embed="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1"',
             'data-td-media-embed="https://player.bilibili.com/player.html?aid=170001&amp;p=1&amp;autoplay=1&amp;danmaku=0&amp;t=10"',
             'data-td-media-embed="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&amp;p=1&amp;autoplay=1&amp;danmaku=0"',
-            # Bilibili's embed code: the BV ID wins over aid; cid and isOutside are dropped.
+            # Bilibili's embed code: the BV ID wins over aid. A valid cid selects the part, otherwise p does.
+            'data-td-media-embed="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&amp;cid=42&amp;autoplay=1&amp;danmaku=0&amp;t=8"',
             'data-td-media-embed="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&amp;p=2&amp;autoplay=1&amp;danmaku=0&amp;t=8"',
             'data-td-media-embed="https://player.bilibili.com/player.html?aid=170002&amp;p=1&amp;autoplay=1&amp;danmaku=0"',
             'data-td-media-embed="https://player.vimeo.com/video/76979871?autoplay=1&amp;dnt=1&amp;h=abcdef1234#t=68s"',

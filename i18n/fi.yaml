@@ -104,6 +104,7 @@ ui_pricing_included: "Mukana"
 ui_pricing_excluded: "Ei mukana"
 ui_marquee_pause: "Keskeytä liike"
 ui_kbd_with: "plus"
+ui_single_key_shortcuts: Yhden näppäimen pikanäppäimet
 ui_keyboard_shortcuts: "Pikanäppäinohje"
 ui_shortcut_tree_move: "Liiku sivupalkissa"
 ui_shortcut_tree_toggle: "Tiivistä tai laajenna osio"

@@ -103,6 +103,7 @@ ui_pricing_included: "含まれる"
 ui_pricing_excluded: "含まれない"
 ui_marquee_pause: "アニメーションを一時停止"
 ui_kbd_with: "と"
+ui_single_key_shortcuts: 単一キーのショートカット
 ui_keyboard_shortcuts: "ショートカット一覧"
 ui_shortcut_tree_move: "サイドバーを移動"
 ui_shortcut_tree_toggle: "セクションの折りたたみ/展開"

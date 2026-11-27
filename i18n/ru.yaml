@@ -106,6 +106,7 @@ ui_pricing_included: "Включено"
 ui_pricing_excluded: "Не включено"
 ui_marquee_pause: "Остановить движение"
 ui_kbd_with: "с"
+ui_single_key_shortcuts: Быстрые команды одной клавишей
 ui_keyboard_shortcuts: "Справка по клавишам"
 ui_shortcut_tree_move: "Навигация по панели"
 ui_shortcut_tree_toggle: "Свернуть/раскрыть раздел"

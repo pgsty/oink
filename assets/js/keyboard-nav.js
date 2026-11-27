@@ -1573,6 +1573,12 @@
         body.appendChild(copy);
       });
       surface.appendChild(body);
+      var preference = doc.querySelector('[data-td-shortcut-preference]');
+      if (preference) {
+        var control = preference.cloneNode(true);
+        control.className = 'td-shell-keyboard-dialog__preference';
+        surface.appendChild(control);
+      }
       dialog.appendChild(surface);
       doc.body.appendChild(dialog);
 
@@ -1675,6 +1681,7 @@
         return;
       }
       if (guarded(event)) return;
+      if (key.length === 1 && key !== ' ' && html.hasAttribute('data-td-shortcuts-off')) return;
       var wrap = menu();
       var active = doc.activeElement;
       var inTree = Boolean(wrap && active && wrap.contains(active));

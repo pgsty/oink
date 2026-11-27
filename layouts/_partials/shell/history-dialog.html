@@ -1,0 +1,41 @@
+{{- /* Browsing-history overlay opened by H or the Command Palette. It reuses
+       the palette surface classes, so every preset styles both alike;
+       history.js fills the list from this browser's localStorage, keyed by
+       the site's base path. The markup varies only by language. */ -}}
+<div id="td-shell-history" class="td-shell-search td-shell-history" hidden data-td-history
+     data-td-history-scope="{{ "/" | relURL }}"
+     data-td-t-empty="{{ T "ui_history_empty" }}"
+     data-td-t-no-results="{{ T "ui_search_empty" }}"
+     data-td-t-results="{{ T "ui_search_results" }}"
+     data-td-t-removed="{{ T "ui_history_removed" }}"
+     data-td-t-cleared="{{ T "ui_history_cleared" }}">
+  <div class="td-shell-search__backdrop" data-td-history-close></div>
+  <div class="td-shell-search__panel" role="dialog" aria-modal="true" aria-label="{{ T "ui_shortcut_history" }}">
+    <div class="td-shell-search__head">
+      <i class="td-shell-icon td-shell-icon--history fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+      <input type="search" class="td-shell-search__input" placeholder="{{ T "ui_history_search" }}"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
+             aria-controls="td-shell-history-results" aria-expanded="false"
+             aria-label="{{ T "ui_history_search" }}" enterkeyhint="go">
+      <button type="button" class="td-shell-search__esc" data-td-history-close
+        aria-label="Esc: {{ T "ui_search_close" }}" aria-keyshortcuts="Escape">
+        <kbd>esc</kbd>
+      </button>
+    </div>
+    <div id="td-shell-history-results" class="td-shell-search__list" role="listbox"
+      aria-label="{{ T "ui_shortcut_history" }}"></div>
+    {{- /* Outside the listbox, which may hold only options. */}}
+    <div class="td-shell-search__empty" data-td-history-empty hidden></div>
+    <div class="td-shell-search__footer">
+      <div class="td-shell-search__status" role="status" aria-live="polite" aria-atomic="true"
+        data-td-history-status></div>
+      <div class="td-shell-search__foot" aria-hidden="true">
+        <span><kbd>↑</kbd><kbd>↓</kbd> {{ T "ui_search_nav" }}</span>
+        <span><kbd>↵</kbd> {{ T "ui_search_open" }}</span>
+        <span><kbd>⇧</kbd><kbd>Del</kbd> {{ T "ui_history_remove" }}</span>
+      </div>
+      <button type="button" class="td-shell-history__clear" data-td-history-clear>{{ T "ui_history_clear" }}</button>
+    </div>
+  </div>
+</div>

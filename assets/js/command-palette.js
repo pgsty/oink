@@ -7,9 +7,10 @@
   if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var html = document.documentElement;
-  // Typing this prefix, or pressing "\\" outside a field, restricts the
-  // palette to commands. "/" opens the full search surface.
+  // Typing this prefix, or pressing "`" (or "~") outside a field, restricts
+  // the palette to commands. "/" opens the full search surface.
   var COMMAND_PREFIX = '>';
+  var COMMAND_KEYS = { '`': true, '~': true };
   var TYPING_TAGS = { TEXTAREA: true, SELECT: true };
   var NON_TYPING_INPUT_TYPES = {
     button: true,
@@ -889,15 +890,18 @@
         if (isOpen()) close();
         else open();
       } else if (
-        (event.key === '/' || event.key === '\\') &&
-        !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey &&
+        (event.key === '/' || COMMAND_KEYS[event.key]) &&
+        !event.metaKey && !event.ctrlKey && !event.altKey &&
+        // "~" is Shift+"`" on most layouts; every other key stays unshifted.
+        (!event.shiftKey || event.key === '~') &&
         !event.defaultPrevented && !isOpen() && !hasOpenDialog() &&
         !isTypingTarget(event.target)
       ) {
-        // Slash and backslash are bare shortcuts, so they never steal a
-        // character from a field. Slash is full search; backslash is commands.
+        // Bare shortcuts, so they never steal a character from a field.
+        // Slash is full search; the backtick key (with or without Shift)
+        // opens the commands.
         event.preventDefault();
-        if (event.key === '\\') open(event, COMMAND_PREFIX);
+        if (COMMAND_KEYS[event.key]) open(event, COMMAND_PREFIX);
         else open(event);
       } else if (event.key === 'Escape' && isOpen()) {
         event.preventDefault();

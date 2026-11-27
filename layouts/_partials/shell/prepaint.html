@@ -33,6 +33,14 @@
       if (sessionStorage.getItem('td-kbd-zen') === '1') {
         html.setAttribute('data-td-kbd-zen', '');
       }
+      {{- if $shell }}
+      var articleWidth = localStorage.getItem('td-shell-article-w');
+      var articlePixels = parseInt(articleWidth, 10);
+      if (articleWidth === 'none' || articlePixels > 0) {
+        html.setAttribute('data-td-shell-article-w', '');
+        html.style.setProperty('--td-shell-article-w', articleWidth === 'none' ? 'none' : articlePixels + 'px');
+      }
+      {{- end }}
       {{- end }}
     } catch (_) {}
   })();

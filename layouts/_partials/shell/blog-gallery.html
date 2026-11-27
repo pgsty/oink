@@ -4,7 +4,7 @@
 {{- $page.Store.Set "hasBlogGallery" true -}}
 <section class="td-blog-gallery" data-td-blog-form="gallery" data-td-blog-gallery data-td-mode="{{ $config.mode }}" data-td-size="{{ $config.size }}" aria-label="{{ $page.Title }}">
   <div class="td-expo-toolbar" data-gallery-controls hidden>
-    <fieldset class="td-expo-modes"{{ if $keyboardNav }} aria-keyshortcuts="M"{{ end }}>
+    <fieldset class="td-expo-modes"{{ if $keyboardNav }} aria-keyshortcuts=";"{{ end }}>
       <legend class="visually-hidden">{{ T "ui_expo_layout" }}</legend>
       {{ range slice "wall" "cards" "seamless" }}
       <label class="td-expo-mode" title="{{ T (printf "ui_expo_%s" .) }}">

@@ -213,7 +213,7 @@
   {{ if eq (partial "footer-style.html" .) "none" -}}
     {{ partial "shell/keyboard-help.html" (dict "page" . "mode" "template") -}}
   {{ end -}}
-  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/keyboard.js" "members" (slice (resources.Get "js/keyboard-nav.js"))) -}}
+  {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/keyboard.js" "members" (slice (resources.Get "js/history.js") (resources.Get "js/keyboard-nav.js"))) -}}
 {{ end -}}
 {{ if $hasFooterCollapse -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/footer-collapse.js" "members" (slice (resources.Get "js/footer-collapse.js"))) -}}
@@ -268,6 +268,9 @@
 {{ $scopeKey := "" -}}
 {{ with .FirstSection }}{{ if and (eq .Kind "section") (ne .Section "") }}{{ $scopeKey = .Section }}{{ end }}{{ end -}}
 {{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.BaseURL .Site.Language.Lang $localSearch $scopeKey }}{{ end -}}
+{{/* After the palette, so the history overlay stacks above it while the
+     palette fades out behind a "Browsing history" command. */ -}}
+{{ if $hasKeyboardNav }}{{ partialCached "shell/history-dialog.html" . .Site.Language.Lang }}{{ end -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
 {{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/dark-mode.js" "members" (slice (resources.Get "js/dark-mode.js"))) -}}

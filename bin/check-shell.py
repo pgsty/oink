@@ -247,17 +247,25 @@ def check_sources() -> list[str]:
             and 'slice "light" "sun"' in appearance and 'slice "dark" "moon"' in appearance
             and 'slice "auto" "contrast"' in appearance,
             "bottom-bar Appearance control lost its native three-mode group", errors)
+    # Hover shows a short hint; the click (or ') opens the 3 x 10 sheet, which
+    # lives in a per-language template and is dimmed per page at runtime.
     require('data-td-nav-hover-open' in keyboard_help
             and 'class="td-kbd-sequence"' in keyboard_help
             and 'data-td-close-label=' in keyboard_help
-            and 'aria-keyshortcuts=";"' in keyboard_help
-            and all(key in keyboard_help for key in (
-                '<kbd>W</kbd>', '<kbd>/</kbd>', '<kbd>H</kbd>', '<kbd>Z</kbd>',
-                '<kbd>K</kbd>', '<kbd>J</kbd>', '<kbd>L</kbd>', '<kbd>X</kbd>',
-                '<kbd>V</kbd>', '<kbd>M</kbd>', '<kbd>&lt;</kbd>', '<kbd>&gt;</kbd>',
-                '<kbd>;</kbd>',
-            )),
-            "bottom-bar shortcut help lost its KBD cheat sheet or ;/V/M/</>/X/Z hints", errors)
+            and 'data-td-unavailable-label=' in keyboard_help
+            and 'aria-keyshortcuts="\'"' in keyboard_help
+            and 'td-shell-keyboard-hint' in keyboard_help
+            and 'T "ui_shortcut_more"' in keyboard_help
+            and '<template data-td-keyboard-help-source>' in keyboard_help
+            and 'partialCached "shell/keyboard-help.html" (dict "page" . "mode" "sheet") .Site.Language.Lang' in keyboard_help
+            and all(f'(dict "id" "{group}" "title" (T "ui_shortcut_group_{group}")' in keyboard_help
+                    for group in ("navigation", "actions", "view"))
+            and 'data-td-shortcut="{{ .id }}"' in keyboard_help,
+            "bottom-bar shortcut help lost its hover hint or the cached three-group sheet", errors)
+    require(".td-shell-keyboard-help__row.td-is-unavailable" in keyboard_styles
+            and "repeat(auto-fit, minmax(16.5rem, 1fr))" in keyboard_styles
+            and "td-shell-keyboard-dialog--split" not in keyboard_styles,
+            "the shortcut sheet no longer dims unavailable rows or lays its groups out side by side", errors)
     # One icon system in the shell chrome: shell/icon.html dispenses Font Awesome
     # glyphs under role-named classes, version controls take theirs from it, and
     # the page action menu takes action icons from the registry rather than a
@@ -397,20 +405,28 @@ def check_sources() -> list[str]:
             "feedback runtime collects more than structured analytics", errors)
     require('id="td-comments"' in giscus,
             "detailed feedback no longer has a stable Giscus target", errors)
-    require("if (key === 'l' || key === 'x') return cycleLanguage();" in keyboard,
-            "l/x no longer cycle the language", errors)
-    require("hasReadingShortcuts() && (key === 'h' || key === 'z')" in keyboard,
-            "h/z no longer toggle Zen Mode", errors)
-    require("if (key === 'v') return cycleBlogLayout(event);" in keyboard
+    require("if (key === 'x') return cycleLanguage(event);" in keyboard
+            and "key === 'l' || key === 'x'" not in keyboard,
+            "x alone no longer cycles the language", errors)
+    require("if (hasReadingShortcuts() && key === 'z') {" in keyboard
+            and "key === 'h' || key === 'z'" not in keyboard,
+            "z alone no longer toggles Zen Mode", errors)
+    require("if (key === 'l') return cycleBlogLayout(event);" in keyboard
             and "data-td-blog-index-toggle" in keyboard,
-            "v no longer switches the blog index layout form", errors)
-    require("if (key === 'm') return cycleExpoMode(event);" in keyboard
+            "l no longer switches the blog index layout form", errors)
+    require("if (key === ';') return cycleExpoMode(event);" in keyboard
             and "if (key === ',' || key === '<') return adjustExpoSize(event, -1);" in keyboard
             and "if (key === '.' || key === '>') return adjustExpoSize(event, 1);" in keyboard,
-            "m or ,/< ./> no longer drive Expo album layout and size controls", errors)
-    require("if (key === ';' && !event.repeat) return openHelp(event);" in keyboard
+            "; or ,/< ./> no longer drive Expo album layout and size controls", errors)
+    require("if (key === \"'\" && !event.repeat) return openHelp(event);" in keyboard
             and "data-td-keyboard-dialog" in keyboard,
-            "; no longer toggles the shortcut help dialog", errors)
+            "' no longer toggles the shortcut help dialog", errors)
+    require("if (key === 'h') return openHistory(event);" in keyboard
+            and "if (key === 'g') return goHome(event);" in keyboard
+            and "if (key === 'v') return cycleChoice(event, 'switch_version');" in keyboard
+            and "if (key === 'o') return toggleAll(event);" in keyboard
+            and "if (key === '-') return adjustWidth(event, -1);" in keyboard,
+            "H, G, V, O or -/= no longer reach history, home, versions, fold-all or the reading width", errors)
     require("if (key === 't') return cyclePreset();" in keyboard
             and "actions.run('switch_preset'" in keyboard,
             "t no longer steps through the offered presets", errors)

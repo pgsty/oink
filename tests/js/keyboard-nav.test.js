@@ -29,13 +29,19 @@ class Element {
     this.id = '';
     this.nodeType = 1;
     this.offsetParent = {};
-    this.style = { scrollBehavior: '' };
+    this.style = {
+      scrollBehavior: '',
+      props: {},
+      setProperty(name, value) { this.props[name] = String(value); },
+      removeProperty(name) { delete this.props[name]; },
+    };
     this.clicks = 0;
     this.textContent = '';
     this.ownerDocument = null;
     this.listeners = new Map();
     this.open = false;
   }
+  get parentElement() { return this.parentNode && this.parentNode.tagName ? this.parentNode : null; }
   get className() { return this._className; }
   set className(value) {
     this._className = String(value || '');
@@ -148,6 +154,22 @@ class Element {
     if (selector === '[data-gallery-controls]') return this.hasAttribute('data-gallery-controls');
     if (selector === 'input[data-gallery-mode]') return this.tagName === 'INPUT' && this.hasAttribute('data-gallery-mode');
     if (selector === 'input[data-gallery-size]') return this.tagName === 'INPUT' && this.hasAttribute('data-gallery-size');
+    if (selector === '[data-td-shortcut]') return this.hasAttribute('data-td-shortcut');
+    if (selector === '[data-td-shortcut-state]') return this.hasAttribute('data-td-shortcut-state');
+    if (selector === 'dd') return this.tagName === 'DD';
+    if (selector === 'details') return this.tagName === 'DETAILS';
+    if (selector === '[data-td-shell-tree-toggle][aria-controls]') {
+      return this.hasAttribute('data-td-shell-tree-toggle') && this.hasAttribute('aria-controls');
+    }
+    if (selector === '#td-shell-sidebar, [data-td-shell-aside]') {
+      return this.id === 'td-shell-sidebar' || this.hasAttribute('data-td-shell-aside');
+    }
+    if (selector === '[data-td-code].is-collapsible') {
+      return this.hasAttribute('data-td-code') && this.classList.contains('is-collapsible');
+    }
+    if (selector === '[data-td-code-expand]') return this.hasAttribute('data-td-code-expand');
+    if (selector === '.td-shell-layout .td-shell-article') return this.classList.contains('td-shell-article');
+    if (selector === '[data-td-compare-open]') return this.hasAttribute('data-td-compare-open');
     return false;
   }
   querySelectorAll(selector) {
@@ -231,9 +253,10 @@ function memoryStorage(initial = {}) {
 }
 
 function helpPanelFixture(title = 'Keyboard shortcuts', closeLabel = 'Close') {
-  const help = new Element('div', 'td-nav-hover-menu__pop td-shell-keyboard-help');
+  const help = new Element('div', 'td-shell-keyboard-help');
   help.setAttribute('aria-label', title);
   help.setAttribute('data-td-close-label', closeLabel);
+  help.setAttribute('data-td-unavailable-label', 'unavailable');
   const header = new Element('div', 'td-shell-keyboard-help__header');
   const icon = new Element('i', 'td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question');
   icon.setAttribute('aria-hidden', 'true');
@@ -242,13 +265,30 @@ function helpPanelFixture(title = 'Keyboard shortcuts', closeLabel = 'Close') {
   header.appendChild(icon);
   header.appendChild(strong);
   help.appendChild(header);
-  for (const id of ['td-shell-shortcuts-navigation', 'td-shell-shortcuts-actions']) {
+  const groups = {
+    navigation: ['tree-move', 'language', 'home'],
+    actions: ['search', 'print', 'gemini'],
+    view: ['page-width', 'help'],
+  };
+  for (const [group, rows] of Object.entries(groups)) {
+    const id = 'td-shell-shortcuts-' + group;
     const section = new Element('section', 'td-shell-keyboard-help__section');
     section.setAttribute('aria-labelledby', id);
-    const heading = new Element('p', 'td-shell-keyboard-help__section-title');
+    const heading = new Element('h3', 'td-shell-keyboard-help__section-title');
     heading.setAttribute('id', id);
-    heading.textContent = id;
+    heading.textContent = group;
     section.appendChild(heading);
+    const list = new Element('dl');
+    for (const shortcut of rows) {
+      const row = new Element('div', 'td-shell-keyboard-help__row');
+      row.setAttribute('data-td-shortcut', shortcut);
+      row.appendChild(new Element('dt'));
+      const label = new Element('dd');
+      label.textContent = shortcut;
+      row.appendChild(label);
+      list.appendChild(row);
+    }
+    section.appendChild(list);
     help.appendChild(section);
   }
   return help;
@@ -269,6 +309,8 @@ function setup({
   session = {},
   shell = true,
   home = false,
+  local = {},
+  history = null,
 } = {}) {
   const html = new Element('html');
   const root = new Element(
@@ -333,6 +375,7 @@ function setup({
       (winListeners.get(event.type) || []).forEach((fn) => fn(event));
     },
     sessionStorage: memoryStorage(session),
+    localStorage: memoryStorage(local),
     history: { replaceState(state, title, url) { win.hashes.push(url); } },
   };
   win.location.assign = (url) => win.assigned.push(url);
@@ -392,15 +435,14 @@ function setup({
     root.appendChild(toggle);
   }
 
-  if (withHelp) {
-    root.appendChild(helpPanelFixture());
-  }
-
-  if (withHelpTemplate) {
+  // The sheet is always template content: the footer only carries a hint.
+  if (withHelp || withHelpTemplate) {
     const tpl = new Element('template');
     tpl.setAttribute('data-td-keyboard-help-source', '');
     const fragment = new Element('div');
-    fragment.appendChild(helpPanelFixture('键盘快捷键', '关闭'));
+    fragment.appendChild(withHelpTemplate
+      ? helpPanelFixture('键盘快捷键', '关闭')
+      : helpPanelFixture());
     tpl.content = fragment;
     root.appendChild(tpl);
   }
@@ -408,7 +450,7 @@ function setup({
   own(root);
   own(html);
 
-  const controller = nav.init({ document: doc, window: win, registry, palette, coordinator });
+  const controller = nav.init({ document: doc, window: win, registry, palette, coordinator, history });
   return { doc, win, html, root, tree, frames, timeouts, controller };
 }
 
@@ -762,7 +804,7 @@ function press(harness, values) {
   press(fold, { key: ' ' });
   assert.equal(fold.doc.activeElement.clicks, 1, 'Space activates the focused link');
   press(fold, { key: 'g' });
-  assert.equal(fold.doc.activeElement.clicks, 2, 'g activates the focused link');
+  assert.equal(fold.doc.activeElement.clicks, 1, 'g goes home now and no longer activates the focused link');
   const escTarget = fold.doc.activeElement;
   press(fold, { key: 'Escape' });
   assert.equal(
@@ -976,20 +1018,16 @@ function press(harness, values) {
   press(mirror, { key: 'e' });
   assert.deepEqual(mirror.win.assigned, ['/docs/c/'], 'e pages from a canonical link on another origin');
 
-  // ------------------------------------------------------- h/z zen mode
+  // --------------------------------------------------------- z zen mode
   const zen = setup();
   press(zen, { key: 'h' });
-  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), true, 'h hides the chrome');
-  assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), '1', 'zen persists');
-  press(zen, { key: 'z' });
-  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'z restores chrome hidden by h');
-  assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), null, 'z clears zen persistence');
+  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'h is browsing history now, not Zen Mode');
   press(zen, { key: 'z' });
   assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), true, 'z hides the chrome');
   assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), '1', 'z persists zen mode');
-  press(zen, { key: 'h' });
-  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'h restores chrome hidden by z');
-  assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), null, 'zen state clears');
+  press(zen, { key: 'z' });
+  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'z restores the chrome');
+  assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), null, 'z clears zen persistence');
 
   const zenBack = setup({ session: { 'td-kbd-zen': '1' } });
   assert.equal(
@@ -1001,7 +1039,8 @@ function press(harness, values) {
   assert.equal(zenBack.doc.activeElement, null, 'zen mode must not focus its hidden tree');
   assert.notEqual(zenTree.defaultPrevented, true, 'zen mode must not swallow WASD');
 
-  // ---------------------------------------------------------- l/x and t
+  // ------------------------------------------------------------ x and v
+  const langRuns = [];
   const langRegistry = {
     get: (id) => (id === 'switch_language'
       ? {
@@ -1012,27 +1051,42 @@ function press(harness, values) {
         ],
       }
       : null),
+    run(id, context) { langRuns.push([id, context.value.url]); return { then() {} }; },
   };
   const lang = setup({ registry: langRegistry });
+  const xEvent = press(lang, { key: 'x' });
+  assert.deepEqual(langRuns, [['switch_language', '/zh/docs/b/one/']],
+    'x runs the next language choice through the registry URL policy');
+  assert.equal(xEvent.defaultPrevented, true, 'x swallows the literal character');
   press(lang, { key: 'l' });
-  assert.deepEqual(lang.win.assigned, ['/zh/docs/b/one/'], 'l cycles to the next language');
-  press(lang, { key: 'x' });
-  assert.deepEqual(
-    lang.win.assigned,
-    ['/zh/docs/b/one/', '/zh/docs/b/one/'],
-    'x cycles to the next language like l',
-  );
-
-  const langFormerAlias = setup({ registry: langRegistry });
-  press(langFormerAlias, { key: 'y' });
-  assert.deepEqual(langFormerAlias.win.assigned, [], 'y no longer switches the language');
+  assert.equal(langRuns.length, 1, 'l is the index layout key now, not a language alias');
+  press(lang, { key: 'y' });
+  assert.equal(langRuns.length, 1, 'y does not switch the language');
 
   const singleLang = setup({
-    registry: { get: () => ({ available: false, options: [] }) },
+    registry: { get: () => ({ available: false, options: [] }), run() { throw new Error('ran'); } },
   });
-  press(singleLang, { key: 'l' });
-  press(singleLang, { key: 'x' });
-  assert.deepEqual(singleLang.win.assigned, [], 'a single-language site keeps l and x silent');
+  assert.notEqual(press(singleLang, { key: 'x' }).defaultPrevented, true, 'a single-language site keeps x silent');
+
+  const versionRuns = [];
+  const versionRegistry = {
+    get: (id) => (id === 'switch_version'
+      ? {
+        available: true,
+        options: [
+          { id: 'v1', url: 'https://v1.example.com/', active: true, available: true },
+          { id: 'v0', url: '', active: false, available: false },
+          { id: 'v2', url: 'https://v2.example.com/', active: false, available: true },
+        ],
+      }
+      : null),
+    run(id, context) { versionRuns.push([id, context.value.id]); return { then() {} }; },
+  };
+  const version = setup({ registry: versionRegistry });
+  assert.equal(press(version, { key: 'v' }).defaultPrevented, true, 'v swallows the key when a version is offered');
+  assert.deepEqual(versionRuns, [['switch_version', 'v2']], 'v skips unavailable versions and opens the next one');
+  const noVersion = setup({ registry: langRegistry });
+  assert.notEqual(press(noVersion, { key: 'v' }).defaultPrevented, true, 'v stays inert without versions');
 
   const themeRuns = [];
   const themeRegistry = {
@@ -1077,7 +1131,7 @@ function press(harness, values) {
   press(preset, { key: 'v' });
   assert.equal(presetRuns.length, 2, 'v does not cycle styles');
 
-  // ------------------------------------------------- ; shortcut help modal
+  // ------------------------------------------------- ' shortcut help modal
   const coordinated = [];
   const registeredSurfaces = new Map();
   const helpCoordinator = {
@@ -1090,60 +1144,82 @@ function press(harness, values) {
   originButton.ownerDocument = helpRun.doc;
   originButton.focus();
 
-  const openHelpKey = press(helpRun, { key: ';' });
-  assert.equal(openHelpKey.defaultPrevented, true, '; swallows the literal character when opening help');
+  assert.notEqual(press(helpRun, { key: ';' }).defaultPrevented, true, '; is the gallery layout key now, not help');
+  const openHelpKey = press(helpRun, { key: "'" });
+  assert.equal(openHelpKey.defaultPrevented, true, "' swallows the literal character when opening help");
   assert.deepEqual(coordinated, ['keyboard-help'], 'opening help closes other surfaces');
   assert.equal(registeredSurfaces.has('keyboard-help'), true, 'help dialog registers with surface coordinator');
   const helpDialog = helpRun.root.querySelector('[data-td-keyboard-dialog]');
-  assert.ok(helpDialog && helpDialog.open, '; opens the shortcut help dialog');
-  assert.equal(helpDialog.classList.contains('td-shell-keyboard-dialog--split'), true, 'two-section help uses split layout');
+  assert.ok(helpDialog && helpDialog.open, "' opens the shortcut help dialog");
   const helpClose = helpDialog.querySelector('[data-td-keyboard-dialog-close]');
   assert.equal(helpRun.doc.activeElement, helpClose, 'opening help focuses the close button');
-  assert.equal(helpClose.getAttribute('aria-keyshortcuts'), 'Escape ;');
+  assert.equal(helpClose.getAttribute('aria-keyshortcuts'), "Escape '");
+  const dialogBody = helpDialog.children[0].children[1];
+  assert.equal(dialogBody.className, 'td-shell-keyboard-dialog__body');
+  assert.equal(dialogBody.getAttribute('tabindex'), '0', 'the scrolling sheet is reachable from the keyboard');
+  assert.equal(dialogBody.getAttribute('role'), 'region');
+  assert.equal(dialogBody.getAttribute('aria-labelledby'), 'td-shell-keyboard-dialog-title');
   const dialogSections = helpDialog.querySelectorAll('.td-shell-keyboard-help__section');
   assert.deepEqual(
     dialogSections.map((s) => s.getAttribute('aria-labelledby')),
-    ['td-shell-shortcuts-navigation-dialog', 'td-shell-shortcuts-actions-dialog'],
-    'cloned help sections rewrite aria-labelledby to avoid duplicate IDs',
+    [
+      'td-shell-shortcuts-navigation-dialog',
+      'td-shell-shortcuts-actions-dialog',
+      'td-shell-shortcuts-view-dialog',
+    ],
+    'the three groups are cloned with aria-labelledby rewritten to avoid duplicate IDs',
   );
+  // Rows this page cannot run stay in the grid, dimmed and explained.
+  const helpRow = (id) => helpDialog.querySelectorAll('[data-td-shortcut]')
+    .find((row) => row.getAttribute('data-td-shortcut') === id);
+  assert.equal(helpRow('language').classList.contains('td-is-unavailable'), false, 'an offered language keeps X live');
+  assert.equal(helpRow('tree-move').classList.contains('td-is-unavailable'), false, 'a sidebar keeps WASD live');
+  assert.equal(helpRow('print').classList.contains('td-is-unavailable'), false, 'P is always live');
+  assert.equal(helpRow('gemini').classList.contains('td-is-unavailable'), true, 'Gemini without assistant links is dimmed');
+  assert.equal(helpRow('page-width').classList.contains('td-is-unavailable'), true, 'no reading column dims the width row');
+  const geminiNote = helpRow('gemini').querySelector('[data-td-shortcut-state]');
+  assert.ok(geminiNote && !geminiNote.hidden, 'a dimmed row carries a screen-reader note');
+  assert.equal(geminiNote.textContent, ' (unavailable)');
+  assert.equal(helpRow('help').querySelector('[data-td-shortcut-state]'), null, 'a live row has no note');
   assert.equal(
     helpRun.doc.getElementById('td-shell-shortcuts-navigation-dialog') !== null,
     true,
     'cloned section heading carries suffixed dialog ID',
   );
 
-  // While help is open, other single-key shortcuts and key-repeat ; stand down.
-  press(helpRun, { key: 'l' });
+  // While help is open, other single-key shortcuts and key-repeat ' stand down.
+  const runsBeforeHelpKeys = langRuns.length;
   press(helpRun, { key: 'x' });
-  press(helpRun, { key: 'h' });
   press(helpRun, { key: 'z' });
-  press(helpRun, { key: ';', repeat: true });
-  press(helpRun, { key: ';', shiftKey: true });
-  press(helpRun, { key: ':', shiftKey: true });
-  assert.deepEqual(helpRun.win.assigned, [], 'other shortcuts stand down while help is open');
-  assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), false, 'h/z stand down while help is open');
-  assert.equal(helpDialog.open, true, 'repeated or modified ; does not dismiss help');
+  press(helpRun, { key: "'", repeat: true });
+  press(helpRun, { key: "'", shiftKey: true });
+  press(helpRun, { key: '"', shiftKey: true });
+  assert.equal(langRuns.length, runsBeforeHelpKeys, 'other shortcuts stand down while help is open');
+  assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), false, 'z stands down while help is open');
+  assert.equal(helpDialog.open, true, "repeated or modified ' does not dismiss help");
 
-  // Second bare ; closes help and restores focus.
-  const closeHelpKey = press(helpRun, { key: ';' });
-  assert.equal(closeHelpKey.defaultPrevented, true, 'second ; swallows the key');
-  assert.equal(helpDialog.open, false, 'second ; closes the help dialog');
-  assert.equal(helpRun.doc.activeElement, originButton, 'closing via ; restores prior focus');
+  // Second bare ' closes help and restores focus.
+  const closeHelpKey = press(helpRun, { key: "'" });
+  assert.equal(closeHelpKey.defaultPrevented, true, "second ' swallows the key");
+  assert.equal(helpDialog.open, false, "second ' closes the help dialog");
+  assert.equal(helpRun.doc.activeElement, originButton, "closing via ' restores prior focus");
 
   // Works inside Zen Mode and closes via Escape, close button, and backdrop click.
   press(helpRun, { key: 'z' });
   assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), true);
-  press(helpRun, { key: ';' });
-  assert.equal(helpDialog.open, true, '; opens help even while Zen Mode hides the footer');
+  press(helpRun, { key: "'" });
+  assert.equal(helpDialog.open, true, "' opens help even while Zen Mode hides the footer");
+  assert.equal(helpRow('tree-move').classList.contains('td-is-unavailable'), true,
+    'availability is recomputed at each open: Zen Mode parks WASD');
   press(helpRun, { key: 'Escape' });
   assert.equal(helpDialog.open, false, 'Escape closes the help dialog');
   assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), true, 'closing help preserves Zen Mode');
 
-  press(helpRun, { key: ';' });
+  press(helpRun, { key: "'" });
   helpClose.click();
   assert.equal(helpDialog.open, false, 'close button dismisses the help dialog');
 
-  press(helpRun, { key: ';' });
+  press(helpRun, { key: "'" });
   helpDialog.dispatchEvent({ type: 'pointerdown', target: helpClose });
   helpDialog.dispatchEvent({ type: 'click', target: helpDialog });
   assert.equal(helpDialog.open, true, 'drag from inside onto backdrop must not dismiss help');
@@ -1152,10 +1228,10 @@ function press(harness, values) {
   assert.equal(helpDialog.open, false, 'backdrop click dismisses the help dialog');
 
   // Coordinator close and beforeprint close without stealing focus.
-  press(helpRun, { key: ';' });
+  press(helpRun, { key: "'" });
   registeredSurfaces.get('keyboard-help')(false);
   assert.equal(helpDialog.open, false, 'surface coordinator can close the help dialog');
-  press(helpRun, { key: ';' });
+  press(helpRun, { key: "'" });
   helpRun.win.dispatchEvent({ type: 'beforeprint' });
   assert.equal(helpDialog.open, false, 'beforeprint closes the help dialog');
 
@@ -1199,41 +1275,43 @@ function press(harness, values) {
   helpRun.timeouts.splice(0).forEach((fn) => fn());
   assert.equal(triggerMenu.hasAttribute('data-td-suppress-hover-open'), false, 'hover suppress attribute clears after post-close frames');
 
-  // footer_style: none fallback template still powers ;.
+  // footer_style: none renders the same template on its own; it still powers '.
   const templateHelp = setup({ withTree: false, withHelpTemplate: true });
-  press(templateHelp, { key: ';' });
+  press(templateHelp, { key: "'" });
   const tplDialog = templateHelp.root.querySelector('[data-td-keyboard-dialog]');
-  assert.ok(tplDialog && tplDialog.open, '; opens help from template fallback when footer is absent');
+  assert.ok(tplDialog && tplDialog.open, "' opens help from the template when the footer is absent");
   assert.equal(
     tplDialog.querySelector('[data-td-keyboard-dialog-close]').getAttribute('aria-label'),
     '关闭',
     'dialog close button carries the localized close label',
   );
 
-  // Without any help source, ; stays a silent no-op.
+  // Without any help source, ' stays a silent no-op.
   const noHelp = setup({ withTree: false });
-  const idleSemi = press(noHelp, { key: ';' });
-  assert.notEqual(idleSemi.defaultPrevented, true, '; without a help source stays inert');
+  const idleQuote = press(noHelp, { key: "'" });
+  assert.notEqual(idleQuote.defaultPrevented, true, "' without a help source stays inert");
 
-  // ----------------------------------------- v switches blog index layout
+  // ----------------------------------------- l switches blog index layout
   const blogLayout = setup({ withTree: false });
-  const idleBlogV = press(blogLayout, { key: 'v' });
-  assert.notEqual(idleBlogV.defaultPrevented, true, 'v stays inert when no layout toggle exists');
+  const idleBlogL = press(blogLayout, { key: 'l' });
+  assert.notEqual(idleBlogL.defaultPrevented, true, 'l stays inert when no layout toggle exists');
   const layoutBtn = new Element('button');
   layoutBtn.setAttribute('data-td-blog-index-toggle', '');
   layoutBtn.hidden = true;
   blogLayout.root.appendChild(layoutBtn);
-  const hiddenBlogV = press(blogLayout, { key: 'v' });
-  assert.notEqual(hiddenBlogV.defaultPrevented, true, 'v ignores a hidden layout toggle');
+  const hiddenBlogL = press(blogLayout, { key: 'l' });
+  assert.notEqual(hiddenBlogL.defaultPrevented, true, 'l ignores a hidden layout toggle');
   assert.equal(layoutBtn.clicks, 0);
   layoutBtn.hidden = false;
-  const activeBlogV = press(blogLayout, { key: 'v' });
-  assert.equal(activeBlogV.defaultPrevented, true, 'v swallows the key when cycling index layout');
-  assert.equal(layoutBtn.clicks, 1, 'v activates the blog index layout toggle');
+  assert.equal(press(blogLayout, { key: 'v' }).defaultPrevented, undefined, 'v no longer switches the index layout');
+  const activeBlogL = press(blogLayout, { key: 'l' });
+  assert.equal(activeBlogL.defaultPrevented, true, 'l swallows the key when cycling index layout');
+  assert.equal(layoutBtn.clicks, 1, 'l activates the blog index layout toggle');
 
-  // -------------------------- Expo album shortcuts: m (mode), ,/< ./> (size)
+  // -------------------------- Expo album shortcuts: ; (mode), ,/< ./> (size)
   const expoPage = setup({ withTree: false });
-  assert.notEqual(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm stays inert outside Expo');
+  assert.notEqual(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm opens Markdown now and needs a markdown action');
+  assert.notEqual(press(expoPage, { key: ';' }).defaultPrevented, true, '; stays inert outside Expo');
   assert.notEqual(press(expoPage, { key: ',' }).defaultPrevented, true, ', stays inert outside Expo');
   assert.notEqual(press(expoPage, { key: '.', shiftKey: false }).defaultPrevented, true, '. stays inert outside Expo');
   assert.notEqual(press(expoPage, { key: '<', shiftKey: true }).defaultPrevented, true, '< stays inert outside Expo');
@@ -1269,16 +1347,16 @@ function press(harness, values) {
   expoPage.root.appendChild(expoSection);
 
   // Hidden Expo controls stay inert until expo.js reveals them.
-  assert.notEqual(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm ignores hidden Expo controls');
+  assert.notEqual(press(expoPage, { key: ';' }).defaultPrevented, true, '; ignores hidden Expo controls');
   assert.notEqual(press(expoPage, { key: '.' }).defaultPrevented, true, '. ignores hidden Expo controls');
 
   expoControls.hidden = false;
-  assert.equal(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm switches Expo mode');
+  assert.equal(press(expoPage, { key: ';' }).defaultPrevented, true, '; switches Expo mode');
   assert.deepEqual(modeEvents, ['cards']);
   assert.equal(modeRadios[1].checked, true);
-  press(expoPage, { key: 'm' });
-  press(expoPage, { key: 'm' });
-  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], 'm wraps from seamless back to wall');
+  press(expoPage, { key: ';' });
+  press(expoPage, { key: ';' });
+  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], '; wraps from seamless back to wall');
 
   assert.equal(press(expoPage, { key: ',' }).defaultPrevented, true, ', shrinks Expo image size');
   assert.equal(sizeSlider.value, '220');
@@ -1300,17 +1378,17 @@ function press(harness, values) {
   assert.equal(sizeSlider.value, '360');
   assert.deepEqual(sizeEvents, [], 'max bound emits no redundant input');
 
-  // Focused Expo toolbar radio or range slider must not block m/,/. shortcuts.
+  // Focused Expo toolbar radio or range slider must not block ;/,/. shortcuts.
   sizeSlider.value = '240';
-  assert.equal(press(expoPage, { key: 'm', target: modeRadios[0] }).defaultPrevented, true, 'm still works while a mode radio has focus');
+  assert.equal(press(expoPage, { key: ';', target: modeRadios[0] }).defaultPrevented, true, '; still works while a mode radio has focus');
   assert.equal(modeEvents.at(-1), 'cards');
   assert.equal(press(expoPage, { key: '.', target: sizeSlider }).defaultPrevented, true, '. still works while the size slider has focus');
   assert.equal(sizeSlider.value, '260');
   assert.equal(press(expoPage, { key: ',', target: sizeSlider }).defaultPrevented, true, ', still works while the size slider has focus');
   assert.equal(sizeSlider.value, '240');
   // Reset back to wall for following assertions.
-  press(expoPage, { key: 'm' });
-  press(expoPage, { key: 'm' });
+  press(expoPage, { key: ';' });
+  press(expoPage, { key: ';' });
   assert.equal(modeEvents.at(-1), 'wall');
 
   // Typing targets and modifiers still guard < and >.
@@ -1318,21 +1396,21 @@ function press(harness, values) {
   const beforeGuardedModes = modeEvents.length;
   press(expoPage, { key: '<', shiftKey: true, target: input });
   press(expoPage, { key: '>', shiftKey: true, ctrlKey: true });
-  press(expoPage, { key: 'M', shiftKey: true });
+  press(expoPage, { key: ':', shiftKey: true });
   assert.equal(sizeSlider.value, '240', 'typing and Ctrl/Meta/Alt guard < and >');
-  assert.equal(modeEvents.length, beforeGuardedModes, 'Shift+M stays guarded');
+  assert.equal(modeEvents.length, beforeGuardedModes, 'Shift+; (:) stays guarded');
 
   // Open Expo viewer dialog suppresses page-level Expo shortcuts.
   const expoViewer = new Element('dialog');
   expoViewer.setAttribute('open', '');
   expoPage.root.appendChild(expoViewer);
-  press(expoPage, { key: 'm' });
+  press(expoPage, { key: ';' });
   press(expoPage, { key: '.' });
   assert.equal(sizeSlider.value, '240', 'open viewer dialog suppresses page-level Expo size shortcuts');
   assert.equal(modeEvents.length, beforeGuardedModes, 'open viewer dialog suppresses page-level Expo mode shortcut');
   expoPage.root.children.pop();
 
-  // Blog/Case/Release gallery form ([data-td-blog-gallery]) uses the same m / , / . shortcuts when visible.
+  // Blog/Case/Release gallery form ([data-td-blog-gallery]) uses the same ; / , / . shortcuts when visible.
   const blogGalleryPage = setup({ withTree: false });
   const blogGallery = new Element('section');
   blogGallery.setAttribute('data-td-blog-gallery', '');
@@ -1359,13 +1437,13 @@ function press(harness, values) {
   blogGalleryPage.root.appendChild(blogGallery);
 
   // Hidden blog gallery (e.g. while cards/list/table view is active) stays inert.
-  assert.notEqual(press(blogGalleryPage, { key: 'm' }).defaultPrevented, true, 'm ignores hidden blog gallery');
+  assert.notEqual(press(blogGalleryPage, { key: ';' }).defaultPrevented, true, '; ignores hidden blog gallery');
   assert.notEqual(press(blogGalleryPage, { key: '.' }).defaultPrevented, true, '. ignores hidden blog gallery');
   assert.equal(bgSlider.value, '240');
 
-  // Visible blog gallery responds to m, ,/<, and ./>.
+  // Visible blog gallery responds to ;, ,/<, and ./>.
   blogGallery.hidden = false;
-  assert.equal(press(blogGalleryPage, { key: 'm' }).defaultPrevented, true, 'm switches visible blog gallery mode');
+  assert.equal(press(blogGalleryPage, { key: ';' }).defaultPrevented, true, '; switches visible blog gallery mode');
   assert.deepEqual(bgModes, ['cards']);
   assert.equal(press(blogGalleryPage, { key: ',' }).defaultPrevented, true, ', shrinks visible blog gallery size');
   assert.equal(bgSlider.value, '220');
@@ -1479,16 +1557,10 @@ function press(harness, values) {
   landing.html.setAttribute('data-td-preset', 'paper');
   press(landing, { key: 't' });
   assert.deepEqual(landingRuns, [['switch_preset', 'slate']], 't steps styles outside the shell');
-  press(landing, { key: 'l' });
-  assert.deepEqual(
-    landing.win.assigned,
-    ['/', '/zh/'],
-    'l works outside the shell',
-  );
   press(landing, { key: 'x' });
   assert.deepEqual(
-    landing.win.assigned,
-    ['/', '/zh/', '/zh/'],
+    landingRuns.at(-1),
+    ['switch_language', { id: 'zh', url: '/zh/', active: false, available: true }],
     'x works outside the shell',
   );
   landing.win.assigned.length = 0;
@@ -1500,9 +1572,9 @@ function press(harness, values) {
   assert.equal(landing.win.hashes.at(-1), '#release', 'homepage section jump updates the hash');
   press(landing, { key: 'k' });
   assert.equal(landing.win.scrolledTo.at(-1), 0, 'homepage k jumps to the previous top-level section');
+  const scrollsBeforeN = landing.win.scrolledTo.length;
   press(landing, { key: 'n' });
-  assert.equal(landing.win.scrolledTo.at(-1), 576, 'homepage n aliases the next top-level section');
-  assert.equal(landing.win.hashes.at(-1), '#release', 'homepage n updates the section hash');
+  assert.equal(landing.win.scrolledTo.length, scrollsBeforeN, 'n creates a page now; it is no homepage section alias');
   const landingAssignments = landing.win.assigned.length;
   press(landing, { key: 'q' });
   assert.equal(landing.win.assigned.length, landingAssignments, 'homepage q remains shell-only');
@@ -1512,8 +1584,7 @@ function press(harness, values) {
   press(landing, { key: 'z' });
   assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), false, 'homepage z restores chrome');
   press(landing, { key: 'h' });
-  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), true, 'homepage h hides navbar and footer chrome');
-  assert.equal(landing.win.sessionStorage.getItem('td-kbd-zen'), '1', 'homepage focus mode persists');
+  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), false, 'homepage h is not a Zen Mode alias');
 
   const homeBack = setup({
     withTree: false,
@@ -1550,10 +1621,8 @@ function press(harness, values) {
   bridge.root.appendChild(bridgeSearch);
   press(bridge, { key: 'y' });
   assert.equal(bridgeTheme.clicks, 1, 'y clicks a standalone homepage theme bridge');
-  press(bridge, { key: 'l' });
-  assert.deepEqual(bridge.win.assigned, ['/zh/'], 'l follows a standalone language bridge');
   press(bridge, { key: 'x' });
-  assert.deepEqual(bridge.win.assigned, ['/zh/', '/zh/'], 'x follows a standalone language bridge');
+  assert.deepEqual(bridge.win.assigned, ['/zh/'], 'x follows a standalone language bridge');
   bridge.win.assigned.length = 0;
   const bridgeF = press(bridge, { key: 'f' });
   assert.deepEqual(bridge.win.assigned, ['/docs/'], 'f leaves a standalone page for its search surface');
@@ -1596,7 +1665,177 @@ function press(harness, values) {
   press(appearanceKeys, { key: 'y' });
   assert.equal(appearanceBridge.clicks, 1, 'a second native dialog was ignored');
 
-  // -------------------------------------------------- collapsed desktop tree
+  // ------------------------------------------------------------- g goes home
+  const homeRegistry = { get: () => null, home: () => 'https://example.test/' };
+  const goHome = setup({ registry: homeRegistry });
+  const gEvent = press(goHome, { key: 'g' });
+  assert.deepEqual(goHome.win.assigned, ['https://example.test/'], 'g opens the language home');
+  assert.equal(gEvent.defaultPrevented, true, 'g swallows the literal character');
+  const atHome = setup({ withTree: false, shell: false, home: true, registry: homeRegistry });
+  atHome.win.location.href = 'https://example.test/';
+  atHome.win.scrollY = 900;
+  press(atHome, { key: 'g' });
+  assert.deepEqual(atHome.win.assigned, [], 'g on the home page does not reload it');
+  assert.deepEqual(atHome.win.scrolledTo, [0], 'g on the home page returns to the top');
+  const brandHome = setup({ withTree: false });
+  const brand = new Element('a', 'td-nav-brand');
+  brand.setAttribute('href', '/');
+  brand.href = 'https://example.test/';
+  brandHome.root.appendChild(brand);
+  brandHome.doc.querySelector = (selector) => (selector === '.td-nav-brand[href], .td-shell-subnav__brand[href]'
+    ? brand
+    : brandHome.root.querySelector(selector));
+  press(brandHome, { key: 'g' });
+  assert.deepEqual(brandHome.win.assigned, ['https://example.test/'], 'without a manifest home g follows the brand link');
+
+  // ----------------------------------------------------- h opens history
+  const historyOpens = [];
+  const withHistory = setup({ history: { instance: { open(event) { historyOpens.push(event.key); } } } });
+  const hEvent = press(withHistory, { key: 'h' });
+  assert.deepEqual(historyOpens, ['h'], 'h opens the browsing history overlay');
+  assert.equal(hEvent.defaultPrevented, true, 'h swallows the literal character');
+  assert.notEqual(press(setup(), { key: 'h' }).defaultPrevented, true, 'h without the history runtime stays inert');
+
+  // ------------------------------------- page actions run through the registry
+  const actionRuns = [];
+  const offered = new Set(['edit_page', 'create_child_page', 'create_issue', 'print', 'open_chatgpt',
+    'open_claude', 'open_gemini', 'view_markdown']);
+  const actionRegistry = {
+    get: (id) => (offered.has(id) ? { id, available: true } : (id === 'view_history' ? { available: false } : null)),
+    run(id, context) { actionRuns.push([id, context.source]); return Promise.resolve(); },
+  };
+  const acting = setup({ registry: actionRegistry });
+  for (const [key, id] of [
+    ['u', 'edit_page'], ['n', 'create_child_page'], ['i', 'create_issue'], ['p', 'print'],
+    ['[', 'open_chatgpt'], [']', 'open_claude'], ['\\', 'open_gemini'], ['m', 'view_markdown'],
+  ]) {
+    const event = press(acting, { key });
+    assert.equal(event.defaultPrevented, true, `${key} swallows the literal character`);
+    assert.deepEqual(actionRuns.at(-1), [id, 'keyboard'], `${key} runs ${id}`);
+  }
+  offered.delete('open_gemini');
+  offered.delete('edit_page');
+  const runsBeforeMissing = actionRuns.length;
+  assert.notEqual(press(acting, { key: '\\' }).defaultPrevented, true, 'an unoffered Gemini handoff stays inert');
+  assert.notEqual(press(acting, { key: 'u' }).defaultPrevented, true, 'a page without an edit URL keeps u inert');
+  assert.equal(actionRuns.length, runsBeforeMissing, 'unavailable actions never run');
+  assert.notEqual(press(acting, { key: '[', target: input }).defaultPrevented, true, '[ yields to a text field');
+
+  // ------------------------------------------------- o folds and unfolds all
+  const folding = setup({ withTree: false });
+  const sidebarShell = new Element('div');
+  sidebarShell.id = 'td-shell-sidebar';
+  const toggles = ['one', 'two'].map((name, index) => {
+    const button = new Element('button');
+    button.setAttribute('data-td-shell-tree-toggle', '');
+    button.setAttribute('aria-controls', 'group-' + name);
+    button.setAttribute('aria-expanded', index === 0 ? 'true' : 'false');
+    button.onclick = () => button.setAttribute('aria-expanded',
+      String(button.getAttribute('aria-expanded') !== 'true'));
+    sidebarShell.appendChild(button);
+    return button;
+  });
+  const strayToggle = new Element('button');
+  strayToggle.setAttribute('data-td-shell-tree-toggle', '');
+  strayToggle.setAttribute('aria-controls', 'outside');
+  strayToggle.setAttribute('aria-expanded', 'false');
+  folding.root.appendChild(sidebarShell);
+  folding.root.appendChild(strayToggle);
+  const detailsBlocks = [new Element('details'), new Element('details')];
+  detailsBlocks[0].open = true;
+  detailsBlocks.forEach((el) => folding.root.appendChild(el));
+  const codeRoot = new Element('div', 'is-collapsible td-is-collapsed');
+  codeRoot.setAttribute('data-td-code', '');
+  const codeButton = new Element('button');
+  codeButton.setAttribute('data-td-code-expand', '');
+  codeButton.onclick = () => {
+    if (codeRoot.classList.contains('td-is-collapsed')) codeRoot.classList.remove('td-is-collapsed');
+    else codeRoot.classList.add('td-is-collapsed');
+  };
+  codeRoot.appendChild(codeButton);
+  folding.root.appendChild(codeRoot);
+
+  const oEvent = press(folding, { key: 'o' });
+  assert.equal(oEvent.defaultPrevented, true, 'o swallows the literal character');
+  assert.deepEqual(toggles.map((b) => b.getAttribute('aria-expanded')), ['true', 'true'], 'o expands every sidebar group');
+  assert.equal(strayToggle.getAttribute('aria-expanded'), 'false', 'o leaves disclosures outside the rails alone');
+  assert.deepEqual(detailsBlocks.map((el) => el.open), [true, true], 'o opens every details block');
+  assert.equal(codeRoot.classList.contains('td-is-collapsed'), false, 'o unfolds shortened code blocks');
+  assert.equal(folding.html.hasAttribute('data-td-kbd-instant'), true, 'the fold runs in one instant frame');
+  folding.frames.splice(0).forEach((fn) => fn());
+  assert.equal(folding.html.hasAttribute('data-td-kbd-instant'), false, 'transitions return after the frame');
+
+  press(folding, { key: 'o' });
+  assert.deepEqual(toggles.map((b) => b.getAttribute('aria-expanded')), ['false', 'false'], 'a second o collapses the groups');
+  assert.deepEqual(detailsBlocks.map((el) => el.open), [false, false], 'a second o closes every details block');
+  assert.equal(codeRoot.classList.contains('td-is-collapsed'), true, 'a second o shortens code blocks again');
+  folding.frames.splice(0).forEach((fn) => fn());
+
+  // With the shared disclosure state, o commits through its API source so the
+  // reader's active path stays open on collapse.
+  const committed = [];
+  global.OinkSidebar = {
+    setExpanded(id, expanded, opts) { committed.push([id, expanded, opts.source]); return true; },
+  };
+  press(folding, { key: 'o' });
+  delete global.OinkSidebar;
+  assert.deepEqual(committed, [['group-one', true, 'api'], ['group-two', true, 'api']],
+    'o commits sidebar groups through OinkSidebar with the api source');
+  assert.notEqual(press(setup({ withTree: false }), { key: 'o' }).defaultPrevented, true,
+    'o stays inert on a page with nothing to fold');
+
+  // ------------------------------------------------- - and = page width
+  const sized = setup({ withTree: false });
+  const shellMain = new Element('div', 'td-shell-main');
+  shellMain.clientWidth = 1600;
+  const article = new Element('article', 'td-shell-article');
+  const natural = () => Math.min(1050, shellMain.clientWidth);
+  article.getBoundingClientRect = () => {
+    if (!sized.html.hasAttribute('data-td-shell-article-w')) return { top: 0, width: natural() };
+    const value = sized.html.style.props['--td-shell-article-w'];
+    return { top: 0, width: value === 'none' ? shellMain.clientWidth : Math.min(parseFloat(value), shellMain.clientWidth) };
+  };
+  shellMain.appendChild(article);
+  sized.root.appendChild(shellMain);
+  const width = () => article.getBoundingClientRect().width;
+  const stored = () => sized.win.localStorage.getItem('td-shell-article-w');
+
+  assert.equal(press(sized, { key: '=' }).defaultPrevented, true, '= swallows the literal character');
+  assert.equal(width(), 1150, '= widens the reading column by one step');
+  assert.equal(stored(), '1150', 'the reader width persists');
+  press(sized, { key: '+', shiftKey: true });
+  assert.equal(width(), 1250, '+ (Shift+=) widens as well');
+  for (let n = 0; n < 4; n += 1) press(sized, { key: '=' });
+  assert.equal(stored(), 'none', 'reaching the container stores "none" so wider screens still fill');
+  assert.equal(width(), 1600, 'the column never outgrows its container');
+  press(sized, { key: '-' });
+  assert.equal(width(), 1500, '- narrows from the rendered width');
+  for (let n = 0; n < 4; n += 1) press(sized, { key: '-' });
+  assert.equal(width(), 1100);
+  press(sized, { key: '-' });
+  assert.equal(sized.html.hasAttribute('data-td-shell-article-w'), false, 'a step across the page width returns to it');
+  assert.equal(stored(), null, 'returning to the page width forgets the reader width');
+  assert.equal(width(), 1050);
+  for (let n = 0; n < 6; n += 1) press(sized, { key: '-' });
+  assert.equal(width(), 600, 'the column stops at the minimum reading width');
+  press(sized, { key: '-' });
+  assert.equal(width(), 600, 'the minimum dwells');
+  for (let n = 0; n < 4; n += 1) press(sized, { key: '=' });
+  assert.equal(width(), 1000);
+  press(sized, { key: '=' });
+  assert.equal(stored(), null, 'widening onto the page width also returns to it');
+  assert.notEqual(press(setup({ withTree: false }), { key: '=' }).defaultPrevented, true,
+    '= stays inert without a reading column');
+  // A column that already fills its container has nowhere to grow; the press
+  // must not leave a "fill" preference that a wider screen would inherit.
+  shellMain.clientWidth = 1000;
+  press(sized, { key: '=' });
+  assert.equal(stored(), null, '= at the container edge records nothing');
+  assert.equal(sized.html.hasAttribute('data-td-shell-article-w'), false);
+  press(sized, { key: '-' });
+  assert.equal(stored(), '900', '- still narrows a full column');
+
+  // ------------------------------------------------- collapsed desktop tree
   const collapsed = setup({ sidebarToggle: true });
   collapsed.html.setAttribute('data-td-shell-sidebar', 'collapsed');
   const restore = collapsed.root.querySelector('[data-td-shell-sidebar-toggle]');

@@ -54,6 +54,7 @@
 {{- $llmPrompt := printf (T "ui_open_in_prompt") $p.Permalink -}}
 {{- $chatgptURL := printf "https://chatgpt.com/?%s" (querify "hints" "search" "prompt" $llmPrompt) -}}
 {{- $claudeURL := printf "https://claude.ai/new?%s" (querify "q" $llmPrompt) -}}
+{{- $geminiURL := printf "https://gemini.google.com/app?%s" (querify "q" $llmPrompt) -}}
 
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" $p.Site.Language.Lang -}}
 {{- $preset := partialCached "preset-config.html" "preset-global" $p.Site.Language.Lang -}}
@@ -99,6 +100,12 @@
 {{- $viewTitle := T "post_view_markdown" -}}
 {{- $chatgptTitle := T "ui_open_in_chatgpt" -}}
 {{- $claudeTitle := T "ui_open_in_claude" -}}
+{{- $geminiTitle := T "ui_open_in_gemini" -}}
+{{- $browseTitle := T "ui_shortcut_history" -}}
+{{- /* The browsing-history overlay ships with the keyboard runtime. */ -}}
+{{- $keyboardNav := and
+  (ne (partial "ui-param.html" (dict "page" $p "key" "keyboard_nav")) false)
+  (eq (lower ($p.Store.Get "tdOutputFormat" | default "html")) "html") -}}
 {{- $historyTitle := T "ui_view_history" -}}
 {{- $askKeyword := T "ui_open_in_prompt_label" -}}
 {{- $editTitle := T "post_edit_this" -}}
@@ -132,6 +139,11 @@
     "icon" "fa-brands fa-claude" "keywords" (slice $claudeTitle $askKeyword "claude" "anthropic" "ai" "llm")
     "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $claudeTitle $unavailable))
     "url" (cond $assistantLinks $claudeURL "") "promptTemplate" (T "ui_open_in_prompt")
+    "target" "blank" "placements" $assistantPlacements "options" (slice))
+  (dict "id" "open_gemini" "title" $geminiTitle "description" (T "ui_open_in_gemini_hint")
+    "icon" "fa-brands fa-google" "keywords" (slice $geminiTitle $askKeyword "gemini" "google" "ai" "llm")
+    "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $geminiTitle $unavailable))
+    "url" (cond $assistantLinks $geminiURL "") "promptTemplate" (T "ui_open_in_prompt")
     "target" "blank" "placements" $assistantPlacements "options" (slice))
   (dict "id" "view_markdown" "title" $viewTitle "description" $viewTitle
     "icon" "fa-brands fa-markdown" "keywords" (slice $viewTitle "markdown" "source")
@@ -189,6 +201,10 @@
     "icon" "fa-brands fa-github" "keywords" (slice "GitHub" "repository" "source")
     "kind" "url" "available" (ne $projectRepo "") "disabledReason" (cond (ne $projectRepo "") "" (printf "%s: %s" $githubTitle $unavailable)) "url" $projectRepo
     "target" "blank" "placements" $paletteOnly "options" (slice))
+  (dict "id" "browse_history" "title" $browseTitle "description" $browseTitle
+    "icon" "fa-solid fa-clock-rotate-left" "keywords" (slice $browseTitle "history" "recent" "visited")
+    "kind" "invoke" "available" $keyboardNav "disabledReason" (cond $keyboardNav "" (printf "%s: %s" $browseTitle $unavailable)) "url" ""
+    "target" "self" "placements" (cond $keyboardNav $paletteOnly $noPlacement) "options" (slice))
 -}}
 {{- $compareTargets := partialCached "compare/targets.html" $p $p.Site.BaseURL $p.Site.Language.Lang (partial "compare/page-key.html" $p) ($p.Store.Get "tdOutputFormat" | default "html") -}}
 {{- if $compareTargets -}}

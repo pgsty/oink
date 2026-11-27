@@ -66,7 +66,7 @@
     {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" $p "key" "keyboard_nav")) false -}}
     <button type="button" class="td-page-actions__primary td-page-actions__form" hidden
       data-td-blog-index-toggle
-      {{- if $keyboardNav }} aria-keyshortcuts="V"{{ end }}
+      {{- if $keyboardNav }} aria-keyshortcuts="L"{{ end }}
       title="{{ T "ui_blog_index_toggle" }}" aria-label="{{ T "ui_blog_index_toggle" }}">
       <span class="td-page-actions__icon td-page-actions__icon--form-list"><i class="fa-solid fa-list" aria-hidden="true"></i></span>
       <span class="td-page-actions__icon td-page-actions__icon--form-cards"><i class="fa-solid fa-table-cells-large" aria-hidden="true"></i></span>
@@ -109,6 +109,11 @@
     <li><a class="td-page-actions__item" data-td-action="open_claude" data-td-page-open-in="claude"
       href="{{ $byID.open_claude.url | safeURL }}" target="_blank" rel="noopener noreferrer">
       <i class="{{ $byID.open_claude.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_claude" }}</span>
+    </a></li>
+    <li><a class="td-page-actions__item" data-td-action="open_gemini" data-td-page-open-in="gemini"
+      href="{{ $byID.open_gemini.url | safeURL }}" target="_blank" rel="noopener noreferrer"
+      title="{{ T "ui_open_in_gemini_hint" }}">
+      <i class="{{ $byID.open_gemini.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_gemini" }}</span>
     </a></li>
     {{- end }}
     {{- with $markdownURL }}

@@ -1,15 +1,24 @@
 /**
- * Keyboard navigation. WASD and arrow keys drive the sidebar tree,
- * q/e page through the visible sidebar order, j/k jump to the next/previous
- * page outline section, h/z toggle Zen Mode (chrome-free reading), b opens
- * the duo view, v switches index layout forms on blog/release/case indexes,
- * m cycles Expo album layout modes and ,/< ./> shrink/enlarge Expo album
- * tiles, l/x cycle languages, t cycles visual styles, y cycles color modes
- * (light/dark/system), r cycles internal top-level navbar sections, f/c open
- * the Command Palette in search or command mode, and ; toggles the shortcut
- * help dialog. The homepage shares j/k section jumps and h/z Zen Mode with
- * shell pages, and n is its mnemonic next-section alias; l/x/t/y/r/f/c/;
- * work on every interactive page.
+ * Keyboard navigation: thirty single-key shortcuts in three groups, matching
+ * the 3 x 10 shortcut help.
+ *
+ * Navigation: W/S and the arrow keys move through the sidebar tree, A/D
+ * collapse or expand a section, Enter or Space opens the focused page, Q/E
+ * page through the visible sidebar order, K/J jump to the previous/next page
+ * outline section, X cycles languages, R cycles internal top-level navbar
+ * sections, V cycles versions, H opens the browsing history and G goes home.
+ *
+ * Actions: F (and "/" in the palette) searches, C (and "`" in the palette)
+ * opens commands, U edits the page, N creates a child page, I files an issue,
+ * O expands or collapses everything that folds, P prints, and [ ] \ hand the
+ * page to ChatGPT, Claude or Gemini.
+ *
+ * View: B opens the duo view, Z toggles Zen Mode, M opens the Markdown
+ * source, T cycles visual styles, Y cycles color modes, L switches index
+ * layout forms, ; cycles gallery layouts, , and . (or < >) shrink and enlarge
+ * gallery tiles, - and = narrow and widen the reading column, and ' toggles
+ * the shortcut help.
+ *
  * Every binding is a single-character shortcut, so all of them yield to
  * anything the reader could be typing into and to open overlays. Bundled only
  * when params.ui.keyboard_nav is not false.
@@ -23,6 +32,9 @@
   var NAV_MARGIN = 24; // fallback when computed anchor padding is unavailable
   var ZEN_KEY = 'td-kbd-zen';
   var PALETTE_KEY = 'td-kbd-palette';
+  var WIDTH_KEY = 'td-shell-article-w';
+  var WIDTH_STEP = 100; // px per - or = press
+  var WIDTH_MIN = 600; // px: narrower than this stops being a reading column
 
   var TYPING_TAGS = { TEXTAREA: true, SELECT: true };
   // Non-text <input> controls (such as Expo/gallery layout radios and tile-size
@@ -294,11 +306,11 @@
 
     // Bare shortcuts stand down while anything modal is up or the reader is
     // typing: IME composition, editable targets, held modifiers, the Command
-    // Palette scroll lock, and open dialogs all take precedence. `<` and `>`
-    // require Shift on standard keyboards, so only those two characters may
-    // pass with shiftKey held.
+    // Palette scroll lock, and open dialogs all take precedence. `<`, `>` and
+    // `+` require Shift on standard keyboards, so only those characters (and
+    // the unshifted keys under them) may pass with shiftKey held.
     function allowShiftKey(key) {
-      return key === ',' || key === '<' || key === '.' || key === '>';
+      return key === ',' || key === '<' || key === '.' || key === '>' || key === '+';
     }
 
     function keyGuarded(event) {
@@ -625,28 +637,253 @@
       }
     }
 
-    function cycleLanguage() {
+    function actionOf(id) {
       var actions = registry();
-      if (actions && actions.get) {
-        var action = actions.get('switch_language');
-        if (action && action.available !== false) {
-          var choices = action.options || [];
-          var active = -1;
-          for (var i = 0; i < choices.length; i += 1) {
-            if (choices[i].active) active = i;
-          }
-          for (var step = 1; step <= choices.length; step += 1) {
-            var candidate = choices[(active + step + choices.length) % choices.length];
-            if (candidate && candidate.available !== false && candidate.url && !candidate.active) {
-              win.location.assign(candidate.url);
-              return true;
-            }
-          }
-        }
+      if (!actions || typeof actions.get !== 'function') return null;
+      var action = actions.get(id);
+      return action && action.available !== false ? action : null;
+    }
+
+    // Page actions run through the registry, which owns URL policy and the
+    // new-tab handoff; an action the page does not offer is not swallowed.
+    function runAction(event, id) {
+      var actions = registry();
+      if (!actionOf(id) || typeof actions.run !== 'function') return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      var result = actions.run(id, { source: 'keyboard' });
+      if (result && result.then) result.then(null, function () {});
+      return true;
+    }
+
+    // The choice after the active one that can be visited, wrapping at the
+    // end; the active choice itself is never a target.
+    function nextChoice(id) {
+      var action = actionOf(id);
+      if (!action) return null;
+      var choices = action.options || [];
+      var active = -1;
+      for (var i = 0; i < choices.length; i += 1) {
+        if (choices[i] && choices[i].active) active = i;
       }
-      var fallback = doc.querySelector('[data-td-language-route][href]');
+      for (var step = 1; step <= choices.length; step += 1) {
+        var candidate = choices[(active + step + choices.length) % choices.length];
+        if (candidate && candidate.available !== false && candidate.url && !candidate.active)
+          return candidate;
+      }
+      return null;
+    }
+
+    function cycleChoice(event, id) {
+      var choice = nextChoice(id);
+      if (!choice) return false;
+      return runChoice(event, id, choice);
+    }
+
+    function runChoice(event, id, choice) {
+      var actions = registry();
+      if (!actions || typeof actions.run !== 'function') return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      var result = actions.run(id, { source: 'keyboard', value: choice });
+      if (result && result.then) result.then(null, function () {});
+      return true;
+    }
+
+    function languageFallback() {
+      return doc.querySelector('[data-td-language-route][href]');
+    }
+
+    function cycleLanguage(event) {
+      if (cycleChoice(event, 'switch_language')) return true;
+      var fallback = languageFallback();
       if (!fallback) return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
       win.location.assign(fallback.getAttribute('href'));
+      return true;
+    }
+
+    function homeUrl() {
+      var actions = registry();
+      var url = actions && typeof actions.home === 'function' ? actions.home() : '';
+      if (url) return url;
+      var brand = doc.querySelector('.td-nav-brand[href], .td-shell-subnav__brand[href]');
+      return brand ? brand.href : '';
+    }
+
+    // On the home page itself G returns to the top instead of reloading.
+    function goHome(event) {
+      var url = homeUrl();
+      if (!url) return false;
+      event.preventDefault();
+      if (pathOf(url, win.location.href) === pathOf(win.location.href, win.location.href)) {
+        glideTo(0);
+        return true;
+      }
+      win.location.assign(url);
+      return true;
+    }
+
+    function historyOwner() {
+      var owner = options.history || global.OinkHistory;
+      var instance = owner && (owner.instance || owner);
+      return instance && typeof instance.open === 'function' ? instance : null;
+    }
+
+    function openHistory(event) {
+      var owner = historyOwner();
+      if (!owner) return false;
+      event.preventDefault();
+      owner.open(event);
+      return true;
+    }
+
+    /* -------------------------------------------------------- fold all (o) */
+
+    // Everything the reader can fold: the sidebar tree and right-rail groups
+    // (one committed state in sidebar-state.js), native <details> such as
+    // collapsible callouts, file trees and "more" lists, and code blocks
+    // shortened to their first lines. Popover menus are transient, not
+    // folded content, and stay out.
+    function foldables() {
+      var tree = Array.prototype.filter.call(
+        doc.querySelectorAll('[data-td-shell-tree-toggle][aria-controls]'),
+        function (button) {
+          return typeof button.closest === 'function' &&
+            Boolean(button.closest('#td-shell-sidebar, [data-td-shell-aside]'));
+        },
+      );
+      var details = Array.prototype.filter.call(doc.querySelectorAll('details'), function (el) {
+        return !(typeof el.closest === 'function' &&
+          el.closest('dialog, [role="dialog"], [data-td-nav-hover], .td-site-header, template'));
+      });
+      var code = Array.prototype.filter.call(
+        doc.querySelectorAll('[data-td-code].is-collapsible'),
+        function (root) { return Boolean(root.querySelector('[data-td-code-expand]')); },
+      );
+      return { tree: tree, details: details, code: code };
+    }
+
+    function hasFoldables() {
+      var all = foldables();
+      return all.tree.length + all.details.length + all.code.length > 0;
+    }
+
+    // Keep the line the reader was on in place while content above it opens
+    // or closes; a collapsed anchor hands over to its nearest visible parent.
+    function readingAnchor() {
+      if (typeof doc.elementFromPoint !== 'function') return null;
+      var main = doc.querySelector('.td-shell-main') || doc.querySelector('main');
+      if (!main) return null;
+      var box = main.getBoundingClientRect();
+      var element = doc.elementFromPoint(
+        box.left + Math.min(box.width / 2, 120),
+        scrollPaddingOffset() + 8,
+      );
+      if (!element || !main.contains(element)) return null;
+      return { element: element, top: element.getBoundingClientRect().top };
+    }
+
+    function restoreAnchor(anchor) {
+      if (!anchor) return;
+      var element = anchor.element;
+      while (element && element.getClientRects && !element.getClientRects().length)
+        element = element.parentElement;
+      if (!element || !element.getBoundingClientRect) return;
+      var delta = element.getBoundingClientRect().top - anchor.top;
+      if (Math.abs(delta) > 1) setScroll((win.scrollY || 0) + delta);
+    }
+
+    function toggleAll(event) {
+      var all = foldables();
+      var sidebar = global.OinkSidebar;
+      var codeFolded = function (root) { return root.classList.contains('td-is-collapsed'); };
+      var expand = all.tree.some(function (button) {
+        return button.getAttribute('aria-expanded') !== 'true';
+      }) || all.details.some(function (el) { return !el.open; }) || all.code.some(codeFolded);
+      if (!all.tree.length && !all.details.length && !all.code.length) return false;
+      event.preventDefault();
+      var anchor = readingAnchor();
+      // One instant frame: animated heights would move the anchor after the
+      // correction below has already been measured.
+      html.setAttribute('data-td-kbd-instant', '');
+      all.tree.forEach(function (button) {
+        var id = button.getAttribute('aria-controls');
+        // The API source keeps the reader's own location open on "collapse".
+        if (sidebar && typeof sidebar.setExpanded === 'function' &&
+            sidebar.setExpanded(id, expand, { source: 'api' })) return;
+        if ((button.getAttribute('aria-expanded') === 'true') !== expand) button.click();
+      });
+      all.details.forEach(function (el) { el.open = expand; });
+      all.code.forEach(function (root) {
+        if (codeFolded(root) === expand) root.querySelector('[data-td-code-expand]').click();
+      });
+      restoreAnchor(anchor);
+      win.requestAnimationFrame(function () {
+        restoreAnchor(anchor);
+        html.removeAttribute('data-td-kbd-instant');
+      });
+      return true;
+    }
+
+    /* ------------------------------------------------- page width (- / =) */
+
+    function articleBox() {
+      var article = doc.querySelector('.td-shell-layout .td-shell-article');
+      return article && isVisible(article, win) ? article : null;
+    }
+
+    function clearWidth() {
+      html.removeAttribute('data-td-shell-article-w');
+      html.style.removeProperty('--td-shell-article-w');
+      try {
+        win.localStorage.removeItem(WIDTH_KEY);
+      } catch (_) {
+        /* storage may be unavailable */
+      }
+    }
+
+    // The reading column grows or shrinks by one step from its rendered
+    // width, never below WIDTH_MIN and never past its container. A step that
+    // reaches or crosses the page's own width (its page_width or book
+    // measure) stops there and forgets the reader's width, which is the way
+    // back to the author's layout. Reaching the container stores "none", so
+    // a wider screen later still fills.
+    function adjustWidth(event, delta) {
+      var article = articleBox();
+      var container = article && article.parentElement;
+      var available = container ? container.clientWidth : 0;
+      if (!article || !available) return false;
+      event.preventDefault();
+      var current = article.getBoundingClientRect().width;
+      var custom = html.hasAttribute('data-td-shell-article-w');
+      var natural = current;
+      if (custom) {
+        html.removeAttribute('data-td-shell-article-w');
+        natural = article.getBoundingClientRect().width;
+        html.setAttribute('data-td-shell-article-w', '');
+      }
+      var next = Math.round(current + delta * WIDTH_STEP);
+      next = Math.max(next, Math.min(WIDTH_MIN, available));
+      // At either bound the press changes nothing, so it records nothing: a
+      // column that already fills must not leave a "fill" preference behind.
+      if (Math.abs(Math.min(next, available) - current) < 1) return true;
+      // A stored width the container already reduces to the page's own adds
+      // nothing; drop it and take the step from the page's width.
+      if (custom && Math.abs(current - natural) < 1) {
+        clearWidth();
+        custom = false;
+      }
+      if (custom && (current - natural) * (next - natural) <= 0) {
+        clearWidth();
+        return true;
+      }
+      var value = next >= available ? 'none' : String(next);
+      html.setAttribute('data-td-shell-article-w', '');
+      html.style.setProperty('--td-shell-article-w', value === 'none' ? 'none' : value + 'px');
+      try {
+        win.localStorage.setItem(WIDTH_KEY, value);
+      } catch (_) {
+        /* storage may be unavailable; the width still applies to this page */
+      }
       return true;
     }
 
@@ -913,17 +1150,138 @@
       }, 0);
     }
 
-    /* -------------------------------------------------- shortcut help (;) */
+    /* -------------------------------------------------- shortcut help (') */
 
     var helpDialog = null;
     var helpCloseButton = null;
     var helpReturnFocus = null;
     var suppressHelpFocus = false;
     var helpBackdropPressed = false;
+    var unavailableLabel = 'unavailable';
 
+    function always() {
+      return true;
+    }
+
+    function hasTree() {
+      return Boolean(menu()) && !html.hasAttribute('data-td-kbd-zen');
+    }
+
+    function hasSearch() {
+      var owner = palette();
+      return Boolean(
+        (owner && owner.instance && typeof owner.instance.open === 'function') ||
+        doc.querySelector('[data-td-keyboard-search-route][href]'),
+      );
+    }
+
+    function presetCount() {
+      var action = actionOf('switch_preset');
+      if (action) {
+        return (action.options || []).filter(function (option) {
+          return option && option.available !== false;
+        }).length;
+      }
+      var names = {};
+      Array.prototype.forEach.call(doc.querySelectorAll('input[data-td-preset-value]'), function (input) {
+        names[input.getAttribute('data-td-preset-value')] = true;
+      });
+      return Object.keys(names).length;
+    }
+
+    function usableControl(selector) {
+      var control = doc.querySelector(selector);
+      return Boolean(control && !control.hidden && !control.disabled);
+    }
+
+    function galleryModes() {
+      var surface = galleryControls();
+      return surface && surface.controls.querySelectorAll
+        ? surface.controls.querySelectorAll(surface.modeSelector).length
+        : 0;
+    }
+
+    function gallerySlider() {
+      var surface = galleryControls();
+      var slider = surface && surface.controls.querySelector
+        ? surface.controls.querySelector(surface.sizeSelector)
+        : null;
+      return Boolean(slider && !slider.disabled);
+    }
+
+    function hasAction(id) {
+      return function () { return Boolean(actionOf(id)); };
+    }
+
+    // One entry per help row. The dialog dims the rows this page cannot run
+    // right now, so the 3 x 10 grid keeps its shape and still tells the truth.
+    var SHORTCUTS = {
+      'tree-move': hasTree,
+      'tree-toggle': hasTree,
+      'tree-open': hasTree,
+      'page-move': function () {
+        return isShellPage() && Boolean(pageTarget('prev') || pageTarget('next'));
+      },
+      'heading-move': function () { return hasReadingShortcuts(); },
+      language: function () { return Boolean(nextChoice('switch_language') || languageFallback()); },
+      route: function () { return navbarRoutes().length > 1; },
+      version: function () { return Boolean(nextChoice('switch_version')); },
+      history: function () { return Boolean(historyOwner()); },
+      home: function () { return Boolean(homeUrl()); },
+      search: hasSearch,
+      commands: hasSearch,
+      edit: hasAction('edit_page'),
+      'new-page': hasAction('create_child_page'),
+      issue: hasAction('create_issue'),
+      'expand-all': hasFoldables,
+      print: always,
+      chatgpt: hasAction('open_chatgpt'),
+      claude: hasAction('open_claude'),
+      gemini: hasAction('open_gemini'),
+      duo: function () { return usableControl('[data-td-compare-open]'); },
+      zen: function () { return hasReadingShortcuts(); },
+      markdown: hasAction('view_markdown'),
+      style: function () { return presetCount() > 1; },
+      theme: function () {
+        return Boolean(actionOf('switch_theme') ||
+          doc.querySelector('[data-bs-theme-value], [data-td-theme-toggle]'));
+      },
+      layout: function () { return usableControl('[data-td-blog-index-toggle]'); },
+      gallery: function () { return galleryModes() > 1; },
+      'image-size': gallerySlider,
+      'page-width': function () { return Boolean(articleBox()); },
+      help: always,
+    };
+
+    function markAvailability(root) {
+      if (!root || !root.querySelectorAll) return;
+      Array.prototype.forEach.call(root.querySelectorAll('[data-td-shortcut]'), function (row) {
+        var check = SHORTCUTS[row.getAttribute('data-td-shortcut')];
+        var available = true;
+        try {
+          available = !check || Boolean(check());
+        } catch (_) {
+          available = false;
+        }
+        if (available) row.classList.remove('td-is-unavailable');
+        else row.classList.add('td-is-unavailable');
+        var note = row.querySelector('[data-td-shortcut-state]');
+        if (!note && !available) {
+          var description = row.querySelector('dd');
+          if (!description) return;
+          note = doc.createElement('span');
+          note.className = 'visually-hidden';
+          note.setAttribute('data-td-shortcut-state', '');
+          note.textContent = ' (' + unavailableLabel + ')';
+          description.appendChild(note);
+        }
+        if (note) note.hidden = available;
+      });
+    }
+
+    // The full sheet is inert template content: the footer's hover card is
+    // only a hint, and pages without a footer carry the same template.
     function helpSource() {
-      var direct = doc.querySelector && doc.querySelector('.td-shell-keyboard-help');
-      if (direct) return direct;
       var tpl = doc.querySelector && doc.querySelector('template[data-td-keyboard-help-source]');
       if (tpl && tpl.content && tpl.content.querySelector) {
         return tpl.content.querySelector('.td-shell-keyboard-help');
@@ -1075,8 +1433,8 @@
       closeBtn.className = 'td-shell-keyboard-dialog__close';
       closeBtn.setAttribute('data-td-keyboard-dialog-close', '');
       closeBtn.setAttribute('aria-label', closeLabel);
-      closeBtn.setAttribute('title', closeLabel + ' (Esc / ;)');
-      closeBtn.setAttribute('aria-keyshortcuts', 'Escape ;');
+      closeBtn.setAttribute('title', closeLabel + " (Esc / ')");
+      closeBtn.setAttribute('aria-keyshortcuts', "Escape '");
       var closeIcon = doc.createElement('i');
       closeIcon.className = 'td-shell-icon td-shell-icon--x fa-solid fa-xmark';
       closeIcon.setAttribute('aria-hidden', 'true');
@@ -1086,15 +1444,17 @@
       header.appendChild(closeBtn);
       surface.appendChild(header);
 
+      // Thirty rows scroll on a phone and hold nothing focusable, so the
+      // body itself is a labelled tab stop that the keyboard can scroll.
       var body = doc.createElement('div');
       body.className = 'td-shell-keyboard-dialog__body';
+      body.setAttribute('tabindex', '0');
+      body.setAttribute('role', 'region');
+      body.setAttribute('aria-labelledby', 'td-shell-keyboard-dialog-title');
       var sections = source.querySelectorAll
         ? Array.prototype.slice.call(source.querySelectorAll('.td-shell-keyboard-help__section'))
         : [];
-      if (sections.length > 1) {
-        if (dialog.classList) dialog.classList.add('td-shell-keyboard-dialog--split');
-        if (body.classList) body.classList.add('td-shell-keyboard-dialog__body--split');
-      }
+      unavailableLabel = source.getAttribute('data-td-unavailable-label') || 'unavailable';
       sections.forEach(function (section) {
         var copy = typeof section.cloneNode === 'function' ? section.cloneNode(true) : null;
         if (!copy) return;
@@ -1134,6 +1494,7 @@
       var dialog = buildHelpDialog(source);
       if (!dialog) return false;
       if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      markAvailability(dialog);
       helpReturnFocus = returnTarget || doc.activeElement;
       suppressHelpFocus = false;
       var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
@@ -1191,7 +1552,7 @@
           return closeHelp(true);
         }
         if (
-          key === ';' &&
+          key === "'" &&
           !event.repeat &&
           !keyGuarded(event) &&
           !html.hasAttribute('data-td-shell-lock') &&
@@ -1227,7 +1588,7 @@
           event.preventDefault();
           return treeExpand(active);
         }
-        if (key === ' ' || key === 'g') {
+        if (key === ' ') {
           // Enter keeps the link's native activation; Space must not scroll.
           event.preventDefault();
           if (active.click) active.click();
@@ -1258,34 +1619,50 @@
         }
       }
 
-      if (
-        hasReadingShortcuts() &&
-        (key === 'j' || key === 'k' || (isHomePage() && key === 'n'))
-      ) {
+      // Navigation
+      if (hasReadingShortcuts() && (key === 'j' || key === 'k')) {
         event.preventDefault();
         return jumpHeading(key === 'k' ? -1 : 1);
       }
       if (isShellPage() && key === 'q') return goPage('prev');
       if (isShellPage() && key === 'e') return goPage('next');
-      if (hasReadingShortcuts() && (key === 'h' || key === 'z')) {
-        event.preventDefault();
-        return setZen(!html.hasAttribute('data-td-kbd-zen'));
-      }
-      if (key === 'b') return openCompare(event);
-      if (key === 'v') return cycleBlogLayout(event);
-      if (key === 'm') return cycleExpoMode(event);
-      if (key === ',' || key === '<') return adjustExpoSize(event, -1);
-      if (key === '.' || key === '>') return adjustExpoSize(event, 1);
-      if (key === 'l' || key === 'x') return cycleLanguage();
-      if (key === 't') return cyclePreset();
-      if (key === 'y') return cycleTheme();
+      if (key === 'x') return cycleLanguage(event);
       if (key === 'r') {
         if (cycleNavbar()) event.preventDefault();
         return;
       }
+      if (key === 'v') return cycleChoice(event, 'switch_version');
+      if (key === 'h') return openHistory(event);
+      if (key === 'g') return goHome(event);
+
+      // Actions
       if (key === 'f') return openPalette(event, false);
       if (key === 'c') return openPalette(event, true);
-      if (key === ';' && !event.repeat) return openHelp(event);
+      if (key === 'u') return runAction(event, 'edit_page');
+      if (key === 'n') return runAction(event, 'create_child_page');
+      if (key === 'i') return runAction(event, 'create_issue');
+      if (key === 'o') return toggleAll(event);
+      if (key === 'p') return runAction(event, 'print');
+      if (key === '[') return runAction(event, 'open_chatgpt');
+      if (key === ']') return runAction(event, 'open_claude');
+      if (key === '\\') return runAction(event, 'open_gemini');
+
+      // View
+      if (key === 'b') return openCompare(event);
+      if (hasReadingShortcuts() && key === 'z') {
+        event.preventDefault();
+        return setZen(!html.hasAttribute('data-td-kbd-zen'));
+      }
+      if (key === 'm') return runAction(event, 'view_markdown');
+      if (key === 't') return cyclePreset();
+      if (key === 'y') return cycleTheme();
+      if (key === 'l') return cycleBlogLayout(event);
+      if (key === ';') return cycleExpoMode(event);
+      if (key === ',' || key === '<') return adjustExpoSize(event, -1);
+      if (key === '.' || key === '>') return adjustExpoSize(event, 1);
+      if (key === '-') return adjustWidth(event, -1);
+      if (key === '=' || key === '+') return adjustWidth(event, 1);
+      if (key === "'" && !event.repeat) return openHelp(event);
     }
 
     // Re-apply the chrome-free mode chosen on a previous page.

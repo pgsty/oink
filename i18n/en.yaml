@@ -83,6 +83,8 @@ ui_skip_to_content: Skip to content
 ui_page_actions: Actions
 ui_open_in_chatgpt: Open in ChatGPT
 ui_open_in_claude: Open in Claude
+ui_open_in_gemini: Open in Gemini
+ui_open_in_gemini_hint: Also copies the prompt to paste into Gemini
 ui_open_in_prompt: Read from %s so I can ask questions about it.
 ui_copy_markdown: Copy Markdown
 ui_copy_success: Markdown copied
@@ -107,8 +109,6 @@ ui_keyboard_shortcuts: Shortcut help
 ui_shortcut_tree_move: Move through sidebar
 ui_shortcut_tree_toggle: Collapse or expand section
 ui_shortcut_tree_open: Open focused page
-ui_shortcut_heading_prev: Previous heading
-ui_shortcut_heading_next: Next heading
 ui_shortcut_page_move: Previous or next page
 ui_shortcut_search: Search
 ui_shortcut_commands: Command palette
@@ -117,6 +117,22 @@ ui_shortcut_language: Switch language
 ui_shortcut_theme: Switch color mode
 ui_shortcut_style: Switch style
 ui_shortcut_route: Switch section
+ui_shortcut_group_navigation: Navigation
+ui_shortcut_group_actions: Actions
+ui_shortcut_group_view: View
+ui_shortcut_heading_move: Previous or next heading
+ui_shortcut_version: Switch version
+ui_shortcut_history: Browsing history
+ui_shortcut_home: Go to home page
+ui_shortcut_expand_all: Expand or collapse all
+ui_shortcut_page_width: Page width
+ui_shortcut_more: Click for all shortcuts
+ui_history_search: Search browsing history
+ui_history_empty: No browsing history yet
+ui_history_clear: Clear history
+ui_history_cleared: Browsing history cleared
+ui_history_remove: Remove
+ui_history_removed: Removed from history
 ui_page_annotation: Page information
 ui_backlinks: Backlinks
 ui_backlinks_more: "Show {{ . }} more"

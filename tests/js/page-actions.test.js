@@ -52,14 +52,19 @@ async function testBindings() {
   const print = control('print', root);
   const chatgpt = control('open_chatgpt', root, 'A');
   const claude = control('open_claude', root, 'A');
-  const events = { preload: [], run: [], resolve: [], timers: [], current: 'initial' };
+  const gemini = control('open_gemini', root, 'A');
+  const events = { preload: [], run: [], resolve: [], timers: [], current: 'initial', copied: [] };
   const actions = {
     copy_markdown: { id: 'copy_markdown', available: true, url: '/page.md' },
     print: { id: 'print', available: true },
     open_chatgpt: { id: 'open_chatgpt', kind: 'url', available: true },
     open_claude: { id: 'open_claude', kind: 'url', available: true },
+    open_gemini: { id: 'open_gemini', kind: 'url', available: true },
   };
   const fakeWindow = {
+    OinkClipboard: {
+      copyNow(text) { events.copied.push(text); return true; },
+    },
     OinkActions: {
       get(id) { return actions[id] || null; },
       preloadMarkdown(url) { events.preload.push(url); return Promise.resolve(); },
@@ -68,6 +73,7 @@ async function testBindings() {
         events.resolve.push({ id, current: events.current });
         return `https://assistant.example/${id}?page=${events.current}`;
       },
+      assistantPrompt(id) { return `${id} prompt for ${events.current}`; },
     },
     requestAnimationFrame(callback) { callback(); },
     setTimeout(callback) { events.timers.push(callback); },
@@ -75,7 +81,7 @@ async function testBindings() {
   const fakeDocument = {
     querySelectorAll(selector) {
       assert.equal(selector, '[data-td-action]');
-      return [copy, print, chatgpt, claude];
+      return [copy, print, chatgpt, claude, gemini];
     },
     querySelector(selector) {
       assert.equal(selector, '[data-td-page-actions]');
@@ -98,6 +104,13 @@ async function testBindings() {
   );
   events.current = 'query-and-hash';
   chatgpt.listeners.get('click').handler();
+  assert.deepEqual(events.copied, [], 'ChatGPT carries its prompt in the URL and copies nothing');
+  gemini.listeners.get('pointerenter').handler();
+  assert.deepEqual(events.copied, [], 'hovering Gemini copies nothing');
+  gemini.listeners.get('click').handler();
+  assert.deepEqual(events.copied, ['open_gemini prompt for query-and-hash'],
+    'activating Gemini copies the current prompt before the link opens its tab');
+  assert.equal(gemini.getAttribute('href'), 'https://assistant.example/open_gemini?page=query-and-hash');
   assert.equal(
     chatgpt.getAttribute('href'),
     'https://assistant.example/open_chatgpt?page=query-and-hash',
@@ -126,7 +139,10 @@ async function testBindings() {
   assert.deepEqual(events.resolve, [
     { id: 'open_chatgpt', current: 'initial' },
     { id: 'open_claude', current: 'initial' },
+    { id: 'open_gemini', current: 'initial' },
     { id: 'open_chatgpt', current: 'query-and-hash' },
+    { id: 'open_gemini', current: 'query-and-hash' },
+    { id: 'open_gemini', current: 'query-and-hash' },
   ]);
 }
 

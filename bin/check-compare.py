@@ -18,7 +18,7 @@ GA_ID = 'G-TEST1234'
 # itself only ever runs in the host document. A new runtime must be classified.
 PANE_SUPPRESSED = {
     'command-palette', 'compare-entry', 'docs-shell', 'feedback', 'footer-collapse', 'giscus',
-    'keyboard-nav', 'navbar-menu', 'page-actions', 'search', 'sidebar-nav', 'sidebar-state',
+    'history', 'keyboard-nav', 'navbar-menu', 'page-actions', 'search', 'sidebar-nav', 'sidebar-state',
 }
 PANE_RUNS = {
     'action-registry', 'appearance', 'asset-list', 'authored-a11y', 'base', 'blog-gallery',
@@ -193,7 +193,9 @@ def check_case(hugo: str, name: str, setting: str, enabled: bool, options: dict,
             first = (public / prefix / 'blog/index.html').read_text()
             later = (public / prefix / 'blog/page/2/index.html').read_text()
             require(manifest(first) is not None, f'{name}: the first blog archive page lost its comparison', errors)
-            require(manifest(later) is None and 'data-td-compare-open' not in later and 'compare_translations' not in later and '<kbd>B</kbd>' not in later,
+            # The shortcut sheet is one template per language; keyboard-nav.js
+            # dims its B row wherever the page has no comparison entry.
+            require(manifest(later) is None and 'data-td-compare-open' not in later and 'compare_translations' not in later,
                     f'{name}: blog archive page 2 must not offer comparison of page 1', errors)
             for page in ['alone', 'draft-peer', 'machine-peer']:
                 require(manifest((public / prefix / f'docs/{page}/index.html').read_text()) is None, f'{name}: docs/{page} must not offer comparison', errors)

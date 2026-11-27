@@ -48,34 +48,69 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   `params.ui.rich_copy: false`, or the same key in front matter, keeps the
   browser's behavior. The runtime is `js/chunks/rich-copy.js`.
 
-- The `;` key and clicking the bottom-bar `?` button open or close the centered
-  two-column shortcut help dialog in the browser top layer from anywhere on the
-  page, including Zen Mode and pages with `footer_style: none`. On desktop
-  (`≥ 768 px`), hovering or focusing `?` previews the two-column cheat sheet
-  above the footer, and closing the modal restores focus without reopening the
-  hover card. It dismisses on a second `;`, `Escape`, the close button, or a
-  backdrop click, and coordinates with other open surfaces.
-- The `v` key switches the layout form (`list`, `cards`, `table`, `gallery`) on
-  index pages that enable `blog_index_toggle`.
-- On Expo album pages and in blog/case/release gallery mode, `m` cycles gallery
-  layout modes (`wall`, `cards`, `seamless`), and `,` / `<` and `.` / `>`
-  shrink or enlarge the tile size slider in 20 px steps; focusing non-text
-  `<input>` controls such as gallery layout radios or range sliders no longer
-  suppresses single-key shortcuts.
-- The `x` key cycles languages like `l`, and the `z` key toggles Zen Mode like
-  `h`, keeping the full shortcut set within easy left-hand reach.
-- The shortcut help panel splits `K` (Previous heading) and `J` (Next heading)
-  onto separate rows and refines shortcut labels across all 32 interface
-  languages (Zen Mode, Switch section, Shortcut help).
+- Thirty single-key shortcuts in three groups of ten, shown as a 3 x 10 sheet:
+  - **Navigation**: `W`/`S` (and `↑`/`↓` in the tree) move through the
+    sidebar, `A`/`D` collapse or expand a section, `Enter` or `Space` opens the
+    focused page, `Q`/`E` page through the sidebar order, `K`/`J` jump between
+    headings, `X` cycles languages, `R` cycles top-level sections, `V` cycles
+    versions, `H` opens the browsing history and `G` goes to the language home
+    page (on the home page it returns to the top).
+  - **Actions**: `F` or `/` searches, `C` or `` ` `` (also `~`) opens the
+    commands, `U` edits the page, `N` creates a child page, `I` files a docs
+    issue, `O` expands or collapses everything that folds, `P` prints, and
+    `[`, `]` and `\` hand the page to ChatGPT, Claude or Gemini. Each runs the
+    page's registry action and stays inert where the page does not offer it.
+  - **View**: `B` opens the duo view, `Z` toggles Zen Mode, `M` opens the
+    Markdown source, `T` cycles the offered presets, `Y` cycles Light, Dark and
+    System, `L` switches the index layout form on pages with
+    `blog_index_toggle`, `;` cycles Expo and gallery layouts, `,`/`<` and
+    `.`/`>` resize gallery tiles in 20 px steps, `-` and `=` (or `+`) narrow and
+    widen the reading column, and `'` opens the shortcut sheet.
+  Non-text controls such as gallery radios and range sliders no longer
+  suppress the shortcuts after a click.
+- The shortcut sheet opens in the browser top layer from `'` or a click on the
+  bottom-bar `?` button, from anywhere on the page, including Zen Mode and
+  `footer_style: none` pages. Its three groups sit side by side where they fit
+  and stack on narrow screens. A shortcut the current page cannot run keeps its
+  row, dimmed and marked unavailable for screen readers. Hovering `?` shows a
+  short hint with search, commands, history and the sheet itself. The sheet is a
+  per-language template; it closes on a second `'`, `Escape`, the close
+  button or a backdrop click, and coordinates with other open surfaces.
+- Browsing history. `H`, or the Command Palette's new "Browsing history"
+  command (`browse_history`), opens an overlay on the palette surface that lists
+  the pages this reader opened on the site, newest first, without the page
+  being read: typing filters by title and path, `Enter` opens a page
+  (`Ctrl`/`Cmd`+`Enter` in a new tab), `Shift`+`Delete` forgets one, and
+  "Clear history" empties the list. Up to 100 entries live only in the
+  browser's `localStorage` under `td-history:` plus the site's base path, so
+  sites sharing an origin keep separate lists. The runtime ships with the
+  keyboard chunk, so `keyboard_nav: false` records nothing.
+- `O` folds or unfolds everything at once: sidebar and right-rail groups,
+  `<details>` blocks such as collapsible callouts, file trees and "more" lists,
+  and shortened code blocks. If anything is folded it opens all, otherwise it
+  closes all; the reader's own location stays open in the sidebar and the
+  reading position holds still. Popover menus are not touched.
+- `-` and `=` change the reading column in 100 px steps from its rendered
+  width, between 600 px and the column's container. The choice persists in
+  `localStorage` (`td-shell-article-w`), is restored before paint, and
+  overrides `page_width` and the Book measure on screen; a step that reaches
+  the page's own width returns to it and forgets the choice.
+- An "Open in Gemini" page action (`open_gemini`) beside ChatGPT and Claude,
+  under the same `page_context_menu.assistant_links` opt-in. Gemini documents
+  no prompt parameter, so activating it also copies the prompt to paste.
+  The action manifest gains the language home (`home`) for `G`.
+- Eighteen locale keys were added to all 32 catalogs for the shortcut groups,
+  history and Gemini; `ui_shortcut_heading_prev` and `ui_shortcut_heading_next`
+  were replaced by `ui_shortcut_heading_move`.
 
 ### Changed
 
-- The `t` key steps through the visual presets the site offers in order
-  (Paper, Slate, Ink, Terminal) and wraps after the last; it does nothing when
-  `preset_menu` offers no choice. The `y` key cycles color mode across Light,
-  Dark, and System (`auto`), instead of switching the language (`l` and `x`
-  switch the language). The shortcut panel lists each binding in all 32
-  interface languages.
+- Shortcuts that moved since 1.6.0: Zen Mode is `Z` only (`H` is the
+  browsing history), languages are `X` (`L` switches the index layout and `Y`
+  the color mode), `T` cycles presets instead of the color mode, the Command
+  Palette opens its commands on `` ` `` instead of `\` (now Open in Gemini),
+  `G` goes home instead of opening the focused tree item (`Enter` and `Space`
+  remain), and the homepage `N` section alias is gone (`J` remains).
 - Paper is an ivory sheet with a clay accent. The canvas moves from the grey
   `#f7f6f3` to `#faf9f5`, with ink `#1f1e1c` and surfaces to match, and the
   preset now sets its own accent (`#9b4a28`, dark `#de8460`) for selected rows,

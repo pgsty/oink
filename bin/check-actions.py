@@ -31,6 +31,7 @@ BUILTINS = [
     "copy_link",
     "open_chatgpt",
     "open_claude",
+    "open_gemini",
     "view_markdown",
     "view_history",
     "edit_page",
@@ -44,6 +45,7 @@ BUILTINS = [
     "switch_preset",
     "switch_theme",
     "open_github",
+    "browse_history",
 ]
 ACTION_FIELDS = {
     "id",
@@ -181,7 +183,7 @@ def validate_assistant_off(output: Path, label: str) -> None:
         output / "en" / "docs" / "guides" / "tutorial" / "index.html"
     ).read_text(encoding="utf-8")
     actions = map_by_id(manifest_from(html)["actions"])
-    for action_id in ("open_chatgpt", "open_claude"):
+    for action_id in ("open_chatgpt", "open_claude", "open_gemini"):
         action = actions[action_id]
         require(
             action["available"] is False
@@ -380,6 +382,10 @@ def validate_manifest(
 ) -> None:
     require(manifest.get("version") == 1, "manifest version changed")
     require(manifest.get("language") == lang, f"{lang} manifest language changed")
+    require(
+        manifest.get("home") == f"{prefix}{lang}/",
+        f"{lang} manifest home is not the subpath-safe language home: {manifest.get('home')}",
+    )
     actions = manifest.get("actions")
     require(isinstance(actions, list), f"{lang} actions are not an array")
     require([action.get("id") for action in actions] == BUILTINS, f"{lang} built-in order changed")
@@ -395,17 +401,28 @@ def validate_manifest(
     expected_assistant_icons = {
         "open_chatgpt": "fa-brands fa-openai",
         "open_claude": "fa-brands fa-claude",
+        "open_gemini": "fa-brands fa-google",
     }
     for action_id, expected_icon in expected_assistant_icons.items():
         require(
             by_id[action_id]["icon"] == expected_icon,
             f"{lang}/{action_id} does not use the Font Awesome icon",
         )
+    require(
+        by_id["browse_history"]["available"] is True
+        and by_id["browse_history"]["kind"] == "invoke"
+        and by_id["browse_history"]["placements"] == {"page": False, "palette": True},
+        f"{lang}/browse_history is not a Palette-only command beside the keyboard runtime",
+    )
     markdown = f"{prefix}{lang}/docs/guides/tutorial/index.md"
     require(by_id["copy_markdown"]["url"] == markdown, f"{lang} copy URL is not subpath safe")
     require(by_id["view_markdown"]["url"] == markdown, f"{lang} view URL diverges from copy")
     require(by_id["copy_markdown"]["available"] is True, f"{lang} copy is unavailable")
-    for action_id, host in (("open_chatgpt", "chatgpt.com"), ("open_claude", "claude.ai")):
+    for action_id, host in (
+        ("open_chatgpt", "chatgpt.com"),
+        ("open_claude", "claude.ai"),
+        ("open_gemini", "gemini.google.com"),
+    ):
         require(
             by_id[action_id].get("promptTemplate", "").count("%s") == 1,
             f"{lang}/{action_id} omitted its runtime URL placeholder",
@@ -643,7 +660,8 @@ def main() -> int:
                     path.read_text(encoding="utf-8") for path in stylesheets
                 )
                 require(
-                    ".fa-openai" in compiled_css and ".fa-claude" in compiled_css,
+                    ".fa-openai" in compiled_css and ".fa-claude" in compiled_css
+                    and ".fa-google" in compiled_css,
                     f"{deployment} stylesheet omitted Font Awesome assistant icons",
                 )
                 for lang in helper.LANGUAGES:
@@ -662,6 +680,7 @@ def main() -> int:
                         "copy_markdown",
                         "open_chatgpt",
                         "open_claude",
+                        "open_gemini",
                         "view_markdown",
                         "view_history",
                         "edit_page",
@@ -710,7 +729,7 @@ def main() -> int:
                     require("data-td-page-print" not in html, "legacy print controller remains")
                     require("</script><script>alert(1)</script>" not in html, "command title escaped inert JSON")
                     by_id = map_by_id(manifest["actions"])
-                    for action_id in ("open_chatgpt", "open_claude"):
+                    for action_id in ("open_chatgpt", "open_claude", "open_gemini"):
                         require(
                             html.count(
                                 f'<i class="{by_id[action_id]["icon"]}" aria-hidden="true"></i>'
@@ -721,6 +740,7 @@ def main() -> int:
                     for action_id in (
                         "open_chatgpt",
                         "open_claude",
+                        "open_gemini",
                         "view_markdown",
                         "view_history",
                         "edit_page",

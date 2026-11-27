@@ -3,6 +3,7 @@
 {{- return (dict
   "version" 1
   "language" .Site.Language.Lang
+  "home" .Site.Home.RelPermalink
   "actions" $context.actions
   "commands" (partialCached "actions/site-commands.html" . .Site.Language.Lang .Site.BaseURL)
   "quickLinks" (partialCached "actions/quick-links.html" . .Site.Language.Lang .Site.BaseURL)

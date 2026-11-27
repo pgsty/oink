@@ -49,6 +49,18 @@
   max-width: none;
 }
 
+/* A reader-chosen reading width from the - and = keys (keyboard-nav.js,
+   restored before paint) replaces every page_width and book measure. The
+   column still never outgrows its container: width stays 100%. */
+@media screen {
+  html[data-td-shell-article-w] .td-shell-layout .td-shell-article {
+    max-width: var(--td-shell-article-w, 1050px);
+  }
+  html[data-td-shell-article-w] .td-shell-layout .td-shell-article > .td-content {
+    max-width: none;
+  }
+}
+
 /* --------------------------------------------------------- compact footer */
 /* Flex layout keeps the footer at the viewport edge on short pages and below
    the fold on long pages. */

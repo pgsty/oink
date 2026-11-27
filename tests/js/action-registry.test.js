@@ -14,6 +14,7 @@ const builtinIds = [
   'copy_link',
   'open_chatgpt',
   'open_claude',
+  'open_gemini',
   'view_markdown',
   'view_history',
   'edit_page',
@@ -27,6 +28,7 @@ const builtinIds = [
   'switch_language',
   'switch_version',
   'open_github',
+  'browse_history',
 ];
 assert.deepEqual(builtinIds, Array.from(registryModule.BUILTINS));
 
@@ -138,6 +140,12 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
     promptTemplate: 'Read from %s so I can ask questions about it.',
     target: 'blank',
   });
+  replace('open_gemini', {
+    kind: 'url',
+    url: 'https://gemini.google.com/app?q=build-time',
+    promptTemplate: 'Read from %s so I can ask questions about it.',
+    target: 'blank',
+  });
   replace('view_markdown', {
     kind: 'url',
     url: '/preview/en/docs/page/index.md',
@@ -179,7 +187,7 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   // the inert JSON node that scripts.html emitted before js/actions.js. Keep a
   // direct test of that path so template/script ordering cannot be masked by
   // the convenience injection used by the rest of this unit harness.
-  const domManifest = { version: 1, actions, commands, quickLinks: [] };
+  const domManifest = { version: 1, home: '/preview/en/', actions, commands, quickLinks: [] };
   const registryFromDOM = registryModule.create({
     window: { location: { href: 'https://example.org/docs/' }, navigator: {} },
     document: {
@@ -191,6 +199,14 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
     },
   });
   assert.equal(registryFromDOM.get('copy_markdown').id, 'copy_markdown');
+  // G reads the language home from the manifest through the URL policy.
+  assert.equal(registryFromDOM.home(), 'https://example.org/preview/en/');
+  const hostileHome = registryModule.create({
+    window: { location: { href: 'https://example.org/docs/' }, navigator: {} },
+    document: { getElementById() { return null; } },
+    manifest: { version: 1, home: 'javascript:alert(1)', actions: [], commands: [] },
+  });
+  assert.equal(hostileHome.home(), null, 'an unsafe home address must not be offered');
   assert.ok(registryFromDOM.commands().some((command) => command.id === 'status'));
 
   const { registry, events, window: fakeWindow } = harness({ actions, commands });
@@ -253,11 +269,28 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   await registry.run('open_claude');
   assert.equal(events.opened[1].url, chatgptUrl.href);
   assert.equal(events.opened[2].url, claudeUrl.href);
+  // Gemini has no documented prompt parameter: the prompt is copied first,
+  // synchronously, and only then does the new tab take focus.
+  const geminiUrl = new URL(registry.resolveUrl('open_gemini'));
+  assert.equal(geminiUrl.origin, 'https://gemini.google.com');
+  assert.equal(geminiUrl.pathname, '/app');
+  assert.equal(geminiUrl.searchParams.get('q'), expectedPrompt);
+  assert.equal(registry.assistantPrompt('open_gemini'), expectedPrompt);
+  assert.equal(registry.assistantPrompt('view_markdown'), '', 'only assistants have a prompt');
+  const copiesBeforeGemini = events.fallbackText.length;
+  const openedBeforeGemini = events.opened.length;
+  const geminiRun = registry.run('open_gemini');
+  assert.equal(events.fallbackText.length, copiesBeforeGemini + 1, 'the prompt was not copied synchronously');
+  assert.equal(events.fallbackText.at(-1), expectedPrompt);
+  assert.equal(events.opened.length, openedBeforeGemini + 1, 'Gemini did not open in the same gesture');
+  await geminiRun;
+  assert.equal(events.opened[3].url, geminiUrl.href);
+  assert.equal(events.opened[3].target, '_blank');
   await registry.run('print');
   await registry.runCommand('print_now');
   assert.equal(events.printed, 2);
   await registry.runCommand('status');
-  assert.equal(events.opened[3].url, 'https://status.example.com/');
+  assert.equal(events.opened[4].url, 'https://status.example.com/');
   for (const [command, action] of [
     ['theme_now', 'switch_theme'],
     ['language_now', 'switch_language'],

@@ -19,14 +19,27 @@ ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
 
 # Every key binds must appear in the runtime, and the runtime must not
 # grow keys the contract table does not document. ArrowLeft/ArrowRight bind through
-# the RTL swap ternary rather than a direct comparison.
+# the RTL swap ternary rather than a direct comparison. The three groups mirror
+# the 3 x 10 shortcut sheet; the Command Palette owns "/", "`" and "~".
 KEYMAP = [
-    "'w'", "'s'", "'a'", "'d'",
-    "'j'", "'k'", "'n'", "'q'", "'e'",
-    "'h'", "'z'", "'l'", "'x'", "'y'", "'t'", "'r'", "'f'", "'b'", "'v'",
-    "'m'", "','", "'<'", "'.'", "'>'", "';'",
-    "'g'", "'c'", "' '", "'Escape'",
-    "'ArrowUp'", "'ArrowDown'",
+    # Navigation
+    "'w'", "'s'", "'a'", "'d'", "' '", "'q'", "'e'", "'k'", "'j'",
+    "'x'", "'r'", "'v'", "'h'", "'g'",
+    # Actions
+    "'f'", "'c'", "'u'", "'n'", "'i'", "'o'", "'p'", "'['", "']'", "'\\\\'",
+    # View
+    "'b'", "'z'", "'m'", "'t'", "'y'", "'l'", "';'", "','", "'<'", "'.'", "'>'",
+    "'-'", "'='", "'+'", "\"'\"",
+    # Tree and dialog control
+    "'Escape'", "'ArrowUp'", "'ArrowDown'",
+]
+SHEET_ROWS = [
+    "tree-move", "tree-toggle", "tree-open", "page-move", "heading-move",
+    "language", "route", "version", "history", "home",
+    "search", "commands", "edit", "new-page", "issue",
+    "expand-all", "print", "chatgpt", "claude", "gemini",
+    "duo", "zen", "markdown", "style", "theme",
+    "layout", "gallery", "image-size", "page-width", "help",
 ]
 
 
@@ -104,8 +117,9 @@ def check_sources() -> None:
         and "rtl ? 'ArrowLeft' : 'ArrowRight'" in source,
         "keyboard-nav lost the RTL-aware ArrowLeft/ArrowRight bindings",
     )
-    bound = set(re.findall(r"key === '([^']+)'", source))
-    documented = {literal.strip("'") for literal in KEYMAP}
+    bound = set(re.findall(r"key === '((?:\\\\|[^'])+)'", source))
+    bound |= set(re.findall(r'key === "([^"]+)"', source))
+    documented = {literal[1:-1] for literal in KEYMAP}
     require(
         bound == documented,
         f"keyboard-nav binds undocumented keys: {sorted(bound - documented)}",
@@ -132,7 +146,7 @@ def check_sources() -> None:
         and "data-td-keyboard-help-source" in source
         and "OinkSurfaceCoordinator" in source
         and "beforeprint" in source,
-        "keyboard-nav lost the ; shortcut help dialog, template fallback, or surface coordination",
+        "keyboard-nav lost the ' shortcut help dialog, its template, or surface coordination",
     )
     require(
         "data-td-blog-index-toggle" in source
@@ -141,7 +155,50 @@ def check_sources() -> None:
         and "data-td-blog-gallery" in source
         and "data-gallery-mode" in source
         and "data-gallery-size" in source,
-        "keyboard-nav lost the V blog layout toggle or Expo / blog gallery M / < > controls",
+        "keyboard-nav lost the L blog layout toggle or Expo / blog gallery ; / < > controls",
+    )
+    shortcuts = source.partition("var SHORTCUTS = {")[2].partition("};")[0]
+    declared = set(re.findall(r"^\s*'?([a-z-]+)'?:", shortcuts, re.MULTILINE))
+    require(
+        declared == set(SHEET_ROWS),
+        f"keyboard-nav availability table drifted from the sheet: {sorted(declared ^ set(SHEET_ROWS))}",
+    )
+    help_source = (ROOT / "layouts" / "_partials" / "shell" / "keyboard-help.html").read_text(
+        encoding="utf-8"
+    )
+    sheet_rows = re.findall(r'\(dict "id" "([a-z-]+)" "keys"', help_source)
+    require(
+        sheet_rows == SHEET_ROWS,
+        f"the shortcut sheet is no longer the 3 x 10 grid in contract order: {sheet_rows}",
+    )
+    for action in ("edit_page", "create_child_page", "create_issue", "print", "open_chatgpt",
+                   "open_claude", "open_gemini", "view_markdown", "switch_version"):
+        require(f"'{action}'" in source, f"keyboard-nav no longer reaches the {action} action")
+    require(
+        "td-shell-article-w" in source and "WIDTH_STEP = 100" in source
+        and "WIDTH_MIN = 600" in source and "clearWidth()" in source,
+        "keyboard-nav lost the - / = reading width, its bounds, or its return to the page width",
+    )
+    require(
+        "source: 'api'" in source and "data-td-kbd-instant" in source
+        and "data-td-code-expand" in source and "querySelectorAll('details')" in source,
+        "keyboard-nav lost O fold-all coverage or its active-path-safe commit",
+    )
+    history = (ROOT / "assets" / "js" / "history.js").read_text(encoding="utf-8")
+    require(
+        "'td-history:'" in history and "LIMIT = 100" in history
+        and "data-td-history-scope" in history and "browse_history" in history
+        and "localStorage" in history,
+        "history.js lost its site-scoped key, entry cap, or Command Palette executor",
+    )
+    require(
+        not re.search(r"sendBeacon|fetch\(|XMLHttpRequest|analytics", history),
+        "browsing history must never leave the browser",
+    )
+    require(
+        'resources.Get "js/history.js") (resources.Get "js/keyboard-nav.js")' in scripts
+        and 'shell/history-dialog.html' in scripts,
+        "scripts.html no longer ships history.js before keyboard-nav.js or the history overlay",
     )
     require(
         '"mode" "template"' in scripts and 'footer-style.html' in scripts,
@@ -163,6 +220,16 @@ def check_sources() -> None:
     require(
         ".IsHome" in prepaint and "td-kbd-zen" in prepaint,
         "homepage focus mode is not restored before paint",
+    )
+    require(
+        "td-shell-article-w" in prepaint and "data-td-shell-article-w" in prepaint,
+        "the reader's reading width is not restored before paint",
+    )
+    layout = (ROOT / "assets" / "css" / "td" / "shell" / "layout.css").read_text(encoding="utf-8")
+    require(
+        "html[data-td-shell-article-w] .td-shell-layout .td-shell-article" in layout
+        and "var(--td-shell-article-w" in layout,
+        "shell/layout.css no longer applies the reader's reading width",
     )
     require(
         "SCROLL_DURATION = 100" in source
@@ -324,7 +391,15 @@ def main() -> int:
             )
             require(
                 "data-td-keyboard-help-source" in html,
-                "footer_style: none with keyboard_nav on omitted the ; shortcut help source template",
+                "footer_style: none with keyboard_nav on omitted the ' shortcut help source template",
+            )
+            require(
+                html.count('class="td-shell-keyboard-help__row" data-td-shortcut=') == 30,
+                "the shortcut help template no longer carries thirty rows",
+            )
+            require(
+                'id="td-shell-history"' in html and "data-td-history-scope=" in html,
+                "a keyboard page omitted the browsing history overlay",
             )
             output, _ = actions.build(
                 helper,
@@ -339,6 +414,10 @@ def main() -> int:
                 "data-td-keyboard-help-source" not in html,
                 "footer_style: none with keyboard_nav off still emitted the shortcut help template",
             )
+            require(
+                'id="td-shell-history"' not in html,
+                "keyboard_nav off still emitted the browsing history overlay",
+            )
 
             try:
                 actions.build(helper, workspace, "kbd-invalid", invalid_value(config))
@@ -350,17 +429,18 @@ def main() -> int:
             else:
                 raise RuntimeError("invalid keyboard_nav value did not fail the build")
 
-        result = subprocess.run(
-            ["node", str(ROOT / "tests" / "js" / "keyboard-nav.test.js")],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        require(
-            result.returncode == 0,
-            "keyboard-nav.test.js failed:\n" + (result.stdout + result.stderr).strip(),
-        )
+        for test in ("keyboard-nav.test.js", "history.test.js"):
+            result = subprocess.run(
+                ["node", str(ROOT / "tests" / "js" / test)],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            require(
+                result.returncode == 0,
+                f"{test} failed:\n" + (result.stdout + result.stderr).strip(),
+            )
     except (OSError, RuntimeError, json.JSONDecodeError) as exc:
         print(f"keyboard navigation check failed: {exc}", file=sys.stderr)
         return 1

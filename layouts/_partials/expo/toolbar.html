@@ -1,6 +1,6 @@
 {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" .page "key" "keyboard_nav")) false -}}
 <div class="td-expo-toolbar" data-td-expo-controls hidden>
-  <fieldset class="td-expo-modes"{{ if $keyboardNav }} aria-keyshortcuts="M"{{ end }}>
+  <fieldset class="td-expo-modes"{{ if $keyboardNav }} aria-keyshortcuts=";"{{ end }}>
     <legend class="visually-hidden">{{ T "ui_expo_layout" }}</legend>
     {{ range slice (dict "mode" "wall" "icon" "wall") (dict "mode" "cards" "icon" "cards") (dict "mode" "seamless" "icon" "seamless") }}
     <label class="td-expo-mode" title="{{ T (printf "ui_expo_%s" .mode) }}">

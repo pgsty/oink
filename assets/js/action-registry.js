@@ -14,6 +14,7 @@
     'copy_link',
     'open_chatgpt',
     'open_claude',
+    'open_gemini',
     'view_markdown',
     'view_history',
     'edit_page',
@@ -27,7 +28,21 @@
     'switch_language',
     'switch_version',
     'open_github',
+    'browse_history',
   ]);
+  var ASSISTANTS = {
+    open_chatgpt: function (prompt) {
+      return 'https://chatgpt.com/?hints=search&prompt=' + encodeURIComponent(prompt);
+    },
+    open_claude: function (prompt) {
+      return 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
+    },
+    // Gemini documents no prompt parameter: q= fills the box only where a
+    // helper extension honors it, so run() also copies the prompt.
+    open_gemini: function (prompt) {
+      return 'https://gemini.google.com/app?q=' + encodeURIComponent(prompt);
+    },
+  };
   var SAFE_SCHEMES = new Set(['http:', 'https:']);
 
   function readManifest(documentObject) {
@@ -143,24 +158,34 @@
       return clipboard.writeText(text, documentObject, windowObject.navigator);
     }
 
+    // The prompt names the address being read, so the deployed host, query
+    // string and current fragment survive; the descriptor's URL is only the
+    // no-JavaScript fallback.
+    function assistantPrompt(actionOrId) {
+      var action = typeof actionOrId === 'string' ? get(actionOrId) : actionOrId;
+      if (!action || action.available === false || !ASSISTANTS[action.id]) return '';
+      if (
+        typeof action.promptTemplate !== 'string' ||
+        action.promptTemplate.indexOf('%s') < 0
+      ) return '';
+      return action.promptTemplate.replace('%s', function () {
+        return windowObject.location.href;
+      });
+    }
+
     function resolveUrl(actionOrId, value) {
       var action = typeof actionOrId === 'string' ? get(actionOrId) : actionOrId;
       if (!action || action.available === false) return null;
-      if (action.id === 'open_chatgpt' || action.id === 'open_claude') {
-        if (
-          typeof action.promptTemplate !== 'string' ||
-          action.promptTemplate.indexOf('%s') < 0
-        ) return null;
-        var prompt = action.promptTemplate.replace('%s', function () {
-          return windowObject.location.href;
-        });
-        var assistantUrl = action.id === 'open_chatgpt'
-          ? 'https://chatgpt.com/?hints=search&prompt=' + encodeURIComponent(prompt)
-          : 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
-        return safeUrl(assistantUrl, windowObject.location.href);
+      if (ASSISTANTS[action.id]) {
+        var prompt = assistantPrompt(action);
+        return prompt ? safeUrl(ASSISTANTS[action.id](prompt), windowObject.location.href) : null;
       }
       var target = value && value.url ? value.url : action.url;
       return safeUrl(target, windowObject.location.href);
+    }
+
+    function home() {
+      return typeof manifest.home === 'string' ? safeUrl(manifest.home, windowObject.location.href) : null;
     }
 
     function openUrl(action, value) {
@@ -204,6 +229,14 @@
       if (id === 'print') {
         windowObject.print();
         return Promise.resolve({ action: action });
+      }
+      if (id === 'open_gemini') {
+        // Copy before the new tab takes focus: the synchronous copy needs
+        // this document focused and the reader's activation still current.
+        var geminiPrompt = assistantPrompt(action);
+        if (geminiPrompt && clipboard && typeof clipboard.copyNow === 'function')
+          clipboard.copyNow(geminiPrompt, documentObject, windowObject.navigator);
+        return openUrl(action, context.value);
       }
       if (action.kind === 'url') return openUrl(action, context.value);
       if (action.kind === 'choice' && context.value && context.value.url)
@@ -255,6 +288,8 @@
       registerExecutor: registerExecutor,
       preloadMarkdown: fetchMarkdown,
       resolveUrl: function (id, value) { return resolveUrl(id, value); },
+      assistantPrompt: function (id) { return assistantPrompt(id); },
+      home: home,
       safeUrl: function (value) { return safeUrl(value, windowObject.location.href); },
     });
   }

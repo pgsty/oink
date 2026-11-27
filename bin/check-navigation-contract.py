@@ -630,10 +630,12 @@ def observe_variant(
         + list((output / "js").glob("core*.js"))
         + list((output / "js/chunks").glob("*.js"))
     )
+    # The browsing-history overlay (keyboard chunk) reuses the palette's
+    # surface classes, so the controller is recognized by its own API.
     palette_bundles = {
         str(bundle.relative_to(output))
         for bundle in main_bundles
-        if "td-shell-search" in bundle.read_text(encoding="utf-8")
+        if "registerSearchTail" in bundle.read_text(encoding="utf-8")
     }
 
     observation: dict[str, Any] = {

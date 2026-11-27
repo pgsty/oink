@@ -66,7 +66,7 @@ resources:
         runtime=(public/'js/chunks/expo.js').read_text()
         assert re.search(r"\.register\(['\"]expo-viewer['\"]",runtime), 'Expo must register its coordinated close callback'
         assert html.count('name="td-expo-mode"')==3
-        assert '<fieldset class="td-expo-modes"' in html and 'aria-keyshortcuts="M"' in html and 'type="range"' in html and ('aria-keyshortcuts=", . &lt; &gt;"' in html or 'aria-keyshortcuts=", . < >"' in html)
+        assert '<fieldset class="td-expo-modes"' in html and 'aria-keyshortcuts=";"' in html and 'type="range"' in html and ('aria-keyshortcuts=", . &lt; &gt;"' in html or 'aria-keyshortcuts=", . < >"' in html)
         assert 'data-td-expo-expand' in html and 'td-appearance-expo' not in html
         assert 'aria-keyshortcuts="W A S D"' in html and 'draggable="false"' in html
         assert 'aria-keyshortcuts="Q H ArrowLeft"' in html and 'aria-keyshortcuts="R 0"' in html

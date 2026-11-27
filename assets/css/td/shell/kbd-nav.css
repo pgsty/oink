@@ -16,7 +16,7 @@
   outline: none;
 }
 
-/* The H and Z keys toggle a chrome-free reading mode: both rails, the footer,
+/* The Z key toggles a chrome-free reading mode: both rails, the footer,
    and the floating restore pill disappear; the flex layout lets the article
    column take the freed width on its own. */
 html[data-td-kbd-zen] #td-shell-sidebar,
@@ -28,7 +28,7 @@ html[data-td-kbd-zen] [data-td-shell-footer] {
 }
 
 /* The navbar-off shell uses the compact subnav instead of .td-site-header.
-   Hide that surface too so H always means the same chrome-free mode. */
+   Hide that surface too so Z always means the same chrome-free mode. */
 html[data-td-kbd-zen] .td-shell-subnav {
   display: none;
 }
@@ -41,17 +41,37 @@ html[data-td-kbd-zen] .td-shell-subnav {
   }
 }
 
-/* Shortcut help reuses the KBD component keycaps in a compact, readable list.
-   The bottom bar end-aligns it on wide screens and gives it the footer as a
-   containing block on phones so the card stays inside the viewport. */
-.td-shell-footline .td-shell-keyboard .td-shell-keyboard-help {
-  width: min(21rem, calc(100vw - 2rem));
+/* O folds or unfolds everything at once. For that one frame disclosures
+   switch without animating, so the reading position can be held exactly. */
+html[data-td-kbd-instant] * {
+  transition: none !important;
+}
+
+/* The bottom-bar ? button previews a short hint on hover; the click opens the
+   full sheet as a dialog. The hint reuses the sheet's header and rows, and the
+   bottom bar end-aligns it on wide screens. */
+.td-shell-footline .td-shell-keyboard .td-shell-keyboard-hint {
+  width: min(17rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 5rem);
   gap: 0;
   padding: 0;
   overflow-y: auto;
   inset-inline-start: auto;
   inset-inline-end: 0;
+}
+
+.td-shell-keyboard-hint__list {
+  margin: 0;
+  padding: 8px 12px;
+}
+
+.td-shell-keyboard-hint__more {
+  margin: 0;
+  padding: 8px 12px 10px;
+  border-top: 1px solid var(--bs-border-color);
+  color: var(--bs-tertiary-color);
+  font-size: 0.75rem;
+  line-height: 1.35;
 }
 
 .td-shell-keyboard-help__header {
@@ -78,22 +98,19 @@ html[data-td-kbd-zen] .td-shell-subnav {
   padding: 10px 12px 12px;
 }
 
-.td-shell-keyboard-help__section + .td-shell-keyboard-help__section {
-  border-top: 1px solid var(--bs-border-color);
-}
-
 .td-shell-keyboard-help__section .td-shell-keyboard-help__section-title {
   margin: 0 0 7px;
   color: var(--bs-tertiary-color);
   font-family: var(--td-meta-font-family);
   font-size: 0.66rem;
   font-weight: 700;
+  line-height: 1.4;
   letter-spacing: 0;
   text-transform: uppercase;
 }
 
 .td-shell-keyboard-help__section dl,
-.td-shell-keyboard-help__section dd {
+.td-shell-keyboard-help__row dd {
   margin: 0;
 }
 
@@ -135,46 +152,44 @@ html[data-td-kbd-zen] .td-shell-subnav {
   font-size: 0.68rem;
 }
 
+/* A shortcut this page cannot run keeps its place in the grid, quieted
+   without losing contrast: its label steps down from body ink to the
+   secondary ink every other label in the hint uses, and its keycaps lose
+   their fill and take a dashed edge, a cue that does not depend on color. */
+.td-shell-keyboard-dialog .td-shell-keyboard-help__row dd {
+  color: var(--bs-body-color);
+}
+
+.td-shell-keyboard-dialog .td-shell-keyboard-help__row.td-is-unavailable dd {
+  color: var(--bs-secondary-color);
+}
+
+.td-shell-keyboard-help__row.td-is-unavailable .td-kbd-sequence kbd {
+  border-style: dashed;
+  background: transparent;
+  box-shadow: none;
+  color: var(--bs-secondary-color);
+}
+
 @media (max-width: 991.98px) {
-  /* Anchor the help card to the full bottom line rather than to its small
+  /* Anchor the hint to the full bottom line rather than to its small
      trigger, which sits near the center once the footer stacks. */
   .td-shell-footline .td-shell-keyboard {
     position: static;
   }
-  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help {
-    width: min(21rem, calc(100vw - 2rem));
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-hint {
     inset-inline-start: auto;
     inset-inline-end: 1rem;
   }
 }
 
-/* On tablet and desktop widths, lay out the two-section hover cheat sheet in
-   two columns (Navigation / Actions) so every shortcut fits without a long
-   single-column scroll. The selector beats site-navbar.css's .td-is-open rule
-   which loads later in the layer order. */
-@media (min-width: 768px) {
-  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--split {
-    width: min(40rem, calc(100vw - 2rem));
-  }
-  .td-shell-footline .td-shell-keyboard.td-is-open .td-shell-keyboard-help--split {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--split .td-shell-keyboard-help__header {
-    grid-column: 1 / -1;
-  }
-  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--split .td-shell-keyboard-help__section + .td-shell-keyboard-help__section {
-    border-top: 0;
-    border-inline-start: 1px solid var(--bs-border-color);
-  }
-}
-
-/* Modal shortcut cheat sheet opened by ; or clicking the bottom-bar trigger
+/* Modal shortcut sheet opened by ' or by clicking the bottom-bar trigger
    from anywhere on the page, including scrolled articles, Zen Mode, and
-   footer_style: none pages. */
+   footer_style: none pages: three groups of ten, side by side when they fit
+   and stacked on narrow screens. */
 .td-shell-keyboard-dialog {
   box-sizing: border-box;
-  width: min(23rem, calc(100vw - 1.5rem));
+  width: min(58rem, calc(100vw - 1.5rem));
   max-width: calc(100vw - 1.5rem);
   max-height: calc(100dvh - 2rem);
   margin: auto;
@@ -277,14 +292,26 @@ html[data-td-kbd-zen] .td-shell-subnav {
 
 .td-shell-keyboard-dialog__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(16.5rem, 1fr));
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
+.td-shell-keyboard-dialog__body:focus-visible {
+  outline: 2px solid var(--td-shell-primary);
+  outline-offset: -2px;
+}
+
+/* Each group draws its own start and top rules; the body clips the ones on
+   its outer edges, so the dividers follow whatever number of columns fit. */
 .td-shell-keyboard-dialog__body .td-shell-keyboard-help__section {
   padding: 14px 16px 16px;
+  box-shadow: -1px 0 0 var(--bs-border-color), 0 -1px 0 var(--bs-border-color);
+}
+
+[dir='rtl'] .td-shell-keyboard-dialog__body .td-shell-keyboard-help__section {
+  box-shadow: 1px 0 0 var(--bs-border-color), 0 -1px 0 var(--bs-border-color);
 }
 
 .td-shell-keyboard-dialog__body .td-shell-keyboard-help__row {
@@ -297,18 +324,39 @@ html[data-td-kbd-zen] .td-shell-subnav {
   overflow-wrap: anywhere;
 }
 
-@media (min-width: 640px) {
-  .td-shell-keyboard-dialog--split {
-    width: min(42rem, calc(100vw - 2rem));
-    max-width: calc(100vw - 2rem);
-  }
-  .td-shell-keyboard-dialog__body--split {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .td-shell-keyboard-dialog__body--split .td-shell-keyboard-help__section + .td-shell-keyboard-help__section {
-    border-top: 0;
-    border-inline-start: 1px solid var(--bs-border-color);
-  }
+/* Browsing history (H) borrows the Command Palette surface; only its footer
+   action is its own. */
+.td-shell-history__clear {
+  flex: none;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-control-radius, 8px);
+  background: transparent;
+  color: var(--bs-secondary-color);
+  font-size: 12px;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.td-shell-history__clear:hover {
+  background: var(--td-shell-accent);
+  color: var(--bs-body-color);
+}
+
+.td-shell-history__clear:focus-visible {
+  outline: 2px solid var(--td-shell-primary);
+  outline-offset: 2px;
+}
+
+.td-shell-history__clear:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.td-shell-history__clear:disabled:hover {
+  background: transparent;
+  color: var(--bs-secondary-color);
 }
 
 @media (forced-colors: active) {
@@ -320,7 +368,13 @@ html[data-td-kbd-zen] .td-shell-subnav {
   .td-shell-keyboard-dialog {
     border: 2px solid CanvasText;
   }
-  .td-shell-keyboard-dialog__close:focus-visible {
+  .td-shell-keyboard-dialog__close:focus-visible,
+  .td-shell-keyboard-dialog__body:focus-visible,
+  .td-shell-history__clear:focus-visible {
     outline: 2px solid Highlight;
+  }
+  .td-shell-keyboard-dialog .td-shell-keyboard-help__row.td-is-unavailable dd,
+  .td-shell-keyboard-help__row.td-is-unavailable .td-kbd-sequence kbd {
+    color: GrayText;
   }
 }

@@ -82,6 +82,8 @@ ui_skip_to_content: 跳转到主要内容
 ui_page_actions: 操作
 ui_open_in_chatgpt: 在 ChatGPT 中打开
 ui_open_in_claude: 在 Claude 中打开
+ui_open_in_gemini: 在 Gemini 中打开
+ui_open_in_gemini_hint: 同时复制提示语，可粘贴到 Gemini
 ui_open_in_prompt: 请阅读 %s 的内容，以便我就此向你提问。
 ui_copy_markdown: "复制 Markdown"
 ui_copy_success: 已复制 Markdown
@@ -104,11 +106,9 @@ ui_marquee_pause: 暂停滚动
 ui_kbd_with: 加
 ui_keyboard_shortcuts: 热键说明
 ui_shortcut_tree_move: 在侧栏中移动
-ui_shortcut_tree_toggle: 收起或展开章节
+ui_shortcut_tree_toggle: 收起/展开章节
 ui_shortcut_tree_open: 打开当前页面
-ui_shortcut_heading_prev: 上一个标题
-ui_shortcut_heading_next: 下一个标题
-ui_shortcut_page_move: 上一页或下一页
+ui_shortcut_page_move: 上一页/下一页
 ui_shortcut_search: 搜索
 ui_shortcut_commands: 命令面板
 ui_shortcut_reading_mode: 禅意模式
@@ -116,6 +116,22 @@ ui_shortcut_language: 切换语言
 ui_shortcut_theme: 切换明暗
 ui_shortcut_style: 切换风格
 ui_shortcut_route: 切换栏目
+ui_shortcut_group_navigation: 导航
+ui_shortcut_group_actions: 操作
+ui_shortcut_group_view: 样式
+ui_shortcut_heading_move: 上一个/下一个锚点
+ui_shortcut_version: 切换版本
+ui_shortcut_history: 浏览历史
+ui_shortcut_home: 回到首页
+ui_shortcut_expand_all: 展开/折叠全部
+ui_shortcut_page_width: 页面宽度
+ui_shortcut_more: 点击查看全部快捷键
+ui_history_search: 搜索浏览历史
+ui_history_empty: 暂无浏览历史
+ui_history_clear: 清除历史
+ui_history_cleared: 浏览历史已清除
+ui_history_remove: 删除
+ui_history_removed: 已从浏览历史中删除
 ui_page_annotation: 页面信息
 ui_backlinks: "反链"
 ui_backlinks_more: "再显示 {{ . }} 条"

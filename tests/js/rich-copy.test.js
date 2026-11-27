@@ -169,3 +169,31 @@ test('update metadata copies as separated tokens instead of glued text', () => {
   assert.doesNotMatch(block, />,\s*<\/span>|td-update-sep/, 'separators are spacing, not chips');
   assert.equal(typeset(meta), '2026-11-23, Breaking, Performance');
 });
+
+test('platform cards avoid duplicate URLs before click and keep the fallback URL after click', () => {
+  const cardUrl = el('p', { class: 'td-media__url' },
+    el('span', { class: 'td-media__url-title' }, 'Talk · Bilibili · '),
+    el('a', { href: 'https://www.bilibili.com/video/BV1xx411c7mD', rel: 'external' }, 'https://www.bilibili.com/video/BV1xx411c7mD'));
+  const unclicked = el('figure', { class: 'td-media td-media--embed' },
+    el('a', { class: 'td-media-card', href: 'https://www.bilibili.com/video/BV1xx411c7mD', rel: 'external' },
+      el('span', { class: 'td-media-card__play', 'aria-hidden': 'true' }, el('i', { class: 'fa-solid fa-play' })),
+      el('span', { class: 'td-media-card__text' },
+        el('span', { class: 'td-media-card__title' }, 'Talk'),
+        el('span', { class: 'visually-hidden' }, ' · '),
+        el('span', { class: 'td-media-card__platform' }, el('i', { class: 'fa-brands fa-bilibili', 'aria-hidden': 'true' }), ' Bilibili'))),
+    cardUrl);
+  const env = { styleOf: node => (node === cardUrl ? { display: 'none' } : null) };
+  const beforeHtml = typeset(el('div', { class: 'td-content' }, unclicked), env);
+  assert.equal((beforeHtml.match(/BV1xx411c7mD/g) || []).length, 1);
+
+  const clickedUrl = el('p', { class: 'td-media__url' },
+    el('span', { class: 'td-media__url-title' }, 'Talk · Bilibili · '),
+    el('a', { href: 'https://www.bilibili.com/video/BV1xx411c7mD', rel: 'external' }, 'https://www.bilibili.com/video/BV1xx411c7mD'));
+  const clicked = el('figure', { class: 'td-media td-media--embed' },
+    el('div', { class: 'td-media-player' },
+      el('iframe', { src: 'https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&p=1&autoplay=1&danmaku=0', title: 'Talk' })),
+    clickedUrl);
+  const afterHtml = typeset(el('div', { class: 'td-content' }, clicked), { styleOf: node => (node === clickedUrl ? { display: 'none' } : null) });
+  assert.match(afterHtml, /Talk · Bilibili · <a href="https:\/\/www\.bilibili\.com\/video\/BV1xx411c7mD"/);
+  assert.doesNotMatch(afterHtml, /<iframe/);
+});

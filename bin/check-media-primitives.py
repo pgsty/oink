@@ -411,6 +411,9 @@ HOOK_INVALID_CASES = (
     ("hook-video-link", '![x](https://example.org/clip.mp4)\n{link="/docs/"}\n', "unknown attribute"),
     ("hook-audio-unnamed", '![](https://example.org/tone.mp3)\n', "the bracket text names the recording"),
     ("hook-video-unnamed", '![](https://example.org/clip.mp4)\n', "the bracket text names the video"),
+    ("hook-video-inline-unnamed", 'Watch ![](https://example.org/clip.mp4) now.\n', "the bracket text names the video"),
+    ("hook-video-single-width", '![x](https://example.org/clip.mp4)\n{width="4"}\n', "width and height must be given together"),
+    ("hook-platform-unnamed", '![](https://www.youtube.com/watch?v=dQw4w9WgXcQ)\n', "using the URL"),
     ("hook-audio-poster", '![x](https://example.org/tone.mp3)\n{poster="page.png"}\n', "unknown attribute"),
     ("hook-platform-no-id", '![x](https://www.youtube.com/watch?v=short)\n', "no YouTube video ID"),
     ("hook-platform-short-link", '![x](https://b23.tv/abc)\n', "short links cannot be resolved without the network"),
@@ -473,6 +476,147 @@ def check_invalid_resource_alt(hugo: str) -> list[str]:
     return errors
 
 
+def check_video_matrix(hugo: str) -> list[str]:
+    """Video: media-type detection without binaries, leading-zero timestamps,
+    platform URL variants, Shorts default ratio, poster vs aspect ratio, track
+    query lookup, Print/RSS watch URLs, and Draw.io poster exclusion."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-video-matrix-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs/video-matrix"
+        synthetic = temp_path / "content/docs/video-bundle"
+        poster_only = temp_path / "content/docs/video-poster-only"
+        layouts = temp_path / "layouts/docs"
+        content.mkdir(parents=True)
+        synthetic.mkdir(parents=True)
+        poster_only.mkdir(parents=True)
+        layouts.mkdir(parents=True)
+        shutil.copyfile(PAGE_IMAGE, content / "page.png")
+        shutil.copyfile(PAGE_IMAGE, poster_only / "page.png")
+        (content / "sub.vtt").write_text("WEBVTT\n\n00:00.000 --> 00:01.000\nHello\n")
+        # Zero-binary synthetic video/mp4 page resource with a non-video extension
+        # proves Hugo media-type detection runs before extension matching.
+        (synthetic / "_content.gotmpl").write_text(
+            '{{ .AddPage (dict "kind" "page" "path" "bundle" "title" "Bundle video" '
+            '"params" (dict "outputs" (slice "HTML" "markdown" "RSS" "print")) '
+            '"content" (dict "mediaType" "text/markdown" "value" '
+            '"![Synthetic stream](stream.bin#t=2,4)\\n{poster=\\"page.png\\" track=\\"sub.vtt?v=2\\" width=\\"4\\" height=\\"3\\" caption=\\"Bundle clip\\"}\\n\\n'
+            '![Partial ratio](stream.bin)\\n{poster=\\"page.png\\" width=\\"4\\"}\\n")) }}\n'
+            '{{ .AddResource (dict "path" "bundle/stream.bin" "content" (dict "mediaType" "video/mp4" "value" "synthetic-mp4")) }}\n'
+            '{{ .AddResource (dict "path" "bundle/page.png" "content" (dict "mediaType" "image/png" "value" (resources.Get "media/content-primitives-global.png").Content)) }}\n'
+            '{{ .AddResource (dict "path" "bundle/sub.vtt" "content" (dict "mediaType" "text/plain" "value" "WEBVTT\\n\\n00:00.000 --> 00:01.000\\nHello\\n")) }}\n'
+        )
+        (content / "index.md").write_text(
+            "---\ntitle: Video matrix\noutputs: [HTML, markdown, RSS, print]\n---\n\n"
+            "![YT leading zero](https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=08s)\n\n"
+            "![YT short link slash](https://youtu.be/dQw4w9WgXcQ/?t=01m09s)\n\n"
+            "![YT nocookie embed](https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=09)\n\n"
+            "![YT music](https://music.youtube.com/watch?v=dQw4w9WgXcQ)\n\n"
+            "![YT shorts vertical](https://www.youtube.com/shorts/dQw4w9WgXcQ)\n\n"
+            "![Bili uppercase AV octal](https://www.bilibili.com/video/AV170001?t=010)\n\n"
+            "![Bili b23 BV](https://b23.tv/BV1xx411c7mD)\n\n"
+            "![Bili embed code](https://player.bilibili.com/player.html?isOutside=true&aid=170001&bvid=BV1xx411c7mD&cid=42&p=2&t=08)\n\n"
+            "![Bili embed aid](https://player.bilibili.com/player.html?aid=170002)\n\n"
+            "![Vimeo query hash and fragment](https://vimeo.com/76979871?h=ABCDEF1234#t=01m08s)\n"
+            '{poster="page.png" width="4" height="3" caption="Vimeo with poster and 4:3"}\n\n'
+            "![Vimeo manage](https://vimeo.com/manage/videos/76979871)\n\n"
+            "![Vimeo player host](https://player.vimeo.com/video/76979871?h=abcdef1234)\n\n"
+            "![](https://www.youtube.com/watch?v=dQw4w9WgXcQ)\n"
+        )
+        (poster_only / "index.md").write_text(
+            "---\ntitle: Poster only\n---\n\n"
+            "![Card with PNG poster](https://www.bilibili.com/video/BV1xx411c7mD)\n"
+            '{poster="page.png"}\n'
+        )
+        (layouts / "single.rss.xml").write_text(
+            '{{- .Store.Set "tdOutputFormat" "rss" -}}\n<fixture>{{ (.Markup "td-rss-check").Render.Content }}</fixture>\n'
+        )
+        override = temp_path / "video.yaml"
+        override.write_text(
+            "disableKinds: [sitemap, taxonomy, term]\n"
+            "outputs:\n  home: [HTML]\n  section: [HTML]\n  page: [HTML, markdown, RSS, print]\n"
+            "params:\n"
+            "  video_embeds: [youtube, bilibili, vimeo]\n"
+            "  drawio:\n    enable: true\n    drawio_server: https://embed.diagrams.net/\n"
+        )
+        destination = temp_path / "public"
+        result = run_hugo(
+            hugo,
+            "--source", str(FIXTURE),
+            "--contentDir", str(temp_path / "content"),
+            "--layoutDir", str(temp_path / "layouts"),
+            "--destination", str(destination),
+            "--config", fixture_media_config(override),
+            "--logLevel", "warn",
+        )
+        output = result.stdout + result.stderr
+        if result.returncode != 0:
+            errors.append(f"video matrix failed to build: {output}")
+            return errors
+
+        require("width and height must be given together" in output,
+                "video matrix did not warn on single width dimension", errors)
+        require("using the URL" in output,
+                "empty platform card did not warn about falling back to URL", errors)
+
+        html = (destination / "docs/video-matrix/index.html").read_text()
+        print_html = (destination / "_print/docs/video-matrix/index.html").read_text()
+        rss_outputs = [path for path in destination.rglob("*.xml") if "video-matrix" in path.parts and "bundle" not in path.parts]
+        rss = rss_outputs[0].read_text() if rss_outputs else ""
+
+        for expected in (
+            'data-td-media-embed="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&amp;start=8"',
+            'data-td-media-embed="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&amp;start=69"',
+            'data-td-media-embed="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&amp;start=9"',
+            'data-td-media-embed="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1"',
+            'style="--td-media-ratio: 9 / 16" data-td-media-embed="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1"',
+            'data-td-media-embed="https://player.bilibili.com/player.html?aid=170001&amp;p=1&amp;autoplay=1&amp;danmaku=0&amp;t=10"',
+            'data-td-media-embed="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&amp;p=1&amp;autoplay=1&amp;danmaku=0"',
+            # Bilibili's embed code: the BV ID wins over aid; cid and isOutside are dropped.
+            'data-td-media-embed="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&amp;p=2&amp;autoplay=1&amp;danmaku=0&amp;t=8"',
+            'data-td-media-embed="https://player.bilibili.com/player.html?aid=170002&amp;p=1&amp;autoplay=1&amp;danmaku=0"',
+            'data-td-media-embed="https://player.vimeo.com/video/76979871?autoplay=1&amp;dnt=1&amp;h=abcdef1234#t=68s"',
+            'data-td-media-embed="https://player.vimeo.com/video/76979871?autoplay=1&amp;dnt=1"',
+            'data-td-media-embed="https://player.vimeo.com/video/76979871?autoplay=1&amp;dnt=1&amp;h=abcdef1234"',
+            '<span class="td-media-card__title">https://www.youtube.com/watch?v=dQw4w9WgXcQ</span>',
+            '<span class="visually-hidden"> · </span>',
+            '<p class="td-media__url"><span class="td-media__url-title">',
+            # Poster <img> keeps its own 64x40 dimensions even with width="4" height="3".
+            '<img class="td-media-card__poster" src="/docs/video-matrix/page.png" alt="" width="64" height="40"',
+        ):
+            require(expected in html, f"video matrix HTML missing {expected}", errors)
+        require('<span class="td-media-card__title">watch</span>' not in html,
+                "empty YouTube watch URL still fell back to 'watch'", errors)
+
+        # Print and RSS platform cards carry visible watch URLs and preserve poster dimensions.
+        for label, body in (("Print", print_html), ("RSS", rss)):
+            require(bool(body), f"video matrix produced no {label} output", errors)
+            require('<span class="td-media__address">https://vimeo.com/76979871?h=ABCDEF1234#t=01m08s</span>' in body,
+                    f"video matrix {label} missing visible platform watch URL", errors)
+            require('width="64" height="40"' in body and 'width="4" height="3"' not in body,
+                    f"video matrix {label} clobbered poster image dimensions with aspect ratio", errors)
+
+        # Synthetic zero-binary bundle resource: media-type detection, #t= fragment,
+        # track query lookup, and single-dimension fallback.
+        bundle_html = (destination / "docs/video-bundle/bundle/index.html").read_text()
+        bundle_print = (destination / "_print/docs/video-bundle/bundle/index.html").read_text()
+        for expected in (
+            'src="/docs/video-bundle/bundle/stream.bin#t=2,4"',
+            'style="aspect-ratio: 4 / 3"',
+            '<track kind="subtitles" src="/docs/video-bundle/bundle/sub.vtt?v=2"',
+            'style="aspect-ratio: 64 / 40"',
+        ):
+            require(expected in bundle_html, f"bundle video HTML missing {expected}", errors)
+        require('width="64" height="40"' in bundle_print and 'width="4" height="3"' not in bundle_print,
+                "bundle video Print clobbered poster dimensions with aspect ratio", errors)
+
+        # Draw.io must ignore PNG posters inside video cards.
+        poster_only_html = (destination / "docs/video-poster-only/index.html").read_text()
+        require('id="td-drawio-config"' not in poster_only_html and "drawioframe" not in combined_source(destination, poster_only_html),
+                "Draw.io runtime loaded for a video card PNG poster", errors)
+    return errors
+
+
 def check_template_contracts() -> list[str]:
     errors: list[str] = []
     resolver = (ROOT / "layouts/_partials/content/image-resolve.html").read_text()
@@ -530,6 +674,35 @@ def check_template_contracts() -> list[str]:
     return errors
 
 
+def check_media_stylesheet() -> list[str]:
+    """Card geometry and paper colors that Chromium-only browser runs miss:
+    WebKit neither narrows a clamped aspect-ratio box nor grows one for a
+    wrapped title, and a dark screen palette must not reach paper."""
+    errors: list[str] = []
+    css = (ROOT / "assets/css/td/media.css").read_text()
+    runtime = (ROOT / "assets/js/media.js").read_text()
+    cap = "max-inline-size: min(100%, calc(80vh * var(--td-media-ratio, 16 / 9)));"
+    require(css.count(cap) == 2, "media.css must cap card and player width by --td-media-ratio", errors)
+    require(css.count("aspect-ratio: var(--td-media-ratio, 16 / 9);") == 2,
+            "media.css card and player must take their ratio from --td-media-ratio", errors)
+    for selector in (".td-media-card {", ".td-media-player {"):
+        start = css.find("\n" + selector)
+        body = css[start:css.find("}", start)] if start != -1 else ""
+        require(bool(body) and "max-block-size" not in body,
+                f"media.css {selector[:-2]} clamps its ratio box by height, which WebKit does not transfer to its width", errors)
+    supports = css.find("@supports (min-block-size: 1cqi)")
+    require(supports != -1
+            and "container-type: inline-size;" in css[supports:]
+            and "min-block-size: min(calc(100cqi / (var(--td-media-ratio, 16 / 9))), 80vh);" in css[supports:],
+            "media.css lacks the container-unit minimum height that lets a long title grow the card", errors)
+    paper = css.find("@media print")
+    require(paper != -1 and ".td-media-card:not(:has(.td-media-card__poster)) .td-media-card__text" in css[paper:],
+            "media.css print colors do not reach the poster-less card text", errors)
+    require("getPropertyValue('--td-media-ratio')" in runtime and "setProperty('--td-media-ratio'" in runtime,
+            "media.js does not carry the card ratio to the player", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--public", type=Path)
@@ -552,7 +725,9 @@ def main() -> int:
         + check_generic_rss_output(args.hugo)
         + check_invalid_cases(args.hugo)
         + check_invalid_resource_alt(args.hugo)
+        + check_video_matrix(args.hugo)
         + check_template_contracts()
+        + check_media_stylesheet()
     )
     if errors:
         print("Media primitive checks failed:")

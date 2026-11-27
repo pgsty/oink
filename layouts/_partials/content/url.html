@@ -39,7 +39,7 @@
     {{- $parsed = $parsedResult.Value -}}
     {{- $scheme = lower $parsed.Scheme -}}
     {{- $urlPath = $parsed.Path -}}
-    {{- $allowed := cond (in (slice "image" "web") $kind) (slice "http" "https") (slice "http" "https" "mailto") -}}
+    {{- $allowed := cond (in (slice "image" "media" "web") $kind) (slice "http" "https") (slice "http" "https" "mailto") -}}
     {{- if and $scheme (not (in $allowed $scheme)) -}}
       {{- warnf "%s: unsupported %s scheme %q at %s; dropping it" $label $parameter $scheme $position -}}
       {{- $ok = false -}}
@@ -49,8 +49,8 @@
     {{- else if and (eq $scheme "mailto") (not (or $parsed.Opaque $parsed.Path)) -}}
       {{- warnf "%s: %s %q requires an address at %s; dropping it" $label $parameter $raw $position -}}
       {{- $ok = false -}}
-    {{- else if and (eq $kind "image") (not $scheme) (not $parsed.Path) -}}
-      {{- warnf "%s: %s %q requires an image path at %s; dropping it" $label $parameter $raw $position -}}
+    {{- else if and (in (slice "image" "media") $kind) (not $scheme) (not $parsed.Path) -}}
+      {{- warnf "%s: %s %q requires %s path at %s; dropping it" $label $parameter $raw (cond (eq $kind "image") "an image" "a file") $position -}}
       {{- $ok = false -}}
     {{- end -}}
   {{- end -}}

@@ -291,8 +291,13 @@
       if (node.nodeType !== 1) return [];
       var tag = tagOf(node);
       // The Image Zoom runtime wraps a picture in a button; the picture is
-      // still the article's.
+      // still the article's. Media print URLs sit hidden beside screen players
+      // and carry the recording link into copied rich text, matching print.
       if (tag === 'BUTTON' && has(node, 'td-image-zoom__trigger')) return unseen(node) ? [] : kidsOf(node);
+      if (tag === 'P' && has(node, 'td-media__url')) {
+        if (node.parentNode && find(node.parentNode, function (el) { return has(el, 'td-media-card'); })) return [];
+        return [{ t: 'p', kids: kidsOf(node) }];
+      }
       if (DROP.test(tag) || isChrome(node) || unseen(node)) return [];
       if (has(node, 'katex-display')) return math(node, true);
       if (tag === 'MATH' || has(node, 'katex')) return math(node, attr(node, 'display') === 'block');

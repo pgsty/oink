@@ -102,7 +102,15 @@
         "video_embeds": {
           "description": "Video platforms whose player may load in place after a reader clicks a card written as ![name](https://youtu.be/...): any of youtube, bilibili, vimeo. Empty: cards only link out, and no third-party request happens.",
           "type": "array",
-          "default": []
+          "default": [],
+          "items": {
+            "type": "string",
+            "enum": [
+              "youtube",
+              "bilibili",
+              "vimeo"
+            ]
+          }
         },
         "map": {
           "type": [

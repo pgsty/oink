@@ -19,12 +19,12 @@
 {{- if $parsed -}}
   {{- $scheme := lower $parsed.Scheme -}}
   {{- if in (slice "http" "https") $scheme -}}
-    {{- $host := lower $parsed.Host | strings.TrimPrefix "www." | strings.TrimPrefix "m." -}}
-    {{- if in (slice "youtube.com" "youtu.be") $host -}}
+    {{- $host := lower $parsed.Hostname | strings.TrimPrefix "www." | strings.TrimPrefix "m." -}}
+    {{- if in (slice "youtube.com" "youtu.be" "youtube-nocookie.com" "music.youtube.com") $host -}}
       {{- $platform = "youtube" -}}
-    {{- else if in (slice "bilibili.com" "b23.tv") $host -}}
+    {{- else if in (slice "bilibili.com" "b23.tv" "player.bilibili.com") $host -}}
       {{- $platform = "bilibili" -}}
-    {{- else if eq $host "vimeo.com" -}}
+    {{- else if in (slice "vimeo.com" "player.vimeo.com") $host -}}
       {{- $platform = "vimeo" -}}
     {{- end -}}
   {{- end -}}

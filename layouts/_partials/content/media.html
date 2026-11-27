@@ -22,22 +22,33 @@
 {{- $kind := $detect.kind -}}
 {{- $label := cond (eq $kind "audio") "audio" "video" -}}
 {{- $validated := partial "content/url.html" (dict
-  "name" $label "label" $label "parameter" "src" "position" $position "value" .src "kind" "image"
+  "name" $label "label" $label "parameter" "src" "position" $position "value" .src "kind" "media"
 ) -}}
 {{- if $validated.valid -}}
 {{- $alt := strings.TrimSpace (.alt | default "") -}}
 {{- $file := path.Base $validated.path -}}
 {{- $href := $validated.href -}}
 {{- if ne $kind "platform" -}}
-  {{- with $detect.resource }}{{ $href = .RelPermalink }}{{ end -}}
+  {{- with $detect.resource -}}
+    {{- $href = .RelPermalink -}}
+    {{- /* Both parts as written: RawQuery and EscapedFragment keep the
+           author's percent-encoding, so href, src and the printed URL agree. */ -}}
+    {{- with $detect.url.RawQuery }}{{ $href = printf "%s?%s" $href . }}{{ end -}}
+    {{- with $detect.url.EscapedFragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
+  {{- end -}}
 {{- end -}}
 {{- $absolute := cond (or $validated.scheme (hasPrefix $href "#")) $href (absURL $href) -}}
 {{- if eq $format "rss" }}{{ $href = $absolute }}{{ end -}}
+{{- $fallbackName := cond (eq $kind "platform") $href ($file | default $href) -}}
 {{- $name := $alt -}}
-{{- if and (not $name) (eq $kind "audio") -}}
-  {{- warnf "audio: the bracket text names the recording and is its visible title; it is empty at %s; using the file name" $position -}}
+{{- if and (not $name) (or (eq $kind "audio") (not .isBlock)) -}}
+  {{- if eq $kind "audio" -}}
+    {{- warnf "audio: the bracket text names the recording and is its visible title; it is empty at %s; using the file name" $position -}}
+  {{- else -}}
+    {{- warnf "%s: the bracket text names the video; it is empty at %s; using %s" $label $position (cond (eq $kind "platform") "the URL" "the file name") -}}
+  {{- end -}}
 {{- end -}}
-{{- if not $name }}{{ $name = $file | default $href }}{{ end -}}
+{{- if not $name }}{{ $name = $fallbackName }}{{ end -}}
 
 {{- if not .isBlock -}}
   {{- /* Inline media stays inline: a plain link to the file or watch page. */ -}}
@@ -65,12 +76,13 @@
   {{- end -}}
 {{- end -}}
 {{- /* Every player needs a name: the bracket text, else the caption, else
-       the file name, with a warning when the author gave neither. */ -}}
+       the file name (or watch URL for platforms), with a warning when the
+       author gave neither. */ -}}
 {{- if and (not $alt) (ne $kind "audio") -}}
   {{- if $caption -}}
     {{- $name = $caption -}}
   {{- else -}}
-    {{- warnf "%s: the bracket text names the video for assistive technology; it and the caption are empty at %s; using the file name" $label $position -}}
+    {{- warnf "%s: the bracket text names the video for assistive technology; it and the caption are empty at %s; using %s" $label $position (cond (eq $kind "platform") "the URL" "the file name") -}}
   {{- end -}}
 {{- end -}}
 {{- $bookLabel := "" -}}
@@ -82,20 +94,32 @@
   ) -}}
   {{- if $resolved.src }}{{ $poster = $resolved }}{{ end -}}
 {{- end -}}
-{{- $width := 0 -}}
-{{- $height := 0 -}}
-{{- with $poster }}{{ $width = .width }}{{ $height = .height }}{{ end -}}
+{{- $posterWidth := 0 -}}
+{{- $posterHeight := 0 -}}
+{{- with $poster }}{{ $posterWidth = .width }}{{ $posterHeight = .height }}{{ end -}}
+{{- $authorWidth := 0 -}}
+{{- $authorHeight := 0 -}}
 {{- range $key := slice "width" "height" -}}
   {{- with index $policy.consumed $key -}}
     {{- if findRE `^[1-9][0-9]{0,4}$` . -}}
-      {{- if eq $key "width" }}{{ $width = int . }}{{ else }}{{ $height = int . }}{{ end -}}
+      {{- if eq $key "width" }}{{ $authorWidth = int . }}{{ else }}{{ $authorHeight = int . }}{{ end -}}
     {{- else -}}
       {{- warnf "%s: %s must be a positive integer; got %q at %s; ignoring it" $label $key . $position -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- if ne (gt $authorWidth 0) (gt $authorHeight 0) -}}
+  {{- warnf "%s: width and height must be given together at %s; ignoring the single dimension" $label $position -}}
+  {{- $authorWidth = 0 -}}
+  {{- $authorHeight = 0 -}}
+{{- end -}}
+{{- $width := cond (and (gt $authorWidth 0) (gt $authorHeight 0)) $authorWidth $posterWidth -}}
+{{- $height := cond (and (gt $authorWidth 0) (gt $authorHeight 0)) $authorHeight $posterHeight -}}
+{{- /* "W / H": the <video> box takes it as aspect-ratio, a platform card as
+       --td-media-ratio, from which media.css derives both its ratio and the
+       width cap that keeps a portrait card within 80vh in every engine. */ -}}
 {{- $ratio := "" -}}
-{{- if and (gt $width 0) (gt $height 0) }}{{ $ratio = printf "aspect-ratio: %d / %d" $width $height }}{{ end -}}
+{{- if and (gt $width 0) (gt $height 0) }}{{ $ratio = printf "%d / %d" $width $height }}{{ end -}}
 {{- $posterSrc := "" -}}
 {{- with $poster }}{{ $posterSrc = cond (eq $format "rss") (absURL .src) .src }}{{ end -}}
 
@@ -132,11 +156,18 @@
 {{- else if eq $kind "video" -}}
   {{- $track := "" -}}
   {{- with index $policy.consumed "track" -}}
-    {{- $trackURL := partial "content/url.html" (dict "name" "video" "label" "video" "parameter" "track" "position" $position "value" . "kind" "image") -}}
+    {{- $trackURL := partial "content/url.html" (dict "name" "video" "label" "video" "parameter" "track" "position" $position "value" . "kind" "media") -}}
     {{- if $trackURL.valid -}}
-      {{- $found := partial "content/resource-lookup.html" (dict "page" $page "source" $trackURL.raw "scheme" $trackURL.scheme) -}}
+      {{- $found := partial "content/resource-lookup.html" (dict "page" $page "source" $trackURL.path "scheme" $trackURL.scheme) -}}
       {{- $track = $trackURL.href -}}
-      {{- with $found.resource }}{{ $track = .RelPermalink }}{{ end -}}
+      {{- with $found.resource -}}
+        {{- $track = .RelPermalink -}}
+        {{- $parsedTrack := try (urls.Parse $trackURL.raw) -}}
+        {{- if not $parsedTrack.Err -}}
+          {{- with $parsedTrack.Value.RawQuery }}{{ $track = printf "%s?%s" $track . }}{{ end -}}
+          {{- with $parsedTrack.Value.EscapedFragment }}{{ $track = printf "%s#%s" $track . }}{{ end -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- $autoplay := false -}}
@@ -145,10 +176,10 @@
     {{- if eq $value "true" }}{{ $autoplay = true }}{{ else if ne $value "false" }}{{ warnf "video: autoplay must be true or false; got %q at %s; using false" . $position }}{{ end -}}
   {{- end -}}
   {{- if in (slice "print" "rss") $format -}}
-{{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }} loading="lazy" decoding="async">{{ end }}{{ $staticLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
+{{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $posterWidth 0 }} width="{{ $posterWidth }}"{{ end }}{{ if gt $posterHeight 0 }} height="{{ $posterHeight }}"{{ end }} loading="lazy" decoding="async">{{ end }}{{ $staticLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
   {{- else -}}
     {{- if $autoplay }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
-{{ $open | safeHTML }}<video controls preload="metadata" playsinline src="{{ $href }}"{{ with $posterSrc }} poster="{{ . }}"{{ end }}{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }}{{ with $ratio }} style="{{ . | safeCSS }}"{{ end }}{{ if $autoplay }} muted loop data-td-media-autoplay{{ end }} aria-label="{{ $name }}">
+{{ $open | safeHTML }}<video controls preload="metadata" playsinline src="{{ $href }}"{{ with $posterSrc }} poster="{{ . }}"{{ end }}{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }}{{ with $ratio }} style="{{ printf "aspect-ratio: %s" . | safeCSS }}"{{ end }}{{ if $autoplay }} muted loop data-td-media-autoplay{{ end }} aria-label="{{ $name }}">
   {{- with $track }}<track kind="subtitles" src="{{ . }}" srclang="{{ $page.Language.Lang }}" label="{{ $page.Language.Label | default $page.Language.Lang }}" default>{{ end -}}
   <a href="{{ $href }}">{{ $name }}</a></video>{{ $urlLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
   {{- end -}}
@@ -158,33 +189,66 @@
          validated itself; author text never reaches an iframe address. */ -}}
   {{- $url := $detect.url -}}
   {{- $platform := $detect.platform -}}
-  {{- $host := lower $url.Host | strings.TrimPrefix "www." | strings.TrimPrefix "m." -}}
+  {{- $host := lower $url.Hostname | strings.TrimPrefix "www." | strings.TrimPrefix "m." -}}
+  {{- $path := strings.TrimSuffix "/" $url.Path -}}
   {{- $player := "" -}}
   {{- $platformName := index (dict "youtube" "YouTube" "bilibili" "Bilibili" "vimeo" "Vimeo") $platform -}}
   {{- $icon := index (dict "youtube" "fa-brands fa-youtube" "bilibili" "fa-brands fa-bilibili" "vimeo" "fa-brands fa-vimeo-v") $platform -}}
   {{- $seconds := 0 -}}
   {{- $time := $url.Query.Get "t" | default ($url.Query.Get "start") -}}
-  {{- with findRESubmatch `^(?:([0-9]{1,2})h)?(?:([0-9]{1,4})m)?(?:([0-9]{1,6})(?:\.[0-9]+)?s?)?$` $time 1 -}}
-    {{- $m := index . 0 -}}
-    {{- $seconds = add (mul (int (index $m 1 | default "0")) 3600) (mul (int (index $m 2 | default "0")) 60) (int (index $m 3 | default "0")) -}}
+  {{- if and (not $time) $url.Fragment -}}
+    {{- with findRESubmatch `(?i)^t=(.+)$` $url.Fragment 1 }}{{ $time = index (index . 0) 1 }}{{ end -}}
+  {{- end -}}
+  {{- $time = lower (strings.TrimSpace $time) -}}
+  {{- if $time -}}
+    {{- with findRESubmatch `^(?:([0-9]{1,2})h)?(?:([0-9]{1,4})m)?(?:([0-9]{1,6})(?:\.[0-9]+)?s?)?$` $time 1 -}}
+      {{- $m := index . 0 -}}
+      {{- if or (index $m 1) (index $m 2) (index $m 3) -}}
+        {{- /* Parse via float so leading zeros (08, 010) stay decimal instead of octal. */ -}}
+        {{- $seconds = add
+          (mul (int (float (index $m 1 | default "0"))) 3600)
+          (mul (int (float (index $m 2 | default "0"))) 60)
+          (int (float (index $m 3 | default "0"))) -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
   {{- if eq $platform "youtube" -}}
     {{- $video := "" -}}
+    {{- $isShort := false -}}
     {{- if eq $host "youtu.be" -}}
-      {{- $video = strings.TrimPrefix "/" $url.Path -}}
-    {{- else if eq $url.Path "/watch" -}}
+      {{- $video = strings.TrimPrefix "/" $path -}}
+    {{- else if eq $path "/watch" -}}
       {{- $video = $url.Query.Get "v" -}}
     {{- else -}}
-      {{- with findRESubmatch `^/(?:shorts|live|embed)/([^/]+)/?$` $url.Path 1 }}{{ $video = index (index . 0) 1 }}{{ end -}}
+      {{- with findRESubmatch `^/(shorts|live|embed)/([^/]+)$` $path 1 -}}
+        {{- $m := index . 0 -}}
+        {{- $video = index $m 2 -}}
+        {{- if eq (index $m 1) "shorts" }}{{ $isShort = true }}{{ end -}}
+      {{- end -}}
     {{- end -}}
     {{- if findRE `^[A-Za-z0-9_-]{11}$` $video -}}
       {{- $player = printf "https://www.youtube-nocookie.com/embed/%s?autoplay=1" $video -}}
       {{- if gt $seconds 0 }}{{ $player = printf "%s&start=%d" $player $seconds }}{{ end -}}
+      {{- if and $isShort (not $ratio) }}{{ $ratio = "9 / 16" }}{{ end -}}
     {{- end -}}
   {{- else if eq $platform "bilibili" -}}
     {{- $query := "" -}}
-    {{- with findRESubmatch `^/video/(BV[0-9A-Za-z]{10})/?$` $url.Path 1 }}{{ $query = printf "bvid=%s" (index (index . 0) 1) }}{{ end -}}
-    {{- with findRESubmatch `^/video/av([0-9]{1,12})/?$` $url.Path 1 }}{{ $query = printf "aid=%s" (index (index . 0) 1) }}{{ end -}}
+    {{- if eq $host "b23.tv" -}}
+      {{- with findRESubmatch `^/(BV[0-9A-Za-z]{10})$` $path 1 }}{{ $query = printf "bvid=%s" (index (index . 0) 1) }}{{ end -}}
+      {{- with findRESubmatch `(?i)^/av([0-9]{1,12})$` $path 1 }}{{ $query = printf "aid=%s" (index (index . 0) 1) }}{{ end -}}
+    {{- else if eq $host "player.bilibili.com" -}}
+      {{- /* Bilibili's own embed code: the IDs sit in the query, often both;
+             the BV ID wins, and the rest of that query (cid, isOutside, …)
+             never reaches the player URL the theme builds. */ -}}
+      {{- if eq $path "/player.html" -}}
+        {{- $bvid := $url.Query.Get "bvid" -}}
+        {{- $aid := $url.Query.Get "aid" -}}
+        {{- if findRE `^BV[0-9A-Za-z]{10}$` $bvid }}{{ $query = printf "bvid=%s" $bvid }}{{ else if findRE `^[0-9]{1,12}$` $aid }}{{ $query = printf "aid=%s" $aid }}{{ end -}}
+      {{- end -}}
+    {{- else -}}
+      {{- with findRESubmatch `^/video/(BV[0-9A-Za-z]{10})$` $path 1 }}{{ $query = printf "bvid=%s" (index (index . 0) 1) }}{{ end -}}
+      {{- with findRESubmatch `(?i)^/video/av([0-9]{1,12})$` $path 1 }}{{ $query = printf "aid=%s" (index (index . 0) 1) }}{{ end -}}
+    {{- end -}}
     {{- if $query -}}
       {{- $part := $url.Query.Get "p" -}}
       {{- if not (findRE `^[1-9][0-9]{0,3}$` $part) }}{{ $part = "1" }}{{ end -}}
@@ -192,10 +256,23 @@
       {{- if gt $seconds 0 }}{{ $player = printf "%s&t=%d" $player $seconds }}{{ end -}}
     {{- end -}}
   {{- else if eq $platform "vimeo" -}}
-    {{- with findRESubmatch `^/([0-9]{1,12})(?:/([0-9a-f]{6,20}))?/?$` $url.Path 1 -}}
-      {{- $m := index . 0 -}}
-      {{- $player = printf "https://player.vimeo.com/video/%s?autoplay=1&dnt=1" (index $m 1) -}}
-      {{- with index $m 2 }}{{ $player = printf "%s&h=%s" $player . }}{{ end -}}
+    {{- $video := "" -}}
+    {{- $hash := "" -}}
+    {{- if eq $host "player.vimeo.com" -}}
+      {{- with findRESubmatch `^/video/([0-9]{1,12})$` $path 1 }}{{ $video = index (index . 0) 1 }}{{ end -}}
+    {{- else -}}
+      {{- with findRESubmatch `^/(?:manage/videos/)?([0-9]{1,12})(?:/([0-9A-Fa-f]{6,20}))?$` $path 1 -}}
+        {{- $m := index . 0 -}}
+        {{- $video = index $m 1 -}}
+        {{- $hash = index $m 2 -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not $hash }}{{ $hash = $url.Query.Get "h" }}{{ end -}}
+    {{- if not (findRE `^[0-9A-Fa-f]{6,20}$` $hash) }}{{ $hash = "" }}{{ else }}{{ $hash = lower $hash }}{{ end -}}
+    {{- if $video -}}
+      {{- $player = printf "https://player.vimeo.com/video/%s?autoplay=1&dnt=1" $video -}}
+      {{- with $hash }}{{ $player = printf "%s&h=%s" $player . }}{{ end -}}
+      {{- if gt $seconds 0 }}{{ $player = printf "%s#t=%ds" $player $seconds }}{{ end -}}
     {{- end -}}
   {{- end -}}
   {{- if not $player -}}
@@ -206,15 +283,16 @@
     {{- end -}}
   {{- end -}}
   {{- $embed := and $player (eq $format "html") (in (partialCached "content/video-embeds.html" . $page.Site.Language.Lang) $platform) -}}
+  {{- $cardUrlLine := printf `<p class="td-media__url"><span class="td-media__url-title">%s · %s · </span><a href="%s" rel="external">%s</a></p>` (htmlEscape $name) (htmlEscape $platformName) (htmlEscape $href) (htmlEscape $absolute) -}}
   {{- if in (slice "print" "rss") $format -}}
-{{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }} loading="lazy" decoding="async">{{ end }}<p class="td-media__link"><a href="{{ $href }}" rel="external">{{ $name }}</a> · {{ $platformName }}</p>{{ $figcaption | safeHTML }}</figure>
+{{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $posterWidth 0 }} width="{{ $posterWidth }}"{{ end }}{{ if gt $posterHeight 0 }} height="{{ $posterHeight }}"{{ end }} loading="lazy" decoding="async">{{ end }}<p class="td-media__link"><a href="{{ $href }}" rel="external">{{ $name }}</a> · {{ $platformName }} · <span class="td-media__address">{{ $absolute }}</span></p>{{ $figcaption | safeHTML }}</figure>
   {{- else -}}
     {{- if $embed }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
-{{ $open | safeHTML }}<a class="td-media-card" href="{{ $href }}" rel="external"{{ with $ratio }} style="{{ . | safeCSS }}"{{ end }}{{ if $embed }} data-td-media-embed="{{ $player }}" data-td-media-title="{{ $name }}"{{ end }}>
-  {{- with $posterSrc }}<img class="td-media-card__poster" src="{{ . }}" alt=""{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }} loading="lazy" decoding="async">{{ end -}}
+{{ $open | safeHTML }}<a class="td-media-card" href="{{ $href }}" rel="external"{{ with $ratio }} style="{{ printf "--td-media-ratio: %s" . | safeCSS }}"{{ end }}{{ if $embed }} data-td-media-embed="{{ $player }}" data-td-media-title="{{ $name }}"{{ end }}>
+  {{- with $posterSrc }}<img class="td-media-card__poster" src="{{ . }}" alt=""{{ if gt $posterWidth 0 }} width="{{ $posterWidth }}"{{ end }}{{ if gt $posterHeight 0 }} height="{{ $posterHeight }}"{{ end }} loading="lazy" decoding="async">{{ end -}}
   <span class="td-media-card__play" aria-hidden="true"><i class="fa-solid fa-play"></i></span>
-  <span class="td-media-card__text"><span class="td-media-card__title">{{ $name }}</span><span class="td-media-card__platform"><i class="{{ $icon }}" aria-hidden="true"></i> {{ $platformName }}</span><span class="visually-hidden">{{ if $embed }}{{ T "ui_video_play" }}{{ else }}{{ T "ui_video_open" }}{{ end }}</span></span>
-</a>{{ $figcaption | safeHTML }}</figure>
+  <span class="td-media-card__text"><span class="td-media-card__title">{{ $name }}</span><span class="visually-hidden"> · </span><span class="td-media-card__platform"><i class="{{ $icon }}" aria-hidden="true"></i> {{ $platformName }}</span><span class="visually-hidden"> · {{ if $embed }}{{ T "ui_video_play" }}{{ else }}{{ T "ui_video_open" }}{{ end }}</span></span>
+</a>{{ $cardUrlLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
   {{- end -}}
 {{- end -}}
 {{- end -}}

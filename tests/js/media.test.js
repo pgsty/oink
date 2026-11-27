@@ -39,12 +39,26 @@ function video() {
   return node;
 }
 
+// CSSStyleDeclaration's custom-property surface: the card's shape travels as
+// --td-media-ratio, which media.css turns into the box ratio and width cap.
+function styleMap(initial = {}) {
+  const values = new Map(Object.entries(initial));
+  return {
+    getPropertyValue(name) {
+      return values.get(name) || '';
+    },
+    setProperty(name, value) {
+      values.set(name, String(value));
+    },
+  };
+}
+
 function element(tag) {
   const attributes = new Map();
   const node = {
     tag,
     className: '',
-    style: {},
+    style: styleMap(),
     children: [],
     focused: false,
     setAttribute(name, value) {
@@ -165,7 +179,7 @@ test("a reader's pause wins until the video leaves the viewport", () => {
 function card(src, title = 'Talk') {
   const attributes = { 'data-td-media-embed': src, 'data-td-media-title': title };
   const node = {
-    style: { aspectRatio: '4 / 3' },
+    style: styleMap({ '--td-media-ratio': '4 / 3' }),
     replacedWith: null,
     getAttribute(name) {
       return Object.prototype.hasOwnProperty.call(attributes, name) ? attributes[name] : null;
@@ -202,17 +216,28 @@ test('a plain click swaps an enabled card for the platform player', () => {
   assert.equal(event.defaultPrevented, true);
   const holder = link.replacedWith;
   assert.equal(holder.className, 'td-media-player');
-  assert.equal(holder.style.aspectRatio, '4 / 3');
+  assert.equal(holder.style.getPropertyValue('--td-media-ratio'), '4 / 3');
   const frame = holder.children[0];
   assert.equal(frame.tag, 'iframe');
   assert.equal(frame.src, 'https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&p=1&autoplay=1&danmaku=0');
   assert.equal(frame.title, 'Talk');
+  assert.equal(frame.getAttribute('allow'), 'autoplay; picture-in-picture; fullscreen');
+  assert.equal(
+    frame.getAttribute('sandbox'),
+    'allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox',
+  );
   assert.equal(frame.getAttribute('referrerpolicy'), 'strict-origin-when-cross-origin');
   assert.equal(frame.getAttribute('allowfullscreen'), '');
   assert.equal(frame.focused, true);
+
+  const vimeo = card('https://player.vimeo.com/video/76979871?autoplay=1&dnt=1&h=abcdef1234#t=90s');
+  const vimeoEvent = clickOn(vimeo);
+  page.click(vimeoEvent);
+  assert.equal(vimeoEvent.defaultPrevented, true);
+  assert.equal(vimeo.replacedWith.children[0].src, 'https://player.vimeo.com/video/76979871?autoplay=1&dnt=1&h=abcdef1234#t=90s');
 });
 
-test('modified clicks and unknown player hosts keep the link', () => {
+test('modified clicks, unknown hosts, and tampered player URLs keep the link', () => {
   const page = build();
   const link = card('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1');
   const modified = clickOn(link, { metaKey: true });
@@ -220,9 +245,65 @@ test('modified clicks and unknown player hosts keep the link', () => {
   assert.equal(modified.defaultPrevented, false);
   assert.equal(link.replacedWith, null);
 
-  const foreign = card('https://evil.example/embed/x');
-  const plain = clickOn(foreign);
-  page.click(plain);
-  assert.equal(plain.defaultPrevented, false);
-  assert.equal(foreign.replacedWith, null);
+  for (const bad of [
+    'https://evil.example/embed/x',
+    'https://www.youtube-nocookie.com/embed/../../watch?v=1',
+    'https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&evil=1',
+    'https://player.vimeo.com/video/76979871?autoplay=1&dnt=0',
+  ]) {
+    const foreign = card(bad);
+    const plain = clickOn(foreign);
+    page.click(plain);
+    assert.equal(plain.defaultPrevented, false, `must reject ${bad}`);
+    assert.equal(foreign.replacedWith, null, `must not swap ${bad}`);
+  }
+});
+
+test('async play/pause events, no-op applies, and re-muting stay race-free', async () => {
+  const listeners = new Map();
+  const queue = [];
+  const clip = {
+    tagName: 'VIDEO',
+    paused: true,
+    muted: false,
+    calls: [],
+    hasAttribute: (name) => name === 'data-td-media-autoplay',
+    addEventListener(type, handler) {
+      if (!listeners.has(type)) listeners.set(type, []);
+      listeners.get(type).push(handler);
+    },
+    dispatch(type) {
+      (listeners.get(type) || []).forEach((handler) => handler({ type, target: clip }));
+    },
+    play() {
+      clip.calls.push('play');
+      clip.paused = false;
+      queue.push('play');
+      return Promise.resolve();
+    },
+    pause() {
+      clip.calls.push('pause');
+      clip.paused = true;
+      queue.push('pause');
+    },
+  };
+  const page = build({ videos: [clip] });
+  page.intersect(clip, 0.8);
+  assert.deepEqual(clip.calls, ['play']);
+  // Rapid scroll-out before the queued play event fires: neither event counts as reader intent.
+  page.intersect(clip, 0);
+  assert.deepEqual(clip.calls, ['play', 'pause']);
+  while (queue.length) clip.dispatch(queue.shift());
+  // Re-entering still autoplays and re-mutes if the reader previously unmuted it.
+  clip.muted = false;
+  page.intersect(clip, 0.8);
+  assert.equal(clip.muted, true);
+  assert.deepEqual(clip.calls, ['play', 'pause', 'play']);
+  while (queue.length) clip.dispatch(queue.shift());
+  // A no-op visibilitychange while already playing must not swallow a reader pause.
+  page.visibility();
+  clip.paused = true;
+  clip.dispatch('pause');
+  page.intersect(clip, 0.9);
+  assert.deepEqual(clip.calls, ['play', 'pause', 'play']);
 });

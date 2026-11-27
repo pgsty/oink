@@ -145,3 +145,58 @@ test('Draw.io closes through the host control, backdrop or native cancel and res
     assert.deepEqual(runtime.messages, []);
   }
 });
+
+// Which images the runtime probes for embedded diagrams. Each image lists its
+// ancestors as "tag.class…" strings; closest() matches "tag" or "tag.class…".
+function probedSources(images) {
+  const requested = [];
+  let ready;
+  const parse = (simple) => {
+    const [tag, ...classes] = simple.split('.');
+    return { tag, classes };
+  };
+  const matches = (ancestor, part) => {
+    const node = parse(ancestor);
+    const want = parse(part);
+    return node.tag === want.tag && want.classes.every(name => node.classes.includes(name));
+  };
+  const nodes = images.map(({ src, ancestors = [] }) => ({
+    tagName: 'img', src,
+    closest(selector) {
+      const parts = selector.split(',').map(part => part.trim());
+      return ancestors.some(ancestor => parts.some(part => matches(ancestor, part))) ? {} : null;
+    },
+  }));
+  vm.runInNewContext(source, {
+    document: {
+      baseURI: 'https://site.example/docs/',
+      getElementById() { return { textContent: JSON.stringify({ server: 'https://editor.example/' }) }; },
+      querySelectorAll() { return nodes; },
+      addEventListener(event, fn) { if (event === 'DOMContentLoaded') ready = fn; },
+    },
+    window: { addEventListener() {}, removeEventListener() {} },
+    URL,
+    XMLHttpRequest: class {
+      open(method, src) { requested.push(src); }
+      addEventListener() {}
+      send() {}
+    },
+    FileReader: class {},
+  });
+  ready();
+  return requested;
+}
+
+test('Draw.io skips video-card posters but still probes linked and zoomable diagrams', () => {
+  const requested = probedSources([
+    { src: 'https://site.example/talk-poster.png', ancestors: ['a.td-media-card', 'figure.td-media'] },
+    { src: 'https://site.example/linked.drawio.png', ancestors: ['a', 'p'] },
+    { src: 'https://site.example/zoom.drawio.svg', ancestors: ['button.td-image-zoom__trigger'] },
+    { src: 'https://site.example/plain.drawio.svg' },
+  ]);
+  assert.deepEqual(requested, [
+    'https://site.example/linked.drawio.png',
+    'https://site.example/zoom.drawio.svg',
+    'https://site.example/plain.drawio.svg',
+  ]);
+});

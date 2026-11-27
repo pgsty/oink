@@ -138,6 +138,9 @@
 
     var imagesBySource = new Map();
     document.querySelectorAll('main img').forEach(function (img) {
+      // A video-platform card's poster is not a diagram, and an Edit button
+      // would nest inside the card's link. Other linked images stay eligible.
+      if (img.closest && img.closest('a.td-media-card')) return;
       var src = img.currentSrc || img.src;
       if (!/\.(?:png|svg)(?:[?#].*)?$/i.test(src)) return;
       if (!imagesBySource.has(src)) imagesBySource.set(src, []);

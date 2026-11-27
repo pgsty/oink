@@ -263,6 +263,14 @@ def build(check_params) -> dict[str, str]:
         {"type": "boolean"},
         {"type": "array", "items": {"type": "string", "enum": presets}},
     ]
+    video_resolver = (ROOT / "layouts/_partials/content/video-embeds.html").read_text()
+    video_names = re.search(r'\$known\s*:=\s*slice((?:\s+"[a-z]+")+)', video_resolver)
+    if not video_names:
+        raise SystemExit("video-embeds resolver has no known-platform slice")
+    params_schema["properties"]["video_embeds"]["items"] = {
+        "type": "string",
+        "enum": re.findall(r'"([a-z]+)"', video_names[1]),
+    }
 
     for key, reason in FRONT_SCHEMA_EXCLUDES.items():
         if key not in page_keys:

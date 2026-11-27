@@ -4,12 +4,19 @@
    an audio file is a titled native player; a video-platform URL is a link
    card that an enabled platform turns into its player in place.
    --------------------------------------------------------------------------- */
-.td-media {
+:where(.td-media) {
   --td-media-radius: var(--td-control-radius, 0.375rem);
+}
+
+/* A captioned or numbered figure takes `.td-figure` / Book spacing; every
+   other media figure needs one class of weight to beat Bootstrap's
+   `figure { margin: 0 0 1rem }`, and no more, so the audio pairing rules
+   below and site CSS still win with two. */
+:where(.td-media):not(.td-figure) {
   margin-block: 1.5rem 1.75rem;
 }
 
-.td-media > figcaption {
+:where(.td-media > figcaption) {
   margin-block-start: 0.6rem;
   color: var(--bs-secondary-color);
   font-size: 0.9rem;
@@ -34,6 +41,7 @@
   font-family: var(--td-meta-font-family);
   font-size: 0.8rem;
   overflow-wrap: anywhere;
+  text-align: start;
 }
 
 /* Audio: no picture, so the name is the title above the native control. */
@@ -72,20 +80,43 @@
   margin-block-start: -0.75rem;
 }
 
-/* Video-platform cards: a link that looks like a paused player. */
+/* Video-platform cards: a link that looks like a paused player.
+   Four rows keep the play button clear of wrapped titles on narrow screens.
+   --td-media-ratio ("W / H", from the template) sets the shape. The width cap
+   keeps a portrait card within 80vh: WebKit does not narrow a box whose
+   aspect-ratio height is clamped, so the cap is a width, not a height. */
 .td-media-card {
   position: relative;
-  max-block-size: 80vh;
   display: grid;
-  place-items: center;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
+  grid-template-rows: minmax(0.75rem, 1fr) auto minmax(0.5rem, 1fr) auto;
+  justify-items: center;
+  align-items: center;
+  max-inline-size: min(100%, calc(80vh * var(--td-media-ratio, 16 / 9)));
+  margin-inline: auto;
+  overflow: clip;
+  aspect-ratio: var(--td-media-ratio, 16 / 9);
   border: 1px solid var(--bs-border-color);
   border-radius: var(--td-media-radius);
   background: var(--bs-secondary-bg);
   color: var(--bs-body-color);
+  text-align: start;
   text-decoration: none;
   isolation: isolate;
+}
+
+/* WebKit keeps an aspect-ratio box at its ratio height even when a wrapped
+   title needs more, and overflow: clip then cuts the text. Where container
+   units exist, the ratio becomes a minimum height measured from the figure,
+   so a long title grows the card in every engine. */
+@supports (min-block-size: 1cqi) {
+  .td-media--embed {
+    container-type: inline-size;
+  }
+
+  .td-media-card {
+    aspect-ratio: auto;
+    min-block-size: min(calc(100cqi / (var(--td-media-ratio, 16 / 9))), 80vh);
+  }
 }
 
 .td-media-card__poster {
@@ -98,6 +129,7 @@
 }
 
 .td-media-card__play {
+  grid-row: 2;
   display: grid;
   place-items: center;
   inline-size: 3.5rem;
@@ -106,16 +138,22 @@
   background: rgba(0, 0, 0, 0.72);
   color: #fff;
   font-size: 1.25rem;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .td-media-card__play > i {
-  margin-inline-start: 0.2rem;
+  /* Optical centering for a right-pointing play glyph; stays physical in RTL. */
+  margin-left: 0.2rem;
 }
 
 .td-media-card:is(:hover, :focus-visible) .td-media-card__play {
   background: var(--td-accent, var(--bs-link-color));
+  color: var(--td-on-link, #fff);
   transform: scale(1.06);
+}
+
+[data-bs-theme='dark'] .td-media-card:is(:hover, :focus-visible) .td-media-card__play {
+  color: var(--td-on-link, #0b1119);
 }
 
 .td-media-card:focus-visible {
@@ -124,18 +162,18 @@
 }
 
 .td-media-card__text {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
+  grid-row: 4;
+  justify-self: stretch;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.25rem 1rem;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 2rem 1rem 0.75rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.58) 42%, rgba(0, 0, 0, 0.84));
   color: #fff;
   font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
 }
 
 .td-media-card__title {
@@ -152,13 +190,17 @@
 
 /* Without a poster the card is a calm surface, not a dark frame. */
 .td-media-card:not(:has(.td-media-card__poster)) .td-media-card__text {
+  padding: 0.75rem 1rem;
   background: none;
   color: var(--bs-body-color);
+  text-shadow: none;
 }
 
 .td-media-player {
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
+  max-inline-size: min(100%, calc(80vh * var(--td-media-ratio, 16 / 9)));
+  margin-inline: auto;
+  overflow: clip;
+  aspect-ratio: var(--td-media-ratio, 16 / 9);
   border-radius: var(--td-media-radius);
   background: #000;
 }
@@ -172,6 +214,7 @@
 
 .td-media__link {
   margin: 0.4rem 0 0;
+  text-align: start;
 }
 
 :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-media {
@@ -198,9 +241,27 @@
     border-color: CanvasText;
   }
 
+  .td-media-card:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .td-media-card__play {
+    border: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  .td-media-card:is(:hover, :focus-visible) .td-media-card__play {
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+
   .td-media-card__text {
+    border-block-start: 1px solid CanvasText;
     background: Canvas;
     color: CanvasText;
+    text-shadow: none;
   }
 }
 
@@ -213,8 +274,43 @@
     display: block;
   }
 
-  .td-media--audio audio {
+  .td-media--audio audio,
+  .td-media-player,
+  .td-media-card__play {
     display: none;
+  }
+
+  .td-media-card + .td-media__url .td-media__url-title {
+    display: none;
+  }
+
+  .td-content .td-media-card,
+  .td-media-card {
+    display: block;
+    max-inline-size: 100%;
+    min-block-size: 0;
+    aspect-ratio: auto;
+    border-color: var(--td-print-line, #c9ced4);
+    background: transparent;
+    color: var(--td-print-ink, #171717) !important;
+    text-decoration: none;
+  }
+
+  .td-media-card__poster {
+    position: static;
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The poster-less selector matches the screen rule's weight, whose
+     --bs-body-color is light in dark mode and would vanish on paper. */
+  .td-media-card__text,
+  .td-media-card:not(:has(.td-media-card__poster)) .td-media-card__text {
+    padding: 0.55rem 0.75rem;
+    background: none;
+    color: var(--td-print-ink, #171717);
+    text-shadow: none;
   }
 
   .td-media__poster {

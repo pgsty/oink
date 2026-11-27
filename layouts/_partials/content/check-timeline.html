@@ -14,15 +14,16 @@
   {{- $fenceLen := 0 -}}
   {{- $prevBlank := true -}}
   {{- range $lines -}}
-    {{- $stripped := replaceRE `^(?:[ \t]*>[ \t]*)*` "" . -}}
+    {{- $stripped := replaceRE `^(?: {0,3}> ?)*` "" . -}}
     {{- $trimmed := strings.TrimSpace $stripped -}}
+    {{- $indented := gt (len (findRE `^(?: {4}|\t)` $stripped 1)) 0 -}}
     {{- if $inFence -}}
       {{- $closeRe := printf `^%s{%d,}$` $fenceChar $fenceLen -}}
-      {{- if findRE $closeRe $trimmed 1 -}}
+      {{- if and (not $indented) (findRE $closeRe $trimmed 1) -}}
         {{- $inFence = false -}}
       {{- end -}}
       {{- $prevBlank = false -}}
-    {{- else if findRE "^(`{3,}[^`]*|~{3,}.*)$" $trimmed 1 -}}
+    {{- else if and (not $indented) (findRE "^(`{3,}[^`]*|~{3,}.*)$" $trimmed 1) -}}
       {{- $open := index (findRE "^(`{3,}|~{3,})" $trimmed 1) 0 -}}
       {{- $inFence = true -}}
       {{- $fenceChar = substr $open 0 1 -}}
@@ -31,9 +32,10 @@
     {{- else if eq $trimmed "" -}}
       {{- $prevBlank = true -}}
     {{- else -}}
-      {{- if $prevBlank -}}
+      {{- if and $prevBlank (not $indented) -}}
         {{- $noCode := replaceRE "`[^`]*`" "" $trimmed -}}
-        {{- if findRE `^\{[^}"']*\.timeline(?:[\s.#][^}]*)?\}$` $noCode 1 -}}
+        {{- $noQuoted := replaceRE `"[^"]*"|'[^']*'` "" $noCode -}}
+        {{- if findRE `^\{(?:[^}]*\s)?\.timeline(?:[\s.#][^}]*)?\}$` $noQuoted 1 -}}
           {{- warnf "timeline in %s: {.timeline} is preceded by a blank line, so Goldmark drops the attribute and renders a plain definition list; place {.timeline} directly under the last event with no blank line" $origin -}}
         {{- end -}}
       {{- end -}}

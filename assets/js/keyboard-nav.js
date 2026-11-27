@@ -314,10 +314,12 @@
     // Bare shortcuts stand down while anything modal is up or the reader is
     // typing: IME composition, editable targets, held modifiers, the Command
     // Palette scroll lock, and open dialogs all take precedence. `<`, `>` and
-    // `+` require Shift on standard keyboards, so only those characters (and
-    // the unshifted keys under them) may pass with shiftKey held.
+    // `+` require Shift on US keyboards, and `;` / `=` require Shift on ISO
+    // and JIS keyboards, so only those characters (and the unshifted keys under
+    // them) may pass with shiftKey held; `:` and `"` remain guarded.
     function allowShiftKey(key) {
-      return key === ',' || key === '<' || key === '.' || key === '>' || key === '+';
+      return key === ',' || key === '<' || key === '.' || key === '>' ||
+        key === ';' || key === '=' || key === '+';
     }
 
     function keyGuarded(event) {
@@ -626,7 +628,9 @@
 
     function goPage(direction) {
       var url = pageTarget(direction);
-      if (url) win.location.assign(url);
+      if (!url) return false;
+      win.location.assign(url);
+      return true;
     }
 
     /* ------------------------------------------------------ h/l/y/t/r/f/c */
@@ -733,14 +737,16 @@
     function historyOwner() {
       var owner = options.history || global.OinkHistory;
       var instance = owner && (owner.instance || owner);
-      return instance && typeof instance.open === 'function' ? instance : null;
+      return instance && instance.available !== false && typeof instance.open === 'function'
+        ? instance
+        : null;
     }
 
     function openHistory(event) {
       var owner = historyOwner();
       if (!owner) return false;
+      if (owner.open(event) === false) return false;
       event.preventDefault();
-      owner.open(event);
       return true;
     }
 
@@ -847,6 +853,8 @@
       if (Math.abs(delta) > 1) setScroll((win.scrollY || 0) + delta);
     }
 
+    var toggleGen = 0;
+
     function toggleAll(event) {
       var all = foldables();
       var sidebar = global.OinkSidebar;
@@ -857,6 +865,8 @@
       if (!all.tree.length && !all.details.length && !all.code.length) return false;
       event.preventDefault();
       var anchor = readingAnchor();
+      toggleGen += 1;
+      var gen = toggleGen;
       // One instant frame: animated heights would move the anchor after the
       // correction below has already been measured.
       html.setAttribute('data-td-kbd-instant', '');
@@ -873,6 +883,7 @@
       });
       restoreAnchor(anchor);
       win.requestAnimationFrame(function () {
+        if (gen !== toggleGen) return;
         restoreAnchor(anchor);
         html.removeAttribute('data-td-kbd-instant');
       });
@@ -1080,13 +1091,14 @@
     }
 
     /** Step through light, dark, and system (auto) color modes in order. */
-    function cycleTheme() {
+    function cycleTheme(event) {
       var current = currentColorMode();
       var next = COLOR_MODES[(COLOR_MODES.indexOf(current) + 1) % COLOR_MODES.length];
       var actions = registry();
       if (actions && actions.get && actions.run) {
         var action = actions.get('switch_theme');
         if (action && action.available !== false) {
+          if (event && typeof event.preventDefault === 'function') event.preventDefault();
           var result = actions.run('switch_theme', { value: next });
           if (result && result.then) result.then(null, function () {});
           return true;
@@ -1095,12 +1107,14 @@
       if (doc.querySelector) {
         var radio = doc.querySelector('[data-bs-theme-value="' + next + '"]');
         if (radio && typeof radio.click === 'function') {
+          if (event && typeof event.preventDefault === 'function') event.preventDefault();
           radio.click();
           return true;
         }
       }
       var fallback = doc.querySelector('[data-td-theme-toggle]');
       if (!fallback || typeof fallback.click !== 'function') return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
       fallback.click();
       return true;
     }
@@ -1108,7 +1122,7 @@
     /** Step to the next visual preset the site offers, wrapping at the end.
      *  The Appearance runtime owns the change; without it the menu's own
      *  radios are the fallback. */
-    function cyclePreset() {
+    function cyclePreset(event) {
       var current = html.getAttribute('data-td-preset') || '';
       var actions = registry();
       if (actions && actions.get && actions.run) {
@@ -1118,6 +1132,7 @@
             .filter(function (option) { return option && option.available !== false; })
             .map(function (option) { return option.value || option.id; });
           if (names.length > 1) {
+            if (event && typeof event.preventDefault === 'function') event.preventDefault();
             var result = actions.run('switch_preset', {
               value: names[(names.indexOf(current) + 1) % names.length],
             });
@@ -1138,6 +1153,7 @@
       if (inputs.length < 2) return false;
       var next = inputs[(seen.indexOf(current) + 1) % inputs.length];
       if (typeof next.click !== 'function') return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
       next.click();
       return true;
     }
@@ -1622,7 +1638,7 @@
     }
 
     // Hovering the bottom-bar ? button previews the cheat sheet; clicking it
-    // promotes to the centered modal dialog (same as pressing ;) and stops
+    // promotes to the centered modal dialog (same as pressing ') and stops
     // base.js's hover-menu click handler from reopening the floating card.
     function onTriggerClick(event) {
       var target = event && event.target;
@@ -1719,8 +1735,14 @@
         event.preventDefault();
         return jumpHeading(key === 'k' ? -1 : 1);
       }
-      if (isShellPage() && key === 'q') return goPage('prev');
-      if (isShellPage() && key === 'e') return goPage('next');
+      if (isShellPage() && key === 'q') {
+        if (goPage('prev')) event.preventDefault();
+        return;
+      }
+      if (isShellPage() && key === 'e') {
+        if (goPage('next')) event.preventDefault();
+        return;
+      }
       if (key === 'x') return cycleLanguage(event);
       if (key === 'r') {
         if (cycleNavbar()) event.preventDefault();
@@ -1749,8 +1771,8 @@
         return setZen(!html.hasAttribute('data-td-kbd-zen'));
       }
       if (key === 'm') return runAction(event, 'view_markdown');
-      if (key === 't') return cyclePreset();
-      if (key === 'y') return cycleTheme();
+      if (key === 't') return cyclePreset(event);
+      if (key === 'y') return cycleTheme(event);
       if (key === 'l') return cycleBlogLayout(event);
       if (key === ';') return cycleExpoMode(event);
       if (key === ',' || key === '<') return adjustExpoSize(event, -1);

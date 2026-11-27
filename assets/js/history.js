@@ -148,6 +148,7 @@
     var empty = root && root.querySelector('[data-td-history-empty]');
     if (!root || !input || !list || !panel) {
       return Object.freeze({
+        available: false,
         entries: function () { return read(win, scope); },
         isOpen: function () { return false; },
         open: function () { return false; },
@@ -499,6 +500,7 @@
     }
 
     return Object.freeze({
+      available: true,
       clear: clear,
       close: close,
       entries: function () { return read(win, scope); },

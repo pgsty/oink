@@ -279,7 +279,7 @@ function helpPanelFixture(title = 'Keyboard shortcuts', closeLabel = 'Close') {
   header.appendChild(strong);
   help.appendChild(header);
   const groups = {
-    navigation: ['tree-move', 'language', 'home'],
+    navigation: ['tree-move', 'language', 'history', 'home'],
     actions: ['search', 'expand-all', 'print', 'gemini'],
     view: ['page-width', 'help'],
   };
@@ -1406,7 +1406,8 @@ function press(harness, values) {
   press(expoPage, { key: ';' });
   assert.equal(modeEvents.at(-1), 'wall');
 
-  // Typing targets and modifiers still guard < and >.
+  // Typing targets and modifiers still guard < and >, while ISO/JIS shifted ;
+  // and = work without letting Shift+; (:) slip through.
   sizeSlider.value = '240';
   const beforeGuardedModes = modeEvents.length;
   press(expoPage, { key: '<', shiftKey: true, target: input });
@@ -1414,15 +1415,21 @@ function press(harness, values) {
   press(expoPage, { key: ':', shiftKey: true });
   assert.equal(sizeSlider.value, '240', 'typing and Ctrl/Meta/Alt guard < and >');
   assert.equal(modeEvents.length, beforeGuardedModes, 'Shift+; (:) stays guarded');
+  assert.equal(press(expoPage, { key: ';', shiftKey: true }).defaultPrevented, true, 'ISO/JIS shifted ; cycles Expo mode');
+  assert.equal(modeEvents.at(-1), 'cards');
+  press(expoPage, { key: ';' });
+  press(expoPage, { key: ';' });
+  assert.equal(modeEvents.at(-1), 'wall');
 
   // Open Expo viewer dialog suppresses page-level Expo shortcuts.
+  const beforeViewerModes = modeEvents.length;
   const expoViewer = new Element('dialog');
   expoViewer.setAttribute('open', '');
   expoPage.root.appendChild(expoViewer);
   press(expoPage, { key: ';' });
   press(expoPage, { key: '.' });
   assert.equal(sizeSlider.value, '240', 'open viewer dialog suppresses page-level Expo size shortcuts');
-  assert.equal(modeEvents.length, beforeGuardedModes, 'open viewer dialog suppresses page-level Expo mode shortcut');
+  assert.equal(modeEvents.length, beforeViewerModes, 'open viewer dialog suppresses page-level Expo mode shortcut');
   expoPage.root.children.pop();
 
   // Blog/Case/Release gallery form ([data-td-blog-gallery]) uses the same ; / , / . shortcuts when visible.
@@ -1710,6 +1717,35 @@ function press(harness, values) {
   assert.deepEqual(historyOpens, ['h'], 'h opens the browsing history overlay');
   assert.equal(hEvent.defaultPrevented, true, 'h swallows the literal character');
   assert.notEqual(press(setup(), { key: 'h' }).defaultPrevented, true, 'h without the history runtime stays inert');
+  const bareHistory = setup({ history: { instance: { available: false, open() { return false; } } }, withHelp: true });
+  assert.notEqual(press(bareHistory, { key: 'h' }).defaultPrevented, true, 'h stays inert when the history overlay is absent');
+  press(bareHistory, { key: "'" });
+  const bareHistoryRow = bareHistory.root.querySelector('[data-td-keyboard-dialog]').querySelectorAll('[data-td-shortcut]')
+    .find((el) => el.getAttribute('data-td-shortcut') === 'history');
+  assert.equal(bareHistoryRow.classList.contains('td-is-unavailable'), true, 'help dims h when the history overlay is absent');
+  press(bareHistory, { key: 'Escape' });
+
+  // q, e, t and y swallow the key when they act (preventing browser Quick Find)
+  // and stay inert when unavailable.
+  const qPage = setup();
+  assert.equal(press(qPage, { key: 'q' }).defaultPrevented, true, 'q swallows the key when paging back');
+  assert.equal(press(qPage, { key: 'e' }).defaultPrevented, true, 'e swallows the key when paging forward');
+  assert.notEqual(press(setup({ withTree: false }), { key: 'q' }).defaultPrevented, true, 'q stays inert without a previous page');
+  const tyPage = setup({
+    withTree: false,
+    registry: {
+      get: (id) => (id === 'switch_theme'
+        ? { available: true }
+        : (id === 'switch_preset'
+          ? { available: true, options: [{ id: 'paper', value: 'paper' }, { id: 'slate', value: 'slate' }] }
+          : null)),
+      run: () => ({ then() {} }),
+    },
+  });
+  assert.equal(press(tyPage, { key: 't' }).defaultPrevented, true, 't swallows the key when cycling presets');
+  assert.equal(press(tyPage, { key: 'y' }).defaultPrevented, true, 'y swallows the key when cycling color modes');
+  assert.notEqual(press(setup({ withTree: false }), { key: 't' }).defaultPrevented, true, 't stays inert with no preset switch');
+  assert.notEqual(press(setup({ withTree: false }), { key: 'y' }).defaultPrevented, true, 'y stays inert with no theme toggle');
 
   // ------------------------------------- page actions run through the registry
   const actionRuns = [];
@@ -1784,6 +1820,16 @@ function press(harness, values) {
   assert.deepEqual(toggles.map((b) => b.getAttribute('aria-expanded')), ['false', 'false'], 'a second o collapses the groups');
   assert.deepEqual(detailsBlocks.map((el) => el.open), [false, false], 'a second o closes every details block');
   assert.equal(codeRoot.classList.contains('td-is-collapsed'), true, 'a second o shortens code blocks again');
+  // Rapid second press before the first rAF runs: the stale frame must not
+  // clear data-td-kbd-instant while the newer fold is still settling.
+  press(folding, { key: 'o' });
+  assert.equal(folding.frames.length, 2);
+  folding.frames.shift()();
+  assert.equal(folding.html.hasAttribute('data-td-kbd-instant'), true, 'stale rAF does not clear instant flag early');
+  folding.frames.shift()();
+  assert.equal(folding.html.hasAttribute('data-td-kbd-instant'), false, 'latest rAF clears instant flag');
+  // Collapse back so the following OinkSidebar test starts from collapsed state.
+  press(folding, { key: 'o' });
   folding.frames.splice(0).forEach((fn) => fn());
 
   // With the shared disclosure state, o commits through its API source so the
@@ -1912,6 +1958,10 @@ function press(harness, values) {
   assert.equal(stored(), '1150', 'the reader width persists');
   press(sized, { key: '+', shiftKey: true });
   assert.equal(width(), 1250, '+ (Shift+=) widens as well');
+  assert.equal(press(sized, { key: '=', shiftKey: true }).defaultPrevented, true, 'ISO/JIS shifted = widens as well');
+  assert.equal(width(), 1350, 'ISO/JIS shifted = steps width up');
+  press(sized, { key: '-' });
+  assert.equal(width(), 1250, 'return to 1250 for max-step check');
   for (let n = 0; n < 4; n += 1) press(sized, { key: '=' });
   assert.equal(stored(), 'none', 'reaching the container stores "none" so wider screens still fill');
   assert.equal(width(), 1600, 'the column never outgrows its container');

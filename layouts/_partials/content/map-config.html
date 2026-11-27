@@ -73,12 +73,15 @@
       {{- warnf "params.map.subdomains must be 1 to 32 letters or digits (for example \"abc\" or \"01234567\"); got %v; using default" . -}}
     {{- end -}}
   {{- end -}}
-  {{- with index $map "max_zoom" -}}
-    {{- $raw := printf "%v" . -}}
-    {{- if and (findRE `^[0-9]{1,2}$` $raw) (ge (int $raw) 1) (le (int $raw) 22) -}}
-      {{- $maxZoom = int $raw -}}
-    {{- else -}}
-      {{- warnf "params.map.max_zoom must be a whole number from 1 to 22; got %v; using 19" . -}}
+  {{- if isset $map "max_zoom" -}}
+    {{- $rawVal := index $map "max_zoom" -}}
+    {{- if ne $rawVal nil -}}
+      {{- $raw := printf "%v" $rawVal -}}
+      {{- if and (findRE `^[1-9][0-9]?$` $raw) (ge (int $raw) 1) (le (int $raw) 22) -}}
+        {{- $maxZoom = int $raw -}}
+      {{- else -}}
+        {{- warnf "params.map.max_zoom must be a whole number from 1 to 22; got %v; using 19" $rawVal -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
   {{- with index $map "loading" -}}

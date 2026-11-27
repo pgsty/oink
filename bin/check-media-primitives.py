@@ -748,6 +748,7 @@ def check_video_matrix(hugo: str) -> list[str]:
             '"params" (dict "outputs" (slice "HTML" "markdown" "RSS" "print")) '
             '"content" (dict "mediaType" "text/markdown" "value" '
             '"![Synthetic stream](stream.bin#t=2,4)\\n{poster=\\"page.png\\" track=\\"sub.vtt?v=2\\" width=\\"4\\" height=\\"3\\" caption=\\"Bundle clip\\"}\\n\\n'
+            '![Remote track clip](stream.bin)\\n{track=\\"https://cdn.example.org/sub.vtt\\"}\\n\\n'
             '![Partial ratio](stream.bin)\\n{poster=\\"page.png\\" width=\\"4\\"}\\n")) }}\n'
             '{{ .AddResource (dict "path" "bundle/stream.bin" "content" (dict "mediaType" "video/mp4" "value" "synthetic-mp4")) }}\n'
             '{{ .AddResource (dict "path" "bundle/page.png" "content" (dict "mediaType" "image/png" "value" (resources.Get "media/content-primitives-global.png").Content)) }}\n'
@@ -851,9 +852,13 @@ def check_video_matrix(hugo: str) -> list[str]:
             'src="/docs/video-bundle/bundle/stream.bin#t=2,4"',
             'style="aspect-ratio: 4 / 3"',
             '<track kind="subtitles" src="/docs/video-bundle/bundle/sub.vtt?v=2"',
+            'src="/docs/video-bundle/bundle/stream.bin" crossorigin="anonymous"',
+            '<track kind="subtitles" src="https://cdn.example.org/sub.vtt"',
             'style="aspect-ratio: 64 / 40"',
         ):
             require(expected in bundle_html, f"bundle video HTML missing {expected}", errors)
+        require('src="/docs/video-bundle/bundle/stream.bin#t=2,4" crossorigin="anonymous"' not in bundle_html,
+                "local video track unexpectedly emitted crossorigin=anonymous", errors)
         require('width="64" height="40"' in bundle_print and 'width="4" height="3"' not in bundle_print,
                 "bundle video Print clobbered poster dimensions with aspect ratio", errors)
 

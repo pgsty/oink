@@ -427,10 +427,10 @@ def check_sources() -> list[str]:
             and "if (key === 'o') return toggleAll(event);" in keyboard
             and "if (key === '-') return adjustWidth(event, -1);" in keyboard,
             "H, G, V, O or -/= no longer reach history, home, versions, fold-all or the reading width", errors)
-    require("if (key === 't') return cyclePreset();" in keyboard
+    require("if (key === 't') return cyclePreset(event);" in keyboard
             and "actions.run('switch_preset'" in keyboard,
             "t no longer steps through the offered presets", errors)
-    require("if (key === 'y') return cycleTheme();" in keyboard
+    require("if (key === 'y') return cycleTheme(event);" in keyboard
             and "['light', 'dark', 'auto']" in keyboard,
             "y no longer cycles light, dark, and system color modes", errors)
     # Blog form and width remain page-overridable parameters.

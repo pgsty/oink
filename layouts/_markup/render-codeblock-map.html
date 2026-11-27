@@ -20,10 +20,10 @@
 {{- end -}}
 {{- $zoom := 0 -}}
 {{- with index $policy.consumed "zoom" -}}
-  {{- if and (findRE `^[0-9]{1,2}$` .) (ge (int .) 1) (le (int .) 19) -}}
+  {{- if and (findRE `^[1-9][0-9]?$` .) (ge (int .) 1) (le (int .) 22) -}}
     {{- $zoom = int . -}}
   {{- else -}}
-    {{- warnf "map: zoom must be a whole number from 1 to 19; got %q at %s; fitting the places instead" . $position -}}
+    {{- warnf "map: zoom must be a whole number from 1 to 22; got %q at %s; fitting the places instead" . $position -}}
   {{- end -}}
 {{- end -}}
 {{- $height := "" -}}
@@ -64,7 +64,15 @@
     {{- if not (in $known $key) }}{{ warnf "map: place %d has unknown field %q at %s (allowed: %s); ignoring it" $n $key $position (delimit $known ", ") }}{{ end -}}
   {{- end -}}
   {{- $name := "" -}}
-  {{- with index $item "name" }}{{ $name = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- $rawName := index $item "name" -}}
+  {{- if ne $rawName nil -}}
+    {{- if eq (printf "%T" $rawName) "string" -}}
+      {{- $name = strings.TrimSpace $rawName -}}
+    {{- else -}}
+      {{- warnf "map: place %d name must be a string; got %T at %s; skipping it" $n $rawName $position -}}
+      {{- continue -}}
+    {{- end -}}
+  {{- end -}}
   {{- if not $name -}}
     {{- warnf "map: place %d requires a name at %s; skipping it" $n $position -}}
     {{- continue -}}
@@ -88,7 +96,14 @@
   {{- $lngStr := strings.TrimRight "." (strings.TrimRight "0" (printf "%.6f" $lngF)) -}}
   {{- if eq $lngStr "-0" }}{{ $lngStr = "0" }}{{ end -}}
   {{- $text := "" -}}
-  {{- with index $item "text" }}{{ $text = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- $rawText := index $item "text" -}}
+  {{- if ne $rawText nil -}}
+    {{- if eq (printf "%T" $rawText) "string" -}}
+      {{- $text = strings.TrimSpace $rawText -}}
+    {{- else -}}
+      {{- warnf "map: place %q text must be a string; got %T at %s; ignoring it" $name $rawText $position -}}
+    {{- end -}}
+  {{- end -}}
   {{- $thumb := dict -}}
   {{- with index $item "image" -}}
     {{- $image := partial "content/image-resolve.html" (dict "name" "map" "label" "map fence" "position" $position "page" $page "src" . "decorative" true) -}}
@@ -102,11 +117,13 @@
     {{- end -}}
   {{- end -}}
   {{- $href := "" -}}
+  {{- $hrefExternal := false -}}
   {{- with index $item "link" -}}
     {{- $link := partial "content/url.html" (dict "name" "map" "label" "map fence" "parameter" (printf "place %d link" $n) "position" $position "value" . "kind" "link") -}}
     {{- $href = $link.href -}}
+    {{- $hrefExternal = $link.external -}}
   {{- end -}}
-  {{- $places = $places | append (dict "name" $name "lat" $latF "lng" $lngF "latStr" $latStr "lngStr" $lngStr "label" (printf "%s, %s" $latStr $lngStr) "text" $text "thumb" $thumb "href" $href) -}}
+  {{- $places = $places | append (dict "name" $name "lat" $latF "lng" $lngF "latStr" $latStr "lngStr" $lngStr "label" (printf "%s, %s" $latStr $lngStr) "text" $text "thumb" $thumb "href" $href "hrefExternal" $hrefExternal) -}}
 {{- end -}}
 {{- if and $items (not $places) }}{{ warnf "map: no valid place at %s; rendering nothing" $position }}{{ end -}}
 
@@ -124,14 +141,14 @@
 {{- range $place := $places -}}
   {{- $osm := printf "https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=16/%s/%s" .latStr .lngStr .latStr .lngStr -}}
   {{- $nameHTML := htmlEscape .name -}}
-  {{- with .href }}{{ $nameHTML = printf `<a href="%s">%s</a>` (htmlEscape .) $nameHTML }}{{ end -}}
+  {{- with .href }}{{ $nameHTML = printf `<a href="%s"%s>%s</a>` (htmlEscape .) (cond $place.hrefExternal ` rel="external"` "") $nameHTML }}{{ end -}}
   {{- $thumbHTML := "" -}}
   {{- with $place.thumb.src -}}
     {{- $thumbHTML = printf `<img class="td-map__thumb" src="%s" alt=""%s%s loading="lazy" decoding="async">` (htmlEscape .)
       (cond (gt ($place.thumb.width | default 0) 0) (printf ` width="%d"` $place.thumb.width) "")
       (cond (gt ($place.thumb.height | default 0) 0) (printf ` height="%d"` $place.thumb.height) "") -}}
   {{- end -}}
-  {{- $row := printf `<li><span class="td-map__place"><span class="td-map__name">%s</span>%s<a class="td-map__coords" dir="ltr" href="%s" rel="external" title="%s">%s</a></span>%s</li>`
+  {{- $row := printf `<li><span class="td-map__place"><span class="td-map__name">%s</span>%s <a class="td-map__coords" dir="ltr" href="%s" rel="external" title="%s">%s</a></span>%s</li>`
     $nameHTML
     (cond (ne .text "") (printf ` <span class="td-map__text">%s</span>` (htmlEscape .text)) "")
     (htmlEscape $osm) (htmlEscape (T "ui_map_open_osm")) (htmlEscape .label) $thumbHTML -}}

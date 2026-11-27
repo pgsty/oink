@@ -408,4 +408,16 @@ test('silent players stay outside single-active playback until they become audib
   quiet.paused = false;
   page2.play(quiet);
   assert.equal(loud.paused, false, 'a zero-volume player does not interrupt');
+
+  // Clicking an enabled platform card pauses audible local players before mounting the iframe.
+  const narration = audio();
+  const ambient = video({ autoplay: true });
+  const page3 = build({ videos: [ambient], players: [narration, ambient] });
+  page3.play(narration);
+  page3.intersect(ambient, 0.8);
+  page3.play(ambient);
+  const embedCard = card('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1');
+  page3.click(clickOn(embedCard));
+  assert.equal(narration.paused, true, 'opening a platform player silences audible local players');
+  assert.equal(ambient.paused, false, 'muted autoplay loops keep playing');
 });

@@ -155,14 +155,35 @@ test('a mounted map drops its interactive canvas and load button, keeping the pl
         el('div', { class: 'leaflet-popup' }, el('p', null, 'Popup text')),
         el('div', { class: 'leaflet-control-attribution' }, '© OpenStreetMap contributors')),
       el('ol', { class: 'td-map__places' },
-        el('li', null, el('span', { class: 'td-map__place' },
-          el('span', { class: 'td-map__name' }, 'Kyoto Station'),
-          ' ',
-          el('a', { class: 'td-map__coords', href: 'https://www.openstreetmap.org/' }, '34.9858, 135.7589')))),
+        el('li', null,
+          el('span', { class: 'td-map__place' },
+            el('span', { class: 'td-map__name' }, 'Kyoto Station'),
+            ' ',
+            el('a', { class: 'td-map__coords', href: 'https://www.openstreetmap.org/' }, '34.9858, 135.7589')),
+          el('img', { class: 'td-map__thumb', src: 'https://example.org/kyoto.webp', alt: '' }))),
       el('figcaption', null, 'Kyoto'))));
-  assert.match(html, /<ol[^>]*><li[^>]*>Kyoto Station/);
+  assert.match(html, /^<figure style="margin:0px 0 16px;text-align:left;">/);
+  assert.match(html, /<ol[^>]*><li[^>]*>Kyoto Station <a[^>]*>34\.9858, 135\.7589<\/a><br><img src="https:\/\/example\.org\/kyoto\.webp" alt=""/);
   assert.match(html, /<figcaption[^>]*>Kyoto<\/figcaption>/);
-  assert.doesNotMatch(html, /Popup text|OpenStreetMap contributors|Load map/);
+  assert.doesNotMatch(html, /Popup text|OpenStreetMap contributors|Load map|text-align:center/);
+});
+
+test('a social post figure keeps start alignment and omits the decorative avatar image', () => {
+  const html = typeset(el('div', { class: 'td-content' },
+    el('figure', { class: 'td-social td-social--x' },
+      el('figcaption', { class: 'td-social__author' },
+        el('img', { class: 'td-social__avatar', src: 'https://example.org/avatar.webp', alt: '' }),
+        el('span', { class: 'td-social__names' },
+          el('span', { class: 'td-social__name' }, 'Alice'),
+          ' ',
+          el('span', { class: 'td-social__handle' }, '@alice'))),
+      el('blockquote', { class: 'td-social__body' }, el('p', null, 'Shipped v1.7.')),
+      el('p', { class: 'td-social__meta' },
+        el('a', { href: 'https://x.com/alice/status/1' }, '2026-11-27 · View original')))));
+  assert.match(html, /^<figure style="margin:0px 0 16px;text-align:left;">/);
+  assert.match(html, /<figcaption[^>]*>Alice @alice<\/figcaption>/);
+  assert.match(html, /Shipped v1\.7\./);
+  assert.doesNotMatch(html, /avatar\.webp|text-align:center/);
 });
 
 test('update metadata copies as separated tokens instead of glued text', () => {

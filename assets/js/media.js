@@ -12,9 +12,11 @@
 //    built from validated IDs; modified clicks keep the link behavior.
 // 3. A player that becomes audible, by starting with sound or by being
 //    unmuted while it plays, pauses every other audible player on the page so
-//    samples do not talk over each other. Silent players (muted or at zero
-//    volume), such as autoplay loops, neither interrupt nor get interrupted.
-//    Platform players in cross-origin iframes cannot take part.
+//    samples do not talk over each other. Opening an enabled platform card
+//    silences audible local players before mounting the autoplay iframe, though
+//    cross-origin iframes cannot be paused by local players later. Silent
+//    players (muted or at zero volume), such as autoplay loops, neither
+//    interrupt nor get interrupted.
 (function () {
   'use strict';
 
@@ -115,6 +117,7 @@
     var src = card.getAttribute('data-td-media-embed') || '';
     if (!PLAYER.test(src)) return;
     event.preventDefault();
+    pauseAudible(null);
     var holder = document.createElement('div');
     holder.className = 'td-media-player';
     // The player keeps the card's shape and its 80vh width cap (media.css).
@@ -145,14 +148,18 @@
     return !!el.muted || el.volume === 0;
   }
 
-  function soloist(target) {
-    if (!isMedia(target) || target.paused || silent(target)) return;
+  function pauseAudible(except) {
     var players = document.querySelectorAll('audio, video');
     for (var i = 0; i < players.length; i += 1) {
       var other = players[i];
-      if (other === target || other.paused || silent(other)) continue;
+      if (other === except || other.paused || silent(other)) continue;
       other.pause();
     }
+  }
+
+  function soloist(target) {
+    if (!isMedia(target) || target.paused || silent(target)) return;
+    pauseAudible(target);
   }
 
   // Media events do not bubble, so both listen in the capture phase. A player

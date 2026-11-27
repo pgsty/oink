@@ -224,13 +224,16 @@
 
 {{- else if eq $kind "video" -}}
   {{- $track := "" -}}
+  {{- $trackRemote := false -}}
   {{- with index $policy.consumed "track" -}}
     {{- $trackURL := partial "content/url.html" (dict "name" "video" "label" "video" "parameter" "track" "position" $position "value" . "kind" "media") -}}
     {{- if $trackURL.valid -}}
       {{- $found := partial "content/resource-lookup.html" (dict "page" $page "source" $trackURL.path "scheme" $trackURL.scheme) -}}
       {{- $track = $trackURL.href -}}
+      {{- $trackRemote = ne $trackURL.scheme "" -}}
       {{- with $found.resource -}}
         {{- $track = .RelPermalink -}}
+        {{- $trackRemote = false -}}
         {{- $parsedTrack := try (urls.Parse $trackURL.raw) -}}
         {{- if not $parsedTrack.Err -}}
           {{- with $parsedTrack.Value.RawQuery }}{{ $track = printf "%s?%s" $track . }}{{ end -}}
@@ -249,7 +252,7 @@
   {{- else -}}
     {{- $page.Store.SetInMap "tdMediaPlayers" $identity true -}}
     {{- if or $autoplay (ge (len ($page.Store.Get "tdMediaPlayers")) 2) }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
-{{ $open | safeHTML }}<video controls preload="metadata" playsinline src="{{ $href }}"{{ with $posterSrc }} poster="{{ . }}"{{ end }}{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }}{{ with $ratio }} style="{{ printf "aspect-ratio: %s" . | safeCSS }}"{{ end }}{{ if $autoplay }} muted loop data-td-media-autoplay{{ end }} aria-label="{{ $name }}">
+{{ $open | safeHTML }}<video controls preload="metadata" playsinline src="{{ $href }}"{{ if $trackRemote }} crossorigin="anonymous"{{ end }}{{ with $posterSrc }} poster="{{ . }}"{{ end }}{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }}{{ with $ratio }} style="{{ printf "aspect-ratio: %s" . | safeCSS }}"{{ end }}{{ if $autoplay }} muted loop data-td-media-autoplay{{ end }} aria-label="{{ $name }}">
   {{- with $track }}<track kind="subtitles" src="{{ . }}" srclang="{{ $page.Language.Lang }}" label="{{ $page.Language.Label | default $page.Language.Lang }}" default>{{ end -}}
   <a href="{{ $href }}">{{ $name }}</a></video>{{ $urlLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
   {{- end -}}

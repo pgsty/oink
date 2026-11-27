@@ -271,6 +271,17 @@ def build(check_params) -> dict[str, str]:
         "type": "string",
         "enum": re.findall(r'"([a-z]+)"', video_names[1]),
     }
+    map_resolver = (ROOT / "layouts/_partials/content/map-config.html").read_text()
+    map_loading = re.search(r'in\s+\(slice((?:\s+"[a-z]+")+)\)\s+\$raw', map_resolver)
+    if not map_loading:
+        raise SystemExit("map-config resolver has no loading-mode slice")
+    map_zoom = re.search(r'\(ge\s+\(int\s+\$raw\)\s+(\d+)\)\s+\(le\s+\(int\s+\$raw\)\s+(\d+)\)', map_resolver)
+    if not map_zoom:
+        raise SystemExit("map-config resolver has no max_zoom bounds")
+    map_props = params_schema["properties"]["map"]["properties"]
+    map_props["loading"]["enum"] = re.findall(r'"([a-z]+)"', map_loading[1])
+    map_props["max_zoom"]["minimum"] = int(map_zoom[1])
+    map_props["max_zoom"]["maximum"] = int(map_zoom[2])
 
     for key, reason in FRONT_SCHEMA_EXCLUDES.items():
         if key not in page_keys:

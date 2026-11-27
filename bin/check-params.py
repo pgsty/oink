@@ -208,6 +208,8 @@ INVALID_SITE_CASES = [
     ("map:\n  enable: true\n  tiles: http://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example", "params.map.tiles must be an https:// tile URL"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/tiles.png\n  attribution: Example", "params.map.tiles must contain {z}, {x} and {y}"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: 40", "params.map.max_zoom must be a whole number from 1 to 22"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: '09'", "params.map.max_zoom must be a whole number from 1 to 22"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: 0", "params.map.max_zoom must be a whole number from 1 to 22"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  attribution_url: http://example.org/copyright", "params.map.attribution_url must be an https:// URL"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  subdomains: 'a b'", "params.map.subdomains must be 1 to 32 letters or digits"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading: eager", "params.map.loading must be lazy or click"),

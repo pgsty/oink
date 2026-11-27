@@ -113,8 +113,8 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   no prompt parameter, so activating it also copies the prompt to paste.
   The action manifest gains the language home (`home`) for `G`.
 - Eighteen locale keys were added to all 32 catalogs for the shortcut groups,
-  history and Gemini; `ui_shortcut_heading_prev` and `ui_shortcut_heading_next`
-  were replaced by `ui_shortcut_heading_move`.
+  history and Gemini (24 added in total since 1.6.0 across the new components,
+  shortcuts, history and Gemini; no existing keys were removed).
 - ECharts fences can use a site's own theme: define it on
   `window.OinkEchartsThemes` under the name the fence's `theme` gives, and each
   chart registers it before drawing. ECharts loads only when a chart comes on

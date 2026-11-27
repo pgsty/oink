@@ -409,8 +409,10 @@ const MINUTE = 60 * 1000;
 {
   // Without a list root the runtime still records visits and offers nothing to open.
   const h = harness();
+  assert.equal(h.instance.available, true);
   h.root.parentNode.children = [];
   const bare = history.init({ document: h.doc, window: h.win, now: () => 7 });
+  assert.equal(bare.available, false);
   assert.equal(bare.open(), false);
   assert.equal(bare.isOpen(), false);
 }

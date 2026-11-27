@@ -414,20 +414,39 @@
     return hosts;
   }
 
+  function safePlaceHref(value) {
+    var raw = typeof value === 'string' ? value.trim() : '';
+    if (!raw || raw.indexOf('//') === 0 || /[\u0000-\u001f\u007f\\]/.test(raw)) return '';
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) && !/^(?:https?:\/\/|mailto:)/i.test(raw)) return '';
+    return raw;
+  }
+
+  function safePlaceThumb(value) {
+    var raw = typeof value === 'string' ? value.trim() : '';
+    if (!raw || raw.indexOf('//') === 0 || /[\u0000-\u001f\u007f\\]/.test(raw)) return '';
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw) && !/^https?:\/\//i.test(raw)) return '';
+    return raw;
+  }
+
   function mapPopup(place) {
     var box = document.createElement('div');
     box.className = 'td-map__popup';
-    if (place.thumb) {
+    var thumb = safePlaceThumb(place.thumb);
+    if (thumb) {
       var image = document.createElement('img');
-      image.src = place.thumb;
+      image.src = thumb;
       image.alt = '';
       image.loading = 'lazy';
       box.appendChild(image);
     }
-    var name = document.createElement(place.href ? 'a' : 'strong');
+    var href = safePlaceHref(place.href);
+    var name = document.createElement(href ? 'a' : 'strong');
     name.className = 'td-map__popup-name';
     name.textContent = place.name;
-    if (place.href) name.href = place.href;
+    if (href) {
+      name.href = href;
+      if (/^(?:https?:\/\/|mailto:)/i.test(href)) name.rel = 'external';
+    }
     box.appendChild(name);
     if (place.text) {
       var text = document.createElement('p');
@@ -649,8 +668,13 @@
       if (points.length === 1) {
         map.setView(points[0], data.zoom || 15);
       } else if (data.zoom) {
-        map.fitBounds(points, { padding: [32, 32] });
-        map.setZoom(data.zoom);
+        var center = typeof L.latLngBounds === 'function' ? L.latLngBounds(points).getCenter() : null;
+        if (center) {
+          map.setView(center, data.zoom);
+        } else {
+          map.fitBounds(points, { padding: [32, 32] });
+          map.setZoom(data.zoom);
+        }
       } else {
         map.fitBounds(points, { padding: [32, 32], maxZoom: 16 });
       }

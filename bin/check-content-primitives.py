@@ -951,6 +951,8 @@ INVALID_CASES = (
     ("map-empty", '```map\n```\n', "requires a list of places"),
     ("map-not-list", '```map\nname: A\n```\n', "must hold a list of places"),
     ("map-no-name", '```map\n- {lat: 1, lng: 2}\n- {name: B, lat: 1, lng: 2}\n```\n', "requires a name"),
+    ("map-non-string-name", '```map\n- {name: [A, B], lat: 1, lng: 2}\n- {name: OK, lat: 1, lng: 2, link: "https://example.org/ok"}\n```\n', "name must be a string"),
+    ("map-non-string-text", '```map\n- {name: A, lat: 1, lng: 2, text: {k: v}}\n```\n', "text must be a string"),
     ("map-range", '```map\n- {name: A, lat: 95, lng: 2}\n```\n', "outside -90..90"),
     ("map-nan", '```map\n- {name: A, lat: .nan, lng: 2}\n- {name: B, lat: 0.00001, lng: -0.00002}\n```\n', "outside -90..90"),
     ("map-inf", '```map\n- {name: A, lat: .inf, lng: 2}\n```\n', "outside -90..90"),
@@ -958,6 +960,7 @@ INVALID_CASES = (
     ("map-bad-link", '```map\n- {name: A, lat: 1, lng: 2, link: "javascript:alert(1)"}\n```\n', "unsupported place 1 link scheme"),
     ("map-unknown-field", '```map\n- {name: A, lat: 1, lng: 2, icon: x}\n```\n', "unknown field"),
     ("map-zoom", '```map {zoom=40}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
+    ("map-zoom-leading-zero", '```map {zoom="08"}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
     ("map-route", '```map {route=maybe}\n- {name: A, lat: 1, lng: 2}\n```\n', "route must be true or false"),
 )
 
@@ -978,10 +981,20 @@ def check_timeline(hugo: str) -> list[str]:
             "2025-08\n: **Second.** First paragraph.\n\n  Second paragraph.\n: Same marker follow-up.\n"
             "{.timeline}\n\n"
             "> [!NOTE] Timeline in callout\n>\n> 2026-01\n> : Safe with a blank quote line.\n> {.timeline}\n\n"
-            "````markdown\n2026-02\n: Fenced example.\n\n```sh\necho ok\n```\n\n{.timeline}\n````\n"
+            "````markdown\n2026-02\n: Fenced example.\n\n```sh\necho ok\n```\n\n{.timeline}\n````\n\n"
+            "Indented code block:\n\n"
+            "    2026-03\n    : Indented example.\n\n    {.timeline}\n\n"
+            "Literal JSON:\n\n"
+            '{"class": ".timeline"}\n'
         )
         (content / "detached.md").write_text(
             "---\ntitle: Detached timeline\n---\n\n2024-05\n: Event.\n\n{.timeline}\n"
+        )
+        (content / "detached-quoted.md").write_text(
+            '---\ntitle: Detached quoted timeline\n---\n\n'
+            'Indented lone fence:\n\n'
+            '    ```markdown\n\n'
+            '2024-05\n: Event.\n\n{data-x="1" .timeline}\n'
         )
         (content / "wrong-block.md").write_text(
             "---\ntitle: Wrong block timeline\n---\n\n- **2024-05.** Bullet item.\n{.timeline}\n"
@@ -999,6 +1012,8 @@ def check_timeline(hugo: str) -> list[str]:
         require("/docs/valid" not in output, f"valid timeline (with 4-backtick fence and callout) emitted a false warning: {output.strip()[-400:]}", errors)
         require("preceded by a blank line" in output and "/docs/detached" in output,
                 f"detached {{.timeline}} did not warn with the page path: {output.strip()[-400:]}", errors)
+        require("preceded by a blank line" in output and "/docs/detached-quoted" in output,
+                f"detached quoted {{data-x=\"1\" .timeline}} did not warn with the page path: {output.strip()[-400:]}", errors)
         require("applies only to a Markdown definition list (<dl>), not <ul>" in output and "/docs/wrong-block" in output,
                 f"bullet-list {{.timeline}} did not warn with the page path: {output.strip()[-400:]}", errors)
         require("callout header (> [!TYPE]) was parsed as a definition-list term" in output and "/docs/callout-swallow" in output,
@@ -1316,6 +1331,19 @@ def check_invalid_cases(hugo: str) -> list[str]:
         for empty_map in ("map-empty", "map-not-list", "map-range", "map-inf", "map-string-lat"):
             empty_html = (temp_path / f"public/docs/{empty_map}/index.html").read_text()
             require("td-map__places" not in empty_html, f"{empty_map} must render no map figure", errors)
+        map_non_string_name_html = (temp_path / "public/docs/map-non-string-name/index.html").read_text()
+        require(
+            '<a href="https://example.org/ok" rel="external">OK</a></span> <a class="td-map__coords"' in map_non_string_name_html
+            and map_non_string_name_html.count('class="td-map__coords"') == 1,
+            "map-non-string-name must skip non-string name, preserve rel=external on sibling OK, and separate name from coords",
+            errors,
+        )
+        map_non_string_text_html = (temp_path / "public/docs/map-non-string-text/index.html").read_text()
+        require(
+            'class="td-map__name">A</span>' in map_non_string_text_html and "map[k:v]" not in map_non_string_text_html,
+            "map-non-string-text must ignore non-string text instead of stringifying it",
+            errors,
+        )
         map_bad_link_html = (temp_path / "public/docs/map-bad-link/index.html").read_text()
         require(
             "javascript:" not in map_bad_link_html and 'class="td-map__name">A</span>' in map_bad_link_html,

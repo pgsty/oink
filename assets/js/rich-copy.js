@@ -21,7 +21,7 @@
   // crosses one of these drops it; a selection wholly inside one stays native.
   var CHROME = ['td-page-end', 'td-article-meta', 'td-article-info', 'td-byline', 'td-series-strip',
     'td-page-actions', 'td-breadcrumbs', 'td-heading-self-link', 'footnote-backref',
-    'td-code__utilities', 'td-code__expand', 'td-map__canvas', 'td-map__load', 'visually-hidden'];
+    'td-code__utilities', 'td-code__expand', 'td-map__canvas', 'td-map__load', 'td-social__avatar', 'visually-hidden'];
   var LINE_NUMBERS = ['ln', 'lnt', 'lnlinks'];
   var DEFAULTS = {
     ink: '#171717', strong: '#111111', muted: '#70757d', meta: '#4e555c', line: '#c9ced4',
@@ -318,7 +318,7 @@
         case 'TR': return [{ t: 'row', kids: kidsOf(node) }];
         case 'TH': case 'TD': return cell(node, tag);
         case 'CAPTION': case 'FIGCAPTION': return [{ t: 'caption', kids: kidsOf(node) }];
-        case 'FIGURE': return [{ t: 'figure', start: has(node, 'td-media--audio'), kids: kidsOf(node) }];
+        case 'FIGURE': return [{ t: 'figure', start: hasAny(node, ['td-media--audio', 'td-social', 'td-map']), kids: kidsOf(node) }];
         case 'DT': return [{ t: 'p', bold: true, kids: kidsOf(node) }];
         case 'SUMMARY': return [{ t: 'p', bold: true, kids: kidsOf(node) }];
         case 'DETAILS': {
@@ -341,7 +341,8 @@
           // The authored source, not the rendition this viewport happened to pick.
           var src = String(node.src || node.currentSrc || '');
           if (!/^(https?:|data:image\/)/i.test(src)) return [];
-          return [{ t: 'img', src: src, alt: attr(node, 'alt') || '' }];
+          var img = { t: 'img', src: src, alt: attr(node, 'alt') || '' };
+          return has(node, 'td-map__thumb') ? [{ t: 'br' }, img] : [img];
         }
         case 'INPUT':
           return attr(node, 'type') === 'checkbox' ? [{ t: 'text', v: node.checked ? '☑ ' : '☐ ' }] : [];

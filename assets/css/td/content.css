@@ -81,7 +81,7 @@
    were drawn apart. Han, kana and Hangul fill their square already, so in a
    Chinese, Japanese or Korean passage a heading sits at its natural pitch,
    whatever the preset tightens for Latin. */
-.td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6):is(:lang(zh), :lang(ja), :lang(ko)) {
+:root .td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6):is(:lang(zh), :lang(ja), :lang(ko)) {
   letter-spacing: 0;
 }
 

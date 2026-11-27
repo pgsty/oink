@@ -28,6 +28,6 @@
   {{ else -}}
     {{/* The sentence names the version it archives; without one there is
          nothing to say, so the banner is left out rather than drawn empty. */ -}}
-    {{ warnf "params.archived_version is true but params.version is empty; the archive banner names the version, so it is omitted" -}}
+    {{ warnidf "version-banner-missing-version" "params.archived_version is true but params.version is empty; the archive banner names the version, so it is omitted" -}}
   {{ end -}}
 {{ end -}}

@@ -217,6 +217,15 @@ function stubLeaflet(calls, { touch = false } = {}) {
       return layer;
     },
     divIcon: (options) => options,
+    latLngBounds(pts) {
+      const lats = pts.map((p) => p[0]);
+      const lngs = pts.map((p) => p[1]);
+      const center = [
+        (Math.min(...lats) + Math.max(...lats)) / 2,
+        (Math.min(...lngs) + Math.max(...lngs)) / 2,
+      ];
+      return { getCenter: () => center };
+    },
     marker(point, options) {
       calls.push(['marker', point, options.title, options.icon.html]);
       let markerEl = null;
@@ -236,7 +245,7 @@ function stubLeaflet(calls, { touch = false } = {}) {
           map.fire('popupopen', { popup: map._popup });
         },
         bindPopup(popup) {
-          calls.push(['popup', popup.children.map((child) => child.textContent)]);
+          calls.push(['popup', popup.children.map((child) => child.textContent), popup.innerHTML]);
           return marker;
         },
         addTo: () => {
@@ -713,4 +722,22 @@ test('a map hidden at mount defers framing until shown, and clicking a list item
   const beforeClicks = page.calls.length;
   page.listItems[0].dispatch('click', { target: { closest: () => ({ tagName: 'A' }) } });
   assert.equal(page.calls.length, beforeClicks, 'clicks on links inside list items stay normal navigation');
+});
+
+test('multiple places with explicit zoom call setView once and validate popup links', async () => {
+  const page = mount({
+    places: [
+      { name: 'External', lat: 35.0, lng: 135.0, text: '', thumb: '', href: 'https://example.org/place' },
+      { name: 'Unsafe', lat: 35.4, lng: 135.6, text: '', thumb: 'javascript:alert(1)', href: 'javascript:alert(1)' },
+    ],
+    route: false,
+    zoom: 13,
+  });
+  await page.due();
+  assert.equal(page.calls.some((call) => call[0] === 'fitBounds'), false, 'explicit zoom avoids a wasted fitBounds wave');
+  assert.equal(page.calls.some((call) => call[0] === 'setZoom'), false, 'explicit zoom avoids a second setZoom call');
+  assert.equal(JSON.stringify(page.calls.at(-1)), JSON.stringify(['setView', [35.2, 135.3], 13]));
+  const popups = page.calls.filter((call) => call[0] === 'popup');
+  assert.equal(popups[0][2], '<a href="https://example.org/place" rel="external">External</a>');
+  assert.equal(popups[1][2], '<strong>Unsafe</strong>', 'unsafe href and thumb are both dropped');
 });

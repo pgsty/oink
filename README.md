@@ -70,7 +70,7 @@ engine supporting unspaced CJK queries, field-level anchors, and automatic
 split indexes; upgrades Markmap to `1.1.0` and ReDoc to `3.1.0`; adds single-line
 navbar overflow, on-approach engine and giscus loading, off-path sidebar
 caching, and WebP blog covers; and tightens all 32 native locale catalogs. See
-the [release notes](https://oink.pgsty.com/blog/release/1.6.0/) and
+the [release notes](https://oink.pgsty.com/release/1.6.0/) and
 [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site
@@ -179,7 +179,7 @@ for supported inputs and fallback behavior.
 
 ## Live sites
 
-OINK is exercised by fifteen real sites, from a two-page utility to large
+OINK is exercised by 45 real sites, from a two-page utility to large
 documentation estates and multi-edition books. These are representative:
 
 | Site | Shape | Case study |
@@ -235,7 +235,7 @@ assuming drop-in compatibility.
 | Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
 | Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text (242 messages per catalog) for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
+| Locales | Native OINK interface text (266 messages per catalog) for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
 
 Development, preview and checks use whichever Hugo is installed, and CI
 installs the current release; none is pinned. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.

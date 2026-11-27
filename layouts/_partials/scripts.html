@@ -270,7 +270,7 @@
 {{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.BaseURL .Site.Language.Lang $localSearch $scopeKey }}{{ end -}}
 {{/* After the palette, so the history overlay stacks above it while the
      palette fades out behind a "Browsing history" command. */ -}}
-{{ if $hasKeyboardNav }}{{ partialCached "shell/history-dialog.html" . .Site.Language.Lang }}{{ end -}}
+{{ if $hasKeyboardNav }}{{ partialCached "shell/history-dialog.html" . .Site.BaseURL .Site.Language.Lang }}{{ end -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
 {{ if and $interactiveOutput $darkMode.enable -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/dark-mode.js" "members" (slice (resources.Get "js/dark-mode.js"))) -}}

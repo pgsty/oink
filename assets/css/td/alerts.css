@@ -281,7 +281,7 @@
 @media print {
   .td-page-notice {
     background: transparent;
-    border-color: #999;
+    border-color: var(--td-print-line, #999);
     color: inherit;
   }
   .td-main > .td-page-notice {

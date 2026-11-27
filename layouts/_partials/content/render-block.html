@@ -49,7 +49,7 @@
   {{- /* Data fences and field-table labels also use document-local ordinals.
          Rewrite only generated families, keeping their ID references together. */ -}}
   {{- $hash := md5 $page.RelPermalink -}}
-  {{- $generated := printf `id="(td-(infographic|echarts|filetree)-%s-f[0-9]+(-canvas|-title)?|td-fields-%s-t[0-9]+-label)"` $hash $hash -}}
+  {{- $generated := printf `id="(td-(infographic|echarts|filetree|map)-%s-f[0-9]+(-canvas|-title)?|td-fields-%s-t[0-9]+-label)"` $hash $hash -}}
   {{- range findRESubmatch $generated $html -}}
     {{- $old := index . 1 -}}
     {{- $new := printf "td-%s-%s" ($scope | anchorize) (strings.TrimPrefix "td-" $old) -}}

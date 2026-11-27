@@ -4,3 +4,4 @@
 
 # Preserve upstream bytes and VENDOR.json hashes, including original CRLFs.
 assets/third_party/plantuml/* -text whitespace=cr-at-eol
+assets/third_party/leaflet/* -text whitespace=cr-at-eol

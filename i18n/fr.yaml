@@ -264,3 +264,9 @@ ui_compare_retry: 'Réessayer'
 ui_pagination: Navigation des pages
 ui_breadcrumb: Fil d’Ariane
 ui_nav_more: "Plus de navigation"
+
+ui_video_play: "Lire la vidéo"
+ui_video_open: "Ouvrir sur le site de la vidéo"
+ui_social_view_original: "Voir l'original"
+ui_map_label: "Carte"
+ui_map_open_osm: "Ouvrir dans OpenStreetMap"

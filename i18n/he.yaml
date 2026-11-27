@@ -264,3 +264,9 @@ ui_compare_retry: 'נסה שוב'
 ui_pagination: ניווט בין עמודים
 ui_breadcrumb: נתיב ניווט
 ui_nav_more: "ניווט נוסף"
+
+ui_video_play: "הפעלת הסרטון"
+ui_video_open: "פתיחה באתר הווידאו"
+ui_social_view_original: "הצגת המקור"
+ui_map_label: "מפה"
+ui_map_open_osm: "פתיחה ב־OpenStreetMap"

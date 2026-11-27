@@ -263,3 +263,9 @@ ui_compare_retry: 'تلاش دوباره'
 ui_pagination: پیمایش صفحه‌ها
 ui_breadcrumb: مسیر راهنما
 ui_nav_more: "گزینه‌های بیشتر ناوبری"
+
+ui_video_play: "پخش ویدئو"
+ui_video_open: "باز کردن در سایت ویدئو"
+ui_social_view_original: "مشاهدهٔ نسخهٔ اصلی"
+ui_map_label: "نقشه"
+ui_map_open_osm: "باز کردن در OpenStreetMap"

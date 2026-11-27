@@ -263,3 +263,9 @@ ui_compare_retry: 'Prøv igjen'
 ui_pagination: Sidenavigasjon
 ui_breadcrumb: Brødsmulesti
 ui_nav_more: "Flere navigasjonslenker"
+
+ui_video_play: "Spill av video"
+ui_video_open: "Åpne på videonettstedet"
+ui_social_view_original: "Vis originalen"
+ui_map_label: "Kart"
+ui_map_open_osm: "Åpne i OpenStreetMap"

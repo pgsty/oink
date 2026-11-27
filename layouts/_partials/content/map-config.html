@@ -1,0 +1,49 @@
+{{- /* Resolve params.map, the site's opt-in to interactive maps. Tiles are
+       third-party requests from the reader's browser, so, as with Draw.io,
+       the theme names no default service: `enable` needs an HTTPS `tiles`
+       template with {z}, {x} and {y}, and the `attribution` that service
+       requires. Anything incomplete warns and leaves maps off; a map fence
+       then renders only its place list. Returns dict: enable, tiles,
+       darkTiles, attribution, maxZoom. */ -}}
+{{- $value := site.Params.map -}}
+{{- $enabled := partial "config-enabled.html" (dict "value" $value "key" "params.map") -}}
+{{- $tiles := "" -}}
+{{- $darkTiles := "" -}}
+{{- $attribution := "" -}}
+{{- $maxZoom := 19 -}}
+{{- if $enabled -}}
+  {{- $map := dict -}}
+  {{- if reflect.IsMap $value }}{{ $map = $value }}{{ end -}}
+  {{- range $key := slice "tiles" "dark_tiles" -}}
+    {{- $raw := index $map $key | default "" -}}
+    {{- $valid := "" -}}
+    {{- if $raw -}}
+      {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" $key "position" "site configuration" "value" $raw "kind" "image") -}}
+      {{- if not $url.valid -}}
+      {{- else if ne $url.scheme "https" -}}
+        {{- warnf "params.map.%s must be an https:// tile URL; got %q; ignoring it" $key $raw -}}
+      {{- else if not (and (strings.Contains $url.raw "{z}") (strings.Contains $url.raw "{x}") (strings.Contains $url.raw "{y}")) -}}
+        {{- warnf "params.map.%s must contain {z}, {x} and {y}; got %q; ignoring it" $key $raw -}}
+      {{- else -}}
+        {{- $valid = $url.raw -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if eq $key "tiles" }}{{ $tiles = $valid }}{{ else }}{{ $darkTiles = $valid }}{{ end -}}
+  {{- end -}}
+  {{- with index $map "attribution" -}}
+    {{- if eq (printf "%T" .) "string" }}{{ $attribution = strings.TrimSpace . }}{{ else }}{{ warnf "params.map.attribution must be a string; got %v; ignoring it" . }}{{ end -}}
+  {{- end -}}
+  {{- with index $map "max_zoom" -}}
+    {{- $raw := printf "%v" . -}}
+    {{- if and (findRE `^[0-9]{1,2}$` $raw) (ge (int $raw) 1) (le (int $raw) 22) -}}
+      {{- $maxZoom = int $raw -}}
+    {{- else -}}
+      {{- warnf "params.map.max_zoom must be a whole number from 1 to 22; got %v; using 19" . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not (and $tiles $attribution) -}}
+    {{- warnf "params.map.enable requires params.map.tiles (an https:// template with {z}, {x} and {y}) and params.map.attribution; the theme names no tile service, so maps stay off and map fences show their place lists" -}}
+    {{- $enabled = false -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "enable" $enabled "tiles" $tiles "darkTiles" $darkTiles "attribution" $attribution "maxZoom" $maxZoom) -}}

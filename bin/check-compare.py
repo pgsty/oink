@@ -23,7 +23,7 @@ PANE_SUPPRESSED = {
 PANE_RUNS = {
     'action-registry', 'appearance', 'asset-list', 'authored-a11y', 'base', 'blog-gallery',
     'clipboard', 'code-block', 'content-components', 'dark-mode', 'diagram', 'drawio', 'expo',
-    'expo-geometry', 'filetree', 'image-zoom', 'landing', 'markmap', 'mermaid', 'palette-model',
+    'expo-geometry', 'filetree', 'image-zoom', 'landing', 'markmap', 'media', 'mermaid', 'palette-model',
     'plantuml', 'plantuml-browser', 'search-engine', 'surface-coordinator', 'swagger-init',
     'table-reader', 'tabs', 'redoc-frame', 'rich-copy',
 }

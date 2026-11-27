@@ -595,6 +595,38 @@
 "url": "https://example.org/fixtures/share/"
 },
 {
+"description": "Regression fixtures for the native definition-list timeline and the .update changelog heading.",
+"id": "/fixtures/timeline-update/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/timeline-update/index.md",
+"title": "Timeline and updates",
+"url": "https://example.org/fixtures/timeline-update/"
+},
+{
+"description": "Regression fixtures for video and audio written as Markdown images, and video-platform cards.",
+"id": "/fixtures/media-files/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/media-files/index.md",
+"title": "Media files",
+"url": "https://example.org/fixtures/media-files/"
+},
+{
+"description": "Regression fixtures for the offline social post card, its platforms, a quoted post, and degraded forms.",
+"id": "/fixtures/social/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/social/index.md",
+"title": "Social posts",
+"url": "https://example.org/fixtures/social/"
+},
+{
+"description": "Regression fixtures for the map data fence — the place list, an interactive map on a configured site, a route, and a single place.",
+"id": "/fixtures/map/",
+"kind": "page",
+"markdown": "https://example.org/fixtures/map/index.md",
+"title": "Maps",
+"url": "https://example.org/fixtures/map/"
+},
+{
 "description": "Generic data-* values that try to close their own attribute, on every render hook that emits them.",
 "id": "/fixtures/attribute-escaping/",
 "kind": "page",

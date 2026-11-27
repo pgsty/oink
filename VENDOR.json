@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "generated": "2026-11-23",
+  "generated": "2026-11-27",
   "hash": "sha256",
   "trees": [
     {
       "path": "assets/third_party",
-      "files": 127,
-      "sha256": "bffc9f4be8f81baf4817132700b1fa7b0e6e49fef0f7a35bdad266e87aaac2cc"
+      "files": 130,
+      "sha256": "5c7839f68622d1a3c5fa6d2c8eef744f30929cd42164a5bf79b8b349cc90ebbc"
     },
     {
       "path": "static/webfonts",
@@ -593,6 +593,26 @@
           "sha256": "2ef6d6897e4c1769e3ce6ead578a12c826f7fc45c66147b608c4ad3173cbce35"
         }
       ]
+    },
+    {
+      "name": "leaflet",
+      "version": "1.9.4",
+      "source": "https://registry.npmjs.org/leaflet/-/leaflet-1.9.4.tgz",
+      "license": "BSD-2-Clause",
+      "licenseFiles": [
+        "assets/third_party/leaflet/LICENSE"
+      ],
+      "artifacts": [
+        {
+          "path": "assets/third_party/leaflet/leaflet.js",
+          "sha256": "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a"
+        },
+        {
+          "path": "assets/third_party/leaflet/leaflet.css",
+          "sha256": "a7837102824184820dfa198d1ebcd109ff6d0ff9a2672a074b9a1b4d147d04c6"
+        }
+      ],
+      "integrity": "sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA=="
     }
   ]
 }

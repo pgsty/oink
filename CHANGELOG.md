@@ -8,6 +8,33 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ### Added
 
+- Six content components, each with a native or minimal form and a defined
+  result in HTML, Print, Markdown/LLMS and RSS:
+  - **Timeline**: a Markdown definition list followed by `{.timeline}` renders
+    as an axis with a marker column. CSS only; requires Goldmark definition
+    lists, which Hugo enables by default.
+  - **Update**: a heading marked `{.update date="2026-11-23" tags="A, B"}` is a
+    changelog entry. The heading is unchanged (TOC, anchor, search, Print IDs);
+    a metadata line with `<time>` and neutral tag chips follows it.
+  - **Video**: a block image whose destination is a video file renders a
+    native player with `caption`, `num`, `poster`, `track`, `width`, `height`;
+    `autoplay=true` makes a muted loop that `js/chunks/media.js` plays only
+    while visible and never under reduced motion. YouTube, Bilibili and Vimeo
+    URLs render link cards; platforms listed in the new `params.video_embeds`
+    load their player in place after a click, from IDs the theme validated.
+  - **Audio**: a block image whose destination is an audio file renders a titled
+    native player. No runtime.
+  - **Social posts**: the `social` shortcode quotes a post (X by default;
+    Bluesky, Mastodon, Threads, Weibo, LinkedIn) entirely from the page, with a
+    Markdown body that composes images, galleries and a nested quoted post.
+    Nothing is fetched at build or view time. Hugo's own `x` is untouched.
+  - **Map**: a `map` fence of places always renders a numbered place list with
+    OpenStreetMap links; with a complete new `params.map` (an HTTPS `tiles`
+    template and its `attribution`), HTML adds an interactive map through
+    vendored Leaflet 1.9.4. The theme names no tile service.
+  The image hook and image resolver now share `content/resource-lookup.html`;
+  image output is unchanged. Five locale keys were added to all 32 catalogs.
+
 - Typeset copy. A selection copied out of article prose now leaves the page as
   clean rich text: semantic tags with a small inline style sheet drawn from the
   preset's print palette, in pixel sizes, without the page canvas, heading

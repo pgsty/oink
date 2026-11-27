@@ -53,6 +53,7 @@ KEPT_MAPS = {
     "search",
     "plantuml",
     "drawio",
+    "map",
     "mermaid",
     "copyright",
     "ui.taxonomy_icons",
@@ -69,6 +70,7 @@ BOOLEAN_SHORTHAND_MAPS = {
     "ui.dark_mode",
     "plantuml",
     "drawio",
+    "map",
 }
 
 # Values handed to an external runtime keep that runtime's key names.
@@ -154,6 +156,8 @@ ACCEPTED_SITE_CASES = [
     "ui:\n  preset: slate\n  preset_menu: [slate]",
     "ui:\n  annotation: false\n  translation_notice: en\n  image_zoom: true\n  keyboard_nav: false\n  reading_time: true\n  typography: system\n  pager_types: [docs]\n  breadcrumb: false\n  scroll_spy: true\n  code_copy: false\n  rich_copy: false\n  docs_sidebar_root: home",
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
+    "map: false\nvideo_embeds: []",
+    "video_embeds: [bilibili, youtube]\nmap:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example tiles\n  dark_tiles: https://tile.example.org/dark/{z}/{x}/{y}.png\n  max_zoom: 18",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
     "ui:\n  dark_mode: {enable: true, show_menu: true}\n  expo: {mode: cards, size: 200}",
     "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
@@ -195,6 +199,15 @@ INVALID_SITE_CASES = [
     ("ui:\n  preset_menu: [paper, canvas]", "not an available preset"),
     ("ui:\n  preset_menu: [slate]", "must include the site preset"),
     ("comments: definitely", "params.comments must be a boolean or a map"),
+    # Network features need complete configuration; the probe page renders a
+    # map fence and a platform card so the resolvers run.
+    ("video_embeds: youtube", "params.video_embeds must be a list of platforms"),
+    ("video_embeds: [tiktok]", 'params.video_embeds: unknown platform "tiktok"'),
+    ("map: definitely", "params.map must be a boolean or a map"),
+    ("map:\n  enable: true", "params.map.enable requires params.map.tiles"),
+    ("map:\n  enable: true\n  tiles: http://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example", "params.map.tiles must be an https:// tile URL"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/tiles.png\n  attribution: Example", "params.map.tiles must contain {z}, {x} and {y}"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: 40", "params.map.max_zoom must be a whole number from 1 to 22"),
     # Discord publishes no share-intent URL, so it stays outside the set no
     # matter how often it is asked for; WeChat below is the same case.
     ("ui:\n  share: [x, discord]", 'invalid params.ui.share entry "discord"'),
@@ -499,7 +512,9 @@ def build_case(hugo: str, name: str, params: str, front_matter: str) -> tuple[in
         (source / "hugo.yaml").write_text(site_config(params), encoding="utf-8")
         (source / "content/docs/_index.md").write_text("---\ntitle: Docs\n---\n\nSection.\n", encoding="utf-8")
         (source / "content/docs/page.md").write_text(
-            f"---\ntitle: Page\n{front_matter}\n---\n\nBody.\n", encoding="utf-8"
+            f"---\ntitle: Page\n{front_matter}\n---\n\nBody.\n\n"
+            "```map\n- {name: Probe, lat: 1, lng: 2}\n```\n\n"
+            "![Probe talk](https://youtu.be/dQw4w9WgXcQ)\n", encoding="utf-8"
         )
         command = [hugo, "--source", str(source), "--themesDir", str(ROOT.parent),
                    "--destination", str(source / "public"), "--logLevel", "warn"]

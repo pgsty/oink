@@ -263,3 +263,9 @@ ui_compare_retry: 'Proovi uuesti'
 ui_pagination: 'Lehekülgede vahel liikumine'
 ui_breadcrumb: Asukoharada
 ui_nav_more: "Veel navigeerimist"
+
+ui_video_play: "Esita video"
+ui_video_open: "Ava videosaidil"
+ui_social_view_original: "Vaata originaali"
+ui_map_label: "Kaart"
+ui_map_open_osm: "Ava OpenStreetMapis"

@@ -99,6 +99,41 @@
             }
           }
         },
+        "video_embeds": {
+          "description": "Video platforms whose player may load in place after a reader clicks a card written as ![name](https://youtu.be/...): any of youtube, bilibili, vimeo. Empty: cards only link out, and no third-party request happens.",
+          "type": "array",
+          "default": []
+        },
+        "map": {
+          "type": [
+            "boolean",
+            "object"
+          ],
+          "description": "Interactive maps above ```map place lists. Off until a site names its tile service: `tiles` is an https:// template with {z}, {x} and {y}, and `attribution` is the text that service requires. The theme names none.",
+          "additionalProperties": true,
+          "properties": {
+            "enable": {
+              "type": "boolean",
+              "default": false
+            },
+            "tiles": {
+              "type": "string",
+              "default": ""
+            },
+            "attribution": {
+              "type": "string",
+              "default": ""
+            },
+            "dark_tiles": {
+              "type": "string",
+              "default": ""
+            },
+            "max_zoom": {
+              "type": "integer",
+              "default": 19
+            }
+          }
+        },
         "print": {
           "type": "object",
           "additionalProperties": true,

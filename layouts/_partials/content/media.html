@@ -1,0 +1,221 @@
+{{- /* Video and audio written as Markdown images. render-image.html hands a
+       destination here when content/media-detect.html classifies it:
+
+         ![name](demo.mp4)            a video file: native <video controls>
+         ![name](episode.mp3)         an audio file: a titled native <audio>
+         ![name](https://youtu.be/…)  a video-platform URL: a link card, and an
+                                      in-place player for platforms listed in
+                                      params.video_embeds
+
+       The bracket text names the media (the accessible name; also the visible
+       title of audio and platform cards). Block attributes: caption, num, id
+       (video and platform cards), poster, track, autoplay, width, height (as
+       they apply). Print and RSS receive static figures with the URL; the
+       Markdown output keeps the authored line. Nothing is fetched at build
+       time, and no third-party request happens before a reader clicks.
+       Input: page, format, position, src, alt, isBlock, attributes, ordinal,
+       detect (from media-detect.html). Returns nothing; prints HTML. */ -}}
+{{- $page := .page -}}
+{{- $format := .format -}}
+{{- $position := .position -}}
+{{- $detect := .detect -}}
+{{- $kind := $detect.kind -}}
+{{- $label := cond (eq $kind "audio") "audio" "video" -}}
+{{- $validated := partial "content/url.html" (dict
+  "name" $label "label" $label "parameter" "src" "position" $position "value" .src "kind" "image"
+) -}}
+{{- if $validated.valid -}}
+{{- $alt := strings.TrimSpace (.alt | default "") -}}
+{{- $file := path.Base $validated.path -}}
+{{- $href := $validated.href -}}
+{{- if ne $kind "platform" -}}
+  {{- with $detect.resource }}{{ $href = .RelPermalink }}{{ end -}}
+{{- end -}}
+{{- $absolute := cond (or $validated.scheme (hasPrefix $href "#")) $href (absURL $href) -}}
+{{- if eq $format "rss" }}{{ $href = $absolute }}{{ end -}}
+{{- $name := $alt -}}
+{{- if and (not $name) (eq $kind "audio") -}}
+  {{- warnf "audio: the bracket text names the recording and is its visible title; it is empty at %s; using the file name" $position -}}
+{{- end -}}
+{{- if not $name }}{{ $name = $file | default $href }}{{ end -}}
+
+{{- if not .isBlock -}}
+  {{- /* Inline media stays inline: a plain link to the file or watch page. */ -}}
+<a class="td-media-link" href="{{ $href }}"{{ if $validated.scheme }} rel="external"{{ end }}>{{ $name }}</a>
+{{- else -}}
+
+{{- /* Block attributes. */ -}}
+{{- $allowed := slice "id" "caption" -}}
+{{- if eq $kind "video" }}{{ $allowed = slice "id" "num" "caption" "poster" "track" "autoplay" "width" "height" }}{{ end -}}
+{{- if eq $kind "platform" }}{{ $allowed = slice "id" "num" "caption" "poster" "width" "height" }}{{ end -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .attributes "allowed" $allowed "position" $position "kind" $label) -}}
+{{- $caption := strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
+{{- $num := "" -}}
+{{- $id := "" -}}
+{{- with index $policy.consumed "num" -}}
+  {{- $num = partial "book/validate-num.html" (dict "name" $label "value" . "position" $position) -}}
+{{- end -}}
+{{- with index $policy.consumed "id" -}}
+  {{- $id = partial "book/validate-id.html" (dict "name" $label "value" . "position" $position) -}}
+{{- end -}}
+{{- if $num -}}
+  {{- if not $id }}{{ $id = printf "fig-%s" $num }}{{ end -}}
+  {{- if not (partial "book/register-target.html" (dict "page" $page "kind" "fig" "source" $label "num" $num "id" $id "caption" $caption "position" $position "ordinal" .ordinal)) -}}
+    {{- $id = "" -}}
+  {{- end -}}
+{{- end -}}
+{{- /* Every player needs a name: the bracket text, else the caption, else
+       the file name, with a warning when the author gave neither. */ -}}
+{{- if and (not $alt) (ne $kind "audio") -}}
+  {{- if $caption -}}
+    {{- $name = $caption -}}
+  {{- else -}}
+    {{- warnf "%s: the bracket text names the video for assistive technology; it and the caption are empty at %s; using the file name" $label $position -}}
+  {{- end -}}
+{{- end -}}
+{{- $bookLabel := "" -}}
+{{- if $num }}{{ $bookLabel = partial "book/label.html" (dict "kind" "fig" "num" $num) }}{{ end -}}
+{{- $poster := false -}}
+{{- with index $policy.consumed "poster" -}}
+  {{- $resolved := partial "content/image-resolve.html" (dict
+    "name" $label "label" (printf "%s poster" $label) "position" $position "page" $page "src" . "decorative" true
+  ) -}}
+  {{- if $resolved.src }}{{ $poster = $resolved }}{{ end -}}
+{{- end -}}
+{{- $width := 0 -}}
+{{- $height := 0 -}}
+{{- with $poster }}{{ $width = .width }}{{ $height = .height }}{{ end -}}
+{{- range $key := slice "width" "height" -}}
+  {{- with index $policy.consumed $key -}}
+    {{- if findRE `^[1-9][0-9]{0,4}$` . -}}
+      {{- if eq $key "width" }}{{ $width = int . }}{{ else }}{{ $height = int . }}{{ end -}}
+    {{- else -}}
+      {{- warnf "%s: %s must be a positive integer; got %q at %s; ignoring it" $label $key . $position -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $ratio := "" -}}
+{{- if and (gt $width 0) (gt $height 0) }}{{ $ratio = printf "aspect-ratio: %d / %d" $width $height }}{{ end -}}
+{{- $posterSrc := "" -}}
+{{- with $poster }}{{ $posterSrc = cond (eq $format "rss") (absURL .src) .src }}{{ end -}}
+
+{{- $classes := slice "td-media" (printf "td-media--%s" (cond (eq $kind "platform") "embed" $kind)) -}}
+{{- if or $caption $num }}{{ $classes = $classes | append "td-figure" }}{{ end -}}
+{{- if $num }}{{ $classes = $classes | append "td-book-figure" "td-book-figure--fig" }}{{ end -}}
+{{- $classes = $classes | append $policy.classes -}}
+{{- $figcaption := "" -}}
+{{- if or $caption $bookLabel -}}
+  {{- $figcaption = printf `<figcaption>%s%s</figcaption>`
+    (cond (ne $bookLabel "") (printf `<span class="td-fig-label">%s</span>` (htmlEscape $bookLabel)) "")
+    (cond (ne $caption "") (printf ` <span class="td-fig-caption">%s</span>` (htmlEscape $caption)) "") -}}
+{{- end -}}
+{{- $open := printf `<figure%s class="%s"%s%s>`
+  (cond (ne $id "") (printf ` id="%s"` $id) "")
+  (delimit $classes " ")
+  (cond (ne $num "") (printf ` data-td-book-kind="fig" data-td-book-num="%s"` $num) "")
+  (partial "content/attrs.html" $policy.generic) -}}
+{{- $urlLine := printf `<p class="td-media__url"><a href="%s"%s>%s</a></p>` (htmlEscape $href) (cond (ne $validated.scheme "") ` rel="external"` "") (htmlEscape $absolute) -}}
+{{- /* Paper and feeds have no player: name the video beside its address. */ -}}
+{{- $staticLine := printf `<p class="td-media__link"><a href="%s"%s>%s</a> · <span class="td-media__address">%s</span></p>` (htmlEscape $href) (cond (ne $validated.scheme "") ` rel="external"` "") (htmlEscape $name) (htmlEscape $absolute) -}}
+
+{{- if eq $kind "audio" -}}
+  {{- /* Audio has no picture, so its name is a visible title. */ -}}
+  {{- $title := printf `<figcaption><span class="td-media__title">%s</span>%s</figcaption>`
+    (htmlEscape $name)
+    (cond (ne $caption "") (printf ` <span class="td-fig-caption">%s</span>` (htmlEscape $caption)) "") -}}
+  {{- if in (slice "print" "rss") $format -}}
+{{ $open | safeHTML }}{{ $title | safeHTML }}{{ $urlLine | safeHTML }}</figure>
+  {{- else -}}
+{{ $open | safeHTML }}{{ $title | safeHTML }}<audio controls preload="metadata" src="{{ $href }}" aria-label="{{ $name }}"><a href="{{ $href }}">{{ $name }}</a></audio>{{ $urlLine | safeHTML }}</figure>
+  {{- end -}}
+
+{{- else if eq $kind "video" -}}
+  {{- $track := "" -}}
+  {{- with index $policy.consumed "track" -}}
+    {{- $trackURL := partial "content/url.html" (dict "name" "video" "label" "video" "parameter" "track" "position" $position "value" . "kind" "image") -}}
+    {{- if $trackURL.valid -}}
+      {{- $found := partial "content/resource-lookup.html" (dict "page" $page "source" $trackURL.raw "scheme" $trackURL.scheme) -}}
+      {{- $track = $trackURL.href -}}
+      {{- with $found.resource }}{{ $track = .RelPermalink }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $autoplay := false -}}
+  {{- with index $policy.consumed "autoplay" -}}
+    {{- $value := lower (strings.TrimSpace .) -}}
+    {{- if eq $value "true" }}{{ $autoplay = true }}{{ else if ne $value "false" }}{{ warnf "video: autoplay must be true or false; got %q at %s; using false" . $position }}{{ end -}}
+  {{- end -}}
+  {{- if in (slice "print" "rss") $format -}}
+{{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }} loading="lazy" decoding="async">{{ end }}{{ $staticLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
+  {{- else -}}
+    {{- if $autoplay }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
+{{ $open | safeHTML }}<video controls preload="metadata" playsinline src="{{ $href }}"{{ with $posterSrc }} poster="{{ . }}"{{ end }}{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }}{{ with $ratio }} style="{{ . | safeCSS }}"{{ end }}{{ if $autoplay }} muted loop data-td-media-autoplay{{ end }} aria-label="{{ $name }}">
+  {{- with $track }}<track kind="subtitles" src="{{ . }}" srclang="{{ $page.Language.Lang }}" label="{{ $page.Language.Label | default $page.Language.Lang }}" default>{{ end -}}
+  <a href="{{ $href }}">{{ $name }}</a></video>{{ $urlLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
+  {{- end -}}
+
+{{- else -}}
+  {{- /* A video-platform URL. The theme derives the player URL from IDs it
+         validated itself; author text never reaches an iframe address. */ -}}
+  {{- $url := $detect.url -}}
+  {{- $platform := $detect.platform -}}
+  {{- $host := lower $url.Host | strings.TrimPrefix "www." | strings.TrimPrefix "m." -}}
+  {{- $player := "" -}}
+  {{- $platformName := index (dict "youtube" "YouTube" "bilibili" "Bilibili" "vimeo" "Vimeo") $platform -}}
+  {{- $icon := index (dict "youtube" "fa-brands fa-youtube" "bilibili" "fa-brands fa-bilibili" "vimeo" "fa-brands fa-vimeo-v") $platform -}}
+  {{- $seconds := 0 -}}
+  {{- $time := $url.Query.Get "t" | default ($url.Query.Get "start") -}}
+  {{- with findRESubmatch `^(?:([0-9]{1,2})h)?(?:([0-9]{1,4})m)?(?:([0-9]{1,6})(?:\.[0-9]+)?s?)?$` $time 1 -}}
+    {{- $m := index . 0 -}}
+    {{- $seconds = add (mul (int (index $m 1 | default "0")) 3600) (mul (int (index $m 2 | default "0")) 60) (int (index $m 3 | default "0")) -}}
+  {{- end -}}
+  {{- if eq $platform "youtube" -}}
+    {{- $video := "" -}}
+    {{- if eq $host "youtu.be" -}}
+      {{- $video = strings.TrimPrefix "/" $url.Path -}}
+    {{- else if eq $url.Path "/watch" -}}
+      {{- $video = $url.Query.Get "v" -}}
+    {{- else -}}
+      {{- with findRESubmatch `^/(?:shorts|live|embed)/([^/]+)/?$` $url.Path 1 }}{{ $video = index (index . 0) 1 }}{{ end -}}
+    {{- end -}}
+    {{- if findRE `^[A-Za-z0-9_-]{11}$` $video -}}
+      {{- $player = printf "https://www.youtube-nocookie.com/embed/%s?autoplay=1" $video -}}
+      {{- if gt $seconds 0 }}{{ $player = printf "%s&start=%d" $player $seconds }}{{ end -}}
+    {{- end -}}
+  {{- else if eq $platform "bilibili" -}}
+    {{- $query := "" -}}
+    {{- with findRESubmatch `^/video/(BV[0-9A-Za-z]{10})/?$` $url.Path 1 }}{{ $query = printf "bvid=%s" (index (index . 0) 1) }}{{ end -}}
+    {{- with findRESubmatch `^/video/av([0-9]{1,12})/?$` $url.Path 1 }}{{ $query = printf "aid=%s" (index (index . 0) 1) }}{{ end -}}
+    {{- if $query -}}
+      {{- $part := $url.Query.Get "p" -}}
+      {{- if not (findRE `^[1-9][0-9]{0,3}$` $part) }}{{ $part = "1" }}{{ end -}}
+      {{- $player = printf "https://player.bilibili.com/player.html?%s&p=%s&autoplay=1&danmaku=0" $query $part -}}
+      {{- if gt $seconds 0 }}{{ $player = printf "%s&t=%d" $player $seconds }}{{ end -}}
+    {{- end -}}
+  {{- else if eq $platform "vimeo" -}}
+    {{- with findRESubmatch `^/([0-9]{1,12})(?:/([0-9a-f]{6,20}))?/?$` $url.Path 1 -}}
+      {{- $m := index . 0 -}}
+      {{- $player = printf "https://player.vimeo.com/video/%s?autoplay=1&dnt=1" (index $m 1) -}}
+      {{- with index $m 2 }}{{ $player = printf "%s&h=%s" $player . }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if not $player -}}
+    {{- if eq $host "b23.tv" -}}
+      {{- warnf "video: %s short links cannot be resolved without the network at %s; link the full bilibili.com/video/BV… URL to allow the player; rendering a link card" $validated.raw $position -}}
+    {{- else -}}
+      {{- warnf "video: no %s video ID in %q at %s; rendering a link card without a player" $platformName $validated.raw $position -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $embed := and $player (eq $format "html") (in (partialCached "content/video-embeds.html" . $page.Site.Language.Lang) $platform) -}}
+  {{- if in (slice "print" "rss") $format -}}
+{{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }} loading="lazy" decoding="async">{{ end }}<p class="td-media__link"><a href="{{ $href }}" rel="external">{{ $name }}</a> · {{ $platformName }}</p>{{ $figcaption | safeHTML }}</figure>
+  {{- else -}}
+    {{- if $embed }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
+{{ $open | safeHTML }}<a class="td-media-card" href="{{ $href }}" rel="external"{{ with $ratio }} style="{{ . | safeCSS }}"{{ end }}{{ if $embed }} data-td-media-embed="{{ $player }}" data-td-media-title="{{ $name }}"{{ end }}>
+  {{- with $posterSrc }}<img class="td-media-card__poster" src="{{ . }}" alt=""{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }} loading="lazy" decoding="async">{{ end -}}
+  <span class="td-media-card__play" aria-hidden="true"><i class="fa-solid fa-play"></i></span>
+  <span class="td-media-card__text"><span class="td-media-card__title">{{ $name }}</span><span class="td-media-card__platform"><i class="{{ $icon }}" aria-hidden="true"></i> {{ $platformName }}</span><span class="visually-hidden">{{ if $embed }}{{ T "ui_video_play" }}{{ else }}{{ T "ui_video_open" }}{{ end }}</span></span>
+</a>{{ $figcaption | safeHTML }}</figure>
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

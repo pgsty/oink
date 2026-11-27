@@ -263,3 +263,9 @@ ui_compare_retry: 'Yeniden dene'
 ui_pagination: Sayfalama
 ui_breadcrumb: Gezinti yolu
 ui_nav_more: "Diğer bağlantılar"
+
+ui_video_play: "Videoyu oynat"
+ui_video_open: "Video sitesinde aç"
+ui_social_view_original: "Orijinali görüntüle"
+ui_map_label: "Harita"
+ui_map_open_osm: "OpenStreetMap'te aç"

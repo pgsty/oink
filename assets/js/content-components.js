@@ -1,6 +1,6 @@
 // Runtime for opt-in content components. Included only when a page uses one.
-// The page carries this small adapter; the player and chart engines load when
-// a component that needs them comes due.
+// The page carries this small adapter; the player, chart and map engines load
+// when a component that needs them comes due.
 (function () {
   'use strict';
 
@@ -360,6 +360,110 @@
     }
   }
 
+  // A map fence keeps its numbered place list as the content; the map is an
+  // enhancement above it. Popups and the attribution are built from text,
+  // never from author HTML. Scroll-wheel zoom stays off so reading never
+  // zooms the map; buttons, keyboard and pinch remain.
+  function textHTML(text) {
+    var node = document.createElement('div');
+    node.textContent = text || '';
+    return node.innerHTML;
+  }
+
+  function mapPopup(place) {
+    var box = document.createElement('div');
+    box.className = 'td-map__popup';
+    if (place.thumb) {
+      var image = document.createElement('img');
+      image.src = place.thumb;
+      image.alt = '';
+      image.loading = 'lazy';
+      box.appendChild(image);
+    }
+    var name = document.createElement(place.href ? 'a' : 'strong');
+    name.className = 'td-map__popup-name';
+    name.textContent = place.name;
+    if (place.href) name.href = place.href;
+    box.appendChild(name);
+    if (place.text) {
+      var text = document.createElement('p');
+      text.textContent = place.text;
+      box.appendChild(text);
+    }
+    return box;
+  }
+
+  function initMap(root) {
+    var L = window.L;
+    var data = configOf(root, '[data-td-map-source]');
+    var site = configOf(document, '[data-td-map-config]');
+    var canvas = root.querySelector('[data-td-map-canvas]');
+    if (!L || !data || !site || !site.tiles || !canvas) return;
+    var places = Array.isArray(data.places) ? data.places : [];
+    if (!places.length) return;
+    canvas.hidden = false;
+    var map = L.map(canvas, {
+      scrollWheelZoom: false,
+      zoomControl: false,
+      attributionControl: false,
+      maxZoom: site.maxZoom || 19,
+    });
+    L.control
+      .zoom({ zoomInTitle: site.zoomIn || 'Zoom in', zoomOutTitle: site.zoomOut || 'Zoom out' })
+      .addTo(map);
+    L.control.attribution({ prefix: false }).addTo(map).addAttribution(textHTML(site.attribution));
+    var layer = null;
+    function tiles() {
+      var url = currentTheme() === 'dark' && site.darkTiles ? site.darkTiles : site.tiles;
+      if (layer) map.removeLayer(layer);
+      layer = L.tileLayer(url, { maxZoom: site.maxZoom || 19 }).addTo(map);
+    }
+    tiles();
+    if (site.darkTiles) watchTheme(tiles);
+    var points = [];
+    places.forEach(function (place, index) {
+      var point = [place.lat, place.lng];
+      points.push(point);
+      L.marker(point, {
+        title: place.name,
+        alt: place.name,
+        icon: L.divIcon({
+          className: 'td-map__marker',
+          html: '<span>' + (index + 1) + '</span>',
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14],
+        }),
+      })
+        .bindPopup(mapPopup(place))
+        .addTo(map);
+    });
+    if (data.route && points.length > 1) {
+      L.polyline(points, { className: 'td-map__route', weight: 3, interactive: false }).addTo(map);
+    }
+    function frame() {
+      if (points.length === 1) {
+        map.setView(points[0], data.zoom || 15);
+      } else if (data.zoom) {
+        map.fitBounds(points, { padding: [32, 32] });
+        map.setZoom(data.zoom);
+      } else {
+        map.fitBounds(points, { padding: [32, 32], maxZoom: 16 });
+      }
+    }
+    frame();
+    var resize = function () {
+      map.invalidateSize();
+    };
+    if (window.ResizeObserver) {
+      new ResizeObserver(resize).observe(canvas);
+    } else {
+      window.addEventListener('resize', resize);
+    }
+    document.addEventListener('td:tab-shown', resize);
+    document.addEventListener('toggle', resize, true);
+  }
+
   // An unmounted player is its recording link, which is already its static
   // form. A chart or an infographic has only its declared source.
   document.querySelectorAll('[data-td-asciinema]').forEach(function (root) {
@@ -382,6 +486,15 @@
         var options = configOf(root, '[data-td-echarts-options]');
         return options ? JSON.stringify(options, null, 2) : '';
       },
+    });
+  });
+  document.querySelectorAll('[data-td-map]').forEach(function (root) {
+    defer(root, {
+      engine: 'leaflet',
+      ready: function () {
+        return !!window.L;
+      },
+      mount: initMap,
     });
   });
   document.querySelectorAll('[data-td-infographic]').forEach(function (root) {

@@ -1,0 +1,230 @@
+/* ---------------------------------------------------------------------------
+   Media -- video and audio written as Markdown images
+   (layouts/_partials/content/media.html). A video file is a native player;
+   an audio file is a titled native player; a video-platform URL is a link
+   card that an enabled platform turns into its player in place.
+   --------------------------------------------------------------------------- */
+.td-media {
+  --td-media-radius: var(--td-control-radius, 0.375rem);
+  margin-block: 1.5rem 1.75rem;
+}
+
+.td-media > figcaption {
+  margin-block-start: 0.6rem;
+  color: var(--bs-secondary-color);
+  font-size: 0.9rem;
+}
+
+.td-media video {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  block-size: auto;
+  max-block-size: 80vh;
+  aspect-ratio: auto 16 / 9;
+  border-radius: var(--td-media-radius);
+  background: #000;
+  object-fit: contain;
+}
+
+/* The source URL is for paper: screens have the player and its link. */
+.td-media__url {
+  display: none;
+  margin: 0.4rem 0 0;
+  font-family: var(--td-meta-font-family);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+/* Audio: no picture, so the name is the title above the native control. */
+.td-media--audio {
+  padding: 0.85rem 1rem 0.9rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-media-radius);
+  background: var(--bs-tertiary-bg, var(--bs-secondary-bg));
+}
+
+.td-media--audio > figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.75rem;
+  margin: 0 0 0.6rem;
+}
+
+.td-media__title {
+  color: var(--bs-body-color);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.td-media--audio audio {
+  display: block;
+  inline-size: 100%;
+  color-scheme: light;
+}
+
+[data-bs-theme='dark'] .td-media--audio audio {
+  color-scheme: dark;
+}
+
+.td-media--audio + .td-media--audio {
+  margin-block-start: -0.75rem;
+}
+
+/* Video-platform cards: a link that looks like a paused player. */
+.td-media-card {
+  position: relative;
+  max-block-size: 80vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-media-radius);
+  background: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+  text-decoration: none;
+  isolation: isolate;
+}
+
+.td-media-card__poster {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.td-media-card__play {
+  display: grid;
+  place-items: center;
+  inline-size: 3.5rem;
+  block-size: 3.5rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 1.25rem;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.td-media-card__play > i {
+  margin-inline-start: 0.2rem;
+}
+
+.td-media-card:is(:hover, :focus-visible) .td-media-card__play {
+  background: var(--td-accent, var(--bs-link-color));
+  transform: scale(1.06);
+}
+
+.td-media-card:focus-visible {
+  outline: 2px solid var(--td-accent, var(--bs-link-color));
+  outline-offset: 2px;
+}
+
+.td-media-card__text {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.td-media-card__title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.td-media-card__platform {
+  font-family: var(--td-meta-font-family);
+  font-size: 0.8rem;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+/* Without a poster the card is a calm surface, not a dark frame. */
+.td-media-card:not(:has(.td-media-card__poster)) .td-media-card__text {
+  background: none;
+  color: var(--bs-body-color);
+}
+
+.td-media-player {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--td-media-radius);
+  background: #000;
+}
+
+.td-media-player > iframe {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+}
+
+.td-media__link {
+  margin: 0.4rem 0 0;
+}
+
+:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-media {
+  --td-media-radius: var(--td-experiment-radius, 0);
+}
+
+:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-media-card__play {
+  border-radius: var(--td-experiment-radius, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .td-media-card__play {
+    transition: none;
+  }
+
+  .td-media-card:is(:hover, :focus-visible) .td-media-card__play {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .td-media--audio,
+  .td-media-card {
+    border-color: CanvasText;
+  }
+
+  .td-media-card__text {
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+
+@media print {
+  .td-media {
+    break-inside: avoid;
+  }
+
+  .td-media__url {
+    display: block;
+  }
+
+  .td-media--audio audio {
+    display: none;
+  }
+
+  .td-media__poster {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+}
+
+.td-media__address {
+  font-family: var(--td-meta-font-family);
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}

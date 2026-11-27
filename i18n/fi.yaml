@@ -263,3 +263,9 @@ ui_compare_retry: 'Yritä uudelleen'
 ui_pagination: Sivutus
 ui_breadcrumb: Murupolku
 ui_nav_more: "Lisää navigointia"
+
+ui_video_play: "Toista video"
+ui_video_open: "Avaa videopalvelussa"
+ui_social_view_original: "Näytä alkuperäinen"
+ui_map_label: "Kartta"
+ui_map_open_osm: "Avaa OpenStreetMapissa"

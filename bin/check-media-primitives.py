@@ -405,6 +405,16 @@ HOOK_INVALID_CASES = (
     ("hook-options-without-command", '![x](page.png)\n{options="10x10"}\n', "command and options must be given together"),
     ("hook-command-unknown", '![x](page.png)\n{command="Squish" options="10x10"}\n', "command must be one of"),
     ("hook-command-on-static", '![x](/media/content-primitives-static.svg)\n{command="Fit" options="10x10"}\n', "cannot be processed"),
+    # Video and audio share image syntax; their attributes warn the same way.
+    ("hook-video-autoplay", '![x](https://example.org/clip.mp4)\n{autoplay="maybe"}\n', "autoplay must be true or false"),
+    ("hook-video-width", '![x](https://example.org/clip.mp4)\n{width="0"}\n', "width must be a positive integer"),
+    ("hook-video-link", '![x](https://example.org/clip.mp4)\n{link="/docs/"}\n', "unknown attribute"),
+    ("hook-audio-unnamed", '![](https://example.org/tone.mp3)\n', "the bracket text names the recording"),
+    ("hook-video-unnamed", '![](https://example.org/clip.mp4)\n', "the bracket text names the video"),
+    ("hook-audio-poster", '![x](https://example.org/tone.mp3)\n{poster="page.png"}\n', "unknown attribute"),
+    ("hook-platform-no-id", '![x](https://www.youtube.com/watch?v=short)\n', "no YouTube video ID"),
+    ("hook-platform-short-link", '![x](https://b23.tv/abc)\n', "short links cannot be resolved without the network"),
+    ("hook-platform-autoplay", '![x](https://vimeo.com/76979871)\n{autoplay=true}\n', "unknown attribute"),
 )
 
 
@@ -469,9 +479,19 @@ def check_template_contracts() -> list[str]:
     processor = (ROOT / "layouts/_partials/content/image-process.html").read_text()
     hook = (ROOT / "layouts/_markup/render-image.html").read_text()
     require("resources.GetRemote" not in resolver + processor + hook, "media layer fetches remote images", errors)
-    require("$page.Resources.Get" in resolver, "resolver lacks exact page resources", errors)
-    require("resources.Get $lookup" in resolver, "resolver lacks global resources", errors)
-    require(resolver.index("$page.Resources.Get") < resolver.index("resources.Get $lookup"), "resolver order is not page then global", errors)
+    # One lookup order for images and media: the image resolver and the media
+    # partials both delegate to content/resource-lookup.html.
+    lookup = (ROOT / "layouts/_partials/content/resource-lookup.html").read_text()
+    media = (ROOT / "layouts/_partials/content/media.html").read_text()
+    detect = (ROOT / "layouts/_partials/content/media-detect.html").read_text()
+    require('partial "content/resource-lookup.html"' in resolver, "image resolver does not use the shared resource lookup", errors)
+    require('partial "content/resource-lookup.html"' in detect + media, "media partials do not use the shared resource lookup", errors)
+    require("$page.Resources.Get" in lookup, "resource lookup lacks exact page resources", errors)
+    require("resources.Get $lookup" in lookup, "resource lookup lacks global resources", errors)
+    require(lookup.index("$page.Resources.Get") < lookup.index("resources.Get $lookup"), "resource lookup order is not page then global", errors)
+    require("resources.GetRemote" not in lookup + media + detect, "media layer fetches remote media", errors)
+    require('partial "content/media-detect.html"' in hook and 'partial "content/media.html"' in hook, "render-image.html does not dispatch media", errors)
+    require('partial "content/url.html"' in media, "media sources skip the shared URL policy", errors)
     # The mechanical answer -- URL, dimensions, media type, processability --
     # lives in the shared media-result contract; the resolver must consume it
     # rather than re-deriving its own, and the contract must keep the guards.

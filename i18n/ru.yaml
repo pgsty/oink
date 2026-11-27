@@ -265,3 +265,9 @@ ui_compare_retry: 'Повторить'
 ui_pagination: Навигация по страницам
 ui_breadcrumb: Навигационная цепочка
 ui_nav_more: "Ещё разделы"
+
+ui_video_play: "Воспроизвести видео"
+ui_video_open: "Открыть на видеосайте"
+ui_social_view_original: "Открыть оригинал"
+ui_map_label: "Карта"
+ui_map_open_osm: "Открыть в OpenStreetMap"

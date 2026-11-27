@@ -1,0 +1,126 @@
+{{- /* A quoted social post, entirely from the page: nothing is fetched at
+       build or view time, so the quote outlives the original.
+
+         {{< social author="…" handle="@…" avatar="avatars/a.jpg"
+                    date="2026-02-15" url="https://x.com/…" platform="x" >}}
+         The post text in Markdown. Images, a `gallery` fence, or a nested
+         `social` (a quoted post) compose in the body.
+         {{< /social >}}
+
+       platform: x (default), bluesky, mastodon, threads, weibo, linkedin —
+       it selects the icon only; every platform shares one card. The card is
+       a figure, a blockquote with cite, and an attribution; Markdown and RSS
+       get the same quotation without component markup. Hugo's own `x`
+       shortcode is left alone. */ -}}
+{{- partial "content/shortcode-params.html" (dict "shortcode" . "allowed" (slice "author" "handle" "avatar" "date" "url" "platform")) -}}
+{{- $params := dict -}}
+{{- if .IsNamedParams }}{{ $params = .Params }}{{ end -}}
+{{- $format := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $platforms := dict
+  "x" (dict "name" "X" "icon" "fa-brands fa-x-twitter")
+  "bluesky" (dict "name" "Bluesky" "icon" "fa-brands fa-bluesky")
+  "mastodon" (dict "name" "Mastodon" "icon" "fa-brands fa-mastodon")
+  "threads" (dict "name" "Threads" "icon" "fa-brands fa-threads")
+  "weibo" (dict "name" "Weibo" "icon" "fa-brands fa-weibo")
+  "linkedin" (dict "name" "LinkedIn" "icon" "fa-brands fa-linkedin")
+-}}
+{{- $platform := lower (strings.TrimSpace (printf "%v" (index $params "platform" | default "x"))) -}}
+{{- if not (isset $platforms $platform) -}}
+  {{- warnf "shortcode %q: platform must be one of x, bluesky, mastodon, threads, weibo, linkedin; got %q at %s; using x" .Name $platform .Position -}}
+  {{- $platform = "x" -}}
+{{- end -}}
+{{- $brand := index $platforms $platform -}}
+{{- $author := strings.TrimSpace (printf "%v" (index $params "author" | default "")) -}}
+{{- $handle := strings.TrimSpace (printf "%v" (index $params "handle" | default "")) -}}
+{{- $date := strings.TrimSpace (printf "%v" (index $params "date" | default "")) -}}
+{{- $datetime := "" -}}
+{{- if findRE `^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][0-9]{2}:[0-9]{2}(?::[0-9]{2})?(?:Z|[+-][0-9]{2}:[0-9]{2})?)?$` $date -}}
+  {{- $datetime = replace $date " " "T" -}}
+{{- end -}}
+{{- $href := "" -}}
+{{- if isset $params "url" -}}
+  {{- $url := partial "content/url.html" (dict "name" .Name "parameter" "url" "position" .Position "value" (index $params "url") "kind" "web") -}}
+  {{- $href = $url.href -}}
+{{- end -}}
+{{- $avatar := false -}}
+{{- if isset $params "avatar" -}}
+  {{- $resolved := partial "content/image-resolve.html" (dict
+    "name" .Name "position" .Position "page" .Page "src" (index $params "avatar") "decorative" true
+  ) -}}
+  {{- if $resolved.src }}{{ $avatar = $resolved }}{{ end -}}
+{{- end -}}
+{{- $body := strings.TrimSpace (printf "%s" .InnerDeindent) -}}
+{{- $nested := false -}}
+{{- with .Parent }}{{ if eq .Name "social" }}{{ $nested = true }}{{ end }}{{ end -}}
+{{- $viewOriginal := T "ui_social_view_original" -}}
+{{- $ok := true -}}
+{{- if not $body -}}
+  {{- if $href -}}
+    {{- warnf "shortcode %q has no body at %s; rendering a link to the original post" .Name .Position -}}
+  {{- else -}}
+    {{- warnf "shortcode %q has no body and no url at %s; rendering nothing" .Name .Position -}}
+    {{- $ok = false -}}
+  {{- end -}}
+{{- end -}}
+{{- $anonymous := and (not $author) (not $handle) -}}
+{{- if and $ok $anonymous -}}
+  {{- warnf "shortcode %q requires author or handle at %s; rendering the body as a plain quotation" .Name .Position -}}
+{{- end -}}
+{{- if $ok -}}
+{{- $who := $author | default $handle -}}
+{{- if eq $format "markdown" -}}
+  {{- /* A quotation: body lines, then the attribution, all prefixed. */ -}}
+  {{- $lines := slice -}}
+  {{- with $body -}}
+    {{- range split . "\n" }}{{ $lines = $lines | append (cond (eq (strings.TrimSpace .) "") ">" (printf "> %s" .)) }}{{ end -}}
+  {{- end -}}
+  {{- if not $anonymous -}}
+    {{- $credit := partial "content/markdown-escape.html" $who -}}
+    {{- if and $author $handle }}{{ $credit = printf "%s (%s)" $credit (partial "content/markdown-escape.html" $handle) }}{{ end -}}
+    {{- with $date }}{{ $credit = printf "%s, %s" $credit (partial "content/markdown-escape.html" .) }}{{ end -}}
+    {{- with $href }}{{ $credit = printf "%s, [%s](%s)" $credit (partial "content/markdown-escape.html" $viewOriginal) (partial "content/markdown-url.html" .) }}{{ end -}}
+    {{- if $lines }}{{ $lines = $lines | append ">" }}{{ end -}}
+    {{- $lines = $lines | append (printf "> — %s" $credit) -}}
+  {{- else if and (not $lines) $href -}}
+    {{- $lines = $lines | append (printf "> [%s](%s)" (partial "content/markdown-escape.html" $viewOriginal) (partial "content/markdown-url.html" $href)) -}}
+  {{- end -}}
+{{ delimit $lines "\n" | safeHTML }}
+{{- else -}}
+{{- $rendered := "" -}}
+{{- with $body -}}
+  {{- $scope := printf "social-%s" (partial "content/shortcode-ordinal.html" $) -}}
+  {{- $rendered = partial "content/render-block.html" (dict "page" $.Page "scope" $scope "content" . "origin" (printf "shortcode %q at %s" $.Name $.Position)) -}}
+{{- end -}}
+{{- if $anonymous -}}
+<blockquote class="td-social-quote"{{ with $href }} cite="{{ . }}"{{ end }}>{{ $rendered }}</blockquote>
+{{- else if eq $format "rss" -}}
+<figure class="td-social"><blockquote{{ with $href }} cite="{{ . }}"{{ end }}>{{ $rendered }}</blockquote><figcaption>— {{ $who }}{{ if and $author $handle }} ({{ $handle }}){{ end }}{{ with $date }}, {{ . }}{{ end }}{{ with $href }}, <a href="{{ . }}">{{ $viewOriginal }}</a>{{ end }}</figcaption></figure>
+{{- else -}}
+{{- $initial := substr (strings.TrimPrefix "@" $who) 0 1 | upper -}}
+<figure class="td-social td-social--{{ $platform }}{{ if $nested }} td-social--nested{{ end }}{{ if not $body }} td-social--link{{ end }}">
+  <figcaption class="td-social__author">
+    {{- with $avatar }}<img class="td-social__avatar" src="{{ .src }}" alt=""{{ if gt .width 0 }} width="{{ .width }}"{{ end }}{{ if gt .height 0 }} height="{{ .height }}"{{ end }} loading="lazy" decoding="async">
+    {{- else }}<span class="td-social__avatar td-social__avatar--initial" aria-hidden="true">{{ $initial }}</span>{{ end -}}
+    <span class="td-social__names">
+      {{- with $author }}<span class="td-social__name">{{ . }}</span>{{ end -}}
+      {{- with $handle }}<span class="td-social__handle">{{ . }}</span>{{ end -}}
+    </span>
+    {{- if not $nested }}<i class="td-social__platform {{ $brand.icon }}" aria-hidden="true"></i>{{ end -}}
+    <span class="visually-hidden"> · {{ $brand.name }}</span>
+  </figcaption>
+  {{- with $rendered }}
+  <blockquote class="td-social__body"{{ with $href }} cite="{{ . }}"{{ end }}>{{ . }}</blockquote>
+  {{- end }}
+  {{- if or $date $href }}
+  <p class="td-social__meta">
+    {{- if $href -}}
+    <a href="{{ $href }}" rel="external">{{ with $date }}<time{{ with $datetime }} datetime="{{ . }}"{{ end }}>{{ $date }}</time> · {{ end }}{{ $viewOriginal }}</a>
+    {{- else -}}
+    <time{{ with $datetime }} datetime="{{ . }}"{{ end }}>{{ $date }}</time>
+    {{- end -}}
+  </p>
+  {{- end }}
+</figure>
+{{- end -}}
+{{- end -}}
+{{- end -}}

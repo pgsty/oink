@@ -52,6 +52,18 @@
   "llmsfull/docs.txt": "docs/llms-full.txt",
   "navjson/navigation.json": "navigation.json",
   "html/fixtures-backlinks-alpha.html": "fixtures/backlinks/alpha/index.html",
-  "markdown/fixtures-backlinks-alpha.md": "fixtures/backlinks/alpha/index.md"
+  "markdown/fixtures-backlinks-alpha.md": "fixtures/backlinks/alpha/index.md",
+  "html/fixtures-timeline-update.html": "fixtures/timeline-update/index.html",
+  "markdown/fixtures-timeline-update.md": "fixtures/timeline-update/index.md",
+  "print/fixtures-timeline-update.html": "_print/fixtures/timeline-update/index.html",
+  "html/fixtures-media-files.html": "fixtures/media-files/index.html",
+  "markdown/fixtures-media-files.md": "fixtures/media-files/index.md",
+  "print/fixtures-media-files.html": "_print/fixtures/media-files/index.html",
+  "html/fixtures-social.html": "fixtures/social/index.html",
+  "markdown/fixtures-social.md": "fixtures/social/index.md",
+  "print/fixtures-social.html": "_print/fixtures/social/index.html",
+  "html/fixtures-map.html": "fixtures/map/index.html",
+  "markdown/fixtures-map.md": "fixtures/map/index.md",
+  "print/fixtures-map.html": "_print/fixtures/map/index.html"
  }
 }

@@ -1,6 +1,16 @@
 {{- $page := .PageInner | default .Page -}}
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $destination := strings.TrimSpace .Destination -}}
+{{- /* Video, audio and video-platform URLs share image syntax; the media
+     partial owns them. Everything else is an image, as before. */ -}}
+{{- $media := partial "content/media-detect.html" (dict "page" $page "src" $destination) -}}
+{{- if $media.kind -}}
+{{- partial "content/media.html" (dict
+  "page" $page "format" $format "position" .Position "src" $destination
+  "alt" (.PlainText | default "") "isBlock" .IsBlock "attributes" .Attributes
+  "ordinal" .Ordinal "detect" $media
+) -}}
+{{- else -}}
 {{- if not $destination }}{{ warnf "image: empty destination at %s; dropping the image" .Position }}{{ end -}}
 {{- $alt := .PlainText | default "" -}}
 {{- $title := .Title | default "" -}}
@@ -123,5 +133,6 @@
   {{- /* Metadata never promotes a plain image to a figure. */ -}}
   <figcaption>{{ with $label }}<span class="td-fig-label">{{ . }}</span>{{ end }}{{ with $caption }} <span class="td-fig-caption">{{ . }}</span>{{ end }}{{ with $image.byline }}<small class="td-figure__byline">{{ . }}</small>{{ end }}</figcaption>
 </figure>
+{{- end -}}
 {{- end -}}
 {{- end -}}

@@ -263,3 +263,9 @@ ui_compare_retry: 'Újra'
 ui_pagination: Lapozás
 ui_breadcrumb: Navigációs útvonal
 ui_nav_more: "További navigáció"
+
+ui_video_play: "Videó lejátszása"
+ui_video_open: "Megnyitás a videóoldalon"
+ui_social_view_original: "Eredeti megtekintése"
+ui_map_label: "Térkép"
+ui_map_open_osm: "Megnyitás az OpenStreetMapen"

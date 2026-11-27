@@ -63,6 +63,13 @@ params:
   drawio:
     enable: true
     drawio_server: https://embed.diagrams.net/
+  # Opt-in network features: platform players load after a click, and map
+  # tiles come from the configured service. Builds still fetch nothing.
+  video_embeds: [bilibili, youtube]
+  map:
+    enable: true
+    tiles: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+    attribution: "© OpenStreetMap contributors"
   ui:
     github_stars: 2189
     dark_mode:

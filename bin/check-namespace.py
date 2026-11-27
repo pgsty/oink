@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # oink.pgsty.com/docs/design/components/ owns the public marker namespace.
 AUTHOR_MARKERS = {
     "steps", "cards", "fields", "matrix", "full-width", "wide", "expand", "no-step-marker",
+    "timeline", "update",
 }
 
 # Site-owned markers used only by the self-contained regression fixture. They

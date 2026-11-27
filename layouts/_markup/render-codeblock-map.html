@@ -1,0 +1,161 @@
+{{- /* ```map {caption="…" route=true zoom=15 height="420px"} — a YAML or JSON
+       list of places. Each place: name (required), lat and lng (required
+       WGS 84 numbers), text, image, link. The numbered place list is the
+       content in every output; when params.map is complete, HTML adds an
+       interactive map above it whose numbered markers match the list.
+       Nothing is fetched at build time; tiles load in the reader's browser
+       only on sites that configured a tile service. */ -}}
+{{- $page := .PageInner | default .Page -}}
+{{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $position := .Position -}}
+{{- $policy := partial "content/attributes.html" (dict
+  "attributes" .Attributes "allowed" (slice "id" "caption" "route" "zoom" "height" "tab" "group" "value")
+  "position" $position "kind" "map"
+) -}}
+{{- $caption := strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
+{{- $route := false -}}
+{{- with index $policy.consumed "route" -}}
+  {{- $raw := lower (strings.TrimSpace .) -}}
+  {{- if eq $raw "true" }}{{ $route = true }}{{ else if ne $raw "false" }}{{ warnf "map: route must be true or false; got %q at %s; using false" . $position }}{{ end -}}
+{{- end -}}
+{{- $zoom := 0 -}}
+{{- with index $policy.consumed "zoom" -}}
+  {{- if and (findRE `^[0-9]{1,2}$` .) (ge (int .) 1) (le (int .) 19) -}}
+    {{- $zoom = int . -}}
+  {{- else -}}
+    {{- warnf "map: zoom must be a whole number from 1 to 19; got %q at %s; fitting the places instead" . $position -}}
+  {{- end -}}
+{{- end -}}
+{{- $height := "" -}}
+{{- with index $policy.consumed "height" -}}
+  {{- $height = partial "validate.html" (dict "value" . "kind" "length" "fallback" "" "key" "map height" "where" $position) -}}
+{{- end -}}
+{{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
+{{- if and (isset $policy.consumed "tab") (not $tab) }}{{ warnf "map: tab label must not be empty at %s; ignoring tab" $position }}{{ end -}}
+{{- if and (or (isset $policy.consumed "group") (isset $policy.consumed "value")) (not $tab) }}{{ warnf "map: group/value require tab at %s; ignoring them" $position }}{{ end -}}
+
+{{- /* Places. */ -}}
+{{- $source := strings.TrimSpace .Inner -}}
+{{- $items := slice -}}
+{{- if not $source -}}
+  {{- warnf "map: the fence requires a list of places at %s; rendering nothing" $position -}}
+{{- else -}}
+  {{- /* Parse as YAML by name, never by content sniffing: a YAML list such
+         as `- {name: …}` would otherwise be read as JSON. JSON is YAML. */ -}}
+  {{- $result := try (resources.FromString (printf "td-map/%s.yaml" (md5 $source)) $source | transform.Unmarshal) -}}
+  {{- if $result.Err -}}
+    {{- warnf "map: places are not valid YAML/JSON at %s: %s; rendering nothing" $position $result.Err -}}
+  {{- else if not (reflect.IsSlice $result.Value) -}}
+    {{- warnf "map: the fence must hold a list of places at %s; rendering nothing" $position -}}
+  {{- else -}}
+    {{- $items = $result.Value -}}
+  {{- end -}}
+{{- end -}}
+{{- $known := slice "name" "lat" "lng" "text" "image" "link" -}}
+{{- $numeric := slice "float64" "int" "int64" "uint64" -}}
+{{- $places := slice -}}
+{{- range $index, $item := $items -}}
+  {{- $n := add $index 1 -}}
+  {{- if not (reflect.IsMap $item) -}}
+    {{- warnf "map: place %d must be a mapping at %s; skipping it" $n $position -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- range $key, $_ := $item -}}
+    {{- if not (in $known $key) }}{{ warnf "map: place %d has unknown field %q at %s (allowed: %s); ignoring it" $n $key $position (delimit $known ", ") }}{{ end -}}
+  {{- end -}}
+  {{- $name := "" -}}
+  {{- with index $item "name" }}{{ $name = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- if not $name -}}
+    {{- warnf "map: place %d requires a name at %s; skipping it" $n $position -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $lat := index $item "lat" -}}
+  {{- $lng := index $item "lng" -}}
+  {{- if not (and (in $numeric (printf "%T" $lat)) (in $numeric (printf "%T" $lng))) -}}
+    {{- warnf "map: place %q requires numeric lat and lng at %s; skipping it" $name $position -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- if or (lt (float $lat) -90.0) (gt (float $lat) 90.0) (lt (float $lng) -180.0) (gt (float $lng) 180.0) -}}
+    {{- warnf "map: place %q has lat %v and lng %v outside -90..90 and -180..180 at %s; skipping it" $name $lat $lng $position -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $text := "" -}}
+  {{- with index $item "text" }}{{ $text = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- $thumb := dict -}}
+  {{- with index $item "image" -}}
+    {{- $image := partial "content/image-resolve.html" (dict "name" "map" "label" "map fence" "position" $position "page" $page "src" . "decorative" true) -}}
+    {{- if $image.src -}}
+      {{- $src := $image.src -}}{{- $w := $image.width -}}{{- $h := $image.height -}}
+      {{- if $image.processable -}}
+        {{- with $image.resource.Fit "480x360" }}{{ $src = .RelPermalink }}{{ $w = .Width }}{{ $h = .Height }}{{ end -}}
+      {{- end -}}
+      {{- if eq $format "rss" }}{{ $src = absURL $src }}{{ end -}}
+      {{- $thumb = dict "src" $src "width" $w "height" $h -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $href := "" -}}
+  {{- with index $item "link" -}}
+    {{- $link := partial "content/url.html" (dict "name" "map" "label" "map fence" "parameter" (printf "place %d link" $n) "position" $position "value" . "kind" "link") -}}
+    {{- $href = $link.href -}}
+  {{- end -}}
+  {{- $places = $places | append (dict "name" $name "lat" (float $lat) "lng" (float $lng) "label" (printf "%v, %v" $lat $lng) "text" $text "thumb" $thumb "href" $href) -}}
+{{- end -}}
+{{- if and $items (not $places) }}{{ warnf "map: no valid place at %s; rendering nothing" $position }}{{ end -}}
+
+{{- if $places -}}
+{{- $config := partialCached "content/map-config.html" . $page.Site.Language.Lang -}}
+{{- $interactive := and $config.enable (eq $format "html") -}}
+{{- $id := printf "td-map-%s-f%d" (md5 $page.RelPermalink) .Ordinal -}}
+{{- with index $policy.consumed "id" -}}
+  {{- with partial "book/validate-id.html" (dict "name" "map" "value" . "position" $position) }}{{ $id = . }}{{ end -}}
+{{- end -}}
+{{- $classes := slice "td-map" -}}
+{{- if $interactive }}{{ $classes = $classes | append "td-map--interactive" }}{{ end -}}
+{{- $classes = $classes | append $policy.classes -}}
+{{- $rows := slice -}}
+{{- range $place := $places -}}
+  {{- $osm := printf "https://www.openstreetmap.org/?mlat=%v&mlon=%v#map=16/%v/%v" .lat .lng .lat .lng -}}
+  {{- $nameHTML := htmlEscape .name -}}
+  {{- with .href }}{{ $nameHTML = printf `<a href="%s">%s</a>` (htmlEscape .) $nameHTML }}{{ end -}}
+  {{- $thumbHTML := "" -}}
+  {{- with $place.thumb.src -}}
+    {{- $thumbHTML = printf `<img class="td-map__thumb" src="%s" alt=""%s%s loading="lazy" decoding="async">` (htmlEscape .)
+      (cond (gt ($place.thumb.width | default 0) 0) (printf ` width="%d"` $place.thumb.width) "")
+      (cond (gt ($place.thumb.height | default 0) 0) (printf ` height="%d"` $place.thumb.height) "") -}}
+  {{- end -}}
+  {{- $row := printf `<li>%s<span class="td-map__place"><span class="td-map__name">%s</span>%s<a class="td-map__coords" href="%s" rel="external" title="%s">%s</a></span></li>`
+    $thumbHTML $nameHTML
+    (cond (ne .text "") (printf ` <span class="td-map__text">%s</span>` (htmlEscape .text)) "")
+    (htmlEscape $osm) (htmlEscape (T "ui_map_open_osm")) (htmlEscape .label) -}}
+  {{- $rows = $rows | append $row -}}
+{{- end -}}
+{{- $html := "" -}}
+{{- $canvas := "" -}}
+{{- $data := "" -}}
+{{- if $interactive -}}
+  {{- $page.Store.Set "hasMap" true -}}
+  {{- $canvas = printf `<div class="td-map__canvas" data-td-map-canvas role="region" aria-label="%s" hidden%s></div>`
+    (htmlEscape (cond (ne $caption "") $caption (T "ui_map_label")))
+    (cond (ne $height "") (printf ` style="height: %s"` $height) "") -}}
+  {{- $json := slice -}}
+  {{- range $places }}{{ $json = $json | append (dict "name" .name "lat" .lat "lng" .lng "text" .text "thumb" (.thumb.src | default "") "href" .href) }}{{ end -}}
+  {{- $data = printf `<script type="application/json" data-td-map-source>%s</script>` (dict "places" $json "route" $route "zoom" $zoom | jsonify) -}}
+{{- end -}}
+{{- $html = printf `<figure id="%s" class="%s"%s%s>%s<ol class="td-map__places">%s</ol>%s%s</figure>`
+  $id (delimit $classes " ")
+  (cond $interactive " data-td-map" "")
+  (partial "content/attrs.html" $policy.generic)
+  $canvas (delimit $rows "")
+  (cond (ne $caption "") (printf `<figcaption>%s</figcaption>` (htmlEscape $caption)) "")
+  $data -}}
+{{- if $tab -}}
+  {{- partial "content/tab-block.html" (dict
+    "page" $page "position" $position "tab" $tab
+    "group" (index $policy.consumed "group" | default "")
+    "value" (index $policy.consumed "value" | default "")
+    "kind" "code" "content" ($html | safeHTML)
+  ) -}}
+{{- else -}}
+  {{- $html | safeHTML -}}
+{{- end -}}
+{{- end -}}

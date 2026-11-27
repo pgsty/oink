@@ -1,8 +1,21 @@
 {{- /* Every heading carries its id and a self-link anchor that the content
      styles reveal on hover (`.td-heading-self-link`). Block attributes follow
      the shared policy: `id` is consumed, `class` passes through validated,
-     data-* / aria-* pass through, and unsupported attributes warn and drop. */ -}}
-{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" (slice "id") "position" .Page.Path "kind" "heading") -}}
+     data-* / aria-* pass through, and unsupported attributes warn and drop.
+
+     The `.update` author marker makes the heading a changelog entry: it also
+     accepts `date` (YYYY, YYYY-MM or YYYY-MM-DD) and `tags` (comma-separated
+     plain text), rendered as a metadata line after the heading so the heading
+     text, its TOC entry, anchor and search title stay exactly as authored. */ -}}
+{{- $allowed := slice "id" -}}
+{{- $update := false -}}
+{{- with index .Attributes "class" -}}
+  {{- if in (split (printf "%v" .) " ") "update" -}}
+    {{- $update = true -}}
+    {{- $allowed = slice "id" "date" "tags" -}}
+  {{- end -}}
+{{- end -}}
+{{- $policy := partial "content/attributes.html" (dict "attributes" .Attributes "allowed" $allowed "position" .Page.Path "kind" "heading") -}}
 {{- $id := index $policy.consumed "id" | default .Anchor -}}
 <h{{ .Level }} id="{{ $id }}"
   {{- with $policy.class }} class="{{ . }}"{{ end -}}
@@ -10,3 +23,20 @@
   {{- .Text -}}
   <a class="td-heading-self-link" href="#{{ $id | safeURL }}" aria-label="{{ T "ui_heading_self_link" }}"></a>
 </h{{ .Level }}>
+{{ if $update -}}
+  {{- $date := strings.TrimSpace (index $policy.consumed "date" | default "") -}}
+  {{- if and $date (not (findRE `^[0-9]{4}(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$` $date)) -}}
+    {{- warnf "heading %q: update date must be YYYY, YYYY-MM or YYYY-MM-DD; got %q in %s; dropping the date" .PlainText $date .Page.Path -}}
+    {{- $date = "" -}}
+  {{- end -}}
+  {{- $tags := slice -}}
+  {{- range split (index $policy.consumed "tags" | default "") "," -}}
+    {{- with strings.TrimSpace . }}{{ $tags = $tags | append . }}{{ end -}}
+  {{- end -}}
+  {{- if or $date $tags -}}
+<div class="td-update-meta">
+  {{- with $date }}<time datetime="{{ . }}">{{ . }}</time>{{ end -}}
+  {{- range $tags }}<span class="td-update-tag">{{ . }}</span>{{ end -}}
+</div>
+{{ end -}}
+{{- end -}}

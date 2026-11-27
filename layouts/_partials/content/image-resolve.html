@@ -2,6 +2,7 @@
 {{- $name := .name | default "image" -}}
 {{- $label := printf "shortcode %q" $name -}}
 {{- if eq $name "image" }}{{ $label = "image" }}{{ else if eq $name "gallery" }}{{ $label = "gallery fence" }}{{ end -}}
+{{- with .label }}{{ $label = . }}{{ end -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $page := .page -}}
 {{- $sourceValue := .src -}}
@@ -12,30 +13,9 @@
 {{- $source := $validated.raw -}}
 {{- $scheme := $validated.scheme -}}
 
-{{- $kind := "static" -}}
-{{- $resource := false -}}
-{{- $lookup := strings.TrimPrefix "/" $source -}}
-{{- if not $scheme -}}
-  {{- $resource = $page.Resources.Get $lookup -}}
-  {{- if $resource -}}
-    {{- $kind = "page" -}}
-  {{- else -}}
-    {{- /* Branch-bundle resources: a regular page in a section may reference
-           files that live beside it under the section directory
-           (content/blog/pg/post/image.png → resource "post/image.png" of blog/pg). */ -}}
-    {{- with $page.CurrentSection -}}
-      {{- if ne . $page -}}
-        {{- with .Resources.Get $lookup }}{{ $resource = . }}{{ $kind = "page" }}{{ end -}}
-      {{- end -}}
-    {{- end -}}
-    {{- if not $resource -}}
-      {{- $resource = resources.Get $lookup -}}
-      {{- if $resource }}{{ $kind = "global" }}{{ end -}}
-    {{- end -}}
-  {{- end -}}
-{{- else -}}
-  {{- $kind = "remote" -}}
-{{- end -}}
+{{- $found := partial "content/resource-lookup.html" (dict "page" $page "source" $source "scheme" $scheme) -}}
+{{- $kind := $found.kind -}}
+{{- $resource := $found.resource -}}
 
 {{- $src := $validated.href -}}
 {{- $fullSrc := $src -}}

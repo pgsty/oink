@@ -1,0 +1,20 @@
+{{- /* The video platforms whose player may load in place after a reader
+       clicks: params.video_embeds, a list drawn from youtube, bilibili and
+       vimeo. Absent or empty, platform cards only link out. Anything else
+       warns and enables nothing. Returns a slice of platform names. */ -}}
+{{- $value := site.Params.video_embeds -}}
+{{- $known := slice "youtube" "bilibili" "vimeo" -}}
+{{- $enabled := slice -}}
+{{- if reflect.IsSlice $value -}}
+  {{- range $value -}}
+    {{- $name := lower (strings.TrimSpace (printf "%v" .)) -}}
+    {{- if in $known $name -}}
+      {{- if not (in $enabled $name) }}{{ $enabled = $enabled | append $name }}{{ end -}}
+    {{- else -}}
+      {{- warnf "params.video_embeds: unknown platform %q (known: youtube, bilibili, vimeo); ignoring it" $name -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if ne $value nil -}}
+  {{- warnf "params.video_embeds must be a list of platforms (youtube, bilibili, vimeo); got %v; video cards only link out" $value -}}
+{{- end -}}
+{{- return $enabled -}}

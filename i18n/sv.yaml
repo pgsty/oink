@@ -263,3 +263,9 @@ ui_compare_retry: 'Försök igen'
 ui_pagination: Sidnavigering
 ui_breadcrumb: Brödsmulor
 ui_nav_more: "Fler navigeringslänkar"
+
+ui_video_play: "Spela upp video"
+ui_video_open: "Öppna på videowebbplatsen"
+ui_social_view_original: "Visa originalet"
+ui_map_label: "Karta"
+ui_map_open_osm: "Öppna i OpenStreetMap"

@@ -263,3 +263,9 @@ ui_compare_retry: 'Opnieuw proberen'
 ui_pagination: Paginanavigatie
 ui_breadcrumb: Kruimelpad
 ui_nav_more: "Meer navigatie"
+
+ui_video_play: "Video afspelen"
+ui_video_open: "Openen op de videosite"
+ui_social_view_original: "Origineel bekijken"
+ui_map_label: "Kaart"
+ui_map_open_osm: "Openen in OpenStreetMap"

@@ -1,0 +1,35 @@
+{{- /* Find the resource a content reference names, without fetching
+       anything: the page bundle, then a branch-bundle sibling under the
+       section directory, then global assets/. A reference with a URL scheme
+       is remote; anything else not found is a path under static/. The image
+       and media resolvers share this one order.
+       Input: page, source (a validated reference), scheme (its URL scheme or
+       ""). Returns dict: resource (or false) and kind
+       (page | global | static | remote). */ -}}
+{{- $page := .page -}}
+{{- $source := .source -}}
+{{- $kind := "static" -}}
+{{- $resource := false -}}
+{{- $lookup := strings.TrimPrefix "/" $source -}}
+{{- if not .scheme -}}
+  {{- $resource = $page.Resources.Get $lookup -}}
+  {{- if $resource -}}
+    {{- $kind = "page" -}}
+  {{- else -}}
+    {{- /* Branch-bundle resources: a regular page in a section may reference
+           files that live beside it under the section directory
+           (content/blog/pg/post/image.png → resource "post/image.png" of blog/pg). */ -}}
+    {{- with $page.CurrentSection -}}
+      {{- if ne . $page -}}
+        {{- with .Resources.Get $lookup }}{{ $resource = . }}{{ $kind = "page" }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not $resource -}}
+      {{- $resource = resources.Get $lookup -}}
+      {{- if $resource }}{{ $kind = "global" }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $kind = "remote" -}}
+{{- end -}}
+{{- return (dict "resource" $resource "kind" $kind) -}}

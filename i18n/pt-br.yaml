@@ -264,3 +264,9 @@ ui_compare_retry: 'Tentar novamente'
 ui_pagination: Paginação
 ui_breadcrumb: Caminho de navegação
 ui_nav_more: "Mais navegação"
+
+ui_video_play: "Reproduzir vídeo"
+ui_video_open: "Abrir no site do vídeo"
+ui_social_view_original: "Ver original"
+ui_map_label: "Mapa"
+ui_map_open_osm: "Abrir no OpenStreetMap"

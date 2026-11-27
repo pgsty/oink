@@ -267,3 +267,9 @@ ui_compare_retry: 'إعادة المحاولة'
 ui_pagination: التنقل بين الصفحات
 ui_breadcrumb: مسار التنقل
 ui_nav_more: "المزيد من روابط التنقل"
+
+ui_video_play: "تشغيل الفيديو"
+ui_video_open: "فتح على موقع الفيديو"
+ui_social_view_original: "عرض الأصل"
+ui_map_label: "خريطة"
+ui_map_open_osm: "فتح في OpenStreetMap"

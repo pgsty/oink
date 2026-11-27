@@ -263,3 +263,9 @@ ui_compare_retry: 'আবার চেষ্টা করুন'
 ui_pagination: পৃষ্ঠা নেভিগেশন
 ui_breadcrumb: অবস্থান নির্দেশক
 ui_nav_more: "আরও নেভিগেশন"
+
+ui_video_play: "ভিডিও চালান"
+ui_video_open: "ভিডিও সাইটে খুলুন"
+ui_social_view_original: "মূলটি দেখুন"
+ui_map_label: "মানচিত্র"
+ui_map_open_osm: "OpenStreetMap-এ খুলুন"

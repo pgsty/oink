@@ -264,3 +264,9 @@ ui_compare_retry: 'Pokušaj ponovo'
 ui_pagination: Navigacija po stranicama
 ui_breadcrumb: Putanja navigacije
 ui_nav_more: "Još navigacije"
+
+ui_video_play: "Pusti video"
+ui_video_open: "Otvori na sajtu za video"
+ui_social_view_original: "Pogledaj original"
+ui_map_label: "Mapa"
+ui_map_open_osm: "Otvori u OpenStreetMap-u"

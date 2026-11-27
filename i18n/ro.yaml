@@ -264,3 +264,9 @@ ui_compare_retry: 'Reîncearcă'
 ui_pagination: Paginare
 ui_breadcrumb: Cale de navigare
 ui_nav_more: "Mai multă navigare"
+
+ui_video_play: "Redă videoclipul"
+ui_video_open: "Deschide pe site-ul video"
+ui_social_view_original: "Vezi originalul"
+ui_map_label: "Hartă"
+ui_map_open_osm: "Deschide în OpenStreetMap"

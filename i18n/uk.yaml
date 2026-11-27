@@ -265,3 +265,9 @@ ui_compare_retry: 'Повторити'
 ui_pagination: Навігація сторінками
 ui_breadcrumb: Навігаційний ланцюжок
 ui_nav_more: "Ще розділи"
+
+ui_video_play: "Відтворити відео"
+ui_video_open: "Відкрити на відеосайті"
+ui_social_view_original: "Переглянути оригінал"
+ui_map_label: "Мапа"
+ui_map_open_osm: "Відкрити в OpenStreetMap"

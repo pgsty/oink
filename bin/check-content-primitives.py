@@ -906,7 +906,61 @@ INVALID_CASES = (
     ("include-dotdot", '{{< include file="../secret.md" >}}\n', "must not contain .."),
     ("include-lang-without-code", '{{< include file="x.md" lang="md" >}}\n', "lang requires code=true"),
     ("include-unknown", '{{< include file="x.md" draft=true >}}\n', "unsupported parameter"),
+    # Offline social posts: every invalid input warns at its position and keeps
+    # the quoted words whenever a body exists.
+    ("social-platform", '{{< social author="A" platform="myspace" >}}Hi{{< /social >}}\n', "platform must be one of"),
+    ("social-empty", '{{< social author="A" />}}\n', "has no body and no url"),
+    ("social-empty-link", '{{< social author="A" url="https://x.com/a/status/1" />}}\n', "rendering a link to the original post"),
+    ("social-anonymous", '{{< social >}}Hi{{< /social >}}\n', "requires author or handle"),
+    ("social-url", '{{< social author="A" url="javascript:alert(1)" >}}Hi{{< /social >}}\n', "unsupported url scheme"),
+    ("social-unknown", '{{< social author="A" likes="1K" >}}Hi{{< /social >}}\n', "unsupported parameter"),
+    # Map fences: invalid places are skipped with a warning; valid siblings stay.
+    ("map-empty", '```map\n```\n', "requires a list of places"),
+    ("map-not-list", '```map\nname: A\n```\n', "must hold a list of places"),
+    ("map-no-name", '```map\n- {lat: 1, lng: 2}\n- {name: B, lat: 1, lng: 2}\n```\n', "requires a name"),
+    ("map-range", '```map\n- {name: A, lat: 95, lng: 2}\n```\n', "outside -90..90"),
+    ("map-string-lat", '```map\n- {name: A, lat: "1", lng: 2}\n```\n', "requires numeric lat and lng"),
+    ("map-unknown-field", '```map\n- {name: A, lat: 1, lng: 2, icon: x}\n```\n', "unknown field"),
+    ("map-zoom", '```map {zoom=40}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
+    ("map-route", '```map {route=maybe}\n- {name: A, lat: 1, lng: 2}\n```\n', "route must be true or false"),
 )
+
+
+def check_update_headings(hugo: str) -> list[str]:
+    """`.update` headings: valid metadata renders, invalid input warns and keeps
+    the entry, and date/tags without the marker stay unsupported attributes.
+    The heading hook has no source position, so it names the page path."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-primitives-update-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs"
+        content.mkdir(parents=True)
+        (content / "updates.md").write_text(
+            "---\ntitle: Updates\n---\n\n"
+            '## v2 {.update date="2026-11" tags="Added, , Fixed"}\n\nBody.\n\n'
+            '## Bad date {.update date="2026-13-01"}\n\nBody.\n\n'
+            '## No marker {date="2026-01-01"}\n\nBody.\n'
+        )
+        result = run_hugo_process(
+            [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn",
+             "--destination", str(temp_path / "public")],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode == 0, f"update headings failed to build: {output.strip()[-400:]}", errors)
+        require("update date must be YYYY, YYYY-MM or YYYY-MM-DD" in output and "/docs/updates" in output,
+                f"an invalid update date did not warn with the page path: {output.strip()[-400:]}", errors)
+        require('unknown attribute "date"' in output, "date without the .update marker was accepted", errors)
+        page = temp_path / "public/docs/updates/index.html"
+        if page.is_file():
+            html = page.read_text()
+            require('<div class="td-update-meta"><time datetime="2026-11">2026-11</time><span class="td-update-tag">Added</span><span class="td-update-tag">Fixed</span></div>' in html,
+                    "update metadata line is missing or malformed", errors)
+            require('id="bad-date" class="update"' in html and html.count('class="td-update-meta"') == 1,
+                    "an invalid date must keep the entry and drop only its metadata", errors)
+        else:
+            errors.append("update headings lost their safe output")
+    return errors
 
 
 def check_invalid_cases(hugo: str) -> list[str]:
@@ -1062,6 +1116,7 @@ def main() -> int:
         + check_table_family(args.hugo)
         + check_table_reader(args.hugo)
         + check_invalid_cases(args.hugo)
+        + check_update_headings(args.hugo)
         + check_template_contracts()
     )
     if errors:

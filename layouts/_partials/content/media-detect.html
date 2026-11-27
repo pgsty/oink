@@ -1,0 +1,52 @@
+{{- /* Classify a Markdown image destination as video, audio, a video-platform
+       URL, or nothing (an ordinary image). Detection never warns: a
+       destination it cannot classify stays on the image path, whose URL
+       policy reports problems. Platforms are recognized by host; files by
+       the Hugo media type of a resolved resource, else by extension.
+       Input: page, src. Returns dict: kind ("" | video | audio | platform),
+       platform (youtube | bilibili | vimeo), url (the parsed URL), resource
+       and resourceKind from the shared lookup. */ -}}
+{{- $src := strings.TrimSpace (printf "%v" .src) -}}
+{{- $kind := "" -}}
+{{- $platform := "" -}}
+{{- $parsed := false -}}
+{{- $resource := false -}}
+{{- $resourceKind := "" -}}
+{{- if and $src (not (findRE `[\x00-\x20\x7f\\]` $src)) (not (hasPrefix $src "//")) -}}
+  {{- $result := try (urls.Parse $src) -}}
+  {{- if not $result.Err }}{{ $parsed = $result.Value }}{{ end -}}
+{{- end -}}
+{{- if $parsed -}}
+  {{- $scheme := lower $parsed.Scheme -}}
+  {{- if in (slice "http" "https") $scheme -}}
+    {{- $host := lower $parsed.Host | strings.TrimPrefix "www." | strings.TrimPrefix "m." -}}
+    {{- if in (slice "youtube.com" "youtu.be") $host -}}
+      {{- $platform = "youtube" -}}
+    {{- else if in (slice "bilibili.com" "b23.tv") $host -}}
+      {{- $platform = "bilibili" -}}
+    {{- else if eq $host "vimeo.com" -}}
+      {{- $platform = "vimeo" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $platform -}}
+    {{- $kind = "platform" -}}
+  {{- else if or (not $scheme) (in (slice "http" "https") $scheme) -}}
+    {{- $videoTypes := slice "mp4" "m4v" "webm" "ogv" "mov" -}}
+    {{- $audioTypes := slice "mp3" "m4a" "aac" "oga" "ogg" "opus" "wav" "flac" -}}
+    {{- $extension := lower (strings.TrimPrefix "." (path.Ext $parsed.Path)) -}}
+    {{- if not $scheme -}}
+      {{- $found := partial "content/resource-lookup.html" (dict "page" .page "source" $parsed.Path "scheme" "") -}}
+      {{- $resource = $found.resource -}}
+      {{- $resourceKind = $found.kind -}}
+    {{- end -}}
+    {{- $main := "" -}}
+    {{- with $resource }}{{ $main = .MediaType.MainType }}{{ end -}}
+    {{- if or (eq $main "video") (and (ne $main "audio") (in $videoTypes $extension)) -}}
+      {{- $kind = "video" -}}
+    {{- else if or (eq $main "audio") (in $audioTypes $extension) -}}
+      {{- $kind = "audio" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $kind }}{{ $resource = false }}{{ end -}}
+{{- return (dict "kind" $kind "platform" $platform "url" $parsed "resource" $resource "resourceKind" $resourceKind) -}}

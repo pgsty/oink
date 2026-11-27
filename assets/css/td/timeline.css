@@ -1,0 +1,180 @@
+/* ---------------------------------------------------------------------------
+   Timeline -- a Markdown definition list marked {.timeline}. Each term is a
+   marker (a date, a time, a version, "Day 2"); each definition is an event.
+   Goldmark emits the <dl>; the theme adds only this layout. The axis is the
+   start border of the event cells, so it stays continuous however tall a
+   row grows, and each marker carries the node that sits on it.
+   --------------------------------------------------------------------------- */
+.td-content dl.timeline {
+  --td-timeline-gap: 1.25rem;
+  --td-timeline-node: 0.7rem;
+  --td-timeline-line: var(--bs-border-color);
+  --td-timeline-accent: var(--td-accent, var(--bs-link-color));
+  margin-block: 1.75rem 2rem;
+  /* Narrow columns put the axis on the start edge; keep its nodes inside. */
+  padding: 0 0 0 calc(var(--td-timeline-node) * 0.5 + 1px);
+  padding-inline: calc(var(--td-timeline-node) * 0.5 + 1px) 0;
+}
+
+.td-content dl.timeline > dt,
+.td-content dl.timeline > dd {
+  position: relative;
+  margin: 0;
+  padding-inline-start: var(--td-timeline-gap);
+  border-inline-start: 1px solid var(--td-timeline-line);
+}
+
+.td-content dl.timeline > dt {
+  padding-block: 0.1rem 0.3rem;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.td-content dl.timeline > dt::after {
+  position: absolute;
+  inset-block-start: 0.45rem;
+  inset-inline-start: calc(var(--td-timeline-node) * -0.5 - 0.5px);
+  inline-size: var(--td-timeline-node);
+  block-size: var(--td-timeline-node);
+  border: 2px solid var(--td-timeline-accent);
+  border-radius: 50%;
+  background: var(--bs-body-bg);
+  content: '';
+}
+
+.td-content dl.timeline > dd {
+  padding-block-end: 1.25rem;
+  color: var(--bs-body-color);
+}
+
+.td-content dl.timeline > dd > :first-child {
+  margin-block-start: 0;
+}
+
+.td-content dl.timeline > dd > :last-child {
+  margin-block-end: 0;
+}
+
+.td-content dl.timeline > dd:last-child {
+  padding-block-end: 0;
+}
+
+/* Wide columns: markers move to their own column and end at the axis. */
+@media (min-width: 576px) {
+  .td-content dl.timeline {
+    display: grid;
+    grid-template-columns: fit-content(10rem) minmax(0, 1fr);
+    column-gap: 0;
+    padding-inline: 0;
+  }
+
+  .td-content dl.timeline > dt {
+    grid-column: 1;
+    padding-inline: 0 var(--td-timeline-gap);
+    border-inline-start: 0;
+    text-align: end;
+  }
+
+  .td-content dl.timeline > dt::after {
+    inset-inline: auto calc(var(--td-timeline-node) * -0.5 - 0.5px);
+  }
+
+  .td-content dl.timeline > dd {
+    grid-column: 2;
+  }
+}
+
+:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content dl.timeline > dt::after {
+  border-radius: var(--td-experiment-radius, 0);
+}
+
+@media (forced-colors: active) {
+  .td-content dl.timeline > dt,
+  .td-content dl.timeline > dd {
+    border-inline-start-color: CanvasText;
+  }
+
+  .td-content dl.timeline > dt::after {
+    border-color: CanvasText;
+    background: Canvas;
+  }
+}
+
+@media print {
+  .td-content dl.timeline > dt {
+    break-after: avoid;
+  }
+
+  .td-content dl.timeline > dt::after {
+    background: #fff;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Update -- an ordinary heading marked {.update date="…" tags="…"}. The
+   heading stays a heading (TOC, anchor, search, Print IDs); the hook adds a
+   metadata line after it. A separator gives a long stream its rhythm.
+   --------------------------------------------------------------------------- */
+.td-content :where(h2, h3, h4, h5, h6).update {
+  margin-block-start: 2.75rem;
+  padding-block-start: 1.25rem;
+  border-block-start: 1px solid var(--bs-border-color);
+}
+
+.td-content > :where(h2, h3, h4, h5, h6).update:first-child {
+  margin-block-start: 0;
+}
+
+.td-update-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  margin-block: -0.35rem 1rem;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.td-update-meta time {
+  font-variant-numeric: tabular-nums;
+}
+
+.td-update-tag {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.1em 0.5em;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-control-radius, 0.25rem);
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-update-tag {
+  border-radius: var(--td-experiment-radius, 0);
+}
+
+@media (forced-colors: active) {
+  .td-update-tag {
+    border-color: CanvasText;
+  }
+}
+
+@media print {
+  .td-content :where(h2, h3, h4, h5, h6).update {
+    break-after: avoid;
+  }
+
+  .td-update-meta {
+    break-before: avoid;
+  }
+}

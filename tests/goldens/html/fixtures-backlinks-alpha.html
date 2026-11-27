@@ -97,8 +97,8 @@ if (sessionStorage.getItem('td-kbd-zen') === '1') {
 html.setAttribute('data-td-kbd-zen', '');
 }
 var articleWidth = localStorage.getItem('td-shell-article-w');
-var articlePixels = parseInt(articleWidth, 10);
-if (articleWidth === 'none' || articlePixels > 0) {
+var articlePixels = /^\d+$/.test(articleWidth || '') ? parseInt(articleWidth, 10) : 0;
+if (articleWidth === 'none' || articlePixels >= 600) {
 html.setAttribute('data-td-shell-article-w', '');
 html.style.setProperty('--td-shell-article-w', articleWidth === 'none' ? 'none' : articlePixels + 'px');
 }

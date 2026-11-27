@@ -318,7 +318,7 @@
         case 'TR': return [{ t: 'row', kids: kidsOf(node) }];
         case 'TH': case 'TD': return cell(node, tag);
         case 'CAPTION': case 'FIGCAPTION': return [{ t: 'caption', kids: kidsOf(node) }];
-        case 'FIGURE': return [{ t: 'figure', kids: kidsOf(node) }];
+        case 'FIGURE': return [{ t: 'figure', start: has(node, 'td-media--audio'), kids: kidsOf(node) }];
         case 'DT': return [{ t: 'p', bold: true, kids: kidsOf(node) }];
         case 'SUMMARY': return [{ t: 'p', bold: true, kids: kidsOf(node) }];
         case 'DETAILS': {
@@ -649,7 +649,7 @@
           body += blocks([kid], { tight: true, ink: ctx.ink });
         }
       });
-      return body ? '<figure' + css('margin:' + above + 'px 0 ' + below(ctx) + 'px;text-align:center;') + '>' + body + '</figure>' : '';
+      return body ? '<figure' + css('margin:' + above + 'px 0 ' + below(ctx) + 'px;text-align:' + (n.start ? start : 'center') + ';') + '>' + body + '</figure>' : '';
     }
 
     function renderUpdateMeta(n) {

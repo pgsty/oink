@@ -222,8 +222,9 @@ def check_sources() -> None:
         "homepage focus mode is not restored before paint",
     )
     require(
-        "td-shell-article-w" in prepaint and "data-td-shell-article-w" in prepaint,
-        "the reader's reading width is not restored before paint",
+        "td-shell-article-w" in prepaint and "data-td-shell-article-w" in prepaint
+        and "articlePixels >= 600" in prepaint,
+        "the reader's reading width is not restored before paint with the minimum bound",
     )
     layout = (ROOT / "assets" / "css" / "td" / "shell" / "layout.css").read_text(encoding="utf-8")
     require(

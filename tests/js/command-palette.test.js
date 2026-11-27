@@ -152,6 +152,11 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
       kind: 'invoke', available: true, disabledReason: '', placements: { page: true, palette: true }, options: [],
     },
     {
+      id: 'browse_history', title: 'Browsing history', description: '', icon: 'fa-clock-rotate-left',
+      keywords: ['history'], kind: 'invoke', available: true, disabledReason: '',
+      placements: { page: false, palette: true }, options: [],
+    },
+    {
       id: 'edit_page', title: 'Edit page', description: '', icon: 'fa-edit', keywords: [],
       kind: 'url', available: false, disabledReason: 'No repository', placements: { page: true, palette: true }, options: [],
     },
@@ -895,6 +900,35 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
   await search(single);
   assert.deepEqual(single.fetches, ['/index.json']);
   assert.ok(single.controller.rows().every((row) => row.type !== 'body'));
+
+  // Activating browse_history closes the palette and restores focus to the
+  // original opener BEFORE running the action, so the history overlay captures
+  // the real opener rather than the palette's fading input.
+  const handoff = setup();
+  let activeDuringRun = null;
+  let openDuringRun = null;
+  const origRun = handoff.calls;
+  handoff.opener.focus();
+  handoff.opener.dispatch('click', { currentTarget: handoff.opener });
+  handoff.input.value = '>Browsing history';
+  handoff.input.dispatch('input');
+  const historyRow = handoff.controller.rows().findIndex((row) => row.sourceId === 'browse_history');
+  assert.ok(historyRow >= 0, 'browse_history appears in command mode');
+  const baseRun = handoff.controller;
+  assert.ok(baseRun);
+  // Spy by wrapping opener.focus + observing state synchronously on run.
+  let restoredBeforeRun = false;
+  handoff.opener.focus = () => {
+    document.activeElement = handoff.opener;
+    if (origRun.every((entry) => entry[1] !== 'browse_history')) restoredBeforeRun = true;
+  };
+  handoff.controller.activate(historyRow);
+  activeDuringRun = document.activeElement;
+  openDuringRun = handoff.controller.isOpen();
+  await tick();
+  assert.equal(restoredBeforeRun, true, 'browse_history restores opener focus before running the executor');
+  assert.equal(activeDuringRun, handoff.opener, 'focus sits on the real opener when history opens');
+  assert.equal(openDuringRun, false, 'palette closes immediately before handing off to history');
 
   console.log('Command Palette controller checks passed');
 })().catch((error) => {

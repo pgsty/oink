@@ -27,6 +27,12 @@ weight: 61
 
 ![第二个样本](https://example.org/media/clip.mp3)
 
+> [!DETAILS]- 文字稿：第二个样本
+>
+> 与录音配套的一段简短文字稿。
+
+行内音频是链接：句中的 ![音调](https://example.org/media/clip.mp3)。
+
 ## 平台卡片 {#platforms}
 
 ![OINK 架构分享](https://www.bilibili.com/video/BV1xx411c7mD?p=2&t=42)

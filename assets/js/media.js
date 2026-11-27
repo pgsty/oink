@@ -1,5 +1,6 @@
-// Media runtime, loaded only on pages with an autoplay video or a video card
-// whose platform the site enabled in params.video_embeds.
+// Media runtime, loaded only on pages with an autoplay video, a video card
+// whose platform the site enabled in params.video_embeds, or two or more
+// audio/video players (for single-active playback).
 //
 // 1. A video marked data-td-media-autoplay is muted and looped by its markup
 //    but carries no autoplay attribute. It plays while at least half of it is
@@ -9,6 +10,11 @@
 // 2. A card with data-td-media-embed is an ordinary link to the platform. A
 //    plain click replaces it with the platform player, whose URL the theme
 //    built from validated IDs; modified clicks keep the link behavior.
+// 3. A player that becomes audible, by starting with sound or by being
+//    unmuted while it plays, pauses every other audible player on the page so
+//    samples do not talk over each other. Silent players (muted or at zero
+//    volume), such as autoplay loops, neither interrupt nor get interrupted.
+//    Platform players in cross-origin iframes cannot take part.
 (function () {
   'use strict';
 
@@ -127,5 +133,38 @@
     holder.appendChild(frame);
     card.replaceWith(holder);
     frame.focus();
+  });
+
+  // A silent player (muted, or at zero volume) never takes part: the theme's
+  // autoplay loops and an author's own GIF-like loops play on undisturbed.
+  function isMedia(el) {
+    return !!el && (el.tagName === 'AUDIO' || el.tagName === 'VIDEO');
+  }
+
+  function silent(el) {
+    return !!el.muted || el.volume === 0;
+  }
+
+  function soloist(target) {
+    if (!isMedia(target) || target.paused || silent(target)) return;
+    var players = document.querySelectorAll('audio, video');
+    for (var i = 0; i < players.length; i += 1) {
+      var other = players[i];
+      if (other === target || other.paused || silent(other)) continue;
+      other.pause();
+    }
+  }
+
+  // Media events do not bubble, so both listen in the capture phase. A player
+  // becomes audible either by starting with sound or, already playing, by
+  // being unmuted (volumechange); both silence the others.
+  ['play', 'volumechange'].forEach(function (type) {
+    document.addEventListener(
+      type,
+      function (event) {
+        soloist(event.target);
+      },
+      true,
+    );
   });
 })();

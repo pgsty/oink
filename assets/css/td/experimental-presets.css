@@ -272,7 +272,8 @@
     white-space: nowrap;
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) ol.steps > li::before,
-:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-steps > :where(h2, h3, h4, h5, h6):not(.no-step-marker)::before {
+:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-steps > :where(h2, h3, h4, h5, h6):not(.no-step-marker)::before,
+:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-timeline li::before {
     border-radius: var(--td-experiment-radius);
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-landing {
@@ -335,7 +336,7 @@
   /* Underlines belong to prose, not card/control labels or heading anchors:
      a paragraph, a table cell, a caption, or an item of a plain or stepped
      list. A list that carries any other class is a component. */
-  [data-td-preset='ink'] .td-content :is(p, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+  [data-td-preset='ink'] .td-content :is(p, td, th, dt, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
 [data-td-preset='ink'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
     /* The shared accessibility sheet suppresses underlines with !important.
        Ink intentionally restores this non-color prose affordance. */
@@ -349,6 +350,9 @@
   [data-td-preset='ink'] .td-callout {
     background: var(--bs-body-bg);
     border-color: var(--bs-border-color);
+  }
+  [data-td-preset='ink'] .td-media--audio {
+    background: var(--bs-body-bg);
   }
   [data-td-preset='ink'] .td-callout__title {
     text-transform: uppercase;
@@ -405,8 +409,11 @@
   [data-td-preset='terminal'] .td-callout__title {
     font-family: var(--td-ui-font-family);
   }
-  [data-td-preset='terminal'] .td-code, [data-td-preset='terminal'] .td-tabs, [data-td-preset='terminal'] .td-table-scroll {
+  [data-td-preset='terminal'] .td-code, [data-td-preset='terminal'] .td-tabs, [data-td-preset='terminal'] .td-table-scroll, [data-td-preset='terminal'] .td-media--audio {
     border: 1px solid var(--td-brand-line-strong);
+  }
+  [data-td-preset='terminal'] .td-media__title {
+    font-family: var(--td-ui-font-family);
   }
   [data-td-preset='terminal'] .td-shell-search__item[aria-selected='true'] {
     background: var(--bs-body-color);

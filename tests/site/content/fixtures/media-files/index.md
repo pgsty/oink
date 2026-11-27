@@ -27,6 +27,12 @@ Inline media is a link: ![the test pattern](https://example.org/media/demo.mp4) 
 
 ![A second sample](https://example.org/media/clip.mp3)
 
+> [!DETAILS]- Transcript: A second sample
+>
+> A short spoken line rendered alongside the recording.
+
+Inline audio is a link: ![the tone](https://example.org/media/clip.mp3) in a sentence.
+
 ## Platform cards {#platforms}
 
 ![OINK architecture talk](https://www.bilibili.com/video/BV1xx411c7mD?p=2&t=42)

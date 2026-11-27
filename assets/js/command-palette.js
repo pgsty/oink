@@ -785,10 +785,14 @@
       } : null;
       if (extensionActivation) pendingExtension = extensionActivation;
       syncBusy();
-      var isPrint = row.sourceId === 'print' ||
-        (row.command && row.command.action === 'print') ||
-        (row.action && row.action.id === 'print');
-      if (isPrint) close(true, true);
+      var actionId = (row.action && row.action.id) ||
+        (row.command && row.command.action) ||
+        row.sourceId || '';
+      // Print and browsing history need the palette closed and focus restored
+      // before they open, so print drops the overlay and history records the
+      // page element the reader actually came from.
+      var closesBeforeRun = actionId === 'print' || actionId === 'browse_history';
+      if (closesBeforeRun) close(true, true);
       var operation;
       try { operation = runRow(row); } catch (error) { operation = Promise.reject(error); }
       Promise.resolve(operation).then(function (result) {
@@ -799,7 +803,7 @@
         }
         clearPending(activation);
         if (extensionActivation && extensionActivation.handedOff) return;
-        if (activationSession !== session && !isPrint) return;
+        if (activationSession !== session && !closesBeforeRun) return;
         if (result && result.requiresChoice) {
           choiceState = { action: result.action, command: result.command || null };
           render(input.value);
@@ -818,7 +822,7 @@
           render(input.value);
           if (restoreInput) input.focus({ preventScroll: true });
           announce(row.title || (result.action && result.action.title) || labels.actions);
-        } else if (!isPrint) {
+        } else if (!closesBeforeRun) {
           close(true);
         }
       }).catch(function (error) {

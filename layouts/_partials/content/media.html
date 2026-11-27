@@ -41,7 +41,7 @@
 {{- if eq $format "rss" }}{{ $href = $absolute }}{{ end -}}
 {{- $fallbackName := cond (eq $kind "platform") $href ($file | default $href) -}}
 {{- $name := $alt -}}
-{{- if and (not $name) (or (eq $kind "audio") (not .isBlock)) -}}
+{{- if and (not .isBlock) (not $name) -}}
   {{- if eq $kind "audio" -}}
     {{- warnf "audio: the bracket text names the recording and is its visible title; it is empty at %s; using the file name" $position -}}
   {{- else -}}
@@ -56,23 +56,50 @@
 {{- else -}}
 
 {{- /* Block attributes. */ -}}
-{{- $allowed := slice "id" "caption" -}}
+{{- $allowed := slice "id" "caption" "preload" -}}
 {{- if eq $kind "video" }}{{ $allowed = slice "id" "num" "caption" "poster" "track" "autoplay" "width" "height" }}{{ end -}}
 {{- if eq $kind "platform" }}{{ $allowed = slice "id" "num" "caption" "poster" "width" "height" }}{{ end -}}
 {{- $policy := partial "content/attributes.html" (dict "attributes" .attributes "allowed" $allowed "position" $position "kind" $label) -}}
 {{- $caption := strings.TrimSpace (index $policy.consumed "caption" | default "") -}}
+{{- $block := hugo.Context.MarkupScope -}}
+{{- if not (hasPrefix $block "td-block/") }}{{ $block = "" }}{{ end -}}
+{{- $identity := printf "%s:%s:%d" $block $kind .ordinal -}}
+{{- if and (not $alt) (eq $kind "audio") -}}
+  {{- if $caption -}}
+    {{- warnf "audio: the bracket text names the recording and is its visible title; it is empty at %s (move the title from caption into the brackets); using the file name" $position -}}
+  {{- else -}}
+    {{- warnf "audio: the bracket text names the recording and is its visible title; it is empty at %s; using the file name" $position -}}
+  {{- end -}}
+{{- end -}}
 {{- $num := "" -}}
 {{- $id := "" -}}
 {{- with index $policy.consumed "num" -}}
   {{- $num = partial "book/validate-num.html" (dict "name" $label "value" . "position" $position) -}}
 {{- end -}}
 {{- with index $policy.consumed "id" -}}
-  {{- $id = partial "book/validate-id.html" (dict "name" $label "value" . "position" $position) -}}
+  {{- $id = partial "book/validate-id.html" (dict "name" $label "label" $label "value" . "position" $position) -}}
 {{- end -}}
+{{- $mediaIDs := $page.Store.Get "tdMediaIDs" | default (dict) -}}
 {{- if $num -}}
   {{- if not $id }}{{ $id = printf "fig-%s" $num }}{{ end -}}
-  {{- if not (partial "book/register-target.html" (dict "page" $page "kind" "fig" "source" $label "num" $num "id" $id "caption" $caption "position" $position "ordinal" .ordinal)) -}}
+  {{- if and (isset $mediaIDs $id) (ne (index $mediaIDs $id) $identity) -}}
+    {{- warnf "%s: duplicate id %q at %s; keeping the first" $label $id $position -}}
     {{- $id = "" -}}
+  {{- else if not (partial "book/register-target.html" (dict "page" $page "kind" "fig" "source" $label "num" $num "id" $id "caption" $caption "position" $position "ordinal" .ordinal)) -}}
+    {{- $id = "" -}}
+  {{- end -}}
+{{- else if $id -}}
+  {{- $bookTargets := $page.Store.Get "tdBookTargets" | default (dict) -}}
+  {{- if isset $bookTargets $id -}}
+    {{- warnf "%s: duplicate id %q at %s; keeping the first" $label $id $position -}}
+    {{- $id = "" -}}
+  {{- else if isset $mediaIDs $id -}}
+    {{- if ne (index $mediaIDs $id) $identity -}}
+      {{- warnf "%s: duplicate id %q at %s; keeping the first" $label $id $position -}}
+      {{- $id = "" -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $page.Store.SetInMap "tdMediaIDs" $id $identity -}}
   {{- end -}}
 {{- end -}}
 {{- /* Every player needs a name: the bracket text, else the caption, else
@@ -124,7 +151,7 @@
 {{- with $poster }}{{ $posterSrc = cond (eq $format "rss") (absURL .src) .src }}{{ end -}}
 
 {{- $classes := slice "td-media" (printf "td-media--%s" (cond (eq $kind "platform") "embed" $kind)) -}}
-{{- if or $caption $num }}{{ $classes = $classes | append "td-figure" }}{{ end -}}
+{{- if and (ne $kind "audio") (or $caption $num) }}{{ $classes = $classes | append "td-figure" }}{{ end -}}
 {{- if $num }}{{ $classes = $classes | append "td-book-figure" "td-book-figure--fig" }}{{ end -}}
 {{- $classes = $classes | append $policy.classes -}}
 {{- $figcaption := "" -}}
@@ -144,13 +171,55 @@
 
 {{- if eq $kind "audio" -}}
   {{- /* Audio has no picture, so its name is a visible title. */ -}}
-  {{- $title := printf `<figcaption><span class="td-media__title">%s</span>%s</figcaption>`
-    (htmlEscape $name)
-    (cond (ne $caption "") (printf ` <span class="td-fig-caption">%s</span>` (htmlEscape $caption)) "") -}}
-  {{- if in (slice "print" "rss") $format -}}
-{{ $open | safeHTML }}{{ $title | safeHTML }}{{ $urlLine | safeHTML }}</figure>
+  {{- $preloadDefault := "metadata" -}}
+  {{- if eq $format "html" -}}
+    {{- $audioSeen := $page.Store.Get "tdAudioSeen" | default (dict) -}}
+    {{- $audioIdx := index $audioSeen $identity | default 0 -}}
+    {{- if eq $audioIdx 0 -}}
+      {{- $audioIdx = add (len $audioSeen) 1 -}}
+      {{- $page.Store.SetInMap "tdAudioSeen" $identity $audioIdx -}}
+    {{- end -}}
+    {{- if gt $audioIdx 6 }}{{ $preloadDefault = "none" }}{{ end -}}
+    {{- $page.Store.SetInMap "tdMediaPlayers" $identity true -}}
+    {{- if ge (len ($page.Store.Get "tdMediaPlayers")) 2 }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
+  {{- end -}}
+  {{- $preload := $preloadDefault -}}
+  {{- with index $policy.consumed "preload" -}}
+    {{- $value := lower (strings.TrimSpace .) -}}
+    {{- if in (slice "metadata" "none") $value -}}
+      {{- $preload = $value -}}
+    {{- else if eq $format "html" -}}
+      {{- /* preload exists only on the HTML player, whose default depends on
+             the player count; other outputs drop it without a second, differing
+             warning. */ -}}
+      {{- warnf "audio: preload must be metadata or none; got %q at %s; using %s" . $position $preloadDefault -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $format "rss" -}}
+    {{- $rssTitle := printf `<figcaption><span class="td-media__title"><a href="%s"%s>%s</a></span>%s</figcaption>`
+      (htmlEscape $href)
+      (cond (ne $validated.scheme "") ` rel="external"` "")
+      (htmlEscape $name)
+      (cond (ne $caption "") (printf ` <span class="td-fig-caption">%s</span>` (htmlEscape $caption)) "") -}}
+{{ $open | safeHTML }}{{ $rssTitle | safeHTML }}</figure>
+  {{- else if eq $format "print" -}}
+    {{- $printTitle := printf `<figcaption><span class="td-media__title">%s</span>%s</figcaption>`
+      (htmlEscape $name)
+      (cond (ne $caption "") (printf ` <span class="td-fig-caption">%s</span>` (htmlEscape $caption)) "") -}}
+    {{- $printLink := printf `<p class="td-media__link"><a href="%s"%s>%s</a></p>`
+      (htmlEscape $href)
+      (cond (ne $validated.scheme "") ` rel="external"` "")
+      (htmlEscape $absolute) -}}
+{{ $open | safeHTML }}{{ $printTitle | safeHTML }}{{ $printLink | safeHTML }}</figure>
   {{- else -}}
-{{ $open | safeHTML }}{{ $title | safeHTML }}<audio controls preload="metadata" src="{{ $href }}" aria-label="{{ $name }}"><a href="{{ $href }}">{{ $name }}</a></audio>{{ $urlLine | safeHTML }}</figure>
+    {{- $audioBase := printf "td-audio-%s-a%d" (md5 $page.RelPermalink) .ordinal -}}
+    {{- $titleID := printf "%s-title" $audioBase -}}
+    {{- $captionID := cond (ne $caption "") (printf "%s-caption" $audioBase) "" -}}
+    {{- $title := printf `<figcaption><span class="td-media__title" id="%s">%s</span>%s</figcaption>`
+      $titleID
+      (htmlEscape $name)
+      (cond (ne $caption "") (printf ` <span class="td-fig-caption" id="%s">%s</span>` $captionID (htmlEscape $caption)) "") -}}
+{{ $open | safeHTML }}{{ $title | safeHTML }}<audio controls preload="{{ $preload }}" src="{{ $href }}" aria-labelledby="{{ $titleID }}"{{ with $captionID }} aria-describedby="{{ . }}"{{ end }}><a href="{{ $href }}">{{ $name }}</a></audio>{{ $urlLine | safeHTML }}</figure>
   {{- end -}}
 
 {{- else if eq $kind "video" -}}
@@ -178,7 +247,8 @@
   {{- if in (slice "print" "rss") $format -}}
 {{ $open | safeHTML }}{{ with $posterSrc }}<img class="td-media__poster" src="{{ . }}" alt="{{ $name }}"{{ if gt $posterWidth 0 }} width="{{ $posterWidth }}"{{ end }}{{ if gt $posterHeight 0 }} height="{{ $posterHeight }}"{{ end }} loading="lazy" decoding="async">{{ end }}{{ $staticLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>
   {{- else -}}
-    {{- if $autoplay }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
+    {{- $page.Store.SetInMap "tdMediaPlayers" $identity true -}}
+    {{- if or $autoplay (ge (len ($page.Store.Get "tdMediaPlayers")) 2) }}{{ $page.Store.Set "hasMedia" true }}{{ end -}}
 {{ $open | safeHTML }}<video controls preload="metadata" playsinline src="{{ $href }}"{{ with $posterSrc }} poster="{{ . }}"{{ end }}{{ if gt $width 0 }} width="{{ $width }}"{{ end }}{{ if gt $height 0 }} height="{{ $height }}"{{ end }}{{ with $ratio }} style="{{ printf "aspect-ratio: %s" . | safeCSS }}"{{ end }}{{ if $autoplay }} muted loop data-td-media-autoplay{{ end }} aria-label="{{ $name }}">
   {{- with $track }}<track kind="subtitles" src="{{ . }}" srclang="{{ $page.Language.Lang }}" label="{{ $page.Language.Label | default $page.Language.Lang }}" default>{{ end -}}
   <a href="{{ $href }}">{{ $name }}</a></video>{{ $urlLine | safeHTML }}{{ $figcaption | safeHTML }}</figure>

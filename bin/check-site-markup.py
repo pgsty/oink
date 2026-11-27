@@ -77,6 +77,11 @@ def main() -> int:
             False,
             "markup.goldmark.parser.wrapStandAloneImageWithinParagraph: false",
         ),
+        (
+            ("markup", "goldmark", "extensions", "definitionlist"),
+            True,
+            "markup.goldmark.extensions.definitionList: true",
+        ),
     )
     missing = [label for keys, expected, label in required if nested(config, *keys) is not expected]
     if missing:

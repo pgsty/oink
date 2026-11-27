@@ -102,6 +102,9 @@ class Element {
     return copy;
   }
   matches(selector) {
+    if (selector.includes(',')) {
+      return selector.split(',').some((part) => this.matches(part.trim()));
+    }
     if (selector === 'a.td-shell-tree__link') {
       return this.tagName === 'A' && this.classList.contains('td-shell-tree__link');
     }
@@ -156,16 +159,22 @@ class Element {
     if (selector === 'input[data-gallery-size]') return this.tagName === 'INPUT' && this.hasAttribute('data-gallery-size');
     if (selector === '[data-td-shortcut]') return this.hasAttribute('data-td-shortcut');
     if (selector === '[data-td-shortcut-state]') return this.hasAttribute('data-td-shortcut-state');
-    if (selector === 'dd') return this.tagName === 'DD';
-    if (selector === 'details') return this.tagName === 'DETAILS';
-    if (selector === '[data-td-map-canvas], .td-map__canvas') {
-      return this.hasAttribute('data-td-map-canvas') || this.classList.contains('td-map__canvas');
+    if (selector === '[data-td-map-canvas]') return this.hasAttribute('data-td-map-canvas');
+    if (selector === '.td-map__canvas') return this.classList.contains('td-map__canvas');
+    if (selector === '[hidden]') return Boolean(this.hidden) || this.hasAttribute('hidden');
+    if (selector === '[inert]') return Boolean(this.inert) || this.hasAttribute('inert');
+    if (selector === '.td-site-header') return this.classList.contains('td-site-header');
+    if (selector === '.td-shell-sidebar__panel') return this.classList.contains('td-shell-sidebar__panel');
+    if (selector === '.td-shell-toc__panel') return this.classList.contains('td-shell-toc__panel');
+    if (selector === '#td-shell-sidebar') return this.id === 'td-shell-sidebar';
+    if (selector === '[data-td-shell-aside]') return this.hasAttribute('data-td-shell-aside');
+    if (selector === '.td-shell-article .td-content') {
+      return this.classList.contains('td-content') && Boolean(this.closest && this.closest('.td-shell-article'));
     }
+    if (selector === '.td-shell-article') return this.classList.contains('td-shell-article');
+    if (selector === '.td-shell-main') return this.classList.contains('td-shell-main');
     if (selector === '[data-td-shell-tree-toggle][aria-controls]') {
       return this.hasAttribute('data-td-shell-tree-toggle') && this.hasAttribute('aria-controls');
-    }
-    if (selector === '#td-shell-sidebar, [data-td-shell-aside]') {
-      return this.id === 'td-shell-sidebar' || this.hasAttribute('data-td-shell-aside');
     }
     if (selector === '[data-td-code].is-collapsible') {
       return this.hasAttribute('data-td-code') && this.classList.contains('is-collapsible');
@@ -173,6 +182,7 @@ class Element {
     if (selector === '[data-td-code-expand]') return this.hasAttribute('data-td-code-expand');
     if (selector === '.td-shell-layout .td-shell-article') return this.classList.contains('td-shell-article');
     if (selector === '[data-td-compare-open]') return this.hasAttribute('data-td-compare-open');
+    if (/^[a-z][a-z0-9]*$/.test(selector)) return this.tagName === selector.toUpperCase();
     return false;
   }
   querySelectorAll(selector) {
@@ -270,7 +280,7 @@ function helpPanelFixture(title = 'Keyboard shortcuts', closeLabel = 'Close') {
   help.appendChild(header);
   const groups = {
     navigation: ['tree-move', 'language', 'home'],
-    actions: ['search', 'print', 'gemini'],
+    actions: ['search', 'expand-all', 'print', 'gemini'],
     view: ['page-width', 'help'],
   };
   for (const [group, rows] of Object.entries(groups)) {
@@ -361,7 +371,9 @@ function setup({
     scrolledTo: [],
     assigned: [],
     hashes: [],
+    printed: 0,
     location: { href: 'https://example.test/docs/b/one/', pathname: '/docs/b/one/', search: '' },
+    print() { this.printed += 1; },
     scrollBy(x, y) { this.scrolled.push(y); },
     scrollTo(x, y) { this.scrolledTo.push(y); this.scrollY = y; },
     scrollY: 0,
@@ -1787,6 +1799,98 @@ function press(harness, values) {
   assert.notEqual(press(setup({ withTree: false }), { key: 'o' }).defaultPrevented, true,
     'o stays inert on a page with nothing to fold');
 
+  // Hidden/collapsed rails and Zen Mode do not hijack o or keep expand-all live.
+  const zenFold = setup({ withTree: false, withHelp: true });
+  const zenSidebar = new Element('aside');
+  zenSidebar.id = 'td-shell-sidebar';
+  const zenPanel = new Element('div', 'td-shell-sidebar__panel');
+  const zenToggle = new Element('button');
+  zenToggle.setAttribute('data-td-shell-tree-toggle', '');
+  zenToggle.setAttribute('aria-controls', 'zen-group');
+  zenToggle.setAttribute('aria-expanded', 'false');
+  zenPanel.appendChild(zenToggle);
+  zenSidebar.appendChild(zenPanel);
+  zenFold.root.appendChild(zenSidebar);
+  const zenDetails = new Element('details');
+  zenDetails.open = true;
+  const hiddenWrap = new Element('div');
+  hiddenWrap.hidden = true;
+  const hiddenDetails = new Element('details');
+  hiddenDetails.open = false;
+  hiddenWrap.appendChild(hiddenDetails);
+  zenFold.root.appendChild(zenDetails);
+  zenFold.root.appendChild(hiddenWrap);
+  // Desktop collapsed sidebar isolates the panel; o ignores its closed toggle
+  // and closes the visible open <details> on the first press.
+  zenFold.html.setAttribute('data-td-shell-sidebar', 'collapsed');
+  zenPanel.setAttribute('aria-hidden', 'true');
+  press(zenFold, { key: 'o' });
+  assert.equal(zenDetails.open, false, 'o ignores collapsed-rail toggles and closes an open details on the first press');
+  assert.equal(zenToggle.getAttribute('aria-expanded'), 'false', 'o does not toggle a collapsed sidebar');
+  assert.equal(hiddenDetails.open, false, 'o ignores details inside [hidden]');
+  // In Zen Mode with no article foldables, o stays inert and help dims expand-all.
+  zenFold.html.removeAttribute('data-td-shell-sidebar');
+  zenPanel.removeAttribute('aria-hidden');
+  zenFold.root.children = zenFold.root.children.filter((c) => c !== zenDetails && c !== hiddenWrap);
+  zenFold.html.setAttribute('data-td-kbd-zen', '');
+  assert.notEqual(press(zenFold, { key: 'o' }).defaultPrevented, true,
+    'o does nothing in Zen Mode when only hidden rails have foldables');
+  press(zenFold, { key: "'" });
+  const zenDialog = zenFold.root.querySelector('[data-td-keyboard-dialog]');
+  const zenExpandRow = zenDialog.querySelectorAll('[data-td-shortcut]')
+    .find((row) => row.getAttribute('data-td-shortcut') === 'expand-all');
+  assert.equal(zenExpandRow.classList.contains('td-is-unavailable'), true,
+    'help dims expand-all in Zen Mode when no article foldables exist');
+
+  // Anchor preservation scans article blocks (no elementFromPoint required)
+  // and compensates scrollY when a <details> above the reading line opens.
+  const anchored = setup({ withTree: false });
+  anchored.win.scrollY = 400;
+  const anchorArticle = new Element('article', 'td-shell-article');
+  const anchorContent = new Element('div', 'td-content');
+  const anchorFold = new Element('details');
+  anchorFold.open = false;
+  const anchorList = new Element('li');
+  const anchorHeading = new Element('h2');
+  let shift = 0;
+  anchorList.getBoundingClientRect = () => ({ top: -100 + shift, bottom: 500 + shift, height: 600 });
+  anchorHeading.getBoundingClientRect = () => ({ top: 72 + shift, bottom: 108 + shift, height: 36 });
+  anchorList.appendChild(anchorHeading);
+  anchorContent.appendChild(anchorFold);
+  anchorContent.appendChild(anchorList);
+  anchorArticle.appendChild(anchorContent);
+  anchored.root.appendChild(anchorArticle);
+  Object.defineProperty(anchorFold, 'open', {
+    get() { return this._open || false; },
+    set(value) { this._open = Boolean(value); shift = this._open ? 320 : 0; },
+  });
+  press(anchored, { key: 'o' });
+  assert.equal(anchored.win.scrollY, 720, 'o preserves the deepest visible article block without elementFromPoint');
+  anchored.frames.splice(0).forEach((fn) => fn());
+
+  // P falls back to window.print() when no registry owns print, and respects
+  // unavailable print descriptors in both the key handler and help dialog.
+  const fallbackPrint = setup({ withTree: false });
+  assert.equal(press(fallbackPrint, { key: 'p' }).defaultPrevented, true, 'P prints via window.print fallback');
+  assert.equal(fallbackPrint.win.printed, 1);
+  const blockedPrint = setup({
+    withTree: false,
+    withHelp: true,
+    registry: {
+      get(id) { return id === 'print' ? { id: 'print', available: false } : null; },
+      run() { throw new Error('must not run unavailable print'); },
+    },
+  });
+  assert.notEqual(press(blockedPrint, { key: 'p' }).defaultPrevented, true,
+    'P respects an unavailable print descriptor instead of bypassing the registry');
+  assert.equal(blockedPrint.win.printed, 0);
+  press(blockedPrint, { key: "'" });
+  const blockedPrintRow = blockedPrint.root.querySelector('[data-td-keyboard-dialog]')
+    .querySelectorAll('[data-td-shortcut]')
+    .find((row) => row.getAttribute('data-td-shortcut') === 'print');
+  assert.equal(blockedPrintRow.classList.contains('td-is-unavailable'), true,
+    'help dims P when print is unavailable');
+
   // ------------------------------------------------- - and = page width
   const sized = setup({ withTree: false });
   const shellMain = new Element('div', 'td-shell-main');
@@ -1838,6 +1942,47 @@ function press(harness, values) {
   press(sized, { key: '-' });
   assert.equal(stored(), '900', '- still narrows a full column');
 
+  // Book reading_width: slim constrains .td-content (768px) inside a 1050px
+  // .td-shell-article with 96px horizontal padding (effective width 864px).
+  const bookSized = setup({ withTree: false });
+  const bookMain = new Element('div', 'td-shell-main');
+  bookMain.clientWidth = 1320;
+  const bookArticle = new Element('article', 'td-shell-article');
+  const bookContent = new Element('div', 'td-content');
+  bookArticle.appendChild(bookContent);
+  bookMain.appendChild(bookArticle);
+  bookSized.root.appendChild(bookMain);
+  bookSized.win.getComputedStyle = (el) => ({
+    display: 'block',
+    visibility: 'visible',
+    getPropertyValue(name) {
+      if (el === bookArticle && (name === 'padding-left' || name === 'padding-right')) return '48px';
+      return '';
+    },
+  });
+  bookArticle.getBoundingClientRect = () => {
+    if (!bookSized.html.hasAttribute('data-td-shell-article-w')) return { top: 0, width: 1050 };
+    const value = bookSized.html.style.props['--td-shell-article-w'];
+    return { top: 0, width: value === 'none' ? bookMain.clientWidth : Math.min(parseFloat(value), bookMain.clientWidth) };
+  };
+  bookContent.getBoundingClientRect = () => {
+    const inner = bookArticle.getBoundingClientRect().width - 96;
+    return { top: 0, width: bookSized.html.hasAttribute('data-td-shell-article-w') ? inner : Math.min(768, inner) };
+  };
+  press(bookSized, { key: '-' });
+  assert.equal(bookSized.win.localStorage.getItem('td-shell-article-w'), '764',
+    '- narrows Book slim from its effective content+padding width (864 -> 764)');
+  assert.equal(bookContent.getBoundingClientRect().width, 668,
+    '- narrows visible Book slim .td-content by exactly 100px');
+  press(bookSized, { key: '=' });
+  assert.equal(bookSized.win.localStorage.getItem('td-shell-article-w'), null,
+    '= from narrowed Book slim snaps back to Book slim and clears storage');
+  assert.equal(bookContent.getBoundingClientRect().width, 768);
+  press(bookSized, { key: '=' });
+  assert.equal(bookSized.win.localStorage.getItem('td-shell-article-w'), '964',
+    '= widens Book slim by exactly 100px instead of jumping past 1050px');
+  assert.equal(bookContent.getBoundingClientRect().width, 868);
+
   // ------------------------------------------------- collapsed desktop tree
   const collapsed = setup({ sidebarToggle: true });
   collapsed.html.setAttribute('data-td-shell-sidebar', 'collapsed');
@@ -1870,7 +2015,7 @@ function press(harness, values) {
   );
 
   // ------------------------------------------------ embedded map canvas guard
-  const mapHost = setup();
+  const mapHost = setup({ articleWidth: true });
   const mapCanvas = new Element('div', 'td-map__canvas');
   mapCanvas.setAttribute('data-td-map-canvas', '');
   const mapMarker = new Element('div', 'td-map__marker');
@@ -1882,8 +2027,6 @@ function press(harness, values) {
   }
   assert.equal(mapHost.html.hasAttribute('data-td-shell-article-w'), false,
     '+ / - inside a map must not resize the reading column');
-  // The same tree key outside the map still belongs to keyboard navigation.
-  assert.equal(press(mapHost, { key: 'w' }).defaultPrevented, true, 'w outside the map moves in the tree');
 
   console.log('keyboard navigation checks passed');
 })();

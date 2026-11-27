@@ -962,6 +962,92 @@ INVALID_CASES = (
 )
 
 
+def check_timeline(hugo: str) -> list[str]:
+    """Native `{.timeline}` definition lists: static four-format output with zero
+    runtime, plus build-time warnings and safe fallbacks for detached markers,
+    non-<dl> targets, disabled definitionList, and callout-header collisions."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-primitives-timeline-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs"
+        content.mkdir(parents=True)
+        (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
+        (content / "valid.md").write_text(
+            "---\ntitle: Valid timeline\noutputs: [HTML, print, markdown]\n---\n\n"
+            "2024-05\n: **First.** Opening event.\n\n"
+            "2025-08\n: **Second.** First paragraph.\n\n  Second paragraph.\n: Same marker follow-up.\n"
+            "{.timeline}\n\n"
+            "> [!NOTE] Timeline in callout\n>\n> 2026-01\n> : Safe with a blank quote line.\n> {.timeline}\n\n"
+            "````markdown\n2026-02\n: Fenced example.\n\n```sh\necho ok\n```\n\n{.timeline}\n````\n"
+        )
+        (content / "detached.md").write_text(
+            "---\ntitle: Detached timeline\n---\n\n2024-05\n: Event.\n\n{.timeline}\n"
+        )
+        (content / "wrong-block.md").write_text(
+            "---\ntitle: Wrong block timeline\n---\n\n- **2024-05.** Bullet item.\n{.timeline}\n"
+        )
+        (content / "callout-swallow.md").write_text(
+            "---\ntitle: Callout swallow\n---\n\n> [!NOTE] Swallowed\n> 2026-01\n> : Missing blank quote line.\n> {.timeline}\n"
+        )
+        result = run_hugo_process(
+            [hugo, "--source", str(FIXTURE), "--contentDir", str(temp_path / "content"), "--logLevel", "warn",
+             "--destination", str(temp_path / "public")],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        output = result.stdout + result.stderr
+        require(result.returncode == 0, f"timeline probe failed to build: {output.strip()[-400:]}", errors)
+        require("/docs/valid" not in output, f"valid timeline (with 4-backtick fence and callout) emitted a false warning: {output.strip()[-400:]}", errors)
+        require("preceded by a blank line" in output and "/docs/detached" in output,
+                f"detached {{.timeline}} did not warn with the page path: {output.strip()[-400:]}", errors)
+        require("applies only to a Markdown definition list (<dl>), not <ul>" in output and "/docs/wrong-block" in output,
+                f"bullet-list {{.timeline}} did not warn with the page path: {output.strip()[-400:]}", errors)
+        require("callout header (> [!TYPE]) was parsed as a definition-list term" in output and "/docs/callout-swallow" in output,
+                f"callout-swallowed timeline did not warn with the page path: {output.strip()[-400:]}", errors)
+
+        valid_html = (temp_path / "public/docs/valid/index.html").read_text()
+        valid_md = (temp_path / "public/docs/valid/index.md").read_text()
+        valid_print = (temp_path / "public/_print/docs/valid/index.html").read_text()
+        valid_rss = unescape((temp_path / "public/docs/index.xml").read_text())
+        require(valid_html.count('<dl class="timeline">') == 2, "valid timeline HTML missing main or callout <dl class=\"timeline\">", errors)
+        require('class="td-callout td-callout--note"' in valid_html, "callout with blank '>' line failed to stay a callout", errors)
+        require(valid_print.count('<dl class="timeline">') == 2, "valid timeline Print lost <dl class=\"timeline\">", errors)
+        require('{.timeline}' in valid_md and '<dl' not in valid_md, "valid timeline Markdown lost source or leaked HTML", errors)
+        require('<dl class="timeline">' in valid_rss, "valid timeline RSS lost <dl class=\"timeline\">", errors)
+        require((temp_path / "public/docs/detached/index.html").is_file()
+                and (temp_path / "public/docs/wrong-block/index.html").is_file()
+                and (temp_path / "public/docs/callout-swallow/index.html").is_file(),
+                "invalid timeline cases lost their safe fallback HTML", errors)
+
+        # Also verify check-site-markup.py rejects definitionList: false.
+        no_dl = temp_path / "no-dl"
+        (no_dl / "content/docs").mkdir(parents=True)
+        (no_dl / "hugo.yaml").write_text(
+            "baseURL: https://example.org/\n"
+            "title: No DL\n"
+            f"theme: {ROOT.name}\n"
+            f"themesDir: {ROOT.parent}\n"
+            "markup:\n  goldmark:\n    renderer:\n      unsafe: true\n"
+            "    parser:\n      wrapStandAloneImageWithinParagraph: false\n"
+            "      attribute:\n        block: true\n"
+            "    extensions:\n      definitionList: false\n"
+        )
+        (no_dl / "content/docs/page.md").write_text("---\ntitle: P\n---\n\n2024-05\n: Event.\n{.timeline}\n")
+        preflight = run_hugo_process(
+            ["python3", str(ROOT / "bin/check-site-markup.py"), "--site", str(no_dl), "--hugo", hugo],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        require(preflight.returncode == 1 and "definitionList: true" in (preflight.stdout + preflight.stderr),
+                f"check-site-markup.py did not reject definitionList: false: {preflight.stdout}{preflight.stderr}", errors)
+        no_dl_build = run_hugo_process(
+            [hugo, "--source", str(no_dl), "--logLevel", "warn", "--destination", str(no_dl / "public")],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+        no_dl_out = no_dl_build.stdout + no_dl_build.stderr
+        require(no_dl_build.returncode == 0 and "not <p>" in no_dl_out and "definitionList" in no_dl_out,
+                f"definitionList: false page build did not warn cleanly: {no_dl_out}", errors)
+    return errors
+
+
 def check_social_posts(hugo: str) -> list[str]:
     """Social shortcode: platforms, nested symmetry, grapheme initials, dates,
     internal URLs, degraded outputs, and context-aware Markdown/RSS escaping."""
@@ -1342,6 +1428,22 @@ def check_template_contracts() -> list[str]:
     heading_hook = (ROOT / "layouts/_markup/render-heading.html").read_text()
     for marker in ('(eq (len .Attributes) 1) (eq (index .Attributes "id") .Anchor)', 'printf "%T"', "time.AsTime", "td-update-sep"):
         require(marker in heading_hook, f"render-heading.html lacks {marker}", errors)
+    timeline_styles = (ROOT / "assets/css/td/timeline.css").read_text()
+    for marker in (
+        "isolation: isolate",
+        "--td-timeline-surface:",
+        "--td-timeline-line: var(--td-brand-line-strong",
+        "z-index: 1",
+        "dd > p",
+        "dd:has(+ dd)",
+        ".td-content-card dl.timeline",
+        "break-after: avoid-page",
+        "break-inside: avoid-page",
+        "--td-print-ink",
+        "--td-print-meta",
+        "forced-colors: active",
+    ):
+        require(marker in timeline_styles, f"timeline.css lacks {marker}", errors)
     runtime = (ROOT / "assets/js/content-components.js").read_text()
     scripts = (ROOT / "layouts/_partials/scripts.html").read_text()
     require("initFileTree" not in runtime and "initCarousel" not in runtime, "content-components.js keeps removed runtimes", errors)
@@ -1409,6 +1511,7 @@ def main() -> int:
         + check_table_reader(args.hugo)
         + check_invalid_cases(args.hugo)
         + check_social_posts(args.hugo)
+        + check_timeline(args.hugo)
         + check_update_headings(args.hugo)
         + check_template_contracts()
     )

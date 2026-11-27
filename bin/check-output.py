@@ -81,6 +81,8 @@ class Structure(HTMLParser):
             self.print_chrome.add("site navigation")
         if attrs.get("id") == "td-shell-search" or "data-td-shell-search-open" in attrs:
             self.print_chrome.add("search")
+        if tag == "a" and any(name == "a" for name, _ in self.stack):
+            self.problems.append(f"{self.rel}:{self.getpos()[0]}: nested <a> inside <a>")
         if tag in STRICT and tag not in VOID:
             self.stack.append((tag, self.getpos()[0]))
         ident = attrs.get("id")
@@ -798,11 +800,13 @@ def self_test() -> list[str]:
     """The structure parser must catch what it claims to catch."""
     errors: list[str] = []
     bad = Structure("self-test.html")
-    bad.feed('<div id="a"><section><span id="a">x</div><p>optional end tags are fine<script src="https://cdn.example.net/x.js"></script>')
+    bad.feed('<div id="a"><section><span id="a">x</div><a href="/a"><a href="/b">nested</a></a><p>optional end tags are fine<script src="https://cdn.example.net/x.js"></script>')
     bad.close_all()
     text = " ".join(bad.problems) + " " + " ".join(bad.remote)
     if "<section> not closed" not in text and "<span> not closed" not in text:
         errors.append("self-test: unclosed elements were not reported")
+    if "nested <a> inside <a>" not in text:
+        errors.append("self-test: nested <a> was not reported")
     if bad.ids.get("a") != 2:
         errors.append("self-test: duplicate ids were not counted")
     if not bad.remote:

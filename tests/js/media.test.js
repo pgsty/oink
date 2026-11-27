@@ -1,8 +1,9 @@
 'use strict';
 
 // Contract of assets/js/media.js: viewport-aware autoplay for muted loop
-// videos, and the in-place player for enabled video-platform cards. Real
-// playback and iframes belong to the documentation site's browser suite.
+// videos, in-place player for enabled video-platform cards, and single-active
+// playback across audio/video players. Real playback and iframes belong to
+// the documentation site's browser suite.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -11,18 +12,23 @@ const vm = require('node:vm');
 
 const SOURCE = fs.readFileSync(path.join(__dirname, '../../assets/js/media.js'), 'utf8');
 
-function video() {
+function media(tagName = 'VIDEO', { autoplay = false, muted = false } = {}) {
   const listeners = new Map();
+  const attrs = new Set(autoplay ? ['data-td-media-autoplay'] : []);
   const node = {
+    tagName,
     paused: true,
-    muted: false,
+    muted,
     calls: [],
+    hasAttribute(name) {
+      return attrs.has(name);
+    },
     addEventListener(type, handler) {
       if (!listeners.has(type)) listeners.set(type, []);
       listeners.get(type).push(handler);
     },
     dispatch(type) {
-      (listeners.get(type) || []).forEach((handler) => handler({ type }));
+      (listeners.get(type) || []).forEach((handler) => handler({ type, target: node }));
     },
     play() {
       node.calls.push('play');
@@ -37,6 +43,14 @@ function video() {
     },
   };
   return node;
+}
+
+function video(options) {
+  return media('VIDEO', { autoplay: true, ...options });
+}
+
+function audio(options) {
+  return media('AUDIO', options);
 }
 
 // CSSStyleDeclaration's custom-property surface: the card's shape travels as
@@ -78,10 +92,11 @@ function element(tag) {
   return node;
 }
 
-function build({ videos = [], reduced = false } = {}) {
+function build({ videos = [], players = null, reduced = false } = {}) {
   const documentListeners = new Map();
   const timers = [];
   let observerCallback = null;
+  const allPlayers = players || videos;
   const motion = {
     matches: reduced,
     listeners: [],
@@ -92,8 +107,9 @@ function build({ videos = [], reduced = false } = {}) {
   const document = {
     hidden: false,
     querySelectorAll(selector) {
-      assert.equal(selector, 'video[data-td-media-autoplay]');
-      return videos;
+      if (selector === 'video[data-td-media-autoplay]') return videos;
+      if (selector === 'audio, video') return allPlayers;
+      assert.fail(`unexpected selector: ${selector}`);
     },
     addEventListener(type, handler) {
       documentListeners.set(type, handler);
@@ -124,6 +140,14 @@ function build({ videos = [], reduced = false } = {}) {
     motion,
     click(event) {
       documentListeners.get('click')(event);
+    },
+    play(target) {
+      target.paused = false;
+      documentListeners.get('play')({ type: 'play', target });
+    },
+    // Unmuting or changing volume fires volumechange, never play.
+    volume(target) {
+      documentListeners.get('volumechange')({ type: 'volumechange', target });
     },
     visibility() {
       documentListeners.get('visibilitychange')();
@@ -306,4 +330,82 @@ test('async play/pause events, no-op applies, and re-muting stay race-free', asy
   clip.dispatch('pause');
   page.intersect(clip, 0.9);
   assert.deepEqual(clip.calls, ['play', 'pause', 'play']);
+});
+
+test('starting an audio or audible video pauses other active players', () => {
+  const first = audio();
+  const second = audio();
+  const talk = media('VIDEO', { autoplay: false });
+  const page = build({ players: [first, second, talk] });
+
+  page.play(first);
+  assert.equal(first.paused, false);
+  assert.deepEqual(second.calls, []);
+
+  page.play(second);
+  assert.equal(first.paused, true);
+  assert.deepEqual(first.calls, ['pause']);
+  assert.equal(second.paused, false);
+  assert.deepEqual(talk.calls, [], 'paused players are not paused again');
+
+  page.play(talk);
+  assert.equal(second.paused, true);
+  assert.deepEqual(second.calls, ['pause']);
+  assert.equal(talk.paused, false);
+});
+
+test('silent players stay outside single-active playback until they become audible', () => {
+  const clip = audio();
+  const clip2 = audio();
+  const loop = video({ autoplay: true });
+  const gif = media('VIDEO', { muted: true });
+  const page = build({ videos: [loop], players: [clip, clip2, loop, gif] });
+
+  page.play(clip);
+  assert.equal(clip.paused, false);
+
+  // Viewport autoplay starts the muted loop without interrupting audio.
+  page.intersect(loop, 0.8);
+  page.play(loop);
+  assert.equal(clip.paused, false);
+  assert.deepEqual(clip.calls, []);
+  assert.equal(loop.paused, false);
+
+  // An author's own muted loop, without the theme marker, is silent too.
+  page.play(gif);
+  assert.equal(clip.paused, false);
+  assert.equal(gif.paused, false);
+
+  // Playing another audio pauses the first and leaves both silent loops running.
+  page.play(clip2);
+  assert.equal(clip.paused, true);
+  assert.equal(loop.paused, false);
+  assert.equal(gif.paused, false);
+
+  // Unmuting a loop that is already playing fires volumechange, not play:
+  // it becomes audible and pauses the audio.
+  loop.muted = false;
+  page.volume(loop);
+  assert.equal(clip2.paused, true);
+  assert.equal(loop.paused, false);
+  assert.equal(gif.paused, false);
+
+  // A volume change on a paused player, or a re-mute, silences nobody.
+  clip2.paused = true;
+  clip2.calls.length = 0;
+  page.volume(clip2);
+  loop.muted = true;
+  page.volume(loop);
+  assert.equal(loop.paused, false);
+  assert.deepEqual(clip2.calls, []);
+
+  // Zero volume counts as silent.
+  const quiet = audio();
+  quiet.volume = 0;
+  const loud = audio();
+  const page2 = build({ players: [quiet, loud] });
+  page2.play(loud);
+  quiet.paused = false;
+  page2.play(quiet);
+  assert.equal(loud.paused, false, 'a zero-volume player does not interrupt');
 });

@@ -410,6 +410,12 @@ HOOK_INVALID_CASES = (
     ("hook-video-width", '![x](https://example.org/clip.mp4)\n{width="0"}\n', "width must be a positive integer"),
     ("hook-video-link", '![x](https://example.org/clip.mp4)\n{link="/docs/"}\n', "unknown attribute"),
     ("hook-audio-unnamed", '![](https://example.org/tone.mp3)\n', "the bracket text names the recording"),
+    ("hook-audio-unnamed-captioned", '![](https://example.org/tone.mp3)\n{caption="Voice note"}\n', "move the title from caption into the brackets"),
+    ("hook-audio-invalid-id", '![x](https://example.org/tone.mp3)\n{#1bad}\n', "audio: id must match"),
+    ("hook-audio-duplicate-id", '![x](https://example.org/tone.mp3)\n{#dup}\n\n![y](https://example.org/tone.mp3)\n{#dup}\n', 'audio: duplicate id "dup"'),
+    ("hook-audio-preload-invalid", '![x](https://example.org/tone.mp3)\n{preload="auto"}\n', "audio: preload must be metadata or none"),
+    ("hook-audio-num", '![x](https://example.org/tone.mp3)\n{num="1"}\n', "unknown attribute"),
+    ("hook-audio-command", '![x](https://example.org/tone.mp3)\n{command="Fit" options="10x10"}\n', "unknown attribute"),
     ("hook-video-unnamed", '![](https://example.org/clip.mp4)\n', "the bracket text names the video"),
     ("hook-video-inline-unnamed", 'Watch ![](https://example.org/clip.mp4) now.\n', "the bracket text names the video"),
     ("hook-video-single-width", '![x](https://example.org/clip.mp4)\n{width="4"}\n', "width and height must be given together"),
@@ -473,6 +479,247 @@ def check_invalid_resource_alt(hugo: str) -> list[str]:
             if result.returncode == 0:
                 require('alt="Authored alt"' in (site / "public/docs/image/index.html").read_text(),
                         "invalid resource alt displaced the authored alt", errors)
+    return errors
+
+
+def check_audio_matrix(hugo: str) -> list[str]:
+    """Audio: local resources (incl. an extensionless audio/* resource and an
+    upper-case static extension), encoded fragments, ARIA IDs (incl.
+    shortcodes), duplicate IDs against Book targets in both orders, preload
+    threshold, JS gating, 4 outputs, and absolute URLs under a subpath baseURL."""
+    errors: list[str] = []
+    silent_wav = (
+        b"RIFF" + struct.pack("<I", 36) + b"WAVE"
+        + b"fmt " + struct.pack("<IHHIIHH", 16, 1, 1, 8000, 8000, 1, 8)
+        + b"data" + struct.pack("<I", 0)
+    )
+    with tempfile.TemporaryDirectory(prefix="oink-audio-matrix-") as temp:
+        temp_path = Path(temp)
+        content = temp_path / "content/docs"
+        assets = temp_path / "assets/audio"
+        static = temp_path / "static/audio"
+        layouts = temp_path / "layouts/docs"
+        synthetic = content / "audio-bundle"
+        for directory in (content / "audio-matrix", content / "single-audio", content / "pair-audio", content / "audio-video", synthetic, assets, static, layouts):
+            directory.mkdir(parents=True)
+        (content / "audio-matrix/sample.wav").write_bytes(silent_wav)
+        (assets / "global.wav").write_bytes(silent_wav)
+        (static / "static.ogg").write_bytes(b"OggS")
+        (static / "UPPER.MP3").write_bytes(b"ID3")
+        # Hugo defines no audio/* media types, so recordings are found by
+        # extension; a site-defined audio/* type on an extensionless resource
+        # must still be detected by its media type, not its file name.
+        (synthetic / "_content.gotmpl").write_text(
+            '{{ .AddPage (dict "kind" "page" "path" "bundle" "title" "Bundle audio" '
+            '"params" (dict "outputs" (slice "HTML")) '
+            '"content" (dict "mediaType" "text/markdown" "value" "![Synthetic voice](voice#t=1,2)\\n")) }}\n'
+            '{{ .AddResource (dict "path" "bundle/voice" "content" (dict "mediaType" "audio/x-oink-test" "value" "synthetic-audio")) }}\n'
+        )
+        (layouts / "single.rss.xml").write_text('{{- .Store.Set "tdOutputFormat" "rss" -}}\n<fixture>{{ (.Markup "td-rss-audio").Render.Content }}</fixture>\n')
+        (content / "audio-matrix/index.md").write_text(
+            "---\ntitle: Audio matrix\noutputs: [HTML, markdown, RSS, print]\n---\n\n"
+            "![Local WAV](sample.wav?v=2#t=2,5)\n"
+            '{#dup-audio caption="Captured note"}\n\n'
+            "> [!DETAILS]- Transcript: Local WAV\n"
+            ">\n"
+            "> Spoken line for the local recording.\n\n"
+            "![Global WAV](audio/global.wav#t=10,20)\n"
+            '{#dup-audio}\n\n'
+            "![Static OGG](/audio/static.ogg)\n"
+            '{#mix-id}\n\n'
+            "![Remote four](https://example.org/audio/4.mp3)\n\n"
+            "![Remote five](https://example.org/audio/5.mp3)\n\n"
+            "![Remote six](https://example.org/audio/6.mp3)\n"
+            '{preload="none"}\n\n'
+            "![Remote seven](https://example.org/audio/7.mp3)\n\n"
+            "![Remote eight](https://example.org/audio/8.mp3)\n"
+            '{preload="metadata"}\n\n'
+            "![Upper-case static](/audio/UPPER.MP3)\n\n"
+            "![Encoded fragment](sample.wav#t=1%2C2%22)\n\n"
+            "![Audio before a numbered image](https://example.org/audio/9.mp3)\n"
+            '{#audio-first}\n\n'
+            "![Numbered image after audio](/media/content-primitives-static.svg)\n"
+            '{num="2" #audio-first caption="Reuses the audio id"}\n\n'
+            "![Numbered image before audio](/media/content-primitives-static.svg)\n"
+            '{num="3" #image-first caption="Claims the id first"}\n\n'
+            "![Audio after a numbered image](https://example.org/audio/10.mp3)\n"
+            '{#image-first}\n\n'
+            "![Numbered video colliding with audio id](https://example.org/video/demo.mp4)\n"
+            '{num="1" #mix-id}\n\n'
+            '{{< tabs >}}\n'
+            '{{< tab label="Sample" >}}\n'
+            "![Tabbed audio](sample.wav)\n"
+            '{caption="Inside a tab"}\n'
+            '{{< /tab >}}\n'
+            '{{< /tabs >}}\n\n'
+            "Inline ![inline clip](sample.wav#t=1,2) mention.\n"
+        )
+        (content / "single-audio/index.md").write_text(
+            "---\ntitle: Single audio\noutputs: [HTML]\n---\n\n"
+            "![Solo clip](https://example.org/audio/solo.mp3)\n"
+        )
+        (content / "pair-audio/index.md").write_text(
+            "---\ntitle: Pair audio\noutputs: [HTML]\n---\n\n"
+            "![First clip](https://example.org/audio/1.mp3)\n\n"
+            "![Second clip](https://example.org/audio/2.mp3)\n"
+        )
+        (content / "audio-video/index.md").write_text(
+            "---\ntitle: Audio and video\noutputs: [HTML]\n---\n\n"
+            "![Voice](https://example.org/audio/1.mp3)\n\n"
+            "![Clip](https://example.org/video/1.mp4)\n"
+        )
+        override = temp_path / "audio.yaml"
+        override.write_text(
+            "disableKinds: [sitemap, taxonomy, term]\n"
+            "outputs:\n  home: [HTML]\n  section: [HTML]\n  page: [HTML, markdown, RSS, print]\n"
+            "mediaTypes:\n  audio/x-oink-test:\n    suffixes: [oinkaudio]\n"
+            f"assetDir: {temp_path / 'assets'}\n"
+            f"staticDir:\n  - {FIXTURE / 'static'}\n  - {temp_path / 'static'}\n"
+        )
+        destination = temp_path / "public"
+        result = run_hugo(
+            hugo,
+            "--source", str(FIXTURE),
+            "--contentDir", str(temp_path / "content"),
+            "--layoutDir", str(temp_path / "layouts"),
+            "--destination", str(destination),
+            "--config", fixture_media_config(override),
+            "--logLevel", "warn",
+        )
+        output = result.stdout + result.stderr
+        if result.returncode != 0:
+            errors.append(f"audio matrix failed to build: {output}")
+            return errors
+
+        require('audio: duplicate id "dup-audio"' in output, "audio matrix did not warn on duplicate audio id", errors)
+        require('video: duplicate id "mix-id"' in output, "audio matrix did not warn when numbered video reused an audio id", errors)
+        require('book component: duplicate id "audio-first"' in output and "already used by an unnumbered audio or video figure" in output,
+                "a numbered image reusing an earlier audio id did not warn", errors)
+        require('audio: duplicate id "image-first"' in output, "an audio reusing an earlier numbered image id did not warn", errors)
+        require(output.count("audio: preload must be metadata or none") == 0, "valid preload values warned", errors)
+
+        html = (destination / "docs/audio-matrix/index.html").read_text()
+        print_html = (destination / "_print/docs/audio-matrix/index.html").read_text()
+        markdown = (destination / "docs/audio-matrix/index.md").read_text()
+        rss_outputs = [path for path in destination.rglob("*.xml") if "audio-matrix" in path.parts]
+        rss = rss_outputs[0].read_text() if rss_outputs else ""
+
+        class AudioParser(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.ids: dict[str, int] = {}
+                self.audios: list[dict[str, str]] = []
+                self.audio_figures: list[dict[str, str]] = []
+
+            def handle_starttag(self, tag, attrs):
+                values = dict(attrs)
+                ident = values.get("id")
+                if ident:
+                    self.ids[ident] = self.ids.get(ident, 0) + 1
+                if tag == "audio":
+                    self.audios.append(values)
+                if tag == "figure" and "td-media--audio" in (values.get("class") or "").split():
+                    self.audio_figures.append(values)
+
+        parsed = AudioParser()
+        parsed.feed(html)
+        for ident, count in parsed.ids.items():
+            require(count == 1, f"audio matrix HTML has duplicate id {ident!r} ({count}x)", errors)
+        require(len(parsed.audios) == 13, f"expected 13 <audio> players (12 main + 1 tab), got {len(parsed.audios)}", errors)
+        for figure in parsed.audio_figures:
+            classes = (figure.get("class") or "").split()
+            require("td-figure" not in classes, "audio figure must not carry .td-figure", errors)
+        require(html.count('id="dup-audio"') == 1, "duplicate audio id was not dropped on the second figure", errors)
+        require(html.count('id="mix-id"') == 1, "colliding video id was not dropped after audio id", errors)
+
+        by_src = {a.get("src", ""): a for a in parsed.audios}
+        local_audio = by_src.get("/docs/audio-matrix/sample.wav?v=2#t=2,5")
+        require(local_audio is not None, "local bundle audio lost query or #t= fragment", errors)
+        if local_audio:
+            require("aria-label" not in local_audio, "audio player should use aria-labelledby instead of aria-label", errors)
+            lbl = local_audio.get("aria-labelledby", "")
+            desc = local_audio.get("aria-describedby", "")
+            require(lbl in parsed.ids, f"audio aria-labelledby {lbl!r} does not resolve", errors)
+            require(desc in parsed.ids, f"audio aria-describedby {desc!r} does not resolve", errors)
+            require(local_audio.get("preload") == "metadata", "first audio should default to preload=metadata", errors)
+        require("/audio/global.wav#t=10,20" in by_src, "global audio resource lost #t= fragment", errors)
+        require("/audio/static.ogg" in by_src, "static audio file did not render", errors)
+        require(by_src.get("https://example.org/audio/5.mp3", {}).get("preload") == "metadata", "5th audio should default to preload=metadata", errors)
+        require(by_src.get("https://example.org/audio/6.mp3", {}).get("preload") == "none", "explicit preload=none was ignored", errors)
+        require(by_src.get("https://example.org/audio/7.mp3", {}).get("preload") == "none", "7th audio should auto-switch to preload=none", errors)
+        require(by_src.get("https://example.org/audio/8.mp3", {}).get("preload") == "metadata", "explicit preload=metadata must override the 6-audio threshold", errors)
+        require("/audio/UPPER.MP3" in by_src, "an upper-case audio extension was not detected", errors)
+        require("/docs/audio-matrix/sample.wav#t=1%2C2%22" in by_src, "a percent-encoded fragment was decoded or lost on a local resource", errors)
+        require('href="/docs/audio-matrix/sample.wav#t=1%2C2%22"' in html and "#t=1,2&#34;" not in html,
+                "the screen URL line decoded the authored fragment", errors)
+        require(html.count('id="audio-first"') == 1 and html.count('id="image-first"') == 1,
+                "a duplicate id shared by audio and a numbered image survived", errors)
+        bundle_html = (destination / "docs/audio-bundle/bundle/index.html").read_text()
+        require('src="/docs/audio-bundle/bundle/voice#t=1,2"' in bundle_html and "<audio" in bundle_html,
+                "an extensionless audio/* resource did not render as an audio player", errors)
+
+        # Tabbed audio must have its generated title/caption IDs rewritten cleanly.
+        tab_audio = by_src.get("/docs/audio-matrix/sample.wav")
+        require(tab_audio is not None, "tabbed audio player missing", errors)
+        if tab_audio:
+            lbl = tab_audio.get("aria-labelledby", "")
+            desc = tab_audio.get("aria-describedby", "")
+            require(lbl.startswith("td-") and not lbl.startswith("td-audio-") and lbl in parsed.ids,
+                    f"tabbed audio aria-labelledby was not scope-rewritten: {lbl!r}", errors)
+            require(desc.startswith("td-") and not desc.startswith("td-audio-") and desc in parsed.ids,
+                    f"tabbed audio aria-describedby was not scope-rewritten: {desc!r}", errors)
+
+        require('<a class="td-media-link" href="/docs/audio-matrix/sample.wav#t=1,2">inline clip</a>' in html,
+                "inline audio link lost its local fragment or class", errors)
+
+        # Runtime gating: 1 audio loads 0 media JS; 2+ players load media chunk.
+        single_html = (destination / "docs/single-audio/index.html").read_text()
+        pair_html = (destination / "docs/pair-audio/index.html").read_text()
+        av_html = (destination / "docs/audio-video/index.html").read_text()
+        require("/js/chunks/media" not in single_html, "single-audio page unexpectedly loaded media.js", errors)
+        require("/js/chunks/media" in pair_html, "two-audio page did not load media.js for single-active playback", errors)
+        require("/js/chunks/media" in av_html, "audio+video page did not load media.js for single-active playback", errors)
+
+        # Print output: visible .td-media__link (not .td-media__url), no <audio>, expanded transcript.
+        require('<p class="td-media__link"><a href="/docs/audio-matrix/sample.wav?v=2#t=2,5">https://example.org/docs/audio-matrix/sample.wav?v=2#t=2,5</a></p>' in print_html,
+                "print audio output missing visible td-media__link", errors)
+        require("td-media__url" not in print_html, "print audio output still uses screen-hidden td-media__url", errors)
+        require("<audio" not in print_html, "print output leaked <audio>", errors)
+        require("Spoken line for the local recording." in print_html and "<details" not in print_html,
+                "print output did not statically expand the transcript callout", errors)
+
+        # RSS output: title links directly to absolute URL; no extra url paragraph.
+        require(bool(rss_outputs), "audio matrix produced no RSS output", errors)
+        if rss:
+            require('<span class="td-media__title"><a href="https://example.org/docs/audio-matrix/sample.wav?v=2#t=2,5">Local WAV</a></span> <span class="td-fig-caption">Captured note</span>' in rss,
+                    "RSS audio title is not linked directly to the absolute URL", errors)
+            require("td-media__url" not in rss and "<audio" not in rss, "RSS audio output leaked player or td-media__url", errors)
+
+        # Markdown output: authored syntax preserved, zero component HTML.
+        require("![Local WAV](sample.wav?v=2#t=2,5)" in markdown, "Markdown output lost authored audio link", errors)
+        require("> [!DETAILS]- Transcript: Local WAV" in markdown, "Markdown output lost transcript callout source", errors)
+        require("<audio" not in markdown and "td-media" not in markdown, "Markdown output leaked audio HTML", errors)
+
+        # A subpath baseURL: printed URLs keep the path for bundle and static files.
+        subpath = temp_path / "public-subpath"
+        result = run_hugo(
+            hugo,
+            "--source", str(FIXTURE),
+            "--contentDir", str(temp_path / "content"),
+            "--layoutDir", str(temp_path / "layouts"),
+            "--destination", str(subpath),
+            "--config", fixture_media_config(override),
+            "--baseURL", "https://example.org/manual/",
+            "--logLevel", "warn",
+        )
+        if result.returncode != 0:
+            errors.append(f"audio matrix (subpath baseURL) failed to build: {result.stdout + result.stderr}")
+            return errors
+        sub_print = (subpath / "_print/docs/audio-matrix/index.html").read_text()
+        require('<a href="/manual/docs/audio-matrix/sample.wav?v=2#t=2,5">https://example.org/manual/docs/audio-matrix/sample.wav?v=2#t=2,5</a>' in sub_print,
+                "subpath print lost the baseURL path on a bundle recording", errors)
+        require('<a href="/manual/audio/static.ogg">https://example.org/manual/audio/static.ogg</a>' in sub_print,
+                "subpath print lost the baseURL path on a static recording", errors)
     return errors
 
 
@@ -725,6 +972,7 @@ def main() -> int:
         + check_generic_rss_output(args.hugo)
         + check_invalid_cases(args.hugo)
         + check_invalid_resource_alt(args.hugo)
+        + check_audio_matrix(args.hugo)
         + check_video_matrix(args.hugo)
         + check_template_contracts()
         + check_media_stylesheet()

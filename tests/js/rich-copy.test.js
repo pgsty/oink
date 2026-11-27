@@ -188,6 +188,26 @@ test('update metadata copies as separated tokens instead of glued text', () => {
   assert.equal(typeset(meta), '2026-11-23, Breaking, Performance');
 });
 
+test('an audio figure keeps its start alignment and hidden print URL link', () => {
+  const url = el('p', { class: 'td-media__url' },
+    el('a', { href: 'https://example.org/media/clip.mp3', rel: 'external' }, 'https://example.org/media/clip.mp3'));
+  const figure = el('figure', { class: 'td-media td-media--audio' },
+    el('figcaption', null,
+      el('span', { class: 'td-media__title', id: 'td-audio-x-a0-title' }, 'Voice sample 1'),
+      ' ',
+      el('span', { class: 'td-fig-caption', id: 'td-audio-x-a0-caption' }, '440 Hz sine wave')),
+    el('audio', { controls: '', src: 'https://example.org/media/clip.mp3' },
+      el('a', { href: 'https://example.org/media/clip.mp3' }, 'Voice sample 1')),
+    url);
+  const env = { styleOf: node => (node === url ? { display: 'none' } : null) };
+  const html = typeset(el('div', { class: 'td-content' }, figure), env);
+  assert.match(html, /^<figure style="margin:0px 0 16px;text-align:left;"><figcaption[^>]*>Voice sample 1 440 Hz sine wave<\/figcaption><p[^>]*><a href="https:\/\/example\.org\/media\/clip\.mp3"[^>]*>https:\/\/example\.org\/media\/clip\.mp3<\/a><\/p><\/figure>$/);
+  assert.doesNotMatch(html, /<audio/);
+
+  const rtl = copy.render(copy.collector(null, env).walk(el('div', { class: 'td-content' }, figure)), { ...paper, rtl: true });
+  assert.match(rtl, /^<figure style="margin:0px 0 16px;text-align:right;">/);
+});
+
 test('platform cards avoid duplicate URLs before click and keep the fallback URL after click', () => {
   const cardUrl = el('p', { class: 'td-media__url' },
     el('span', { class: 'td-media__url-title' }, 'Talk · Bilibili · '),

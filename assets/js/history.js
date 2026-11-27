@@ -37,15 +37,28 @@
     return PREFIX + scope;
   }
 
+  function inScope(pathname, scope) {
+    return !scope || pathname.indexOf(scope) === 0 || pathname + '/' === scope;
+  }
+
   // Only a path inside this site survives. Anything else in the stored list
-  // (another site's path, a protocol-relative URL, a backslash) is dropped
-  // rather than repaired, so a tampered entry can never become a link.
+  // (another site's path, a traversal segment, a protocol-relative URL, a
+  // backslash) is dropped rather than repaired, so a tampered entry can never
+  // become a link.
   function sanitize(entry, scope) {
     if (!entry || typeof entry !== 'object') return null;
     var url = typeof entry.url === 'string' ? entry.url : '';
     if (url.charAt(0) !== '/' || url.charAt(1) === '/' || url.indexOf('\\') >= 0 ||
         /[\u0000-\u001f]/.test(url) || url.length > 2048) return null;
-    if (scope && url.indexOf(scope) !== 0 && url + '/' !== scope) return null;
+    var pathPart = url.split(/[?#]/)[0];
+    if (/(?:^|\/)(?:\.|%2e){2}(?:\/|$)/i.test(pathPart)) return null;
+    var resolved;
+    try {
+      resolved = new URL(url, 'https://scope.invalid');
+    } catch (_) {
+      return null;
+    }
+    if (resolved.origin !== 'https://scope.invalid' || !inScope(resolved.pathname, scope)) return null;
     var title = typeof entry.title === 'string' ? entry.title.replace(/\s+/g, ' ').trim().slice(0, 300) : '';
     var time = Number(entry.time);
     if (!isFinite(time) || time <= 0) return null;
@@ -145,8 +158,21 @@
     var rows = [];
     var selected = 0;
     var openState = false;
+    var composing = false;
     var returnFocus = null;
     var hideTimer = 0;
+
+    function isRendered(el) {
+      if (!el || !doc.contains(el)) return false;
+      if (typeof el.closest === 'function' && el.closest('[hidden], [inert], [aria-hidden="true"]'))
+        return false;
+      if (win.getComputedStyle) {
+        var style = win.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+      }
+      if (typeof el.getClientRects === 'function') return el.getClientRects().length > 0;
+      return el.offsetParent !== null;
+    }
 
     function label(name, fallback) {
       return root.getAttribute('data-td-t-' + name) || fallback;
@@ -241,7 +267,7 @@
       list.textContent = '';
       if (empty) empty.hidden = true;
       input.removeAttribute('aria-activedescendant');
-      if (clearButton) clearButton.disabled = read(win, scope).length === 0;
+      if (clearButton) clearButton.disabled = entries.length === 0;
       if (!rows.length) {
         message(entries.length ? label('no-results', 'No results') : label('empty', 'No browsing history yet'));
         return;
@@ -291,7 +317,7 @@
       } catch (_) {
         return;
       }
-      if (target.origin !== win.location.origin) return;
+      if (target.origin !== win.location.origin || !inScope(target.pathname, scope)) return;
       if (newTab) {
         win.open(target.href, '_blank', 'noopener');
         return;
@@ -334,11 +360,15 @@
       var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
       if (coordinator && typeof coordinator.closeOthers === 'function') coordinator.closeOthers('history');
       var active = doc.activeElement;
-      returnFocus = active && active !== doc.body && active !== html && !root.contains(active) &&
-        typeof active.focus === 'function'
+      var insideClosingOverlay = active && typeof active.closest === 'function' &&
+        Boolean(active.closest('.td-shell-search:not(.td-is-open)'));
+      returnFocus = active && active !== doc.body && active !== html &&
+        !root.contains(active) && !insideClosingOverlay &&
+        isRendered(active) && typeof active.focus === 'function'
         ? active
         : null;
       openState = true;
+      composing = false;
       win.clearTimeout(hideTimer);
       root.hidden = false;
       html.setAttribute('data-td-shell-lock', '');
@@ -359,6 +389,7 @@
     function close(restoreFocus) {
       if (!openState) return;
       openState = false;
+      composing = false;
       root.classList.remove('td-is-open');
       html.removeAttribute('data-td-shell-lock');
       input.setAttribute('aria-expanded', 'false');
@@ -370,14 +401,19 @@
       var active = doc.activeElement;
       var target = returnFocus;
       returnFocus = null;
-      if (
-        restoreFocus !== false && target && doc.contains(target) &&
-        (!active || active === doc.body || root.contains(active))
-      ) {
-        try {
-          target.focus({ preventScroll: true });
-        } catch (_) {
-          target.focus();
+      if (restoreFocus !== false && (!active || active === doc.body || root.contains(active))) {
+        if (target && !isRendered(target)) {
+          target = doc.getElementById && doc.getElementById('td-main-content');
+          if (target && !isRendered(target)) target = null;
+        }
+        if (target && typeof target.focus === 'function') {
+          try {
+            target.focus({ preventScroll: true });
+          } catch (_) {
+            target.focus();
+          }
+        } else if (active && root.contains(active) && typeof active.blur === 'function') {
+          active.blur();
         }
       }
     }
@@ -388,9 +424,16 @@
       });
     }
 
-    input.addEventListener('input', function () { render(); });
+    input.addEventListener('compositionstart', function () { composing = true; });
+    input.addEventListener('compositionend', function () {
+      composing = false;
+      render();
+    });
+    input.addEventListener('input', function () {
+      if (!composing) render();
+    });
     input.addEventListener('keydown', function (event) {
-      if (event.isComposing || event.keyCode === 229) return;
+      if (event.isComposing || composing || event.keyCode === 229) return;
       if (event.key === 'ArrowDown') {
         event.preventDefault();
         select(selected + 1);
@@ -412,13 +455,13 @@
       }
     });
     doc.addEventListener('keydown', function (event) {
-      if (!openState) return;
-      if (event.key === 'Escape' && !event.defaultPrevented) {
-        event.preventDefault();
-        close(true);
-        return;
-      }
-      if (event.key !== 'Tab') return;
+      if (!openState || event.key !== 'Escape' || event.defaultPrevented) return;
+      if (event.isComposing || composing || event.keyCode === 229) return;
+      event.preventDefault();
+      close(true);
+    });
+    doc.addEventListener('keydown', function (event) {
+      if (!openState || event.key !== 'Tab') return;
       var items = focusable();
       if (!items.length) return;
       var first = items[0];

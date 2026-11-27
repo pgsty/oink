@@ -8,11 +8,13 @@
 .td-content dl.timeline {
   --td-timeline-gap: 1.25rem;
   --td-timeline-node: 0.7rem;
-  --td-timeline-line: var(--bs-border-color);
+  --td-timeline-line: var(--td-brand-line-strong, var(--bs-border-color));
   --td-timeline-accent: var(--td-accent, var(--bs-link-color));
+  --td-timeline-surface: var(--bs-body-bg);
+  isolation: isolate;
   margin-block: 1.75rem 2rem;
   /* Narrow columns put the axis on the start edge; keep its nodes inside. */
-  padding: 0 0 0 calc(var(--td-timeline-node) * 0.5 + 1px);
+  padding-block: 0;
   padding-inline: calc(var(--td-timeline-node) * 0.5 + 1px) 0;
 }
 
@@ -24,6 +26,22 @@
   border-inline-start: 1px solid var(--td-timeline-line);
 }
 
+/* Start the narrow-screen rail at the center of the first node rather than
+   poking a stub above it. Dropping the border (instead of making it
+   transparent) keeps Chromium forced-colors mode from recoloring the stub. */
+.td-content dl.timeline > dt:first-child {
+  padding-inline-start: calc(var(--td-timeline-gap) + 1px);
+  border-inline-start: 0;
+}
+
+.td-content dl.timeline > dt:first-child::before {
+  position: absolute;
+  inset-block: calc(0.45rem + var(--td-timeline-node) * 0.5) 0;
+  inset-inline-start: 0;
+  border-inline-start: 1px solid var(--td-timeline-line);
+  content: '';
+}
+
 .td-content dl.timeline > dt {
   padding-block: 0.1rem 0.3rem;
   color: var(--bs-secondary-color);
@@ -33,26 +51,48 @@
   font-weight: 600;
   line-height: 1.5;
   overflow-wrap: anywhere;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+[dir='rtl'] .td-content dl.timeline > dt {
+  text-align: right;
 }
 
 .td-content dl.timeline > dt::after {
   position: absolute;
+  z-index: 1;
   inset-block-start: 0.45rem;
   inset-inline-start: calc(var(--td-timeline-node) * -0.5 - 0.5px);
   inline-size: var(--td-timeline-node);
   block-size: var(--td-timeline-node);
   border: 2px solid var(--td-timeline-accent);
   border-radius: 50%;
-  background: var(--bs-body-bg);
+  background: var(--td-timeline-surface);
   content: '';
+}
+
+.td-content dl.timeline > dt:first-child::after {
+  inset-inline-start: calc(var(--td-timeline-node) * -0.5 + 0.5px);
 }
 
 .td-content dl.timeline > dd {
   padding-block-end: 1.25rem;
-  color: var(--bs-body-color);
 }
 
-.td-content dl.timeline > dd > :first-child {
+/* Consecutive events under one marker stay visually grouped. */
+.td-content dl.timeline > dd:has(+ dd) {
+  padding-block-end: 0.75rem;
+}
+
+/* Goldmark emits the first paragraph of a definition as bare inline text and
+   wraps only continuation paragraphs in <p>. Keep a clear paragraph gap even
+   when the first paragraph has no inline wrapper element before <p>. */
+.td-content dl.timeline > dd > p {
+  margin-block-start: 0.75rem;
+}
+
+.td-content dl.timeline > dd > :first-child:not(p) {
   margin-block-start: 0;
 }
 
@@ -62,6 +102,27 @@
 
 .td-content dl.timeline > dd:last-child {
   padding-block-end: 0;
+}
+
+/* Match hollow node centers to tinted and elevated container surfaces. */
+.td-content dl.timeline dl.timeline {
+  margin-block: 0.75rem 0.25rem;
+}
+
+.td-content .td-callout dl.timeline {
+  --td-timeline-surface: var(--td-callout-bg, var(--bs-body-bg));
+}
+
+[data-td-preset='ink'] .td-content .td-callout dl.timeline {
+  --td-timeline-surface: var(--bs-body-bg);
+}
+
+.td-content .td-content-card dl.timeline {
+  --td-timeline-surface: var(--td-brand-elev, var(--bs-tertiary-bg));
+}
+
+.td-content .td-tabs dl.timeline {
+  --td-timeline-surface: var(--td-pre-bg, var(--bs-body-bg));
 }
 
 /* Wide columns: markers move to their own column and end at the axis. */
@@ -77,15 +138,109 @@
     grid-column: 1;
     padding-inline: 0 var(--td-timeline-gap);
     border-inline-start: 0;
-    text-align: end;
+    text-align: right;
   }
 
-  .td-content dl.timeline > dt::after {
+  [dir='rtl'] .td-content dl.timeline > dt {
+    text-align: left;
+  }
+
+  .td-content dl.timeline > dt:first-child {
+    padding-inline: 0 var(--td-timeline-gap);
+  }
+
+  .td-content dl.timeline > dt:first-child:not(:has(+ dt))::before {
+    content: none;
+  }
+
+  /* Bridge the wide-screen rail when two markers appear consecutively. */
+  .td-content dl.timeline > dt:has(+ dt)::before {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: auto -1px;
+    border-inline-start: 1px solid var(--td-timeline-line);
+    content: '';
+  }
+
+  .td-content dl.timeline > dt:first-child:has(+ dt)::before {
+    inset-block: calc(0.45rem + var(--td-timeline-node) * 0.5) 0;
+    inset-inline: auto -1px;
+    content: '';
+  }
+
+  .td-content dl.timeline > dt::after,
+  .td-content dl.timeline > dt:first-child::after {
     inset-inline: auto calc(var(--td-timeline-node) * -0.5 - 0.5px);
   }
 
   .td-content dl.timeline > dd {
     grid-column: 2;
+  }
+
+  /* Start the wide-screen rail at the center of the first node. */
+  .td-content dl.timeline > dt:first-child + dd {
+    padding-inline-start: calc(var(--td-timeline-gap) + 1px);
+    border-inline-start: 0;
+  }
+
+  .td-content dl.timeline > dt:first-child + dd::before {
+    position: absolute;
+    inset-block: calc(0.45rem + var(--td-timeline-node) * 0.5) 0;
+    inset-inline-start: 0;
+    border-inline-start: 1px solid var(--td-timeline-line);
+    content: '';
+  }
+
+  /* Cards sit in multi-column grids narrower than the viewport breakpoint;
+     keep timelines inside them in the single-column layout. */
+  .td-content .td-content-card dl.timeline {
+    display: block;
+    padding-inline: calc(var(--td-timeline-node) * 0.5 + 1px) 0;
+  }
+
+  .td-content .td-content-card dl.timeline > dt {
+    padding-inline: var(--td-timeline-gap) 0;
+    border-inline-start: 1px solid var(--td-timeline-line);
+    text-align: left;
+  }
+
+  [dir='rtl'] .td-content .td-content-card dl.timeline > dt {
+    text-align: right;
+  }
+
+  .td-content .td-content-card dl.timeline > dt:first-child {
+    padding-inline: calc(var(--td-timeline-gap) + 1px) 0;
+    border-inline-start: 0;
+  }
+
+  .td-content .td-content-card dl.timeline > dt:first-child::before,
+  .td-content .td-content-card dl.timeline > dt:first-child:has(+ dt)::before {
+    position: absolute;
+    inset-block: calc(0.45rem + var(--td-timeline-node) * 0.5) 0;
+    inset-inline: 0 auto;
+    border-inline-start: 1px solid var(--td-timeline-line);
+    content: '';
+  }
+
+  .td-content .td-content-card dl.timeline > dt:not(:first-child):has(+ dt)::before {
+    content: none;
+  }
+
+  .td-content .td-content-card dl.timeline > dt::after {
+    inset-inline: calc(var(--td-timeline-node) * -0.5 - 0.5px) auto;
+  }
+
+  .td-content .td-content-card dl.timeline > dt:first-child::after {
+    inset-inline: calc(var(--td-timeline-node) * -0.5 + 0.5px) auto;
+  }
+
+  .td-content .td-content-card dl.timeline > dt:first-child + dd {
+    padding-inline-start: var(--td-timeline-gap);
+    border-inline-start: 1px solid var(--td-timeline-line);
+  }
+
+  .td-content .td-content-card dl.timeline > dt:first-child + dd::before {
+    content: none;
   }
 }
 
@@ -94,9 +249,10 @@
 }
 
 @media (forced-colors: active) {
-  .td-content dl.timeline > dt,
-  .td-content dl.timeline > dd {
-    border-inline-start-color: CanvasText;
+  .td-content dl.timeline {
+    --td-timeline-line: CanvasText;
+    --td-timeline-accent: CanvasText;
+    --td-timeline-surface: Canvas;
   }
 
   .td-content dl.timeline > dt::after {
@@ -106,12 +262,23 @@
 }
 
 @media print {
+  .td-content dl.timeline {
+    --td-timeline-line: var(--td-print-table-line, var(--td-print-line, #b8bec5));
+    --td-timeline-accent: var(--td-print-quote-line, var(--td-print-ink, #171717));
+    --td-timeline-surface: #fff;
+  }
+
   .td-content dl.timeline > dt {
-    break-after: avoid;
+    color: var(--td-print-meta, #4e555c);
+    break-after: avoid-page;
+  }
+
+  .td-content dl.timeline > dd {
+    color: var(--td-print-ink, #171717);
+    break-inside: avoid-page;
   }
 
   .td-content dl.timeline > dt::after {
     background: #fff;
   }
 }
-

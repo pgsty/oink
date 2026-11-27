@@ -23,7 +23,10 @@ existing sites can keep the `github.com/pgsty/oink` module path.
     URLs render link cards; platforms listed in the new `params.video_embeds`
     load their player in place after a click, from IDs the theme validated.
   - **Audio**: a block image whose destination is an audio file renders a titled
-    native player. No runtime.
+    native player with `caption`, `id` and `preload` (the first six players on
+    a page preload metadata, later ones nothing). A page with one player loads
+    no script; with two or more audio or video players, `js/chunks/media.js`
+    keeps one audible player at a time.
   - **Social posts**: the `social` shortcode quotes a post (X by default;
     Bluesky, Mastodon, Threads, Weibo, Zhihu, Telegram, LinkedIn, or `none`,
     the default for a nested quote) entirely from the page, with a Markdown

@@ -16,6 +16,10 @@
   {{- $orderKey = printf "%08d-%05d" (int (index $m 1)) (int (index $m 2)) -}}
 {{- end -}}
 {{- $targets := $page.Store.Get "tdBookTargets" | default (dict) -}}
+{{- /* Unnumbered audio and video figures keep their #id in tdMediaIDs
+       (content/media.html), which checks Book targets in turn, so a clash
+       warns, and drops the id, on whichever of the two comes second. */ -}}
+{{- $mediaIDs := $page.Store.Get "tdMediaIDs" | default (dict) -}}
 {{- $accepted := true -}}
 {{- if isset $targets $id -}}
   {{- $existing := index $targets $id -}}
@@ -23,6 +27,9 @@
     {{- warnf "book component: duplicate id %q at %s (already used by %s %s at %s); keeping the first" $id $position $existing.kind $existing.num $existing.position -}}
     {{- $accepted = false -}}
   {{- end -}}
+{{- else if isset $mediaIDs $id -}}
+  {{- warnf "book component: duplicate id %q at %s (already used by an unnumbered audio or video figure); keeping the first" $id $position -}}
+  {{- $accepted = false -}}
 {{- end -}}
 {{- $numbers := $page.Store.Get "tdBookTargetNums" | default (dict) -}}
 {{- $numberKey := printf "%s:%s" $kind $num -}}
@@ -30,7 +37,7 @@
   {{- $existing := index $numbers $numberKey -}}
   {{- if ne $existing.id $id }}{{ warnf "book component: duplicate %s number %q at %s (already uses id %q); keeping the first" $kind $num $position $existing.id }}{{ end -}}
 {{- end -}}
-{{- if not (isset $targets $id) -}}
+{{- if and $accepted (not (isset $targets $id)) -}}
 {{- $entry := dict
   "id" $id
   "num" $num

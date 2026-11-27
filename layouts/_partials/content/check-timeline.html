@@ -1,0 +1,54 @@
+{{- /* Build-time diagnostics for the native {.timeline} definition-list form.
+       Goldmark drops a detached {.timeline} line silently and swallows a
+       callout header (> [!TYPE]) into <dt> when a definition list starts on the
+       very next line without a blank `>`. Warn with the page path and keep the
+       safe fallback output without adding any browser runtime. */ -}}
+{{- $page := .page -}}
+{{- $html := .html -}}
+{{- $raw := .raw -}}
+{{- $origin := $page.Path -}}
+{{- if strings.Contains $raw ".timeline" -}}
+  {{- $lines := split (replace $raw "\r\n" "\n") "\n" -}}
+  {{- $inFence := false -}}
+  {{- $fenceChar := "" -}}
+  {{- $fenceLen := 0 -}}
+  {{- $prevBlank := true -}}
+  {{- range $lines -}}
+    {{- $stripped := replaceRE `^(?:[ \t]*>[ \t]*)*` "" . -}}
+    {{- $trimmed := strings.TrimSpace $stripped -}}
+    {{- if $inFence -}}
+      {{- $closeRe := printf `^%s{%d,}$` $fenceChar $fenceLen -}}
+      {{- if findRE $closeRe $trimmed 1 -}}
+        {{- $inFence = false -}}
+      {{- end -}}
+      {{- $prevBlank = false -}}
+    {{- else if findRE "^(`{3,}[^`]*|~{3,}.*)$" $trimmed 1 -}}
+      {{- $open := index (findRE "^(`{3,}|~{3,})" $trimmed 1) 0 -}}
+      {{- $inFence = true -}}
+      {{- $fenceChar = substr $open 0 1 -}}
+      {{- $fenceLen = len $open -}}
+      {{- $prevBlank = false -}}
+    {{- else if eq $trimmed "" -}}
+      {{- $prevBlank = true -}}
+    {{- else -}}
+      {{- if $prevBlank -}}
+        {{- $noCode := replaceRE "`[^`]*`" "" $trimmed -}}
+        {{- if findRE `^\{[^}"']*\.timeline(?:[\s.#][^}]*)?\}$` $noCode 1 -}}
+          {{- warnf "timeline in %s: {.timeline} is preceded by a blank line, so Goldmark drops the attribute and renders a plain definition list; place {.timeline} directly under the last event with no blank line" $origin -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $prevBlank = false -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if strings.Contains $html "timeline" -}}
+  {{- range findRESubmatch `<(ul|ol|p|blockquote|table|h[1-6])\b[^>]*\bclass="[^"]*\btimeline\b[^"]*"` $html -}}
+    {{- $tag := index . 1 -}}
+    {{- warnf "timeline in %s: {.timeline} applies only to a Markdown definition list (<dl>), not <%s>; check that each entry uses a marker line followed by ': event' and that markup.goldmark.extensions.definitionList is enabled" $origin $tag -}}
+  {{- end -}}
+{{- end -}}
+{{- if strings.Contains $html "<dl" -}}
+  {{- if findRE `(?i)<blockquote[^>]*>\s*<dl\b[^>]*>\s*<dt>\[!(?:note|tip|important|warning|caution|success|danger|question|example|quote|details)\b` $html 1 -}}
+    {{- warnf "timeline in %s: a callout header (> [!TYPE]) was parsed as a definition-list term; insert a blank '>' line between the callout header and the first marker" $origin -}}
+  {{- end -}}
+{{- end -}}

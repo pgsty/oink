@@ -21,4 +21,5 @@
   -}}
     {{- $page.Store.Set "hasDrawio" true -}}
   {{- end -}}
+  {{- partial "content/check-timeline.html" (dict "page" $page "html" $html "raw" $raw) -}}
 {{- end -}}

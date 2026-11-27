@@ -70,10 +70,17 @@ class Node {
   }
   click() { this.dispatch('click'); }
   focus() { this.ownerDocument.activeElement = this; }
+  blur() { if (this.ownerDocument && this.ownerDocument.activeElement === this) this.ownerDocument.activeElement = this.ownerDocument.body; }
   scrollIntoView() {}
   contains(node) {
     for (let current = node; current; current = current.parentNode) if (current === this) return true;
     return false;
+  }
+  closest(selector) {
+    for (let current = this; current; current = current.parentNode) {
+      if (current.matches && current.matches(selector)) return current;
+    }
+    return null;
   }
   matches(selector) {
     if (this.nodeType !== 1) return false;
@@ -83,6 +90,11 @@ class Node {
       if (part === '[tabindex]:not([tabindex="-1"])') {
         return this.hasAttribute('tabindex') && this.getAttribute('tabindex') !== '-1';
       }
+      if (part === '.td-shell-search:not(.td-is-open)') {
+        return this.classList.contains('td-shell-search') && !this.classList.contains('td-is-open');
+      }
+      if (part === '[hidden]') return Boolean(this.hidden) || this.hasAttribute('hidden');
+      if (part === '[inert]') return Boolean(this.inert) || this.hasAttribute('inert');
       if (part.startsWith('.')) return this.classList.contains(part.slice(1));
       const attribute = /^\[([\w-]+)(?:="([^"]*)")?\]$/.exec(part);
       if (attribute) {
@@ -343,6 +355,57 @@ const MINUTE = 60 * 1000;
   assert.equal(h.instance.isOpen(), false, 'a coordinated close is honored');
 }
 
+{
+  // Traversal segments cannot escape a subpath scope; legitimate dots inside
+  // a segment and root queries still pass.
+  assert.equal(history.sanitize({ url: '/a/../b/secret/', title: 'Escape', time: 5 }, '/a/'), null);
+  assert.equal(history.sanitize({ url: '/a/%2e%2e/b/secret/', title: 'Encoded escape', time: 5 }, '/a/'), null);
+  assert.equal(history.sanitize({ url: '/a/.%2E/b/', title: 'Mixed escape', time: 5 }, '/a/'), null);
+  assert.equal(history.sanitize({ url: '/a/v1..v2/', title: 'Release range', time: 5 }, '/a/')?.url, '/a/v1..v2/');
+  assert.equal(history.sanitize({ url: '/a?tab=1', title: 'Root query', time: 5 }, '/a/')?.url, '/a?tab=1');
+}
+{
+  // First visit: only the current page is stored, so the displayed list is
+  // empty and Clear history starts disabled.
+  const h = harness();
+  h.instance.open();
+  assert.equal(h.rows().length, 0);
+  assert.equal(h.empty.textContent, 'Nothing yet');
+  assert.equal(h.clear.disabled, true, 'Clear history is disabled when no earlier page is listed');
+
+  // IME composition suppresses filtering and Escape does not close the overlay.
+  h.input.dispatch('compositionstart');
+  const composingEsc = h.docKey({ key: 'Escape', isComposing: true, keyCode: 229 });
+  assert.notEqual(composingEsc.defaultPrevented, true, 'Escape during IME composition is not swallowed');
+  assert.equal(h.instance.isOpen(), true, 'IME Escape keeps the history overlay open');
+  h.input.dispatch('compositionend');
+  const finalEsc = h.docKey({ key: 'Escape' });
+  assert.equal(finalEsc.defaultPrevented, true);
+  assert.equal(h.instance.isOpen(), false, 'Escape after compositionend closes the overlay');
+}
+{
+  // Focus restoration skips a closing Command Palette input and falls back to
+  // #td-main-content if the original opener becomes hidden before close.
+  const h = harness();
+  const main = h.doc.createElement('main');
+  main.id = 'td-main-content';
+  h.doc.body.appendChild(main);
+  const closingPalette = h.doc.createElement('div');
+  closingPalette.className = 'td-shell-search';
+  const paletteInput = h.doc.createElement('input');
+  closingPalette.appendChild(paletteInput);
+  h.doc.body.appendChild(closingPalette);
+  paletteInput.focus();
+  h.instance.open();
+  h.instance.close(true);
+  assert.notEqual(h.doc.activeElement, paletteInput, 'closing history never restores focus into a closing search overlay');
+
+  h.opener.focus();
+  h.instance.open();
+  h.opener.hidden = true;
+  h.instance.close(true);
+  assert.equal(h.doc.activeElement, main, 'when the opener hides, focus falls back to #td-main-content');
+}
 {
   // Without a list root the runtime still records visits and offers nothing to open.
   const h = harness();

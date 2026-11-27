@@ -2,17 +2,18 @@
      the empty string; the caller then renders the component without a
      target id rather than stopping the build. */ -}}
 {{- $name := .name | default "book component" -}}
+{{- $label := .label | default (printf "shortcode %q" $name) -}}
 {{- $position := .position | default "unknown position" -}}
 {{- $value := .value -}}
 {{- $id := "" -}}
 {{- if ne (printf "%T" $value) "string" -}}
-  {{- warnf "shortcode %q: id must be a string at %s; dropping it" $name $position -}}
+  {{- warnf "%s: id must be a string at %s; dropping it" $label $position -}}
 {{- else -}}
   {{- $id = strings.TrimSpace $value -}}
   {{- if not $id -}}
-    {{- warnf "shortcode %q: id must not be empty at %s; dropping it" $name $position -}}
+    {{- warnf "%s: id must not be empty at %s; dropping it" $label $position -}}
   {{- else if not (findRE `^[A-Za-z][A-Za-z0-9_.:-]*$` $id) -}}
-    {{- warnf "shortcode %q: id must match [A-Za-z][A-Za-z0-9_.:-]*; got %q at %s; dropping it" $name $id $position -}}
+    {{- warnf "%s: id must match [A-Za-z][A-Za-z0-9_.:-]*; got %q at %s; dropping it" $label $id $position -}}
     {{- $id = "" -}}
   {{- end -}}
 {{- end -}}

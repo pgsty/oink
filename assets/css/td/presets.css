@@ -165,7 +165,7 @@ html[data-td-preset-switching] *::after {
      text is a paragraph, a table cell, a caption, or an item of a plain or
      stepped list: a list that carries any other class is a component, and
      its labels keep the weight cue instead. */
-  [data-td-preset='paper'] .td-content :is(p, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
 [data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
     font-weight: inherit;
     text-decoration-line: underline !important;
@@ -174,7 +174,7 @@ html[data-td-preset-switching] *::after {
     text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
     text-decoration-skip-ink: auto;
   }
-  [data-td-preset='paper'] .td-content :is(p, td, th, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
+  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
 [data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible) {
     text-decoration-color: currentColor;
   }
@@ -246,6 +246,9 @@ html[data-td-preset-switching] *::after {
   [data-td-preset='paper'] .td-callout--details {
     border: 1px solid var(--bs-border-color);
     border-radius: var(--td-code-radius);
+    background: var(--td-brand-elev);
+  }
+  [data-td-preset='paper'] .td-media--audio {
     background: var(--td-brand-elev);
   }
   /* Landing keeps its structure; the blueprint grid and glow are Slate's. */

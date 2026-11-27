@@ -746,26 +746,60 @@
 
     /* -------------------------------------------------------- fold all (o) */
 
-    // Everything the reader can fold: the sidebar tree and right-rail groups
+    // Everything the reader can fold: visible sidebar tree and right-rail groups
     // (one committed state in sidebar-state.js), native <details> such as
     // collapsible callouts, file trees and "more" lists, and code blocks
-    // shortened to their first lines. Popover menus are transient, not
-    // folded content, and stay out.
+    // shortened to their first lines. Popover menus and hidden or collapsed
+    // rails are not targets.
+    function railActive(element) {
+      if (html.hasAttribute('data-td-kbd-zen')) return false;
+      var rail = typeof element.closest === 'function'
+        ? element.closest('#td-shell-sidebar, [data-td-shell-aside]')
+        : null;
+      if (!rail) return false;
+      var panel = typeof element.closest === 'function'
+        ? element.closest('.td-shell-sidebar__panel, .td-shell-toc__panel')
+        : null;
+      if (panel && (panel.inert || panel.getAttribute('aria-hidden') === 'true')) return false;
+      if (!isVisible(panel || rail, win)) return false;
+      if (rail.id === 'td-shell-sidebar') {
+        return !(
+          html.getAttribute('data-td-shell-sidebar') === 'collapsed' &&
+          !(rail.classList && rail.classList.contains('td-shell-sidebar--overlay'))
+        );
+      }
+      return html.getAttribute('data-td-shell-toc') !== 'collapsed';
+    }
+
+    function foldableSurfaceVisible(el) {
+      if (typeof el.closest === 'function') {
+        if (el.closest('dialog, [role="dialog"], [data-td-nav-hover], .td-site-header, template, [hidden], [inert]'))
+          return false;
+        if (el.closest('#td-shell-sidebar, [data-td-shell-aside]') && !railActive(el))
+          return false;
+      }
+      var outer = el;
+      for (var parent = el.parentElement; parent; parent = parent.parentElement) {
+        if (parent.tagName === 'DETAILS') outer = parent;
+      }
+      return isVisible(outer, win);
+    }
+
     function foldables() {
       var tree = Array.prototype.filter.call(
         doc.querySelectorAll('[data-td-shell-tree-toggle][aria-controls]'),
-        function (button) {
-          return typeof button.closest === 'function' &&
-            Boolean(button.closest('#td-shell-sidebar, [data-td-shell-aside]'));
-        },
+        railActive,
       );
-      var details = Array.prototype.filter.call(doc.querySelectorAll('details'), function (el) {
-        return !(typeof el.closest === 'function' &&
-          el.closest('dialog, [role="dialog"], [data-td-nav-hover], .td-site-header, template'));
-      });
+      var details = Array.prototype.filter.call(
+        doc.querySelectorAll('details'),
+        foldableSurfaceVisible,
+      );
       var code = Array.prototype.filter.call(
         doc.querySelectorAll('[data-td-code].is-collapsible'),
-        function (root) { return Boolean(root.querySelector('[data-td-code-expand]')); },
+        function (root) {
+          return Boolean(root.querySelector('[data-td-code-expand]')) &&
+            foldableSurfaceVisible(root);
+        },
       );
       return { tree: tree, details: details, code: code };
     }
@@ -777,17 +811,30 @@
 
     // Keep the line the reader was on in place while content above it opens
     // or closes; a collapsed anchor hands over to its nearest visible parent.
+    // Measure article blocks directly rather than probing a fixed x coordinate,
+    // which lands on margins or column padding on wide screens, Zen Mode, Book
+    // slim measures, and RTL layouts.
+    var ANCHOR_BLOCKS = 'h1, h2, h3, h4, h5, h6, p, li, pre, table, figure, blockquote, summary, dt, dd';
+
     function readingAnchor() {
-      if (typeof doc.elementFromPoint !== 'function') return null;
-      var main = doc.querySelector('.td-shell-main') || doc.querySelector('main');
-      if (!main) return null;
-      var box = main.getBoundingClientRect();
-      var element = doc.elementFromPoint(
-        box.left + Math.min(box.width / 2, 120),
-        scrollPaddingOffset() + 8,
-      );
-      if (!element || !main.contains(element)) return null;
-      return { element: element, top: element.getBoundingClientRect().top };
+      if (!(win.scrollY > 0)) return null;
+      var scope = doc.querySelector('.td-shell-article .td-content') ||
+        doc.querySelector('.td-shell-article') ||
+        doc.querySelector('.td-shell-main') ||
+        doc.querySelector('main');
+      if (!scope || !scope.querySelectorAll) return null;
+      var line = scrollPaddingOffset() + 8;
+      var blocks = scope.querySelectorAll(ANCHOR_BLOCKS);
+      var best = null;
+      for (var i = 0; i < blocks.length; i += 1) {
+        var block = blocks[i];
+        if (typeof block.closest === 'function' && block.closest('[hidden], [inert]')) continue;
+        var rect = block.getBoundingClientRect();
+        if (!(rect.height > 0 && rect.bottom > line)) continue;
+        if (best && !best.element.contains(block)) break;
+        best = { element: block, top: rect.top };
+      }
+      return best;
     }
 
     function restoreAnchor(anchor) {
@@ -849,6 +896,29 @@
       }
     }
 
+    // Book's reading_width constrains .td-content inside a wider article box.
+    // Measure the effective reading column (content plus horizontal article
+    // padding) so - and = step smoothly from what the reader actually sees.
+    function measuredWidth(article) {
+      var width = article.getBoundingClientRect().width;
+      if (!win.getComputedStyle || !article.children) return width;
+      var content = null;
+      for (var i = 0; i < article.children.length; i += 1) {
+        if (article.children[i].classList && article.children[i].classList.contains('td-content')) {
+          content = article.children[i];
+          break;
+        }
+      }
+      if (!content || typeof content.getBoundingClientRect !== 'function') return width;
+      var contentWidth = content.getBoundingClientRect().width;
+      if (!(contentWidth > 0)) return width;
+      var style = win.getComputedStyle(article);
+      var pad = (cssPixels(style.getPropertyValue('padding-left')) || 0) +
+        (cssPixels(style.getPropertyValue('padding-right')) || 0);
+      var effective = contentWidth + pad;
+      return effective < width - 1 ? effective : width;
+    }
+
     // The reading column grows or shrinks by one step from its rendered
     // width, never below WIDTH_MIN and never past its container. A step that
     // reaches or crosses the page's own width (its page_width or book
@@ -861,12 +931,12 @@
       var available = container ? container.clientWidth : 0;
       if (!article || !available) return false;
       event.preventDefault();
-      var current = article.getBoundingClientRect().width;
+      var current = measuredWidth(article);
       var custom = html.hasAttribute('data-td-shell-article-w');
       var natural = current;
       if (custom) {
         html.removeAttribute('data-td-shell-article-w');
-        natural = article.getBoundingClientRect().width;
+        natural = measuredWidth(article);
         html.setAttribute('data-td-shell-article-w', '');
       }
       var next = Math.round(current + delta * WIDTH_STEP);
@@ -1221,6 +1291,23 @@
       return function () { return Boolean(actionOf(id)); };
     }
 
+    function canPrint() {
+      var actions = registry();
+      var action = actions && typeof actions.get === 'function' ? actions.get('print') : null;
+      if (action) return action.available !== false;
+      return typeof win.print === 'function';
+    }
+
+    function printPage(event) {
+      if (runAction(event, 'print')) return true;
+      var actions = registry();
+      var action = actions && typeof actions.get === 'function' ? actions.get('print') : null;
+      if (action || typeof win.print !== 'function') return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      win.print();
+      return true;
+    }
+
     // One entry per help row. The dialog dims the rows this page cannot run
     // right now, so the 3 x 10 grid keeps its shape and still tells the truth.
     var SHORTCUTS = {
@@ -1242,7 +1329,7 @@
       'new-page': hasAction('create_child_page'),
       issue: hasAction('create_issue'),
       'expand-all': hasFoldables,
-      print: always,
+      print: canPrint,
       chatgpt: hasAction('open_chatgpt'),
       claude: hasAction('open_claude'),
       gemini: hasAction('open_gemini'),
@@ -1650,7 +1737,7 @@
       if (key === 'n') return runAction(event, 'create_child_page');
       if (key === 'i') return runAction(event, 'create_issue');
       if (key === 'o') return toggleAll(event);
-      if (key === 'p') return runAction(event, 'print');
+      if (key === 'p') return printPage(event);
       if (key === '[') return runAction(event, 'open_chatgpt');
       if (key === ']') return runAction(event, 'open_claude');
       if (key === '\\') return runAction(event, 'open_gemini');

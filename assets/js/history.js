@@ -51,7 +51,7 @@
     if (url.charAt(0) !== '/' || url.charAt(1) === '/' || url.indexOf('\\') >= 0 ||
         /[\u0000-\u001f]/.test(url) || url.length > 2048) return null;
     var pathPart = url.split(/[?#]/)[0];
-    if (/(?:^|\/)(?:\.|%2e){2}(?:\/|$)/i.test(pathPart)) return null;
+    if (/(?:^|\/|%2f|%5c)(?:\.|%2e){2}(?:\/|%2f|%5c|$)/i.test(pathPart)) return null;
     var resolved;
     try {
       resolved = new URL(url, 'https://scope.invalid');

@@ -361,6 +361,9 @@ const MINUTE = 60 * 1000;
   assert.equal(history.sanitize({ url: '/a/../b/secret/', title: 'Escape', time: 5 }, '/a/'), null);
   assert.equal(history.sanitize({ url: '/a/%2e%2e/b/secret/', title: 'Encoded escape', time: 5 }, '/a/'), null);
   assert.equal(history.sanitize({ url: '/a/.%2E/b/', title: 'Mixed escape', time: 5 }, '/a/'), null);
+  assert.equal(history.sanitize({ url: '/a/..%2f/b/', title: 'Encoded slash escape', time: 5 }, '/a/'), null);
+  assert.equal(history.sanitize({ url: '/a/%2e%2e%2fb/', title: 'All-encoded escape', time: 5 }, '/a/'), null);
+  assert.equal(history.sanitize({ url: '/a/..%5cb/', title: 'Encoded backslash escape', time: 5 }, '/a/'), null);
   assert.equal(history.sanitize({ url: '/a/v1..v2/', title: 'Release range', time: 5 }, '/a/')?.url, '/a/v1..v2/');
   assert.equal(history.sanitize({ url: '/a?tab=1', title: 'Root query', time: 5 }, '/a/')?.url, '/a?tab=1');
 }

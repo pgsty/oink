@@ -1,9 +1,10 @@
 {{- $page := .page -}}
 {{- $config := partial "shell/blog-gallery-config.html" $page -}}
+{{- $keyboardNav := ne (partial "ui-param.html" (dict "page" $page "key" "keyboard_nav")) false -}}
 {{- $page.Store.Set "hasBlogGallery" true -}}
 <section class="td-blog-gallery" data-td-blog-form="gallery" data-td-blog-gallery data-td-mode="{{ $config.mode }}" data-td-size="{{ $config.size }}" aria-label="{{ $page.Title }}">
   <div class="td-expo-toolbar" data-gallery-controls hidden>
-    <fieldset class="td-expo-modes">
+    <fieldset class="td-expo-modes"{{ if $keyboardNav }} aria-keyshortcuts="M"{{ end }}>
       <legend class="visually-hidden">{{ T "ui_expo_layout" }}</legend>
       {{ range slice "wall" "cards" "seamless" }}
       <label class="td-expo-mode" title="{{ T (printf "ui_expo_%s" .) }}">
@@ -14,7 +15,7 @@
     </fieldset>
     <label class="td-expo-size">
       <span class="td-expo-size__small" aria-hidden="true">{{ partial "shell/icon.html" "image" }}</span>
-      <input type="range" min="160" max="360" step="20" value="{{ $config.size }}" data-gallery-size aria-label="{{ T "ui_expo_size" }}">
+      <input type="range" min="160" max="360" step="20" value="{{ $config.size }}" data-gallery-size{{ if $keyboardNav }} aria-keyshortcuts=", . < >"{{ end }} aria-label="{{ T "ui_expo_size" }}">
       <span class="td-expo-size__large" aria-hidden="true">{{ partial "shell/icon.html" "image" }}</span>
     </label>
   </div>

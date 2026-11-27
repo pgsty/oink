@@ -1,5 +1,6 @@
+{{- $keyboardNav := ne (partial "ui-param.html" (dict "page" .page "key" "keyboard_nav")) false -}}
 <div class="td-expo-toolbar" data-td-expo-controls hidden>
-  <fieldset class="td-expo-modes">
+  <fieldset class="td-expo-modes"{{ if $keyboardNav }} aria-keyshortcuts="M"{{ end }}>
     <legend class="visually-hidden">{{ T "ui_expo_layout" }}</legend>
     {{ range slice (dict "mode" "wall" "icon" "wall") (dict "mode" "cards" "icon" "cards") (dict "mode" "seamless" "icon" "seamless") }}
     <label class="td-expo-mode" title="{{ T (printf "ui_expo_%s" .mode) }}">
@@ -11,7 +12,7 @@
   <button type="button" class="td-expo-button" data-td-expo-motion title="{{ T "ui_expo_pause" }}" aria-label="{{ T "ui_expo_pause" }}">{{ partial "shell/icon.html" "pause" }}</button>
   <label class="td-expo-size">
     <span class="td-expo-size__small" aria-hidden="true">{{ partial "shell/icon.html" "image" }}</span>
-    <input type="range" min="160" max="360" step="20" value="{{ .size }}" data-td-expo-size aria-label="{{ T "ui_expo_size" }}">
+    <input type="range" min="160" max="360" step="20" value="{{ .size }}" data-td-expo-size{{ if $keyboardNav }} aria-keyshortcuts=", . < >"{{ end }} aria-label="{{ T "ui_expo_size" }}">
     <span class="td-expo-size__large" aria-hidden="true">{{ partial "shell/icon.html" "image" }}</span>
   </label>
 </div>

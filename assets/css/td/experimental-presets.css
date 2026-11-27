@@ -245,7 +245,7 @@
   }
   /* Concrete component boundaries, never a global `*` radius reset:
      avatars, status dots, images and third-party widgets retain their shape. */
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) :is(.td-shell-tree__row, .td-shell-root__trigger, .td-shell-root__pop, .td-shell-search__panel, .td-shell-search__item, .td-shell-search__esc, .td-nav-search-box, .td-nav-search-box__kbd, .td-nav-hover-menu__pop, .td-shell-tag, .td-appearance__panel, .td-appearance__card, .td-appearance__modes, .td-content-card, .td-blog-card, .td-table-scroll, .td-table-reader, .td-diagram-zoom__surface, .td-compare__sync-tip, .td-field__term, .td-tab-block, .td-print-document, .td-page-actions__group, .td-page-actions__menu, .td-asciinema) {
+  :is([data-td-preset='ink'], [data-td-preset='terminal']) :is(.td-shell-tree__row, .td-shell-root__trigger, .td-shell-root__pop, .td-shell-search__panel, .td-shell-search__item, .td-shell-search__esc, .td-nav-search-box, .td-nav-search-box__kbd, .td-nav-hover-menu__pop, .td-shell-keyboard-dialog, .td-shell-tag, .td-appearance__panel, .td-appearance__card, .td-appearance__modes, .td-content-card, .td-blog-card, .td-table-scroll, .td-table-reader, .td-diagram-zoom__surface, .td-compare__sync-tip, .td-field__term, .td-tab-block, .td-print-document, .td-page-actions__group, .td-page-actions__menu, .td-asciinema) {
     border-radius: var(--td-experiment-radius);
     box-shadow: none;
   }

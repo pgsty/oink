@@ -876,11 +876,10 @@ data-bs-theme-value="auto" checked>
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
 <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
 data-td-nav-hover-trigger data-td-nav-hover-open
-title="Keyboard shortcuts" aria-label="Keyboard shortcuts"
-aria-expanded="false"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i></button>
-<div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
-aria-label="Keyboard shortcuts">
-<div class="td-shell-keyboard-help__header"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i><strong>Keyboard shortcuts</strong>
+title="Shortcut help" aria-label="Shortcut help" aria-keyshortcuts=";"
+aria-expanded="false"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i></button><div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
+aria-label="Shortcut help" data-td-close-label="Close">
+<div class="td-shell-keyboard-help__header"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i><strong>Shortcut help</strong>
 </div>
 <section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-navigation">
 <p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-navigation">Section navigation</p>
@@ -898,8 +897,12 @@ aria-label="Keyboard shortcuts">
 <dd>Open focused page</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
-<dt><span class="td-kbd-sequence"><kbd>J</kbd><kbd>K</kbd></span></dt>
-<dd>Previous or next heading</dd>
+<dt><span class="td-kbd-sequence"><kbd>K</kbd></span></dt>
+<dd>Previous heading</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>J</kbd></span></dt>
+<dd>Next heading</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
 <dt><span class="td-kbd-sequence"><kbd>Q</kbd><kbd>E</kbd></span></dt>
@@ -919,11 +922,11 @@ aria-label="Keyboard shortcuts">
 <dd>Command palette</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
-<dt><span class="td-kbd-sequence"><kbd>H</kbd></span></dt>
-<dd>Reading mode</dd>
+<dt><span class="td-kbd-sequence"><kbd>H</kbd><kbd>Z</kbd></span></dt>
+<dd>Zen Mode</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
-<dt><span class="td-kbd-sequence"><kbd>L</kbd></span></dt>
+<dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>X</kbd></span></dt>
 <dd>Switch language</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
@@ -932,7 +935,11 @@ aria-label="Keyboard shortcuts">
 </div>
 <div class="td-shell-keyboard-help__row">
 <dt><span class="td-kbd-sequence"><kbd>R</kbd></span></dt>
-<dd>Cycle top-level pages</dd>
+<dd>Switch section</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>;</kbd></span></dt>
+<dd>Shortcut help</dd>
 </div>
 </dl>
 </section>

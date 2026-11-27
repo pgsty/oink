@@ -900,11 +900,10 @@ data-bs-theme-value="auto" checked>
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
 <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
 data-td-nav-hover-trigger data-td-nav-hover-open
-title="键盘快捷键" aria-label="键盘快捷键"
-aria-expanded="false"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i></button>
-<div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
-aria-label="键盘快捷键">
-<div class="td-shell-keyboard-help__header"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i><strong>键盘快捷键</strong>
+title="热键说明" aria-label="热键说明" aria-keyshortcuts=";"
+aria-expanded="false"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i></button><div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
+aria-label="热键说明" data-td-close-label="关闭">
+<div class="td-shell-keyboard-help__header"><i class="td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question" aria-hidden="true"></i><strong>热键说明</strong>
 </div>
 <section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-navigation">
 <p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-navigation">章节导航</p>
@@ -922,8 +921,12 @@ aria-label="键盘快捷键">
 <dd>打开当前页面</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
-<dt><span class="td-kbd-sequence"><kbd>J</kbd><kbd>K</kbd></span></dt>
-<dd>上一个或下一个标题</dd>
+<dt><span class="td-kbd-sequence"><kbd>K</kbd></span></dt>
+<dd>上一个标题</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>J</kbd></span></dt>
+<dd>下一个标题</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
 <dt><span class="td-kbd-sequence"><kbd>Q</kbd><kbd>E</kbd></span></dt>
@@ -943,11 +946,11 @@ aria-label="键盘快捷键">
 <dd>命令面板</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
-<dt><span class="td-kbd-sequence"><kbd>H</kbd></span></dt>
-<dd>专注阅读模式</dd>
+<dt><span class="td-kbd-sequence"><kbd>H</kbd><kbd>Z</kbd></span></dt>
+<dd>禅意模式</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
-<dt><span class="td-kbd-sequence"><kbd>L</kbd></span></dt>
+<dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>X</kbd></span></dt>
 <dd>切换语言</dd>
 </div>
 <div class="td-shell-keyboard-help__row">
@@ -956,7 +959,11 @@ aria-label="键盘快捷键">
 </div>
 <div class="td-shell-keyboard-help__row">
 <dt><span class="td-kbd-sequence"><kbd>R</kbd></span></dt>
-<dd>切换顶层页面</dd>
+<dd>切换栏目</dd>
+</div>
+<div class="td-shell-keyboard-help__row">
+<dt><span class="td-kbd-sequence"><kbd>;</kbd></span></dt>
+<dd>热键说明</dd>
 </div>
 </dl>
 </section>

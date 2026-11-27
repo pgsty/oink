@@ -25,6 +25,7 @@ class Element {
     this.attributes = new Map();
     this.dataset = {};
     this.classList = classes(className);
+    this._className = className;
     this.id = '';
     this.nodeType = 1;
     this.offsetParent = {};
@@ -32,18 +33,68 @@ class Element {
     this.clicks = 0;
     this.textContent = '';
     this.ownerDocument = null;
+    this.listeners = new Map();
+    this.open = false;
+  }
+  get className() { return this._className; }
+  set className(value) {
+    this._className = String(value || '');
+    this.classList = classes(this._className);
   }
   appendChild(child) {
     child.parentNode = this;
+    child.ownerDocument = this.ownerDocument;
     this.children.push(child);
     return child;
   }
-  setAttribute(name, value) { this.attributes.set(name, String(value)); }
+  setAttribute(name, value) {
+    const str = String(value);
+    this.attributes.set(name, str);
+    if (name === 'id') this.id = str;
+    if (name === 'open') this.open = true;
+  }
   getAttribute(name) {
+    if (name === 'id' && this.id) return this.id;
     return this.attributes.has(name) ? this.attributes.get(name) : null;
   }
-  hasAttribute(name) { return this.attributes.has(name); }
-  removeAttribute(name) { this.attributes.delete(name); }
+  hasAttribute(name) {
+    if (name === 'id' && this.id) return true;
+    return this.attributes.has(name);
+  }
+  removeAttribute(name) {
+    this.attributes.delete(name);
+    if (name === 'id') this.id = '';
+    if (name === 'open') this.open = false;
+  }
+  addEventListener(name, callback) {
+    const callbacks = this.listeners.get(name) || [];
+    callbacks.push(callback);
+    this.listeners.set(name, callbacks);
+  }
+  dispatchEvent(event) {
+    (this.listeners.get(event.type) || []).forEach((fn) => fn(event));
+  }
+  showModal() {
+    this.open = true;
+    this.modal = true;
+    this.attributes.set('open', '');
+  }
+  close() {
+    this.open = false;
+    this.modal = false;
+    this.attributes.delete('open');
+    this.dispatchEvent({ type: 'close', target: this });
+  }
+  cloneNode(deep = false) {
+    const copy = new Element(this.tagName.toLowerCase(), this._className);
+    copy.id = this.id;
+    copy.textContent = this.textContent;
+    this.attributes.forEach((value, key) => copy.attributes.set(key, value));
+    if (deep) {
+      this.children.forEach((child) => copy.appendChild(child.cloneNode(true)));
+    }
+    return copy;
+  }
   matches(selector) {
     if (selector === 'a.td-shell-tree__link') {
       return this.tagName === 'A' && this.classList.contains('td-shell-tree__link');
@@ -71,7 +122,30 @@ class Element {
     if (selector === '[data-td-keyboard-search-route][href]') return this.hasAttribute('data-td-keyboard-search-route') && this.hasAttribute('href');
     if (selector === '[data-td-landing]') return this.hasAttribute('data-td-landing');
     if (selector === '[data-td-theme-toggle]') return this.hasAttribute('data-td-theme-toggle');
-    if (selector === '[data-td-theme-toggle]') return this.hasAttribute('data-td-theme-toggle');
+    if (selector === '.td-shell-keyboard-help') return this.classList.contains('td-shell-keyboard-help');
+    if (selector === '.td-shell-keyboard-help__section') return this.classList.contains('td-shell-keyboard-help__section');
+    if (selector === '.td-shell-keyboard-help__header .td-shell-icon') {
+      return this.classList.contains('td-shell-icon') &&
+        Boolean(this.parentNode && this.parentNode.classList.contains('td-shell-keyboard-help__header'));
+    }
+    if (selector === '.td-shell-keyboard-help__header strong') {
+      return this.tagName === 'STRONG' &&
+        Boolean(this.parentNode && this.parentNode.classList.contains('td-shell-keyboard-help__header'));
+    }
+    if (selector === 'template[data-td-keyboard-help-source]') {
+      return this.tagName === 'TEMPLATE' && this.hasAttribute('data-td-keyboard-help-source');
+    }
+    if (selector === '[data-td-keyboard-dialog]') return this.hasAttribute('data-td-keyboard-dialog');
+    if (selector === '[data-td-keyboard-dialog-close]') return this.hasAttribute('data-td-keyboard-dialog-close');
+    if (selector === '[data-td-blog-index-toggle]') return this.hasAttribute('data-td-blog-index-toggle');
+    if (selector === '[data-td-expo]') return this.hasAttribute('data-td-expo');
+    if (selector === '[data-td-expo-controls]') return this.hasAttribute('data-td-expo-controls');
+    if (selector === 'input[data-td-expo-mode]') return this.tagName === 'INPUT' && this.hasAttribute('data-td-expo-mode');
+    if (selector === 'input[data-td-expo-size]') return this.tagName === 'INPUT' && this.hasAttribute('data-td-expo-size');
+    if (selector === '[data-td-blog-gallery]') return this.hasAttribute('data-td-blog-gallery');
+    if (selector === '[data-gallery-controls]') return this.hasAttribute('data-gallery-controls');
+    if (selector === 'input[data-gallery-mode]') return this.tagName === 'INPUT' && this.hasAttribute('data-gallery-mode');
+    if (selector === 'input[data-gallery-size]') return this.tagName === 'INPUT' && this.hasAttribute('data-gallery-size');
     return false;
   }
   querySelectorAll(selector) {
@@ -90,7 +164,11 @@ class Element {
   }
   focus() { if (this.ownerDocument) this.ownerDocument.activeElement = this; }
   blur() { if (this.ownerDocument) this.ownerDocument.activeElement = null; }
-  click() { this.clicks += 1; if (this.onclick) this.onclick(); }
+  click() {
+    this.clicks += 1;
+    if (this.onclick) this.onclick();
+    this.dispatchEvent({ type: 'click', target: this });
+  }
   scrollIntoView() {}
   getBoundingClientRect() { return { top: 0 }; }
   getClientRects() { return this.hidden ? [] : [{}]; }
@@ -144,12 +222,39 @@ function memoryStorage(initial = {}) {
   };
 }
 
+function helpPanelFixture(title = 'Keyboard shortcuts', closeLabel = 'Close') {
+  const help = new Element('div', 'td-nav-hover-menu__pop td-shell-keyboard-help');
+  help.setAttribute('aria-label', title);
+  help.setAttribute('data-td-close-label', closeLabel);
+  const header = new Element('div', 'td-shell-keyboard-help__header');
+  const icon = new Element('i', 'td-shell-icon td-shell-icon--circle-question fa-solid fa-circle-question');
+  icon.setAttribute('aria-hidden', 'true');
+  const strong = new Element('strong');
+  strong.textContent = title;
+  header.appendChild(icon);
+  header.appendChild(strong);
+  help.appendChild(header);
+  for (const id of ['td-shell-shortcuts-navigation', 'td-shell-shortcuts-actions']) {
+    const section = new Element('section', 'td-shell-keyboard-help__section');
+    section.setAttribute('aria-labelledby', id);
+    const heading = new Element('p', 'td-shell-keyboard-help__section-title');
+    heading.setAttribute('id', id);
+    heading.textContent = id;
+    section.appendChild(heading);
+    help.appendChild(section);
+  }
+  return help;
+}
+
 function setup({
   withTree = true,
   drawerOpener = false,
   sidebarToggle = false,
   registry = null,
   palette = null,
+  coordinator = null,
+  withHelp = false,
+  withHelpTemplate = false,
   reducedMotion = true,
   scrollPadding = null,
   scrollMargin = '0px',
@@ -167,6 +272,11 @@ function setup({
     activeElement: null,
     listeners: new Map(),
     body: root,
+    createElement(tag) {
+      const el = new Element(tag);
+      el.ownerDocument = doc;
+      return el;
+    },
     addEventListener(name, callback) {
       const callbacks = this.listeners.get(name) || [];
       callbacks.push(callback);
@@ -192,6 +302,7 @@ function setup({
 
   const frames = [];
   const timeouts = [];
+  const winListeners = new Map();
   const win = {
     scrolled: [],
     scrolledTo: [],
@@ -205,6 +316,14 @@ function setup({
     matchMedia() { return { matches: reducedMotion }; },
     setTimeout(callback) { timeouts.push(callback); return timeouts.length; },
     clearTimeout() {},
+    addEventListener(name, callback) {
+      const callbacks = winListeners.get(name) || [];
+      callbacks.push(callback);
+      winListeners.set(name, callbacks);
+    },
+    dispatchEvent(event) {
+      (winListeners.get(event.type) || []).forEach((fn) => fn(event));
+    },
     sessionStorage: memoryStorage(session),
     history: { replaceState(state, title, url) { win.hashes.push(url); } },
   };
@@ -265,10 +384,23 @@ function setup({
     root.appendChild(toggle);
   }
 
+  if (withHelp) {
+    root.appendChild(helpPanelFixture());
+  }
+
+  if (withHelpTemplate) {
+    const tpl = new Element('template');
+    tpl.setAttribute('data-td-keyboard-help-source', '');
+    const fragment = new Element('div');
+    fragment.appendChild(helpPanelFixture('键盘快捷键', '关闭'));
+    tpl.content = fragment;
+    root.appendChild(tpl);
+  }
+
   own(root);
   own(html);
 
-  const controller = nav.init({ document: doc, window: win, registry, palette });
+  const controller = nav.init({ document: doc, window: win, registry, palette, coordinator });
   return { doc, win, html, root, tree, frames, timeouts, controller };
 }
 
@@ -819,13 +951,19 @@ function press(harness, values) {
   press(mirror, { key: 'e' });
   assert.deepEqual(mirror.win.assigned, ['/docs/c/'], 'e pages from a canonical link on another origin');
 
-  // ---------------------------------------------------------- h zen mode
+  // ------------------------------------------------------- h/z zen mode
   const zen = setup();
   press(zen, { key: 'h' });
   assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), true, 'h hides the chrome');
   assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), '1', 'zen persists');
+  press(zen, { key: 'z' });
+  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'z restores chrome hidden by h');
+  assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), null, 'z clears zen persistence');
+  press(zen, { key: 'z' });
+  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), true, 'z hides the chrome');
+  assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), '1', 'z persists zen mode');
   press(zen, { key: 'h' });
-  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'h restores the chrome');
+  assert.equal(zen.html.hasAttribute('data-td-kbd-zen'), false, 'h restores chrome hidden by z');
   assert.equal(zen.win.sessionStorage.getItem('td-kbd-zen'), null, 'zen state clears');
 
   const zenBack = setup({ session: { 'td-kbd-zen': '1' } });
@@ -838,7 +976,7 @@ function press(harness, values) {
   assert.equal(zenBack.doc.activeElement, null, 'zen mode must not focus its hidden tree');
   assert.notEqual(zenTree.defaultPrevented, true, 'zen mode must not swallow WASD');
 
-  // ------------------------------------------------------------ l and t
+  // ---------------------------------------------------------- l/x and t
   const langRegistry = {
     get: (id) => (id === 'switch_language'
       ? {
@@ -853,6 +991,12 @@ function press(harness, values) {
   const lang = setup({ registry: langRegistry });
   press(lang, { key: 'l' });
   assert.deepEqual(lang.win.assigned, ['/zh/docs/b/one/'], 'l cycles to the next language');
+  press(lang, { key: 'x' });
+  assert.deepEqual(
+    lang.win.assigned,
+    ['/zh/docs/b/one/', '/zh/docs/b/one/'],
+    'x cycles to the next language like l',
+  );
 
   const langFormerAlias = setup({ registry: langRegistry });
   press(langFormerAlias, { key: 'y' });
@@ -862,7 +1006,8 @@ function press(harness, values) {
     registry: { get: () => ({ available: false, options: [] }) },
   });
   press(singleLang, { key: 'l' });
-  assert.deepEqual(singleLang.win.assigned, [], 'a single-language site keeps l silent');
+  press(singleLang, { key: 'x' });
+  assert.deepEqual(singleLang.win.assigned, [], 'a single-language site keeps l and x silent');
 
   const themeRuns = [];
   const themeRegistry = {
@@ -905,7 +1050,246 @@ function press(harness, values) {
   press(preset, { key: 't' });
   assert.deepEqual(presetRuns[1], ['switch_preset', 'paper'], 't wraps from the last style to the first');
   press(preset, { key: 'v' });
-  assert.equal(presetRuns.length, 2, 'v is no longer bound to style cycling');
+  assert.equal(presetRuns.length, 2, 'v does not cycle styles');
+
+  // ------------------------------------------------- ; shortcut help modal
+  const coordinated = [];
+  const registeredSurfaces = new Map();
+  const helpCoordinator = {
+    register(name, close) { registeredSurfaces.set(name, close); },
+    closeOthers(name) { coordinated.push(name); },
+  };
+  const helpRun = setup({ withHelp: true, coordinator: helpCoordinator, registry: langRegistry });
+  const originButton = new Element('button');
+  helpRun.root.appendChild(originButton);
+  originButton.ownerDocument = helpRun.doc;
+  originButton.focus();
+
+  const openHelpKey = press(helpRun, { key: ';' });
+  assert.equal(openHelpKey.defaultPrevented, true, '; swallows the literal character when opening help');
+  assert.deepEqual(coordinated, ['keyboard-help'], 'opening help closes other surfaces');
+  assert.equal(registeredSurfaces.has('keyboard-help'), true, 'help dialog registers with surface coordinator');
+  const helpDialog = helpRun.root.querySelector('[data-td-keyboard-dialog]');
+  assert.ok(helpDialog && helpDialog.open, '; opens the shortcut help dialog');
+  assert.equal(helpDialog.classList.contains('td-shell-keyboard-dialog--split'), true, 'two-section help uses split layout');
+  const helpClose = helpDialog.querySelector('[data-td-keyboard-dialog-close]');
+  assert.equal(helpRun.doc.activeElement, helpClose, 'opening help focuses the close button');
+  assert.equal(helpClose.getAttribute('aria-keyshortcuts'), 'Escape ;');
+  const dialogSections = helpDialog.querySelectorAll('.td-shell-keyboard-help__section');
+  assert.deepEqual(
+    dialogSections.map((s) => s.getAttribute('aria-labelledby')),
+    ['td-shell-shortcuts-navigation-dialog', 'td-shell-shortcuts-actions-dialog'],
+    'cloned help sections rewrite aria-labelledby to avoid duplicate IDs',
+  );
+  assert.equal(
+    helpRun.doc.getElementById('td-shell-shortcuts-navigation-dialog') !== null,
+    true,
+    'cloned section heading carries suffixed dialog ID',
+  );
+
+  // While help is open, other single-key shortcuts and key-repeat ; stand down.
+  press(helpRun, { key: 'l' });
+  press(helpRun, { key: 'x' });
+  press(helpRun, { key: 'h' });
+  press(helpRun, { key: 'z' });
+  press(helpRun, { key: ';', repeat: true });
+  press(helpRun, { key: ';', shiftKey: true });
+  press(helpRun, { key: ':', shiftKey: true });
+  assert.deepEqual(helpRun.win.assigned, [], 'other shortcuts stand down while help is open');
+  assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), false, 'h/z stand down while help is open');
+  assert.equal(helpDialog.open, true, 'repeated or modified ; does not dismiss help');
+
+  // Second bare ; closes help and restores focus.
+  const closeHelpKey = press(helpRun, { key: ';' });
+  assert.equal(closeHelpKey.defaultPrevented, true, 'second ; swallows the key');
+  assert.equal(helpDialog.open, false, 'second ; closes the help dialog');
+  assert.equal(helpRun.doc.activeElement, originButton, 'closing via ; restores prior focus');
+
+  // Works inside Zen Mode and closes via Escape, close button, and backdrop click.
+  press(helpRun, { key: 'z' });
+  assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), true);
+  press(helpRun, { key: ';' });
+  assert.equal(helpDialog.open, true, '; opens help even while Zen Mode hides the footer');
+  press(helpRun, { key: 'Escape' });
+  assert.equal(helpDialog.open, false, 'Escape closes the help dialog');
+  assert.equal(helpRun.html.hasAttribute('data-td-kbd-zen'), true, 'closing help preserves Zen Mode');
+
+  press(helpRun, { key: ';' });
+  helpClose.click();
+  assert.equal(helpDialog.open, false, 'close button dismisses the help dialog');
+
+  press(helpRun, { key: ';' });
+  helpDialog.dispatchEvent({ type: 'pointerdown', target: helpClose });
+  helpDialog.dispatchEvent({ type: 'click', target: helpDialog });
+  assert.equal(helpDialog.open, true, 'drag from inside onto backdrop must not dismiss help');
+  helpDialog.dispatchEvent({ type: 'pointerdown', target: helpDialog });
+  helpDialog.dispatchEvent({ type: 'click', target: helpDialog });
+  assert.equal(helpDialog.open, false, 'backdrop click dismisses the help dialog');
+
+  // Coordinator close and beforeprint close without stealing focus.
+  press(helpRun, { key: ';' });
+  registeredSurfaces.get('keyboard-help')(false);
+  assert.equal(helpDialog.open, false, 'surface coordinator can close the help dialog');
+  press(helpRun, { key: ';' });
+  helpRun.win.dispatchEvent({ type: 'beforeprint' });
+  assert.equal(helpDialog.open, false, 'beforeprint closes the help dialog');
+
+  // footer_style: none fallback template still powers ;.
+  const templateHelp = setup({ withTree: false, withHelpTemplate: true });
+  press(templateHelp, { key: ';' });
+  const tplDialog = templateHelp.root.querySelector('[data-td-keyboard-dialog]');
+  assert.ok(tplDialog && tplDialog.open, '; opens help from template fallback when footer is absent');
+  assert.equal(
+    tplDialog.querySelector('[data-td-keyboard-dialog-close]').getAttribute('aria-label'),
+    '关闭',
+    'dialog close button carries the localized close label',
+  );
+
+  // Without any help source, ; stays a silent no-op.
+  const noHelp = setup({ withTree: false });
+  const idleSemi = press(noHelp, { key: ';' });
+  assert.notEqual(idleSemi.defaultPrevented, true, '; without a help source stays inert');
+
+  // ----------------------------------------- v switches blog index layout
+  const blogLayout = setup({ withTree: false });
+  const idleBlogV = press(blogLayout, { key: 'v' });
+  assert.notEqual(idleBlogV.defaultPrevented, true, 'v stays inert when no layout toggle exists');
+  const layoutBtn = new Element('button');
+  layoutBtn.setAttribute('data-td-blog-index-toggle', '');
+  layoutBtn.hidden = true;
+  blogLayout.root.appendChild(layoutBtn);
+  const hiddenBlogV = press(blogLayout, { key: 'v' });
+  assert.notEqual(hiddenBlogV.defaultPrevented, true, 'v ignores a hidden layout toggle');
+  assert.equal(layoutBtn.clicks, 0);
+  layoutBtn.hidden = false;
+  const activeBlogV = press(blogLayout, { key: 'v' });
+  assert.equal(activeBlogV.defaultPrevented, true, 'v swallows the key when cycling index layout');
+  assert.equal(layoutBtn.clicks, 1, 'v activates the blog index layout toggle');
+
+  // -------------------------- Expo album shortcuts: m (mode), ,/< ./> (size)
+  const expoPage = setup({ withTree: false });
+  assert.notEqual(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm stays inert outside Expo');
+  assert.notEqual(press(expoPage, { key: ',' }).defaultPrevented, true, ', stays inert outside Expo');
+  assert.notEqual(press(expoPage, { key: '.', shiftKey: false }).defaultPrevented, true, '. stays inert outside Expo');
+  assert.notEqual(press(expoPage, { key: '<', shiftKey: true }).defaultPrevented, true, '< stays inert outside Expo');
+  assert.notEqual(press(expoPage, { key: '>', shiftKey: true }).defaultPrevented, true, '> stays inert outside Expo');
+
+  const expoSection = new Element('section');
+  expoSection.setAttribute('data-td-expo', '');
+  const expoControls = new Element('div');
+  expoControls.setAttribute('data-td-expo-controls', '');
+  expoControls.hidden = true;
+  const modeEvents = [];
+  const modeRadios = ['wall', 'cards', 'seamless'].map((modeName, idx) => {
+    const radio = new Element('input');
+    radio.setAttribute('data-td-expo-mode', modeName);
+    radio.value = modeName;
+    radio.checked = idx === 0;
+    radio.addEventListener('change', () => modeEvents.push(modeName));
+    expoControls.appendChild(radio);
+    return radio;
+  });
+  const sizeEvents = [];
+  const sizeSlider = new Element('input');
+  sizeSlider.setAttribute('data-td-expo-size', '');
+  sizeSlider.setAttribute('min', '160');
+  sizeSlider.setAttribute('max', '360');
+  sizeSlider.setAttribute('step', '20');
+  sizeSlider.value = '240';
+  sizeSlider.addEventListener('input', () => sizeEvents.push(sizeSlider.value));
+  expoControls.appendChild(sizeSlider);
+  expoSection.appendChild(expoControls);
+  expoPage.root.appendChild(expoSection);
+
+  // Hidden Expo controls stay inert until expo.js reveals them.
+  assert.notEqual(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm ignores hidden Expo controls');
+  assert.notEqual(press(expoPage, { key: '.' }).defaultPrevented, true, '. ignores hidden Expo controls');
+
+  expoControls.hidden = false;
+  assert.equal(press(expoPage, { key: 'm' }).defaultPrevented, true, 'm switches Expo mode');
+  assert.deepEqual(modeEvents, ['cards']);
+  assert.equal(modeRadios[1].checked, true);
+  press(expoPage, { key: 'm' });
+  press(expoPage, { key: 'm' });
+  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], 'm wraps from seamless back to wall');
+
+  assert.equal(press(expoPage, { key: ',' }).defaultPrevented, true, ', shrinks Expo image size');
+  assert.equal(sizeSlider.value, '220');
+  assert.equal(press(expoPage, { key: '<', shiftKey: true }).defaultPrevented, true, 'Shift+, (<) shrinks Expo image size');
+  assert.equal(sizeSlider.value, '200');
+  assert.equal(press(expoPage, { key: '.' }).defaultPrevented, true, '. enlarges Expo image size');
+  assert.equal(sizeSlider.value, '220');
+  assert.equal(press(expoPage, { key: '>', shiftKey: true }).defaultPrevented, true, 'Shift+. (>) enlarges Expo image size');
+  assert.equal(sizeSlider.value, '240');
+
+  // Bounds clamp cleanly without emitting redundant input events.
+  sizeSlider.value = '160';
+  sizeEvents.length = 0;
+  assert.equal(press(expoPage, { key: ',' }).defaultPrevented, true);
+  assert.equal(sizeSlider.value, '160');
+  assert.deepEqual(sizeEvents, [], 'min bound emits no redundant input');
+  sizeSlider.value = '360';
+  assert.equal(press(expoPage, { key: '>', shiftKey: true }).defaultPrevented, true);
+  assert.equal(sizeSlider.value, '360');
+  assert.deepEqual(sizeEvents, [], 'max bound emits no redundant input');
+
+  // Typing targets and modifiers still guard < and >.
+  sizeSlider.value = '240';
+  press(expoPage, { key: '<', shiftKey: true, target: input });
+  press(expoPage, { key: '>', shiftKey: true, ctrlKey: true });
+  press(expoPage, { key: 'M', shiftKey: true });
+  assert.equal(sizeSlider.value, '240', 'typing and Ctrl/Meta/Alt guard < and >');
+  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], 'Shift+M stays guarded');
+
+  // Open Expo viewer dialog suppresses page-level Expo shortcuts.
+  const expoViewer = new Element('dialog');
+  expoViewer.setAttribute('open', '');
+  expoPage.root.appendChild(expoViewer);
+  press(expoPage, { key: 'm' });
+  press(expoPage, { key: '.' });
+  assert.equal(sizeSlider.value, '240', 'open viewer dialog suppresses page-level Expo size shortcuts');
+  assert.deepEqual(modeEvents, ['cards', 'seamless', 'wall'], 'open viewer dialog suppresses page-level Expo mode shortcut');
+  expoPage.root.children.pop();
+
+  // Blog/Case/Release gallery form ([data-td-blog-gallery]) uses the same m / , / . shortcuts when visible.
+  const blogGalleryPage = setup({ withTree: false });
+  const blogGallery = new Element('section');
+  blogGallery.setAttribute('data-td-blog-gallery', '');
+  blogGallery.hidden = true;
+  const galleryBar = new Element('div');
+  galleryBar.setAttribute('data-gallery-controls', '');
+  const bgModes = [];
+  ['wall', 'cards', 'seamless'].forEach((name, idx) => {
+    const radio = new Element('input');
+    radio.setAttribute('data-gallery-mode', '');
+    radio.value = name;
+    radio.checked = idx === 0;
+    radio.addEventListener('change', () => bgModes.push(name));
+    galleryBar.appendChild(radio);
+  });
+  const bgSlider = new Element('input');
+  bgSlider.setAttribute('data-gallery-size', '');
+  bgSlider.setAttribute('min', '160');
+  bgSlider.setAttribute('max', '360');
+  bgSlider.setAttribute('step', '20');
+  bgSlider.value = '240';
+  galleryBar.appendChild(bgSlider);
+  blogGallery.appendChild(galleryBar);
+  blogGalleryPage.root.appendChild(blogGallery);
+
+  // Hidden blog gallery (e.g. while cards/list/table view is active) stays inert.
+  assert.notEqual(press(blogGalleryPage, { key: 'm' }).defaultPrevented, true, 'm ignores hidden blog gallery');
+  assert.notEqual(press(blogGalleryPage, { key: '.' }).defaultPrevented, true, '. ignores hidden blog gallery');
+  assert.equal(bgSlider.value, '240');
+
+  // Visible blog gallery responds to m, ,/<, and ./>.
+  blogGallery.hidden = false;
+  assert.equal(press(blogGalleryPage, { key: 'm' }).defaultPrevented, true, 'm switches visible blog gallery mode');
+  assert.deepEqual(bgModes, ['cards']);
+  assert.equal(press(blogGalleryPage, { key: ',' }).defaultPrevented, true, ', shrinks visible blog gallery size');
+  assert.equal(bgSlider.value, '220');
+  assert.equal(press(blogGalleryPage, { key: '>', shiftKey: true }).defaultPrevented, true, '> enlarges visible blog gallery size');
+  assert.equal(bgSlider.value, '240');
 
   const fixedRuns = [];
   const fixedPreset = setup({
@@ -1020,6 +1404,12 @@ function press(harness, values) {
     ['/', '/zh/'],
     'l works outside the shell',
   );
+  press(landing, { key: 'x' });
+  assert.deepEqual(
+    landing.win.assigned,
+    ['/', '/zh/', '/zh/'],
+    'x works outside the shell',
+  );
   landing.win.assigned.length = 0;
   press(landing, { key: 'y' });
   assert.deepEqual(landing.win.assigned, [], 'y leaves the language alone outside the shell');
@@ -1035,6 +1425,11 @@ function press(harness, values) {
   const landingAssignments = landing.win.assigned.length;
   press(landing, { key: 'q' });
   assert.equal(landing.win.assigned.length, landingAssignments, 'homepage q remains shell-only');
+  press(landing, { key: 'z' });
+  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), true, 'homepage z hides navbar and footer chrome');
+  assert.equal(landing.win.sessionStorage.getItem('td-kbd-zen'), '1', 'homepage z focus mode persists');
+  press(landing, { key: 'z' });
+  assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), false, 'homepage z restores chrome');
   press(landing, { key: 'h' });
   assert.equal(landing.html.hasAttribute('data-td-kbd-zen'), true, 'homepage h hides navbar and footer chrome');
   assert.equal(landing.win.sessionStorage.getItem('td-kbd-zen'), '1', 'homepage focus mode persists');
@@ -1054,6 +1449,7 @@ function press(harness, values) {
   });
   press(ordinary, { key: 'j' });
   press(ordinary, { key: 'h' });
+  press(ordinary, { key: 'z' });
   assert.equal(ordinary.win.scrolled.length, 0, 'ordinary pages keep reading keys inert');
   assert.equal(ordinary.html.hasAttribute('data-td-kbd-zen'), false, 'ordinary pages do not restore focus mode');
 
@@ -1075,6 +1471,8 @@ function press(harness, values) {
   assert.equal(bridgeTheme.clicks, 1, 'y clicks a standalone homepage theme bridge');
   press(bridge, { key: 'l' });
   assert.deepEqual(bridge.win.assigned, ['/zh/'], 'l follows a standalone language bridge');
+  press(bridge, { key: 'x' });
+  assert.deepEqual(bridge.win.assigned, ['/zh/', '/zh/'], 'x follows a standalone language bridge');
   bridge.win.assigned.length = 0;
   const bridgeF = press(bridge, { key: 'f' });
   assert.deepEqual(bridge.win.assigned, ['/docs/'], 'f leaves a standalone page for its search surface');

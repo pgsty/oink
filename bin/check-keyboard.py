@@ -23,7 +23,8 @@ ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
 KEYMAP = [
     "'w'", "'s'", "'a'", "'d'",
     "'j'", "'k'", "'n'", "'q'", "'e'",
-    "'h'", "'l'", "'y'", "'t'", "'r'", "'f'", "'b'",
+    "'h'", "'z'", "'l'", "'x'", "'y'", "'t'", "'r'", "'f'", "'b'", "'v'",
+    "'m'", "','", "'<'", "'.'", "'>'", "';'",
     "'g'", "'c'", "' '", "'Escape'",
     "'ArrowUp'", "'ArrowDown'",
 ]
@@ -127,6 +128,26 @@ def check_sources() -> None:
         "keyboard-nav lost the zen-mode toggle or its persistence",
     )
     require(
+        "data-td-keyboard-dialog" in source
+        and "data-td-keyboard-help-source" in source
+        and "OinkSurfaceCoordinator" in source
+        and "beforeprint" in source,
+        "keyboard-nav lost the ; shortcut help dialog, template fallback, or surface coordination",
+    )
+    require(
+        "data-td-blog-index-toggle" in source
+        and "data-td-expo-mode" in source
+        and "data-td-expo-size" in source
+        and "data-td-blog-gallery" in source
+        and "data-gallery-mode" in source
+        and "data-gallery-size" in source,
+        "keyboard-nav lost the V blog layout toggle or Expo / blog gallery M / < > controls",
+    )
+    require(
+        '"mode" "template"' in scripts and 'footer-style.html' in scripts,
+        "scripts.html no longer provides a keyboard-help template when footer_style is none",
+    )
+    require(
         "data-td-shell-sidebar" in source and "data-td-shell-sidebar-toggle" in source,
         "keyboard-nav lost collapsed-sidebar restoration",
     )
@@ -213,6 +234,15 @@ def toggle_off(config: str) -> str:
     )
 
 
+def footer_none(config: str) -> str:
+    marker = "    feedback:\n      enable: false\n"
+    require(marker in config, "fixture config lost the ui.feedback marker")
+    return config.replace(
+        marker,
+        "    footer_style: none\n" + marker,
+    )
+
+
 def invalid_value(config: str) -> str:
     marker = "    feedback:\n      enable: false\n"
     return config.replace(
@@ -282,6 +312,33 @@ def main() -> int:
                     "OinkKeyboardNav" not in bundle,
                     "front matter opt-out still bundles the runtime",
                 )
+
+            output, _ = actions.build(
+                helper,
+                workspace,
+                "kbd-footer-none",
+                footer_none(config),
+            )
+            html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(
+                encoding="utf-8"
+            )
+            require(
+                "data-td-keyboard-help-source" in html,
+                "footer_style: none with keyboard_nav on omitted the V shortcut help source template",
+            )
+            output, _ = actions.build(
+                helper,
+                workspace,
+                "kbd-footer-none-off",
+                toggle_off(footer_none(config)),
+            )
+            html = (output / "en" / "docs" / "guides" / "tutorial" / "index.html").read_text(
+                encoding="utf-8"
+            )
+            require(
+                "data-td-keyboard-help-source" not in html,
+                "footer_style: none with keyboard_nav off still emitted the shortcut help template",
+            )
 
             try:
                 actions.build(helper, workspace, "kbd-invalid", invalid_value(config))

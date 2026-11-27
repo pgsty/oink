@@ -1,21 +1,43 @@
-{{- /* Context-aware shortcut cheat sheet shared by the desktop sidebar and
-       its mobile drawer. The keycaps deliberately reuse the KBD component's
-       .td-kbd-sequence markup and presentation. */ -}}
+{{- /* Context-aware shortcut cheat sheet shared by the bottom bar and the ;
+       modal dialog. Accepts a Page (default footer hover menu) or a dict
+       {page, mode} where mode is "menu" | "template" | "panel". The keycaps
+       deliberately reuse the KBD component's .td-kbd-sequence markup and
+       presentation. */ -}}
+{{- $p := . -}}
+{{- $mode := "menu" -}}
+{{- $pop := false -}}
+{{- if reflect.IsMap . -}}
+  {{- $p = .page -}}
+  {{- $mode = .mode | default "menu" -}}
+  {{- $pop = .pop | default false -}}
+{{- end -}}
+{{- with $p -}}
 {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) false -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- if or $keyboardNav $localSearch -}}
-{{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
-{{- $compareTargets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang (partial "compare/page-key.html" .) (.Store.Get "tdOutputFormat" | default "html") -}}
-{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
+{{- if eq $mode "menu" -}}
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
     data-td-nav-hover-trigger data-td-nav-hover-open
     title="{{ T "ui_keyboard_shortcuts" }}" aria-label="{{ T "ui_keyboard_shortcuts" }}"
+    {{- if $keyboardNav }} aria-keyshortcuts=";"{{ end }}
     aria-expanded="false">
     {{- partialCached "shell/icon.html" "circle-question" "sidebar-keyboard-help" -}}
   </button>
-  <div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group"
-    aria-label="{{ T "ui_keyboard_shortcuts" }}">
+  {{- partial "shell/keyboard-help.html" (dict "page" . "mode" "panel" "pop" true) }}
+</div>
+{{- else if eq $mode "template" -}}
+<template data-td-keyboard-help-source>
+  {{- partial "shell/keyboard-help.html" (dict "page" . "mode" "panel") }}
+</template>
+{{- else -}}
+{{- $targets := partialCached "language-targets.html" . .Site.BaseURL .RelPermalink .Site.Language.Lang -}}
+{{- $compareTargets := partialCached "compare/targets.html" . .Site.BaseURL .Site.Language.Lang (partial "compare/page-key.html" .) (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" .Site.Language.Lang -}}
+{{- $hasBlogIndexToggle := .Store.Get "hasBlogIndexToggle" | default false -}}
+{{- $hasGallery := or (.Store.Get "hasExpo" | default false) (.Store.Get "hasBlogGallery" | default false) -}}
+<div class="{{ if $pop }}td-nav-hover-menu__pop {{ end }}td-shell-keyboard-help" role="group"
+  aria-label="{{ T "ui_keyboard_shortcuts" }}" data-td-close-label="{{ T "ui_search_close" }}">
     <div class="td-shell-keyboard-help__header">
       {{- partialCached "shell/icon.html" "circle-question" "keyboard-help-title" -}}
       <strong>{{ T "ui_keyboard_shortcuts" }}</strong>
@@ -37,8 +59,12 @@
           <dd>{{ T "ui_shortcut_tree_open" }}</dd>
         </div>
         <div class="td-shell-keyboard-help__row">
-          <dt><span class="td-kbd-sequence"><kbd>J</kbd><kbd>K</kbd></span></dt>
-          <dd>{{ T "ui_shortcut_heading_move" }}</dd>
+          <dt><span class="td-kbd-sequence"><kbd>K</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_heading_prev" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>J</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_heading_next" }}</dd>
         </div>
         <div class="td-shell-keyboard-help__row">
           <dt><span class="td-kbd-sequence"><kbd>Q</kbd><kbd>E</kbd></span></dt>
@@ -62,7 +88,7 @@
         {{- end }}
         {{- if $keyboardNav }}
         <div class="td-shell-keyboard-help__row">
-          <dt><span class="td-kbd-sequence"><kbd>H</kbd></span></dt>
+          <dt><span class="td-kbd-sequence"><kbd>H</kbd><kbd>Z</kbd></span></dt>
           <dd>{{ T "ui_shortcut_reading_mode" }}</dd>
         </div>
         {{- if gt (len $compareTargets) 0 }}
@@ -71,9 +97,25 @@
           <dd>{{ T "ui_compare_view" }}</dd>
         </div>
         {{- end }}
+        {{- if $hasBlogIndexToggle }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>V</kbd></span></dt>
+          <dd>{{ T "ui_blog_index_toggle" }}</dd>
+        </div>
+        {{- end }}
+        {{- if $hasGallery }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>M</kbd></span></dt>
+          <dd>{{ T "ui_expo_layout" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>&lt;</kbd><kbd>&gt;</kbd></span></dt>
+          <dd>{{ T "ui_expo_size" }}</dd>
+        </div>
+        {{- end }}
         {{- if gt (len $targets) 1 }}
         <div class="td-shell-keyboard-help__row">
-          <dt><span class="td-kbd-sequence"><kbd>L</kbd></span></dt>
+          <dt><span class="td-kbd-sequence"><kbd>L</kbd><kbd>X</kbd></span></dt>
           <dd>{{ T "ui_shortcut_language" }}</dd>
         </div>
         {{- end }}
@@ -95,9 +137,14 @@
           <dd>{{ T "ui_shortcut_route" }}</dd>
         </div>
         {{- end }}
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>;</kbd></span></dt>
+          <dd>{{ T "ui_keyboard_shortcuts" }}</dd>
+        </div>
         {{- end }}
       </dl>
     </section>
-  </div>
 </div>
+{{- end -}}
+{{- end -}}
 {{- end -}}

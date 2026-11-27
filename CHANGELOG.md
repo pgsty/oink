@@ -21,14 +21,29 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   `params.ui.rich_copy: false`, or the same key in front matter, keeps the
   browser's behavior. The runtime is `js/chunks/rich-copy.js`.
 
-- The `v` key steps to the next visual preset the site offers and wraps after
-  the last. It does nothing when `preset_menu` offers no choice. The shortcut
-  panel lists it as "Switch style" in all 32 interface languages.
+- The `;` key opens or closes the shortcut help dialog in the browser top layer
+  from anywhere on the page, including Zen Mode and pages with
+  `footer_style: none`. It dismisses on a second `;`, `Escape`, the close
+  button, or a backdrop click, and coordinates with other open surfaces.
+- The `v` key switches the layout form (`list`, `cards`, `table`, `gallery`) on
+  index pages that enable `blog_index_toggle`.
+- On Expo album pages and in blog/case/release gallery mode, `m` cycles gallery
+  layout modes (`wall`, `cards`, `seamless`), and `,` / `<` and `.` / `>`
+  shrink or enlarge the tile size slider in 20 px steps.
+- The `x` key cycles languages like `l`, and the `z` key toggles Zen Mode like
+  `h`, keeping the full shortcut set within easy left-hand reach.
+- The shortcut help panel splits `K` (Previous heading) and `J` (Next heading)
+  onto separate rows and refines shortcut labels across all 32 interface
+  languages (Zen Mode, Switch section, Shortcut help).
 
 ### Changed
 
-- The `y` key toggles light and dark, like `t`. It no longer switches the
-  language; `l` still does.
+- The `t` key steps through the visual presets the site offers in order
+  (Paper, Slate, Ink, Terminal) and wraps after the last; it does nothing when
+  `preset_menu` offers no choice. The `y` key cycles color mode across Light,
+  Dark, and System (`auto`), instead of switching the language (`l` and `x`
+  switch the language). The shortcut panel lists each binding in all 32
+  interface languages.
 - Paper is an ivory sheet with a clay accent. The canvas moves from the grey
   `#f7f6f3` to `#faf9f5`, with ink `#1f1e1c` and surfaces to match, and the
   preset now sets its own accent (`#9b4a28`, dark `#de8460`) for selected rows,

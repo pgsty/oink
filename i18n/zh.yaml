@@ -102,19 +102,20 @@ ui_pricing_included: 包含
 ui_pricing_excluded: 不包含
 ui_marquee_pause: 暂停滚动
 ui_kbd_with: 加
-ui_keyboard_shortcuts: 键盘快捷键
+ui_keyboard_shortcuts: 热键说明
 ui_shortcut_tree_move: 在侧栏中移动
 ui_shortcut_tree_toggle: 收起或展开章节
 ui_shortcut_tree_open: 打开当前页面
-ui_shortcut_heading_move: 上一个或下一个标题
+ui_shortcut_heading_prev: 上一个标题
+ui_shortcut_heading_next: 下一个标题
 ui_shortcut_page_move: 上一页或下一页
 ui_shortcut_search: 搜索
 ui_shortcut_commands: 命令面板
-ui_shortcut_reading_mode: 专注阅读模式
+ui_shortcut_reading_mode: 禅意模式
 ui_shortcut_language: 切换语言
 ui_shortcut_theme: 切换明暗
 ui_shortcut_style: 切换风格
-ui_shortcut_route: 切换顶层页面
+ui_shortcut_route: 切换栏目
 ui_page_annotation: 页面信息
 ui_backlinks: "反链"
 ui_backlinks_more: "再显示 {{ . }} 条"

@@ -1,14 +1,16 @@
 /**
  * Keyboard navigation. WASD and arrow keys drive the sidebar tree,
- * q/e page through the visible sidebar order, j/k jump between the page
- * outline's sections, h toggles a chrome-free reading mode, b opens the
- * bilingual view, l/y cycle
- * languages, t flips light/dark, r cycles the internal top-level navbar
- * routes, and f/c open the Command Palette in search or command mode. The
- * homepage shares j/k section jumps and h focus mode with shell pages, and n
- * is its mnemonic next-section alias;
- * l/y/t/r/f/c work on every interactive page.
- * Every binding is a bare single-character shortcut, so all of them yield to
+ * q/e page through the visible sidebar order, j/k jump to the next/previous
+ * page outline section, h/z toggle Zen Mode (chrome-free reading), b opens
+ * the duo view, v switches index layout forms on blog/release/case indexes,
+ * m cycles Expo album layout modes and ,/< ./> shrink/enlarge Expo album
+ * tiles, l/x cycle languages, t cycles visual styles, y cycles color modes
+ * (light/dark/system), r cycles internal top-level navbar sections, f/c open
+ * the Command Palette in search or command mode, and ; toggles the shortcut
+ * help dialog. The homepage shares j/k section jumps and h/z Zen Mode with
+ * shell pages, and n is its mnemonic next-section alias; l/x/t/y/r/f/c/;
+ * work on every interactive page.
+ * Every binding is a single-character shortcut, so all of them yield to
  * anything the reader could be typing into and to open overlays. Bundled only
  * when params.ui.keyboard_nav is not false.
  */
@@ -153,15 +155,20 @@
       return isShellPage() || isHomePage();
     }
 
-    function hasOpenDialog() {
+    function hasOtherOpenDialog(except) {
       if (!doc.querySelectorAll) return false;
       if (Array.prototype.some.call(doc.querySelectorAll('dialog[open]'), function (dialog) {
+        if (dialog === except) return false;
         return !dialog.classList.contains('td-appearance__panel') || dialog.matches(':modal');
       })) return true;
       return Array.prototype.some.call(
         doc.querySelectorAll('[role="dialog"]'),
-        function (dialog) { return isVisible(dialog, win); },
+        function (dialog) { return dialog !== except && isVisible(dialog, win); },
       );
+    }
+
+    function hasOpenDialog() {
+      return hasOtherOpenDialog(null);
     }
 
     /* ------------------------------------------------------- scroll engine */
@@ -266,13 +273,26 @@
 
     // Bare shortcuts stand down while anything modal is up or the reader is
     // typing: IME composition, editable targets, held modifiers, the Command
-    // Palette scroll lock, and open dialogs all take precedence.
-    function guarded(event) {
+    // Palette scroll lock, and open dialogs all take precedence. `<` and `>`
+    // require Shift on standard keyboards, so only those two characters may
+    // pass with shiftKey held.
+    function allowShiftKey(key) {
+      return key === ',' || key === '<' || key === '.' || key === '>';
+    }
+
+    function keyGuarded(event) {
       return Boolean(
         event.isComposing || event.keyCode === 229 ||
-        event.metaKey || event.ctrlKey || event.altKey || event.shiftKey ||
+        event.metaKey || event.ctrlKey || event.altKey ||
+        (event.shiftKey && !allowShiftKey(event.key)) ||
         event.defaultPrevented ||
-        isTypingTarget(event.target) ||
+        isTypingTarget(event.target),
+      );
+    }
+
+    function guarded(event) {
+      return Boolean(
+        keyGuarded(event) ||
         html.hasAttribute('data-td-shell-lock') ||
         hasOpenDialog(),
       );
@@ -617,6 +637,91 @@
       return true;
     }
 
+    function cycleBlogLayout(event) {
+      var toggle = doc.querySelector && doc.querySelector('[data-td-blog-index-toggle]');
+      if (!toggle || toggle.hidden || toggle.disabled || typeof toggle.click !== 'function') return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      toggle.click();
+      return true;
+    }
+
+    function dispatchControlEvent(target, type) {
+      if (!target || typeof target.dispatchEvent !== 'function') return;
+      var evt;
+      if (typeof win.Event === 'function') {
+        evt = new win.Event(type, { bubbles: true });
+      } else if (typeof Event === 'function') {
+        evt = new Event(type, { bubbles: true });
+      } else {
+        evt = { type: type, target: target, bubbles: true };
+      }
+      target.dispatchEvent(evt);
+    }
+
+    function galleryControls() {
+      var expo = doc.querySelector && doc.querySelector('[data-td-expo]');
+      if (expo && expo.querySelector && isVisible(expo, win)) {
+        var expoBar = expo.querySelector('[data-td-expo-controls]');
+        if (expoBar && !expoBar.hidden && isVisible(expoBar, win)) {
+          return {
+            controls: expoBar,
+            modeSelector: 'input[data-td-expo-mode]',
+            sizeSelector: 'input[data-td-expo-size]',
+          };
+        }
+      }
+      var blogGallery = doc.querySelector && doc.querySelector('[data-td-blog-gallery]');
+      if (blogGallery && blogGallery.querySelector && isVisible(blogGallery, win)) {
+        var galleryBar = blogGallery.querySelector('[data-gallery-controls]');
+        if (galleryBar && !galleryBar.hidden && isVisible(galleryBar, win)) {
+          return {
+            controls: galleryBar,
+            modeSelector: 'input[data-gallery-mode]',
+            sizeSelector: 'input[data-gallery-size]',
+          };
+        }
+      }
+      return null;
+    }
+
+    function cycleExpoMode(event) {
+      var surface = galleryControls();
+      if (!surface || !surface.controls.querySelectorAll) return false;
+      var inputs = Array.prototype.slice.call(surface.controls.querySelectorAll(surface.modeSelector));
+      if (inputs.length < 2) return false;
+      var current = -1;
+      for (var i = 0; i < inputs.length; i += 1) {
+        if (inputs[i].checked) current = i;
+      }
+      var next = inputs[(current + 1 + inputs.length) % inputs.length];
+      if (!next) return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      for (var j = 0; j < inputs.length; j += 1) inputs[j].checked = inputs[j] === next;
+      dispatchControlEvent(next, 'change');
+      return true;
+    }
+
+    function adjustExpoSize(event, delta) {
+      var surface = galleryControls();
+      if (!surface || !surface.controls.querySelector) return false;
+      var slider = surface.controls.querySelector(surface.sizeSelector);
+      if (!slider || slider.disabled) return false;
+      var min = Number(slider.getAttribute('min'));
+      var max = Number(slider.getAttribute('max'));
+      var step = Number(slider.getAttribute('step'));
+      if (!isFinite(min)) min = 160;
+      if (!isFinite(max)) max = 360;
+      if (!isFinite(step) || step <= 0) step = 20;
+      var current = Number(slider.value);
+      if (!isFinite(current)) current = Number(slider.getAttribute('value')) || 240;
+      var next = Math.min(max, Math.max(min, current + delta * step));
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      if (next === current) return true;
+      slider.value = String(next);
+      dispatchControlEvent(slider, 'input');
+      return true;
+    }
+
     var COLOR_MODES = ['light', 'dark', 'auto'];
 
     function currentColorMode() {
@@ -787,11 +892,238 @@
       }, 0);
     }
 
+    /* -------------------------------------------------- shortcut help (;) */
+
+    var helpDialog = null;
+    var helpCloseButton = null;
+    var helpReturnFocus = null;
+    var suppressHelpFocus = false;
+    var helpBackdropPressed = false;
+
+    function helpSource() {
+      var direct = doc.querySelector && doc.querySelector('.td-shell-keyboard-help');
+      if (direct) return direct;
+      var tpl = doc.querySelector && doc.querySelector('template[data-td-keyboard-help-source]');
+      if (tpl && tpl.content && tpl.content.querySelector) {
+        return tpl.content.querySelector('.td-shell-keyboard-help');
+      }
+      return null;
+    }
+
+    function isHelpOpen() {
+      return Boolean(
+        helpDialog &&
+        (helpDialog.open || (helpDialog.hasAttribute && helpDialog.hasAttribute('open'))),
+      );
+    }
+
+    function suffixDialogIds(node) {
+      if (!node || !node.getAttribute) return;
+      var id = node.getAttribute('id');
+      if (id) node.setAttribute('id', id + '-dialog');
+      var labelledBy = node.getAttribute('aria-labelledby');
+      if (labelledBy) {
+        node.setAttribute(
+          'aria-labelledby',
+          labelledBy.split(/\s+/).filter(Boolean).map(function (ref) {
+            return ref + '-dialog';
+          }).join(' '),
+        );
+      }
+      var children = node.children || [];
+      for (var i = 0; i < children.length; i += 1) suffixDialogIds(children[i]);
+    }
+
+    function finishHelpClose() {
+      if (isHelpOpen()) return;
+      var target = helpReturnFocus;
+      helpReturnFocus = null;
+      var shouldRestore = !suppressHelpFocus;
+      suppressHelpFocus = false;
+      if (!shouldRestore) return;
+      var active = doc.activeElement;
+      var mayRestore = !active ||
+        active === doc.body ||
+        active === doc.documentElement ||
+        active === helpDialog ||
+        (helpDialog && helpDialog.contains && helpDialog.contains(active));
+      if (
+        mayRestore && target && target.focus &&
+        target !== doc.body && target !== doc.documentElement &&
+        doc.contains(target)
+      ) {
+        try {
+          target.focus({ preventScroll: true });
+        } catch (_) {
+          target.focus();
+        }
+      }
+    }
+
+    function closeHelp(restoreFocus) {
+      if (!isHelpOpen()) return;
+      suppressHelpFocus = restoreFocus === false;
+      if (typeof helpDialog.close === 'function') {
+        helpDialog.close();
+      } else {
+        helpDialog.open = false;
+        helpDialog.removeAttribute('open');
+      }
+      finishHelpClose();
+    }
+
+    function buildHelpDialog(source) {
+      if (helpDialog) return helpDialog;
+      if (!source || !doc.createElement || !doc.body) return null;
+
+      var dialog = doc.createElement('dialog');
+      dialog.className = 'td-shell-keyboard-dialog d-print-none';
+      dialog.setAttribute('data-td-keyboard-dialog', '');
+      dialog.setAttribute('aria-labelledby', 'td-shell-keyboard-dialog-title');
+
+      var surface = doc.createElement('div');
+      surface.className = 'td-shell-keyboard-dialog__surface';
+
+      var header = doc.createElement('div');
+      header.className = 'td-shell-keyboard-dialog__header';
+
+      var heading = doc.createElement('div');
+      heading.className = 'td-shell-keyboard-dialog__heading';
+
+      var sourceIcon = source.querySelector &&
+        source.querySelector('.td-shell-keyboard-help__header .td-shell-icon');
+      if (sourceIcon && typeof sourceIcon.cloneNode === 'function') {
+        heading.appendChild(sourceIcon.cloneNode(true));
+      }
+
+      var title = doc.createElement('h2');
+      title.className = 'td-shell-keyboard-dialog__title';
+      title.id = 'td-shell-keyboard-dialog-title';
+      var sourceTitle = source.querySelector &&
+        source.querySelector('.td-shell-keyboard-help__header strong');
+      title.textContent = (sourceTitle && sourceTitle.textContent) ||
+        source.getAttribute('aria-label') ||
+        'Shortcut help';
+      heading.appendChild(title);
+
+      var closeLabel = source.getAttribute('data-td-close-label') || 'Close';
+      var closeBtn = doc.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'td-shell-keyboard-dialog__close';
+      closeBtn.setAttribute('data-td-keyboard-dialog-close', '');
+      closeBtn.setAttribute('aria-label', closeLabel);
+      closeBtn.setAttribute('title', closeLabel + ' (Esc / ;)');
+      closeBtn.setAttribute('aria-keyshortcuts', 'Escape ;');
+      var closeIcon = doc.createElement('i');
+      closeIcon.className = 'td-shell-icon td-shell-icon--x fa-solid fa-xmark';
+      closeIcon.setAttribute('aria-hidden', 'true');
+      closeBtn.appendChild(closeIcon);
+
+      header.appendChild(heading);
+      header.appendChild(closeBtn);
+      surface.appendChild(header);
+
+      var body = doc.createElement('div');
+      body.className = 'td-shell-keyboard-dialog__body';
+      var sections = source.querySelectorAll
+        ? Array.prototype.slice.call(source.querySelectorAll('.td-shell-keyboard-help__section'))
+        : [];
+      if (sections.length > 1) {
+        if (dialog.classList) dialog.classList.add('td-shell-keyboard-dialog--split');
+        if (body.classList) body.classList.add('td-shell-keyboard-dialog__body--split');
+      }
+      sections.forEach(function (section) {
+        var copy = typeof section.cloneNode === 'function' ? section.cloneNode(true) : null;
+        if (!copy) return;
+        suffixDialogIds(copy);
+        body.appendChild(copy);
+      });
+      surface.appendChild(body);
+      dialog.appendChild(surface);
+      doc.body.appendChild(dialog);
+
+      if (closeBtn.addEventListener) {
+        closeBtn.addEventListener('click', function () { closeHelp(true); });
+      }
+      if (dialog.addEventListener) {
+        dialog.addEventListener('cancel', function (event) {
+          event.preventDefault();
+          closeHelp(true);
+        });
+        dialog.addEventListener('close', finishHelpClose);
+        dialog.addEventListener('pointerdown', function (event) {
+          helpBackdropPressed = event.target === dialog;
+        });
+        dialog.addEventListener('click', function (event) {
+          if (event.target === dialog && helpBackdropPressed) closeHelp(true);
+          helpBackdropPressed = false;
+        });
+      }
+
+      helpDialog = dialog;
+      helpCloseButton = closeBtn;
+      return dialog;
+    }
+
+    function openHelp(event) {
+      var source = helpSource();
+      if (!source) return false;
+      var dialog = buildHelpDialog(source);
+      if (!dialog) return false;
+      if (event && typeof event.preventDefault === 'function') event.preventDefault();
+      helpReturnFocus = doc.activeElement;
+      suppressHelpFocus = false;
+      var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
+      if (coordinator && typeof coordinator.closeOthers === 'function') {
+        coordinator.closeOthers('keyboard-help');
+      }
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal();
+      } else {
+        dialog.open = true;
+        dialog.setAttribute('open', '');
+      }
+      if (helpCloseButton && typeof helpCloseButton.focus === 'function') {
+        try {
+          helpCloseButton.focus({ preventScroll: true });
+        } catch (_) {
+          helpCloseButton.focus();
+        }
+      }
+      return true;
+    }
+
+    function toggleHelp(event) {
+      if (isHelpOpen()) {
+        if (event && typeof event.preventDefault === 'function') event.preventDefault();
+        closeHelp(true);
+        return true;
+      }
+      return openHelp(event);
+    }
+
     /* ------------------------------------------------------------ keymap */
 
     function onKeydown(event) {
-      if (guarded(event)) return;
       var key = event.key;
+      if (isHelpOpen()) {
+        if (key === 'Escape' && !event.defaultPrevented && !hasOtherOpenDialog(helpDialog)) {
+          event.preventDefault();
+          return closeHelp(true);
+        }
+        if (
+          key === ';' &&
+          !event.repeat &&
+          !keyGuarded(event) &&
+          !html.hasAttribute('data-td-shell-lock') &&
+          !hasOtherOpenDialog(helpDialog)
+        ) {
+          event.preventDefault();
+          return closeHelp(true);
+        }
+        return;
+      }
+      if (guarded(event)) return;
       var wrap = menu();
       var active = doc.activeElement;
       var inTree = Boolean(wrap && active && wrap.contains(active));
@@ -856,12 +1188,16 @@
       }
       if (isShellPage() && key === 'q') return goPage('prev');
       if (isShellPage() && key === 'e') return goPage('next');
-      if (hasReadingShortcuts() && key === 'h') {
+      if (hasReadingShortcuts() && (key === 'h' || key === 'z')) {
         event.preventDefault();
         return setZen(!html.hasAttribute('data-td-kbd-zen'));
       }
       if (key === 'b') return openCompare(event);
-      if (key === 'l') return cycleLanguage();
+      if (key === 'v') return cycleBlogLayout(event);
+      if (key === 'm') return cycleExpoMode(event);
+      if (key === ',' || key === '<') return adjustExpoSize(event, -1);
+      if (key === '.' || key === '>') return adjustExpoSize(event, 1);
+      if (key === 'l' || key === 'x') return cycleLanguage();
       if (key === 't') return cyclePreset();
       if (key === 'y') return cycleTheme();
       if (key === 'r') {
@@ -870,6 +1206,7 @@
       }
       if (key === 'f') return openPalette(event, false);
       if (key === 'c') return openPalette(event, true);
+      if (key === ';' && !event.repeat) return openHelp(event);
     }
 
     // Re-apply the chrome-free mode chosen on a previous page.
@@ -883,6 +1220,17 @@
       /* storage may be unavailable */
     }
 
+    var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
+    if (coordinator && typeof coordinator.register === 'function') {
+      coordinator.register('keyboard-help', function (restoreFocus) {
+        closeHelp(restoreFocus === true);
+      });
+    }
+    if (win.addEventListener) {
+      win.addEventListener('beforeprint', function () { closeHelp(false); });
+      win.addEventListener('pagehide', function () { closeHelp(false); });
+    }
+
     doc.addEventListener('keydown', onKeydown);
     doc.addEventListener('focusin', function (event) {
       var ring = doc.querySelector('.td-kbd-focus');
@@ -893,12 +1241,14 @@
     resumePalette();
 
     return Object.freeze({
+      closeHelp: closeHelp,
       guarded: guarded,
       jumpHeading: jumpHeading,
       onKeydown: onKeydown,
       navbarRoutes: navbarRoutes,
       pageTarget: pageTarget,
       setZen: setZen,
+      toggleHelp: toggleHelp,
     });
   }
 

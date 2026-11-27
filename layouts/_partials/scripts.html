@@ -190,6 +190,9 @@
   {{ $jsChunks = $jsChunks | append (dict "target" (printf "js/chunks/google-search-%s.js" .Site.Language.Lang) "members" (slice $jsSearch)) -}}
 {{ end -}}
 {{ if $hasKeyboardNav -}}
+  {{ if eq (partial "footer-style.html" .) "none" -}}
+    {{ partial "shell/keyboard-help.html" (dict "page" . "mode" "template") -}}
+  {{ end -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/keyboard.js" "members" (slice (resources.Get "js/keyboard-nav.js"))) -}}
 {{ end -}}
 {{ if $hasFooterCollapse -}}

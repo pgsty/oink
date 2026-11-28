@@ -1,27 +1,27 @@
 [
   {
     "name": "@markmap/core",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "MIT"
   },
   {
     "name": "@markmap/parse",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "MIT"
   },
   {
     "name": "@markmap/plugin-math",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "MIT"
   },
   {
     "name": "@markmap/render",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "MIT"
   },
   {
     "name": "@markmap/view",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "license": "MIT"
   },
   {

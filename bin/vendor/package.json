@@ -2,12 +2,12 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@markmap/core": "1.1.0",
-    "@markmap/parse": "1.1.0",
-    "@markmap/render": "1.1.0",
-    "@markmap/plugin-math": "1.1.0",
+    "@markmap/core": "1.1.1",
+    "@markmap/parse": "1.1.1",
+    "@markmap/render": "1.1.1",
+    "@markmap/plugin-math": "1.1.1",
     "esbuild": "0.28.2",
-    "@markmap/view": "1.1.0",
+    "@markmap/view": "1.1.1",
     "pako": "3.0.3",
     "external-svg-loader": "1.7.1",
     "idb-keyval": "6.3.0"

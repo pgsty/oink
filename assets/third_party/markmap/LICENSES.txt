@@ -1,4 +1,4 @@
-@markmap/core 1.1.0 (MIT)
+@markmap/core 1.1.1 (MIT)
 LICENSE
 MIT License
 
@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@markmap/parse 1.1.0 (MIT)
+@markmap/parse 1.1.1 (MIT)
 LICENSE
 MIT License
 
@@ -48,7 +48,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@markmap/plugin-math 1.1.0 (MIT)
+@markmap/plugin-math 1.1.1 (MIT)
 LICENSE
 MIT License
 
@@ -73,7 +73,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@markmap/render 1.1.0 (MIT)
+@markmap/render 1.1.1 (MIT)
 LICENSE
 MIT License
 
@@ -98,7 +98,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-@markmap/view 1.1.0 (MIT)
+@markmap/view 1.1.1 (MIT)
 LICENSE
 MIT License
 

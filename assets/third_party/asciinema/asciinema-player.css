@@ -80,10 +80,11 @@ div.ap-wrapper div.ap-player {
 div.ap-term {
   position: relative;
   font-family: var(--term-font-family);
-  border-width: 0.75em;
+  --pad-x: calc(1ch * 10 / 8);
+  --pad-y: calc(var(--term-line-height) * 14 / 24);
+  padding: var(--pad-y) var(--pad-x);
+  border: 0;
   border-radius: 0;
-  border-style: solid;
-  border-color: var(--term-color-background);
   box-sizing: content-box;
 }
 div.ap-term canvas {
@@ -95,10 +96,10 @@ div.ap-term canvas {
 }
 div.ap-term svg.ap-term-symbols {
   position: absolute;
-  inset: 0;
+  inset: var(--pad-y) auto auto var(--pad-x);
   display: block;
-  width: 100%;
-  height: 100%;
+  width: calc(var(--term-cols) * 1ch);
+  height: calc(var(--term-rows) * var(--term-line-height));
   overflow: hidden;
   pointer-events: none;
 }
@@ -110,13 +111,16 @@ div.ap-term svg.ap-term-symbols:not(.ap-blink) .ap-blink {
 }
 div.ap-term pre.ap-term-text {
   position: absolute;
-  inset: 0;
+  inset: var(--pad-y) auto auto var(--pad-x);
+  width: calc(var(--term-cols) * 1ch);
+  height: calc(var(--term-rows) * var(--term-line-height));
   box-sizing: content-box;
   overflow: hidden;
   padding: 0;
   margin: 0px;
   display: block;
   white-space: pre;
+  text-decoration-skip-spaces: none;
   word-wrap: normal;
   word-break: normal;
   cursor: text;
@@ -130,7 +134,7 @@ div.ap-term pre.ap-term-text {
   border-radius: 0;
   background-color: transparent !important;
 }
-pre.ap-term-text .ap-line {
+pre.ap-term-text .ap-row {
   display: block;
   width: 100%;
   height: var(--term-line-height);
@@ -139,14 +143,14 @@ pre.ap-term-text .ap-line {
   letter-spacing: normal;
   overflow: hidden;
 }
-pre.ap-term-text .ap-line span {
+pre.ap-term-text .ap-row span {
   position: absolute;
   left: calc(100% * var(--offset) / var(--term-cols));
   padding: 0;
   display: inline-block;
   height: 100%;
 }
-pre.ap-term-text:not(.ap-blink) .ap-line .ap-blink {
+pre.ap-term-text:not(.ap-blink) .ap-row .ap-blink {
   color: transparent;
   border-color: transparent;
 }
@@ -165,7 +169,7 @@ pre.ap-term-text .ap-italic {
 pre.ap-term-text .ap-strike {
   text-decoration: line-through;
 }
-.ap-line span {
+.ap-row span {
   color: var(--term-color-foreground);
 }
 div.ap-player div.ap-control-bar {

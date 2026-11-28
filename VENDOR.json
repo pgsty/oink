@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "generated": "2026-11-27",
+  "generated": "2026-11-28",
   "hash": "sha256",
   "trees": [
     {
       "path": "assets/third_party",
-      "files": 130,
-      "sha256": "5c7839f68622d1a3c5fa6d2c8eef744f30929cd42164a5bf79b8b349cc90ebbc"
+      "files": 131,
+      "sha256": "bebaa6c3d82905d89f831220cf967ec90477875a4b789faf2d42f56c9433bdc0"
     },
     {
       "path": "static/webfonts",
@@ -283,19 +283,20 @@
     },
     {
       "name": "mermaid",
-      "version": "12.3.0",
-      "source": "https://registry.npmjs.org/mermaid/-/mermaid-12.3.0.tgz",
+      "version": "12.4.0",
+      "source": "https://registry.npmjs.org/mermaid/-/mermaid-12.4.0.tgz",
       "license": "MIT",
       "licenseFiles": [
-        "assets/third_party/mermaid/LICENSE"
+        "assets/third_party/mermaid/LICENSE",
+        "assets/third_party/mermaid/THIRD_PARTY_NOTICES"
       ],
       "artifacts": [
         {
           "path": "assets/third_party/mermaid/mermaid.min.js",
-          "sha256": "336df803d87a38b70a01e736e666c8f7601d2ce42f5e47c8fafe5d721074b9a3"
+          "sha256": "c0891e4c0413d0710ad193b431d8cbbe9d031636e51c467d11daa4721ba22094"
         }
       ],
-      "integrity": "sha512-4113TdXeLAsMruJ79OpFL5O8+LTFXhQqZ260rF3tgUmiNAtRm4Uume04I+65PRN6yZ69J4f8rVYWW8zRk65UYw=="
+      "integrity": "sha512-j2gvsGUFeS/53WdYLl9H5G2YtMZX9G/PlCvV3E5Pf4j5XSnK19DwazU6wki7OTcKeYKed7+qujRDLhy8NV2zBg=="
     },
     {
       "name": "katex",
@@ -315,8 +316,8 @@
     },
     {
       "name": "swagger-ui-dist",
-      "version": "5.34.1",
-      "source": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.34.1.tgz",
+      "version": "5.36.0",
+      "source": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.36.0.tgz",
       "license": "Apache-2.0",
       "licenseFiles": [
         "assets/third_party/swagger-ui/LICENSE",
@@ -327,7 +328,7 @@
       "artifacts": [
         {
           "path": "assets/third_party/swagger-ui/swagger-ui-bundle.js",
-          "sha256": "36eeb4d5640b9c036b1d0f854499af1cceebbdb260b790a03a18be5e8488fbf5"
+          "sha256": "b164c5a22535e40dae08c00271674a67e437ec195098c55fcedf8ffac7ac3c88"
         },
         {
           "path": "assets/third_party/swagger-ui/swagger-ui-standalone-preset.js",
@@ -335,15 +336,15 @@
         },
         {
           "path": "assets/third_party/swagger-ui/swagger-ui.css",
-          "sha256": "c3cfe8248c4b0b89673600fb829924eafbac6de4bc4b2b06f5f5243483074d0a"
+          "sha256": "7eb9f5a125e4bc9b3f0b71869b66d1a3d7c501f972f53d44ef91c2ae6c5bda5e"
         }
       ],
-      "integrity": "sha512-VSr8fXfI93obYaQicLJbLUKGRxDojj/SfRJDDLCioGTUBj4BK/Nj4eE9jCeCAnJxVLi7iS+08PbiZLyrQKBkJQ=="
+      "integrity": "sha512-Lt6/Kb0gXmLdiabLhvso4VdJP9V7qJWB0zh0gzeXUV3+CMOTzMmvpJRSXN7EAjfwixwmoi9ezDbLHiexC7lA9A=="
     },
     {
       "name": "redoc",
-      "version": "3.1.0",
-      "source": "https://registry.npmjs.org/redoc/-/redoc-3.1.0.tgz",
+      "version": "3.2.0",
+      "source": "https://registry.npmjs.org/redoc/-/redoc-3.2.0.tgz",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/redoc/LICENSE",
@@ -352,10 +353,10 @@
       "artifacts": [
         {
           "path": "assets/third_party/redoc/redoc.standalone.js",
-          "sha256": "28fe52577d1fcb133db8e55eb078cf60f44dc69d38a08855e28298a92e8ea843"
+          "sha256": "aaddd04f476ff5042a4f0bfbc1d2d52fd942383c96ca51315db8b4c94e27d7f2"
         }
       ],
-      "integrity": "sha512-hYsN0ABpoDAPE2+A+mNvs6DDTzhPlJaIeJK2jCFgvxtiXHpWzBXqNBWWKUNq/VLBMZGnyT4qiQnODVWEX031uQ==",
+      "integrity": "sha512-RWN9p/BdulGe+Khbo4HrfOC7cZWtLjwBCgeO0O2TNeN7/NljlQ/mPfc0mbANLybHELR8yL9FVlUCbBOs+0CJQg==",
       "build": "bin/vendor/import-redoc.py",
       "notes": "The two upstream CDN brand images are inlined from bin/vendor/redoc-logos; all other bundle bytes are unchanged.",
       "imageSources": [
@@ -365,8 +366,8 @@
     },
     {
       "name": "asciinema-player",
-      "version": "3.18.0",
-      "source": "https://registry.npmjs.org/asciinema-player/-/asciinema-player-3.18.0.tgz",
+      "version": "3.19.0",
+      "source": "https://registry.npmjs.org/asciinema-player/-/asciinema-player-3.19.0.tgz",
       "license": "Apache-2.0",
       "licenseFiles": [
         "assets/third_party/asciinema/LICENSE"
@@ -374,14 +375,14 @@
       "artifacts": [
         {
           "path": "assets/third_party/asciinema/asciinema-player.min.js",
-          "sha256": "752c9b528b664f5b16f27c68ba22fc7973d1d6063a1c3e4795a4c8015943acf6"
+          "sha256": "808731d0463da04f6426972a5f929f1030988e0a003444a83741d64a17a7f128"
         },
         {
           "path": "assets/third_party/asciinema/asciinema-player.css",
-          "sha256": "981fe7bc6042048b2a373b6da297f747e324e90a8b6264e833e3a92cec22dfb9"
+          "sha256": "356c78feca80075c9f976a9cc078acd0b9ed02b4dba97718cc97d435f5d906e0"
         }
       ],
-      "integrity": "sha512-5gpt2ipFcy4NKmgkv+c/QXnJ9zMicxqWROCOuJqgwwtiYKM8Qe9hnDOvfqke5bW6M2DW/seO3uQYkQ0xeUUVtw=="
+      "integrity": "sha512-iS+5f8PPlCOPiMcoXBGXep0wwTc0xfjx0kL8xvgTRjev4oomfMR4tOXL44mB0PdVZbN5mTDOjY7wEvjX5P0rUg=="
     },
     {
       "name": "echarts",
@@ -472,8 +473,8 @@
     },
     {
       "name": "@plantuml/core",
-      "version": "1.2026.9",
-      "source": "https://registry.npmjs.org/@plantuml/core/-/core-1.2026.9.tgz",
+      "version": "1.2026.10",
+      "source": "https://registry.npmjs.org/@plantuml/core/-/core-1.2026.10.tgz",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/plantuml/LICENSE"
@@ -481,9 +482,10 @@
       "artifacts": [
         {
           "path": "assets/third_party/plantuml/plantuml.js",
-          "sha256": "21c049ce47d087eff61ae0836f9c62a2b0c0d2528a5f16c2247057544228fae7"
+          "sha256": "c6664799aaa464319b5e1070a69850b93a7ea23ee41a23e920a8f2086e7da21c"
         }
-      ]
+      ],
+      "integrity": "sha512-m67zsiUiJGAUfrk7xM2i3b9Y8HPefXder+v7STblGZgW96GUOnJTCBfJAX1d9ElDzV9d7zrEJO9S7/FHfkaGMg=="
     },
     {
       "name": "@viz-js/viz",
@@ -506,9 +508,9 @@
     },
     {
       "name": "@markmap/core",
-      "version": "1.1.0",
-      "source": "https://registry.npmjs.org/@markmap/core/-/core-1.1.0.tgz",
-      "integrity": "sha512-KsPt8dOAiMjNrFA7u3AmFTqiynbX30kvMCLu/66xf6qfylYVgIjSJgV6cpTWvouZYA5VtwWyLMZMwMZHo0NB3w==",
+      "version": "1.1.1",
+      "source": "https://registry.npmjs.org/@markmap/core/-/core-1.1.1.tgz",
+      "integrity": "sha512-413Cg3My6YnHf55AnnwGpJ4SR2JxYU3VrbPbhAI20IxITRFszoFwpSYXZ7Jy3w2K05ZAoOTEjJXibkG32aUs6g==",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/markmap/LICENSES.txt"
@@ -518,15 +520,15 @@
       "artifacts": [
         {
           "path": "assets/third_party/markmap/markmap.js",
-          "sha256": "2ef6d6897e4c1769e3ce6ead578a12c826f7fc45c66147b608c4ad3173cbce35"
+          "sha256": "076e29305efee7848ae37bb3f294ef051593b9ef468403b3a07e0ec74e83ff1f"
         }
       ]
     },
     {
       "name": "@markmap/parse",
-      "version": "1.1.0",
-      "source": "https://registry.npmjs.org/@markmap/parse/-/parse-1.1.0.tgz",
-      "integrity": "sha512-Gr5LOtr4pwN2sISMVolCUdSfbCW74/n2z5+WVfMNlv8Djuna1BHNwg0tSpBE17C6SM9i0SEUi3oZa6e5J3IC8A==",
+      "version": "1.1.1",
+      "source": "https://registry.npmjs.org/@markmap/parse/-/parse-1.1.1.tgz",
+      "integrity": "sha512-hRbBYtD6WToXKwoB68HsDq3nlwRX6obW8aA6soAr1WqMoGkZhuZb1+//838MTZPI+wD+6+Fn6jgt64WaGmKrlA==",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/markmap/LICENSES.txt"
@@ -536,15 +538,15 @@
       "artifacts": [
         {
           "path": "assets/third_party/markmap/markmap.js",
-          "sha256": "2ef6d6897e4c1769e3ce6ead578a12c826f7fc45c66147b608c4ad3173cbce35"
+          "sha256": "076e29305efee7848ae37bb3f294ef051593b9ef468403b3a07e0ec74e83ff1f"
         }
       ]
     },
     {
       "name": "@markmap/render",
-      "version": "1.1.0",
-      "source": "https://registry.npmjs.org/@markmap/render/-/render-1.1.0.tgz",
-      "integrity": "sha512-nHHLi+YsCJISrW3Ge+M+IWU+l3dUIi2kUHQBG6qwVGjyRqWsStEQ5Yz9wjXyXTOmoIX5gJHzJ3H6Ks5tM3kfmw==",
+      "version": "1.1.1",
+      "source": "https://registry.npmjs.org/@markmap/render/-/render-1.1.1.tgz",
+      "integrity": "sha512-nzSKwAdeuPPB2J0QOSi4dPyyNpiz9LocaCZRviayKDtpjgsMrFSgWm8mBOHKcCfDGYzTHWEtB1TnF0F+AVVcKg==",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/markmap/LICENSES.txt"
@@ -554,15 +556,15 @@
       "artifacts": [
         {
           "path": "assets/third_party/markmap/markmap.js",
-          "sha256": "2ef6d6897e4c1769e3ce6ead578a12c826f7fc45c66147b608c4ad3173cbce35"
+          "sha256": "076e29305efee7848ae37bb3f294ef051593b9ef468403b3a07e0ec74e83ff1f"
         }
       ]
     },
     {
       "name": "@markmap/view",
-      "version": "1.1.0",
-      "source": "https://registry.npmjs.org/@markmap/view/-/view-1.1.0.tgz",
-      "integrity": "sha512-0uvtZaCtqpsCt0NVjhPLwuiHpkb61z5FXsdbxwEqfPWW2NoR4GDy95ewUfHDVL3YLLtCENijivaCLBNqYPatiw==",
+      "version": "1.1.1",
+      "source": "https://registry.npmjs.org/@markmap/view/-/view-1.1.1.tgz",
+      "integrity": "sha512-094ev5E/NsVx+5jjTQ7pEuvK9stilpyeDTHsXXTWCj3ffK1NC/aD3Se2pPevMvnTmnSB66LXRgXDPFGxRauqtw==",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/markmap/LICENSES.txt"
@@ -572,15 +574,15 @@
       "artifacts": [
         {
           "path": "assets/third_party/markmap/markmap.js",
-          "sha256": "2ef6d6897e4c1769e3ce6ead578a12c826f7fc45c66147b608c4ad3173cbce35"
+          "sha256": "076e29305efee7848ae37bb3f294ef051593b9ef468403b3a07e0ec74e83ff1f"
         }
       ]
     },
     {
       "name": "@markmap/plugin-math",
-      "version": "1.1.0",
-      "source": "https://registry.npmjs.org/@markmap/plugin-math/-/plugin-math-1.1.0.tgz",
-      "integrity": "sha512-xlQSbmTf5YAo/FYnE/a1c1JCDvhb9RR/jnTegVT9ewrAPQPwmrFMwioYBYucD27mcCO6ao+g2u8b1QuLZ4LHmw==",
+      "version": "1.1.1",
+      "source": "https://registry.npmjs.org/@markmap/plugin-math/-/plugin-math-1.1.1.tgz",
+      "integrity": "sha512-6jIM51am5RjPQ2GGCIJ/Qma4pcX7ArCH9dFasGZmvf2enGV4WzrZTHGTL0S7do6b3A6y/3idV69KdixV2Cr4+g==",
       "license": "MIT",
       "licenseFiles": [
         "assets/third_party/markmap/LICENSES.txt"
@@ -590,7 +592,7 @@
       "artifacts": [
         {
           "path": "assets/third_party/markmap/markmap.js",
-          "sha256": "2ef6d6897e4c1769e3ce6ead578a12c826f7fc45c66147b608c4ad3173cbce35"
+          "sha256": "076e29305efee7848ae37bb3f294ef051593b9ef468403b3a07e0ec74e83ff1f"
         }
       ]
     },

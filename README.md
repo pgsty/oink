@@ -65,16 +65,15 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.7.0 adds six content components (Timeline, Update, Video, Audio, Social,
-and Map with vendored Leaflet 1.9.4), typeset rich-text copy for pasting into
-external editors, 29 single-key shortcuts shown on a top-layer sheet, local
-browsing history (`H`), fold-all (`O`), an adjustable reading width (`-`/`=`)
-and a reader opt-out. It refines all four visual presets with a clay accent
-for Paper and a Chinese arrangement of system fonts for each, adds Markmap
-corner controls with SVG download, site ECharts themes
-(`window.OinkEchartsThemes`) and a styled archived-version banner, and keeps
-every site build Hugo-only and plain CSS on any supported Hugo edition. See the
-[release notes](https://oink.pgsty.com/release/1.7.0/) and
+OINK 1.8.0 widens the visual system to six styles, each with a dark mode of
+its own: Paper returns to its 1.6.0 look, GitHub renders Markdown as GitHub
+does, News sets the printed page, Ink is redesigned as the written page, and
+dark Terminal becomes a restrained phosphor screen. Local audio and video play
+through one themed control row with a single three-color progress bar, and
+quoted social posts are native `> [!SOCIAL]` callouts: the `social` shortcode
+of 1.7.0 is removed, and `bin/migrations/oink06.py --only social` converts old
+calls. The theme no longer declares a minimum Hugo version. See the
+[release notes](https://oink.pgsty.com/release/1.8.0/) and
 [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site

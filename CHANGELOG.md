@@ -1,8 +1,10 @@
 # Changelog
 
 OINK uses [Semantic Versioning](https://semver.org/) for published tags, with
-one exception. Version 1.6.0 retires public interfaces in a minor release so
-existing sites can keep the `github.com/pgsty/oink` module path.
+one exception: a minor release may retire a public interface, so existing
+sites keep the `github.com/pgsty/oink` module path instead of moving to a
+`/v2` path. Version 1.6.0 retired several in this way, and 1.8.0 replaces
+the `social` shortcode of 1.7.0 with a callout. A patch release only fixes.
 
 ## Unreleased
 
@@ -3173,6 +3175,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[1.7.0]: https://github.com/pgsty/oink/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/pgsty/oink/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/pgsty/oink/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/pgsty/oink/compare/v1.4.0...v1.5.0

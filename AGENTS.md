@@ -8,8 +8,8 @@ accepted decisions, dated research, and active proposals.
 
 ## Current baseline
 
-The current release is `v1.7.0`, dated 2026-11-28 in `CHANGELOG.md`. The sibling
-site's `v1.7.0` Design contracts describe this release. Work merged after the
+The current release is `v1.8.0`, dated 2026-11-28 in `CHANGELOG.md`. The sibling
+site's `v1.8.0` Design contracts describe this release. Work merged after the
 latest tag accumulates under `## Unreleased` in `CHANGELOG.md` until the next
 release. Refresh Git state, public tags, and consumer pins before making claims
 about later releases or downstream adoption.

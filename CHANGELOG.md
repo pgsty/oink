@@ -6,7 +6,7 @@ sites keep the `github.com/pgsty/oink` module path instead of moving to a
 `/v2` path. Version 1.6.0 retired several in this way, and 1.8.0 replaces
 the `social` shortcode of 1.7.0 with a callout. A patch release only fixes.
 
-## Unreleased
+## [1.8.0] — 2026-11-28
 
 Paper looks as it did in 1.6.0 again. Its 1.7.0 refresh grows into a preset
 of its own, News, beside a new GitHub preset, so a Style menu can offer six
@@ -3175,6 +3175,7 @@ fail the build with the new name rather than being silently ignored.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[1.8.0]: https://github.com/pgsty/oink/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/pgsty/oink/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/pgsty/oink/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/pgsty/oink/compare/v1.5.0...v1.5.1

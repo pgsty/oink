@@ -21,8 +21,12 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   `.td-social .td-social`. A page that still calls the shortcode fails with
   `template for shortcode "social" not found`;
   `python3 bin/migrations/oink06.py migrate --site <dir> --only social --write`
-  rewrites every call and writes `platform="x"` where the old default
-  applied. `content/markdown-escape-inline.html`, used only by the
+  rewrites every call, including an opening tag wrapped over several lines,
+  keeps the author plain text (no Markdown or autolinks, as the shortcode
+  printed it) and writes `platform="x"` where the old default applied. It
+  reports any call it cannot express, together with the card around it;
+  `python3 bin/migrations/oink06.py check --site <dir>` lists whatever
+  remains. `content/markdown-escape-inline.html`, used only by the
   shortcode, is gone.
 
 ### Changed

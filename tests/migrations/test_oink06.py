@@ -281,6 +281,86 @@ class TransformationCase(unittest.TestCase):
         self.assertEqual(counts["social.nested"], 1)
         self.assertEqual(counts["social.platform.x"], 3)
 
+    def test_social_opening_tag_split_across_lines(self):
+        # The 1.7.0 docs and fixture wrapped long opening tags.
+        self.assertMigrates(
+            """\
+            {{< social author="Ada Lovelace" handle="@ada" avatar="a.png"
+                       date="2026-02-15" url="https://x.com/ada/status/1" >}}
+            The post.
+            {{< /social >}}
+
+            > {{< social author="Quoted" handle="@q"
+            >     url="https://e.co/2" >}}
+            > Quoted body.
+            > {{< /social >}}
+            """,
+            """\
+            > [!SOCIAL] Ada Lovelace `@ada`
+            >
+            > The post.
+            {avatar="a.png" date="2026-02-15" url="https://x.com/ada/status/1" platform="x"}
+
+            > > [!SOCIAL] Quoted `@q`
+            > >
+            > > Quoted body.
+            > {url="https://e.co/2" platform="x"}
+            """,
+            ["social"],
+        )
+
+    def test_social_nested_card_without_attributes_ends_its_quote(self):
+        # A table after a bare nested card stays in the outer post's body.
+        self.assertMigrates(
+            """\
+            {{< social author="Outer" url="https://e.co/1" >}}
+            Outer text.
+
+            {{< social author="Inner" >}}
+            One
+            {{< /social >}}
+            | a | b |
+            | - | - |
+            {{< /social >}}
+            """,
+            """\
+            > [!SOCIAL] Outer
+            >
+            > Outer text.
+            >
+            > > [!SOCIAL] Inner
+            > >
+            > > One
+            >
+            > | a | b |
+            > | - | - |
+            {url="https://e.co/1" platform="x"}
+            """,
+            ["social"],
+        )
+
+    def test_social_author_stays_plain_text(self):
+        # As the shortcode printed it: no Markdown and no GFM autolinks.
+        self.assertMigrates(
+            """\
+            {{< social author="Ada (ada@example.com, www.ada.dev, https://ada.dev) | *x*" handle="@a``b" />}}
+            """,
+            """\
+            > [!SOCIAL] Ada (ada\\@example.com, www\\.ada.dev, https\\://ada.dev) \\| \\*x\\* ``` @a``b ```
+            {platform="x"}
+            """,
+            ["social"],
+        )
+
+    def test_social_card_around_a_refused_one_is_reported(self):
+        source = """\
+            {{< social author="Outer" >}}
+            {{< social author="Inner" likes="1" >}}Hi{{< /social >}}
+            {{< /social >}}
+            """
+        _, found = self.assertMigrates(source, source, ["social"], findings=3)
+        self.assertEqual([f.line for f in found], [2, 1, 3])
+
     def test_social_unsupported_forms_are_reported(self):
         source = """\
             {{< social author="A" likes="1K" >}}Hi{{< /social >}}

@@ -71,8 +71,8 @@
           {{- $itemPreset := lower (strings.TrimSpace (printf "%v" (.preset | default ""))) }}
           {{- if and $itemPreset (not (in $presetConfig.available $itemPreset)) }}
             {{- warnidf (printf "landing:capabilities-preset:%s" $itemPreset)
-                "%s: capabilities tile preset %q is not a preset (available: %s); the tile stays static"
-                $page.Path $itemPreset (delimit $presetConfig.available ", ") }}
+                "capabilities tile preset %q is not a preset (available: %s); the tile stays static"
+                $itemPreset (delimit $presetConfig.available ", ") }}
           {{- end }}
           {{- if and $interactive $presetConfig.menu $itemPreset (in $presetConfig.offered $itemPreset) }}{{ $hasPresets = true }}{{ end }}
         {{- end }}

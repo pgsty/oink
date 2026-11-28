@@ -813,28 +813,34 @@ def check_capabilities_preset_buttons(hugo: str) -> list[str]:
         site = Path(temp)
         create_site(site, data)
         config = (site / "hugo.yaml").read_text(encoding="utf-8")
-        write(
-            site / "hugo.yaml",
-            config.replace("page: [HTML]", "page: [HTML, print, markdown]").replace(
-                "    pager_types: []", "    pager_types: []\n    preset_menu: [paper, slate]"
-            ),
-        )
+        config = config.replace("[home, RSS", "[RSS").replace(
+            "page: [HTML]", "home: [HTML, print, markdown]\n  page: [HTML, print, markdown]"
+        ).replace("    pager_types: []", "    pager_types: []\n    preset_menu: [paper, slate]")
+        write(site / "hugo.yaml", config)
+        write(site / "data/home/en.yaml", data)
         result = run(hugo, site)
         if result.returncode != 0:
             return [f"preset board fixture failed: {result.stdout}{result.stderr}"]
         html = (site / "public/test/index.html").read_text(encoding="utf-8")
-        print_html = (site / "public/_print/test/index.html").read_text(encoding="utf-8")
-        markdown = (site / "public/test/index.md").read_text(encoding="utf-8")
         require('role="group" aria-label="Choose a style"' in html, "preset board lacks group role", errors)
         require('data-td-preset-select="paper" aria-pressed="true"' in html, "default preset button not pressed", errors)
         require('data-td-preset-select="slate" aria-pressed="false"' in html, "secondary offered preset button missing", errors)
         require('data-td-preset-select="terminal"' not in html, "unoffered preset rendered a live button", errors)
         require('<span><i class="fa-solid fa-terminal" aria-hidden="true"></i><b>Terminal</b><small>unoffered</small></span>' in html,
                 "unoffered preset did not degrade to static span", errors)
-        require('data-td-preset-select' not in print_html and '<button' not in print_html,
-                "preset board emitted interactive buttons in Print", errors)
-        require('data-td-preset-select' not in markdown and '<button' not in markdown,
-                "preset board leaked markup into Markdown", errors)
+        for path in ("test", ""):
+            print_html = (site / "public/_print" / path / "index.html").read_text(encoding="utf-8")
+            markdown = (site / "public" / path / "index.md").read_text(encoding="utf-8")
+            require("data-td-preset-select" not in print_html and "<button" not in print_html,
+                    f"/{path} preset board emitted buttons in Print", errors)
+            require("data-td-preset-select" not in markdown and "<button" not in markdown,
+                    f"/{path} preset board leaked markup into Markdown", errors)
+            for label, detail in (("Paper", "default"), ("Slate", "technical"),
+                                  ("Terminal", "unoffered"), ("Typo", "unknown")):
+                require(f"<b>{label}</b><small>{detail}</small>" in print_html,
+                        f"/{path} Print lost the {label} preset tile", errors)
+                require(f"  - {label} — {detail}" in markdown.splitlines(),
+                        f"/{path} Markdown lost the {label} preset tile", errors)
         log = result.stdout + result.stderr
         require(log.count('capabilities tile preset "papr" is not a preset') == 1,
                 "unknown tile preset did not warn exactly once", errors)

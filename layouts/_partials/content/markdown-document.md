@@ -53,6 +53,11 @@ default language's llms.txt even though Hugo publishes one per language. */ -}}
 {{/* Page content ------------------------------------------------------ */ -}}
 
 {{ $body := .RenderShortcodes | strings.TrimSpace -}}
+{{ if .IsHome -}}
+  {{ with partial "landing/text.html" (dict "page" . "data" (partial "landing/home-data.html" .) "presetTilesOnly" true) -}}
+    {{ $body = printf "%s\n\n%s" $body . | strings.TrimSpace -}}
+  {{ end -}}
+{{ end -}}
 {{ $expoBody := "" -}}
 {{ if eq .Type "expo" }}{{ $expoBody = partial "expo/markdown.md" . | strings.TrimSpace }}{{ end -}}
 {{ if or $body $expoBody -}}

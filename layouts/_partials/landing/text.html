@@ -1,10 +1,14 @@
 {{- $page := .page -}}{{- $home := .data -}}{{- $chunks := slice -}}
+{{- $presetTilesOnly := .presetTilesOnly | default false -}}
 {{- range $index, $entry := ($home.sections | default slice) -}}
   {{- $resolved := partial "landing/entry.html" (dict "home" $home "entry" $entry) -}}
+  {{- if and $presetTilesOnly (ne $resolved.type "capabilities") }}{{ continue }}{{ end -}}
   {{- if and $resolved.enabled $resolved.data -}}
     {{- $data := $resolved.data -}}{{- $type := $resolved.type -}}{{- $lines := slice -}}
-    {{- with $data.title }}{{ $lines = $lines | append (printf "## %v" .) }}{{ end -}}
-    {{- $desc := $data.desc | default $data.lead | default $data.text -}}{{- with $desc }}{{ $lines = $lines | append (printf "%v" .) }}{{ end -}}
+    {{- if not $presetTilesOnly -}}
+      {{- with $data.title }}{{ $lines = $lines | append (printf "## %v" .) }}{{ end -}}
+      {{- $desc := $data.desc | default $data.lead | default $data.text -}}{{- with $desc }}{{ $lines = $lines | append (printf "%v" .) }}{{ end -}}
+    {{- end -}}
     {{- if eq $type "hero" }}
       {{- if not $data.title }}{{ with $data.title_lines }}{{ $title := slice }}{{ range . }}{{ if reflect.IsMap . }}{{ $words := slice }}{{ range .words }}{{ $words = $words | append .text }}{{ end }}{{ $title = $title | append (delimit $words " ") }}{{ else }}{{ $title = $title | append (printf "%v" .) }}{{ end }}{{ end }}{{ $lines = $lines | append (printf "## %s" (delimit $title " ")) }}{{ end }}{{ end -}}
       {{- range ($data.actions | default slice) }}{{ $action := . }}{{ with ($action.url | default $action.href) }}{{ $lines = $lines | append (partial "landing/markdown-link.html" (dict "page" $page "value" . "text" (partial "content/markdown-escape.html" $action.label))) }}{{ end }}{{ end -}}
@@ -52,7 +56,31 @@
         {{- $lines = $lines | append $line -}}
       {{- end -}}
     {{- else if eq $type "capabilities" }}
-      {{- range $data.items }}{{ $label := partial "landing/field.html" (dict "page" $page "record" . "key" "title") }}{{ $lines = $lines | append (printf "- **%s**" $label) }}{{ range (.bullets | default slice) }}{{ $lines = $lines | append (printf "  - %v" .) }}{{ end }}{{ end -}}
+      {{- range $data.items -}}
+        {{- $tiles := slice -}}
+        {{- with .visual -}}
+          {{- if and (reflect.IsMap .) (eq .type "components") (reflect.IsSlice .items) -}}
+            {{- range .items -}}
+              {{- if and (reflect.IsMap .) .preset .title -}}
+                {{- $tile := partial "content/markdown-escape.html" .title -}}
+                {{- with .detail -}}
+                  {{- $tile = printf "%s — %s" $tile (partial "content/markdown-escape.html" .) -}}
+                {{- end -}}
+                {{- $tiles = $tiles | append (printf "  - %s" $tile) -}}
+              {{- end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if and $presetTilesOnly (not $tiles) }}{{ continue }}{{ end -}}
+        {{- $label := partial "landing/field.html" (dict "page" $page "record" . "key" "title") -}}
+        {{- $lines = $lines | append (printf "- **%s**" $label) -}}
+        {{- if not $presetTilesOnly -}}
+          {{- range (.bullets | default slice) -}}
+            {{- $lines = $lines | append (printf "  - %v" .) -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $lines = $lines | append $tiles -}}
+      {{- end -}}
     {{- else if or (isset $data "items") (in (slice "cards" "logo-wall" "gallery" "testimonials" "contributors" "faq" "principles") $type) }}
       {{- if reflect.IsSlice $data.items }}{{ range $data.items }}{{- if not (reflect.IsMap .) }}{{ warnf "%s: landing %s item must be a mapping; skipping it" $page.Path $type }}{{ else -}}{{ $item := . }}{{ $label := $item.title | default $item.name | default $item.question | default $item.label }}{{ $body := $item.desc | default $item.text | default $item.answer | default $item.comment | default $item.quote }}{{ if $label }}{{ $display := printf "**%v**" $label }}{{ with ($item.url | default $item.href) }}{{ $display = partial "landing/markdown-link.html" (dict "page" $page "value" . "text" $display) }}{{ end }}{{ $lines = $lines | append (printf "- %s%s" $display (cond (ne $body nil) (printf " — %v" $body) "")) }}{{ end }}{{- end -}}{{ end }}{{ else }}{{ warnf "%s: landing %s.items must be an array; omitting the items" $page.Path $type }}{{ end -}}
     {{- else if eq $type "markdown" }}{{ with ($data.body | default $data.content) }}{{ $lines = $lines | append (printf "%v" .) }}{{ end -}}

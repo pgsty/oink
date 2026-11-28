@@ -109,6 +109,10 @@ def main():
     assert all(abs(e - p) <= 1 for e, p in zip(edge, peak)), f'News dark canvas edge {edge} != glow peak {peak}'
     news_light = palettes['news']['light']
     assert news_light['--td-preset-canvas-edge'] == news_light['--bs-body-bg'], 'light News has no glow'
+    for mode, tokens in palettes['news'].items():
+        assert tokens['--td-experiment-radius'] == '0', f'News {mode} uses square controls'
+        for token in ('--td-brand-shadow-sm', '--td-brand-shadow-md', '--td-shell-shadow-lg'):
+            assert tokens[token] == 'none', f'News {mode} assigns a shadow to {token}'
     fonts = (ROOT/'assets/css/td/tokens-typography.css').read_text()
     assert fonts.index("[data-td-preset='paper']") < fonts.index("[data-td-typography='system']")
     assert '--td-brand-font-family:' in fonts.split("[data-td-typography='system']")[1]

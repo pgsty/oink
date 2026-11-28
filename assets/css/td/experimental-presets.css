@@ -980,6 +980,26 @@
   [data-td-preset='news'] .td-content > .lead :is(code, kbd, samp) {
     font-style: normal;
   }
+  /* News draws its interactive surfaces as flat pieces of the printed page. */
+  [data-td-preset='news'] .td-site-header :is(a, button, kbd, ul, .td-nav-util),
+  [data-td-preset='news'] :is(.td-language-selector, .td-version-menu) :is(a, button, ul, .active),
+  [data-td-preset='news'] :is(.td-shell-sidebar, .td-shell-aside, .td-shell-footline, .td-page-actions) :is(a, button, .td-shell-tree__chevron, .td-shell-aside-group__row, .td-shell-tag__count),
+  [data-td-preset='news'] :is(.td-skip-link, .td-shortcut-preference, .td-shell-iconbtn, .td-series-strip__part, .td-series-strip__caret, .td-share__item),
+  [data-td-preset='news'] .td-content :is(code, kbd, summary, .td-field__name, .td-gallery__item, .td-gallery__image),
+  [data-td-preset='news'] :is(.td-social__avatar, .td-byline__avatar),
+  [data-td-preset='news'] .td-social .td-social__body,
+  [data-td-preset='news'] .td-shell-backlinks__more > summary,
+  [data-td-preset='news'] .td-landing-component-board > :is(button[aria-pressed], a, span),
+  [data-td-preset='news'] .td-landing-shell-demo :is(li, b, span, kbd, i),
+  [data-td-preset='news'] .td-landing-logo-wall > .td-landing-logo-card,
+  [data-td-preset='news'] .td-landing-marquee__group > .td-landing-logo-card,
+  [data-td-preset='news'] .td-landing-landing :is(.td-landing-card, .td-landing-logo-card, .td-landing-logo-card__media, .td-landing-gallery-card, .td-landing-testimonial, .td-landing-contributor, .td-landing-faq) {
+    border-radius: 0;
+    box-shadow: none;
+  }
+  [data-td-preset='news'] .td-shell-toc__dot {
+    box-shadow: none;
+  }
   /* The dateline: date, section and length in small capitals of the
      interface face, between two hairlines. */
   [data-td-preset='news'] .td-content .td-article-info {
@@ -995,7 +1015,7 @@
   [data-td-preset='news'] .td-content > :is(h2, .h2) {
     padding-block-start: 0.7rem;
     border-block-start: 3px solid var(--bs-emphasis-color);
-    box-shadow: inset 0 1px 0 var(--bs-body-bg), inset 0 2px 0 var(--bs-emphasis-color);
+    background-image: linear-gradient(to bottom, var(--bs-body-bg) 1px, var(--bs-emphasis-color) 1px 2px, transparent 2px);
   }
   /* The masthead: a double rule under the site header. The bar keeps its
      fixed 50px under border-box sizing, so the rule takes no extra height. */

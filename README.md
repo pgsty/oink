@@ -233,14 +233,14 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | Any edition meeting the [module minimum](theme.toml). OINK 1.5.1 and older require the Extended edition |
+| Hugo | Tested on Hugo `0.170+` (plain CSS; no Sass compiler or Extended edition). OINK 1.5.1 and older require the Extended edition |
 | Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
-| Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
+| Go | Required only for Hugo Module resolution; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
 | Locales | Native OINK interface text for 32 locales, including generic `zh`. Each catalog has 272 keys and follows the schema and placeholders in `i18n/en.yaml`, with language-specific CLDR plural forms |
 
 Development, preview and checks use whichever Hugo is installed, and CI
-installs the current release; none is pinned. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.
+installs `latest` without testing older Hugo releases. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.
 Keep warnings visible and review them. Focused checks verify theme diagnostics
 and safe fallbacks directly.
 Dated release and research records retain their original tool versions.

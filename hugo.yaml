@@ -340,9 +340,7 @@ mediaTypes:
     suffixes: [woff2]
 
 module:
-  # The stylesheet is plain CSS, so a site build needs no Extended feature.
-  hugoVersion:
-    min: 0.169.0
+  # Plain CSS, no Sass compiler; tested on Hugo 0.170+.
   mounts:
     - source: assets
       target: assets

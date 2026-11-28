@@ -27,6 +27,9 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ### Changed
 
+- The theme no longer declares a minimum Hugo version: `min_version` leaves
+  `theme.toml` and `module.hugoVersion.min` leaves `hugo.yaml`. Hugo only
+  warned on that setting; CI builds and checks with the current release.
 - **Audio and video files play through one progress bar.** 1.7.0 painted the
   accent under Chromium's native timeline and hung a second strip below the
   player in Firefox and Safari, so a reader saw two bars. The media runtime

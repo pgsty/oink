@@ -10,7 +10,6 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: 1.27.4
   GOTOOLCHAIN: local
 
 jobs:
@@ -43,8 +42,7 @@ jobs:
           python-version: '3.x'
       - uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_VERSION }}
-          check-latest: true
+          go-version: stable
           cache: false
       - uses: actions/setup-java@v6
         with:
@@ -192,8 +190,7 @@ jobs:
           python-version: '3.x'
       - uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_VERSION }}
-          check-latest: true
+          go-version: stable
           cache: false
       - uses: peaceiris/actions-hugo@v3
         with:

@@ -148,10 +148,10 @@ python3 -m unittest discover -s tests/migrations -t .
 
 ### Toolchain and diagnostics
 
-- Build, check and preview with the Hugo that is installed. Do not pin or
-  prescribe a Hugo release in documentation, CI, checkers or scripts.
-  `theme.toml` and `hugo.yaml` declare the oldest release the theme supports;
-  nothing else names one. Any edition builds this checkout.
+- Build, check and preview with the Hugo that is installed (tested on Hugo
+  `0.170+`). Do not declare a minimum Hugo release in documentation, CI,
+  checkers or scripts; CI installs `latest` and does not test older Hugo
+  releases.
 - The stylesheet is plain CSS. Its source is the layer files under
   `assets/css/td/`; `layouts/_partials/css/layers.html` lists them in cascade
   order and `css/bundle.html` concatenates them. Editing a layer is the whole
@@ -174,8 +174,9 @@ python3 -m unittest discover -s tests/migrations -t .
   `search` or `compare` with `partial "css/bundle.html"`. The three SCSS hooks
   of 1.5.1 and older warn and are ignored. Layer files are not a public
   interface.
-- The module declares Go 1.27.4 as its minimum; the current development default
-  is Go 1.27.4. Record the actual local tool versions when reporting validation.
+- Go is only used to resolve Hugo Modules; do not require or document a
+  specific Go version for users. Record the actual local tool versions when
+  reporting validation.
 - Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING` in any build,
   checker, preview, or CI job. Review diagnostics and verify their owning
   output contracts. Invalid-input tests check warnings and safe fallback

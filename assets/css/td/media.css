@@ -105,8 +105,7 @@
   --td-media-button-radius: 50%;
 }
 
-:where([data-bs-theme='dark']) :where(.td-media),
-:where(.td-media[data-bs-theme='dark']) {
+:where([data-bs-theme='dark']) :where(.td-media) {
   --td-media-buffer: color-mix(in srgb, var(--bs-body-color) 22%, var(--bs-body-bg));
   --td-media-track: color-mix(in srgb, var(--bs-body-color) 11%, var(--bs-body-bg));
 }
@@ -195,6 +194,12 @@
   color: var(--td-media-fill);
 }
 
+/* Captions on is a tinted chip as well as a color, so the state does not
+   rest on hue alone. */
+.td-media__captions[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--td-media-fill) 16%, transparent);
+}
+
 .td-media__time {
   flex: none;
   min-inline-size: 2.4em;
@@ -229,8 +234,12 @@
   cursor: pointer;
 }
 
+/* The seek bar takes what the buttons leave, so the volume bar that
+   unfolds on hover narrows it instead of wrapping the row. */
 .td-media__seek {
   --td-media-level: var(--td-media-played, 0%);
+  flex-basis: 0;
+  min-inline-size: 2.5rem;
   margin-inline: 0.2rem;
 }
 
@@ -534,11 +543,11 @@
   text-align: start;
 }
 
-:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-media {
+:is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-media {
   --td-media-radius: var(--td-experiment-radius, 0);
 }
 
-:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-media-card__play {
+:is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-media-card__play {
   border-radius: var(--td-experiment-radius, 0);
 }
 
@@ -571,10 +580,6 @@
   --td-media-bar-radius: 0;
   --td-media-thumb-radius: 0;
   --td-media-button-radius: var(--td-experiment-radius, 2px);
-}
-
-[data-td-preset='terminal'] .td-media__controls {
-  font-family: var(--td-ui-font-family);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -613,6 +618,10 @@
 
   .td-media__range {
     forced-color-adjust: none;
+  }
+
+  .td-media__volume {
+    --td-media-fill: CanvasText;
   }
 
   .td-media__range::-webkit-slider-runnable-track {

@@ -46,7 +46,7 @@
   var LABELS = {
     play: text('play', 'Play'),
     pause: text('pause', 'Pause'),
-    seek: text('seek', 'Seek'),
+    seek: text('seek', 'Playback position'),
     speed: text('speed', 'Playback speed'),
     captions: text('captions', 'Captions'),
     mute: text('mute', 'Mute'),
@@ -130,6 +130,7 @@
 
   function enhance(player) {
     var figure = player.parentElement;
+    if (figure.classList.contains('td-media--controlled')) return;
     var isVideo = player.tagName === 'VIDEO';
     var row = document.createElement('div');
     row.className = 'td-media__controls';
@@ -140,6 +141,8 @@
     var named = player.getAttribute('aria-labelledby');
     if (named) row.setAttribute('aria-labelledby', named);
     else if (player.getAttribute('aria-label')) row.setAttribute('aria-label', player.getAttribute('aria-label'));
+    var described = player.getAttribute('aria-describedby');
+    if (described) row.setAttribute('aria-describedby', described);
 
     var toggle = makeButton('play', ICONS.play, LABELS.play);
     var current = makeTime('current');
@@ -366,14 +369,18 @@
         } else if (document.webkitFullscreenEnabled && figure.webkitRequestFullscreen) {
           figure.webkitRequestFullscreen();
         } else if (player.webkitEnterFullscreen) {
-          player.webkitEnterFullscreen();
+          try {
+            player.webkitEnterFullscreen();
+          } catch (_) {
+            // No metadata yet: the native player refuses until it has some.
+          }
         }
       });
       document.addEventListener('fullscreenchange', syncFullscreen);
       document.addEventListener('webkitfullscreenchange', syncFullscreen);
     }
 
-    ['play', 'playing', 'pause', 'ended', 'emptied', 'error'].forEach(function (type) {
+    ['play', 'playing', 'pause', 'ended', 'seeking', 'seeked', 'emptied', 'error'].forEach(function (type) {
       player.addEventListener(type, syncPlay);
     });
     ['loadedmetadata', 'durationchange', 'timeupdate', 'seeking', 'seeked', 'ended', 'emptied', 'error'].forEach(function (type) {
@@ -381,7 +388,9 @@
     });
     player.addEventListener('progress', syncBuffer);
     player.addEventListener('volumechange', syncVolume);
-    player.addEventListener('ratechange', syncRate);
+    ['ratechange', 'emptied', 'loadedmetadata'].forEach(function (type) {
+      player.addEventListener(type, syncRate);
+    });
     player.addEventListener('loadedmetadata', syncCaptions);
 
     syncPlay();

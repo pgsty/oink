@@ -592,6 +592,34 @@ test('a file player trades its native strip for one labelled control row', () =>
   assert.equal(part(rowOf(plain), 'captions'), undefined);
 });
 
+test('the play button leaves its replay icon when the reader seeks back from the end', () => {
+  const player = filePlayer('AUDIO', { duration: 8, currentTime: 8, label: 'title-1' });
+  build({ files: [player] });
+  const row = rowOf(player);
+  const glyph = () => part(row, 'play').querySelector('i').className;
+  player.ended = true;
+  player.dispatch('ended');
+  assert.equal(glyph(), 'fa-solid fa-rotate-right');
+  // Seeking from the ended state fires no play or pause event.
+  player.ended = false;
+  player.currentTime = 2;
+  player.dispatch('seeking');
+  player.dispatch('seeked');
+  assert.equal(glyph(), 'fa-solid fa-play');
+
+  // A reload resets the rate without a ratechange event.
+  part(row, 'speed').dispatch('click');
+  player.dispatch('ratechange');
+  assert.equal(part(row, 'rate').textContent, '1.25×');
+  player.playbackRate = 1;
+  player.dispatch('emptied');
+  assert.equal(part(row, 'rate').textContent, '1×');
+
+  // A second run of the runtime leaves the one row in place.
+  build({ files: [player] });
+  assert.equal(player.parentElement.children.filter((child) => child.classList && child.classList.contains('td-media__controls')).length, 1);
+});
+
 test('the seek bar takes arrow, page, Home and End keys and long durations', () => {
   const player = filePlayer('VIDEO', { duration: 3725, currentTime: 60, label: 'Talk' });
   build({ files: [player] });

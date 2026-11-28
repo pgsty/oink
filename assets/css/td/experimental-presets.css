@@ -564,13 +564,13 @@
     --bs-box-shadow-sm: none;
     --bs-box-shadow-lg: none;
   }
-  /* Concrete component boundaries, never a global `*` radius reset:
-     avatars, status dots, images and third-party widgets retain their shape. */
+  /* Style the frame of each owned component. Status dots and third-party
+     widgets retain their shape. */
   :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) :is(.td-shell-tree__row, .td-shell-root__trigger, .td-shell-root__pop, .td-shell-search__panel, .td-shell-search__item, .td-shell-search__esc, .td-nav-search-box, .td-nav-search-box__kbd, .td-nav-hover-menu__pop, .td-shell-keyboard-dialog, .td-shell-tag, .td-appearance__panel, .td-appearance__card, .td-appearance__segment, .td-content-card, .td-blog-card, .td-table-scroll, .td-table-reader, .td-diagram-zoom__surface, .td-compare__sync-tip, .td-field__term, .td-tab-block, .td-print-document, .td-page-actions__group, .td-page-actions__menu, .td-asciinema) {
     border-radius: var(--td-experiment-radius);
     box-shadow: none;
   }
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content .chroma {
+  :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-content .chroma {
     box-shadow: none;
   }
   :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-content kbd {
@@ -986,7 +986,13 @@
   [data-td-preset='news'] :is(.td-shell-sidebar, .td-shell-aside, .td-shell-footline, .td-page-actions) :is(a, button, .td-shell-tree__chevron, .td-shell-aside-group__row, .td-shell-tag__count),
   [data-td-preset='news'] :is(.td-skip-link, .td-shortcut-preference, .td-shell-iconbtn, .td-series-strip__part, .td-series-strip__caret, .td-share__item),
   [data-td-preset='news'] .td-content :is(code, kbd, summary, .td-field__name, .td-gallery__item, .td-gallery__image),
-  [data-td-preset='news'] :is(.td-social__avatar, .td-byline__avatar),
+  [data-td-preset='news'] :is(.td-social__avatar, .td-byline__avatar, .td-author-profile__avatar, .td-taxonomy-card__avatar),
+  [data-td-preset='news'] :is(.td-taxonomy-head__count, .td-taxonomy-head__icon, .td-shell-taxonomies__count, .td-shell-toc__title-btn),
+  [data-td-preset='news'] :is(.td-shell-search__panel, .td-shell-search-btn__keys, .td-shell-keyboard-help__row) kbd,
+  [data-td-preset='news'] :is(.td-blog-posts-list__thumbnail, .td-featured-banner) img,
+  [data-td-preset='news'] :is(.td-featured-wash, .td-filetree, .td-tab-block__title),
+  [data-td-preset='news'] .td-feedback :is(button, .td-feedback__result),
+  [data-td-preset='news'] :is(.td-image-zoom__close, .td-image-zoom__surface),
   [data-td-preset='news'] .td-social .td-social__body,
   [data-td-preset='news'] .td-shell-backlinks__more > summary,
   [data-td-preset='news'] .td-landing-component-board > :is(button[aria-pressed], a, span),
@@ -997,8 +1003,13 @@
     border-radius: 0;
     box-shadow: none;
   }
-  [data-td-preset='news'] .td-shell-toc__dot {
+  [data-td-preset='news'] .td-shell-toc__dot,
+  [data-td-preset='news'] .td-asciinema__lights i {
     box-shadow: none;
+  }
+  [data-td-preset='news'] .td-content .chroma .hl {
+    box-shadow: none;
+    background-image: linear-gradient(to right, var(--td-code-hl-accent) 3px, transparent 3px);
   }
   /* The dateline: date, section and length in small capitals of the
      interface face, between two hairlines. */

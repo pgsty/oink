@@ -8,6 +8,7 @@ import importlib
 ORDER = [
     ("frontmatter", "FrontMatterTransformation"),
     ("callout", "CalloutTransformation"),
+    ("social", "SocialTransformation"),
     ("param_placeholders", "ParamPlaceholdersTransformation"),
     ("tabs", "TabsTransformation"),
     ("filetree", "FileTreeTransformation"),

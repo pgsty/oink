@@ -187,10 +187,9 @@ test('a social post figure keeps start alignment and omits the decorative avatar
     el('figure', { class: 'td-social td-social--x' },
       el('figcaption', { class: 'td-social__author' },
         el('img', { class: 'td-social__avatar', src: 'https://example.org/avatar.webp', alt: '' }),
-        el('span', { class: 'td-social__names' },
-          el('span', { class: 'td-social__name' }, 'Alice'),
-          ' ',
-          el('span', { class: 'td-social__handle' }, '@alice'))),
+        el('span', { class: 'td-social__names', dir: 'auto' },
+          'Alice ',
+          el('span', { class: 'td-social__handle', dir: 'ltr' }, '@alice'))),
       el('blockquote', { class: 'td-social__body' }, el('p', null, 'Shipped v1.7.')),
       el('p', { class: 'td-social__meta' },
         el('a', { href: 'https://x.com/alice/status/1' }, '2026-11-27 · View original')))));

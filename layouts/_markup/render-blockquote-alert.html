@@ -2,6 +2,11 @@
 {{- $format := lower ($page.Store.Get "tdOutputFormat" | default "html") -}}
 {{- $type := lower (.AlertType | default "") -}}
 {{- $sign := .AlertSign | default "" -}}
+{{- /* A quoted social post is a card, not a callout box; the type owns its
+       own attributes and the identity line in its title. */ -}}
+{{- if eq $type "social" -}}
+{{- partial "content/social.html" . -}}
+{{- else -}}
 {{- $canonical := slice "note" "tip" "important" "warning" "caution" "success" "danger" "question" "example" "quote" "details" -}}
 {{- $icons := dict
   "note" "fa-solid fa-circle-info"
@@ -62,4 +67,5 @@
   </div>
 </details>
   {{- end -}}
+{{- end -}}
 {{- end -}}

@@ -31,6 +31,7 @@ REMOVED_SHORTCODES = (
     "tabpane", "code-group", "code-tab", "filetree", "filetree/folder", "filetree/file",
     "gallery", "gallery/image", "echarts", "infographic", "example", "imgproc", "readfile",
     "cardpane", "nav-card", "nav-cards", "doc-card", "doc-cards", "doc-carousel",
+    "social",
 )
 
 
@@ -734,7 +735,7 @@ def check_removed_shortcodes(hugo: str) -> list[str]:
     errors: list[str] = []
     for name in REMOVED_SHORTCODES:
         require(not (ROOT / f"layouts/_shortcodes/{name}.html").exists(), f"layouts/_shortcodes/{name}.html must stay deleted", errors)
-    for name in ("alert", "tabpane", "filetree", "readfile", "imgproc", "example", "doc-cards"):
+    for name in ("alert", "tabpane", "filetree", "readfile", "imgproc", "example", "doc-cards", "social"):
         result, _destination, temp = build_site(hugo, {"docs/_index.md": "---\ntitle: Docs\n---\n", "docs/legacy.md": f"---\ntitle: Legacy {name}\n---\n\n{{{{< {name} >}}}}\n"}, prefix=f"oink-components-legacy-{name}-")
         with temp:
             output = result.stdout + result.stderr

@@ -223,6 +223,74 @@ class TransformationCase(unittest.TestCase):
             ["callout"],
         )
 
+    # -- social (1.7.0 shortcode -> callout) ------------------------------------
+    def test_social_to_callout(self):
+        counts, _ = self.assertMigrates(
+            """\
+            Intro.
+            {{< social author="Hydra" handle="@hydradatabase" avatar="avatar.webp" >}}
+            First line.\\
+            \\#duckdb #postgres
+            {{< /social >}}
+            Next.
+
+            {{< social author="OINK" handle="@pgsty" date="2026-11-23" url="https://x.com/pgsty/status/1" >}}
+            OINK v1.6.0 is out.
+
+            {{< social author="Hugo" handle="@GoHugoIO" platform="mastodon" >}}
+            Quoted.
+            {{< /social >}}
+            {{< /social >}}
+
+            {{< social author="A*B & C" handle="@u`1" platform="bluesky" url="https://e.co/1" />}}
+
+            {{< social handle="@only" >}}  Deindented body.{{< /social >}}
+            """,
+            """\
+            Intro.
+
+            > [!SOCIAL] Hydra `@hydradatabase`
+            >
+            > First line.\\
+            > \\#duckdb #postgres
+            {avatar="avatar.webp" platform="x"}
+
+            Next.
+
+            > [!SOCIAL] OINK `@pgsty`
+            >
+            > OINK v1.6.0 is out.
+            >
+            > > [!SOCIAL] Hugo `@GoHugoIO`
+            > >
+            > > Quoted.
+            > {platform="mastodon"}
+            {date="2026-11-23" url="https://x.com/pgsty/status/1" platform="x"}
+
+            > [!SOCIAL] A\\*B \\& C `` @u`1 ``
+            {url="https://e.co/1" platform="bluesky"}
+
+            > [!SOCIAL] `@only`
+            >
+            > Deindented body.
+            {platform="x"}
+            """,
+            ["social"],
+        )
+        self.assertEqual(counts["social"], 5)
+        self.assertEqual(counts["social.nested"], 1)
+        self.assertEqual(counts["social.platform.x"], 3)
+
+    def test_social_unsupported_forms_are_reported(self):
+        source = """\
+            {{< social author="A" likes="1K" >}}Hi{{< /social >}}
+
+            {{< social author="A" url="https://e.co/?q=\\"x\\"" >}}Hi{{< /social >}}
+
+            {{< social author="A" >}}Hi{{< /social >}} trailing
+            """
+        self.assertMigrates(source, source, ["social"], findings=3)
+
     def test_raw_details(self):
         counts, _ = self.assertMigrates(
             """\

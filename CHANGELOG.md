@@ -4,6 +4,27 @@ OINK uses [Semantic Versioning](https://semver.org/) for published tags, with
 one exception. Version 1.6.0 retires public interfaces in a minor release so
 existing sites can keep the `github.com/pgsty/oink` module path.
 
+## Unreleased
+
+### Breaking changes
+
+- **Social posts are `> [!SOCIAL]` callouts.** The `social` shortcode from
+  1.7.0 is removed. A quoted post is now a blockquote: its title names the
+  author with the handle as a code span, and a block attribute line under it
+  carries `avatar`, `date`, `url` and `platform`. The source reads as a
+  quotation on GitHub, in an editor preview or in Obsidian, the Markdown and
+  LLMS outputs keep it as written, and footnotes, Image Zoom and the other
+  hooks apply to the body. A card without `platform` shows no icon at any
+  depth (the shortcode drew X on a top-level card), and nesting deeper than
+  one quoted post no longer warns. The card's markup drops
+  `.td-social__name` and `.td-social--nested`; a nested card is
+  `.td-social .td-social`. A page that still calls the shortcode fails with
+  `template for shortcode "social" not found`;
+  `python3 bin/migrations/oink06.py migrate --site <dir> --only social --write`
+  rewrites every call and writes `platform="x"` where the old default
+  applied. `content/markdown-escape-inline.html`, used only by the
+  shortcode, is gone.
+
 ## [1.7.0] — 2026-11-28
 
 OINK 1.7.0 adds six content components, typeset rich-text copy, a sheet of 29

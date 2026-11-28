@@ -1,7 +1,8 @@
 /* ---------------------------------------------------------------------------
-   Social -- {{< social >}} (layouts/_shortcodes/social.html). An
-   editorial quotation card: author line, the post body, and a date line
-   linking to the original. One layout for every platform; presets own color.
+   Social -- the `> [!SOCIAL]` callout (layouts/_partials/content/social.html).
+   An editorial quotation card: the title's identity line, the post body, and
+   a date line linking to the original. One layout for every platform;
+   presets own color.
    --------------------------------------------------------------------------- */
 .td-social {
   --td-social-avatar: 2.75rem;
@@ -46,24 +47,20 @@
 }
 
 .td-social__names {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   min-inline-size: 0;
-}
-
-.td-social__name {
-  max-inline-size: 100%;
   font-weight: 700;
   overflow-wrap: anywhere;
 }
 
+/* The title's code span: its own line under the name in a top-level card. */
 .td-social__handle {
+  display: block;
   max-inline-size: 100%;
   direction: ltr;
   unicode-bidi: isolate;
   color: var(--bs-secondary-color);
   font-size: 0.9rem;
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 
@@ -153,7 +150,7 @@
 }
 
 /* A quoted post inside a post. */
-.td-social--nested {
+.td-social .td-social {
   --td-social-avatar: 1.5rem;
   margin-block: 0.85rem 0.25rem;
   padding: 0.75rem 0.9rem 0.7rem;
@@ -161,24 +158,21 @@
   background: var(--bs-body-bg);
 }
 
-.td-social--nested .td-social__author {
+.td-social .td-social .td-social__author {
   margin-block-end: 0.5rem;
 }
 
-.td-social--nested .td-social__names {
-  flex-direction: row;
-  flex-wrap: wrap;
-  column-gap: 0.4rem;
-  align-items: baseline;
+.td-social .td-social .td-social__handle {
+  display: inline;
 }
 
-.td-social--nested .td-social__platform {
+.td-social .td-social .td-social__platform {
   align-self: center;
   color: var(--bs-secondary-color);
   font-size: 0.95rem;
 }
 
-.td-content .td-social--nested .td-social__body {
+.td-content .td-social .td-social .td-social__body {
   font-size: 0.9375em;
 }
 
@@ -221,7 +215,7 @@
     break-inside: avoid;
   }
 
-  .td-social--nested {
+  .td-social .td-social {
     background: var(--td-print-code-bg);
   }
 
@@ -244,7 +238,7 @@
     color: var(--td-print-ink);
   }
 
-  .td-social--nested .td-social__platform {
+  .td-social .td-social .td-social__platform {
     color: var(--td-print-meta);
   }
 

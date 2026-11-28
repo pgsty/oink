@@ -4,24 +4,29 @@
 LLMS index: [llms.txt](/llms.txt)
 ---
 ## Full card {#full}
+> [!SOCIAL] Ada Lovelace `@ada`
+>
 > The post text, in ordinary **Markdown**, with a [link](https://example.org/)
 > and `inline code`.
 >
 > ![The image attached to the post](media/content-primitives-global.png)
->
-> — Ada Lovelace (`@ada`) · X · 2026-02-15 · [View original](https://x.com/ada/status/1890000000000000000)
+{avatar="media/content-primitives-global.png" date="2026-02-15" url="https://x.com/ada/status/1890000000000000000" platform="x"}
 ## Other platforms {#platforms}
+> [!SOCIAL] Grace Hopper `@grace@mastodon.social`
+>
 > No avatar: the card draws the first letter.
+{platform="mastodon" date="2026-03-01 08:30"}
+> [!SOCIAL] `@oink.bsky.social`
 >
-> — Grace Hopper (`@grace@mastodon.social`) · Mastodon · 2026-03-01 08:30
 > Only a handle, no author name.
->
-> — `@oink.bsky.social` · Bluesky · [View original](https://bsky.app/profile/oink.bsky.social/post/3kxyz)
+{platform="bluesky" url="https://bsky.app/profile/oink.bsky.social/post/3kxyz"}
 ## Quoted post {#quote}
+> [!SOCIAL] OINK `@pgsty`
+>
 > OINK v1.6.0 is out.
 >
-> > Hugo <version> removes the extended edition.
+> > [!SOCIAL] Hugo `@GoHugoIO`
 > >
-> > — Hugo (`@GoHugoIO`) · 2026-11-13 · [View original](https://x.com/GoHugoIO/status/2)
->
-> — OINK (`@pgsty`) · X · 2026-11-23 · [View original](https://x.com/pgsty/status/1)
+> > Hugo <version> removes the extended edition.
+> {date="2026-11-13" url="https://x.com/GoHugoIO/status/2"}
+{date="2026-11-23" url="https://x.com/pgsty/status/1" platform="x"}

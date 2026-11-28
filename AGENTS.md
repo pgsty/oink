@@ -222,7 +222,7 @@ python3 -m unittest discover -s tests/migrations -t .
   run `bin/check-i18n.py`; the checker never manufactures English fallbacks.
 - Override the narrowest partial. Do not merge base templates when that changes
   Hugo lookup precedence or copy a full shell for one feature.
-- The public surface is 30 shortcodes, 22 Landing sections, shared output and
+- The public surface is 29 shortcodes, 22 Landing sections, shared output and
   security rules, and the blog hero/index/authors/series/share contracts. Their
   bilingual maintainer references are published under
   `../oink.pgsty.com/content/docs/design/`.

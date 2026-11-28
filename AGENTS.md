@@ -138,8 +138,10 @@ python3 -m unittest discover -s tests/migrations -t .
   READMEs/configuration, and run each site's relevant checks. Keep historical
   release notes unchanged. Commit, push, and deployment remain separate steps.
 - Maintained consumers use `params.ui.preset: paper` and the explicit
-  `preset_menu: [paper, slate, ink, terminal]` list. Preserve this reader-choice
-  policy on later upgrades, and check rendered menus as well as configuration.
+  `preset_menu: [paper, slate, github, ink, news, terminal]` list, from
+  the first release that ships News and GitHub (sites pinned to v1.7.0
+  keep the four it has). Preserve this reader-choice policy on later
+  upgrades, and check rendered menus as well as configuration.
   Use `--check --check-appearance` to verify the published pin and entry menus.
   Review custom shells separately. Select reviewed source-only sites with
   `--sites`; leave superseded migration copies out of the maintained set.

@@ -1,11 +1,13 @@
 {{- /* Canvas and ink per visual preset and mode, mirrored from
      `presets.css` (Paper), `brand.css` (Slate), and
-     `experimental-presets.css` (Ink/Terminal). The
+     `experimental-presets.css` (Ink, Terminal, News and GitHub). The
      head uses them for the pre-paint style and the browser chrome color; the
      Appearance menu hands them to the runtime for the same purpose after a
      switch. bin/check-presets.py keeps this map and the stylesheets in step. */ -}}
 {{- return dict
-    "paper" (dict "light" "#faf9f5" "dark" "#161513" "lightInk" "#1f1e1c" "darkInk" "#ece9e3")
+    "paper" (dict "light" "#f7f6f3" "dark" "#161513" "lightInk" "#21201c" "darkInk" "#ece9e3")
     "slate" (dict "light" "#f1f4f8" "dark" "#0b1119" "lightInk" "#16222e" "darkInk" "#e8eef6")
-    "ink" (dict "light" "#ffffff" "dark" "#0b0b0b" "lightInk" "#141414" "darkInk" "#ededed")
-    "terminal" (dict "light" "#f4f5f2" "dark" "#0c0f0e" "lightInk" "#1d211f" "darkInk" "#d3dbd6") -}}
+    "ink" (dict "light" "#f3ead7" "dark" "#1b1730" "lightInk" "#241a10" "darkInk" "#e3ddd0")
+    "terminal" (dict "light" "#f4f5f2" "dark" "#050806" "lightInk" "#1d211f" "darkInk" "#c9d2cc")
+    "news" (dict "light" "#f0eee8" "dark" "#0f0f0f" "lightInk" "#161616" "darkInk" "#d8d6d1")
+    "github" (dict "light" "#ffffff" "dark" "#0d1117" "lightInk" "#1f2328" "darkInk" "#f0f6fc") -}}

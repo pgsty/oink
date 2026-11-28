@@ -30,6 +30,12 @@
   text-align: start;
 }
 
+/* Six styles in three columns need more width than two: the longest name,
+   Terminal, must fit beside its icon even in Terminal's mono. */
+.td-appearance__panel--wide {
+  width: 24rem;
+}
+
 .td-appearance__panel:not(:modal) {
   position: absolute;
   inset-block: calc(100% + 8px) auto;
@@ -120,6 +126,23 @@
   line-height: 1.4;
 }
 
+/* The single key that steps the group. A reader who turned single-key
+   shortcuts off, or who has no keyboard to hover with, does not see it. */
+.td-appearance__key {
+  color: var(--bs-tertiary-color);
+  font-weight: 400;
+}
+
+html[data-td-shortcuts-off] .td-appearance__key {
+  display: none;
+}
+
+@media (hover: none) {
+  .td-appearance__key {
+    display: none;
+  }
+}
+
 /* Native radios stay in the accessibility tree and keep their arrow-key
    behavior; they cover their option so the whole button is the hit target. */
 .td-appearance__input {
@@ -136,6 +159,16 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+/* Three columns line the styles up over the three mode buttons. */
+.td-appearance__presets--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.td-appearance__presets--3 .td-appearance__card {
+  gap: 6px;
+  padding-inline: 6px;
 }
 
 .td-appearance__preset, .td-appearance__mode {
@@ -173,11 +206,15 @@
 
 .td-appearance__name {
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Icons identify the four styles without miniature preview cards. Each
-   keeps its own accent, independent of the currently selected preset. */
+/* Icons identify the styles without miniature preview cards. Each
+   keeps its own color, independent of the currently selected preset.
+   GitHub's mark stays monochrome. Ink and News take their own accent in
+   each mode: vermilion then gold, spot blue then safelight orange. */
 .td-appearance__preset-icon {
   display: inline-flex;
   align-items: center;
@@ -189,7 +226,7 @@
 }
 
 .td-appearance__preset-icon--paper {
-  color: #9b4a28;
+  color: #9c5530;
 }
 
 .td-appearance__preset-icon--slate {
@@ -197,47 +234,55 @@
 }
 
 .td-appearance__preset-icon--ink {
-  color: #c8102e;
+  color: #a8321b;
 }
 
 .td-appearance__preset-icon--terminal {
   color: #935400;
 }
 
+.td-appearance__preset-icon--news {
+  color: #1f4f7a;
+}
+
+.td-appearance__preset-icon--github {
+  color: #1f2328;
+}
+
+/* The mode buttons share the style cards' geometry and gap, so with three
+   style columns every button in the panel stands in the same column grid. */
 .td-appearance__modes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  overflow: hidden;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--td-control-radius);
+  gap: 8px;
 }
 
 .td-appearance__segment {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
   font-weight: 600;
   min-height: 36px;
-  padding: 0 6px;
-  border-inline-start: 1px solid var(--bs-border-color);
+  padding: 6px 8px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--td-control-radius);
   color: var(--bs-secondary-color);
   white-space: nowrap;
+  transition: border-color var(--td-motion-duration-fast) var(--td-shell-ease-color), background-color var(--td-motion-duration-fast) var(--td-shell-ease-color);
 }
 
 .td-appearance__segment .td-shell-icon {
   --td-shell-icon-size: 13px;
 }
 
-.td-appearance__mode:first-child .td-appearance__segment {
-  border-inline-start: 0;
-}
-
 .td-appearance__mode:hover .td-appearance__segment {
+  border-color: var(--td-brand-line-strong);
   background: var(--td-shell-accent);
 }
 
 .td-appearance__input:checked + .td-appearance__segment {
+  border-color: var(--td-accent);
   background: rgba(var(--td-accent-rgb), 0.12);
   color: var(--bs-emphasis-color);
   font-weight: 600;
@@ -246,10 +291,6 @@
 .td-appearance__input:focus-visible + .td-appearance__card, .td-appearance__input:focus-visible + .td-appearance__segment {
   outline: 2px solid var(--td-accent);
   outline-offset: 2px;
-}
-
-.td-appearance__input:focus-visible + .td-appearance__segment {
-  outline-offset: -2px;
 }
 
 .td-appearance__note {
@@ -262,8 +303,19 @@
   min-height: 44px;
 }
 
+/* On a phone the three-column sheet has no room for an icon beside the
+   longest name: every button stacks its icon over its name, so the nine
+   tiles still share one column grid. */
+.td-appearance__panel--wide:modal :is(.td-appearance__card, .td-appearance__segment) {
+  flex-direction: column;
+  gap: 4px;
+  min-height: 56px;
+  padding: 8px 4px;
+  font-size: 0.9375rem;
+}
+
 [data-bs-theme='dark'] .td-appearance__preset-icon--paper {
-  color: #de8460;
+  color: #d99a6c;
 }
 
 [data-bs-theme='dark'] .td-appearance__preset-icon--slate {
@@ -271,11 +323,19 @@
 }
 
 [data-bs-theme='dark'] .td-appearance__preset-icon--ink {
-  color: #ff5c4d;
+  color: #dcb766;
 }
 
 [data-bs-theme='dark'] .td-appearance__preset-icon--terminal {
-  color: #f0a73a;
+  color: #3dff7a;
+}
+
+[data-bs-theme='dark'] .td-appearance__preset-icon--news {
+  color: #f2804a;
+}
+
+[data-bs-theme='dark'] .td-appearance__preset-icon--github {
+  color: #f0f6fc;
 }
 
 /* The landing drawer's Appearance row spans the drawer like its siblings. */
@@ -292,7 +352,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .td-appearance__card {
+  .td-appearance__card, .td-appearance__segment {
     transition: none;
   }
 }

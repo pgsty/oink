@@ -52,10 +52,12 @@ print and RSS for publication, semantic Markdown for reuse, and optional
 - **Local-first delivery.** Search, fonts, icons, syntax highlighting, and
   interactive runtimes are vendored; a normal build performs no remote asset
   fetch.
-- **Four visual styles.** Paper is the warm, reading-focused default; Slate
-  preserves the original look. Ink and Terminal are explicit opt-ins. Style
-  and light/dark mode can be selected independently, with local fonts and saved
-  reader preferences. See the [appearance guide](https://oink.pgsty.com/docs/customize/brand/#visual-presets).
+- **Six visual styles.** Paper is the warm, reading-focused default; Slate
+  preserves the original look. GitHub (Markdown as GitHub renders it), Ink
+  (brush-written in Kai and Palatino), News (serif newspaper reading) and
+  Terminal (all mono, a phosphor screen at night) are explicit opt-ins.
+  Style and light/dark mode can be selected independently, each style with
+  a dark mode of its own, local fonts and saved reader preferences. See the [appearance guide](https://oink.pgsty.com/docs/customize/brand/#visual-presets).
 - **Multilingual by design.** Language-aware routing, translated-page peers,
   RTL support, alternate-site links, and localized search work across large
   documentation trees.
@@ -237,7 +239,7 @@ assuming drop-in compatibility.
 | Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
 | Go | Required only for Hugo Module resolution; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text for 32 locales, including generic `zh`. Each catalog has 272 keys and follows the schema and placeholders in `i18n/en.yaml`, with language-specific CLDR plural forms |
+| Locales | Native OINK interface text for 32 locales, including generic `zh`. Each catalog has 274 keys and follows the schema and placeholders in `i18n/en.yaml`, with language-specific CLDR plural forms |
 
 Development, preview and checks use whichever Hugo is installed, and CI
 installs `latest` without testing older Hugo releases. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.

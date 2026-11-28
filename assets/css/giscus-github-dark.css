@@ -1,0 +1,110 @@
+/* Appended to the shared giscus stylesheet; no font or network imports.
+   GitHub's own dark palette: @primer/primitives 11.10.0 and
+   github-markdown-css 5.9.0 prettylights (both MIT). The primary hover is
+   #268838, not GitHub's #29903b (4.08:1 under white). */
+main {
+  color-scheme: dark;
+  --color-prettylights-syntax-comment: #9198a1;
+  --color-prettylights-syntax-constant: #79c0ff;
+  --color-prettylights-syntax-entity: #d2a8ff;
+  --color-prettylights-syntax-storage-modifier-import: #f0f6fc;
+  --color-prettylights-syntax-entity-tag: #7ee787;
+  --color-prettylights-syntax-keyword: #ff7b72;
+  --color-prettylights-syntax-string: #a5d6ff;
+  --color-prettylights-syntax-variable: #ffa657;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #f85149;
+  --color-prettylights-syntax-invalid-illegal-text: #f85149;
+  --color-prettylights-syntax-invalid-illegal-bg: rgba(248, 81, 73, 0.1);
+  --color-prettylights-syntax-carriage-return-text: #f0f6fc;
+  --color-prettylights-syntax-carriage-return-bg: #b62324;
+  --color-prettylights-syntax-string-regexp: #7ee787;
+  --color-prettylights-syntax-markup-list: #f2cc60;
+  --color-prettylights-syntax-markup-heading: #1f6feb;
+  --color-prettylights-syntax-markup-italic: #f0f6fc;
+  --color-prettylights-syntax-markup-bold: #f0f6fc;
+  --color-prettylights-syntax-markup-deleted-text: #ffdcd7;
+  --color-prettylights-syntax-markup-deleted-bg: #67060c;
+  --color-prettylights-syntax-markup-inserted-text: #aff5b4;
+  --color-prettylights-syntax-markup-inserted-bg: #033a16;
+  --color-prettylights-syntax-markup-changed-text: #ffdfb6;
+  --color-prettylights-syntax-markup-changed-bg: #5a1e02;
+  --color-prettylights-syntax-markup-ignored-text: #f0f6fc;
+  --color-prettylights-syntax-markup-ignored-bg: #1158c7;
+  --color-prettylights-syntax-meta-diff-range: #d2a8ff;
+  --color-prettylights-syntax-brackethighlighter-angle: #9198a1;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #3d444d;
+  --color-prettylights-syntax-constant-other-reference-link: #a5d6ff;
+  --color-btn-text: #f0f6fc;
+  --color-btn-bg: #212830;
+  --color-btn-border: #3d444d;
+  --color-btn-shadow: 0 0 0 0 transparent;
+  --color-btn-inset-shadow: inset 0 0 0 0 transparent;
+  --color-btn-hover-bg: #262c36;
+  --color-btn-hover-border: #3d444d;
+  --color-btn-active-bg: #2a313c;
+  --color-btn-active-border: #3d444d;
+  --color-btn-selected-bg: #2a313c;
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-bg: #238636;
+  --color-btn-primary-border: rgba(255, 255, 255, 0.15);
+  --color-btn-primary-shadow: 0 0 0 0 transparent;
+  --color-btn-primary-inset-shadow: inset 0 0 0 0 transparent;
+  --color-btn-primary-hover-bg: #268838;
+  --color-btn-primary-hover-border: rgba(255, 255, 255, 0.15);
+  --color-btn-primary-selected-bg: #238636;
+  --color-btn-primary-selected-shadow: inset 0 0 0 0 transparent;
+  --color-btn-primary-disabled-text: rgba(255, 255, 255, 0.5);
+  --color-btn-primary-disabled-bg: #105823;
+  --color-btn-primary-disabled-border: #105823;
+  --color-action-list-item-default-hover-bg: rgba(101, 108, 118, 0.2);
+  --color-segmented-control-bg: #010409;
+  --color-segmented-control-button-bg: #212830;
+  --color-segmented-control-button-selected-border: #656c76;
+  --color-fg-default: #f0f6fc;
+  --color-fg-muted: #9198a1;
+  --color-fg-subtle: #9198a1;
+  --color-canvas-default: #0d1117;
+  --color-canvas-overlay: #010409;
+  --color-canvas-inset: #010409;
+  --color-canvas-subtle: #151b23;
+  --color-border-default: #3d444d;
+  --color-border-muted: rgba(61, 68, 77, 0.7);
+  --color-neutral-muted: rgba(101, 108, 118, 0.2);
+  --color-accent-fg: #4493f8;
+  --color-accent-emphasis: #1f6feb;
+  --color-accent-muted: rgba(56, 139, 253, 0.4);
+  --color-accent-subtle: rgba(56, 139, 253, 0.1);
+  --color-success-fg: #3fb950;
+  --color-attention-fg: #d29922;
+  --color-attention-muted: rgba(187, 128, 9, 0.4);
+  --color-attention-subtle: rgba(187, 128, 9, 0.15);
+  --color-danger-fg: #f85149;
+  --color-danger-muted: rgba(248, 81, 73, 0.4);
+  --color-danger-subtle: rgba(248, 81, 73, 0.1);
+  --color-primer-shadow-inset: inset 0 1px 0 0 rgba(1, 4, 9, 0.24);
+  --color-scale-gray-7: #212830;
+  --color-scale-blue-8: rgba(56, 139, 253, 0.2);
+  --oink-comment-border: #3d444d;
+  --oink-comment-shadow: none;
+}
+
+main,
+main button,
+main input,
+main textarea {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica,
+    Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Noto Sans CJK SC', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+main .gsc-comment-box:not(.gsc-comment-box-is-reply),
+main .gsc-reactions-popover,
+main .gsc-replies {
+  border-radius: 6px;
+}
+
+main .btn {
+  border-radius: 6px;
+  font-weight: 500;
+}

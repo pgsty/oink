@@ -75,10 +75,10 @@ FALLBACK_MARKERS = (
 )
 # Visual preset names are product names, like OINK itself: every locale keeps
 # them as written.
-UNIVERSAL_IDENTICAL = {"ui_preview_source", "ui_list_separator", "ui_preset_paper", "ui_preset_slate", "ui_preset_ink", "ui_preset_terminal"}
+UNIVERSAL_IDENTICAL = {"ui_preview_source", "ui_list_separator", "ui_preset_paper", "ui_preset_slate", "ui_preset_ink", "ui_preset_terminal", "ui_preset_news", "ui_preset_github"}
 REVIEWED_IDENTICAL = {
     "de": {"callout_details", "ui_theme_auto", "post_meta_in", "ui_media_pause"},
-    "es": {"post_translated_original", "post_reading_minutes", "feedback_negative"},
+    "es": {"post_translated_original", "post_reading_minutes", "feedback_negative", "ui_appearance_mode"},
     "et": {"post_reading_minutes"},
     "fi": {"post_reading_minutes"},
     "fr": {
@@ -103,7 +103,7 @@ REVIEWED_IDENTICAL = {
     "no": {"ui_theme_auto", "post_reading_minutes", "ui_media_pause"},
     "oc": {
         "callout_important", "callout_question", "post_translated_original",
-        "post_reading_minutes", "contributors_count",
+        "post_reading_minutes", "contributors_count", "ui_appearance_mode",
     },
     "pl": {"ui_tag_title", "ui_theme_auto", "post_reading_minutes"},
     "pt-br": {"post_translated_original", "post_reading_minutes", "ui_media_volume"},

@@ -1,57 +1,67 @@
-/* Explicitly selected experimental presets. Stable defaults stay Paper/Slate.
+/* Explicitly selected experimental presets: Ink, Terminal, News and
+   GitHub. Stable defaults stay Paper/Slate.
    Palettes use the same semantic roles as Paper; no new font files or runtime.
    The component rules below scope geometry and density to owned surfaces,
    preserving media shapes, status colors, responsive columns and prose size. */
+/* ---------------------------------------------------------------------------
+   Ink -- the written page. A manuscript's two inks on paper: black for the
+   writing, vermilion for the marks a reader's brush adds -- the dot beside
+   where you are, the dots under emphasis, a first letter. Red stays small
+   and never takes a heading or a frame. Dark Ink is a sutra in gold and
+   silver on indigo-violet paper. `--td-preset-canvas-edge` is the
+   darkest point of the paper's shade, and every text color clears AA on it.
+   --------------------------------------------------------------------------- */
 [data-td-preset='ink'] {
-  --bs-body-bg: #ffffff;
-  --bs-body-bg-rgb: 255, 255, 255;
-  --bs-body-color: #141414;
-  --bs-body-color-rgb: 20, 20, 20;
-  --bs-emphasis-color: #000000;
-  --bs-emphasis-color-rgb: 0, 0, 0;
-  --bs-secondary-color: #474747;
-  --bs-secondary-color-rgb: 71, 71, 71;
-  --bs-tertiary-color: #636363;
-  --bs-tertiary-color-rgb: 99, 99, 99;
-  --bs-secondary-bg: #f4f4f4;
-  --bs-secondary-bg-rgb: 244, 244, 244;
-  --bs-tertiary-bg: #ffffff;
-  --bs-tertiary-bg-rgb: 255, 255, 255;
-  --bs-link-color: #141414;
-  --bs-link-color-rgb: 20, 20, 20;
-  --bs-link-hover-color: #c8102e;
-  --bs-link-hover-color-rgb: 200, 16, 46;
-  --bs-border-color: rgba(20, 20, 20, 0.24);
-  --bs-border-color-translucent: rgba(20, 20, 20, 0.24);
-  --bs-code-color: #141414;
-  --td-code-inline-bg: rgba(20, 20, 20, 0.05);
-  --td-code-strong-fg: #000000;
-  --td-code-header-bg: #f4f4f4;
-  --td-code-radius: 0;
-  --td-pre-bg: #fafafa;
-  --td-brand-elev: #ffffff;
-  --td-brand-silk: #636363;
-  --td-brand-copper: #c8102e;
-  --td-brand-copper-dim: rgba(200, 16, 46, 0.5);
-  --td-brand-line-strong: rgba(20, 20, 20, 0.55);
-  --td-brand-header-bg: rgba(255, 255, 255, 0.98);
+  --bs-body-bg: #f3ead7;
+  --bs-body-bg-rgb: 243, 234, 215;
+  --bs-body-color: #241a10;
+  --bs-body-color-rgb: 36, 26, 16;
+  --bs-emphasis-color: #1a120a;
+  --bs-emphasis-color-rgb: 26, 18, 10;
+  --bs-secondary-color: #574634;
+  --bs-secondary-color-rgb: 87, 70, 52;
+  --bs-tertiary-color: #6e5c47;
+  --bs-tertiary-color-rgb: 110, 92, 71;
+  --bs-secondary-bg: #ece1c8;
+  --bs-secondary-bg-rgb: 236, 225, 200;
+  --bs-tertiary-bg: #f8f2e6;
+  --bs-tertiary-bg-rgb: 248, 242, 230;
+  --bs-link-color: #241a10;
+  --bs-link-color-rgb: 36, 26, 16;
+  --bs-link-hover-color: #a8321b;
+  --bs-link-hover-color-rgb: 168, 50, 27;
+  --bs-border-color: rgba(36, 26, 16, 0.2);
+  --bs-border-color-translucent: rgba(36, 26, 16, 0.2);
+  --bs-code-color: #241a10;
+  --td-code-inline-bg: rgba(36, 26, 16, 0.06);
+  --td-code-strong-fg: #1a120a;
+  --td-code-header-bg: #ece1c8;
+  --td-code-radius: 0px;
+  --td-pre-bg: #f8f2e6;
+  --td-brand-elev: #f8f2e6;
+  --td-brand-silk: #6e5c47;
+  --td-brand-copper: #a8321b;
+  --td-brand-copper-dim: rgba(168, 50, 27, 0.5);
+  --td-brand-line-strong: rgba(36, 26, 16, 0.55);
+  --td-brand-header-bg: rgba(243, 234, 215, 0.97);
   --td-brand-shadow-sm: none;
   --td-brand-shadow-md: none;
-  --td-brand-mark-from: #141414;
-  --td-brand-mark-to: #141414;
-  --td-shell-accent: rgba(20, 20, 20, 0.05);
-  --td-shell-rail: rgba(20, 20, 20, 0.24);
+  --td-brand-mark-from: #241a10;
+  --td-brand-mark-to: #241a10;
+  --td-shell-accent: rgba(36, 26, 16, 0.05);
+  --td-shell-rail: rgba(36, 26, 16, 0.2);
   --td-shell-shadow-lg: none;
   --td-shell-scrim: rgba(0, 0, 0, 0.5);
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 8%, var(--bs-body-bg));
-  --td-shell-primary-wash: rgba(20, 20, 20, 0.05);
+  --td-shell-primary-wash: rgba(36, 26, 16, 0.05);
   --td-callout-tint: 3%;
-  --td-preset-player-line: rgba(20, 20, 20, 0.55);
-  --td-preset-player-muted: #636363;
+  --td-preset-player-line: rgba(36, 26, 16, 0.55);
+  --td-preset-player-muted: #6e5c47;
   --td-on-link: #ffffff;
-  --td-preset-accent: #c8102e;
-  --td-preset-accent-rgb: 200, 16, 46;
-  --td-preset-accent-hover: #c8102e;
+  --td-preset-accent: #a8321b;
+  --td-preset-accent-rgb: 168, 50, 27;
+  --td-preset-accent-hover: #8c2814;
+  --td-preset-canvas-edge: #e8dabd;
   --td-experiment-radius: 0;
   --bs-border-radius: 0;
   --bs-border-radius-sm: 0;
@@ -62,55 +72,56 @@
 
 [data-td-preset='ink'][data-bs-theme='dark'],
 [data-td-preset='ink'] [data-bs-theme='dark'] {
-  --bs-body-bg: #0b0b0b;
-  --bs-body-bg-rgb: 11, 11, 11;
-  --bs-body-color: #ededed;
-  --bs-body-color-rgb: 237, 237, 237;
-  --bs-emphasis-color: #ffffff;
-  --bs-emphasis-color-rgb: 255, 255, 255;
-  --bs-secondary-color: #b5b5b5;
-  --bs-secondary-color-rgb: 181, 181, 181;
-  --bs-tertiary-color: #8f8f8f;
-  --bs-tertiary-color-rgb: 143, 143, 143;
-  --bs-secondary-bg: #161616;
-  --bs-secondary-bg-rgb: 22, 22, 22;
-  --bs-tertiary-bg: #161616;
-  --bs-tertiary-bg-rgb: 22, 22, 22;
-  --bs-link-color: #ededed;
-  --bs-link-color-rgb: 237, 237, 237;
-  --bs-link-hover-color: #ff5c4d;
-  --bs-link-hover-color-rgb: 255, 92, 77;
-  --bs-border-color: rgba(237, 237, 237, 0.24);
-  --bs-border-color-translucent: rgba(237, 237, 237, 0.24);
-  --bs-code-color: #ededed;
-  --td-code-inline-bg: rgba(237, 237, 237, 0.06);
-  --td-code-strong-fg: #ffffff;
-  --td-code-header-bg: #161616;
-  --td-code-radius: 0;
-  --td-pre-bg: #111111;
-  --td-brand-elev: #161616;
-  --td-brand-silk: #8f8f8f;
-  --td-brand-copper: #ff5c4d;
-  --td-brand-copper-dim: rgba(255, 92, 77, 0.5);
-  --td-brand-line-strong: rgba(237, 237, 237, 0.5);
-  --td-brand-header-bg: rgba(11, 11, 11, 0.98);
+  --bs-body-bg: #1b1730;
+  --bs-body-bg-rgb: 27, 23, 48;
+  --bs-body-color: #e3ddd0;
+  --bs-body-color-rgb: 227, 221, 208;
+  --bs-emphasis-color: #f1ece2;
+  --bs-emphasis-color-rgb: 241, 236, 226;
+  --bs-secondary-color: #b4ad9f;
+  --bs-secondary-color-rgb: 180, 173, 159;
+  --bs-tertiary-color: #958e82;
+  --bs-tertiary-color-rgb: 149, 142, 130;
+  --bs-secondary-bg: #231e3c;
+  --bs-secondary-bg-rgb: 35, 30, 60;
+  --bs-tertiary-bg: #262042;
+  --bs-tertiary-bg-rgb: 38, 32, 66;
+  --bs-link-color: #e3ddd0;
+  --bs-link-color-rgb: 227, 221, 208;
+  --bs-link-hover-color: #dcb766;
+  --bs-link-hover-color-rgb: 220, 183, 102;
+  --bs-border-color: rgba(227, 221, 208, 0.18);
+  --bs-border-color-translucent: rgba(227, 221, 208, 0.18);
+  --bs-code-color: #e3ddd0;
+  --td-code-inline-bg: rgba(227, 221, 208, 0.07);
+  --td-code-strong-fg: #f1ece2;
+  --td-code-header-bg: #231e3c;
+  --td-code-radius: 0px;
+  --td-pre-bg: #15122a;
+  --td-brand-elev: #231e3c;
+  --td-brand-silk: #958e82;
+  --td-brand-copper: #dcb766;
+  --td-brand-copper-dim: rgba(220, 183, 102, 0.5);
+  --td-brand-line-strong: rgba(227, 221, 208, 0.5);
+  --td-brand-header-bg: rgba(27, 23, 48, 0.97);
   --td-brand-shadow-sm: none;
   --td-brand-shadow-md: none;
-  --td-brand-mark-from: #ededed;
-  --td-brand-mark-to: #ededed;
-  --td-shell-accent: rgba(237, 237, 237, 0.06);
-  --td-shell-rail: rgba(237, 237, 237, 0.24);
+  --td-brand-mark-from: #e3ddd0;
+  --td-brand-mark-to: #e3ddd0;
+  --td-shell-accent: rgba(227, 221, 208, 0.06);
+  --td-shell-rail: rgba(227, 221, 208, 0.18);
   --td-shell-shadow-lg: none;
-  --td-shell-scrim: rgba(0, 0, 0, 0.5);
-  --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 8%, var(--bs-body-bg));
-  --td-shell-primary-wash: rgba(237, 237, 237, 0.06);
+  --td-shell-scrim: rgba(0, 0, 0, 0.55);
+  --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 10%, var(--bs-body-bg));
+  --td-shell-primary-wash: rgba(227, 221, 208, 0.06);
   --td-callout-tint: 5%;
-  --td-preset-player-line: rgba(237, 237, 237, 0.5);
-  --td-preset-player-muted: #8f8f8f;
-  --td-on-link: #0b0b0b;
-  --td-preset-accent: #ff5c4d;
-  --td-preset-accent-rgb: 255, 92, 77;
-  --td-preset-accent-hover: #ff5c4d;
+  --td-preset-player-line: rgba(227, 221, 208, 0.5);
+  --td-preset-player-muted: #958e82;
+  --td-on-link: #1b1730;
+  --td-preset-accent: #dcb766;
+  --td-preset-accent-rgb: 220, 183, 102;
+  --td-preset-accent-hover: #e8c985;
+  --td-preset-canvas-edge: #120f22;
   --td-experiment-radius: 0;
   --bs-border-radius: 0;
   --bs-border-radius-sm: 0;
@@ -177,63 +188,368 @@
   --bs-border-radius-pill: 2px;
 }
 
+/* Dark Terminal is a phosphor screen used with restraint: the text and the
+   chrome are a pale grey with a trace of green, and the phosphor green is
+   kept for the signals -- headings, links, the cursor bar on the current
+   row and code keywords. Marks, emphasis and quotation rules take amber, the
+   other terminal phosphor, so they stay apart from links. */
 [data-td-preset='terminal'][data-bs-theme='dark'],
 [data-td-preset='terminal'] [data-bs-theme='dark'] {
-  --bs-body-bg: #0c0f0e;
-  --bs-body-bg-rgb: 12, 15, 14;
-  --bs-body-color: #d3dbd6;
-  --bs-body-color-rgb: 211, 219, 214;
-  --bs-emphasis-color: #edf4ef;
-  --bs-emphasis-color-rgb: 237, 244, 239;
-  --bs-secondary-color: #9aa59f;
-  --bs-secondary-color-rgb: 154, 165, 159;
-  --bs-tertiary-color: #8b9990;
-  --bs-tertiary-color-rgb: 139, 153, 144;
-  --bs-secondary-bg: #141a18;
-  --bs-secondary-bg-rgb: 20, 26, 24;
-  --bs-tertiary-bg: #18201c;
-  --bs-tertiary-bg-rgb: 24, 32, 28;
-  --bs-link-color: #4cc9bd;
-  --bs-link-color-rgb: 76, 201, 189;
-  --bs-link-hover-color: #7de0d7;
-  --bs-link-hover-color-rgb: 125, 224, 215;
-  --bs-border-color: rgba(211, 219, 214, 0.32);
-  --bs-border-color-translucent: rgba(211, 219, 214, 0.32);
-  --bs-code-color: #d3dbd6;
-  --td-code-inline-bg: rgba(211, 219, 214, 0.07);
-  --td-code-strong-fg: #edf4ef;
-  --td-code-header-bg: #141a18;
+  --bs-body-bg: #050806;
+  --bs-body-bg-rgb: 5, 8, 6;
+  --bs-body-color: #c9d2cc;
+  --bs-body-color-rgb: 201, 210, 204;
+  --bs-emphasis-color: #eef4ef;
+  --bs-emphasis-color-rgb: 238, 244, 239;
+  --bs-secondary-color: #9aa69f;
+  --bs-secondary-color-rgb: 154, 166, 159;
+  --bs-tertiary-color: #808c85;
+  --bs-tertiary-color-rgb: 128, 140, 133;
+  --bs-secondary-bg: #0c120e;
+  --bs-secondary-bg-rgb: 12, 18, 14;
+  --bs-tertiary-bg: #101812;
+  --bs-tertiary-bg-rgb: 16, 24, 18;
+  --bs-link-color: #3dff7a;
+  --bs-link-color-rgb: 61, 255, 122;
+  --bs-link-hover-color: #b8ffcb;
+  --bs-link-hover-color-rgb: 184, 255, 203;
+  --bs-border-color: rgba(201, 210, 204, 0.16);
+  --bs-border-color-translucent: rgba(201, 210, 204, 0.16);
+  --bs-code-color: #c9d2cc;
+  --td-code-inline-bg: rgba(201, 210, 204, 0.07);
+  --td-code-strong-fg: #eef4ef;
+  --td-code-header-bg: #0c120e;
   --td-code-radius: 2px;
-  --td-pre-bg: #0a0d0b;
-  --td-brand-elev: #18201c;
-  --td-brand-silk: #8b9990;
-  --td-brand-copper: #f0a73a;
-  --td-brand-copper-dim: rgba(240, 167, 58, 0.5);
-  --td-brand-line-strong: rgba(211, 219, 214, 0.55);
-  --td-brand-header-bg: rgba(12, 15, 14, 0.98);
+  --td-pre-bg: #020403;
+  --td-brand-elev: #101812;
+  --td-brand-silk: #808c85;
+  --td-brand-copper: #e5b45a;
+  --td-brand-copper-dim: rgba(229, 180, 90, 0.5);
+  --td-brand-line-strong: rgba(201, 210, 204, 0.4);
+  --td-brand-header-bg: rgba(5, 8, 6, 0.97);
   --td-brand-shadow-sm: none;
   --td-brand-shadow-md: none;
-  --td-brand-mark-from: #d3dbd6;
-  --td-brand-mark-to: #d3dbd6;
-  --td-shell-accent: rgba(211, 219, 214, 0.07);
-  --td-shell-rail: rgba(211, 219, 214, 0.32);
+  --td-brand-mark-from: #3dff7a;
+  --td-brand-mark-to: #3dff7a;
+  --td-shell-accent: rgba(61, 255, 122, 0.07);
+  --td-shell-rail: rgba(201, 210, 204, 0.16);
   --td-shell-shadow-lg: none;
-  --td-shell-scrim: rgba(0, 0, 0, 0.5);
-  --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 12%, var(--bs-body-bg));
-  --td-shell-primary-wash: rgba(211, 219, 214, 0.07);
-  --td-callout-tint: 5%;
-  --td-preset-player-line: rgba(211, 219, 214, 0.55);
-  --td-preset-player-muted: #8b9990;
-  --td-on-link: #0c0f0e;
-  --td-preset-accent: #f0a73a;
-  --td-preset-accent-rgb: 240, 167, 58;
-  --td-preset-accent-hover: #f0a73a;
+  --td-shell-scrim: rgba(0, 0, 0, 0.6);
+  --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 14%, var(--bs-body-bg));
+  --td-shell-primary-wash: rgba(61, 255, 122, 0.06);
+  --td-callout-tint: 6%;
+  --td-preset-player-line: rgba(201, 210, 204, 0.4);
+  --td-preset-player-muted: #808c85;
+  --td-on-link: #050806;
+  --td-preset-accent: #3dff7a;
+  --td-preset-accent-rgb: 61, 255, 122;
+  --td-preset-accent-hover: #b8ffcb;
   --td-experiment-radius: 2px;
   --bs-border-radius: 2px;
   --bs-border-radius-sm: 2px;
   --bs-border-radius-lg: 2px;
   --bs-border-radius-xl: 2px;
   --bs-border-radius-pill: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   News -- the printed page. Grey newsprint, press black and one spot color,
+   flat as a sheet: no radius, no shadow. Hierarchy is weight and rule -- a
+   heavy headline, a double rule under it, a thick-and-thin rule over each
+   section -- and the furniture is set in the same serif, small labels in
+   spaced capitals, so the page reads as one sheet. Dark News is the darkroom
+   where the paper's photographs were developed: true black, the grey of a
+   silver print, the safelight's orange, with a faint glow of that light in
+   one corner. `--td-preset-canvas-edge` is the glow's brightest point, and
+   every text color clears AA on it.
+   --------------------------------------------------------------------------- */
+[data-td-preset='news'] {
+  --bs-body-bg: #f0eee8;
+  --bs-body-bg-rgb: 240, 238, 232;
+  --bs-body-color: #161616;
+  --bs-body-color-rgb: 22, 22, 22;
+  --bs-emphasis-color: #0b0b0b;
+  --bs-emphasis-color-rgb: 11, 11, 11;
+  --bs-secondary-color: #4a4844;
+  --bs-secondary-color-rgb: 74, 72, 68;
+  --bs-tertiary-color: #625f59;
+  --bs-tertiary-color-rgb: 98, 95, 89;
+  --bs-secondary-bg: #e6e3da;
+  --bs-secondary-bg-rgb: 230, 227, 218;
+  --bs-tertiary-bg: #f6f5f1;
+  --bs-tertiary-bg-rgb: 246, 245, 241;
+  --bs-link-color: #1f4f7a;
+  --bs-link-color-rgb: 31, 79, 122;
+  --bs-link-hover-color: #163a5b;
+  --bs-link-hover-color-rgb: 22, 58, 91;
+  --bs-border-color: rgba(22, 22, 22, 0.16);
+  --bs-border-color-translucent: rgba(22, 22, 22, 0.16);
+  --bs-code-color: #1f1f1f;
+  --td-code-inline-bg: rgba(22, 22, 22, 0.06);
+  --td-code-strong-fg: #0b0b0b;
+  --td-code-header-bg: #e6e3da;
+  --td-code-radius: 0px;
+  --td-pre-bg: #f6f5f1;
+  --td-brand-elev: #f6f5f1;
+  --td-brand-silk: #625f59;
+  --td-brand-copper: #1f4f7a;
+  --td-brand-copper-dim: rgba(31, 79, 122, 0.5);
+  --td-brand-line-strong: rgba(22, 22, 22, 0.7);
+  --td-brand-header-bg: rgba(240, 238, 232, 0.97);
+  --td-brand-shadow-sm: none;
+  --td-brand-shadow-md: none;
+  --td-brand-mark-from: #161616;
+  --td-brand-mark-to: #161616;
+  --td-shell-accent: rgba(22, 22, 22, 0.05);
+  --td-shell-rail: rgba(22, 22, 22, 0.16);
+  --td-shell-shadow-lg: none;
+  --td-shell-scrim: rgba(0, 0, 0, 0.45);
+  --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 8%, var(--bs-secondary-bg));
+  --td-shell-primary-wash: rgba(22, 22, 22, 0.04);
+  --td-callout-tint: 4%;
+  --td-preset-player-line: rgba(22, 22, 22, 0.3);
+  --td-preset-player-muted: #625f59;
+  --td-on-link: #ffffff;
+  --td-preset-accent: #1f4f7a;
+  --td-preset-accent-rgb: 31, 79, 122;
+  --td-preset-accent-hover: #163a5b;
+  --td-preset-canvas-edge: #f0eee8;
+  --td-experiment-radius: 0;
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+  --bs-border-radius-xl: 0;
+  --bs-border-radius-pill: 0;
+}
+
+[data-td-preset='news'][data-bs-theme='dark'],
+[data-td-preset='news'] [data-bs-theme='dark'] {
+  --bs-body-bg: #0f0f0f;
+  --bs-body-bg-rgb: 15, 15, 15;
+  --bs-body-color: #d8d6d1;
+  --bs-body-color-rgb: 216, 214, 209;
+  --bs-emphasis-color: #f3f1ec;
+  --bs-emphasis-color-rgb: 243, 241, 236;
+  --bs-secondary-color: #a4a19a;
+  --bs-secondary-color-rgb: 164, 161, 154;
+  --bs-tertiary-color: #8a877f;
+  --bs-tertiary-color-rgb: 138, 135, 127;
+  --bs-secondary-bg: #1a1a1a;
+  --bs-secondary-bg-rgb: 26, 26, 26;
+  --bs-tertiary-bg: #151515;
+  --bs-tertiary-bg-rgb: 21, 21, 21;
+  --bs-link-color: #f2804a;
+  --bs-link-color-rgb: 242, 128, 74;
+  --bs-link-hover-color: #f6a47c;
+  --bs-link-hover-color-rgb: 246, 164, 124;
+  --bs-border-color: rgba(216, 214, 209, 0.16);
+  --bs-border-color-translucent: rgba(216, 214, 209, 0.16);
+  --bs-code-color: #d8d6d1;
+  --td-code-inline-bg: rgba(216, 214, 209, 0.08);
+  --td-code-strong-fg: #f3f1ec;
+  --td-code-header-bg: #1a1a1a;
+  --td-code-radius: 0px;
+  --td-pre-bg: #0a0a0a;
+  --td-brand-elev: #1a1a1a;
+  --td-brand-silk: #8a877f;
+  --td-brand-copper: #f2804a;
+  --td-brand-copper-dim: rgba(242, 128, 74, 0.5);
+  --td-brand-line-strong: rgba(216, 214, 209, 0.6);
+  --td-brand-header-bg: rgba(15, 15, 15, 0.97);
+  --td-brand-shadow-sm: none;
+  --td-brand-shadow-md: none;
+  --td-brand-mark-from: #f3f1ec;
+  --td-brand-mark-to: #f3f1ec;
+  --td-shell-accent: rgba(216, 214, 209, 0.06);
+  --td-shell-rail: rgba(216, 214, 209, 0.14);
+  --td-shell-shadow-lg: none;
+  --td-shell-scrim: rgba(0, 0, 0, 0.6);
+  --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 12%, var(--bs-secondary-bg));
+  --td-shell-primary-wash: rgba(216, 214, 209, 0.05);
+  --td-callout-tint: 6%;
+  --td-preset-player-line: rgba(216, 214, 209, 0.3);
+  --td-preset-player-muted: #8a877f;
+  --td-on-link: #0f0f0f;
+  --td-preset-accent: #f2804a;
+  --td-preset-accent-rgb: 242, 128, 74;
+  --td-preset-accent-hover: #f6a47c;
+  --td-preset-canvas-edge: #1f1713;
+  --td-experiment-radius: 0;
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+  --bs-border-radius-xl: 0;
+  --bs-border-radius-pill: 0;
+}
+
+/* GitHub -- Markdown as github.com renders it, a README or an issue body,
+   inside Primer's chrome. Values from github-markdown-css 5.9.0 (MIT, Sindre
+   Sorhus, generated from GitHub's CSS) and @primer/primitives 11.10.0 (MIT,
+   GitHub Inc.); the NavList indicator follows @primer/react ActionList (MIT).
+   Every text token is GitHub's own and clears AA on the three surfaces. Two
+   values move to keep their contrast: the dark primary hover is darkened
+   from #29903b to #268838 so white stays AA on it, and the light selected-tab
+   underline takes GitHub's severe orange #bc4c00 instead of its coral
+   #fd8c73, which is 2.15:1 against the tab bar. */
+[data-td-preset='github'] {
+  --bs-body-bg: #ffffff;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-body-color: #1f2328;
+  --bs-body-color-rgb: 31, 35, 40;
+  --bs-emphasis-color: #1f2328;
+  --bs-emphasis-color-rgb: 31, 35, 40;
+  --bs-secondary-color: #59636e;
+  --bs-secondary-color-rgb: 89, 99, 110;
+  --bs-tertiary-color: #59636e;
+  --bs-tertiary-color-rgb: 89, 99, 110;
+  --bs-secondary-bg: #f6f8fa;
+  --bs-secondary-bg-rgb: 246, 248, 250;
+  --bs-tertiary-bg: #ffffff;
+  --bs-tertiary-bg-rgb: 255, 255, 255;
+  --bs-link-color: #0969da;
+  --bs-link-color-rgb: 9, 105, 218;
+  --bs-link-hover-color: #0969da;
+  --bs-link-hover-color-rgb: 9, 105, 218;
+  --bs-border-color: #d1d9e0;
+  --bs-border-color-translucent: rgba(31, 35, 40, 0.15);
+  --bs-code-color: #1f2328;
+  --td-code-inline-bg: rgba(129, 139, 152, 0.12);
+  --td-code-strong-fg: #1f2328;
+  --td-code-header-bg: #f6f8fa;
+  --td-code-radius: 6px;
+  --td-pre-bg: #f6f8fa;
+  --td-brand-elev: #ffffff;
+  --td-brand-silk: #59636e;
+  --td-brand-copper: #bc4c00;
+  --td-brand-copper-dim: rgba(188, 76, 0, 0.5);
+  --td-brand-line-strong: #818b98;
+  --td-brand-header-bg: #f6f8fa;
+  --td-brand-shadow-sm: 0 1px 1px 0 rgba(31, 35, 40, 0.04), 0 1px 2px 0 rgba(31, 35, 40, 0.03);
+  --td-brand-shadow-md: 0 1px 1px 0 rgba(37, 41, 46, 0.1), 0 3px 6px 0 rgba(37, 41, 46, 0.12);
+  --td-brand-mark-from: #1f2328;
+  --td-brand-mark-to: #1f2328;
+  --td-shell-accent: rgba(129, 139, 152, 0.1);
+  --td-shell-rail: rgba(209, 217, 224, 0.7);
+  --td-shell-shadow-lg: 0 0 0 1px rgba(209, 217, 224, 0.25), 0 6px 12px -3px rgba(37, 41, 46, 0.04), 0 6px 18px 0 rgba(37, 41, 46, 0.12);
+  --td-shell-scrim: rgba(200, 209, 218, 0.4);
+  --td-shell-primary-dim: rgba(129, 139, 152, 0.15);
+  --td-shell-primary-wash: rgba(129, 139, 152, 0.1);
+  --td-shell-card: #ffffff;
+  --td-callout-tint: 0%;
+  --td-preset-player-line: #d1d9e0;
+  --td-preset-player-muted: #59636e;
+  --td-on-link: #ffffff;
+  --td-preset-accent: #0969da;
+  --td-preset-accent-rgb: 9, 105, 218;
+  --td-preset-accent-hover: #0969da;
+  --td-experiment-radius: 6px;
+  --bs-border-radius: 6px;
+  --bs-border-radius-sm: 3px;
+  --bs-border-radius-lg: 12px;
+  --bs-border-radius-xl: 12px;
+  --bs-border-radius-pill: 50rem;
+  --td-preset-border-muted: rgba(209, 217, 224, 0.7);
+  --td-preset-control-bg: #f6f8fa;
+  --td-preset-control-bg-hover: #eff2f5;
+  --td-preset-control-fg: #25292e;
+  --td-preset-primary-bg: #1f883d;
+  --td-preset-primary-bg-hover: #1c8139;
+  --td-preset-underline-nav: #bc4c00;
+  --td-preset-mark-bg: #fff8c5;
+  --td-preset-selection: rgba(9, 105, 218, 0.2);
+  --td-preset-syntax-comment: #59636e;
+  --td-preset-syntax-constant: #0550ae;
+  --td-preset-note: #0969da;
+  --td-preset-note-border: #0969da;
+  --td-preset-tip: #1a7f37;
+  --td-preset-tip-border: #1a7f37;
+  --td-preset-important: #8250df;
+  --td-preset-important-border: #8250df;
+  --td-preset-warning: #9a6700;
+  --td-preset-warning-border: #9a6700;
+  --td-preset-caution: #d1242f;
+  --td-preset-caution-border: #cf222e;
+}
+
+[data-td-preset='github'][data-bs-theme='dark'],
+[data-td-preset='github'] [data-bs-theme='dark'] {
+  --bs-body-bg: #0d1117;
+  --bs-body-bg-rgb: 13, 17, 23;
+  --bs-body-color: #f0f6fc;
+  --bs-body-color-rgb: 240, 246, 252;
+  --bs-emphasis-color: #f0f6fc;
+  --bs-emphasis-color-rgb: 240, 246, 252;
+  --bs-secondary-color: #9198a1;
+  --bs-secondary-color-rgb: 145, 152, 161;
+  --bs-tertiary-color: #9198a1;
+  --bs-tertiary-color-rgb: 145, 152, 161;
+  --bs-secondary-bg: #151b23;
+  --bs-secondary-bg-rgb: 21, 27, 35;
+  --bs-tertiary-bg: #010409;
+  --bs-tertiary-bg-rgb: 1, 4, 9;
+  --bs-link-color: #4493f8;
+  --bs-link-color-rgb: 68, 147, 248;
+  --bs-link-hover-color: #4493f8;
+  --bs-link-hover-color-rgb: 68, 147, 248;
+  --bs-border-color: #3d444d;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+  --bs-code-color: #f0f6fc;
+  --td-code-inline-bg: rgba(101, 108, 118, 0.2);
+  --td-code-strong-fg: #f0f6fc;
+  --td-code-header-bg: #151b23;
+  --td-code-radius: 6px;
+  --td-pre-bg: #151b23;
+  --td-brand-elev: #0d1117;
+  --td-brand-silk: #9198a1;
+  --td-brand-copper: #db6d28;
+  --td-brand-copper-dim: rgba(219, 109, 40, 0.5);
+  --td-brand-line-strong: #656c76;
+  --td-brand-header-bg: #010409;
+  --td-brand-shadow-sm: 0 1px 1px 0 rgba(1, 4, 9, 0.6), 0 1px 3px 0 rgba(1, 4, 9, 0.6);
+  --td-brand-shadow-md: 0 1px 1px 0 rgba(1, 4, 9, 0.4), 0 3px 6px 0 rgba(1, 4, 9, 0.8);
+  --td-brand-mark-from: #f0f6fc;
+  --td-brand-mark-to: #f0f6fc;
+  --td-shell-accent: rgba(101, 108, 118, 0.2);
+  --td-shell-rail: rgba(61, 68, 77, 0.7);
+  --td-shell-shadow-lg: 0 0 0 1px #3d444d, 0 6px 12px -3px rgba(1, 4, 9, 0.4), 0 6px 18px 0 rgba(1, 4, 9, 0.4);
+  --td-shell-scrim: rgba(33, 40, 48, 0.4);
+  --td-shell-primary-dim: rgba(101, 108, 118, 0.2);
+  --td-shell-primary-wash: rgba(101, 108, 118, 0.2);
+  --td-shell-card: #0d1117;
+  --td-callout-tint: 0%;
+  --td-preset-player-line: #3d444d;
+  --td-preset-player-muted: #9198a1;
+  --td-on-link: #0d1117;
+  --td-preset-accent: #4493f8;
+  --td-preset-accent-rgb: 68, 147, 248;
+  --td-preset-accent-hover: #4493f8;
+  --td-experiment-radius: 6px;
+  --bs-border-radius: 6px;
+  --bs-border-radius-sm: 3px;
+  --bs-border-radius-lg: 12px;
+  --bs-border-radius-xl: 12px;
+  --bs-border-radius-pill: 50rem;
+  --td-preset-border-muted: rgba(61, 68, 77, 0.7);
+  --td-preset-control-bg: #212830;
+  --td-preset-control-bg-hover: #262c36;
+  --td-preset-control-fg: #f0f6fc;
+  --td-preset-primary-bg: #238636;
+  --td-preset-primary-bg-hover: #268838;
+  --td-preset-underline-nav: #f78166;
+  --td-preset-mark-bg: rgba(187, 128, 9, 0.15);
+  --td-preset-selection: rgba(31, 111, 235, 0.7);
+  --td-preset-syntax-comment: #9198a1;
+  --td-preset-syntax-constant: #79c0ff;
+  --td-preset-note: #4493f8;
+  --td-preset-note-border: #1f6feb;
+  --td-preset-tip: #3fb950;
+  --td-preset-tip-border: #238636;
+  --td-preset-important: #ab7df8;
+  --td-preset-important-border: #8957e5;
+  --td-preset-warning: #d29922;
+  --td-preset-warning-border: #9e6a03;
+  --td-preset-caution: #f85149;
+  --td-preset-caution-border: #da3633;
 }
 
 @media screen {
@@ -243,16 +559,21 @@
     --bs-box-shadow-lg: none;
     font-variant-numeric: tabular-nums;
   }
+  [data-td-preset='news'] {
+    --bs-box-shadow: none;
+    --bs-box-shadow-sm: none;
+    --bs-box-shadow-lg: none;
+  }
   /* Concrete component boundaries, never a global `*` radius reset:
      avatars, status dots, images and third-party widgets retain their shape. */
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) :is(.td-shell-tree__row, .td-shell-root__trigger, .td-shell-root__pop, .td-shell-search__panel, .td-shell-search__item, .td-shell-search__esc, .td-nav-search-box, .td-nav-search-box__kbd, .td-nav-hover-menu__pop, .td-shell-keyboard-dialog, .td-shell-tag, .td-appearance__panel, .td-appearance__card, .td-appearance__modes, .td-content-card, .td-blog-card, .td-table-scroll, .td-table-reader, .td-diagram-zoom__surface, .td-compare__sync-tip, .td-field__term, .td-tab-block, .td-print-document, .td-page-actions__group, .td-page-actions__menu, .td-asciinema) {
+  :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) :is(.td-shell-tree__row, .td-shell-root__trigger, .td-shell-root__pop, .td-shell-search__panel, .td-shell-search__item, .td-shell-search__esc, .td-nav-search-box, .td-nav-search-box__kbd, .td-nav-hover-menu__pop, .td-shell-keyboard-dialog, .td-shell-tag, .td-appearance__panel, .td-appearance__card, .td-appearance__segment, .td-content-card, .td-blog-card, .td-table-scroll, .td-table-reader, .td-diagram-zoom__surface, .td-compare__sync-tip, .td-field__term, .td-tab-block, .td-print-document, .td-page-actions__group, .td-page-actions__menu, .td-asciinema) {
     border-radius: var(--td-experiment-radius);
     box-shadow: none;
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content .chroma {
     box-shadow: none;
   }
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content kbd {
+  :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-content kbd {
     box-shadow: none;
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-content .chroma :is(.ln, .lnt, .lnlinks) {
@@ -271,9 +592,9 @@
        table scroll region handles width instead of stacking characters. */
     white-space: nowrap;
   }
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) ol.steps > li::before,
-:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-steps > :where(h2, h3, h4, h5, h6):not(.no-step-marker)::before,
-:is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-timeline li::before {
+  :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) ol.steps > li::before,
+:is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-steps > :where(h2, h3, h4, h5, h6):not(.no-step-marker)::before,
+:is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-landing-timeline li::before {
     border-radius: var(--td-experiment-radius);
   }
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-landing {
@@ -292,7 +613,7 @@
     --td-terminal-line: rgba(211, 219, 214, 0.32);
     font-family: var(--td-body-font-family);
   }
-  :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-status-dot {
+  :is([data-td-preset='ink'], [data-td-preset='news'], [data-td-preset='terminal']) .td-landing-status-dot {
     animation: none;
     box-shadow: none;
   }
@@ -302,36 +623,72 @@
   :is([data-td-preset='ink'], [data-td-preset='terminal']) .td-landing-button {
     font-family: var(--td-ui-font-family);
   }
-  /* 700 is the heaviest weight the platform CJK faces carry. A heavier
-     Latin beside them reads as two voices in one heading. */
-  [data-td-preset='ink'] .td-content h1, [data-td-preset='ink'] .td-content .h1 {
-    font-weight: 700;
-    letter-spacing: -0.03em;
+  /* Ink is written by hand, and a hand ranks its headings by changing the
+     letter, not by pressing harder: every heading stays at text weight.
+     The page title is upright; sections take Palatino's chancery italic
+     beside upright Kai (the italic face of `OINK Kai` is upright). Kai and
+     Palatino are drawn untracked. A breath of bleed softens the edge of
+     every heading, as ink spreads into paper. */
+  [data-td-preset='ink'] .td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
+    letter-spacing: 0;
+    font-weight: 400;
+    text-shadow: 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
   }
-  [data-td-preset='ink'] .td-content h2, [data-td-preset='ink'] .td-content .h2, [data-td-preset='ink'] .td-content h3, [data-td-preset='ink'] .td-content .h3 {
-    font-weight: 700;
-    letter-spacing: -0.02em;
+  [data-td-preset='ink'] .td-content .td-page-heading > :is(h1, .h1) {
+    font-weight: 400;
+  }
+  [data-td-preset='ink'] .td-content :is(h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
+    font-style: italic;
+  }
+  /* On the dark paper the headings are written in gold. */
+  [data-td-preset='ink'][data-bs-theme='dark'] .td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6),
+  [data-td-preset='ink'][data-bs-theme='dark'] .td-landing-hero__title {
+    color: var(--td-brand-copper);
+  }
+  /* A deep head margin above the title, as a scroll opens. */
+  [data-td-preset='ink'] .td-content > :is(.td-page-heading, .td-article-header) {
+    padding-block-start: 1.25rem;
   }
   /* Song is lighter on the page than the Hei it replaces; one step up in
      size keeps the text at the same color. */
   [data-td-preset='ink'] .td-content {
     font-size: 1.0625rem;
   }
-  /* One hairline of full ink opens a section; a heavier rule shouts. */
-  [data-td-preset='ink'] .td-content > h2:not(.update), [data-td-preset='ink'] .td-content > .h2:not(.update) {
-    border-block-start: 1px solid var(--bs-emphasis-color);
+  /* A section opens under one brush stroke: full ink where the brush
+     lands, running dry across the column. */
+  [data-td-preset='ink'] .td-content > :is(h2, .h2) {
     padding-block-start: 1rem;
+    background: linear-gradient(to right, var(--bs-emphasis-color), color-mix(in srgb, var(--bs-emphasis-color) 55%, transparent) 40%, transparent 92%) no-repeat 0 0 / 100% 2px;
   }
-  [data-td-preset='ink'] .td-content > h2.update {
-    border-block-start: 1px solid var(--bs-emphasis-color);
+  [data-td-preset='ink'] .td-content > :is(h2, .h2):dir(rtl) {
+    background-image: linear-gradient(to left, var(--bs-emphasis-color), color-mix(in srgb, var(--bs-emphasis-color) 55%, transparent) 40%, transparent 92%);
+    background-position: 100% 0;
   }
   [data-td-preset='ink'] .td-update-tag {
     background: transparent;
   }
-  [data-td-preset='ink'] .td-content h4, [data-td-preset='ink'] .td-content .h4, [data-td-preset='ink'] .td-content table:not(.td-initial) thead th {
-    text-transform: uppercase;
-    letter-spacing: 0.055em;
-    font-weight: 700;
+  /* A break is a single stroke, tapered at both ends. */
+  [data-td-preset='ink'] .td-content hr {
+    width: min(12rem, 40%);
+    height: 4px;
+    margin: 2.5rem auto;
+    border: 0;
+    border-radius: 50%;
+    background: linear-gradient(to right, transparent, var(--bs-emphasis-color) 18%, var(--bs-emphasis-color) 82%, transparent);
+    opacity: 0.85;
+  }
+  /* A quotation hangs from a cinnabar stroke that fades as the brush
+     lifts. */
+  [data-td-preset='ink'] .td-content blockquote {
+    border-inline-start: 3px solid var(--td-brand-copper);
+    border-image: linear-gradient(to bottom, var(--td-brand-copper), color-mix(in srgb, var(--td-brand-copper) 20%, transparent)) 1;
+  }
+  /* Table labels are written, not stamped: the heading hand at its own
+     case and weight, over a band of paper. */
+  [data-td-preset='ink'] .td-content table:not(.td-initial) thead th {
+    font-family: var(--td-heading-font-family);
+    font-weight: 400;
+    letter-spacing: 0;
   }
   /* Underlines belong to prose, not card/control labels or heading anchors:
      a paragraph, a table cell, a caption, or an item of a plain or stepped
@@ -345,20 +702,26 @@
     text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
     text-decoration-skip-ink: auto;
+    /* The second ink underlines; the link itself stays in the first. */
+    text-decoration-color: var(--td-brand-copper);
     /* The underline is the cue; bold on top of it was a second voice. */
     font-weight: inherit;
   }
+  /* Callouts and players lie on the paper, so its shade runs under them. */
   [data-td-preset='ink'] .td-callout {
-    background: var(--bs-body-bg);
+    background: transparent;
     border-color: var(--bs-border-color);
   }
   [data-td-preset='ink'] .td-media--audio {
-    background: var(--bs-body-bg);
+    background: transparent;
   }
   [data-td-preset='ink'] .td-callout__title {
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-family: var(--td-heading-font-family);
+    font-weight: 400;
+    letter-spacing: 0;
   }
+  /* Where the reader is: one vermilion dot, the mark a reader's brush
+     leaves in a margin. */
   [data-td-preset='ink'] .td-shell-tree .td-shell-tree__row.td-shell-active {
     --td-shell-row-selected-fg: var(--bs-emphasis-color);
     background: transparent;
@@ -366,14 +729,62 @@
   [data-td-preset='ink'] .td-shell-tree .td-shell-tree__row.td-shell-active::before {
     content: '';
     position: absolute;
-    inset-block: 6px;
-    inset-inline-start: 0;
-    width: 3px;
+    inset-block-start: 50%;
+    inset-inline-start: 1px;
+    width: 5px;
+    height: 5px;
+    margin-block-start: -2.5px;
+    border-radius: 50%;
     background: var(--td-accent);
   }
-  [data-td-preset='ink'] .td-landing-hero__title {
-    font-weight: 700;
-    letter-spacing: -0.04em;
+  /* Red never takes a frame: a chosen style or mode is framed in ink over
+     the accent's wash. */
+  [data-td-preset='ink'] .td-appearance__input:checked + :is(.td-appearance__card, .td-appearance__segment) {
+    border-color: var(--bs-emphasis-color);
+  }
+  [data-td-preset='ink'] .td-landing-hero__title,
+  [data-td-preset='ink'] .td-landing-section__head :is(h2, .h2) {
+    font-weight: 400;
+    letter-spacing: 0;
+    text-shadow: 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
+  }
+  /* The paper: lit at the head of the page and darkening toward the edges
+     of the window. The shade's far end is `--td-preset-canvas-edge`, the
+     surface every text color is checked on. */
+  [data-td-preset='ink'] body {
+    background-image: radial-gradient(ellipse 140% 110% at 50% 0%, var(--bs-body-bg) 55%, var(--td-preset-canvas-edge));
+    background-attachment: fixed;
+  }
+  /* The paper also runs under the Landing page and the footline, which
+     otherwise lay a flat band of canvas over its shade. */
+  [data-td-preset='ink'] .td-landing-landing {
+    background: transparent;
+  }
+  [data-td-preset='ink'] .td-shell-footline {
+    background: var(--td-preset-canvas-edge);
+  }
+  /* Emphasis in Chinese is a row of dots under the characters, in the
+     second ink, not a heavier letter: the hand that wrote the text has no
+     bold. Latin inside the same span takes the dots too. */
+  [data-td-preset='ink'] .td-content :is(p, li, td, dd, blockquote) :is(strong, b):lang(zh) {
+    font-weight: inherit;
+    -webkit-text-emphasis: filled dot var(--td-brand-copper);
+    text-emphasis: filled dot var(--td-brand-copper);
+    -webkit-text-emphasis-position: under right;
+    text-emphasis-position: under right;
+  }
+  /* A written chapter or post opens on a first letter in the second ink,
+     about two lines tall, in the heading hand. Docs pages are consulted, not
+     read from the top, and index pages only introduce a list: both keep a
+     plain opening. */
+  [data-td-preset='ink'] .td-page:is(.td-blog, .td-book) .td-content > p:first-of-type:not(:lang(ar), :lang(fa), :lang(he), :lang(hi), :lang(bn))::first-letter {
+    float: inline-start;
+    margin-block-start: 0.06em;
+    margin-inline-end: 0.08em;
+    color: var(--td-brand-copper);
+    font-family: var(--td-display-font-family);
+    font-size: 3.3em;
+    line-height: 0.85;
   }
   /* Emphasis keeps the text face and takes the accent: upright, as a
      terminal would show it. */
@@ -498,5 +909,778 @@
     [data-td-preset='terminal'] .td-callout__title::after {
       content: ']' / '';
     }
+  }
+}
+
+@media screen {
+  /* Slate's dim line numbers lose AA on this palette's highlighted rows. */
+  [data-td-preset='news'] .td-content .chroma :is(.ln, .lnt, .lnlinks) {
+    color: var(--bs-tertiary-color);
+  }
+  /* Song is lighter on the page than the Hei it replaces; one step up in
+     size keeps the column at the same color. */
+  [data-td-preset='news'] .td-content {
+    font-size: 1.0625rem;
+  }
+  /* A link in running text is underlined, not bold: a cue a reader can see
+     without color, at the weight of the sentence around it. Running text is
+     a paragraph, a table cell, a caption, or an item of a plain or stepped
+     list; a list with any other class is a component. */
+  [data-td-preset='news'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+[data-td-preset='news'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
+    font-weight: inherit;
+    text-decoration-line: underline !important;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+    text-decoration-skip-ink: auto;
+  }
+  [data-td-preset='news'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
+[data-td-preset='news'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible) {
+    text-decoration-color: currentColor;
+  }
+  /* The chip already says "code"; bold code still speaks up. */
+  :where([data-td-preset='news'] .td-content :not(pre)) > code {
+    font-weight: 400;
+  }
+  :where([data-td-preset='news'] .td-content) :is(strong, b) code,
+:where([data-td-preset='news'] .td-content) code :is(strong, b) {
+    font-weight: 600;
+  }
+  /* Print ranks by weight: sections in the headline face's bold, the title
+     at its heaviest -- Times Bold for Latin, Songti's Black for Han -- set
+     tight, as a front page sets its lead story. The CJK reset in content.css
+     outranks the tracking here. */
+  [data-td-preset='news'] .td-content :is(h2, .h2, h3, .h3, h4, .h4) {
+    font-weight: 700;
+    letter-spacing: -0.006em;
+  }
+  [data-td-preset='news'] .td-content :is(h1, .h1) {
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+  }
+  /* The page-heading block asks for 700 at (0,3,1). Restate only the
+     weight, so the CJK tracking reset still wins at (0,4,0). */
+  [data-td-preset='news'] .td-content .td-page-heading > :is(h1, .h1) {
+    font-weight: 800;
+  }
+  /* The description is the deck under the headline: the text face, a step
+     larger and quieter, italic in Latin. Han has no italic, so pages in a
+     script without one keep it upright. */
+  [data-td-preset='news'] .td-content > .lead {
+    color: var(--bs-secondary-color);
+    font-family: var(--td-body-font-family);
+    font-size: 1.1875rem;
+    line-height: 1.45;
+  }
+  [data-td-preset='news'] .td-content > .lead:not(:lang(zh), :lang(ja), :lang(ko), :lang(ar), :lang(fa), :lang(he), :lang(hi), :lang(bn)) {
+    font-style: italic;
+  }
+  [data-td-preset='news'] .td-content > .lead :is(code, kbd, samp) {
+    font-style: normal;
+  }
+  /* The dateline: date, section and length in small capitals of the
+     interface face, between two hairlines. */
+  [data-td-preset='news'] .td-content .td-article-info {
+    padding-block: 0.45rem;
+    border-block: 1px solid var(--bs-border-color);
+    font-family: var(--td-ui-font-family);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* Each section opens under a thick-and-thin rule: three points of ink,
+     a point of paper, a hairline. */
+  [data-td-preset='news'] .td-content > :is(h2, .h2) {
+    padding-block-start: 0.7rem;
+    border-block-start: 3px solid var(--bs-emphasis-color);
+    box-shadow: inset 0 1px 0 var(--bs-body-bg), inset 0 2px 0 var(--bs-emphasis-color);
+  }
+  /* The masthead: a double rule under the site header. The bar keeps its
+     fixed 50px under border-box sizing, so the rule takes no extra height. */
+  [data-td-preset='news'] .td-site-header {
+    border-block-end: 3px double var(--bs-emphasis-color);
+  }
+  /* Where the reader is: a column rule and bold type, no color. The link
+     sets its own weight, so the bold goes on the link. */
+  [data-td-preset='news'] .td-shell-tree .td-shell-tree__row.td-shell-active {
+    --td-shell-row-selected-fg: var(--bs-emphasis-color);
+    background: transparent;
+  }
+  [data-td-preset='news'] .td-shell-tree .td-shell-tree__row.td-shell-active > .td-shell-tree__link {
+    font-weight: 700;
+  }
+  [data-td-preset='news'] .td-shell-tree .td-shell-tree__row.td-shell-active::before {
+    content: '';
+    position: absolute;
+    inset-block: 4px;
+    inset-inline-start: 0;
+    width: 2px;
+    background: var(--bs-emphasis-color);
+  }
+  /* The darkroom's safelight: a faint glow of the accent in one corner of
+     the window, below the header. Its brightest point is
+     `--td-preset-canvas-edge`. */
+  [data-td-preset='news'][data-bs-theme='dark'] body {
+    background-image: radial-gradient(ellipse 55% 60% at 100% 0%, rgba(var(--td-preset-accent-rgb), 0.07), transparent 70%);
+    background-attachment: fixed;
+  }
+  /* A double rule closes the headline and breaks a section: the printer's
+     one device, used in two places only. */
+  [data-td-preset='news'] .td-content > .td-page-heading,
+[data-td-preset='news'] .td-content > .td-article-header > .td-page-heading {
+    padding-block-end: 0.75rem;
+    border-block-end: 3px double var(--td-brand-line-strong);
+  }
+  [data-td-preset='news'] .td-content hr {
+    margin-block: 2rem;
+    border: 0;
+    border-block-start: 3px double var(--td-brand-line-strong);
+    opacity: 1;
+  }
+  /* Open tables, as in print: an ink hairline above the labels and below
+     the last row, a quiet rule under the labels, no frame and no band. */
+  [data-td-preset='news'] .td-content .td-table-scroll {
+    border-radius: 0;
+  }
+  [data-td-preset='news'] .td-content table:not(.td-initial) > thead > tr:first-child > * {
+    border-block-start: 1px solid var(--bs-body-color);
+  }
+  [data-td-preset='news'] .td-content table:not(.td-initial) tbody tr:last-child > * {
+    border-block-end: 1px solid var(--bs-body-color);
+  }
+  [data-td-preset='news'] .td-content table:not(.td-initial) thead th {
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* An identifier keeps its case and its pitch in a label. */
+  [data-td-preset='news'] .td-content table:not(.td-initial) thead th code {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  /* Matrix headers stick over scrolled rows and keep their opaque ground. */
+  [data-td-preset='news'] .td-content table:not(.td-initial, .td-table-scroll--matrix > *) thead th {
+    background: transparent;
+  }
+  /* A quotation is a pull quote: a heavy rule above, a hairline below, no
+     bar at its side, a step larger. It keeps its start alignment, because a
+     quotation in documentation can run to several paragraphs. */
+  [data-td-preset='news'] .td-content blockquote:not(.td-social blockquote, .td-social-quote) {
+    padding: 0.7rem 0;
+    border: 0;
+    border-block-start: 3px solid var(--bs-emphasis-color);
+    border-block-end: 1px solid var(--bs-emphasis-color);
+    border-radius: 0;
+    background: none;
+    font-size: 1.125em;
+  }
+  /* Callouts: a light semantic wash and one 3px rule, no frame, no
+     rounding. */
+  [data-td-preset='news'] .td-callout {
+    border: 0;
+    border-inline-start: 3px solid var(--td-callout-accent);
+    border-radius: 0;
+  }
+  [data-td-preset='news'] .td-callout--details {
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--td-code-radius);
+    background: var(--td-brand-elev);
+  }
+  [data-td-preset='news'] .td-media--audio {
+    background: var(--td-brand-elev);
+  }
+  /* Landing keeps its structure and reads in the text face; the blueprint
+     grid and glow are Slate's, the buttons are controls. */
+  [data-td-preset='news'] .td-landing-landing {
+    --td-grid: transparent;
+    --td-glow-opacity: 0;
+    --td-radius-sm: var(--td-experiment-radius);
+    --td-radius-md: var(--td-experiment-radius);
+    --td-shadow: var(--td-brand-shadow-sm);
+    --td-shadow-lg: var(--td-brand-shadow-md);
+    --td-primary-bg: var(--bs-link-color);
+    --td-primary-bg-hover: var(--bs-link-hover-color);
+    --td-primary-fg: var(--td-on-link);
+    --td-primary-shadow: var(--td-brand-shadow-sm);
+    --td-primary-shadow-hover: var(--td-brand-shadow-sm);
+    --td-terminal: #121110;
+    --td-terminal-line: rgba(236, 233, 227, 0.16);
+    font-family: var(--td-body-font-family);
+  }
+  [data-td-preset='news'] .td-landing-button {
+    font-family: var(--td-ui-font-family);
+  }
+  [data-td-preset='news'] .td-landing-hero__title {
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Quotation in a second hand: Latin takes the serif's true italic, Han
+   takes Kai, whose italic face is upright Kai, so nothing is slanted
+   artificially. Pages in a language whose script has no italic stay
+   upright, and so do Chinese pages, where Kai alone carries the quote (and
+   a system without Kai would otherwise slant Song). Within the quote,
+   emphasis turns upright and code never slants. No color is set here, so
+   the rule holds on paper as on screen. */
+[data-td-preset='news'] .td-content blockquote:not(.td-social blockquote, .td-social-quote, :lang(zh), :lang(ja), :lang(ko), :lang(ar), :lang(fa), :lang(he), :lang(hi), :lang(bn)) {
+  font-style: italic;
+}
+
+[data-td-preset='news'] .td-content blockquote :is(code, kbd, samp, pre, em, i:not([class]), cite, dfn) {
+  font-style: normal;
+}
+
+@media screen {
+  /* Prose: GitHub's 16px/1.5, semibold untracked headings, h1 and h2 over a
+     muted hairline. Chrome keeps the shared 1.7 rhythm. */
+  [data-td-preset='github'] .td-content {
+    --td-code-border-color: transparent;
+    line-height: 1.5;
+  }
+  [data-td-preset='github'] .td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6) {
+    color: var(--bs-body-color);
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+  [data-td-preset='github'] .td-content :is(h1, .h1) {
+    font-size: 2em;
+  }
+  [data-td-preset='github'] .td-content :is(h2, .h2) {
+    font-size: 1.5em;
+  }
+  [data-td-preset='github'] .td-content :is(h3, .h3) {
+    font-size: 1.25em;
+  }
+  [data-td-preset='github'] .td-content :is(h4, .h4) {
+    font-size: 1em;
+  }
+  [data-td-preset='github'] .td-content :is(h5, .h5) {
+    font-size: 0.875em;
+  }
+  [data-td-preset='github'] .td-content :is(h6, .h6) {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+  }
+  [data-td-preset='github'] .td-content > :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6):not(.update) {
+    margin-block: 1.5rem 1rem;
+  }
+  [data-td-preset='github'] .td-content > :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6):first-child {
+    margin-block-start: 0;
+  }
+  [data-td-preset='github'] .td-content > :is(h1, .h1, h2, .h2):not(.update),
+  [data-td-preset='github'] .td-content > .td-page-heading > :is(h1, .h1) {
+    padding-block-end: 0.3em;
+    border-block-end: 1px solid var(--td-preset-border-muted);
+  }
+  [data-td-preset='github'] .td-content > .td-page-heading > :is(h1, .h1) {
+    margin-block: 0 1rem;
+  }
+  [data-td-preset='github'] .td-content :is(strong, b) {
+    font-weight: 600;
+  }
+  /* The heading anchor is a chain link, as on GitHub; the label stays on the
+     link itself, so the glyph carries empty alternative text. Engines
+     without content alternatives keep the shared '#'. */
+  [data-td-preset='github'] .td-content .td-heading-self-link::before {
+    content: '\f0c1' / '';
+    font: var(--fa-font-solid);
+    font-size: 1rem;
+  }
+
+  /* Links: GitHub's default since 2023 -- underlined in running text, at
+     the weight of the sentence. Same scope as Paper's prose links. */
+  [data-td-preset='github'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+  [data-td-preset='github'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
+    font-weight: inherit;
+    text-decoration-line: underline !important;
+    text-underline-offset: 0.2rem;
+  }
+
+  /* Lists. */
+  [data-td-preset='github'] .td-content :where(ul, ol):not([class]) {
+    margin-block: 0 1rem;
+    padding-inline-start: 2em;
+  }
+  [data-td-preset='github'] .td-content :where(ul, ol):not([class]) :where(ul, ol) {
+    margin-block: 0;
+  }
+  [data-td-preset='github'] .td-content :where(ul, ol):not([class]) > li {
+    margin-block: 0;
+  }
+  [data-td-preset='github'] .td-content :where(ul, ol):not([class]) > li + li {
+    margin-block-start: 0.25em;
+  }
+  [data-td-preset='github'] .td-content :where(ul, ol):not([class]) > li > p {
+    margin-block-start: 1rem;
+  }
+  [data-td-preset='github'] .td-content :where(ul, ol):not([class]) > li::marker {
+    color: inherit;
+  }
+  [data-td-preset='github'] .td-content :where(ol, ul) ol:not([type]) {
+    list-style-type: lower-roman;
+  }
+  [data-td-preset='github'] .td-content :where(ol, ul) :where(ol, ul) ol:not([type]) {
+    list-style-type: lower-alpha;
+  }
+  /* Task lists: the checkbox replaces the bullet. Without :has() the bullet
+     simply stays. */
+  [data-td-preset='github'] .td-content li:has(> input[type='checkbox']:first-child) {
+    list-style-type: none;
+  }
+  [data-td-preset='github'] .td-content li > input[type='checkbox']:first-child {
+    margin-block: 0 0.25em;
+    margin-inline: -1.4em 0.2em;
+    vertical-align: middle;
+  }
+
+  /* Inline code: GitHub's neutral chip at prose weight. */
+  :where([data-td-preset='github'] .td-content :not(pre)) > code {
+    padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-size: 85%;
+    font-weight: 400;
+    white-space: break-spaces;
+  }
+  :where([data-td-preset='github'] .td-content) :is(strong, b) code,
+  :where([data-td-preset='github'] .td-content) code :is(strong, b) {
+    font-weight: 600;
+  }
+  [data-td-preset='github'] .td-content :is(h1, h2, h3, h4, h5, h6) > code {
+    padding: 0 0.2em;
+    font-size: inherit;
+  }
+
+  /* Code: an untitled block is GitHub's plain grey block; a titled block is
+     GitHub's file box -- framed, a muted header, a white body. */
+  [data-td-preset='github'] .td-content pre {
+    font-size: 85%;
+    line-height: 1.45;
+  }
+  /* A bare highlight block keeps GitHub's 16px below it; one inside a code
+     frame sits in the frame's viewport and adds nothing. */
+  [data-td-preset='github'] .td-content .td-code,
+  [data-td-preset='github'] .td-content .highlight:not(.td-code .highlight) {
+    margin-block: 0 1rem;
+  }
+  [data-td-preset='github'] .td-content .td-code--titled {
+    --td-code-border-color: var(--bs-border-color);
+    --td-pre-bg: var(--bs-body-bg);
+  }
+  [data-td-preset='github'] .td-content .td-code__utilities--compact .td-code__copy {
+    --td-control-bg: var(--td-preset-control-bg);
+    --td-control-border: var(--bs-border-color);
+  }
+  [data-td-preset='github'] .td-content .td-code__utilities--compact .td-code__copy:hover {
+    --td-control-bg: var(--td-preset-control-bg-hover);
+  }
+  [data-td-preset='github'] .td-content .chroma :is(.ln, .lnt, .lnlinks) {
+    color: var(--bs-tertiary-color);
+  }
+  /* The shipped Chroma palettes are already Chroma's github / github-dark
+     styles; only the roles that drifted from prettylights are restated. A
+     highlighted line takes GitHub's attention wash. */
+  [data-td-preset='github'] .chroma {
+    --td-code-hl-bg: var(--td-preset-mark-bg);
+    --td-code-hl-accent: transparent;
+  }
+  [data-td-preset='github'] .chroma :is(.c, .ch, .cm, .c1, .cs, .cp, .cpf) {
+    color: var(--td-preset-syntax-comment);
+  }
+  [data-td-preset='github'] .td-content .chroma :is(.m, .mb, .mf, .mh, .mi, .il, .mo) {
+    color: var(--td-preset-syntax-constant);
+  }
+
+  /* Blockquote: a 0.25em rule in the border color, muted text, no wash. */
+  [data-td-preset='github'] .td-content blockquote {
+    margin: 0 0 1rem;
+    padding: 0 1em;
+    border-inline-start: 0.25em solid var(--bs-border-color);
+    border-radius: 0;
+    background: none;
+    color: var(--bs-secondary-color);
+  }
+
+  /* Tables: every cell ruled, even body rows muted, no frame, no header
+     band, no hover; the table shrinks to its content as on GitHub. */
+  [data-td-preset='github'] .td-content .td-table-scroll {
+    border-radius: 0;
+  }
+  [data-td-preset='github'] .td-content .td-table-scroll > table {
+    min-width: 0;
+  }
+  [data-td-preset='github'] .td-content table:not(.td-initial) {
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-bg: var(--bs-body-bg);
+  }
+  [data-td-preset='github'] .td-content table:not(.td-initial) > :not(caption) > * > :is(th, td) {
+    padding: 6px 13px;
+    border: 1px solid var(--bs-border-color);
+  }
+  [data-td-preset='github'] .td-content table:not(.td-initial) thead :is(th, td) {
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+  }
+  [data-td-preset='github'] .td-content table:not(.td-initial) > tbody > tr:nth-child(2n) > * {
+    --bs-table-bg-type: var(--bs-secondary-bg);
+  }
+
+  /* Rules, keys, highlights. */
+  [data-td-preset='github'] .td-content hr {
+    box-sizing: content-box;
+    height: 0.25em;
+    margin: 1.5rem 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background-color: var(--bs-border-color);
+    opacity: 1;
+  }
+  [data-td-preset='github'] .td-content kbd {
+    display: inline-block;
+    padding: 0.25rem;
+    border: 1px solid var(--td-preset-border-muted);
+    border-radius: 6px;
+    background-color: var(--bs-secondary-bg);
+    box-shadow: inset 0 -1px 0 var(--td-preset-border-muted);
+    color: var(--bs-body-color);
+    font: 11px var(--td-code-font-family);
+    line-height: 10px;
+    vertical-align: middle;
+  }
+  [data-td-preset='github'] .td-content mark {
+    padding: 0;
+    background-color: var(--td-preset-mark-bg);
+    color: var(--bs-body-color);
+  }
+
+  /* Footnotes: small and muted under one rule; the targeted note is ringed. */
+  [data-td-preset='github'] .td-content .footnotes {
+    border-block-start: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
+    font-size: 12px;
+  }
+  [data-td-preset='github'] .td-content .footnotes > hr {
+    display: none;
+  }
+  [data-td-preset='github'] .td-content .footnotes > ol {
+    padding-inline-start: 1rem;
+  }
+  [data-td-preset='github'] .td-content .footnotes li {
+    position: relative;
+  }
+  [data-td-preset='github'] .td-content .footnotes li:target {
+    color: var(--bs-body-color);
+  }
+  [data-td-preset='github'] .td-content .footnotes li:target::before {
+    content: '';
+    position: absolute;
+    inset-block: -0.5rem;
+    inset-inline: -1.5rem -0.5rem;
+    border: 2px solid var(--td-accent);
+    border-radius: 6px;
+    pointer-events: none;
+  }
+
+  /* GFM alerts: a 0.25em emphasis rule and a colored title, nothing else. */
+  [data-td-preset='github'] .td-callout {
+    margin: 0 0 1rem;
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-inline-start: 0.25em solid var(--td-callout-accent);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+  }
+  [data-td-preset='github'] .td-callout__title {
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    line-height: 1;
+  }
+  [data-td-preset='github'] .td-callout__body {
+    font-size: inherit;
+  }
+  [data-td-preset='github'] .td-callout--collapsible {
+    padding: 0;
+  }
+  [data-td-preset='github'] .td-callout--collapsible > summary {
+    margin: 0;
+    padding: 0.5rem 1rem;
+  }
+  [data-td-preset='github'] .td-callout--collapsible > .td-callout__body {
+    padding: 0 1rem 0.5rem;
+    border-block-start: 0;
+  }
+  [data-td-preset='github'] :is(.td-callout--note, .td-callout--question) {
+    --td-callout-accent: var(--td-preset-note-border);
+    --td-callout-title: var(--td-preset-note);
+  }
+  [data-td-preset='github'] :is(.td-callout--tip, .td-callout--success) {
+    --td-callout-accent: var(--td-preset-tip-border);
+    --td-callout-title: var(--td-preset-tip);
+  }
+  [data-td-preset='github'] :is(.td-callout--important, .td-callout--example) {
+    --td-callout-accent: var(--td-preset-important-border);
+    --td-callout-title: var(--td-preset-important);
+  }
+  [data-td-preset='github'] .td-callout--warning {
+    --td-callout-accent: var(--td-preset-warning-border);
+    --td-callout-title: var(--td-preset-warning);
+  }
+  [data-td-preset='github'] :is(.td-callout--caution, .td-callout--danger) {
+    --td-callout-accent: var(--td-preset-caution-border);
+    --td-callout-title: var(--td-preset-caution);
+  }
+  [data-td-preset='github'] :is(.td-callout--quote, .td-callout--details) {
+    --td-callout-accent: var(--bs-border-color);
+    --td-callout-title: var(--bs-secondary-color);
+  }
+
+  /* Tabs: Primer's UnderlineNav inside a file box. */
+  [data-td-preset='github'] .td-content .td-tabs {
+    --td-code-border-color: var(--bs-border-color);
+    --td-pre-bg: var(--bs-body-bg);
+  }
+  [data-td-preset='github'] .td-tabs__tab {
+    color: var(--bs-body-color);
+    font-weight: 400;
+  }
+  [data-td-preset='github'] .td-tabs__tab[aria-selected='true'] {
+    border-block-end-color: var(--td-preset-underline-nav);
+    color: var(--bs-body-color);
+    font-weight: 600;
+  }
+
+  /* Shell: an opaque app header, Primer NavList rows, neutral grounds. */
+  [data-td-preset='github'] .td-site-header {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  [data-td-preset='github'] .td-site-header.td-scrolled {
+    box-shadow: none;
+  }
+  [data-td-preset='github'] .td-shell-tree {
+    --td-shell-row-hover: var(--td-shell-accent);
+  }
+  [data-td-preset='github'] .td-shell-tree__row {
+    border-radius: 6px;
+  }
+  [data-td-preset='github'] .td-shell-tree .td-shell-tree__row.td-shell-active {
+    --td-shell-row-selected-fg: var(--td-preset-control-fg);
+  }
+  [data-td-preset='github'] .td-shell-tree .td-shell-tree__row.td-shell-active > .td-shell-tree__link {
+    font-weight: 600;
+  }
+  [data-td-preset='github'] .td-shell-tree .td-shell-tree__row.td-shell-active::before,
+  [data-td-preset='github'] .td-shell-tree .td-shell-tree__list--2 .td-shell-tree__row.td-shell-active::before {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset-block: 4px;
+    inset-inline-start: 0;
+    width: 4px;
+    border-radius: 6px;
+    background: var(--td-accent);
+  }
+  [data-td-preset='github'] .td-shell-toc__body {
+    --td-shell-toc-pill-bg: var(--td-shell-accent);
+  }
+  [data-td-preset='github'] ::selection {
+    background: var(--td-preset-selection);
+  }
+
+  /* Buttons: Primer default and the green primary. */
+  [data-td-preset='github'] .btn {
+    --bs-btn-font-weight: 500;
+  }
+  /* Bootstrap's button tokens take values, not OINK tokens, so the green
+     is written out per mode; it matches --td-preset-primary-bg. */
+  [data-td-preset='github'] .btn-primary {
+    --bs-btn-color: #ffffff;
+    --bs-btn-bg: #1f883d;
+    --bs-btn-border-color: var(--bs-border-color-translucent);
+    --bs-btn-hover-color: #ffffff;
+    --bs-btn-hover-bg: #1c8139;
+    --bs-btn-hover-border-color: var(--bs-border-color-translucent);
+    --bs-btn-active-color: #ffffff;
+    --bs-btn-active-bg: #1c8139;
+    --bs-btn-active-border-color: var(--bs-border-color-translucent);
+  }
+  [data-td-preset='github'][data-bs-theme='dark'] .btn-primary,
+[data-td-preset='github'] [data-bs-theme='dark'] .btn-primary {
+    --bs-btn-bg: #238636;
+    --bs-btn-hover-bg: #268838;
+    --bs-btn-active-bg: #268838;
+  }
+
+  /* Landing: a repository page, not a marketing poster. */
+  [data-td-preset='github'] .td-landing-landing {
+    --td-grid: transparent;
+    --td-glow-opacity: 0;
+    --td-radius-sm: 6px;
+    --td-radius-md: 6px;
+    --td-shadow: var(--td-brand-shadow-sm);
+    --td-shadow-lg: var(--td-brand-shadow-md);
+    --td-primary-bg: var(--td-preset-primary-bg);
+    --td-primary-bg-hover: var(--td-preset-primary-bg-hover);
+    --td-primary-fg: #ffffff;
+    --td-primary-shadow: none;
+    --td-primary-shadow-hover: none;
+    --td-terminal: #0d1117;
+    --td-terminal-line: #3d444d;
+  }
+  [data-td-preset='github'] .td-landing-button {
+    font-weight: 500;
+  }
+  [data-td-preset='github'] .td-landing-button--primary {
+    --td-control-border: var(--bs-border-color-translucent);
+  }
+  [data-td-preset='github'] .td-landing-button--ghost {
+    --td-control-bg: var(--td-preset-control-bg);
+    --td-control-border: var(--bs-border-color);
+    color: var(--td-preset-control-fg);
+  }
+  [data-td-preset='github'] .td-landing-button--ghost:hover {
+    --td-control-bg: var(--td-preset-control-bg-hover);
+    --td-control-border: var(--bs-border-color);
+    color: var(--td-preset-control-fg);
+  }
+  [data-td-preset='github'] .td-landing-hero__title {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+}
+
+@media screen and (hover: hover) {
+  [data-td-preset='github'] .td-content table:not(.td-initial) tbody tr:hover > * {
+    background-color: var(--bs-table-bg);
+  }
+}
+
+/* The anchor stands 20px before the heading, as on GitHub, where the
+   column has room for it; narrow screens keep the shared trailing anchor. */
+@media screen and (min-width: 768px) {
+  [data-td-preset='github'] .td-content > :is(h1, h2, h3, h4, h5, h6) {
+    position: relative;
+  }
+  [data-td-preset='github'] .td-content > :is(h1, h2, h3, h4, h5, h6) > .td-heading-self-link {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: -20px;
+    display: flex;
+    align-items: center;
+    block-size: 1.25em;
+    inline-size: 20px;
+    padding: 0;
+    color: var(--bs-body-color);
+    font-size: inherit;
+  }
+}
+
+@media screen {
+  @supports (content: '[' / '') {
+    [data-td-preset='github'] .td-content .footnote-ref::before {
+      content: '[' / '';
+    }
+    [data-td-preset='github'] .td-content .footnote-ref::after {
+      content: ']' / '';
+    }
+  }
+}
+
+@media (forced-colors: active) {
+  /* A background bar vanishes under forced colors; draw the rule. */
+  [data-td-preset='github'] .td-content hr {
+    height: 0;
+    border-block-start: 0.25em solid CanvasText;
+    background: none;
+  }
+  [data-td-preset='github'] .td-tabs__tab[aria-selected='true'] {
+    border-block-end-color: Highlight;
+    color: Highlight;
+  }
+}
+
+/* The phosphor screen's effects, kept faint: scan lines behind the page, a
+   glow on headings and on a link under the pointer, green headings, and the
+   current row as a green cursor bar. Code keeps several hues so its parts
+   stay apart: keywords in phosphor green, strings in amber, numbers in cyan,
+   names pale, comments dim. */
+@media screen {
+  [data-td-preset='terminal'][data-bs-theme='dark'] body {
+    background-image: repeating-linear-gradient(to bottom, rgba(61, 255, 122, 0.018) 0, rgba(61, 255, 122, 0.018) 1px, transparent 1px, transparent 3px);
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .td-content :is(h1, .h1, h2, .h2, h3, .h3, h4, .h4),
+[data-td-preset='terminal'][data-bs-theme='dark'] .td-landing-hero__title {
+    color: var(--bs-link-color);
+    text-shadow: 0 0 8px rgba(61, 255, 122, 0.28);
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .td-content a:not(.btn):is(:hover, :focus-visible) {
+    text-shadow: 0 0 6px rgba(61, 255, 122, 0.45);
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .td-shell-tree .td-shell-tree__row.td-shell-active,
+[data-td-preset='terminal'][data-bs-theme='dark'] .td-shell-search__item[aria-selected='true'] {
+    --td-shell-row-selected-fg: var(--td-on-link);
+    background: var(--td-accent);
+    color: var(--td-on-link);
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] ::selection {
+    background: rgba(61, 255, 122, 0.28);
+    color: #eafff0;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.k, .kc, .kd, .kn, .kp, .kr, .kt, .nt) {
+    color: #3dff7a;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.s, .s1, .s2, .sa, .sb, .sc, .sd, .se, .sh, .si, .sr, .ss, .sx, .dl) {
+    color: #e5b45a;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.c, .ch, .cm, .c1, .cs, .cp, .cpf) {
+    color: #7a877f;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.m, .mb, .mf, .mh, .mi, .il, .mo, .no, .ld) {
+    color: #7cc8ff;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.nf, .fm, .nc, .nn, .nd, .ne) {
+    color: #a6f0bd;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.na, .nb, .bp, .nv, .vc, .vg, .vi, .vm, .py, .nx, .nl) {
+    color: #c9d2cc;
+  }
+  [data-td-preset='terminal'][data-bs-theme='dark'] .chroma :is(.o, .ow, .p) {
+    color: #9aa69f;
+  }
+}
+
+@media (forced-colors: active) {
+  /* Brush strokes drawn as backgrounds vanish under forced colors; rules
+     stand in for them. */
+  [data-td-preset='ink'] .td-content > :is(h2, .h2) {
+    border-block-start: 2px solid CanvasText;
+  }
+  [data-td-preset='ink'] .td-content hr {
+    height: 0;
+    border-block-start: 2px solid CanvasText;
+    background: none;
+  }
+  [data-td-preset='ink'] .td-content blockquote {
+    border-image: none;
+    border-inline-start-color: CanvasText;
+  }
+  /* The paper's shade and the safelight are atmosphere, not content: the
+     system canvas replaces them. The current-row marks become system ink. */
+  :is([data-td-preset='ink'], [data-td-preset='news']) body {
+    background-image: none;
+  }
+  :is([data-td-preset='ink'], [data-td-preset='news']) .td-shell-tree .td-shell-tree__row.td-shell-active::before {
+    background: CanvasText;
   }
 }

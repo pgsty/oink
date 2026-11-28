@@ -1,0 +1,54 @@
+/* Local experimental palette; no font or network imports. */
+main {
+  --color-fg-default: #161616;
+  --color-fg-muted: #4a4844;
+  --color-fg-subtle: #625f59;
+  --color-canvas-default: #f0eee8;
+  --color-canvas-overlay: #f6f5f1;
+  --color-canvas-inset: #f6f5f1;
+  --color-canvas-subtle: #e6e3da;
+  --color-border-default: rgba(22, 22, 22, 0.16);
+  --color-border-muted: rgba(22, 22, 22, 0.12);
+  --color-neutral-muted: rgba(22, 22, 22, 0.1);
+  --color-accent-fg: #1f4f7a;
+  --color-accent-emphasis: #1f4f7a;
+  --color-accent-muted: rgba(31, 79, 122, 0.34);
+  --color-accent-subtle: rgba(31, 79, 122, 0.1);
+  --color-btn-text: #161616;
+  --color-btn-bg: #e6e3da;
+  --color-btn-hover-bg: #dedad0;
+  --color-btn-hover-border: rgba(22, 22, 22, 0.3);
+  --color-btn-active-bg: #d5d1c5;
+  --color-btn-active-border: rgba(31, 79, 122, 0.42);
+  --color-btn-selected-bg: rgba(31, 79, 122, 0.12);
+  --color-btn-border: var(--color-border-default);
+  --color-btn-primary-text: #ffffff;
+  --color-btn-primary-bg: #1f4f7a;
+  --color-btn-primary-border: #1f4f7a;
+  --color-btn-primary-hover-bg: #163a5b;
+  --color-btn-primary-hover-border: #163a5b;
+  --color-btn-primary-selected-bg: #122f4a;
+  --color-btn-primary-disabled-bg: rgba(31, 79, 122, 0.55);
+  --color-btn-primary-disabled-border: rgba(31, 79, 122, 0.25);
+  --color-action-list-item-default-hover-bg: rgba(31, 79, 122, 0.08);
+  --color-segmented-control-bg: #e6e3da;
+  --color-segmented-control-button-bg: #f6f5f1;
+  --color-segmented-control-button-selected-border: rgba(22, 22, 22, 0.3);
+  --color-scale-gray-1: #e6e3da;
+  --color-scale-blue-1: rgba(31, 79, 122, 0.12);
+  --oink-comment-border: rgba(22, 22, 22, 0.3);
+  --oink-comment-shadow: none;
+}
+
+main .gsc-comment-box:not(.gsc-comment-box-is-reply),
+main .gsc-comment-box-tabs button,
+main .gsc-comment-box-textarea,
+main .gsc-comment-box-textarea-extras,
+main .gsc-comment-box-write:focus-within,
+main .btn,
+main .gsc-reactions-popover,
+main .gsc-replies,
+main .gsc-social-reaction-summary-item,
+main .gsc-reactions-button {
+  border-radius: 0;
+}

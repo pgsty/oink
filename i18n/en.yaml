@@ -67,7 +67,7 @@ ui_theme_light: Light
 ui_theme_dark: Dark
 ui_appearance: Appearance
 ui_appearance_style: Style
-ui_appearance_mode: Color mode
+ui_appearance_mode: Color
 ui_appearance_close: Close appearance settings
 ui_appearance_unsaved: Your browser is not saving settings, so this choice lasts only on this page.
 ui_preset_default: Default
@@ -75,6 +75,8 @@ ui_preset_paper: Paper
 ui_preset_slate: Slate
 ui_preset_ink: "Ink"
 ui_preset_terminal: "Terminal"
+ui_preset_news: "News"
+ui_preset_github: "GitHub"
 ui_toc_hide: Hide table of contents
 ui_toc_show: Show table of contents
 ui_language_select: Choose language

@@ -74,6 +74,8 @@ ui_preset_paper: "Paper"
 ui_preset_slate: "Slate"
 ui_preset_ink: "Ink"
 ui_preset_terminal: "Terminal"
+ui_preset_news: "News"
+ui_preset_github: "GitHub"
 ui_toc_hide: 隐藏目录
 ui_toc_show: 显示目录
 ui_language_select: 选择语言

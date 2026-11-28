@@ -19,8 +19,8 @@
   /* Emphasis and citation. `OINK Kai` answers only for CJK code points, so
      Latin in the same phrase keeps the true italic of the role behind it and
      Han takes Kai upright instead of a synthesized slant. */
-  --td-emphasis-font-family: 'OINK Kai', var(--td-body-font-family);
-  --td-heading-emphasis-font-family: 'OINK Kai', var(--td-heading-font-family);
+  --td-emphasis-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-body-font-family);
+  --td-heading-emphasis-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-heading-font-family);
   /* Quotations follow the body role unless a preset gives them a hand of
      their own. */
   --td-quote-font-family: var(--td-body-font-family);
@@ -37,42 +37,57 @@
    line: a sans with Hei, a serif with Song. A stack names the Latin face
    first, then the Han faces platform by platform. */
 [data-td-preset='paper'] {
-  /* A published essay: Song headings over a Hei text. IBM Plex Sans carries
-     UI and prose; Han beside it prefers Hiragino Sans GB, whose open forms
-     read like print, then the platform Hei. The wordmark keeps the brand
-     face. */
+  /* IBM Plex Sans for UI, prose, headings, and display; Latin first, then the
+     platform CJK sans faces, so Chinese reads in PingFang/YaHei/Noto, never a
+     synthesized fallback. The wordmark keeps the brand face. */
   --td-ui-font-family:
-      'IBM Plex Sans', 'Hiragino Sans GB', -apple-system, BlinkMacSystemFont,
-      'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC',
+      'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+      'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC',
       'Segoe UI', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   --td-body-font-family: var(--td-ui-font-family);
-  /* Headings: a system serif for Latin, Song for Han. Microsoft YaHei stands
-     before the generic so a Windows without a Song that has a real bold gets
-     a bold Hei rather than a smeared SimSun; Android reaches its Noto Serif
-     CJK through `serif`. */
-  --td-heading-font-family:
-      Charter, 'Bitstream Charter', 'Iowan Old Style', Cambria, Georgia,
-      'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
-      'Microsoft YaHei', serif;
+  --td-heading-font-family: var(--td-body-font-family);
   --td-display-font-family: var(--td-ui-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
   --td-brand-font-family: 'Chakra Petch', var(--td-ui-font-family);
-  --td-quote-font-family: 'OINK Kai', var(--td-body-font-family);
 }
 
 [data-td-preset='ink'] {
-  /* A printed page: Hei headlines over a Song text, the newspaper's
-     arrangement. Inter stays in the chrome and the headings; prose reads in
-     a system serif with Song beside it. */
+  /* Written, not printed: one hand on paper, and one voice on the whole
+     page -- chrome, headings and text alike. Latin takes Palatino, a roman
+     Hermann Zapf drew from Renaissance pen lettering, whose italic is a
+     chancery hand: on Windows Palatino Linotype or Book Antiqua, on Linux
+     URW Palladio or P052. Han takes Kai -- the brush's regular hand -- for
+     headings and for the navigation, search, menus and lists around the
+     text, and Fangsong, the carved hand between Kai and Song, for the text
+     itself, where its thin stroke has room; a system without them sets
+     Song, which a regular-weight heading and open spacing still keep apart
+     from News. The display role (page titles, the Landing hero) and the
+     wordmark take the heading face: Palatino stays readable at every size,
+     where a true chancery reads as ornament. `OINK Kai` and `OINK Fangsong`
+     answer only for Han, so Latin always reaches Palatino. Arabic and
+     Hebrew headings reach a calligraphic face the same way, by glyph:
+     Thuluth on Apple systems or Arabic Typesetting on Windows, and Corsiva
+     Hebrew; no face before them carries those scripts. Emphasis and
+     quotation take Kai through the shared roles. */
+  --td-ui-font-family:
+      Palatino, 'Palatino Linotype', 'Book Antiqua', 'URW Palladio L', P052,
+      'TeX Gyre Pagella', 'OINK Kai', 'OINK Kai Synth', 'Songti SC', 'Noto Serif SC',
+      'Noto Serif CJK SC', 'Source Han Serif SC', STSong, SimSun, serif,
+      'Apple Color Emoji', 'Segoe UI Emoji';
   --td-body-font-family:
-      Charter, 'Bitstream Charter', 'Iowan Old Style', Cambria, Georgia,
-      'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
-      STSong, SimSun, serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --td-heading-font-family: var(--td-ui-font-family);
+      Palatino, 'Palatino Linotype', 'Book Antiqua', 'URW Palladio L', P052,
+      'TeX Gyre Pagella', 'OINK Fangsong', 'Songti SC', 'Noto Serif SC',
+      'Noto Serif CJK SC', 'Source Han Serif SC', STSong, SimSun, serif,
+      'Apple Color Emoji', 'Segoe UI Emoji';
+  --td-heading-font-family:
+      'OINK Kai', 'OINK Kai Synth', Palatino, 'Palatino Linotype', 'Book Antiqua',
+      'URW Palladio L', P052, 'TeX Gyre Pagella', 'Songti SC', 'Noto Serif SC',
+      'Noto Serif CJK SC', 'Source Han Serif SC', STSong, SimSun,
+      'Diwan Thuluth', 'Arabic Typesetting', 'Corsiva Hebrew', serif;
   --td-display-font-family: var(--td-heading-font-family);
-  --td-brand-font-family: var(--td-ui-font-family);
+  --td-brand-font-family: var(--td-heading-font-family);
   --td-meta-font-family: var(--td-ui-font-family);
-  --td-quote-font-family: 'OINK Kai', var(--td-body-font-family);
+  --td-quote-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-body-font-family);
 }
 
 [data-td-preset='terminal'] {
@@ -96,6 +111,65 @@
      face and takes the accent in `experimental-presets.css`. */
   --td-emphasis-font-family: var(--td-body-font-family);
   --td-heading-emphasis-font-family: var(--td-heading-font-family);
+}
+
+[data-td-preset='news'] {
+  /* Printed, not written: type set by machine. The text is a book serif
+     with Song for Han; headlines are Times New Roman, drawn for The Times
+     and carried by Windows and Apple systems alike (Liberation Serif on
+     Linux), set heavy over Songti's Black weight for Han. The headline stack
+     puts Microsoft YaHei before the generic, so Windows, whose SimSun has no
+     bold, sets a real bold Hei rather than a smeared synthesized one. The
+     wordmark is a masthead in a Didone where the reader has one. The
+     furniture -- navigation, search, menus, lists, table labels, datelines
+     -- is set in the text serif too, so the whole page reads as one printed
+     sheet; small labels take capitals and spacing instead of a second
+     face. Kai carries quotation and emphasis. */
+  --td-ui-font-family:
+      Charter, 'Bitstream Charter', 'Iowan Old Style', Cambria, Georgia,
+      'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
+      STSong, SimSun, serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --td-body-font-family:
+      Charter, 'Bitstream Charter', 'Iowan Old Style', Cambria, Georgia,
+      'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
+      STSong, SimSun, serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --td-heading-font-family:
+      'Times New Roman', Times, 'Liberation Serif', Tinos, 'Songti SC',
+      'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC',
+      'Microsoft YaHei', serif;
+  --td-display-font-family: var(--td-heading-font-family);
+  --td-brand-font-family:
+      Didot, 'Bodoni 72', 'Bodoni MT', 'Times New Roman', Times,
+      'Liberation Serif', 'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC',
+      'Microsoft YaHei', serif;
+  --td-meta-font-family: var(--td-ui-font-family);
+  --td-quote-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-body-font-family);
+}
+
+[data-td-preset='github'] {
+  /* GitHub's own system stack, from github-markdown-css 5.9.0. GitHub leaves
+     Han to the platform's fallback; naming the Hei faces after Arial picks
+     the same faces on purpose -- PingFang or Hiragino Sans GB on Apple,
+     Microsoft YaHei on Windows, Noto Sans CJK on Linux and Android. Primer's
+     newer UI stack starts with the Mona Sans web font; the theme ships no
+     font file, and README bodies on GitHub still use this stack. */
+  --td-ui-font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica,
+      Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+      'Noto Sans CJK SC', 'Noto Sans SC', sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji';
+  --td-body-font-family: var(--td-ui-font-family);
+  --td-heading-font-family: var(--td-ui-font-family);
+  /* GitHub's code stack; Han in a comment gets a Hei rather than the bitmap
+     Song a Windows mono fallback would give. */
+  --td-code-font-family:
+      ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+      'Liberation Mono', 'Noto Sans Mono CJK SC', 'PingFang SC',
+      'Microsoft YaHei', monospace;
+  --td-display-font-family: var(--td-ui-font-family);
+  --td-meta-font-family: var(--td-ui-font-family);
+  --td-brand-font-family: var(--td-ui-font-family);
+  --td-print-font-family: var(--td-body-font-family);
 }
 
 [data-td-typography='system'] {

@@ -1,25 +1,35 @@
-/* Theme toggles and the Appearance trigger show the resolved mode: sun in
-   light mode, moon in dark mode. `[data-td-theme-icon]` is the icon slot of the
-   Appearance trigger, which opens a menu instead of toggling. */
-[data-td-theme-toggle] > [hidden],
-[data-td-theme-icon] > [hidden] {
+/* A theme toggle shows the resolved mode: sun in light mode, moon in dark
+   mode. The Appearance trigger's icon slot, `[data-td-theme-icon]`, opens a
+   menu instead of toggling, and shows the reader's choice in it: sun for
+   light, moon for dark, the half-filled circle for system. The choice is
+   `data-td-color-mode` on the root, which the head script sets before paint;
+   without it the slot shows the system icon, the default choice. */
+[data-td-theme-toggle] > [hidden] {
   display: none !important;
 }
 
-[data-td-theme-toggle] > .td-shell-icon--moon,
-[data-td-theme-icon] > .td-shell-icon--moon {
+[data-td-theme-toggle] > .td-shell-icon--moon {
   display: none !important;
 }
 
-[data-td-theme-toggle] > .td-shell-icon--sun,
-[data-td-theme-icon] > .td-shell-icon--sun {
+[data-td-theme-toggle] > .td-shell-icon--sun {
   display: inline-block !important;
 }
 
-html[data-bs-theme='dark'] :is([data-td-theme-toggle], [data-td-theme-icon]) > .td-shell-icon--moon {
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon {
   display: inline-block !important;
 }
 
-html[data-bs-theme='dark'] :is([data-td-theme-toggle], [data-td-theme-icon]) > .td-shell-icon--sun {
+html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun {
   display: none !important;
+}
+
+[data-td-theme-icon] > .td-shell-icon {
+  display: none !important;
+}
+
+html:not([data-td-color-mode='light'], [data-td-color-mode='dark']) [data-td-theme-icon] > .td-shell-icon--contrast,
+html[data-td-color-mode='light'] [data-td-theme-icon] > .td-shell-icon--sun,
+html[data-td-color-mode='dark'] [data-td-theme-icon] > .td-shell-icon--moon {
+  display: inline-block !important;
 }

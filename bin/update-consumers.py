@@ -262,7 +262,22 @@ class Appearance(HTMLParser):
             self.redirect = True
 
 
-def check_appearance(public, config):
+# The reader-choice policy of maintained consumers (AGENTS.md): all six
+# styles from the first release that ships News and GitHub, the four that
+# v1.7.0 and older offer before it.
+MAINTAINED_STYLES = {"paper", "slate", "ink", "terminal", "news", "github"}
+LEGACY_STYLES = {"paper", "slate", "ink", "terminal"}
+
+
+def maintained_styles(version=None):
+    match = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)(?:-.*)?", version or "")
+    if match and tuple(map(int, match.groups())) <= (1, 7, 0):
+        return LEGACY_STYLES
+    return MAINTAINED_STYLES
+
+
+def check_appearance(public, config, version=None):
+    styles = maintained_styles(version)
     # Sites may intentionally disable Home. Check their documentation entry
     # instead, and omit Hugo's redirect aliases rather than treating them as UI.
     entry = "docs/index.html" if "home" in config.get("disablekinds", []) else "index.html"
@@ -277,8 +292,9 @@ def check_appearance(public, config):
             continue
         if (page.root.get("data-td-site-preset") != "paper"
                 or page.root.get("data-td-preset") != "paper"
-                or page.styles != {"paper", "slate", "ink", "terminal"}):
-            raise RuntimeError(f"{path.relative_to(public)}: expected Paper default and all four style controls")
+                or page.styles != styles):
+            raise RuntimeError(f"{path.relative_to(public)}: expected Paper default and all "
+                               f"{len(styles)} style controls")
         checked.append(str(path.relative_to(public)))
     if not checked:
         raise RuntimeError("appearance check found no rendered entry pages")
@@ -296,7 +312,7 @@ def check(site, hugo, version, appearance=False):
                      "--destination", str(public),
                      "--noBuildLock")
         if appearance:
-            output += "\n" + check_appearance(public, config)
+            output += "\n" + check_appearance(public, config, version)
     return graph + "\n" + output
 
 
@@ -311,7 +327,8 @@ def main():
     parser.add_argument("--write", action="store_true", help="update pins; otherwise inventory only")
     parser.add_argument("--check", action="store_true", help="verify the published graph and build every selected site with warnings visible")
     parser.add_argument("--check-appearance", action="store_true",
-                        help="with --check, require Paper default and all four styles on rendered entry pages")
+                        help="with --check, require Paper default and every maintained style "
+                             "(six; four for v1.7.0 and older) on rendered entry pages")
     parser.add_argument("--refresh-vendor", action="store_true", help="back up and regenerate reviewed vendored themes")
     parser.add_argument("--hugo", default="hugo")
     parser.add_argument("--report-dir", type=Path, help="directory for JSON, logs, and original module files")

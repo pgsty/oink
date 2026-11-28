@@ -29,10 +29,14 @@
   {{- if $darkMode.enable }}
   {{/* Avoid transitions until theme CSS is loaded */ -}}
   html[data-td-theme-init] * { transition: none !important; }
-  :is([data-td-theme-toggle], [data-td-theme-icon]) > .td-shell-icon--moon { display: none !important; }
-  :is([data-td-theme-toggle], [data-td-theme-icon]) > [hidden] { display: none !important; }
-  html[data-bs-theme='dark'] :is([data-td-theme-toggle], [data-td-theme-icon]) > .td-shell-icon--sun { display: none !important; }
-  html[data-bs-theme='dark'] :is([data-td-theme-toggle], [data-td-theme-icon]) > .td-shell-icon--moon { display: inline-block !important; }
+  [data-td-theme-toggle] > .td-shell-icon--moon { display: none !important; }
+  [data-td-theme-toggle] > [hidden] { display: none !important; }
+  html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--sun { display: none !important; }
+  html[data-bs-theme='dark'] [data-td-theme-toggle] > .td-shell-icon--moon { display: inline-block !important; }
+  [data-td-theme-icon] > .td-shell-icon { display: none !important; }
+  html:not([data-td-color-mode='light'], [data-td-color-mode='dark']) [data-td-theme-icon] > .td-shell-icon--contrast,
+  html[data-td-color-mode='light'] [data-td-theme-icon] > .td-shell-icon--sun,
+  html[data-td-color-mode='dark'] [data-td-theme-icon] > .td-shell-icon--moon { display: inline-block !important; }
   {{- end }}
 </style>
 
@@ -90,6 +94,8 @@
     }
 
     document.documentElement.setAttribute('data-bs-theme', theme);
+    {{/* The reader's choice, which the Appearance trigger shows. */ -}}
+    document.documentElement.setAttribute('data-td-color-mode', storedTheme || 'auto');
     document.querySelectorAll('meta[name="theme-color"]').forEach(function(meta) {
       meta.setAttribute('content', meta.getAttribute('data-td-canvas-' + theme));
     });

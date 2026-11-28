@@ -20,7 +20,8 @@
    - preset-specific rules are scoped to `[data-td-preset=X]`, screen only, so
      the shared print stylesheet owns the light print palettes.
 
-   Explicit Ink and Terminal experiments live in `experimental-presets.css`.
+   Explicit Ink, Terminal, News and GitHub experiments live in
+   `experimental-presets.css`.
    Reserved names (`folio`, `canvas`) are rejected by the configuration resolver. */
 /* While the runtime swaps presets, no element animates its colors: a theme
    switch should land in one frame, not ripple through every transition. */
@@ -31,31 +32,28 @@ html[data-td-preset-switching] *::after {
 }
 
 /* ---------------------------------------------------------------------------
-   Paper -- an ivory sheet, soft black ink and one clay accent.
-   The canvas is paper rather than grey: a warm ivory that stays clear of
-   yellow, with ink a step short of black so a long page never glares. Links
-   stay blue: a reading convention, not decoration. The accent is fired clay,
-   kept for the places a reader is rather than the things a reader reads --
-   the selected row, the outline cursor, a selection, a quote's rule.
+   Paper -- warm editorial minimalism, distilled from PG.CENTER.
+   Warm paper canvas, ink text, quiet hairlines, soft warm shadows. Links stay
+   blue: a reading convention, not decoration.
    --------------------------------------------------------------------------- */
 [data-td-preset='paper'] {
-  --bs-body-bg: #faf9f5;
-  --bs-body-bg-rgb: 250, 249, 245;
-  --bs-body-color: #1f1e1c;
-  --bs-body-color-rgb: 31, 30, 28;
-  --bs-emphasis-color: #141413;
-  --bs-emphasis-color-rgb: 20, 20, 19;
-  --bs-secondary-color: #55534d;
-  --bs-secondary-color-rgb: 85, 83, 77;
-  --bs-tertiary-color: #6b6860;
-  --bs-tertiary-color-rgb: 107, 104, 96;
-  --bs-secondary-bg: #f0eee6;
-  --bs-secondary-bg-rgb: 240, 238, 230;
-  --bs-tertiary-bg: #fdfcfa;
-  --bs-tertiary-bg-rgb: 253, 252, 250;
-  --bs-border-color: rgba(31, 30, 28, 0.12);
-  --bs-border-color-translucent: rgba(31, 30, 28, 0.12);
-  /* 6.39:1 on the canvas; hover 5.57:1. */
+  --bs-body-bg: #f7f6f3;
+  --bs-body-bg-rgb: 247, 246, 243;
+  --bs-body-color: #21201c;
+  --bs-body-color-rgb: 33, 32, 28;
+  --bs-emphasis-color: #1a1916;
+  --bs-emphasis-color-rgb: 26, 25, 22;
+  --bs-secondary-color: #56534c;
+  --bs-secondary-color-rgb: 86, 83, 76;
+  --bs-tertiary-color: #6b665d;
+  --bs-tertiary-color-rgb: 107, 102, 93;
+  --bs-secondary-bg: #efede8;
+  --bs-secondary-bg-rgb: 239, 237, 232;
+  --bs-tertiary-bg: #fbfaf8;
+  --bs-tertiary-bg-rgb: 251, 250, 248;
+  --bs-border-color: rgba(33, 32, 28, 0.12);
+  --bs-border-color-translucent: rgba(33, 32, 28, 0.12);
+  /* 6.23:1 on the canvas; hover 5.43:1. */
   --bs-link-color: #2b5f8c;
   --bs-link-color-rgb: 43, 95, 140;
   --bs-link-hover-color: #1d68a5;
@@ -63,39 +61,34 @@ html[data-td-preset-switching] *::after {
   /* Inline code is an ink chip, not a second ink color: Paper prose reads
      as text and code by surface, the way PG.CENTER sets identifiers. */
   --bs-code-color: #2b2925;
-  --td-code-inline-bg: rgba(31, 30, 28, 0.06);
-  --td-code-strong-fg: #141413;
-  --td-code-header-bg: #f5f3ed;
+  --td-code-inline-bg: rgba(33, 32, 28, 0.06);
+  --td-code-strong-fg: #1a1916;
+  --td-code-header-bg: #f3f1ec;
   --td-code-radius: 12px;
   --td-pre-bg: #fff;
   --td-brand-elev: #fff;
-  --td-brand-silk: #6b6860;
-  --td-brand-copper: #9b4a28;
-  --td-brand-copper-dim: rgba(155, 74, 40, 0.5);
-  --td-brand-line-strong: rgba(31, 30, 28, 0.22);
-  --td-brand-header-bg: rgba(250, 249, 245, 0.86);
-  --td-brand-shadow-sm: 0 2px 10px rgba(31, 30, 28, 0.07);
-  --td-brand-shadow-md: 0 14px 38px rgba(31, 30, 28, 0.13);
-  --td-brand-mark-from: #1f1e1c;
-  --td-brand-mark-to: #55534d;
-  --td-shell-accent: rgba(31, 30, 28, 0.05);
-  --td-shell-rail: rgba(31, 30, 28, 0.1);
-  --td-shell-shadow-lg: 0 10px 30px -10px rgba(31, 30, 28, 0.25);
-  --td-shell-scrim: rgba(31, 30, 28, 0.38);
+  --td-brand-silk: #6b665d;
+  --td-brand-copper: #9c5530;
+  --td-brand-copper-dim: rgba(156, 85, 48, 0.5);
+  --td-brand-line-strong: rgba(33, 32, 28, 0.22);
+  --td-brand-header-bg: rgba(247, 246, 243, 0.86);
+  --td-brand-shadow-sm: 0 2px 10px rgba(33, 32, 28, 0.07);
+  --td-brand-shadow-md: 0 14px 38px rgba(33, 32, 28, 0.13);
+  --td-brand-mark-from: #21201c;
+  --td-brand-mark-to: #56534c;
+  --td-shell-accent: rgba(33, 32, 28, 0.05);
+  --td-shell-rail: rgba(33, 32, 28, 0.1);
+  --td-shell-shadow-lg: 0 10px 30px -10px rgba(33, 32, 28, 0.25);
+  --td-shell-scrim: rgba(33, 32, 28, 0.38);
   /* Selected rows sit on a warm neutral ground with the accent mixed in;
-     accent text on it stays AA (4.68:1 for the clay below). */
+     accent text on it stays AA. */
   --td-shell-primary-dim: color-mix(in srgb, var(--td-accent) 9%, var(--bs-secondary-bg));
-  --td-shell-primary-wash: rgba(31, 30, 28, 0.04);
+  --td-shell-primary-wash: rgba(33, 32, 28, 0.04);
   --td-callout-tint: 4%;
   /* Text on a link-colored ground (Landing primary action). */
-  --td-preset-player-line: rgba(31, 30, 28, 0.22);
-  --td-preset-player-muted: #6b6860;
+  --td-preset-player-line: rgba(33, 32, 28, 0.22);
+  --td-preset-player-muted: #6b665d;
   --td-on-link: #fff;
-  /* Clay, deep enough to carry text: 5.86:1 on the canvas. A published
-     `theme_color` still replaces it, as it does in every preset. */
-  --td-preset-accent: #9b4a28;
-  --td-preset-accent-rgb: 155, 74, 40;
-  --td-preset-accent-hover: #b5562f;
 }
 
 [data-td-preset='paper'][data-bs-theme='dark'],
@@ -128,8 +121,8 @@ html[data-td-preset-switching] *::after {
   --td-pre-bg: #121110;
   --td-brand-elev: #1f1e1a;
   --td-brand-silk: #958f84;
-  --td-brand-copper: #de8460;
-  --td-brand-copper-dim: rgba(222, 132, 96, 0.5);
+  --td-brand-copper: #d99a6c;
+  --td-brand-copper-dim: rgba(217, 154, 108, 0.5);
   --td-brand-line-strong: rgba(236, 233, 227, 0.26);
   --td-brand-header-bg: rgba(22, 21, 19, 0.88);
   --td-brand-shadow-sm: 0 4px 18px rgba(0, 0, 0, 0.35);
@@ -146,9 +139,6 @@ html[data-td-preset-switching] *::after {
   --td-preset-player-line: rgba(236, 233, 227, 0.26);
   --td-preset-player-muted: #958f84;
   --td-on-link: #161513;
-  --td-preset-accent: #de8460;
-  --td-preset-accent-rgb: 222, 132, 96;
-  --td-preset-accent-hover: #eba283;
 }
 
 /* Slate's dim line numbers lose AA contrast on Paper's highlighted rows.
@@ -158,35 +148,6 @@ html[data-td-preset-switching] *::after {
 [data-td-preset='paper'] .td-content .chroma .lnt,
 [data-td-preset='paper'] .td-content .chroma .lnlinks {
     color: var(--bs-tertiary-color);
-  }
-  /* A link in running text is underlined, not bold: a cue a reader can see
-     without color, at the weight of the sentence around it. The rule is a
-     hairline at half strength and takes full ink under the pointer. Running
-     text is a paragraph, a table cell, a caption, or an item of a plain or
-     stepped list: a list that carries any other class is a component, and
-     its labels keep the weight cue instead, paragraphs in its items too. */
-  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
-[data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
-    font-weight: inherit;
-    text-decoration-line: underline !important;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.22em;
-    text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
-    text-decoration-skip-ink: auto;
-  }
-  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
-[data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible) {
-    text-decoration-color: currentColor;
-  }
-  /* The chip already says "code". At the weight of prose it stops competing
-     with what the author set in bold; bold code still speaks up. `:where()`
-     keeps both at element specificity, below the theme's own semantic code. */
-  :where([data-td-preset='paper'] .td-content :not(pre)) > code {
-    font-weight: 400;
-  }
-  :where([data-td-preset='paper'] .td-content) :is(strong, b) code,
-:where([data-td-preset='paper'] .td-content) code :is(strong, b) {
-    font-weight: 600;
   }
   /* Plex Sans is wider than Inter: lighter negative tracking, 600 headings. */
   [data-td-preset='paper'] .td-content h1, [data-td-preset='paper'] .td-content .h1,
@@ -225,12 +186,19 @@ html[data-td-preset-switching] *::after {
     font-size: 0.8125rem;
     letter-spacing: 0.01em;
   }
+  /* Dark Paper raises its frames and its secondary ground to one value,
+     #1f1e1a, so the header band would melt into the table's frame. The
+     tertiary ground keeps it a band, as on the light page. */
+  [data-td-preset='paper'][data-bs-theme='dark'] .td-content table:not(.td-initial) thead th,
+[data-td-preset='paper'] [data-bs-theme='dark'] .td-content table:not(.td-initial) thead th {
+    background: var(--bs-tertiary-bg);
+  }
   [data-td-preset='paper'] .td-content table:not(.td-initial) tbody tr:last-child > * {
     border-bottom: 0;
   }
-  /* Blockquote: one quiet clay rule instead of Slate's copper gradient. */
+  /* Blockquote: a hairline rule instead of Slate's copper gradient. */
   [data-td-preset='paper'] .td-content blockquote {
-    border-inline-start: 2px solid var(--td-brand-copper-dim);
+    border-inline-start: 2px solid var(--td-brand-line-strong);
     border-radius: 0;
     background: none;
   }

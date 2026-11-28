@@ -58,8 +58,10 @@
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" $p.Site.Language.Lang -}}
 {{- $preset := partialCached "preset-config.html" "preset-global" $p.Site.Language.Lang -}}
 {{- $presetOptions := slice -}}
+{{- $presetKeywords := slice "preset" "style" -}}
 {{- range $preset.offered -}}
   {{- $presetOptions = $presetOptions | append (dict "id" . "title" (T (printf "ui_preset_%s" .)) "value" . "available" true "disabledReason" "") -}}
+  {{- $presetKeywords = $presetKeywords | append (T (printf "ui_preset_%s" .)) -}}
 {{- end -}}
 {{- $languageOptions := slice -}}
 {{- range partialCached "language-targets.html" $p $p.Site.BaseURL $p.RelPermalink $p.Site.Language.Lang -}}
@@ -180,7 +182,7 @@
     "kind" "choice" "available" (gt (len $languageOptions) 1) "disabledReason" (cond (gt (len $languageOptions) 1) "" (printf "%s: %s" $languageTitle $unavailable)) "url" ""
     "target" "self" "placements" $paletteOnly "options" $languageOptions)
   (dict "id" "switch_preset" "title" (T "ui_appearance_style") "description" (T "ui_appearance")
-    "icon" "fa-solid fa-palette" "keywords" ((slice "preset" "style" "Paper" "Slate") | append (cond (in $preset.offered "ink") (slice "Ink") (slice)) | append (cond (in $preset.offered "terminal") (slice "Terminal") (slice)) | append (T "ui_appearance_style"))
+    "icon" "fa-solid fa-palette" "keywords" ($presetKeywords | append (T "ui_appearance_style"))
     "kind" "choice" "available" $preset.menu "disabledReason" (cond $preset.menu "" $unavailable) "url" ""
     "target" "self" "placements" $paletteOnly "options" $presetOptions)
   (dict "id" "switch_theme" "title" $themeTitle "description" $themeTitle

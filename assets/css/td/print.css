@@ -20,34 +20,35 @@
 }
 
 [data-td-preset='paper'] {
-  --td-print-ink: #1f1e1c;
-  --td-print-strong: #141413;
-  --td-print-muted: #6b6860;
-  --td-print-line: #d6d2c6;
+  --td-print-ink: #21201c;
+  --td-print-strong: #1a1916;
+  --td-print-muted: #6b665d;
+  --td-print-line: #d4d0c7;
   --td-print-link: #2b5f8c;
-  --td-print-code-bg: #f5f4ee;
-  --td-print-table-line: #c9c4b6;
-  --td-print-quote-line: #9b4a28;
-  --td-print-quote-bg: #faf9f5;
-  --td-print-quote-ink: #1f1e1c;
-  --td-print-meta: #55534d;
-  --td-print-header-bg: #f0eee6;
+  --td-print-code-bg: #f7f6f3;
+  --td-print-table-line: #c4bfb5;
+  --td-print-quote-line: #9c5530;
+  --td-print-quote-bg: #f7f6f3;
+  --td-print-quote-ink: #21201c;
+  --td-print-meta: #56534c;
+  --td-print-header-bg: #efede8;
 }
 
 [data-td-preset='ink'] {
-  --td-print-ink: #141414;
-  --td-print-strong: #000;
-  --td-print-muted: #636363;
-  --td-print-line: #bdbdbd;
-  --td-print-link: #141414;
-  --td-print-code-bg: #fafafa;
-  --td-print-table-line: #bdbdbd;
-  --td-print-quote-line: #c8102e;
+  --td-print-ink: #241a10;
+  --td-print-strong: #1a120a;
+  --td-print-muted: #6e5c47;
+  --td-print-line: #c9bda6;
+  --td-print-link: #241a10;
+  --td-print-code-bg: #faf6ee;
+  --td-print-table-line: #c9bda6;
+  --td-print-quote-line: #a8321b;
   --td-print-quote-bg: #fff;
-  --td-print-quote-ink: #141414;
-  --td-print-meta: #474747;
-  --td-print-header-bg: #f4f4f4;
+  --td-print-quote-ink: #241a10;
+  --td-print-meta: #574634;
+  --td-print-header-bg: #f6f0e3;
   --td-copy-heading-rule: over;
+  --td-copy-heading-font: 'Kaiti SC', STKaiti, KaiTi, Palatino, 'Palatino Linotype', 'Book Antiqua', serif;
 }
 
 [data-td-preset='terminal'] {
@@ -65,6 +66,38 @@
   --td-print-header-bg: #e9ebe6;
   --td-copy-heading-rule: none;
   --td-copy-heading-font: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+[data-td-preset='news'] {
+  --td-print-ink: #161616;
+  --td-print-strong: #0b0b0b;
+  --td-print-muted: #625f59;
+  --td-print-line: #cfccc3;
+  --td-print-link: #1f4f7a;
+  --td-print-code-bg: #f6f5f1;
+  --td-print-table-line: #161616;
+  --td-print-quote-line: #161616;
+  --td-print-quote-bg: #fff;
+  --td-print-quote-ink: #161616;
+  --td-print-meta: #4a4844;
+  --td-print-header-bg: #f0eee8;
+  --td-copy-heading-font: 'Times New Roman', Times, 'Liberation Serif', Tinos, 'Songti SC', 'Noto Serif SC', 'Noto Serif CJK SC', 'Source Han Serif SC', serif;
+}
+
+[data-td-preset='github'] {
+  --td-print-ink: #1f2328;
+  --td-print-strong: #1f2328;
+  --td-print-muted: #59636e;
+  --td-print-line: #d1d9e0;
+  --td-print-link: #0969da;
+  --td-print-code-bg: #f6f8fa;
+  --td-print-table-line: #d1d9e0;
+  --td-print-quote-line: #d1d9e0;
+  --td-print-quote-bg: #ffffff;
+  --td-print-quote-ink: #59636e;
+  --td-print-meta: #59636e;
+  --td-print-header-bg: #ffffff;
+  --td-copy-heading-rule: under;
 }
 
 @page {
@@ -108,8 +141,8 @@
     --td-heading-font-family: var(--td-print-font-family);
     /* The emphasis and quote roles resolve their var() on :root, so they
        carry the screen faces unless print restates them here. */
-    --td-emphasis-font-family: 'OINK Kai', var(--td-print-font-family);
-    --td-heading-emphasis-font-family: 'OINK Kai', var(--td-print-font-family);
+    --td-emphasis-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-print-font-family);
+    --td-heading-emphasis-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-print-font-family);
     --td-quote-font-family: var(--td-print-font-family);
     min-width: 0 !important;
     background: #fff !important;
@@ -119,9 +152,12 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  [data-td-preset='paper'] :is(body, .td-print-view),
+  [data-td-preset='ink'] :is(body, .td-print-view),
+  [data-td-preset='news'] :is(body, .td-print-view) {
+    --td-quote-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-print-font-family);
+  }
   [data-td-preset='ink'] :is(body, .td-print-view) {
-    --td-quote-font-family: 'OINK Kai', var(--td-print-font-family);
+    --td-heading-font-family: 'OINK Kai', 'OINK Kai Synth', var(--td-print-font-family);
   }
   [data-td-preset='terminal'] :is(body, .td-print-view) {
     --td-emphasis-font-family: var(--td-print-font-family);

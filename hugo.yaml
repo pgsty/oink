@@ -81,8 +81,9 @@ params:
     # it per page, and a section root's `cascade` gives a whole section its
     # own identity. `theme_color_dark` carries the dark palette; when omitted
     # it is derived by lightening the light color until it reads AA on the
-    # dark canvas. Blank keeps the preset's default accent (clay in Paper,
-    # navy in Slate), and an invalid value warns and keeps it too; front
+    # dark canvas. Blank keeps the preset's default accent (link blue in
+    # Paper and Slate, its own color in each experimental preset), and an
+    # invalid value warns and keeps it too; front
     # matter `theme_color: false` opts a page out of an inherited color
     # entirely.
     theme_color: ''
@@ -161,13 +162,17 @@ params:
     dark_mode: false
     # Visual preset: the site's default look. paper (warm editorial reading,
     # the default) | slate (the technical look of OINK 1.1 and earlier).
-    # Experimental, explicitly selected: ink | terminal. Reserved: folio | canvas.
+    # Experimental, explicitly selected: github (Markdown as GitHub renders
+    # it) | ink (brush-written: Kai and Palatino) | news (serif newspaper
+    # reading) | terminal (mono; a phosphor screen in dark mode).
+    # Reserved: folio | canvas.
     preset: paper
     # Reader choice of preset in the Appearance menu: false (site preset
     # only) | true (Paper, Slate and the site default) | an explicit list.
-    # Ink and Terminal are experimental: opt in with preset: ink/terminal
-    # or preset_menu: [paper, slate, ink, terminal]. No additional fonts.
-    # Lists must include `preset`. The menu also hosts the dark_mode switch.
+    # The experiments are opt-in: name one in `preset`, or list all six with
+    # preset_menu: [paper, slate, github, ink, news, terminal]. No
+    # additional fonts. Lists must include `preset`. The menu also hosts the
+    # dark_mode switch.
     preset_menu: false
     typography: technical # technical | system
     # Font faces by typography role, for a site that wants a different face

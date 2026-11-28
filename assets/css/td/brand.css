@@ -53,6 +53,70 @@
   unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
 }
 
+/* The bold Kai a system actually draws, for Kai headings and bold
+   emphasis. It names only bold faces. Where none is installed the bold
+   face fails, and a failed face sends bold text on to the next family in
+   the stack, not to the regular face of this one: every stack therefore
+   names `OINK Kai Synth` next, the regular Kai alone, which a browser
+   bolds synthetically as it did before this face existed. */
+@font-face {
+  font-family: 'OINK Kai';
+  font-style: normal;
+  font-weight: 600 900;
+  src: local("Kaiti SC Bold"), local("STKaitiSC-Bold"), local("Kaiti TC Bold"), local("STKaitiTC-Bold");
+  size-adjust: 114%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'OINK Kai';
+  font-style: italic;
+  font-weight: 600 900;
+  src: local("Kaiti SC Bold"), local("STKaitiSC-Bold"), local("Kaiti TC Bold"), local("STKaitiTC-Bold");
+  size-adjust: 114%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'OINK Kai Synth';
+  font-style: normal;
+  src: local("Kaiti SC"), local("STKaitiSC-Regular"), local("STKaiti"), local("KaiTi"), local("楷体");
+  size-adjust: 114%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'OINK Kai Synth';
+  font-style: italic;
+  src: local("Kaiti SC"), local("STKaitiSC-Regular"), local("STKaiti"), local("KaiTi"), local("楷体");
+  size-adjust: 114%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+/* Fangsong from the reader's own system, for Han in Ink's text: the
+   carved hand between Song and Kai. Same terms as Kai above -- no file, Han
+   and CJK punctuation only, an upright face behind the italic slot. Its
+   strokes are thin and its body small, so `size-adjust` lifts it a step
+   above the Song it replaces. Chinese Windows carries FangSong; macOS
+   carries STFangsong once the reader downloads it; elsewhere the face never
+   loads and Song answers. A `local()` alias also reaches a downloaded face
+   that some engines hide from a plain family-name lookup. */
+@font-face {
+  font-family: 'OINK Fangsong';
+  font-style: normal;
+  src: local("STFangsong"), local("FangSong"), local("仿宋"), local("FangSong_GB2312");
+  size-adjust: 108%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'OINK Fangsong';
+  font-style: italic;
+  src: local("STFangsong"), local("FangSong"), local("仿宋"), local("FangSong_GB2312");
+  size-adjust: 108%;
+  unicode-range: U+2E80-2FDF, U+3000-303F, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF;
+}
+
 :root,
 [data-bs-theme='light'] {
   --bs-body-bg: #f1f4f8;

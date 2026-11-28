@@ -76,14 +76,8 @@
 
   const syncDirectThemeButtons = () => {
     const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark'
-    // The Appearance trigger shows the resolved mode (sun = light, moon =
-    // dark), including system changes, without claiming a pressed state.
-    document.querySelectorAll('[data-td-theme-icon]').forEach(slot => {
-      const moon = slot.querySelector('.td-shell-icon--moon')
-      const sun = slot.querySelector('.td-shell-icon--sun')
-      if (moon) moon.toggleAttribute('hidden', !dark)
-      if (sun) sun.toggleAttribute('hidden', dark)
-    })
+    // The Appearance trigger's icon slot needs nothing here: it shows the
+    // reader's choice through `data-td-color-mode`, which setTheme writes.
     document.querySelectorAll('[data-td-theme-toggle]').forEach(toggle => {
       toggle.setAttribute('aria-pressed', dark ? 'true' : 'false')
       const moon = toggle.querySelector('.td-shell-icon--moon')

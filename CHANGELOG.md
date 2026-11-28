@@ -6,6 +6,12 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ## Unreleased
 
+Paper looks as it did in 1.6.0 again. Its 1.7.0 refresh grows into a preset
+of its own, News, beside a new GitHub preset, so a Style menu can offer six
+looks in two rows over the three color modes. Ink and News
+split along one line, the written page and the printed one, and Ink, News
+and Terminal each get a dark mode of their own.
+
 ### Breaking changes
 
 - **Social posts are `> [!SOCIAL]` callouts.** The `social` shortcode from
@@ -29,8 +35,109 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   remains. `content/markdown-escape-inline.html`, used only by the
   shortcode, is gone.
 
+### Added
+
+- **News** (`preset: news`, experimental): the printed page, grown from
+  1.7.0's Paper and Typora's Newsprint theme. Press black `#161616` on grey
+  newsprint `#f0eee8` with one spot blue `#1f4f7a`, flat, with no radius or
+  shadow. Text is a book serif with Song for Han; headlines are heavy Times
+  New Roman over Songti's Black weight (bold Hei on Windows), and the
+  wordmark is a Didot masthead where installed. The title sits over a
+  double rule, the description becomes a deck (italic in Latin) and the
+  date line an uppercase line between hairlines; each section opens under
+  a thick-and-thin rule, the site header closes on a double rule,
+  quotations are pull quotes between rules, tables are open between two
+  ink hairlines, and the current navigation row takes a black rule and bold
+  type. Prose links are underlined at text weight. Navigation, search,
+  menus and lists are set in the text serif too, so the page reads as one
+  sheet, and the interface loses its rounding. No font file ships. Dark
+  News is a darkroom: silver type on `#0f0f0f`, links and accent in
+  safelight orange `#f2804a`, and a faint orange glow in one corner of the
+  window.
+- **GitHub** (`preset: github`, experimental): Markdown as GitHub renders a
+  README, light and dark. GitHub's system and code stacks, 16px/1.5 prose,
+  semibold headings with h1/h2 hairlines, underlined links, the neutral code
+  chip and grey blocks (a titled block is a file box), fully ruled zebra
+  tables that shrink to their content, the GFM alert colors on callouts, a
+  0.25em `hr`, the NavList bar on the current sidebar row and green primary
+  buttons. Values come from github-markdown-css 5.9.0 and
+  @primer/primitives 11.10.0 (both MIT). Three values move for contrast:
+  the dark primary hover (`#268838`), the light selected-tab underline
+  (`#bc4c00` instead of coral) and the dark focus ring, which keeps the link
+  blue. Han emphasis keeps OINK's upright Kai.
+- Both new presets come with their labels, `ui_preset_news` and
+  `ui_preset_github`, in all 32 locales, and with giscus comment palettes
+  in light and dark.
+- `OINK Kai` gains a bold face that names only installed bold Kai (Kaiti SC
+  Bold on Apple systems), so Kai headings and bold Han emphasis draw a real
+  bold. A browser that finds no bold Kai moves bold text on to the next
+  family, so every stack now names a second `local()`-only alias, `OINK Kai
+  Synth`, the regular Kai alone, right after it: elsewhere the regular face
+  still answers with a synthesized bold.
+- The Style legend reads "Style (T)" and the Color legend "Color (Y)" when
+  keyboard navigation is on; the hint hides when a reader turns single-key
+  shortcuts off and on devices without hover.
+
 ### Changed
 
+- **Paper returns to its 1.6.0 look.** Canvas `#f7f6f3` and ink `#21201c`,
+  IBM Plex Sans for headings as well as prose with the platform Hei for Han,
+  link blue as the accent again (selected rows, the outline cursor and
+  selections), semibold prose links, inline code at its usual weight, a
+  hairline quote rule, and the 1.6.0 print, typeset-copy and comment
+  palettes. Shared 1.7.0 typography stays: upright Kai for Han emphasis,
+  keycaps, quieter list markers, tabular figures and untracked CJK
+  headings. News grew out of 1.7.0's Paper; a site that wants 1.7.0's clay
+  accent back on Paper sets `theme_color: '#9b4a28'` and
+  `theme_color_dark: '#de8460'`, since `theme_color` still replaces the
+  accent in every preset.
+- The Appearance trigger shows the reader's color choice whenever the menu
+  offers Color: a sun for Light, a moon for Dark and a half-filled circle
+  for System, which stays while the system flips between modes. A menu that
+  offers only Style shows a palette. The head script sets
+  `data-td-color-mode` before paint so the icon never flashes. Style lays out
+  three, five or six presets in three columns (the panel widens to 24rem),
+  and the mode buttons are cards with the same gap, so six styles stand in
+  the columns of the three modes; two or four presets keep two columns. On
+  a phone's bottom sheet each of those buttons stacks its icon over its
+  name, so the longest name fits at 320px. The
+  menu lists presets in one order: Paper, Slate and GitHub over Ink, News
+  and Terminal. The color group is labelled Color rather than Color mode;
+  the Chinese catalogs keep 明暗, which already names it.
+- **Ink is the written page.** Ink `#241a10` and vermilion `#a8321b` on
+  warm paper `#f3ead7` that darkens toward the window's edges, replacing
+  1.7.0's white page and crimson accent. Latin is Palatino everywhere
+  (Palatino Linotype or Book Antiqua on Windows, URW Palladio or P052 on
+  Linux): the navigation, search, menus and lists, the page title and the
+  Landing hero upright, sections in its chancery italic, all headings at
+  text weight with a faint ink bleed. Han takes Kai in headings and the
+  interface and Fangsong in the text, through a new `local()`-only alias
+  `OINK Fangsong`, or Song where they are missing. A section opens under a
+  brush stroke that runs dry, `hr` is one tapered stroke and a quotation
+  hangs from a fading vermilion stroke. Chinese `strong` takes vermilion
+  emphasis dots instead of bold, Blog posts and Book chapters open on a
+  vermilion initial, the current navigation row carries a vermilion dot,
+  and prose links are underlined in vermilion. Table and callout labels
+  lose their uppercase. Print and typeset copy set headings in Kai. Dark
+  Ink is gold and silver writing on indigo-violet paper `#1b1730`: silver
+  type, gold headings and accent `#dcb766`. Sites that chose `ink` in 1.7.0
+  see a different page.
+- `check-presets.py` checks text contrast at the extreme of a shaded
+  canvas, which Ink and News name `--td-preset-canvas-edge`, as well as on
+  the flat canvas, and ties that edge to the shade the stylesheet paints.
+  It compares the pre-paint canvas map with every preset's stylesheet
+  exactly and reads the preset names from the resolver.
+- **Dark Terminal is a phosphor screen, used with restraint**: pale
+  grey-green type `#c9d2cc` on `#050806`, phosphor green `#3dff7a` kept for
+  headings (with a faint glow), links, the accent and a green cursor bar on
+  the current navigation and search row, amber `#e5b45a` for heading marks,
+  emphasis and quotation rules, faint scan lines, and a syntax palette that
+  keeps its parts apart: keywords green, strings amber, numbers cyan, names
+  pale, comments dim. Light Terminal is unchanged.
+- Maintained consumer sites move to the six-style menu
+  (`preset_menu: [paper, slate, github, ink, news, terminal]`) with the
+  release that ships it; `update-consumers.py --check-appearance` expects six
+  for a later tag and the four of v1.7.0 and older.
 - The theme no longer declares a minimum Hugo version: `min_version` leaves
   `theme.toml` and `module.hugoVersion.min` leaves `hugo.yaml`. Hugo only
   warned on that setting; CI builds and checks with the current release.
@@ -52,6 +159,13 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   clicking a video toggles playback, and the row stays left to right on RTL
   pages. Eight `ui_media_*` labels join all 32 locales. Without JavaScript
   the native controls remain; `.td-media__progress` is gone.
+
+### Fixed
+
+- Dark Paper's framed tables show their header band again. The frame and
+  the band both took `#1f1e1a` in dark mode, so the band the light page
+  draws disappeared; the dark header now takes the tertiary ground,
+  `#262420`.
 
 ## [1.7.0] — 2026-11-28
 

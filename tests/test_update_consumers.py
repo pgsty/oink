@@ -121,7 +121,7 @@ class ConsumerUpdates(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text('<html data-td-preset="paper" data-td-site-preset="paper">'
                         + ''.join(f'<input data-td-preset-value="{p}">' for p in
-                                  ("paper", "slate", "ink", "terminal")) + '</html>')
+                                  ("paper", "slate", "ink", "terminal", "news", "github")) + '</html>')
 
     def test_appearance_checks_localized_pages_and_rejects_missing_controls(self):
         self.appearance_page(self.root / "index.html")
@@ -130,6 +130,14 @@ class ConsumerUpdates(unittest.TestCase):
         (self.root / "zh/index.html").write_text('<html data-td-preset="paper" data-td-site-preset="paper"></html>')
         with self.assertRaisesRegex(RuntimeError, "zh/index.html"):
             updater.check_appearance(self.root, {"languages": {"zh": {}}})
+
+    def test_appearance_expects_the_four_styles_of_v1_7_0_and_older(self):
+        self.appearance_page(self.root / "index.html")
+        self.assertIn("index.html", updater.check_appearance(self.root, {}, "v1.8.0"))
+        with self.assertRaisesRegex(RuntimeError, "all 4 style controls"):
+            updater.check_appearance(self.root, {}, "v1.7.0")
+        self.assertEqual(updater.maintained_styles("v1.6.0"), updater.LEGACY_STYLES)
+        self.assertEqual(updater.maintained_styles("v1.8.0-rc.1"), updater.MAINTAINED_STYLES)
 
     def test_appearance_uses_docs_for_disabled_home_and_ignores_redirects(self):
         self.appearance_page(self.root / "docs/index.html")

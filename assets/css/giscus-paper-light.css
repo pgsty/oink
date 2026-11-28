@@ -1,24 +1,24 @@
 /* Appended to the shared giscus stylesheet; no font or network imports. */
 main {
-  --color-fg-default: #1f1e1c;
-  --color-fg-muted: #55534d;
-  --color-fg-subtle: #6b6860;
-  --color-canvas-default: #faf9f5;
+  --color-fg-default: #21201c;
+  --color-fg-muted: #56534c;
+  --color-fg-subtle: #6b665d;
+  --color-canvas-default: #f7f6f3;
   --color-canvas-overlay: #fff;
-  --color-canvas-inset: #fdfcfa;
-  --color-canvas-subtle: #f0eee6;
-  --color-border-default: rgba(31, 30, 28, 0.12);
-  --color-border-muted: rgba(31, 30, 28, 0.1);
-  --color-neutral-muted: rgba(31, 30, 28, 0.12);
+  --color-canvas-inset: #fbfaf8;
+  --color-canvas-subtle: #efede8;
+  --color-border-default: rgba(33, 32, 28, 0.12);
+  --color-border-muted: rgba(33, 32, 28, 0.1);
+  --color-neutral-muted: rgba(33, 32, 28, 0.12);
   --color-accent-fg: #2b5f8c;
   --color-accent-emphasis: #2b5f8c;
   --color-accent-muted: rgba(43, 95, 140, 0.34);
   --color-accent-subtle: rgba(43, 95, 140, 0.1);
-  --color-btn-text: #1f1e1c;
-  --color-btn-bg: #f0eee6;
-  --color-btn-hover-bg: #e8e5db;
-  --color-btn-hover-border: rgba(31, 30, 28, 0.22);
-  --color-btn-active-bg: #e0dccf;
+  --color-btn-text: #21201c;
+  --color-btn-bg: #efede8;
+  --color-btn-hover-bg: #e6e3dc;
+  --color-btn-hover-border: rgba(33, 32, 28, 0.22);
+  --color-btn-active-bg: #dfdbd2;
   --color-btn-active-border: rgba(43, 95, 140, 0.42);
   --color-btn-selected-bg: rgba(43, 95, 140, 0.12);
   --color-btn-border: var(--color-border-default);
@@ -31,11 +31,11 @@ main {
   --color-btn-primary-disabled-bg: rgba(43, 95, 140, 0.55);
   --color-btn-primary-disabled-border: rgba(43, 95, 140, 0.25);
   --color-action-list-item-default-hover-bg: rgba(43, 95, 140, 0.08);
-  --color-segmented-control-bg: #f0eee6;
-  --color-segmented-control-button-bg: #fdfcfa;
-  --color-segmented-control-button-selected-border: rgba(31, 30, 28, 0.18);
-  --color-scale-gray-1: #f0eee6;
+  --color-segmented-control-bg: #efede8;
+  --color-segmented-control-button-bg: #fbfaf8;
+  --color-segmented-control-button-selected-border: rgba(33, 32, 28, 0.18);
+  --color-scale-gray-1: #efede8;
   --color-scale-blue-1: rgba(43, 95, 140, 0.12);
-  --oink-comment-border: rgba(31, 30, 28, 0.22);
-  --oink-comment-shadow: 0 2px 10px rgba(31, 30, 28, 0.07);
+  --oink-comment-border: rgba(33, 32, 28, 0.22);
+  --oink-comment-shadow: 0 2px 10px rgba(33, 32, 28, 0.07);
 }

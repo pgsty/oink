@@ -2,9 +2,9 @@
 
      Input: `dict "color" <dict r g b> "canvas" "light"|"dark"`. Returns the
      ratio as a float. The canvas luminances are precomputed from the site
-     default preset's canvases -- Paper #faf9f5 light, #161513 dark (in
+     default preset's canvases -- Paper #f7f6f3 light, #161513 dark (in
      `presets.css`); Slate #f1f4f8 light, #0b1119 dark (in `brand.css`);
-     Ink and Terminal from `experimental-presets.css`. check-presets.py
+     Ink, Terminal, News and GitHub from `experimental-presets.css`. check-presets.py
      verifies each luminance against the palette, so this is advisory against the theme's own defaults, not against a
      reader's other preset choice or whatever a consumer site may repaint. */ -}}
 {{- $color := .color -}}
@@ -19,10 +19,12 @@
 {{- end -}}
 {{- $preset := (partialCached "preset-config.html" "preset-global" site.Language.Lang).preset -}}
 {{- $canvases := dict
-    "paper" (dict "light" 0.946679 "dark" 0.007539)
+    "paper" (dict "light" 0.921568 "dark" 0.007539)
     "slate" (dict "light" 0.901795 "dark" 0.005422)
-    "ink" (dict "light" 1.000000 "dark" 0.003347)
-    "terminal" (dict "light" 0.909487 "dark" 0.004515) -}}
+    "ink" (dict "light" 0.828066 "dark" 0.010592)
+    "terminal" (dict "light" 0.909487 "dark" 0.002191)
+    "news" (dict "light" 0.855005 "dark" 0.004777)
+    "github" (dict "light" 1.000000 "dark" 0.005483) -}}
 {{- $canvas := index $canvases $preset (cond (eq .canvas "dark") "dark" "light") -}}
 {{- $hi := math.Max $lum $canvas -}}
 {{- $lo := math.Min $lum $canvas -}}

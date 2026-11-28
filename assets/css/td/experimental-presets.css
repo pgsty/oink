@@ -773,11 +773,12 @@
     -webkit-text-emphasis-position: under right;
     text-emphasis-position: under right;
   }
-  /* A written chapter or post opens on a first letter in the second ink,
-     about two lines tall, in the heading hand. Docs pages are consulted, not
-     read from the top, and index pages only introduce a list: both keep a
-     plain opening. */
-  [data-td-preset='ink'] .td-page:is(.td-blog, .td-book) .td-content > p:first-of-type:not(:lang(ar), :lang(fa), :lang(he), :lang(hi), :lang(bn))::first-letter {
+  /* A numbered Book chapter can be a branch bundle. Its heading carries
+     the chapter number; a section that lists children keeps a plain opening. */
+  [data-td-preset='ink'] :is(
+    .td-page:is(.td-blog, .td-book) .td-content,
+    .td-section.td-book .td-content:has(> .td-page-heading .td-book-number):not(:has(> .td-section-index))
+  ) > p:first-of-type:not(:lang(ar), :lang(fa), :lang(he), :lang(hi), :lang(bn))::first-letter {
     float: inline-start;
     margin-block-start: 0.06em;
     margin-inline-end: 0.08em;

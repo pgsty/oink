@@ -877,9 +877,17 @@ book_number: 1
 ## Reader's question {#reader-question}
 """,
         )
+        write(source / "content/book/branch/_index.md",
+              "---\ntitle: Branch chapter\nbook_number: 2\n---\n\nOpening paragraph.\n")
         result = build(hugo, source, source / "public")
         if result.returncode != 0:
             return [f"Book heading-entity fixture failed: {result.stdout}{result.stderr}"]
+
+        branch = (source / "public/book/branch/index.html").read_text(encoding="utf-8")
+        require('<span class="td-book-number">2</span>' in branch and '<p>Opening paragraph.</p>' in branch,
+                "numbered Book branch lost its chapter heading or prose", errors)
+        require('<div class="td-section-index ' not in branch,
+                "a Book branch chapter without children rendered a section index", errors)
 
         paths = {
             "Book ToC": source / "public/book/index.html",

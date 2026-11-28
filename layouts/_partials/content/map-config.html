@@ -20,8 +20,13 @@
 {{- if $enabled -}}
   {{- $map := dict -}}
   {{- if reflect.IsMap $value }}{{ $map = $value }}{{ end -}}
+  {{- $knownKeys := slice "enable" "tiles" "dark_tiles" "attribution" "attribution_url" "subdomains" "max_zoom" "loading" -}}
+  {{- range $key, $_ := $map -}}
+    {{- if not (in $knownKeys $key) }}{{ warnf "params.map has unknown key %q (allowed: %s); ignoring it" $key (delimit $knownKeys ", ") }}{{ end -}}
+  {{- end -}}
   {{- range $key := slice "tiles" "dark_tiles" -}}
     {{- $raw := index $map $key | default "" -}}
+    {{- if eq (printf "%T" $raw) "string" }}{{ $raw = strings.TrimSpace $raw }}{{ end -}}
     {{- $valid := "" -}}
     {{- if $raw -}}
       {{- /* Substitute the placeholders the theme supplies before URL parsing
@@ -34,7 +39,7 @@
       {{- $dynamicHost := false -}}
       {{- if eq (printf "%T" $raw) "string" -}}
         {{- $probe = replace $probe "{s}" "s" -}}
-        {{- with findRE `(?i)^https://[^/?#]*` (strings.TrimSpace $probe) 1 }}
+        {{- with findRE `(?i)^https://[^/?#]*` $probe 1 }}
           {{- $dynamicHost = or (strings.Contains (index . 0) "{") (strings.Contains (index . 0) "}") -}}
         {{- end -}}
         {{- range slice "{z}" "{x}" "{y}" "{-y}" "{r}" -}}
@@ -54,7 +59,7 @@
         {{- else if not (and (strings.Contains $raw "{z}") (strings.Contains $raw "{x}") (or (strings.Contains $raw "{y}") (strings.Contains $raw "{-y}"))) -}}
           {{- warnf "params.map.%s must contain {z}, {x} and {y} (or {-y}); got %q; ignoring it" $key $raw -}}
         {{- else -}}
-          {{- $valid = strings.TrimSpace $raw -}}
+          {{- $valid = $raw -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}
@@ -64,7 +69,9 @@
     {{- if eq (printf "%T" .) "string" }}{{ $attribution = strings.TrimSpace . }}{{ else }}{{ warnf "params.map.attribution must be a string; got %v; ignoring it" . }}{{ end -}}
   {{- end -}}
   {{- with index $map "attribution_url" -}}
-    {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" "attribution_url" "position" "site configuration" "value" . "kind" "web") -}}
+    {{- $rawUrl := . -}}
+    {{- if eq (printf "%T" $rawUrl) "string" }}{{ $rawUrl = strings.TrimSpace $rawUrl }}{{ end -}}
+    {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" "attribution_url" "position" "site configuration" "value" $rawUrl "kind" "web") -}}
     {{- if not $url.valid -}}
     {{- else if ne $url.scheme "https" -}}
       {{- warnf "params.map.attribution_url must be an https:// URL; got %q; ignoring it" . -}}
@@ -73,8 +80,10 @@
     {{- end -}}
   {{- end -}}
   {{- with index $map "subdomains" -}}
-    {{- if and (eq (printf "%T" .) "string") (findRE `^[A-Za-z0-9]{1,32}$` .) -}}
-      {{- $subdomains = . -}}
+    {{- if and (eq (printf "%T" .) "string") (findRE `^[A-Za-z0-9]{1,32}$` (strings.TrimSpace .)) -}}
+      {{- $subdomains = strings.TrimSpace . -}}
+    {{- else if not (eq (printf "%T" .) "string") -}}
+      {{- warnf "params.map.subdomains must be a quoted string such as \"abc\" or \"01234567\" (YAML reads an unquoted 01234567 as a number); got %v; using default" . -}}
     {{- else -}}
       {{- warnf "params.map.subdomains must be 1 to 32 letters or digits (for example \"abc\" or \"01234567\"); got %v; using default" . -}}
     {{- end -}}

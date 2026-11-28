@@ -99,7 +99,10 @@
       const origin = state.returnFocus;
       const target = origin?.isConnected && origin.getClientRects().length && !origin.closest('[inert], dialog:not([open])')
         ? origin : state.trigger;
-      if (target?.isConnected) target.focus({ preventScroll: true });
+      if (target?.isConnected) {
+        if (window.OinkSurfaceCoordinator?.restoreFocus) window.OinkSurfaceCoordinator.restoreFocus(target, { preventScroll: true });
+        else target.focus({ preventScroll: true });
+      }
     }
     if (!fromHistory && history.state?.oinkCompareReader === state.token) {
       leavingHistory = true;
@@ -468,13 +471,22 @@
             })
           );
           let composing = false;
+          let compositionEndedAt = -Infinity;
           doc.addEventListener('compositionstart', () => { composing = true; }, { signal: paneSignal });
+          doc.addEventListener('compositionend', () => { compositionEndedAt = Date.now(); }, { capture: true, signal: paneSignal });
           for (const type of ['compositionend', 'compositioncancel', 'blur']) {
             doc.addEventListener(type, () => { composing = false; }, { capture: true, signal: paneSignal });
           }
           doc.addEventListener('keydown', event => {
-            if (event.defaultPrevented || composing || event.isComposing || event.keyCode === 229 || hasOpenPaneDialog()) return;
-            if (event.key === 'Escape' || isToggleKey(event)) { event.preventDefault(); close(); return; }
+            if (event.defaultPrevented || hasOpenPaneDialog()) return;
+            // Same rule as the palette: the input method keeps an Escape that
+            // cancels a composition, including Safari's trailing 229 keydown.
+            if (event.key === 'Escape') {
+              if (event.isComposing || (event.keyCode === 229 && Date.now() - compositionEndedAt < 100)) return;
+              event.preventDefault(); close(); return;
+            }
+            if (composing || event.isComposing || event.keyCode === 229) return;
+            if (isToggleKey(event)) { event.preventDefault(); close(); return; }
             if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) own();
           }, { signal: paneSignal });
           win.addEventListener('scroll', () => {

@@ -5118,7 +5118,7 @@ consumes `llms.txt`, and anyone printing the page see only that text.
 | `loop` | `"true"` / omitted | off | Replay at the end |
 | `preload` | `"true"` / omitted | off | Fetch the `.cast` when the page loads |
 | `pauseOnMarkers` | `"true"` / omitted | off | Pause at chapter markers |
-| `markers` | `time:label,time:label` | — | Chapter markers; see the limits — the labels do not reach the player today |
+| `markers` | `time:label,time:label` | — | Chapter markers, passed to the player as `[time, label]` pairs |
 {.fields meta="type default"}
 The boolean-ish parameters compare against the text `true`: `loop="true"` and
 `loop=true` both enable, anything else disables. `fit` is validated by the theme
@@ -5126,10 +5126,9 @@ and an illegal value errors with the parameter name. Numeric parameters
 (`speed`, `cols`, `rows`, `startAt`, `idleTimeLimit`) fail conversion — and the
 build — when they are not numbers.
 ## Limits {#limits}
-- `markers` labels are lost: the theme flattens the `time:label` list into a
-one-dimensional array, and the player accepts only pairs, so the timeline ends
-up with unlabelled markers. When you need chapters, write a list beside the
-recording.
+- `markers` reach the player as `[time, label]` pairs; a marker without a
+label shows only its tick. When you need a list of chapters the reader can
+scan, write it beside the recording.
 - The player needs JavaScript: with scripts disabled, and in Markdown and RSS
 output, only an empty window remains — see [Output](#outputs).
 - Recordings are not searchable: the site index covers page text, so a command

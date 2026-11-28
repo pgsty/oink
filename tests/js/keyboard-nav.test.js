@@ -161,6 +161,7 @@ class Element {
     if (selector === '[data-td-shortcut-state]') return this.hasAttribute('data-td-shortcut-state');
     if (selector === '[data-td-map-canvas]') return this.hasAttribute('data-td-map-canvas');
     if (selector === '.td-map__canvas') return this.classList.contains('td-map__canvas');
+    if (selector === 'audio' || selector === 'video') return this.tagName === selector.toUpperCase();
     if (selector === '[hidden]') return Boolean(this.hidden) || this.hasAttribute('hidden');
     if (selector === '[inert]') return Boolean(this.inert) || this.hasAttribute('inert');
     if (selector === '.td-site-header') return this.classList.contains('td-site-header');
@@ -2109,6 +2110,17 @@ function press(harness, values) {
   }
   assert.equal(mapHost.html.hasAttribute('data-td-shell-article-w'), false,
     '+ / - inside a map must not resize the reading column');
+
+  // A focused native player owns its keys: g, f, k, j and friends must not
+  // navigate away or open the palette mid-playback.
+  for (const tag of ['video', 'audio']) {
+    const player = new Element(tag);
+    mapHost.root.appendChild(player);
+    for (const key of ['g', 'f', 'k', 'j', 'x', '-']) {
+      const ev = press(mapHost, { key, target: player });
+      assert.notEqual(ev.defaultPrevented, true, `key ${key} yields while a ${tag} player has focus`);
+    }
+  }
 
   // Turning off single-key shortcuts suppresses ' inside shortcut help and
   // updates the dialog close hint; narrow viewports dim page-width.

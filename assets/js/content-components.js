@@ -433,6 +433,14 @@
       image.src = thumb;
       image.alt = '';
       image.loading = 'lazy';
+      // Leaflet sizes and pans the popup before the image arrives; known
+      // dimensions keep the box from growing past the map edge afterwards.
+      var width = Number(place.thumbWidth);
+      var height = Number(place.thumbHeight);
+      if (width > 0 && height > 0 && width <= 10000 && height <= 10000) {
+        image.width = width;
+        image.height = height;
+      }
       box.appendChild(image);
     }
     var href = safePlaceHref(place.href);

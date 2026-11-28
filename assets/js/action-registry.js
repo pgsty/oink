@@ -274,7 +274,6 @@
       registerExecutor: registerExecutor,
       preloadMarkdown: fetchMarkdown,
       resolveUrl: function (id, value) { return resolveUrl(id, value); },
-      assistantPrompt: function (id) { return assistantPrompt(id); },
       home: home,
       safeUrl: function (value) { return safeUrl(value, windowObject.location.href); },
     });

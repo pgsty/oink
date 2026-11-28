@@ -70,15 +70,15 @@
         (delimit $roles " | ") -}}
   {{- end -}}
 {{- end -}}
-{{- /* Reconnect the role chain when a site chooses its main face. Presets
-       can otherwise give prose and headings their own default stacks. */ -}}
-{{- if in $valid "ui" -}}
-  {{- if not (in $valid "body") -}}
-    {{- $decls = $decls | append "--td-body-font-family:var(--td-ui-font-family)" -}}
-  {{- end -}}
-  {{- if not (in $valid "heading") -}}
-    {{- $decls = $decls | append "--td-heading-font-family:var(--td-body-font-family)" -}}
-  {{- end -}}
+{{- /* Reconnect the role chain when a site chooses its main or prose face.
+       Presets can otherwise give prose and headings their own default
+       stacks; a site's own face reaches the headings unless it also names
+       a heading face. */ -}}
+{{- if and (in $valid "ui") (not (in $valid "body")) -}}
+  {{- $decls = $decls | append "--td-body-font-family:var(--td-ui-font-family)" -}}
+{{- end -}}
+{{- if and (or (in $valid "ui") (in $valid "body")) (not (in $valid "heading")) -}}
+  {{- $decls = $decls | append "--td-heading-font-family:var(--td-body-font-family)" -}}
 {{- end -}}
 {{- with $decls -}}
 <style>{{ printf ":root{%s}" (delimit . ";") | safeCSS }}</style>

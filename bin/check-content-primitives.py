@@ -962,6 +962,9 @@ INVALID_CASES = (
     ("map-zoom", '```map {zoom=40}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
     ("map-zoom-leading-zero", '```map {zoom="08"}\n- {name: A, lat: 1, lng: 2}\n```\n', "zoom must be a whole number"),
     ("map-route", '```map {route=maybe}\n- {name: A, lat: 1, lng: 2}\n```\n', "route must be true or false"),
+    ("map-empty-list", '```map\n[]\n```\n', "no valid place"),
+    ("map-percent-height", '```map {height="50%"}\n- {name: A, lat: 1, lng: 2}\n```\n', "height must be a positive"),
+    ("map-zero-height", '```map {height="0px"}\n- {name: A, lat: 1, lng: 2}\n```\n', "height must be a positive"),
 )
 
 
@@ -1340,7 +1343,13 @@ def check_invalid_cases(hugo: str) -> list[str]:
             "map-nan must skip NaN without failing the build and format small decimal coordinates cleanly",
             errors,
         )
-        for empty_map in ("map-empty", "map-not-list", "map-range", "map-inf", "map-string-lat"):
+        avatar_parent_html = (temp_path / "public/docs/social-avatar-parent/index.html").read_text()
+        require(
+            'class="td-social__avatar"' not in avatar_parent_html and "td-social" in avatar_parent_html,
+            "social-avatar-parent must drop the avatar that climbs above the site root and keep the card",
+            errors,
+        )
+        for empty_map in ("map-empty", "map-empty-list", "map-not-list", "map-range", "map-inf", "map-string-lat"):
             empty_html = (temp_path / f"public/docs/{empty_map}/index.html").read_text()
             require("td-map__places" not in empty_html, f"{empty_map} must render no map figure", errors)
         map_non_string_name_html = (temp_path / "public/docs/map-non-string-name/index.html").read_text()

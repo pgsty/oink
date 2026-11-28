@@ -158,6 +158,8 @@ ACCEPTED_SITE_CASES = [
     "reading_width: slim\nmarkmap: false\nplantuml: false\ndrawio: false\ncomments: false\nprint:\n  toc: false",
     "map: false\nvideo_embeds: []",
     "video_embeds: [bilibili, youtube]\nmap:\n  enable: true\n  tiles: https://{s}.tile.example.org/{z}/{x}/{y}{r}.png\n  attribution: Example tiles\n  attribution_url: https://example.org/copyright\n  dark_tiles: https://{s}.tile.example.org/dark/{z}/{x}/{-y}.png\n  subdomains: abcd\n  max_zoom: 18\n  loading: click",
+    # Surrounding whitespace in map values is trimmed, not rejected.
+    "map:\n  enable: true\n  tiles: ' https://tile.example.org/{z}/{x}/{y}.png '\n  attribution: Example\n  attribution_url: ' https://example.org/copyright '\n  subdomains: ' abc '",
     "ui:\n  dark_mode: true\n  feedback: true\n  page_context_menu: false",
     "ui:\n  dark_mode: {enable: true, show_menu: true}\n  expo: {mode: cards, size: 200}",
     "ui:\n  share: [x, bluesky, mastodon, whatsapp, line, pinterest, chatgpt, claude, email, copy]",
@@ -214,6 +216,8 @@ INVALID_SITE_CASES = [
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: 0", "params.map.max_zoom must be a whole number from 1 to 22"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  attribution_url: http://example.org/copyright", "params.map.attribution_url must be an https:// URL"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  subdomains: 'a b'", "params.map.subdomains must be 1 to 32 letters or digits"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  subdomains: 01234567", "YAML reads an unquoted 01234567 as a number"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  maxZoom: 5", 'params.map has unknown key "maxzoom"'),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading: eager", "params.map.loading must be lazy or click"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading: [click]", "params.map.loading must be lazy or click"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  loading:\n    mode: click", "params.map.loading must be lazy or click"),

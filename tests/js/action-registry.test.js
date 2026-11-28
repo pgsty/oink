@@ -262,8 +262,6 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   await registry.run('open_claude');
   assert.equal(events.opened[1].url, chatgptUrl.href);
   assert.equal(events.opened[2].url, claudeUrl.href);
-  assert.equal(registry.assistantPrompt('open_claude'), expectedPrompt);
-  assert.equal(registry.assistantPrompt('view_markdown'), '', 'only assistants have a prompt');
   await registry.run('print');
   await registry.runCommand('print_now');
   assert.equal(events.printed, 2);

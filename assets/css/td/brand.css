@@ -287,6 +287,15 @@ a {
   border-start-end-radius: 8px;
 }
 
+/* A tab panel or a titled block already frames the table, and its edge is
+   square under the tab bar. */
+.td-content .td-tabs__panel-body > .td-table-scroll:only-child,
+.td-content .td-tabs__panel-body > .td-table-frame:only-child > .td-table-scroll,
+.td-content .td-tab-block > .td-table-scroll,
+.td-content .td-tab-block > .td-table-frame > .td-table-scroll {
+  border-radius: 0;
+}
+
 .td-content table:not(.td-initial) > :not(caption) > * > th,
 .td-content table:not(.td-initial) > :not(caption) > * > td {
   padding: 0.75rem 0.875rem;

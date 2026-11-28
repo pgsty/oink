@@ -29,6 +29,12 @@
 {{- $height := "" -}}
 {{- with index $policy.consumed "height" -}}
   {{- $height = partial "validate.html" (dict "value" . "kind" "length" "fallback" "" "key" "map height" "where" $position) -}}
+  {{- /* The figure has no height of its own, so a percentage resolves to
+         nothing, and a zero length leaves a canvas no reader can see. */ -}}
+  {{- if and $height (or (strings.HasSuffix $height "%") (not (findRE `[1-9]` $height))) -}}
+    {{- warnf "map: height must be a positive px, rem, em, vh or vw length; got %q at %s; using the default" $height $position -}}
+    {{- $height = "" -}}
+  {{- end -}}
 {{- end -}}
 {{- $tab := strings.TrimSpace (index $policy.consumed "tab" | default "") -}}
 {{- if and (isset $policy.consumed "tab") (not $tab) }}{{ warnf "map: tab label must not be empty at %s; ignoring tab" $position }}{{ end -}}
@@ -37,6 +43,7 @@
 {{- /* Places. */ -}}
 {{- $source := strings.TrimSpace .Inner -}}
 {{- $items := slice -}}
+{{- $parsed := false -}}
 {{- if not $source -}}
   {{- warnf "map: the fence requires a list of places at %s; rendering nothing" $position -}}
 {{- else -}}
@@ -49,6 +56,7 @@
     {{- warnf "map: the fence must hold a list of places at %s; rendering nothing" $position -}}
   {{- else -}}
     {{- $items = $result.Value -}}
+    {{- $parsed = true -}}
   {{- end -}}
 {{- end -}}
 {{- $known := slice "name" "lat" "lng" "text" "image" "link" -}}
@@ -125,7 +133,7 @@
   {{- end -}}
   {{- $places = $places | append (dict "name" $name "lat" $latF "lng" $lngF "latStr" $latStr "lngStr" $lngStr "label" (printf "%s, %s" $latStr $lngStr) "text" $text "thumb" $thumb "href" $href "hrefExternal" $hrefExternal) -}}
 {{- end -}}
-{{- if and $items (not $places) }}{{ warnf "map: no valid place at %s; rendering nothing" $position }}{{ end -}}
+{{- if and $parsed (not $places) }}{{ warnf "map: no valid place at %s; rendering nothing" $position }}{{ end -}}
 
 {{- if $places -}}
 {{- $config := partialCached "content/map-config.html" . $page.Site.Language.Lang -}}
@@ -163,7 +171,13 @@
     (htmlEscape (cond (ne $caption "") $caption (T "ui_map_label")))
     (cond (ne $height "") (printf ` style="height: %s"` $height) "") -}}
   {{- $json := slice -}}
-  {{- range $places }}{{ $json = $json | append (dict "name" .name "lat" .lat "lng" .lng "text" .text "thumb" (.thumb.src | default "") "href" .href) }}{{ end -}}
+  {{- range $places -}}
+    {{- $entry := dict "name" .name "lat" .lat "lng" .lng "text" .text "thumb" (.thumb.src | default "") "href" .href -}}
+    {{- if and .thumb.src (gt (.thumb.width | default 0) 0) (gt (.thumb.height | default 0) 0) -}}
+      {{- $entry = merge $entry (dict "thumbWidth" .thumb.width "thumbHeight" .thumb.height) -}}
+    {{- end -}}
+    {{- $json = $json | append $entry -}}
+  {{- end -}}
   {{- $data = printf `<script type="application/json" data-td-map-source>%s</script>` (dict "places" $json "route" $route "zoom" $zoom | jsonify) -}}
 {{- end -}}
 {{- $html = printf `<figure id="%s" class="%s"%s%s>%s<ol class="td-map__places">%s</ol>%s%s</figure>`

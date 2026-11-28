@@ -4,12 +4,14 @@ OINK uses [Semantic Versioning](https://semver.org/) for published tags, with
 one exception. Version 1.6.0 retires public interfaces in a minor release so
 existing sites can keep the `github.com/pgsty/oink` module path.
 
-## [1.7.0] — 2026-11-27
+## [1.7.0] — 2026-11-28
 
-OINK 1.7.0 expands the content and reading experience with six new components,
-typeset rich-text copy, a unified 29-key shortcut system with local
-browsing history and adjustable reading width, and refined presets with
-preset-specific CJK typography.
+OINK 1.7.0 adds six content components, typeset rich-text copy, a sheet of 29
+single-key shortcuts with local browsing history and an adjustable reading
+width, and a typography pass that gives each visual preset its own Chinese
+arrangement. Readers who used the 1.6.0 shortcuts should read the moved keys
+under Changed; sites should note that typeset copy is on by default and that
+Paper's accent changed.
 
 ### Added
 
@@ -17,42 +19,55 @@ preset-specific CJK typography.
   result in HTML, Print, Markdown/LLMS and RSS:
   - **Timeline**: a Markdown definition list followed by `{.timeline}` renders
     as an axis with a marker column. CSS only; requires Goldmark definition
-    lists, which Hugo enables by default.
+    lists, which Hugo enables by default. A `{.timeline}` separated from its
+    list by a blank line warns; the check skips code fences of any length.
   - **Update**: a heading marked `{.update date="2026-11-23" tags="A, B"}` is a
     changelog entry. The heading is unchanged (TOC, anchor, search, Print IDs);
-    a metadata line with `<time>` and neutral tag chips follows it.
+    a metadata line with `<time>` and neutral tag chips follows it, and its
+    items stay separated in plain-text copy, search, feeds and screen readers.
+    An invalid date or tag warns and is dropped; an unquoted full date, which
+    makes Goldmark drop the whole attribute block, warns too.
   - **Video**: a block image whose destination is a video file renders a
     native player with `caption`, `num`, `poster`, `track`, `width`, `height`;
     `autoplay=true` makes a muted loop that `js/chunks/media.js` plays only
     while visible and never under reduced motion. YouTube, Bilibili and Vimeo
     URLs render link cards; platforms listed in the new `params.video_embeds`
-    load their player in place after a click, from IDs the theme validated.
-  - **Audio**: a block image whose destination is an audio file renders a titled
-    native player with `caption`, `id` and `preload` (the first six players on
-    a page preload metadata, later ones nothing). Local audio and video use the
-    page accent to show elapsed playback time. The shared `js/chunks/media.js`
-    also keeps one audible player at a time.
-  - **Social**: the `social` shortcode quotes a post (X by default;
-    Bluesky, Mastodon, Threads, Weibo, Zhihu, Telegram, LinkedIn, or `none`,
-    the default for a nested quote) entirely from the page, with a Markdown
-    body that composes images, galleries and a nested quoted post. The quote
-    requires no platform request. A reader’s browser loads any remote avatar
-    or attachment the author supplies. A static avatar missing from the
-    project's `static/` warns with the suppressible ID `social:avatar-static`.
-    Hugo's own `x` is untouched.
-  - **Map**: a `map` fence renders a numbered place list with OpenStreetMap links
-    in HTML, Print and RSS. Markdown and LLMS keep the source fence; with a complete new `params.map` (an HTTPS `tiles`
-    template and its `attribution`), HTML adds an interactive map through
-    vendored Leaflet 1.9.4. The theme names no tile service. Tile templates
-    may also use `{s}`, `{r}` and `{-y}`; any other placeholder warns and the
-    template is ignored. Optional `attribution_url` links the credit,
-    `subdomains` chooses the `{s}` values, and `loading: click` waits for a
-    button that names every tile host before any request. Only `{s}` may vary in the host. Failing `dark_tiles`
-    fall back to the dimmed light tiles; failing light tiles or Leaflet hide
-    the map and keep the list. A finger keeps scrolling the page; a mouse or
-    pen drags the map, and a popup opened with Enter takes keyboard focus.
+    load a sandboxed player in place after a click, from IDs and start times
+    the theme validated (a start time it cannot read warns and starts at 0).
+    No platform request happens before the click.
+  - **Audio**: a block image whose destination is an audio file renders a
+    titled native player with `caption`, `id` and `preload`. The first six
+    players preload metadata and later ones nothing; players written in the
+    page are counted before players inside shortcode bodies. Local audio and
+    video use the page accent to show elapsed playback time, and
+    `js/chunks/media.js` keeps one audible player at a time.
+  - **Social**: the `social` shortcode quotes a post (X by default; Bluesky,
+    Mastodon, Threads, Weibo, Zhihu, Telegram, LinkedIn, or `none`, the
+    default for a nested quote) entirely from the page, with a Markdown body
+    that composes images, galleries and one nested quoted post. The quote
+    makes no platform request; a reader's browser loads any remote avatar or
+    attachment the author supplies. A static avatar missing from the
+    project's `static/`, or one whose path climbs above the site root, warns
+    with the suppressible ID `social:avatar-static`. Hugo's own `x` shortcode
+    is untouched.
+  - **Map**: a `map` fence renders a numbered place list with OpenStreetMap
+    links in HTML, Print and RSS; Markdown and LLMS keep the source fence.
+    With `params.map` set to `enable: true`, an HTTPS `tiles` template and the
+    `attribution` its service requires, HTML adds an interactive map through
+    vendored Leaflet 1.9.4. The theme names no tile service. Templates may use
+    `{s}`, `{r}` and `{-y}` besides `{z}`, `{x}` and `{y}`, and only `{s}` may
+    vary in the host; any other placeholder warns and the template is
+    ignored. Optional `attribution_url` links the credit, `subdomains` (a
+    quoted string) chooses the `{s}` values, `dark_tiles` serves dark mode,
+    and `loading: click` waits for a button that names every tile host before
+    any request. Values are trimmed and unknown keys warn. Failing
+    `dark_tiles` fall back to the dimmed light tiles; failing light tiles or
+    Leaflet hide the map and keep the list. A finger keeps scrolling the page,
+    a mouse or pen drags the map, and a popup opened with Enter takes keyboard
+    focus.
   The image hook and image resolver now share `content/resource-lookup.html`;
-  image output is unchanged. Six locale keys were added to all 32 catalogs.
+  image output is unchanged. Draw.io detection skips video-card posters,
+  social avatars and map thumbnails.
 
 - Typeset copy. A selection copied out of article prose now leaves the page as
   clean rich text: semantic tags with a small inline style sheet drawn from the
@@ -62,13 +77,14 @@ preset-specific CJK typography.
   rich-text editors such as WeChat's kept as grey boxes, and carried the dark
   palette out of dark mode. Selecting the whole page copies the article alone;
   a phrase inside one line travels as bare markup; a source line break between
-  two CJK characters no longer pastes as a space; code blocks keep their token
-  colors, and a dark code card stays dark. `text/plain` is unchanged.
-  `params.ui.rich_copy: false`, or the same key in front matter, keeps the
-  browser's behavior. The runtime is `js/chunks/rich-copy.js`.
+  two CJK characters no longer pastes as a space; ordered lists keep their
+  numbers when a selection starts midway; code blocks keep their token colors,
+  and a dark code card stays dark. `text/plain` is unchanged. It is on by
+  default; `params.ui.rich_copy: false`, or the same key in front matter,
+  keeps the browser's behavior. The runtime is `js/chunks/rich-copy.js`.
 
-- Twenty-nine single-key shortcuts in three groups (Navigation, Actions, View),
-  shown as a three-column sheet:
+- Twenty-nine single-key shortcuts in three groups, shown as a three-column
+  sheet:
   - **Navigation**: `W`/`S` (and `↑`/`↓` in the tree) move through the
     sidebar, `A`/`D` collapse or expand a section, `Enter` or `Space` opens the
     focused page, `Q`/`E` page through the sidebar order, `K`/`J` jump between
@@ -86,19 +102,24 @@ preset-specific CJK typography.
     `blog_index_toggle`, `;` cycles Expo and gallery layouts, `,`/`<` and
     `.`/`>` resize gallery tiles in 20 px steps, `-` and `=` (or `+`) narrow and
     widen the reading column, and `'` opens the shortcut sheet.
-  Non-text controls such as gallery radios and range sliders no longer
-  suppress the shortcuts after a click.
+  Fullwidth punctuation from CJK input methods (`【`, `】`, `；`, `，`, `。`,
+  `‘`, `’` and the like) runs the same shortcuts. Shortcuts yield to text
+  fields, the map canvas and a focused audio or video player; non-text
+  controls such as gallery radios and range sliders no longer suppress them
+  after a click.
 - The shortcut sheet opens in the browser top layer from `'` or a click on the
   bottom-bar `?` button, from anywhere on the page, including Zen Mode and
-  `footer_style: none` pages. Hovering or focusing `?` previews the same full
-  three-group sheet above the footer (three columns side by side on wide
-  screens, wrapping cleanly on narrower widths); clicking `?` or pressing `'`
-  opens it as a centered modal dialog with the **Enable shortcuts** toggle
-  (enabled by default). A shortcut the current page cannot run keeps its row,
-  dimmed and marked unavailable for screen readers on both hover and modal
-  views. The sheet is cached per language (reused in a `<template>` on
-  footerless pages); the modal closes on a second `'`, `Escape`, the close
-  button or a backdrop click, and coordinates with other open surfaces.
+  `footer_style: none` pages. Hovering or focusing `?` previews the same
+  sheet above the footer; the dialog adds an **Enable shortcuts** switch. A
+  shortcut the current page cannot run keeps its row, dimmed and marked
+  unavailable for screen readers, including `-`/`=` on a viewport too narrow
+  to resize. The sheet is a per-language template; the dialog closes on a
+  second `'`, `Escape`, the close button or a backdrop click, and coordinates
+  with other open surfaces.
+- Readers can turn off the global single-key shortcuts from the sheet or from
+  the focus stop after "Skip to content". The choice persists across languages
+  on the same site and also covers the Command Palette's `/` and `\`, Duo
+  View's `B` and the sheet's own `'`; `Cmd/Ctrl+K` and `Escape` keep working.
 - Browsing history. `H`, or the Command Palette's new "Browsing history"
   command (`browse_history`), opens an overlay on the palette surface that lists
   the pages this reader opened on the site, newest first, without the page
@@ -106,8 +127,10 @@ preset-specific CJK typography.
   (`Ctrl`/`Cmd`+`Enter` in a new tab), `Shift`+`Delete` forgets one, and
   "Clear history" empties the list. Up to 100 entries live only in the
   browser's `localStorage` under `td-history:` plus the site's base path, so
-  sites sharing an origin keep separate lists. The runtime ships with the
-  keyboard chunk, so `keyboard_nav: false` records nothing.
+  sites sharing an origin keep separate lists, also when the base path holds
+  URL-encoded characters. Returning to a page with Back updates its order.
+  The runtime ships with the keyboard chunk, so `keyboard_nav: false` records
+  nothing.
 - `O` folds or unfolds everything at once: sidebar and right-rail groups,
   `<details>` blocks such as collapsible callouts, file trees and "more" lists,
   and shortened code blocks. If anything is folded it opens all, otherwise it
@@ -119,36 +142,39 @@ preset-specific CJK typography.
   overrides `page_width` and the Book measure on screen; a step that reaches
   the page's own width returns to it and forgets the choice.
 - The action manifest gains the language home (`home`) for `G`.
-- All 32 catalogs gained 16 labels for shortcuts, the reader preference, and
-  history, and six for the new content components (264 localized keys total).
+- All 32 catalogs gained 16 labels for shortcuts, the reader preference and
+  history, and six for the new content components; each catalog now has 264
+  keys.
 - Markmap replaces the boxed "Fit to window" button below the SVG with quiet,
   borderless icon controls in the bottom-right corner for **Fit to window** and
-  **Download SVG** (exporting a self-contained SVG with resolved theme tokens
-  and background).
+  **Download SVG**, which exports a self-contained SVG with resolved theme
+  colors and background.
 - ECharts fences can use a site's own theme: define it on
   `window.OinkEchartsThemes` under the name the fence's `theme` gives, and each
-  chart registers it before drawing. ECharts loads only when a chart comes on
-  screen, so a site script had no point at which to call
-  `echarts.registerTheme()` itself.
+  chart registers it before drawing, inside the chart's error guard. ECharts
+  loads only when a chart comes on screen, so a site script had no point at
+  which to call `echarts.registerTheme()` itself.
 
 ### Changed
 
+- Shortcuts that moved since 1.6.0: Zen Mode moves from `H` to `Z` (`H` is
+  the browsing history), languages move from `L` and `Y` to `X` (`L` now
+  switches the index layout and `Y` the color mode), `T` cycles presets
+  instead of the color mode, `G` goes home instead of opening the focused tree
+  item (`Enter` and `Space` remain), and the home page `N` section alias is
+  gone (`J` remains). The Command Palette keeps `\` (beside `C`) for commands.
+- The Command Palette's `/` and `\` also work from CJK input methods (`、`,
+  `／`, `＼`) and on layouts that produce them with Shift or AltGraph.
+  Reopening search clears a leftover `>` command prefix, and a key pressed
+  during the 240 ms close fade reopens the palette instead of typing into the
+  hidden field. In the palette, the history overlay and Duo View, an `Escape`
+  that cancels an input-method composition stays with the input method,
+  including the keyCode 229 keydown Safari sends right after the composition
+  ends; an interrupted composition no longer leaves `Escape` dead.
 - Refreshed vendored browser libraries in `VENDOR.json`: Mermaid `12.4.0`
-  (including `THIRD_PARTY_NOTICES`), Swagger UI `5.36.0`, ReDoc `3.2.0`,
-  Asciinema `3.19.0`, `@plantuml/core` `1.2026.10`, and `@markmap/*` `1.1.1`.
-- Hardened Command Palette, Browsing History, and keyboard shortcuts for CJK
-  IME punctuation (`、` / `／` / `＼` / fullwidth quotes and brackets),
-  interrupted IME compositions (`blur` / `compositioncancel` / close),
-  reliable `Escape` dismissal, rapid reopen during the 240 ms close fade
-  (`inert` closing overlays), and clearing stale `>` command mode when
-  reopening search. The palette recognizes slash and backslash produced with
-  Shift or AltGraph. Escape during composition in a Duo View pane stays with the input method.
-- Shortcuts that moved since 1.6.0: Zen Mode is `Z` only (`H` is the
-  browsing history), languages are `X` (`L` switches the index layout and `Y`
-  the color mode), `T` cycles presets instead of the color mode, `G` goes home
-  instead of opening the focused tree item (`Enter` and `Space` remain), and
-  the homepage `N` section alias is gone (`J` remains). The Command Palette
-  keeps `\` (alongside `C`) for commands.
+  (with its `THIRD_PARTY_NOTICES`), Swagger UI `5.36.0`, ReDoc `3.2.0`,
+  asciinema-player `3.19.0`, `@plantuml/core` `1.2026.10`, and `@markmap/*`
+  `1.1.1`.
 - Paper is an ivory sheet with a clay accent. The canvas moves from the grey
   `#f7f6f3` to `#faf9f5`, with ink `#1f1e1c` and surfaces to match, and the
   preset now sets its own accent (`#9b4a28`, dark `#de8460`) for selected rows,
@@ -174,10 +200,12 @@ preset-specific CJK typography.
   `local()`-only face limited to CJK code points, so Han is never slanted
   while Latin keeps its italic; Terminal colors emphasis instead. New roles:
   `--td-emphasis-font-family`, `--td-heading-emphasis-font-family` and
-  `--td-quote-font-family`.
+  `--td-quote-font-family`; Print restates all three from the print face. An
+  explicit `params.ui.fonts.ui` or `fonts.body` still reaches the headings in
+  every preset unless `fonts.heading` names its own face.
 - Table figures use tabular numerals, and a table's header band takes rounded
-  top corners in Slate. Dark mode uses grayscale font smoothing so light text
-  keeps its drawn weight.
+  top corners in Slate, except inside a tab panel or titled block. Dark mode
+  uses grayscale font smoothing so light text keeps its drawn weight.
 - A bare `<kbd>` in Markdown draws the keycap the `kbd` shortcode draws,
   instead of Bootstrap's inverse bar. List markers take the tertiary ink.
 - Headings in Chinese, Japanese and Korean passages sit at zero tracking in
@@ -192,41 +220,20 @@ preset-specific CJK typography.
 
 ### Fixed
 
-- An explicit `params.ui.fonts.ui` applies to headings in Paper as well as
-  prose. A site can still choose a separate `fonts.heading` in any preset.
+- Closing the Command Palette returned focus to the element it came from and
+  thereby reopened the navbar language or version menu around it. Focus now
+  returns without opening a hover menu, also after the history overlay, Duo
+  View and the shortcut sheet close.
 - The sidebar section switcher, previous/next links and blog gallery links
   include their visible text in their accessible names for voice control.
-- Readers can turn off global single-key shortcuts from shortcut help or the
-  focus stop after “Skip to content”. The choice also covers the palette’s
-  punctuation shortcuts and persists across languages on the same site.
-- Sites served under different paths on one host now store browsing history
-  separately, including sites with URL-encoded characters in their base path.
-  Restoring a page with Back updates its visit order. Clear history also
-  removes the current page when it is the only stored visit.
 - A table that occupies a whole tab panel reaches both panel edges. Wide
   tables can still scroll within the panel.
-- RSS links from maps and quoted posts keep the source article address when
-  the link consists of a query or fragment. Bilibili embed links keep a valid
-  `cid` so a multi-part recording opens at the selected part.
-- Typeset copy preserves step numbers when a selection begins midway through
-  an ordered list, including lists starting at zero or counting down.
-- Timeline diagnostics accept long Markdown fences and match the full
-  `timeline` class name.
-- Asciinema `markers` reach the player as `[time, label]` pairs and ignore
-  trailing whitespace after a comma. The theme spread them into one flat list,
-  which asciinema-player 3.18 rejects, so a recording with markers showed only
-  its link. Labels are trimmed and keep their colons.
-- Turning off single-key shortcuts (`data-td-shortcuts-off`) also suppresses
-  Duo View's `B` toggle and the shortcut sheet's `'` toggle (updating its close
-  hint to `Esc` only), and the `-`/`=` shortcut row dims on viewports too narrow
-  to resize.
-- Draw.io diagram detection skips `.td-social__avatar` and `.td-map__thumb`
-  images alongside video-card posters. Map tile configuration trims surrounding
-  whitespace, avoids recreating light tiles on theme changes after `dark_tiles`
-  fails, and uses `map fence` (and `image` on block images) in invalid-`id`
-  warnings. ECharts site-theme registration runs inside the chart error guard,
-  and `.td-blog-card__image` sets `height: auto` so intrinsic dimensions never
-  stretch cards.
+- Asciinema `markers` reach the player as `[time, label]` pairs. The theme
+  spread them into one flat list, which asciinema-player 3.18 rejects, so a
+  recording with markers showed only its link. Labels are trimmed and keep
+  their colons; empty items after a comma are skipped.
+- `.td-blog-card__image` sets `height: auto`, so an image's intrinsic
+  dimensions never stretch a card.
 - The archived-version banner (`params.archived_version`) is styled: a tinted
   band with an archive icon and `role="note"`, covering dark mode, forced
   colors, print and right-to-left pages. The Print output's printable-section

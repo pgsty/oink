@@ -385,9 +385,22 @@ const MINUTE = 60 * 1000;
   assert.notEqual(composingEsc.defaultPrevented, true, 'Escape during IME composition is not swallowed');
   assert.equal(h.instance.isOpen(), true, 'IME Escape keeps the history overlay open');
   h.input.dispatch('compositionend');
-  const finalEsc = h.docKey({ key: 'Escape', keyCode: 229, isComposing: false });
+  // Safari's trailing 229 Escape dismissed the candidates; it stays with the IME.
+  const trailingEsc = h.docKey({ key: 'Escape', keyCode: 229, isComposing: false });
+  assert.notEqual(trailingEsc.defaultPrevented, true);
+  assert.equal(h.instance.isOpen(), true, "Safari's trailing 229 Escape closed the overlay");
+  let finalEsc;
+  {
+    const realNow = Date.now;
+    Date.now = () => realNow() + 1000;
+    try {
+      finalEsc = h.docKey({ key: 'Escape', keyCode: 229, isComposing: false });
+    } finally {
+      Date.now = realNow;
+    }
+  }
   assert.equal(finalEsc.defaultPrevented, true);
-  assert.equal(h.instance.isOpen(), false, 'Escape after compositionend closes the overlay even with keyCode 229');
+  assert.equal(h.instance.isOpen(), false, 'a later Escape closes the overlay even with keyCode 229');
   assert.equal(h.root.inert, true, 'closing marks the fading history overlay inert');
 
   // Interrupted composition (blur / compositioncancel) clears composing so Escape works.

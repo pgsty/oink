@@ -171,6 +171,10 @@
     var hideTimer = 0;
     var choiceState = null;
     var composing = false;
+    // When a composition ended (ms). Safari ends a composition before the
+    // Escape keydown that dismissed its candidates, then reports that keydown
+    // as keyCode 229 with isComposing false.
+    var compositionEndedAt = -Infinity;
     var pendingKey = '';
     var pendingActivation = 0;
     var pendingExtension = null;
@@ -440,7 +444,11 @@
             '.td-shell-float [data-td-shell-sidebar-toggle], [data-td-shell-drawer-open]',
           ), isRendered) || document.getElementById('td-main-content');
         }
-        if (focusTarget && typeof focusTarget.focus === 'function') focusTarget.focus();
+        if (focusTarget && typeof focusTarget.focus === 'function') {
+          if (global.OinkSurfaceCoordinator && global.OinkSurfaceCoordinator.restoreFocus)
+            global.OinkSurfaceCoordinator.restoreFocus(focusTarget);
+          else focusTarget.focus();
+        }
       }
       var reducedMotion = global.matchMedia &&
         global.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -884,6 +892,7 @@
     });
     input.addEventListener('compositionend', function () {
       composing = false;
+      compositionEndedAt = Date.now();
       global.clearTimeout(debounce);
       choiceState = null;
       render(input.value);
@@ -923,7 +932,10 @@
     document.addEventListener('keydown', tabTrap(panel, isOpen), true);
     document.addEventListener('keydown', function (event) {
       if ((event.key === 'Escape' || event.code === 'Escape') && isOpen()) {
-        if (event.isComposing || composing) return;
+        // The input method owns an Escape that cancels a composition, either
+        // during it or as Safari's trailing 229 keydown. A stale composing
+        // flag never blocks Escape.
+        if (event.isComposing || (event.keyCode === 229 && Date.now() - compositionEndedAt < 100)) return;
         event.preventDefault();
         if (typeof event.stopPropagation === 'function') event.stopPropagation();
         close();

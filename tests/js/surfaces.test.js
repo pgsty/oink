@@ -44,6 +44,40 @@ function testCoordinatorCompatibility() {
   ]);
 }
 
+function testRestoreFocusKeepsHoverMenuClosed() {
+  // Focus a closing surface puts back on a hover-menu trigger (the footer "?"
+  // after the palette closes) must not raise that menu: base.js opens it on
+  // focusin unless data-td-suppress-focus-open is present at that moment.
+  const timers = [];
+  global.window = {
+    requestAnimationFrame(callback) { timers.push(callback); },
+    setTimeout(callback) { timers.push(callback); },
+  };
+  load('assets/js/surface-coordinator.js');
+  const attributes = new Map();
+  const host = {
+    setAttribute(name, value) { attributes.set(name, value); },
+    removeAttribute(name) { attributes.delete(name); },
+  };
+  const seenDuringFocus = [];
+  const trigger = {
+    closest(selector) { return selector === '[data-td-nav-hover]' ? host : null; },
+    focus(options) {
+      seenDuringFocus.push([attributes.has('data-td-suppress-focus-open'), options]);
+    },
+  };
+  window.OinkSurfaceCoordinator.restoreFocus(trigger, { preventScroll: true });
+  assert.deepEqual(seenDuringFocus, [[true, { preventScroll: true }]]);
+  assert.equal(attributes.has('data-td-suppress-focus-open'), false, 'focus suppression outlived the focus call');
+  assert.equal(attributes.has('data-td-suppress-hover-open'), true, 'hover stays suppressed until the overlay is gone');
+  while (timers.length) timers.shift()();
+  assert.equal(attributes.has('data-td-suppress-hover-open'), false);
+
+  const plain = { focused: 0, focus() { this.focused += 1; } };
+  window.OinkSurfaceCoordinator.restoreFocus(plain);
+  assert.equal(plain.focused, 1, 'an element outside any hover menu is simply focused');
+}
+
 function classList() {
   const values = new Set();
   return {
@@ -492,6 +526,7 @@ function hoverMenuDismissal(inDrawer) {
 }
 
 testCoordinatorCompatibility();
+testRestoreFocusKeepsHoverMenuClosed();
 testPaletteFocusFromDrawer();
 testNavbarHoverPanel();
 testHoverTriggerClickAfterFocus();

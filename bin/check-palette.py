@@ -161,6 +161,19 @@ def main() -> int:
             and "registry.safeUrl" in source,
             "Palette lost lazy index, IME, or URL protection",
         )
+        # The document-level handler: Escape yields only to a live composition
+        # (or Safari's trailing 229 keydown), the shortcuts to any composition.
+        require(
+            "if (event.isComposing || (event.keyCode === 229 && Date.now() - compositionEndedAt < 100)) return;" in source
+            and "if (event.isComposing || composing) return;" in source
+            and "compositionEndedAt = Date.now();" in source,
+            "Palette lost the IME guards on its document-level Escape and shortcut handler",
+        )
+        # Focus returns without reopening a hover menu around the opener.
+        require(
+            "OinkSurfaceCoordinator.restoreFocus(focusTarget)" in source,
+            "Palette restores focus without the hover-menu guard",
+        )
         require("@docs" not in source and "@blog" not in source, "Palette gained a v1-excluded scope")
         require(
             not re.search(r"sendBeacon|analytics|telemetry|XMLHttpRequest", source, re.IGNORECASE),

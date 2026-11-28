@@ -312,15 +312,15 @@
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-  /* One hairline of full ink opens a section; a heavier rule shouts. */
   /* Song is lighter on the page than the Hei it replaces; one step up in
      size keeps the text at the same color. */
   [data-td-preset='ink'] .td-content {
     font-size: 1.0625rem;
   }
+  /* One hairline of full ink opens a section; a heavier rule shouts. */
   [data-td-preset='ink'] .td-content > h2:not(.update), [data-td-preset='ink'] .td-content > .h2:not(.update) {
-    border-top: 1px solid var(--bs-emphasis-color);
-    padding-top: 1rem;
+    border-block-start: 1px solid var(--bs-emphasis-color);
+    padding-block-start: 1rem;
   }
   [data-td-preset='ink'] .td-content > h2.update {
     border-block-start: 1px solid var(--bs-emphasis-color);
@@ -335,8 +335,9 @@
   }
   /* Underlines belong to prose, not card/control labels or heading anchors:
      a paragraph, a table cell, a caption, or an item of a plain or stepped
-     list. A list that carries any other class is a component. */
-  [data-td-preset='ink'] .td-content :is(p, td, th, dt, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+     list. A list that carries any other class is a component, and so are
+     the paragraphs of its items. */
+  [data-td-preset='ink'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
 [data-td-preset='ink'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
     /* The shared accessibility sheet suppresses underlines with !important.
        Ink intentionally restores this non-color prose affordance. */

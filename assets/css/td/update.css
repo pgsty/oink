@@ -61,7 +61,7 @@
 }
 
 .td-update-tag {
-  max-width: 100%;
+  max-inline-size: 100%;
   padding: 0.1em 0.5em;
   border: 1px solid var(--bs-border-color);
   border-radius: var(--td-experiment-radius, var(--bs-border-radius-sm, 0.25rem));

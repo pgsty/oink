@@ -407,6 +407,7 @@ HOOK_INVALID_CASES = (
     ("hook-command-on-static", '![x](/media/content-primitives-static.svg)\n{command="Fit" options="10x10"}\n', "cannot be processed"),
     # Video and audio share image syntax; their attributes warn the same way.
     ("hook-video-autoplay", '![x](https://example.org/clip.mp4)\n{autoplay="maybe"}\n', "autoplay must be true or false"),
+    ("hook-video-start-time", '![x](https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=1:30)\n', "start time \"1:30\" is not seconds or 1h2m3s"),
     ("hook-video-width", '![x](https://example.org/clip.mp4)\n{width="0"}\n', "width must be a positive integer"),
     ("hook-video-link", '![x](https://example.org/clip.mp4)\n{link="/docs/"}\n', "unknown attribute"),
     ("hook-audio-unnamed", '![](https://example.org/tone.mp3)\n', "the bracket text names the recording"),

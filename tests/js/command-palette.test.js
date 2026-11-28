@@ -658,6 +658,30 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
   pressKey(slash, { key: 'Escape' });
   assert.equal(slash.controller.isOpen(), false, 'Escape still closes after compositioncancel');
 
+  // Safari ends the composition before the Escape that dismissed the
+  // candidates and reports that keydown as 229 without isComposing: it stays
+  // with the input method. A later Escape closes, and a stale composing flag
+  // (no compositionend ever arrived) never blocks it.
+  pressKey(slash, { key: '/' });
+  slash.input.dispatch('compositionstart');
+  slash.input.dispatch('compositionend');
+  pressKey(slash, { key: 'Escape', keyCode: 229, isComposing: false });
+  assert.equal(slash.controller.isOpen(), true, "Safari's trailing 229 Escape closed the Palette");
+  {
+    const realNow = Date.now;
+    Date.now = () => realNow() + 1000;
+    try {
+      pressKey(slash, { key: 'Escape', keyCode: 229, isComposing: false });
+    } finally {
+      Date.now = realNow;
+    }
+  }
+  assert.equal(slash.controller.isOpen(), false, 'a later 229 Escape closes the Palette');
+  pressKey(slash, { key: '/' });
+  slash.input.dispatch('compositionstart');
+  pressKey(slash, { key: 'Escape' });
+  assert.equal(slash.controller.isOpen(), false, 'a stale composing flag blocked Escape');
+
   slash.controller.open({ currentTarget: slash.opener });
   slash.input.value = 'already typing';
   pressKey(slash, { key: '/' });

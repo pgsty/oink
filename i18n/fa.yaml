@@ -112,7 +112,7 @@ ui_shortcut_search: "جستجو"
 ui_shortcut_commands: "پالت دستورات"
 ui_shortcut_reading_mode: "حالت ذن"
 ui_shortcut_language: "تعویض زبان"
-ui_shortcut_theme: "تعویض تم"
+ui_shortcut_theme: "تغییر حالت رنگ"
 ui_shortcut_style: "تعویض سبک"
 ui_shortcut_route: "تغییر بخش"
 ui_shortcut_group_navigation: "ناوبری"
@@ -144,7 +144,7 @@ ui_diagram_zoom_close: "بستن پیش‌نمایش نمودار"
 ui_diagram_zoom_in: "بزرگ‌نمایی"
 ui_diagram_zoom_out: "کوچک‌نمایی"
 ui_diagram_error: "نمودار قابل نمایش نیست"
-ui_diagram_fit: اندازهٔ پنجره
+ui_diagram_fit: متناسب با پنجره
 ui_diagram_download: دریافت SVG
 ui_diagram_download_started: درخواست دریافت SVG ارسال شد
 ui_diagram_download_error: دریافت SVG ممکن نشد

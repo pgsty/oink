@@ -414,8 +414,11 @@
           if (target && !isRendered(target)) target = null;
         }
         if (target && typeof target.focus === 'function') {
+          var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
           try {
-            target.focus({ preventScroll: true });
+            if (coordinator && typeof coordinator.restoreFocus === 'function')
+              coordinator.restoreFocus(target, { preventScroll: true });
+            else target.focus({ preventScroll: true });
           } catch (_) {
             target.focus();
           }
@@ -431,9 +434,13 @@
       });
     }
 
+    // See command-palette.js: Safari's trailing 229 Escape after a
+    // composition ends belongs to the input method too.
+    var compositionEndedAt = -Infinity;
     input.addEventListener('compositionstart', function () { composing = true; });
     input.addEventListener('compositionend', function () {
       composing = false;
+      compositionEndedAt = Date.now();
       render();
     });
     input.addEventListener('compositioncancel', function () { composing = false; });
@@ -465,7 +472,7 @@
     });
     doc.addEventListener('keydown', function (event) {
       if (!openState || (event.key !== 'Escape' && event.code !== 'Escape') || event.defaultPrevented) return;
-      if (event.isComposing || composing) return;
+      if (event.isComposing || (event.keyCode === 229 && Date.now() - compositionEndedAt < 100)) return;
       event.preventDefault();
       if (typeof event.stopPropagation === 'function') event.stopPropagation();
       close(true);

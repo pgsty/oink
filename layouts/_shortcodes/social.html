@@ -115,7 +115,8 @@
              warning carries an ID a site can list in ignoreLogs. */ -}}
       {{- $relStatic := path.Clean (strings.TrimPrefix "/" (urls.Parse $resolved.source).Path) -}}
       {{- if or (eq $relStatic "..") (hasPrefix $relStatic "../") -}}
-        {{- warnf "shortcode %q: avatar %q climbs above the site root at %s" .Name $resolved.source .Position -}}
+        {{- warnidf "social:avatar-static" "shortcode %q: avatar %q climbs above the site root at %s; using the initial instead" .Name $resolved.source .Position -}}
+        {{- $avatar = dict -}}
       {{- else if and (fileExists "static") (not (fileExists (path.Join "static" $relStatic))) -}}
         {{- warnidf "social:avatar-static" "shortcode %q: avatar %q was not found as a page/assets resource or under static/ at %s" .Name $resolved.source .Position -}}
       {{- end -}}

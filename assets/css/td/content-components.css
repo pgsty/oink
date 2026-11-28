@@ -17,7 +17,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.125rem;
-  opacity: 0.45;
+  /* Quiet at rest, yet at least 3:1 against the canvas in every preset. */
+  opacity: 0.75;
   transition: opacity var(--td-motion-duration-fast, 150ms) ease;
 }
 
@@ -57,7 +58,7 @@
 
 @media (hover: none) {
   .td-markmap__controls {
-    opacity: 0.75;
+    opacity: 1;
   }
 }
 

@@ -164,8 +164,8 @@ html[data-td-preset-switching] *::after {
      hairline at half strength and takes full ink under the pointer. Running
      text is a paragraph, a table cell, a caption, or an item of a plain or
      stepped list: a list that carries any other class is a component, and
-     its labels keep the weight cue instead. */
-  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
+     its labels keep the weight cue instead, paragraphs in its items too. */
+  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref),
 [data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref) {
     font-weight: inherit;
     text-decoration-line: underline !important;
@@ -174,7 +174,7 @@ html[data-td-preset-switching] *::after {
     text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
     text-decoration-skip-ink: auto;
   }
-  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
+  [data-td-preset='paper'] .td-content :is(p, td, th, dt, dd, figcaption):where(:not(:where(ul, ol)[class]:not(.steps, .contains-task-list) > li *)) a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible),
 [data-td-preset='paper'] .td-content :where(ul, ol):where(:not([class]), .steps, .contains-task-list) > li a:not(.btn):not(.td-heading-self-link):not(.td-badge):not(.footnote-ref):not(.footnote-backref):is(:hover, :focus-visible) {
     text-decoration-color: currentColor;
   }

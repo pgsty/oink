@@ -106,6 +106,11 @@
 .td-print-view {
     --td-body-font-family: var(--td-print-font-family);
     --td-heading-font-family: var(--td-print-font-family);
+    /* The emphasis and quote roles resolve their var() on :root, so they
+       carry the screen faces unless print restates them here. */
+    --td-emphasis-font-family: 'OINK Kai', var(--td-print-font-family);
+    --td-heading-emphasis-font-family: 'OINK Kai', var(--td-print-font-family);
+    --td-quote-font-family: var(--td-print-font-family);
     min-width: 0 !important;
     background: #fff !important;
     color: var(--td-print-ink) !important;
@@ -113,6 +118,14 @@
     line-height: 1.55;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  [data-td-preset='paper'] :is(body, .td-print-view),
+  [data-td-preset='ink'] :is(body, .td-print-view) {
+    --td-quote-font-family: 'OINK Kai', var(--td-print-font-family);
+  }
+  [data-td-preset='terminal'] :is(body, .td-print-view) {
+    --td-emphasis-font-family: var(--td-print-font-family);
+    --td-heading-emphasis-font-family: var(--td-print-font-family);
   }
   .container-fluid, .container-sm, .container-md, .container-lg, .container-xl, .container-xxl,
 .td-outer,

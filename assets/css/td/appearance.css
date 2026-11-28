@@ -189,7 +189,7 @@
 }
 
 .td-appearance__preset-icon--paper {
-  color: #9c5530;
+  color: #9b4a28;
 }
 
 .td-appearance__preset-icon--slate {
@@ -263,7 +263,7 @@
 }
 
 [data-bs-theme='dark'] .td-appearance__preset-icon--paper {
-  color: #d99a6c;
+  color: #de8460;
 }
 
 [data-bs-theme='dark'] .td-appearance__preset-icon--slate {

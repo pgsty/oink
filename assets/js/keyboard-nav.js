@@ -68,10 +68,11 @@
   }
 
   // Interactive widgets that own their own arrow / +/- / single-key controls
-  // (such as an embedded Leaflet map) take priority while focus sits inside.
+  // (an embedded Leaflet map, a native audio or video player) take priority
+  // while focus sits inside.
   function isInteractiveWidget(target) {
     if (!target || target.nodeType !== 1 || typeof target.closest !== 'function') return false;
-    return target.closest('[data-td-map-canvas], .td-map__canvas') !== null;
+    return target.closest('[data-td-map-canvas], .td-map__canvas, audio, video') !== null;
   }
 
   function closestByClass(node, className) {
@@ -1267,13 +1268,22 @@
         return;
       }
       if (!mode) return;
-      win.setTimeout(function () {
-        var owner = palette();
-        var instance = owner && owner.instance;
-        if (instance && typeof instance.open === 'function') {
-          instance.open(null, mode === 'command' ? owner.commandPrefix || '>' : undefined);
-        }
-      }, 0);
+      // The palette is a later classic script. Every classic script has run
+      // by DOMContentLoaded, so wait for it while the page is still parsing.
+      var resume = function () {
+        win.setTimeout(function () {
+          var owner = palette();
+          var instance = owner && owner.instance;
+          if (instance && typeof instance.open === 'function') {
+            instance.open(null, mode === 'command' ? owner.commandPrefix || '>' : undefined);
+          }
+        }, 0);
+      };
+      if (doc.readyState === 'loading' && typeof doc.addEventListener === 'function') {
+        doc.addEventListener('DOMContentLoaded', resume, { once: true });
+      } else {
+        resume();
+      }
     }
 
     /* -------------------------------------------------- shortcut help (') */

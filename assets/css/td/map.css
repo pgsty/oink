@@ -226,6 +226,7 @@
 .td-map__popup img {
   display: block;
   inline-size: 100%;
+  block-size: auto;
   border-radius: var(--td-map-radius);
 }
 

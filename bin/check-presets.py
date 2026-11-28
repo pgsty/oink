@@ -81,6 +81,7 @@ def main():
         ('style-only', '    preset_menu: [paper, slate]\n    typography: system\n    fonts:\n      brand: serif\n', 'paper', True, False),
         ('main-face', '    fonts: {ui: serif}\n', 'paper', False, False),
         ('separate-faces', '    fonts: {ui: sans-serif, body: serif, heading: monospace}\n', 'paper', False, False),
+        ('prose-face', '    fonts: {body: serif}\n', 'paper', False, False),
         ('fixed', '    preset: slate\n    preset_menu: [slate]\n', 'slate', False, False),
         ('ink-default', "    preset: ink\n    preset_menu: true\n    theme_color: '#245f94'\n", 'ink', True, False),
         ('terminal-fixed', "    preset: terminal\n    theme_color: '#245f94'\n", 'terminal', False, False),
@@ -116,6 +117,10 @@ def main():
             if name == 'main-face':
                 assert '--td-body-font-family:var(--td-ui-font-family)' in html
                 assert '--td-heading-font-family:var(--td-body-font-family)' in html
+            if name == 'prose-face':
+                assert '--td-body-font-family:serif' in html
+                assert '--td-heading-font-family:var(--td-body-font-family)' in html
+                assert '--td-body-font-family:var(--td-ui-font-family)' not in html
             if name == 'separate-faces':
                 assert '--td-body-font-family:serif' in html
                 assert '--td-heading-font-family:monospace' in html

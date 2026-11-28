@@ -272,6 +272,7 @@
   {{- end -}}
   {{- $time = lower (strings.TrimSpace $time) -}}
   {{- if $time -}}
+    {{- $understood := false -}}
     {{- with findRESubmatch `^(?:([0-9]{1,2})h)?(?:([0-9]{1,4})m)?(?:([0-9]{1,6})(?:\.[0-9]+)?s?)?$` $time 1 -}}
       {{- $m := index . 0 -}}
       {{- if or (index $m 1) (index $m 2) (index $m 3) -}}
@@ -280,7 +281,11 @@
           (mul (int (float (index $m 1 | default "0"))) 3600)
           (mul (int (float (index $m 2 | default "0"))) 60)
           (int (float (index $m 3 | default "0"))) -}}
+        {{- $understood = true -}}
       {{- end -}}
+    {{- end -}}
+    {{- if not $understood -}}
+      {{- warnf "%s: start time %q is not seconds or 1h2m3s at %s; starting at 0" $label $time $position -}}
     {{- end -}}
   {{- end -}}
   {{- if eq $platform "youtube" -}}

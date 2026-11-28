@@ -64,14 +64,14 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   machine-readable outputs are tested as separate contracts.
 
 OINK 1.7.0 adds six content components (Timeline, Update, Video, Audio, Social,
-and Map with vendored Leaflet 1.9.4), typeset rich-text copy for pasting
-into external editors, a 29-key single-key shortcut system with a top-layer
-sheet, local browsing history (`H`), fold-all (`O`), adjustable reading width
-(`-`/`=`), and a reader opt-out; refines all four visual presets with a warm
-clay accent for Paper and distinct CJK system typography; adds Markmap corner
-icon controls with SVG download, custom ECharts themes (`window.OinkEchartsThemes`),
-and styled archived-version banners; and keeps every site build Hugo-only with
-plain CSS with any supported Hugo edition. See the
+and Map with vendored Leaflet 1.9.4), typeset rich-text copy for pasting into
+external editors, 29 single-key shortcuts shown on a top-layer sheet, local
+browsing history (`H`), fold-all (`O`), an adjustable reading width (`-`/`=`)
+and a reader opt-out. It refines all four visual presets with a clay accent
+for Paper and a Chinese arrangement of system fonts for each, adds Markmap
+corner controls with SVG download, site ECharts themes
+(`window.OinkEchartsThemes`) and a styled archived-version banner, and keeps
+every site build Hugo-only and plain CSS on any supported Hugo edition. See the
 [release notes](https://oink.pgsty.com/release/1.7.0/) and
 [changelog](CHANGELOG.md) for the complete list.
 

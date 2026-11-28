@@ -29,6 +29,10 @@
     return Array.prototype.slice.call(document.querySelectorAll('[data-td-preset-value]'));
   }
 
+  function presetButtons() {
+    return Array.prototype.slice.call(document.querySelectorAll('[data-td-preset-select]'));
+  }
+
   // The presets this page offers, read from the rendered menu (or the action
   // manifest when chrome menus are suppressed), so the runtime never accepts a
   // name the site did not build a choice for.
@@ -85,6 +89,9 @@
     presetInputs().forEach(function (input) {
       input.checked = input.getAttribute('data-td-preset-value') === current;
     });
+    presetButtons().forEach(function (button) {
+      button.setAttribute('aria-pressed', button.getAttribute('data-td-preset-select') === current ? 'true' : 'false');
+    });
   }
 
   function updateThemeColor(name) {
@@ -133,11 +140,19 @@
     }
   }
 
+  function anchorFor(element) {
+    if (!element || !element.isConnected || typeof element.getBoundingClientRect !== 'function') return null;
+    var rect = element.getBoundingClientRect();
+    if (rect.height <= 0) return null;
+    return { element: element, top: rect.top };
+  }
+
   /**
    * Apply a preset. `store` records the reader's choice; a storage-event or
    * initial sync passes false. Unknown names fall back to the site default.
+   * An optional `anchorEl` keeps a clicked in-page switcher pinned in place.
    */
-  function applyPreset(name, store) {
+  function applyPreset(name, store, anchorEl) {
     var names = offered();
     if (!names.length) return null;
     if (names.indexOf(name) < 0) {
@@ -152,7 +167,7 @@
       return name;
     }
 
-    var anchor = readingAnchor();
+    var anchor = anchorFor(anchorEl) || readingAnchor();
     // One frame without color transitions: the switch lands at once.
     root.setAttribute('data-td-preset-switching', '');
     root.setAttribute('data-td-preset', name);
@@ -205,6 +220,11 @@
     presetInputs().forEach(function (input) {
       input.addEventListener('change', function () {
         if (input.checked) applyPreset(input.getAttribute('data-td-preset-value'), true);
+      });
+    });
+    presetButtons().forEach(function (button) {
+      button.addEventListener('click', function () {
+        applyPreset(button.getAttribute('data-td-preset-select'), true, button);
       });
     });
     // Another tab chose or cleared a preset.

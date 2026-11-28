@@ -63,20 +63,34 @@
         </div>
       </div>
         {{- else if eq $visualType "components" }}
-        {{- $interactive := false }}
+        {{- $presetConfig := partialCached "preset-config.html" "preset-global" $page.Site.Language.Lang }}
+        {{- $hasLinks := false }}
+        {{- $hasPresets := false }}
         {{- range .items }}
-          {{- if or .url .href }}{{ $interactive = true }}{{ end }}
+          {{- if or .url .href }}{{ $hasLinks = true }}{{ end }}
+          {{- $itemPreset := lower (strings.TrimSpace (printf "%v" (.preset | default ""))) }}
+          {{- if and $itemPreset (not (in $presetConfig.available $itemPreset)) }}
+            {{- warnidf (printf "landing:capabilities-preset:%s" $itemPreset)
+                "%s: capabilities tile preset %q is not a preset (available: %s); the tile stays static"
+                $page.Path $itemPreset (delimit $presetConfig.available ", ") }}
+          {{- end }}
+          {{- if and $interactive $presetConfig.menu $itemPreset (in $presetConfig.offered $itemPreset) }}{{ $hasPresets = true }}{{ end }}
         {{- end }}
+        {{- $boardInteractive := or $hasLinks $hasPresets }}
+        {{- $boardRole := cond (and $hasLinks (not $hasPresets)) "navigation" "group" }}
         {{- $columns := partial "validate.html" (dict
             "value" .columns "kind" "int" "min" 1 "fallback" 2
             "key" "capabilities visual columns" "where" $page.Path) }}
         {{- if gt $columns 4 }}{{ $columns = 4 }}{{ end }}
-      <div class="td-landing-component-board{{ if $interactive }} td-landing-component-board--nav{{ end }}{{ if .compact }} td-landing-component-board--compact{{ end }}"
+      <div class="td-landing-component-board{{ if $boardInteractive }} td-landing-component-board--nav{{ end }}{{ if .compact }} td-landing-component-board--compact{{ end }}"
            style="--td-component-columns: {{ $columns }}"
-           {{- if $interactive }} role="navigation" aria-label="{{ .aria_label | default $module.title }}"{{ else }} aria-hidden="true"{{ end }}>
+           {{- if $boardInteractive }} role="{{ $boardRole }}" aria-label="{{ .aria_label | default $module.title }}"{{ else }} aria-hidden="true"{{ end }}>
         {{- range .items }}
           {{- $itemURL := partial "landing/url.html" (dict "page" $page "value" (.url | default .href)) }}
-          {{- if $itemURL }}
+          {{- $itemPreset := lower (strings.TrimSpace (printf "%v" (.preset | default ""))) }}
+          {{- if and $interactive $presetConfig.menu $itemPreset (in $presetConfig.offered $itemPreset) }}
+        <button type="button" data-td-preset-select="{{ $itemPreset }}" aria-pressed="{{ cond (eq $itemPreset $presetConfig.preset) "true" "false" }}"><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</button>
+          {{- else if $itemURL }}
         <a href="{{ $itemURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</a>
           {{- else }}
         <span><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</span>

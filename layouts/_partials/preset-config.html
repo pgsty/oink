@@ -5,7 +5,8 @@
        preset  -- the site default, always an available preset name;
        offered -- the presets the Appearance menu offers, the default first
                   when the menu is off (so `len offered` is 1 without a menu);
-       menu    -- true when the reader may choose between two or more presets.
+       menu    -- true when the reader may choose between two or more presets;
+       available -- every preset name this version ships, in menu order.
 
      `preset` falls back to paper. GitHub, Ink, News and Terminal are
      experimental and need an explicit preset or menu-list entry. `true` keeps
@@ -69,4 +70,4 @@
   {{- end -}}
 {{- end -}}
 
-{{- return dict "preset" $preset "offered" $offered "menu" (gt (len $offered) 1) -}}
+{{- return dict "preset" $preset "offered" $offered "menu" (gt (len $offered) 1) "available" $available -}}

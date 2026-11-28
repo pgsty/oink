@@ -77,6 +77,12 @@ and Terminal each get a dark mode of their own.
 - The Style legend reads "Style (T)" and the Color legend "Color (Y)" when
   keyboard navigation is on; the hint hides when a reader turns single-key
   shortcuts off and on devices without hover.
+- A Landing `capabilities` tile with `visual.type: components` may name a
+  `preset`. When the Appearance menu offers that preset, the tile becomes a
+  button that switches the style (`button[data-td-preset-select]` in a
+  `role="group"` board) and follows the reader's choice; Print, Markdown and
+  a preset the menu does not offer keep the static tile, and a name that is
+  not a preset warns.
 
 ### Changed
 

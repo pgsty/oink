@@ -792,6 +792,57 @@ def check_markdown_scopes(hugo: str) -> list[str]:
     return errors
 
 
+def check_capabilities_preset_buttons(hugo: str) -> list[str]:
+    """Offered capability preset tiles become buttons in HTML and static spans in Print."""
+    errors: list[str] = []
+    data = """sections:
+  - type: capabilities
+    data:
+      items:
+        - title: Visual styles
+          visual:
+            type: components
+            aria_label: Choose a style
+            items:
+              - { icon: fa-solid fa-file-lines, title: Paper, detail: default, preset: paper }
+              - { icon: fa-solid fa-layer-group, title: Slate, detail: technical, preset: slate }
+              - { icon: fa-solid fa-terminal, title: Terminal, detail: unoffered, preset: terminal }
+              - { icon: fa-solid fa-file, title: Typo, detail: unknown, preset: papr }
+"""
+    with tempfile.TemporaryDirectory(prefix="td-landing-preset-board-") as temp:
+        site = Path(temp)
+        create_site(site, data)
+        config = (site / "hugo.yaml").read_text(encoding="utf-8")
+        write(
+            site / "hugo.yaml",
+            config.replace("page: [HTML]", "page: [HTML, print, markdown]").replace(
+                "    pager_types: []", "    pager_types: []\n    preset_menu: [paper, slate]"
+            ),
+        )
+        result = run(hugo, site)
+        if result.returncode != 0:
+            return [f"preset board fixture failed: {result.stdout}{result.stderr}"]
+        html = (site / "public/test/index.html").read_text(encoding="utf-8")
+        print_html = (site / "public/_print/test/index.html").read_text(encoding="utf-8")
+        markdown = (site / "public/test/index.md").read_text(encoding="utf-8")
+        require('role="group" aria-label="Choose a style"' in html, "preset board lacks group role", errors)
+        require('data-td-preset-select="paper" aria-pressed="true"' in html, "default preset button not pressed", errors)
+        require('data-td-preset-select="slate" aria-pressed="false"' in html, "secondary offered preset button missing", errors)
+        require('data-td-preset-select="terminal"' not in html, "unoffered preset rendered a live button", errors)
+        require('<span><i class="fa-solid fa-terminal" aria-hidden="true"></i><b>Terminal</b><small>unoffered</small></span>' in html,
+                "unoffered preset did not degrade to static span", errors)
+        require('data-td-preset-select' not in print_html and '<button' not in print_html,
+                "preset board emitted interactive buttons in Print", errors)
+        require('data-td-preset-select' not in markdown and '<button' not in markdown,
+                "preset board leaked markup into Markdown", errors)
+        log = result.stdout + result.stderr
+        require(log.count('capabilities tile preset "papr" is not a preset') == 1,
+                "unknown tile preset did not warn exactly once", errors)
+        require('<span><i class="fa-solid fa-file" aria-hidden="true"></i><b>Typo</b><small>unknown</small></span>' in html,
+                "unknown tile preset did not stay a static span", errors)
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--hugo", default="hugo")
@@ -820,6 +871,7 @@ def main() -> int:
         + check_rss(args.hugo)
         + check_markdown_scopes(args.hugo)
         + check_code_focus(args.hugo)
+        + check_capabilities_preset_buttons(args.hugo)
     )
     if errors:
         print("landing checks failed:")

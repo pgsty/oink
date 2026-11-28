@@ -4,7 +4,8 @@
   {{- warnf "shortcode %q requires at least one key at %s; rendering nothing" .Name .Position -}}
 {{- end -}}
 {{- $keys := slice -}}
-{{- range .Params -}}
+{{- /* Named parameters warned above and render nothing. */ -}}
+{{- range (cond .IsNamedParams slice .Params) -}}
   {{- if ne (printf "%T" .) "string" -}}
     {{- warnf "shortcode %q: every key must be a string at %s; skipping it" $.Name $.Position -}}
     {{- continue -}}

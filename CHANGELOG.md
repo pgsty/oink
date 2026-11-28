@@ -26,7 +26,8 @@ Paper's accent changed.
     a metadata line with `<time>` and neutral tag chips follows it, and its
     items stay separated in plain-text copy, search, feeds and screen readers.
     An invalid date or tag warns and is dropped; an unquoted full date, which
-    makes Goldmark drop the whole attribute block, warns too.
+    makes Goldmark leave the whole attribute block in the heading text, warns
+    too.
   - **Video**: a block image whose destination is a video file renders a
     native player with `caption`, `num`, `poster`, `track`, `width`, `height`;
     `autoplay=true` makes a muted loop that `js/chunks/media.js` plays only
@@ -226,6 +227,8 @@ Paper's accent changed.
   View and the shortcut sheet close.
 - The sidebar section switcher, previous/next links and blog gallery links
   include their visible text in their accessible names for voice control.
+- `kbd` ignores named parameters, as its warning says, instead of rendering
+  their values as keys.
 - A table that occupies a whole tab panel reaches both panel edges. Wide
   tables can still scroll within the panel.
 - Asciinema `markers` reach the player as `[time, label]` pairs. The theme

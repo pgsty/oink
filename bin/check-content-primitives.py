@@ -1236,7 +1236,9 @@ def check_update_headings(hugo: str) -> list[str]:
             '## Numeric date {#num-date .update date=2026 tags=true}\n\nBody.\n\n'
             '## Escaped tags {#escaped .update tags="A&B, <script>x</script>, **bold**"}\n\nBody.\n\n'
             '## No marker date {date="2026-01-01"}\n\nBody.\n\n'
-            '## No marker tags {tags="Breaking"}\n\nBody.\n'
+            '## No marker tags {tags="Breaking"}\n\nBody.\n\n'
+            '## Unquoted date {.update date=2026-11-01}\n\nBody.\n\n'
+            '## Unquoted after id {#unquoted .update date=2026-11-01}\n\nBody.\n'
         )
         override_cfg = temp_path / "update-search.yaml"
         override_cfg.write_text("params:\n  offline_search_index: content\n")
@@ -1257,6 +1259,8 @@ def check_update_headings(hugo: str) -> list[str]:
             ("update tags must be a string", "non-string tags"),
             ('unknown attribute "date"', "orphan date without .update"),
             ('unknown attribute "tags"', "orphan tags without .update"),
+            ('heading "Unquoted date {.update date=2026-11-01}": its {.update', "unparsed unquoted date"),
+            ('heading "Unquoted after id {#unquoted .update date=2026-11-01}": its {.update', "unparsed unquoted date after an id"),
         ):
             require(snippet in output, f"update headings missing warning for {label}: {output.strip()[-600:]}", errors)
         page = temp_path / "public/docs/updates/index.html"
@@ -1343,6 +1347,12 @@ def check_invalid_cases(hugo: str) -> list[str]:
             "map-nan must skip NaN without failing the build and format small decimal coordinates cleanly",
             errors,
         )
+        # The footer shortcut sheet carries its own <kbd>K</kbd>; compare with a
+        # page whose kbd rendered nothing either.
+        kbd_named_html = (temp_path / "public/docs/kbd-named/index.html").read_text()
+        kbd_type_html = (temp_path / "public/docs/kbd-type/index.html").read_text()
+        require(kbd_named_html.count("<kbd>K</kbd>") == kbd_type_html.count("<kbd>K</kbd>"),
+                "kbd-named must ignore named parameters as its warning says", errors)
         avatar_parent_html = (temp_path / "public/docs/social-avatar-parent/index.html").read_text()
         require(
             'class="td-social__avatar"' not in avatar_parent_html and "td-social" in avatar_parent_html,

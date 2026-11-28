@@ -17,7 +17,7 @@
 {{- if and (eq (len .Attributes) 1) (eq (index .Attributes "id") .Anchor) -}}
 {{- /* Goldmark drops a whole attribute block it cannot parse, such as an
        unquoted date=2026-11-01, and leaves it in the heading text. */ -}}
-{{- if and (strings.Contains .PlainText "{") (findRE `\{\s*\.update\b[^{}]*\}\s*$` .PlainText 1) -}}
+{{- if and (strings.Contains .PlainText "{") (findRE `\{[^{}]*\.update\b[^{}]*\}\s*$` .PlainText 1) -}}
   {{- warnf "heading %q: its {.update …} attributes were not parsed, so they stay in the heading text; quote every value, as in date=\"2026-11-01\", in %s" .PlainText .Page.Path -}}
 {{- end -}}
 <h{{ .Level }} id="{{ .Anchor }}">

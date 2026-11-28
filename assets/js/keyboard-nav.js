@@ -68,11 +68,11 @@
   }
 
   // Interactive widgets that own their own arrow / +/- / single-key controls
-  // (an embedded Leaflet map, a native audio or video player) take priority
-  // while focus sits inside.
+  // (an embedded Leaflet map, a native audio or video player, the theme's
+  // media control row) take priority while focus sits inside.
   function isInteractiveWidget(target) {
     if (!target || target.nodeType !== 1 || typeof target.closest !== 'function') return false;
-    return target.closest('[data-td-map-canvas], .td-map__canvas, audio, video') !== null;
+    return target.closest('[data-td-map-canvas], .td-map__canvas, audio, video, .td-media__controls') !== null;
   }
 
   function closestByClass(node, className) {

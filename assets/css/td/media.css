@@ -88,31 +88,293 @@
   color-scheme: dark;
 }
 
-/* The browser keeps its scrubber, time labels, volume and caption controls.
-   Keep a distinct accent and track even when a preset changes during playback. */
-.td-media--timed {
-  --td-media-track: color-mix(in srgb, var(--bs-body-bg) 84%, var(--bs-body-color));
-  --td-media-progress-fill: linear-gradient(to right,
-    var(--td-accent) var(--td-media-played), var(--td-media-track) var(--td-media-played));
+/* The control row (js/chunks/media.js) replaces the native control strip:
+   play, elapsed time, one seek bar, duration, speed, captions, sound and full
+   screen. The seek bar is a single track in three colors: played time in the
+   preset accent, buffered time a deeper neutral and unloaded time a light
+   one. Played time keeps at least 3:1 against both neutrals in every preset
+   and mode, so the playhead edge reads without the handle. Without the
+   runtime the native player keeps its own controls. */
+:where(.td-media) {
+  --td-media-fill: var(--td-accent, var(--bs-link-color));
+  --td-media-buffer: color-mix(in srgb, var(--bs-body-color) 26%, var(--bs-body-bg));
+  --td-media-track: color-mix(in srgb, var(--bs-body-color) 12%, var(--bs-body-bg));
+  --td-media-bar: 6px;
+  --td-media-bar-radius: 999px;
+  --td-media-thumb-radius: 50%;
+  --td-media-button-radius: 50%;
 }
 
-.td-media__progress {
+:where([data-bs-theme='dark']) :where(.td-media),
+:where(.td-media[data-bs-theme='dark']) {
+  --td-media-buffer: color-mix(in srgb, var(--bs-body-color) 22%, var(--bs-body-bg));
+  --td-media-track: color-mix(in srgb, var(--bs-body-color) 11%, var(--bs-body-bg));
+}
+
+.td-media--controlled > audio {
   display: none;
 }
 
-@media screen and (forced-colors: none) {
-  .td-media--timed > :is(audio, video)::-webkit-media-controls-timeline {
-    direction: ltr;
-    background: var(--td-media-progress-fill) center / calc(100% - 32px) 10px no-repeat;
+.td-media__controls {
+  container: td-media-controls / inline-size;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.4rem;
+  color: var(--bs-secondary-color);
+  font-family: var(--td-meta-font-family);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.td-media--video > .td-media__controls {
+  margin-block-start: 0.5rem;
+}
+
+.td-media__button {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--td-media-button-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.td-media__button:hover {
+  background: color-mix(in srgb, var(--bs-body-color) 9%, transparent);
+  color: var(--bs-body-color);
+}
+
+.td-media__button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.td-media__button:focus-visible,
+.td-media__range:focus-visible {
+  outline: 2px solid var(--td-media-fill);
+  outline-offset: 2px;
+}
+
+.td-media__play {
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  margin-inline-end: 0.2rem;
+  background: var(--td-media-fill);
+  color: var(--td-on-link, #fff);
+}
+
+.td-media__play:hover {
+  background: var(--td-accent-hover, var(--td-media-fill));
+  color: var(--td-on-link, #fff);
+}
+
+/* Optical centering for the right-pointing play glyph. */
+.td-media__play > .fa-play {
+  margin-left: 0.15em;
+}
+
+.td-media__speed {
+  inline-size: auto;
+  min-inline-size: 2.6rem;
+  padding-inline: 0.35rem;
+  border-radius: var(--td-control-radius, 0.375rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.td-media--rate .td-media__speed,
+.td-media__captions[aria-pressed='true'] {
+  color: var(--td-media-fill);
+}
+
+.td-media__time {
+  flex: none;
+  min-inline-size: 2.4em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.td-media__sound {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* One track per range. Its background stacks the level (played time, or the
+   volume) over the buffered spans over the unloaded track. The thumb is as
+   tall as the track, so the level and the thumb agree at both ends; it grows
+   into a handle while the bar is hovered, focused or dragged. */
+.td-media__range {
+  --td-media-level: 0%;
+  flex: 1 1 6rem;
+  min-inline-size: 0;
+  block-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--td-media-bar-radius);
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.td-media__seek {
+  --td-media-level: var(--td-media-played, 0%);
+  margin-inline: 0.2rem;
+}
+
+/* Volume is a second range, so it stays folded behind the speaker button
+   until that is hovered or focused: at rest the row shows one bar. Its level
+   is drawn in the text color, never the accent that means elapsed time. */
+.td-media__volume {
+  --td-media-level: var(--td-media-volume, 100%);
+  --td-media-loaded: none;
+  --td-media-fill: var(--bs-secondary-color);
+  flex: none;
+  inline-size: 0;
+  opacity: 0;
+  transition: inline-size 0.15s ease, margin 0.15s ease, opacity 0.15s ease;
+}
+
+.td-media__sound:is(:hover, :focus-within) > .td-media__volume {
+  inline-size: 4.5rem;
+  margin-inline: 0.2rem 0.4rem;
+  opacity: 1;
+}
+
+.td-media__range:disabled {
+  cursor: default;
+}
+
+.td-media__range::-webkit-slider-runnable-track {
+  block-size: var(--td-media-bar);
+  border: 0;
+  border-radius: var(--td-media-bar-radius);
+  background:
+    linear-gradient(to right, var(--td-media-fill) var(--td-media-level), transparent var(--td-media-level)),
+    var(--td-media-loaded, none),
+    var(--td-media-track);
+}
+
+.td-media__range::-moz-range-track {
+  block-size: var(--td-media-bar);
+  border: 0;
+  border-radius: var(--td-media-bar-radius);
+  background:
+    linear-gradient(to right, var(--td-media-fill) var(--td-media-level), transparent var(--td-media-level)),
+    var(--td-media-loaded, none),
+    var(--td-media-track);
+}
+
+.td-media__range::-webkit-slider-thumb {
+  inline-size: var(--td-media-bar);
+  block-size: var(--td-media-bar);
+  border: 0;
+  border-radius: var(--td-media-thumb-radius);
+  background: var(--td-media-fill);
+  -webkit-appearance: none;
+  appearance: none;
+  transform: scale(0);
+  transition: transform 0.12s ease;
+}
+
+.td-media__range::-moz-range-thumb {
+  inline-size: var(--td-media-bar);
+  block-size: var(--td-media-bar);
+  border: 0;
+  border-radius: var(--td-media-thumb-radius);
+  background: var(--td-media-fill);
+  transform: scale(0);
+  transition: transform 0.12s ease;
+}
+
+.td-media__range:enabled:is(:hover, :focus-visible, :active)::-webkit-slider-thumb {
+  transform: scale(2.2);
+}
+
+.td-media__range:enabled:is(:hover, :focus-visible, :active)::-moz-range-thumb {
+  transform: scale(2.2);
+}
+
+/* Touch has no hover: the handle stays visible, and the device's own buttons
+   set the volume (iOS ignores a page's volume). */
+@media (hover: none) and (pointer: coarse) {
+  .td-media__range:enabled::-webkit-slider-thumb {
+    transform: scale(2.2);
   }
 
-  .td-media--timed > .td-media__progress {
-    display: block;
-    block-size: 6px;
-    margin-block-start: 0.3rem;
-    border-radius: var(--td-media-radius);
-    background: var(--td-media-progress-fill);
+  .td-media__range:enabled::-moz-range-thumb {
+    transform: scale(2.2);
   }
+
+  .td-media__volume {
+    display: none;
+  }
+}
+
+/* A narrow row gives the seek bar a line of its own above the buttons. */
+@container td-media-controls (max-width: 26rem) {
+  .td-media__seek {
+    flex-basis: 100%;
+    order: -1;
+    margin-inline: 0;
+  }
+
+  .td-media__time {
+    min-inline-size: 0;
+  }
+
+  .td-media__time--total {
+    margin-inline-end: auto;
+  }
+
+  .td-media__time--total::before {
+    content: '/';
+    margin-inline-end: 0.4rem;
+  }
+
+  .td-media__volume {
+    display: none;
+  }
+}
+
+/* Full screen keeps the theme's row under the picture. */
+.td-media--fullscreen {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  background: #000;
+}
+
+.td-media--fullscreen > video {
+  flex: 1 1 0;
+  min-block-size: 0;
+  block-size: auto;
+  max-block-size: none;
+  border-radius: 0;
+}
+
+.td-media--fullscreen > :not(video, .td-media__controls) {
+  display: none;
+}
+
+.td-media--fullscreen > .td-media__controls {
+  margin: 0;
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  background: var(--bs-body-bg);
 }
 
 /* Stack consecutive audio samples tighter using positive margins so custom
@@ -280,8 +542,53 @@
   border-radius: var(--td-experiment-radius, 0);
 }
 
+/* Each preset draws the bar in its own shape: Paper and Slate keep a soft
+   pill, GitHub Primer's 8px progress bar, Ink a thin square-cut rule, News a
+   flat editorial line with a square marker, and Terminal a block cursor over
+   dim phosphor. */
+[data-td-preset='github'] .td-media {
+  --td-media-bar: 8px;
+  --td-media-button-radius: 6px;
+}
+
+[data-td-preset='ink'] .td-media {
+  --td-media-bar: 4px;
+  --td-media-bar-radius: 0;
+  --td-media-thumb-radius: 0;
+  --td-media-button-radius: 0;
+}
+
+[data-td-preset='news'] .td-media {
+  --td-media-bar: 5px;
+  --td-media-bar-radius: 0;
+  --td-media-thumb-radius: 0;
+  --td-media-button-radius: 0;
+}
+
+[data-td-preset='terminal'] .td-media {
+  --td-media-buffer: color-mix(in srgb, var(--td-media-fill) 30%, var(--bs-body-bg));
+  --td-media-bar: 8px;
+  --td-media-bar-radius: 0;
+  --td-media-thumb-radius: 0;
+  --td-media-button-radius: var(--td-experiment-radius, 2px);
+}
+
+[data-td-preset='terminal'] .td-media__controls {
+  font-family: var(--td-ui-font-family);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .td-media-card__play {
+  .td-media-card__play,
+  .td-media__button,
+  .td-media__volume {
+    transition: none;
+  }
+
+  .td-media__range::-webkit-slider-thumb {
+    transition: none;
+  }
+
+  .td-media__range::-moz-range-thumb {
     transition: none;
   }
 
@@ -294,6 +601,43 @@
   .td-media--audio,
   .td-media-card {
     border-color: CanvasText;
+  }
+
+  /* The bar keeps its three states in system colors; the handle always shows. */
+  .td-media,
+  [data-td-preset] .td-media {
+    --td-media-fill: Highlight;
+    --td-media-buffer: GrayText;
+    --td-media-track: Canvas;
+  }
+
+  .td-media__range {
+    forced-color-adjust: none;
+  }
+
+  .td-media__range::-webkit-slider-runnable-track {
+    outline: 1px solid CanvasText;
+  }
+
+  .td-media__range::-moz-range-track {
+    outline: 1px solid CanvasText;
+  }
+
+  .td-media__range:enabled::-webkit-slider-thumb {
+    transform: scale(2.2);
+  }
+
+  .td-media__range:enabled::-moz-range-thumb {
+    transform: scale(2.2);
+  }
+
+  .td-media__range:focus-visible,
+  .td-media__button:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .td-media__play {
+    border: 1px solid ButtonText;
   }
 
   .td-media-card:focus-visible {
@@ -348,6 +692,7 @@
   }
 
   .td-media--audio audio,
+  .td-media__controls,
   .td-media-player,
   .td-media-card__play {
     display: none;

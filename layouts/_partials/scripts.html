@@ -322,8 +322,13 @@
 {{ if $hasFileTree -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/filetree.js" "members" (slice (resources.Get "js/filetree.js"))) -}}
 {{ end -}}
-{{/* Native media progress and playback, or an enabled in-place platform player. */ -}}
+{{/* The theme's media controls and playback, or an enabled in-place platform
+     player. The control labels follow the page language. */ -}}
 {{ if and $interactiveOutput (.Page.Store.Get "hasMedia") -}}
+<script type="application/json" data-td-media-config>{{ dict
+  "play" (T "ui_media_play") "pause" (T "ui_media_pause") "seek" (T "ui_media_seek")
+  "speed" (T "ui_media_speed") "captions" (T "ui_media_captions") "mute" (T "ui_media_mute")
+  "volume" (T "ui_media_volume") "fullscreen" (T "ui_media_fullscreen") | jsonify | safeJS }}</script>
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/media.js" "members" (slice (resources.Get "js/media.js"))) -}}
 {{ end -}}
 {{ if $hasAuthoredA11y -}}

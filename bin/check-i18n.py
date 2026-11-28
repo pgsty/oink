@@ -77,7 +77,7 @@ FALLBACK_MARKERS = (
 # them as written.
 UNIVERSAL_IDENTICAL = {"ui_preview_source", "ui_list_separator", "ui_preset_paper", "ui_preset_slate", "ui_preset_ink", "ui_preset_terminal"}
 REVIEWED_IDENTICAL = {
-    "de": {"callout_details", "ui_theme_auto", "post_meta_in"},
+    "de": {"callout_details", "ui_theme_auto", "post_meta_in", "ui_media_pause"},
     "es": {"post_translated_original", "post_reading_minutes", "feedback_negative"},
     "et": {"post_reading_minutes"},
     "fi": {"post_reading_minutes"},
@@ -87,23 +87,26 @@ REVIEWED_IDENTICAL = {
         "ui_module_title", "ui_page_actions", "ui_release_source",
         "post_upstream_notice", "post_translated_original", "post_reading_minutes",
         "book_figure", "ui_taxonomies_title", "ui_appearance_style",
+        "ui_media_pause", "ui_media_volume",
     },
     "it": {
         "ui_home", "ui_tag_title", "ui_share_email", "ui_assets_file",
         "post_meta_in", "post_reading_minutes", "feedback_negative",
+        "ui_media_volume",
     },
     "nl": {
         "callout_tip", "callout_details", "ui_home", "ui_tags_title",
         "ui_tag_title", "ui_modules_title", "ui_module_title",
         "ui_tabs_label", "post_meta_in", "post_reading_minutes",
+        "ui_media_volume",
     },
-    "no": {"ui_theme_auto", "post_reading_minutes"},
+    "no": {"ui_theme_auto", "post_reading_minutes", "ui_media_pause"},
     "oc": {
         "callout_important", "callout_question", "post_translated_original",
         "post_reading_minutes", "contributors_count",
     },
     "pl": {"ui_tag_title", "ui_theme_auto", "post_reading_minutes"},
-    "pt-br": {"post_translated_original", "post_reading_minutes"},
+    "pt-br": {"post_translated_original", "post_reading_minutes", "ui_media_volume"},
     "ro": {
         "callout_important", "ui_share_email", "post_translated_original",
         "post_reading_minutes",

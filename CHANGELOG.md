@@ -25,6 +25,25 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   applied. `content/markdown-escape-inline.html`, used only by the
   shortcode, is gone.
 
+### Changed
+
+- **Audio and video files play through one progress bar.** 1.7.0 painted the
+  accent under Chromium's native timeline and hung a second strip below the
+  player in Firefox and Safari, so a reader saw two bars. The media runtime
+  now removes `controls` and draws the theme's own row: play, elapsed time,
+  a single seek bar, duration, a speed button (1×, 1.25×, 1.5×, 2×, 0.75×),
+  mute with a volume bar that unfolds on hover or focus, and for video a
+  captions toggle and full screen with the row kept under the picture.
+  The bar is one track in three colors, played time in the accent over
+  buffered time in a deeper neutral over the unloaded rest, with played
+  time at least 3:1 against both neutrals in every preset and mode. Each
+  preset shapes it: a pill in Paper and Slate, GitHub's 8px bar,
+  square-cut rules in Ink and News, and a block cursor over dim phosphor in
+  Terminal. Arrow keys seek 5 s, a narrow row gives the bar its own line,
+  clicking a video toggles playback, and the row stays left to right on RTL
+  pages. Eight `ui_media_*` labels join all 32 locales. Without JavaScript
+  the native controls remain; `.td-media__progress` is gone.
+
 ## [1.7.0] — 2026-11-28
 
 OINK 1.7.0 adds six content components, typeset rich-text copy, a sheet of 29

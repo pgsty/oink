@@ -237,7 +237,7 @@ assuming drop-in compatibility.
 | Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
 | Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text for 32 locales, including generic `zh`. Each catalog has 264 keys and follows the schema and placeholders in `i18n/en.yaml`, with language-specific CLDR plural forms |
+| Locales | Native OINK interface text for 32 locales, including generic `zh`. Each catalog has 272 keys and follows the schema and placeholders in `i18n/en.yaml`, with language-specific CLDR plural forms |
 
 Development, preview and checks use whichever Hugo is installed, and CI
 installs the current release; none is pinned. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.

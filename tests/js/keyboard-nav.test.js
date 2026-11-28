@@ -162,6 +162,7 @@ class Element {
     if (selector === '[data-td-map-canvas]') return this.hasAttribute('data-td-map-canvas');
     if (selector === '.td-map__canvas') return this.classList.contains('td-map__canvas');
     if (selector === 'audio' || selector === 'video') return this.tagName === selector.toUpperCase();
+    if (selector === '.td-media__controls') return this.classList.contains('td-media__controls');
     if (selector === '[hidden]') return Boolean(this.hidden) || this.hasAttribute('hidden');
     if (selector === '[inert]') return Boolean(this.inert) || this.hasAttribute('inert');
     if (selector === '.td-site-header') return this.classList.contains('td-site-header');
@@ -2120,6 +2121,15 @@ function press(harness, values) {
       const ev = press(mapHost, { key, target: player });
       assert.notEqual(ev.defaultPrevented, true, `key ${key} yields while a ${tag} player has focus`);
     }
+  }
+  // The theme's control row stands in for the native controls and yields too.
+  const mediaRow = new Element('div', 'td-media__controls');
+  const mediaButton = new Element('button', 'td-media__button');
+  mediaRow.appendChild(mediaButton);
+  mapHost.root.appendChild(mediaRow);
+  for (const key of ['g', 'f', 'k', 'j', 'x', '-']) {
+    const ev = press(mapHost, { key, target: mediaButton });
+    assert.notEqual(ev.defaultPrevented, true, `key ${key} yields while a media control has focus`);
   }
 
   // Turning off single-key shortcuts suppresses ' inside shortcut help and

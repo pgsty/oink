@@ -266,6 +266,7 @@
     function isToggleKey(event) {
       const target = event.target;
       return Boolean(shortcut) && typeof event.key === 'string' && event.key.toLowerCase() === shortcut &&
+        !document.documentElement.hasAttribute('data-td-shortcuts-off') &&
         !event.defaultPrevented && !event.isComposing && event.keyCode !== 229 &&
         !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey &&
         !target?.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
@@ -466,8 +467,13 @@
               return style.display !== 'none' && style.visibility !== 'hidden' && node.getClientRects().length > 0;
             })
           );
+          let composing = false;
+          doc.addEventListener('compositionstart', () => { composing = true; }, { signal: paneSignal });
+          for (const type of ['compositionend', 'compositioncancel', 'blur']) {
+            doc.addEventListener(type, () => { composing = false; }, { capture: true, signal: paneSignal });
+          }
           doc.addEventListener('keydown', event => {
-            if (event.defaultPrevented || hasOpenPaneDialog()) return;
+            if (event.defaultPrevented || composing || event.isComposing || event.keyCode === 229 || hasOpenPaneDialog()) return;
             if (event.key === 'Escape' || isToggleKey(event)) { event.preventDefault(); close(); return; }
             if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) own();
           }, { signal: paneSignal });

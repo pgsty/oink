@@ -1,6 +1,6 @@
 /**
- * Keyboard navigation: thirty single-key shortcuts in three groups, matching
- * the 3 x 10 shortcut help.
+ * Keyboard navigation: twenty-nine single-key shortcuts in three groups,
+ * matching the shortcut help sheet.
  *
  * Navigation: W/S and the arrow keys move through the sidebar tree, A/D
  * collapse or expand a section, Enter or Space opens the focused page, Q/E
@@ -8,10 +8,10 @@
  * outline section, X cycles languages, R cycles internal top-level navbar
  * sections, V cycles versions, H opens the browsing history and G goes home.
  *
- * Actions: F (and "/" in the palette) searches, C (and "`" in the palette)
+ * Actions: F (and "/" in the palette) searches, C (and "\\" in the palette)
  * opens commands, U edits the page, N creates a child page, I files an issue,
- * O expands or collapses everything that folds, P prints, and [ ] \ hand the
- * page to ChatGPT, Claude or Gemini.
+ * O expands or collapses everything that folds, P prints, and [ ] hand the
+ * page to ChatGPT or Claude.
  *
  * View: B opens the duo view, Z toggles Zen Mode, M opens the Markdown
  * source, T cycles visual styles, Y cycles color modes, L switches index
@@ -150,6 +150,8 @@
 
   function isVisible(element, win) {
     if (!element) return false;
+    if (typeof element.closest === 'function' && element.closest('[hidden], [inert], [aria-hidden="true"]'))
+      return false;
     if (win.getComputedStyle) {
       var style = win.getComputedStyle(element);
       if (style.display === 'none' || style.visibility === 'hidden') return false;
@@ -317,16 +319,46 @@
     // `+` require Shift on US keyboards, and `;` / `=` require Shift on ISO
     // and JIS keyboards, so only those characters (and the unshifted keys under
     // them) may pass with shiftKey held; `:` and `"` remain guarded.
+    // Normalize fullwidth / CJK IME punctuation to the matching single-key
+    // shortcut without overriding Latin keys on non-US keyboard layouts.
+    var CJK_KEY_MAP = {
+      '【': '[',
+      '】': ']',
+      '；': ';',
+      '，': ',',
+      '《': '<',
+      '。': '.',
+      '》': '>',
+      '‘': "'",
+      '’': "'",
+      '＇': "'",
+      '－': '-',
+      '＝': '=',
+      '＋': '+',
+    };
+
+    function shortcutKey(event) {
+      var raw = event.key;
+      if (Object.prototype.hasOwnProperty.call(CJK_KEY_MAP, raw)) {
+        return CJK_KEY_MAP[raw];
+      }
+      if (raw === 'Process' && event.code === 'Quote' && !event.shiftKey) return "'";
+      return raw;
+    }
+
     function allowShiftKey(key) {
       return key === ',' || key === '<' || key === '.' || key === '>' ||
         key === ';' || key === '=' || key === '+';
     }
 
     function keyGuarded(event) {
+      var mapped = shortcutKey(event);
+      var imeBlocked = (event.isComposing || event.keyCode === 229) &&
+        !(mapped !== event.key && !event.isComposing && !isTypingTarget(event.target));
       return Boolean(
-        event.isComposing || event.keyCode === 229 ||
+        imeBlocked ||
         event.metaKey || event.ctrlKey || event.altKey ||
-        (event.shiftKey && !allowShiftKey(event.key)) ||
+        (event.shiftKey && !allowShiftKey(mapped)) ||
         event.defaultPrevented ||
         isTypingTarget(event.target) ||
         isInteractiveWidget(event.target),
@@ -1325,7 +1357,7 @@
     }
 
     // One entry per help row. The dialog dims the rows this page cannot run
-    // right now, so the 3 x 10 grid keeps its shape and still tells the truth.
+    // right now, so the three-column grid keeps its shape and still tells the truth.
     var SHORTCUTS = {
       'tree-move': hasTree,
       'tree-toggle': hasTree,
@@ -1348,7 +1380,6 @@
       print: canPrint,
       chatgpt: hasAction('open_chatgpt'),
       claude: hasAction('open_claude'),
-      gemini: hasAction('open_gemini'),
       duo: function () { return usableControl('[data-td-compare-open]'); },
       zen: function () { return hasReadingShortcuts(); },
       markdown: hasAction('view_markdown'),
@@ -1360,7 +1391,13 @@
       layout: function () { return usableControl('[data-td-blog-index-toggle]'); },
       gallery: function () { return galleryModes() > 1; },
       'image-size': gallerySlider,
-      'page-width': function () { return Boolean(articleBox()); },
+      'page-width': function () {
+        var article = articleBox();
+        if (!article) return false;
+        var container = article.parentElement;
+        var available = container ? container.clientWidth : 0;
+        return !available || available > WIDTH_MIN;
+      },
       help: always,
     };
 
@@ -1390,14 +1427,41 @@
       });
     }
 
-    // The full sheet is inert template content: the footer's hover card is
-    // only a hint, and pages without a footer carry the same template.
+    // Footer pages carry the full sheet inside the bottom-bar hover menu;
+    // footerless pages carry the same sheet inside a hidden template.
     function helpSource() {
+      var sheet = doc.querySelector && doc.querySelector('.td-shell-keyboard-help');
+      if (sheet && sheet.hasAttribute && sheet.hasAttribute('data-td-close-label')) {
+        return sheet;
+      }
       var tpl = doc.querySelector && doc.querySelector('template[data-td-keyboard-help-source]');
       if (tpl && tpl.content && tpl.content.querySelector) {
         return tpl.content.querySelector('.td-shell-keyboard-help');
       }
       return null;
+    }
+
+    function fitHoverHelp() {
+      if (!hoverHelpHost) return;
+      var trigger = hoverHelpHost.querySelector('.td-shell-keyboard__trigger');
+      if (trigger && trigger.getBoundingClientRect && hoverHelp.style) {
+        var top = trigger.getBoundingClientRect().top;
+        hoverHelp.style.setProperty('--td-keyboard-help-height', Math.max(0, top - 16) + 'px');
+      }
+    }
+
+    function refreshVisibleHelp() {
+      if (isHelpOpen()) markAvailability(helpDialog);
+      if (hoverHelpHost && hoverHelpHost.classList.contains('td-is-open')) syncHoverHelp();
+    }
+
+    function syncHoverHelp() {
+      var sheet = doc.querySelector && doc.querySelector('.td-shell-keyboard-help');
+      if (!sheet || !sheet.hasAttribute || !sheet.hasAttribute('data-td-close-label')) return;
+      var label = sheet.getAttribute('data-td-unavailable-label');
+      if (label) unavailableLabel = label;
+      fitHoverHelp();
+      markAvailability(sheet);
     }
 
     function isHelpOpen() {
@@ -1544,8 +1608,7 @@
       closeBtn.className = 'td-shell-keyboard-dialog__close';
       closeBtn.setAttribute('data-td-keyboard-dialog-close', '');
       closeBtn.setAttribute('aria-label', closeLabel);
-      closeBtn.setAttribute('title', closeLabel + " (Esc / ')");
-      closeBtn.setAttribute('aria-keyshortcuts', "Escape '");
+      closeBtn.setAttribute('data-td-close-label', closeLabel);
       var closeIcon = doc.createElement('i');
       closeIcon.className = 'td-shell-icon td-shell-icon--x fa-solid fa-xmark';
       closeIcon.setAttribute('aria-hidden', 'true');
@@ -1555,7 +1618,7 @@
       header.appendChild(closeBtn);
       surface.appendChild(header);
 
-      // Thirty rows scroll on a phone and hold nothing focusable, so the
+      // Twenty-nine rows scroll on a phone and hold nothing focusable, so the
       // body itself is a labelled tab stop that the keyboard can scroll.
       var body = doc.createElement('div');
       body.className = 'td-shell-keyboard-dialog__body';
@@ -1577,6 +1640,8 @@
       if (preference) {
         var control = preference.cloneNode(true);
         control.className = 'td-shell-keyboard-dialog__preference';
+        control.hidden = false;
+        if (control.removeAttribute) control.removeAttribute('hidden');
         surface.appendChild(control);
       }
       dialog.appendChild(surface);
@@ -1590,6 +1655,12 @@
           event.preventDefault();
           closeHelp(true);
         });
+        dialog.addEventListener('change', function (event) {
+          var target = event && event.target;
+          if (target && target.closest && target.closest('[data-td-shortcut-preference]')) {
+            syncHelpCloseHint(typeof target.checked === 'boolean' ? !target.checked : undefined);
+          }
+        });
         dialog.addEventListener('close', finishHelpClose);
         dialog.addEventListener('pointerdown', function (event) {
           helpBackdropPressed = event.target === dialog;
@@ -1602,7 +1673,22 @@
 
       helpDialog = dialog;
       helpCloseButton = closeBtn;
+      syncHelpCloseHint();
       return dialog;
+    }
+
+    function syncHelpCloseHint(forcedOff) {
+      if (!helpCloseButton) return;
+      var closeLabel = helpCloseButton.getAttribute('data-td-close-label') ||
+        helpCloseButton.getAttribute('aria-label') || 'Close';
+      var off = typeof forcedOff === 'boolean' ? forcedOff : html.hasAttribute('data-td-shortcuts-off');
+      if (off) {
+        helpCloseButton.setAttribute('title', closeLabel + ' (Esc)');
+        helpCloseButton.setAttribute('aria-keyshortcuts', 'Escape');
+      } else {
+        helpCloseButton.setAttribute('title', closeLabel + " (Esc / ')");
+        helpCloseButton.setAttribute('aria-keyshortcuts', "Escape '");
+      }
     }
 
     function openHelp(event, returnTarget) {
@@ -1612,6 +1698,10 @@
       if (!dialog) return false;
       if (event && typeof event.preventDefault === 'function') event.preventDefault();
       markAvailability(dialog);
+      var pref = dialog.querySelector && dialog.querySelector('[data-td-shortcut-preference]');
+      var prefInput = pref && pref.querySelector && pref.querySelector('input');
+      if (prefInput) prefInput.checked = !html.hasAttribute('data-td-shortcuts-off');
+      syncHelpCloseHint();
       helpReturnFocus = returnTarget || doc.activeElement;
       suppressHelpFocus = false;
       var coordinator = options.coordinator || win.OinkSurfaceCoordinator;
@@ -1662,15 +1752,16 @@
     /* ------------------------------------------------------------ keymap */
 
     function onKeydown(event) {
-      var key = event.key;
+      var key = shortcutKey(event);
       if (isHelpOpen()) {
-        if (key === 'Escape' && !event.defaultPrevented && !hasOtherOpenDialog(helpDialog)) {
+        if ((key === 'Escape' || event.code === 'Escape') && !event.isComposing && !event.defaultPrevented && !hasOtherOpenDialog(helpDialog)) {
           event.preventDefault();
           return closeHelp(true);
         }
         if (
           key === "'" &&
           !event.repeat &&
+          !html.hasAttribute('data-td-shortcuts-off') &&
           !keyGuarded(event) &&
           !html.hasAttribute('data-td-shell-lock') &&
           !hasOtherOpenDialog(helpDialog)
@@ -1769,7 +1860,6 @@
       if (key === 'p') return printPage(event);
       if (key === '[') return runAction(event, 'open_chatgpt');
       if (key === ']') return runAction(event, 'open_claude');
-      if (key === '\\') return runAction(event, 'open_gemini');
 
       // View
       if (key === 'b') return openCompare(event);
@@ -1813,6 +1903,23 @@
 
     doc.addEventListener('keydown', onKeydown);
     doc.addEventListener('click', onTriggerClick, true);
+    var hoverHelp = doc.querySelector && doc.querySelector('.td-shell-keyboard-help');
+    var hoverHelpHost = hoverHelp && hoverHelp.parentNode;
+    if (hoverHelpHost && hoverHelpHost.addEventListener) {
+      hoverHelpHost.addEventListener('pointerenter', syncHoverHelp);
+      hoverHelpHost.addEventListener('focusin', syncHoverHelp);
+    }
+    if (win.addEventListener) {
+      win.addEventListener('resize', refreshVisibleHelp);
+      win.addEventListener('scroll', function () {
+        if (hoverHelpHost && hoverHelpHost.classList.contains('td-is-open')) fitHoverHelp();
+      }, { passive: true });
+    }
+    var article = articleBox();
+    if (article && article.parentElement && win.ResizeObserver) {
+      new win.ResizeObserver(refreshVisibleHelp).observe(article.parentElement);
+    }
+    syncHoverHelp();
     doc.addEventListener('focusin', function (event) {
       var ring = doc.querySelector('.td-kbd-focus');
       if (ring && event.target && !ring.contains(event.target)) {

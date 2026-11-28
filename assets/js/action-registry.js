@@ -14,7 +14,6 @@
     'copy_link',
     'open_chatgpt',
     'open_claude',
-    'open_gemini',
     'view_markdown',
     'view_history',
     'edit_page',
@@ -36,11 +35,6 @@
     },
     open_claude: function (prompt) {
       return 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
-    },
-    // Gemini documents no prompt parameter: q= fills the box only where a
-    // helper extension honors it, so run() also copies the prompt.
-    open_gemini: function (prompt) {
-      return 'https://gemini.google.com/app?q=' + encodeURIComponent(prompt);
     },
   };
   var SAFE_SCHEMES = new Set(['http:', 'https:']);
@@ -229,14 +223,6 @@
       if (id === 'print') {
         windowObject.print();
         return Promise.resolve({ action: action });
-      }
-      if (id === 'open_gemini') {
-        // Copy before the new tab takes focus: the synchronous copy needs
-        // this document focused and the reader's activation still current.
-        var geminiPrompt = assistantPrompt(action);
-        if (geminiPrompt && clipboard && typeof clipboard.copyNow === 'function')
-          clipboard.copyNow(geminiPrompt, documentObject, windowObject.navigator);
-        return openUrl(action, context.value);
       }
       if (action.kind === 'url') return openUrl(action, context.value);
       if (action.kind === 'choice' && context.value && context.value.url)

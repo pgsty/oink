@@ -187,9 +187,11 @@ function probedSources(images) {
   return requested;
 }
 
-test('Draw.io skips video-card posters but still probes linked and zoomable diagrams', () => {
+test('Draw.io skips video-card posters, social avatars, and map thumbnails but still probes diagrams', () => {
   const requested = probedSources([
     { src: 'https://site.example/talk-poster.png', ancestors: ['a.td-media-card', 'figure.td-media'] },
+    { src: 'https://cdn.example/avatar.png', ancestors: ['img.td-social__avatar', 'div.td-social__author'] },
+    { src: 'https://site.example/thumb.svg', ancestors: ['img.td-map__thumb', 'li'] },
     { src: 'https://site.example/linked.drawio.png', ancestors: ['a', 'p'] },
     { src: 'https://site.example/zoom.drawio.svg', ancestors: ['button.td-image-zoom__trigger'] },
     { src: 'https://site.example/plain.drawio.svg' },

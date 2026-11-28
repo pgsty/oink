@@ -138,6 +138,9 @@
     var now = options.now || function () { return Date.now(); };
     var scope = scopeOf(doc);
     record(doc, win, now);
+    if (win.addEventListener) win.addEventListener('pageshow', function (event) {
+      if (event.persisted) record(doc, win, now);
+    });
 
     var root = doc.getElementById('td-shell-history');
     var input = root && root.querySelector('.td-shell-search__input');
@@ -258,7 +261,8 @@
     function render(keepIndex) {
       var needles = normalize(input.value).split(/\s+/).filter(Boolean);
       var here = currentPath(win);
-      var entries = read(win, scope).filter(function (entry) { return entry.url !== here; });
+      var stored = read(win, scope);
+      var entries = stored.filter(function (entry) { return entry.url !== here; });
       rows = needles.length
         ? entries.filter(function (entry) {
           var haystack = normalize(entry.title + ' ' + displayPath(entry.url));
@@ -268,7 +272,7 @@
       list.textContent = '';
       if (empty) empty.hidden = true;
       input.removeAttribute('aria-activedescendant');
-      if (clearButton) clearButton.disabled = entries.length === 0;
+      if (clearButton) clearButton.disabled = stored.length === 0;
       if (!rows.length) {
         message(entries.length ? label('no-results', 'No results') : label('empty', 'No browsing history yet'));
         return;
@@ -372,6 +376,7 @@
       composing = false;
       win.clearTimeout(hideTimer);
       root.hidden = false;
+      root.inert = false;
       html.setAttribute('data-td-shell-lock', '');
       input.setAttribute('aria-expanded', 'true');
       input.value = '';
@@ -392,6 +397,7 @@
       openState = false;
       composing = false;
       root.classList.remove('td-is-open');
+      root.inert = true;
       html.removeAttribute('data-td-shell-lock');
       input.setAttribute('aria-expanded', 'false');
       input.removeAttribute('aria-activedescendant');
@@ -430,6 +436,8 @@
       composing = false;
       render();
     });
+    input.addEventListener('compositioncancel', function () { composing = false; });
+    input.addEventListener('blur', function () { composing = false; });
     input.addEventListener('input', function () {
       if (!composing) render();
     });
@@ -456,9 +464,10 @@
       }
     });
     doc.addEventListener('keydown', function (event) {
-      if (!openState || event.key !== 'Escape' || event.defaultPrevented) return;
-      if (event.isComposing || composing || event.keyCode === 229) return;
+      if (!openState || (event.key !== 'Escape' && event.code !== 'Escape') || event.defaultPrevented) return;
+      if (event.isComposing || composing) return;
       event.preventDefault();
+      if (typeof event.stopPropagation === 'function') event.stopPropagation();
       close(true);
     });
     doc.addEventListener('keydown', function (event) {

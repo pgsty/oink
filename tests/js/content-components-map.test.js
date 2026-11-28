@@ -282,11 +282,13 @@ function mount(source, opts = {}) {
   canvas.querySelector = (selector) => (selector === '.leaflet-popup-close-button' ? closeBtn : null);
 
   const listItems = (source.places || []).map(() => element('li'));
+  const coords = element('a');
   const root = element('figure');
   root.appendChild(canvas);
   root.querySelector = (selector) => {
     if (selector === '[data-td-map-source]') return { textContent: JSON.stringify(source) };
     if (selector === '[data-td-map-canvas]') return canvas;
+    if (selector === '.td-map__coords') return coords;
     return null;
   };
   root.querySelectorAll = (selector) => (selector === '.td-map__places > li' ? listItems : []);
@@ -378,6 +380,7 @@ function mount(source, opts = {}) {
     calls,
     canvas,
     closeBtn,
+    coords,
     listItems,
     root,
     L,
@@ -505,10 +508,12 @@ test('complete tile failure removes the map and hides the canvas', async () => {
   await page.due();
   assert.equal(page.canvas.hidden, false);
   const layer = page.L._lastTileLayer();
+  page.setActive(page.canvas);
   layer.fire('tileerror');
   layer.fire('tileerror');
   layer.fire('load');
   assert.equal(page.canvas.hidden, true);
+  assert.equal(page.coords.focused, true);
   assert.equal(page.root.classList.contains('td-map--mounted'), false);
   assert.equal(page.calls.some((call) => call[0] === 'mapRemove'), false, 'removal waits for Leaflet to finish the event');
   await page.tick();
@@ -550,10 +555,13 @@ test('failing dark tiles fall back to the light tiles and the map stays', async 
   assert.equal(page.canvas.hidden, false);
   assert.equal(page.canvas.hasAttribute('data-td-map-light-tiles'), true, 'light tiles are dimmed in dark mode');
   assert.equal(page.calls.some((call) => call[0] === 'mapRemove'), false);
-  // Later theme changes keep the working light tiles.
+  // Later theme changes keep the working light tiles without rebuilding them.
   page.setTheme('light');
   page.setTheme('dark');
-  assert.equal(tileUrls().slice(-1)[0], 'https://tile.example.org/light/{z}/{x}/{y}.png');
+  assert.deepEqual(tileUrls(), [
+    'https://tile.example.net/dark/{z}/{x}/{y}.png',
+    'https://tile.example.org/light/{z}/{x}/{y}.png',
+  ]);
   // A stale layer finishing after being replaced is ignored.
   dark.fire('tileerror');
   dark.fire('load');
@@ -687,13 +695,30 @@ test('click-to-load names the dark tile host as well as the light one', async ()
     {
       site: {
         loading: 'click',
-        tiles: 'https://t{s}.light.example.org/{z}/{x}/{-y}{r}.png',
+        tiles: 'https://t{s}.tdsubdomain.example.org:8443/{z}/{x}/{-y}{r}.png',
         darkTiles: 'https://dark.example.net/{z}/{x}/{y}.png',
       },
     },
   );
   const button = page.root.children.find((child) => child.tag === 'button');
-  assert.equal(button.textContent, 'Karte laden (\u2066t*.light.example.org, dark.example.net\u2069)');
+  assert.equal(button.textContent, 'Karte laden (\u2066t*.tdsubdomain.example.org:8443, dark.example.net\u2069)');
+});
+
+test('an engine load failure respects the current focus and leaves the coordinate link available', async () => {
+  for (const moveAway of [false, true]) {
+    const page = mount({ places: [{ name: 'A', lat: 35, lng: 135 }] }, { preload: false, site: { loading: 'click' } });
+    const button = page.root.children.find(child => child.tag === 'button');
+    page.setActive(button);
+    button.dispatch('click');
+    button.dispatch('click');
+    assert.equal(button.getAttribute('aria-disabled'), 'true');
+    assert.equal(page.requests.length, 1);
+    if (moveAway) page.setActive(element('button'));
+    page.requests[0].onerror();
+    await page.settle();
+    assert.equal(page.coords.focused === true, !moveAway);
+    assert.equal(page.root.children.includes(button), false);
+  }
 });
 
 test('a map hidden at mount defers framing until shown, and clicking a list item pans to its marker', async () => {

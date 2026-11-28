@@ -31,7 +31,7 @@
   src: url(../webfonts/brand/ibm-plex-mono-latin-600-normal.woff2) format("woff2");
 }
 
-/* Kai from the reader's own system, for Han, kana and CJK punctuation only:
+/* Kai from the reader's own system, for Han and CJK punctuation:
    no file, no request. The italic face is the same upright Kai, declared
    italic so nothing slants it -- Han has no italic, and its emphasis is a
    change of hand. Kai is drawn small in its em box; `size-adjust` sets it

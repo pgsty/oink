@@ -117,6 +117,7 @@
       function (error) {
         unmounted.delete(root);
         console.error(component.engine + ':', error);
+        if (component.failed) component.failed();
         var text = component.source && component.source(root);
         if (text) showSource(root, component.engine, text);
       },
@@ -268,7 +269,6 @@
     var target = root.querySelector('[data-td-echarts-canvas]');
     if (!options || !target) return;
     options = replaceFunctions(options);
-    registerThemes();
     var configuredTheme = root.getAttribute('data-theme');
     var chart;
 
@@ -280,6 +280,7 @@
       var theme =
         configuredTheme || (currentTheme() === 'dark' ? 'dark' : null);
       try {
+        registerThemes();
         chart = window.echarts.init(target, theme);
         chart.setOption(options);
       } catch (error) {
@@ -395,17 +396,12 @@
 
   // The hosts a click-to-load map may contact: light and dark tiles alike, with
   // `{s}` shown as `*` because the request rotates through every subdomain.
-  // Browsers percent-encode `*` in a parsed hostname, so `{s}` parses as a
-  // plain label and becomes `*` afterwards.
-  var SUBDOMAIN_LABEL = 'tdsubdomain';
   function tileHosts(site) {
     var hosts = [];
     [site && site.tiles, site && site.darkTiles].forEach(function (template) {
       if (!template) return;
       try {
-        var host = new URL(
-          String(template).replace(/\{s\}/g, SUBDOMAIN_LABEL).replace(/\{[^{}]*\}/g, '0'),
-        ).hostname.split(SUBDOMAIN_LABEL).join('*');
+        var host = new URL(template.replace(/\{s\}/g, '*')).host.replace(/%2a/gi, '*');
         if (host && hosts.indexOf(host) < 0) hosts.push(host);
       } catch (_) {
         // An unparsable template names no host; the button keeps its label.
@@ -454,6 +450,11 @@
       box.appendChild(text);
     }
     return box;
+  }
+
+  function focusMapList(root) {
+    var link = root.querySelector('.td-map__coords');
+    if (link) link.focus({ preventScroll: true });
   }
 
   function initMap(root) {
@@ -510,6 +511,7 @@
       .addTo(map)
       .addAttribution(attributionHTML(site.attribution, site.attributionUrl));
     var layer = null;
+    var currentUrl = null;
     var hidden = false;
     var darkFailed = false;
     // A layer whose first tiles all fail: dark tiles fall back to the light
@@ -526,6 +528,7 @@
         return;
       }
       hidden = true;
+      if (document.activeElement === canvas || canvas.contains?.(document.activeElement)) focusMapList(root);
       canvas.hidden = true;
       if (root.classList) root.classList.remove('td-map--mounted');
       setTimeout(function () {
@@ -535,12 +538,15 @@
     function tiles() {
       if (hidden) return;
       var dark = currentTheme() === 'dark' && !!site.darkTiles && !darkFailed;
+      var nextUrl = dark ? site.darkTiles : site.tiles;
+      if (layer && nextUrl === currentUrl) return;
       if (layer) map.removeLayer(layer);
+      currentUrl = nextUrl;
       var tileOpts = { maxZoom: site.maxZoom || 19 };
       if (site.subdomains) tileOpts.subdomains = site.subdomains;
       var loaded = 0;
       var failed = 0;
-      var current = L.tileLayer(dark ? site.darkTiles : site.tiles, tileOpts);
+      var current = L.tileLayer(nextUrl, tileOpts);
       layer = current;
       if (typeof current.on === 'function') {
         current.on('tileload', function () {
@@ -601,7 +607,8 @@
       map.on('popupopen', function (event) {
         var source = event && event.popup && event.popup._source;
         lastTrigger = source && typeof source.getElement === 'function' ? source.getElement() : null;
-        var close = canvas.querySelector && canvas.querySelector('.leaflet-popup-close-button');
+        var scope = popupElement(event) || canvas;
+        var close = scope.querySelector && scope.querySelector('.leaflet-popup-close-button');
         if (close && site.closePopup) {
           close.setAttribute('aria-label', site.closePopup);
           close.setAttribute('title', site.closePopup);
@@ -610,7 +617,6 @@
         // keyboard, it takes focus so its link and close button come next.
         if (!keyboardOpen) return;
         keyboardOpen = false;
-        var scope = popupElement(event) || canvas;
         var target =
           (scope.querySelector && scope.querySelector('a.td-map__popup-name')) ||
           (scope.querySelector && scope.querySelector('.leaflet-popup-close-button'));
@@ -772,16 +778,20 @@
         // Hostnames are left-to-right: isolate them (LRI … PDI) so an RTL
         // label cannot move the leading `*` or trailing dots.
         button.textContent = mapHost ? label + ' (\u2066' + mapHost + '\u2069)' : label;
-        button.addEventListener('click', function () {
-          // The button disappears; keyboard focus moves to the map it loads.
+        function finishLoading() {
           if (document.activeElement === button) {
-            component.mount = function (target) {
-              initMap(target);
-              if (!canvas.hidden && typeof canvas.focus === 'function') canvas.focus({ preventScroll: true });
-            };
+            if (canvas.hidden) focusMapList(root);
+            else canvas.focus({ preventScroll: true });
           }
-          if (typeof button.remove === 'function') button.remove();
-          else if (button.parentNode) button.parentNode.removeChild(button);
+          button.remove();
+        }
+        component.mount = function (target) {
+          initMap(target);
+          finishLoading();
+        };
+        component.failed = finishLoading;
+        button.addEventListener('click', function () {
+          button.setAttribute('aria-disabled', 'true');
           begin(root);
         });
         root.insertBefore(button, canvas);

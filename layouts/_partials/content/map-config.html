@@ -31,8 +31,12 @@
              while drawing tiles: reject it here, in the path and query too. */ -}}
       {{- $probe := $raw -}}
       {{- $unknown := "" -}}
+      {{- $dynamicHost := false -}}
       {{- if eq (printf "%T" $raw) "string" -}}
         {{- $probe = replace $probe "{s}" "s" -}}
+        {{- with findRE `(?i)^https://[^/?#]*` (strings.TrimSpace $probe) 1 }}
+          {{- $dynamicHost = or (strings.Contains (index . 0) "{") (strings.Contains (index . 0) "}") -}}
+        {{- end -}}
         {{- range slice "{z}" "{x}" "{y}" "{-y}" "{r}" -}}
           {{- $probe = replace $probe . "0" -}}
         {{- end -}}
@@ -40,6 +44,8 @@
       {{- end -}}
       {{- if $unknown -}}
         {{- warnf "params.map.%s may use only the {s}, {z}, {x}, {y}, {-y} and {r} placeholders; got %s in %q; ignoring it" $key $unknown $raw -}}
+      {{- else if $dynamicHost -}}
+        {{- warnf "params.map.%s allows only {s} in the tile host; got %q; ignoring it" $key $raw -}}
       {{- else -}}
         {{- $url := partial "content/url.html" (dict "label" "params.map" "parameter" $key "position" "site configuration" "value" $probe "kind" "image") -}}
         {{- if not $url.valid -}}
@@ -48,7 +54,7 @@
         {{- else if not (and (strings.Contains $raw "{z}") (strings.Contains $raw "{x}") (or (strings.Contains $raw "{y}") (strings.Contains $raw "{-y}"))) -}}
           {{- warnf "params.map.%s must contain {z}, {x} and {y} (or {-y}); got %q; ignoring it" $key $raw -}}
         {{- else -}}
-          {{- $valid = $raw -}}
+          {{- $valid = strings.TrimSpace $raw -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}

@@ -88,6 +88,33 @@
   color-scheme: dark;
 }
 
+/* The browser keeps its scrubber, time labels, volume and caption controls.
+   Keep a distinct accent and track even when a preset changes during playback. */
+.td-media--timed {
+  --td-media-track: color-mix(in srgb, var(--bs-body-bg) 84%, var(--bs-body-color));
+  --td-media-progress-fill: linear-gradient(to right,
+    var(--td-accent) var(--td-media-played), var(--td-media-track) var(--td-media-played));
+}
+
+.td-media__progress {
+  display: none;
+}
+
+@media screen and (forced-colors: none) {
+  .td-media--timed > :is(audio, video)::-webkit-media-controls-timeline {
+    direction: ltr;
+    background: var(--td-media-progress-fill) center / calc(100% - 32px) 10px no-repeat;
+  }
+
+  .td-media--timed > .td-media__progress {
+    display: block;
+    block-size: 6px;
+    margin-block-start: 0.3rem;
+    border-radius: var(--td-media-radius);
+    background: var(--td-media-progress-fill);
+  }
+}
+
 /* Stack consecutive audio samples tighter using positive margins so custom
    spacing or flex/grid containers never overlap adjacent cards. */
 .td-media--audio:has(+ .td-media--audio) {

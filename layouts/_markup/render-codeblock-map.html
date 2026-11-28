@@ -132,7 +132,7 @@
 {{- $interactive := and $config.enable (eq $format "html") -}}
 {{- $id := printf "td-map-%s-f%d" (md5 $page.RelPermalink) .Ordinal -}}
 {{- with index $policy.consumed "id" -}}
-  {{- with partial "book/validate-id.html" (dict "name" "map" "value" . "position" $position) }}{{ $id = . }}{{ end -}}
+  {{- with partial "book/validate-id.html" (dict "name" "map" "label" "map fence" "value" . "position" $position) }}{{ $id = . }}{{ end -}}
 {{- end -}}
 {{- $classes := slice "td-map" -}}
 {{- if $interactive }}{{ $classes = $classes | append "td-map--interactive" }}{{ end -}}

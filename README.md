@@ -13,7 +13,7 @@
   <a href="https://oink.pgsty.com/"><img alt="Website" src="https://img.shields.io/badge/website-oink.pgsty.com-17385c?style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/pgsty/oink?display_name=tag&amp;sort=semver&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/pgsty/oink/ci.yml?branch=main&amp;label=CI&amp;style=flat-square"></a>
-  <a href="https://gohugo.io/"><img alt="Hugo 0.169.0 or newer" src="https://img.shields.io/badge/Hugo-%E2%89%A50.169.0-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
+  <a href="theme.toml"><img alt="Hugo theme" src="https://img.shields.io/badge/Hugo-theme-ff4088?logo=hugo&amp;logoColor=white&amp;style=flat-square"></a>
   <a href="https://github.com/pgsty/oink/blob/main/LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/github/license/pgsty/oink?label=license&amp;style=flat-square"></a>
 </p>
 
@@ -63,14 +63,16 @@ print and RSS for publication, semantic Markdown for reuse, and optional
   JavaScript; interaction, accessibility, responsive behavior, print, and
   machine-readable outputs are tested as separate contracts.
 
-OINK 1.6.0 removes Sass, Bootstrap's JavaScript bundle, and Lunr so any Hugo
-edition (`0.169.0` or newer, including Hugo `0.170+`) builds a site with no
-external compiler. It replaces the local search engine with a scanning BM25
-engine supporting unspaced CJK queries, field-level anchors, and automatic
-split indexes; upgrades Markmap to `1.1.0` and ReDoc to `3.1.0`; adds single-line
-navbar overflow, on-approach engine and giscus loading, off-path sidebar
-caching, and WebP blog covers; and tightens all 32 native locale catalogs. See
-the [release notes](https://oink.pgsty.com/release/1.6.0/) and
+OINK 1.7.0 adds six content components (Timeline, Update, Video, Audio, Social,
+and Map with vendored Leaflet 1.9.4), typeset rich-text copy for pasting
+into external editors, a 29-key single-key shortcut system with a top-layer
+sheet, local browsing history (`H`), fold-all (`O`), adjustable reading width
+(`-`/`=`), and a reader opt-out; refines all four visual presets with a warm
+clay accent for Paper and distinct CJK system typography; adds Markmap corner
+icon controls with SVG download, custom ECharts themes (`window.OinkEchartsThemes`),
+and styled archived-version banners; and keeps every site build Hugo-only with
+plain CSS with any supported Hugo edition. See the
+[release notes](https://oink.pgsty.com/release/1.7.0/) and
 [changelog](CHANGELOG.md) for the complete list.
 
 ## Start a site
@@ -152,10 +154,10 @@ also read the [upgrade and migration guide](https://oink.pgsty.com/docs/admin/up
 | Area | Included capabilities |
 | --- | --- |
 | Reading shells | Docs, Blog, Book, Expo, Swagger/Redoc, releases, downloads, Print |
-| Navigation | Single-line responsive navbar with overflow, sidebars, breadcrumbs, TOC rail, pager, version and language menus |
+| Navigation | Single-line responsive navbar with overflow, sidebars, breadcrumbs, TOC rail, pager, version and language menus, 29 single-key shortcuts and browsing history |
 | Discovery | Scanning BM25 local search (split indexes, field anchors), command palette, taxonomies, backlinks |
-| Authoring | Code, tabs, steps, cards, fields, images, galleries, callouts, includes |
-| Technical content | Mermaid, PlantUML, Draw.io, Markmap, ECharts, Infographic, KaTeX, Asciinema |
+| Authoring | Code, tabs, steps, cards, fields, timelines, update entries, images, galleries, video, audio, social posts, maps, callouts, includes, typeset copy |
+| Technical content | Mermaid, PlantUML, Draw.io, Markmap, ECharts (with site themes), Infographic, KaTeX, Asciinema |
 | Landing pages | 22 server-rendered sections with progressive enhancement |
 | Outputs | HTML, RSS, Print, Markdown, LLMS, LLMSFULL, NAVJSON, Book manifest |
 | Operations | SEO, analytics hooks, Giscus, feedback events, sharing, deployment-safe URLs |
@@ -231,11 +233,11 @@ assuming drop-in compatibility.
 
 | Dependency | Policy |
 | --- | --- |
-| Hugo | 0.169.0 or newer, any edition. OINK 1.5.1 and older need the Extended edition, which ended with Hugo 0.169 |
+| Hugo | Any edition meeting the [module minimum](theme.toml). OINK 1.5.1 and older require the Extended edition |
 | Stylesheet | Plain CSS that Hugo concatenates. Nothing is compiled: no Sass, PostCSS or bundler, for a site or for the theme |
 | Go | 1.27.4 minimum for Hugo Module resolution; current default 1.27.4, CI pins 1.27.4; not needed when using an offline archive or submodule |
 | Node.js | Not required to build or run an OINK site |
-| Locales | Native OINK interface text (266 messages per catalog) for all 31 locale names shipped by Docsy, plus generic `zh`; every bundle follows the schema in `i18n/en.yaml`, including CLDR plural forms, with no English placeholder blocks |
+| Locales | Native OINK interface text for 32 locales, including generic `zh`. Each catalog has 264 keys and follows the schema and placeholders in `i18n/en.yaml`, with language-specific CLDR plural forms |
 
 Development, preview and checks use whichever Hugo is installed, and CI
 installs the current release; none is pinned. Do not enable `--panicOnWarning` or `HUGO_PANICONWARNING`.

@@ -116,15 +116,6 @@
   margin-bottom: 0.5rem;
 }
 
-.td-content blockquote {
-  /* Logical, so the quote bar stays on the side the text starts from: the
-     theme's own stylesheet is compiled once and never run through rtlcss. */
-  padding-inline-start: 1rem;
-  margin-bottom: 1rem;
-  color: var(--bs-secondary-color);
-  border-inline-start: 6px solid var(--bs-primary);
-}
-
 .td-content :where(ul, ol):not([class]) > li {
   margin-bottom: 0.25rem;
 }

@@ -81,9 +81,10 @@ params:
     # it per page, and a section root's `cascade` gives a whole section its
     # own identity. `theme_color_dark` carries the dark palette; when omitted
     # it is derived by lightening the light color until it reads AA on the
-    # dark canvas. Blank keeps the brand navy, and an invalid value warns and
-    # keeps it too; front matter `theme_color: false` opts a page out of an
-    # inherited color entirely.
+    # dark canvas. Blank keeps the preset's default accent (clay in Paper,
+    # navy in Slate), and an invalid value warns and keeps it too; front
+    # matter `theme_color: false` opts a page out of an inherited color
+    # entirely.
     theme_color: ''
     theme_color_dark: ''
     # The site navbar and footer render on every layout by default. Rendering,
@@ -262,9 +263,10 @@ params:
     sidebar_item_overflow: ellipsis
     page_context_menu:
       enable: true
-      # Opt in before exposing the built-in ChatGPT and Claude actions. When a
-      # reader activates one, the full browser URL (including query and hash)
-      # is sent to that third party; the page body is not uploaded.
+      # Opt in before exposing the built-in ChatGPT and Claude actions.
+      # When a reader activates one, the full browser URL (including
+      # query and hash) is sent to that third party; the page body is not
+      # uploaded.
       assistant_links: false
       # Optional external actions may use the placeholders {url}, {title}, and
       # {markdown_url}. No custom links are enabled by default.
@@ -282,10 +284,10 @@ params:
     # block. Plain-text copies are unchanged. Set false to keep the browser's
     # behavior; pages can also opt out via front matter or a section cascade.
     rich_copy: true
-    # Thirty single-key shortcuts in three groups (navigation, actions, view;
-    # press ' for the sheet), the browsing history (H) and the reading width
-    # (- and =). Set false to drop the runtime from the bundle; pages can also
-    # opt out via front matter or a section cascade.
+    # Twenty-nine single-key shortcuts in three groups (navigation, actions,
+    # view; press ' for the sheet), the browsing history (H) and the reading
+    # width (- and =). Set false to drop the runtime from the bundle; pages can
+    # also opt out via front matter or a section cascade.
     keyboard_nav: true
 
 outputFormats:

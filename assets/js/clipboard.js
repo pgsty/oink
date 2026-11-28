@@ -68,30 +68,7 @@
     });
   }
 
-  // A copy that must finish before the caller moves focus elsewhere, such as
-  // a handoff that opens a new tab in the same gesture. The legacy copy is
-  // synchronous; the Clipboard API is only a best-effort second attempt.
-  function copyNow(text, doc, nav) {
-    doc = doc || global.document;
-    nav = nav || global.navigator;
-    try {
-      fallbackCopy(text, doc);
-      return true;
-    } catch (_) {
-      var clipboard = nav && nav.clipboard;
-      if (clipboard && typeof clipboard.writeText === 'function') {
-        try {
-          var pending = clipboard.writeText(text);
-          if (pending && typeof pending.catch === 'function') pending.catch(function () {});
-        } catch (_) {
-          /* nothing more to try */
-        }
-      }
-      return false;
-    }
-  }
-
-  var api = { writeText: writeText, copyNow: copyNow };
+  var api = { writeText: writeText };
   global.OinkClipboard = api;
   if (typeof module === 'object' && module.exports) module.exports = api;
 })(typeof window === 'object' ? window : globalThis);

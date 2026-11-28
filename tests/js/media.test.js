@@ -109,6 +109,7 @@ function build({ videos = [], players = null, reduced = false } = {}) {
     querySelectorAll(selector) {
       if (selector === 'video[data-td-media-autoplay]') return videos;
       if (selector === 'audio, video') return allPlayers;
+      if (selector === '.td-media > audio, .td-media > video') return [];
       assert.fail(`unexpected selector: ${selector}`);
     },
     addEventListener(type, handler) {

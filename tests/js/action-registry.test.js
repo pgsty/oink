@@ -14,7 +14,6 @@ const builtinIds = [
   'copy_link',
   'open_chatgpt',
   'open_claude',
-  'open_gemini',
   'view_markdown',
   'view_history',
   'edit_page',
@@ -137,12 +136,6 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   replace('open_claude', {
     kind: 'url',
     url: 'https://claude.ai/new?q=build-time',
-    promptTemplate: 'Read from %s so I can ask questions about it.',
-    target: 'blank',
-  });
-  replace('open_gemini', {
-    kind: 'url',
-    url: 'https://gemini.google.com/app?q=build-time',
     promptTemplate: 'Read from %s so I can ask questions about it.',
     target: 'blank',
   });
@@ -269,28 +262,13 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true, fallback
   await registry.run('open_claude');
   assert.equal(events.opened[1].url, chatgptUrl.href);
   assert.equal(events.opened[2].url, claudeUrl.href);
-  // Gemini has no documented prompt parameter: the prompt is copied first,
-  // synchronously, and only then does the new tab take focus.
-  const geminiUrl = new URL(registry.resolveUrl('open_gemini'));
-  assert.equal(geminiUrl.origin, 'https://gemini.google.com');
-  assert.equal(geminiUrl.pathname, '/app');
-  assert.equal(geminiUrl.searchParams.get('q'), expectedPrompt);
-  assert.equal(registry.assistantPrompt('open_gemini'), expectedPrompt);
+  assert.equal(registry.assistantPrompt('open_claude'), expectedPrompt);
   assert.equal(registry.assistantPrompt('view_markdown'), '', 'only assistants have a prompt');
-  const copiesBeforeGemini = events.fallbackText.length;
-  const openedBeforeGemini = events.opened.length;
-  const geminiRun = registry.run('open_gemini');
-  assert.equal(events.fallbackText.length, copiesBeforeGemini + 1, 'the prompt was not copied synchronously');
-  assert.equal(events.fallbackText.at(-1), expectedPrompt);
-  assert.equal(events.opened.length, openedBeforeGemini + 1, 'Gemini did not open in the same gesture');
-  await geminiRun;
-  assert.equal(events.opened[3].url, geminiUrl.href);
-  assert.equal(events.opened[3].target, '_blank');
   await registry.run('print');
   await registry.runCommand('print_now');
   assert.equal(events.printed, 2);
   await registry.runCommand('status');
-  assert.equal(events.opened[4].url, 'https://status.example.com/');
+  assert.equal(events.opened[3].url, 'https://status.example.com/');
   for (const [command, action] of [
     ['theme_now', 'switch_theme'],
     ['language_now', 'switch_language'],

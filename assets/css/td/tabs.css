@@ -94,8 +94,6 @@
 
 /* Embedded blocks fill the panel edge to edge. */
 .td-tabs__panel-body > .td-code:only-child,
-.td-tabs__panel-body > .td-table-frame:only-child,
-.td-tabs__panel-body > .td-table-scroll:only-child,
 .td-tabs__panel-body > .td-fields:only-child {
   margin: -1rem -1.1rem;
   max-width: none;
@@ -106,6 +104,14 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+
+.td-tabs__panel-body:has(> :is(.td-table-frame, .td-table-scroll):only-child) {
+  padding: 0;
+}
+
+.td-tabs__panel-body > :is(.td-table-frame, .td-table-scroll):only-child {
+  margin: 0;
 }
 
 .td-tabs__panel-body > .td-table-scroll:only-child > table,

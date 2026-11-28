@@ -232,7 +232,7 @@
           "additionalProperties": true,
           "properties": {
             "theme_color": {
-              "description": "Optional accent recolor: a `#rgb`/`#rrggbb` hex tints the shell's accent grounds -- the selected sidebar row, hover washes, the outline pill and its travelling rail, tag hovers, text selection, focus rings, and each root's mark in the sidebar switcher. It deliberately does NOT touch links or inline code, which stay the brand palette so running text reads the same in every section. Front matter `theme_color` overrides it per page, and a section root's `cascade` gives a whole section its own identity. `theme_color_dark` carries the dark palette; when omitted it is derived by lightening the light color until it reads AA on the dark canvas. Blank keeps the brand navy, and an invalid value warns and keeps it too; front matter `theme_color: false` opts a page out of an inherited color entirely.",
+              "description": "Optional accent recolor: a `#rgb`/`#rrggbb` hex tints the shell's accent grounds -- the selected sidebar row, hover washes, the outline pill and its travelling rail, tag hovers, text selection, focus rings, and each root's mark in the sidebar switcher. It deliberately does NOT touch links or inline code, which stay the brand palette so running text reads the same in every section. Front matter `theme_color` overrides it per page, and a section root's `cascade` gives a whole section its own identity. `theme_color_dark` carries the dark palette; when omitted it is derived by lightening the light color until it reads AA on the dark canvas. Blank keeps the preset's default accent (clay in Paper, navy in Slate), and an invalid value warns and keeps it too; front matter `theme_color: false` opts a page out of an inherited color entirely.",
               "type": "string",
               "default": ""
             },
@@ -575,7 +575,7 @@
               "default": true
             },
             "keyboard_nav": {
-              "description": "Thirty single-key shortcuts in three groups (navigation, actions, view; press ' for the sheet), the browsing history (H) and the reading width (- and =). Set false to drop the runtime from the bundle; pages can also opt out via front matter or a section cascade.",
+              "description": "Twenty-nine single-key shortcuts in three groups (navigation, actions, view; press ' for the sheet), the browsing history (H) and the reading width (- and =). Set false to drop the runtime from the bundle; pages can also opt out via front matter or a section cascade.",
               "type": "boolean",
               "default": true
             },

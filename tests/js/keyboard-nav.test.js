@@ -280,7 +280,7 @@ function helpPanelFixture(title = 'Keyboard shortcuts', closeLabel = 'Close') {
   help.appendChild(header);
   const groups = {
     navigation: ['tree-move', 'language', 'history', 'home'],
-    actions: ['search', 'expand-all', 'print', 'gemini'],
+    actions: ['search', 'expand-all', 'print', 'claude'],
     view: ['page-width', 'help'],
   };
   for (const [group, rows] of Object.entries(groups)) {
@@ -1190,11 +1190,11 @@ function press(harness, values) {
   assert.equal(helpRow('language').classList.contains('td-is-unavailable'), false, 'an offered language keeps X live');
   assert.equal(helpRow('tree-move').classList.contains('td-is-unavailable'), false, 'a sidebar keeps WASD live');
   assert.equal(helpRow('print').classList.contains('td-is-unavailable'), false, 'P is always live');
-  assert.equal(helpRow('gemini').classList.contains('td-is-unavailable'), true, 'Gemini without assistant links is dimmed');
+  assert.equal(helpRow('claude').classList.contains('td-is-unavailable'), true, 'Claude without assistant links is dimmed');
   assert.equal(helpRow('page-width').classList.contains('td-is-unavailable'), true, 'no reading column dims the width row');
-  const geminiNote = helpRow('gemini').querySelector('[data-td-shortcut-state]');
-  assert.ok(geminiNote && !geminiNote.hidden, 'a dimmed row carries a screen-reader note');
-  assert.equal(geminiNote.textContent, ' (unavailable)');
+  const claudeNote = helpRow('claude').querySelector('[data-td-shortcut-state]');
+  assert.ok(claudeNote && !claudeNote.hidden, 'a dimmed row carries a screen-reader note');
+  assert.equal(claudeNote.textContent, ' (unavailable)');
   assert.equal(helpRow('help').querySelector('[data-td-shortcut-state]'), null, 'a live row has no note');
   assert.equal(
     helpRun.doc.getElementById('td-shell-shortcuts-navigation-dialog') !== null,
@@ -1300,6 +1300,37 @@ function press(harness, values) {
     '关闭',
     'dialog close button carries the localized close label',
   );
+  // CJK curly quote also toggles the help dialog even with IME keyCode 229.
+  press(templateHelp, { key: '‘', keyCode: 229 });
+  assert.equal(tplDialog.open, false, 'CJK quote closes help when not composing');
+  press(templateHelp, { key: '’', keyCode: 229 });
+  assert.equal(tplDialog.open, true, 'CJK quote opens help when not composing');
+  press(templateHelp, { key: 'Process', code: 'Escape', keyCode: 229 });
+  assert.equal(tplDialog.open, false, 'Escape closes help via code even with IME Process key');
+
+  // Footer pages render the full sheet directly inside the hover popover (no
+  // template needed), dimming unavailable rows immediately and on hover.
+  const liveHoverHelp = setup({ withTree: false, registry: langRegistry });
+  const hoverMenu = new Element('div', 'td-shell-keyboard td-nav-hover-menu');
+  const liveSheet = helpPanelFixture('Keyboard shortcuts', 'Close');
+  hoverMenu.appendChild(liveSheet);
+  liveHoverHelp.root.appendChild(hoverMenu);
+  liveHoverHelp.controller.toggleHelp();
+  const hoverDialog = liveHoverHelp.root.querySelector('[data-td-keyboard-dialog]');
+  assert.ok(hoverDialog && hoverDialog.open, 'live footer sheet powers the modal dialog directly');
+  liveHoverHelp.controller.closeHelp(false);
+
+  // Inert fading overlays must not suppress single-key shortcuts.
+  const inertWrap = new Element('div');
+  inertWrap.inert = true;
+  const fadingDialog = new Element('div');
+  fadingDialog.setAttribute('role', 'dialog');
+  inertWrap.appendChild(fadingDialog);
+  guard.root.appendChild(inertWrap);
+  const beforeInertScroll = guard.win.scrolled.length;
+  press(guard, { key: 'j' });
+  assert.equal(guard.win.scrolled.length, beforeInertScroll + 1, 'inert fading dialog does not suppress shortcuts');
+  guard.root.children.pop();
 
   // Without any help source, ' stays a silent no-op.
   const noHelp = setup({ withTree: false });
@@ -1750,7 +1781,7 @@ function press(harness, values) {
   // ------------------------------------- page actions run through the registry
   const actionRuns = [];
   const offered = new Set(['edit_page', 'create_child_page', 'create_issue', 'print', 'open_chatgpt',
-    'open_claude', 'open_gemini', 'view_markdown']);
+    'open_claude', 'view_markdown']);
   const actionRegistry = {
     get: (id) => (offered.has(id) ? { id, available: true } : (id === 'view_history' ? { available: false } : null)),
     run(id, context) { actionRuns.push([id, context.source]); return Promise.resolve(); },
@@ -1758,16 +1789,17 @@ function press(harness, values) {
   const acting = setup({ registry: actionRegistry });
   for (const [key, id] of [
     ['u', 'edit_page'], ['n', 'create_child_page'], ['i', 'create_issue'], ['p', 'print'],
-    ['[', 'open_chatgpt'], [']', 'open_claude'], ['\\', 'open_gemini'], ['m', 'view_markdown'],
+    ['[', 'open_chatgpt'], [']', 'open_claude'], ['m', 'view_markdown'],
   ]) {
     const event = press(acting, { key });
     assert.equal(event.defaultPrevented, true, `${key} swallows the literal character`);
     assert.deepEqual(actionRuns.at(-1), [id, 'keyboard'], `${key} runs ${id}`);
   }
-  offered.delete('open_gemini');
+  offered.delete('open_claude');
   offered.delete('edit_page');
   const runsBeforeMissing = actionRuns.length;
-  assert.notEqual(press(acting, { key: '\\' }).defaultPrevented, true, 'an unoffered Gemini handoff stays inert');
+  assert.notEqual(press(acting, { key: ']' }).defaultPrevented, true, 'an unoffered Claude handoff stays inert');
+  assert.notEqual(press(acting, { key: '\\' }).defaultPrevented, true, 'backslash belongs to the palette, not keyboard-nav');
   assert.notEqual(press(acting, { key: 'u' }).defaultPrevented, true, 'a page without an edit URL keeps u inert');
   assert.equal(actionRuns.length, runsBeforeMissing, 'unavailable actions never run');
   assert.notEqual(press(acting, { key: '[', target: input }).defaultPrevented, true, '[ yields to a text field');
@@ -2077,6 +2109,39 @@ function press(harness, values) {
   }
   assert.equal(mapHost.html.hasAttribute('data-td-shell-article-w'), false,
     '+ / - inside a map must not resize the reading column');
+
+  // Turning off single-key shortcuts suppresses ' inside shortcut help and
+  // updates the dialog close hint; narrow viewports dim page-width.
+  helpRun.html.setAttribute('data-td-shortcuts-off', '');
+  const offClick = {
+    type: 'click',
+    target: triggerIcon,
+    button: 0,
+    preventDefault() { this.defaultPrevented = true; },
+    stopPropagation() {},
+  };
+  (helpRun.doc.listeners.get('click') || []).forEach((fn) => fn(offClick));
+  assert.equal(helpDialog.open, true, 'clicking ? still opens help when single-key shortcuts are off');
+  assert.equal(helpClose.getAttribute('aria-keyshortcuts'), 'Escape', 'close button omits apostrophe when shortcuts are off');
+  assert.equal(helpClose.getAttribute('title'), 'Close (Esc)', 'close title omits apostrophe when shortcuts are off');
+  press(helpRun, { key: "'" });
+  assert.equal(helpDialog.open, true, "apostrophe does not close help when single-key shortcuts are off");
+  press(helpRun, { key: 'Escape' });
+  assert.equal(helpDialog.open, false, 'Escape still closes help when single-key shortcuts are off');
+  helpRun.html.removeAttribute('data-td-shortcuts-off');
+
+  const narrowHelp = setup({ withTree: false, withHelp: true });
+  const narrowMain = new Element('div', 'td-shell-main');
+  narrowMain.clientWidth = 540;
+  const narrowArticle = new Element('article', 'td-shell-article');
+  narrowMain.appendChild(narrowArticle);
+  narrowHelp.root.appendChild(narrowMain);
+  press(narrowHelp, { key: "'" });
+  const narrowWidthRow = narrowHelp.root.querySelector('[data-td-keyboard-dialog]').querySelectorAll('[data-td-shortcut]')
+    .find((el) => el.getAttribute('data-td-shortcut') === 'page-width');
+  assert.equal(narrowWidthRow.classList.contains('td-is-unavailable'), true,
+    'narrow viewports below the minimum reading width dim page-width');
+  press(narrowHelp, { key: 'Escape' });
 
   console.log('keyboard navigation checks passed');
 })();

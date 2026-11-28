@@ -369,12 +369,15 @@ const MINUTE = 60 * 1000;
 }
 {
   // First visit: only the current page is stored, so the displayed list is
-  // empty and Clear history starts disabled.
+  // empty but the stored visit can still be cleared.
   const h = harness();
   h.instance.open();
   assert.equal(h.rows().length, 0);
   assert.equal(h.empty.textContent, 'Nothing yet');
-  assert.equal(h.clear.disabled, true, 'Clear history is disabled when no earlier page is listed');
+  assert.equal(h.clear.disabled, false, 'the current visit can be cleared');
+  h.instance.clear();
+  assert.deepEqual(h.instance.entries(), []);
+  assert.equal(h.clear.disabled, true);
 
   // IME composition suppresses filtering and Escape does not close the overlay.
   h.input.dispatch('compositionstart');
@@ -382,9 +385,23 @@ const MINUTE = 60 * 1000;
   assert.notEqual(composingEsc.defaultPrevented, true, 'Escape during IME composition is not swallowed');
   assert.equal(h.instance.isOpen(), true, 'IME Escape keeps the history overlay open');
   h.input.dispatch('compositionend');
-  const finalEsc = h.docKey({ key: 'Escape' });
+  const finalEsc = h.docKey({ key: 'Escape', keyCode: 229, isComposing: false });
   assert.equal(finalEsc.defaultPrevented, true);
-  assert.equal(h.instance.isOpen(), false, 'Escape after compositionend closes the overlay');
+  assert.equal(h.instance.isOpen(), false, 'Escape after compositionend closes the overlay even with keyCode 229');
+  assert.equal(h.root.inert, true, 'closing marks the fading history overlay inert');
+
+  // Interrupted composition (blur / compositioncancel) clears composing so Escape works.
+  h.instance.open();
+  assert.equal(h.root.inert, false, 'opening clears inert on the history overlay');
+  h.input.dispatch('compositionstart');
+  h.input.dispatch('blur');
+  h.docKey({ key: 'Escape' });
+  assert.equal(h.instance.isOpen(), false, 'Escape closes history after blur cancels composition');
+  h.instance.open();
+  h.input.dispatch('compositionstart');
+  h.input.dispatch('compositioncancel');
+  h.docKey({ key: 'Escape' });
+  assert.equal(h.instance.isOpen(), false, 'Escape closes history after compositioncancel');
 }
 {
   // Focus restoration skips a closing Command Palette input and falls back to

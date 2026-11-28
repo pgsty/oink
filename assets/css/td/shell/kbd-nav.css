@@ -47,42 +47,35 @@ html[data-td-kbd-instant] * {
   transition: none !important;
 }
 
-/* The bottom-bar ? button previews a short hint on hover; the click opens the
-   full sheet as a dialog. The hint reuses the sheet's header and rows, and the
-   bottom bar end-aligns it on wide screens. */
-.td-shell-footline .td-shell-keyboard .td-shell-keyboard-hint {
-  width: min(17rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - 5rem);
+/* The bottom-bar ? button previews the full three-group sheet on hover (three
+   columns side by side on wide screens, wrapping cleanly on narrower widths);
+   clicking ? or pressing ' opens the centered modal dialog. Keep overflow
+   visible on the outer popover so the footer's ::before hover bridge stays
+   active, and scroll the grid body inside. */
+.td-shell-footline .td-shell-keyboard .td-shell-keyboard-help {
+  width: min(54rem, calc(100vw - 4.5rem));
+  max-width: calc(100vw - 2rem);
+  max-height: min(calc(100dvh - 5rem), var(--td-keyboard-help-height, 100dvh));
   gap: 0;
   padding: 0;
-  overflow-y: auto;
+  overflow: visible;
+  text-align: start;
   inset-inline-start: auto;
   inset-inline-end: 0;
 }
 
-.td-shell-keyboard-hint__list {
-  margin: 0;
-  padding: 8px 12px;
-}
-
-.td-shell-keyboard-hint__more {
-  margin: 0;
-  padding: 8px 12px 10px;
-  border-top: 1px solid var(--bs-border-color);
-  color: var(--bs-tertiary-color);
-  font-size: 0.75rem;
-  line-height: 1.35;
+.td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--compact {
+  width: min(17rem, calc(100vw - 2rem));
 }
 
 .td-shell-keyboard-help__header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
   display: flex;
   align-items: center;
+  flex: none;
   gap: 8px;
-  padding: 11px 12px;
+  padding: 11px 14px;
   border-bottom: 1px solid var(--bs-border-color);
+  border-radius: 9px 9px 0 0;
   background: var(--bs-body-bg);
   color: var(--bs-body-color);
   font-family: var(--td-heading-font-family);
@@ -94,8 +87,29 @@ html[data-td-kbd-instant] * {
   color: var(--bs-link-color);
 }
 
+.td-shell-keyboard-help__body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16.5rem, 1fr));
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 0 0 9px 9px;
+}
+
 .td-shell-keyboard-help__section {
-  padding: 10px 12px 12px;
+  padding: 10px 14px 12px;
+}
+
+/* Each group draws its own start and top rules; the body clips the ones on
+   its outer edges, so the dividers follow whatever number of columns fit. */
+.td-shell-keyboard-help__body .td-shell-keyboard-help__section {
+  box-shadow: -1px 0 0 var(--bs-border-color), 0 -1px 0 var(--bs-border-color);
+}
+
+[dir='rtl'] .td-shell-keyboard-help__body .td-shell-keyboard-help__section {
+  box-shadow: 1px 0 0 var(--bs-border-color), 0 -1px 0 var(--bs-border-color);
 }
 
 .td-shell-keyboard-help__section .td-shell-keyboard-help__section-title {
@@ -135,7 +149,7 @@ html[data-td-kbd-instant] * {
 .td-shell-keyboard-help__row dd {
   grid-column: 1;
   grid-row: 1;
-  color: var(--bs-secondary-color);
+  color: var(--bs-body-color);
   font-size: 0.78rem;
   line-height: 1.3;
   overflow-wrap: anywhere;
@@ -153,14 +167,10 @@ html[data-td-kbd-instant] * {
 }
 
 /* A shortcut this page cannot run keeps its place in the grid, quieted
-   without losing contrast: its label steps down from body ink to the
-   secondary ink every other label in the hint uses, and its keycaps lose
-   their fill and take a dashed edge, a cue that does not depend on color. */
-.td-shell-keyboard-dialog .td-shell-keyboard-help__row dd {
-  color: var(--bs-body-color);
-}
-
-.td-shell-keyboard-dialog .td-shell-keyboard-help__row.td-is-unavailable dd {
+   without losing contrast: its label steps down from body ink to secondary
+   ink, and its keycaps lose their fill and take a dashed edge, a cue that
+   does not depend on color. */
+.td-shell-keyboard-help__row.td-is-unavailable dd {
   color: var(--bs-secondary-color);
 }
 
@@ -172,20 +182,28 @@ html[data-td-kbd-instant] * {
 }
 
 @media (max-width: 991.98px) {
-  /* Anchor the hint to the full bottom line rather than to its small
-     trigger, which sits near the center once the footer stacks. */
+  /* Anchor the hover sheet to the full bottom-bar dock row rather than to its
+     small trigger, which sits near the center once the footer stacks. */
   .td-shell-footline .td-shell-keyboard {
     position: static;
   }
-  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-hint {
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help {
+    width: min(54rem, 100%);
+    max-width: 100%;
+    inset-inline: 0;
+    margin-inline: auto;
+  }
+  .td-shell-footline .td-shell-keyboard .td-shell-keyboard-help--compact {
+    width: min(17rem, 100%);
     inset-inline-start: auto;
-    inset-inline-end: 1rem;
+    inset-inline-end: 0;
+    margin-inline: 0;
   }
 }
 
 /* Modal shortcut sheet opened by ' or by clicking the bottom-bar trigger
    from anywhere on the page, including scrolled articles, Zen Mode, and
-   footer_style: none pages: three groups of ten, side by side when they fit
+   footer_style: none pages: 29 keys in three groups, side by side when they fit
    and stacked on narrow screens. */
 .td-shell-keyboard-dialog {
   box-sizing: border-box;
@@ -383,7 +401,7 @@ html[data-td-kbd-instant] * {
   .td-shell-history__clear:focus-visible {
     outline: 2px solid Highlight;
   }
-  .td-shell-keyboard-dialog .td-shell-keyboard-help__row.td-is-unavailable dd,
+  .td-shell-keyboard-help__row.td-is-unavailable dd,
   .td-shell-keyboard-help__row.td-is-unavailable .td-kbd-sequence kbd {
     color: GrayText;
   }

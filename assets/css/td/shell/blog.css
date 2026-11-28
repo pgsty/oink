@@ -131,6 +131,7 @@
 .td-blog-card__image {
   display: block;
   width: 100%;
+  height: auto;
   /* Processed images arrive cropped to 16:9; SVG, static, and remote ones
      cannot be cropped, so the same frame is imposed here. */
   aspect-ratio: 16 / 9;

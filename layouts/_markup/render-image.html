@@ -74,7 +74,7 @@
     {{- $num = partial "book/validate-num.html" (dict "name" "image" "value" . "position" $.Position) -}}
   {{- end -}}
   {{- with index $policy.consumed "id" -}}
-    {{- $id = partial "book/validate-id.html" (dict "name" "image" "value" . "position" $.Position) -}}
+    {{- $id = partial "book/validate-id.html" (dict "name" "image" "label" "image" "value" . "position" $.Position) -}}
   {{- end -}}
   {{- if and $src $num -}}
     {{- if not $id }}{{ $id = printf "fig-%s" $num }}{{ end -}}

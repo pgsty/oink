@@ -322,8 +322,7 @@
 {{ if $hasFileTree -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/filetree.js" "members" (slice (resources.Get "js/filetree.js"))) -}}
 {{ end -}}
-{{/* Video autoplay and in-place platform players; the media partial sets
-     the flag only for an autoplay video or an enabled platform card. */ -}}
+{{/* Native media progress and playback, or an enabled in-place platform player. */ -}}
 {{ if and $interactiveOutput (.Page.Store.Get "hasMedia") -}}
   {{ $jsChunks = $jsChunks | append (dict "target" "js/chunks/media.js" "members" (slice (resources.Get "js/media.js"))) -}}
 {{ end -}}

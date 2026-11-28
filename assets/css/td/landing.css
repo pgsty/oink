@@ -1891,15 +1891,6 @@
   color: inherit;
 }
 
-.td-landing-command-box button {
-  min-width: 44px;
-  min-height: 44px;
-  border: 1px solid var(--td-terminal-line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #c9d6e8;
-}
-
 .td-landing-command-box__note {
   color: var(--td-muted);
 }
@@ -1908,7 +1899,10 @@
 .td-landing-command-box button {
   position: relative;
   isolation: isolate;
+  min-width: 44px;
+  min-height: 44px;
   background: transparent;
+  color: #c9d6e8;
   --td-control-border: var(--td-terminal-line);
   --td-control-bg: rgba(255, 255, 255, 0.05);
   display: grid;

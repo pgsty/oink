@@ -110,11 +110,6 @@
       href="{{ $byID.open_claude.url | safeURL }}" target="_blank" rel="noopener noreferrer">
       <i class="{{ $byID.open_claude.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_claude" }}</span>
     </a></li>
-    <li><a class="td-page-actions__item" data-td-action="open_gemini" data-td-page-open-in="gemini"
-      href="{{ $byID.open_gemini.url | safeURL }}" target="_blank" rel="noopener noreferrer"
-      title="{{ T "ui_open_in_gemini_hint" }}">
-      <i class="{{ $byID.open_gemini.icon }}" aria-hidden="true"></i><span>{{ T "ui_open_in_gemini" }}</span>
-    </a></li>
     {{- end }}
     {{- with $markdownURL }}
     <li><a class="td-page-actions__item" data-td-action="view_markdown" href="{{ . }}" target="_blank" rel="noopener">

@@ -102,11 +102,12 @@
 {{- with .Get "markers" -}}
   {{- $markers := slice -}}
   {{- range split . "," -}}
-    {{- if not . }}{{ continue }}{{ end -}}
-    {{- $parts := split . ":" -}}
+    {{- $item := strings.TrimSpace . -}}
+    {{- if not $item }}{{ continue }}{{ end -}}
+    {{- $parts := split $item ":" -}}
     {{- $time := strings.TrimSpace (index $parts 0) -}}
     {{- if not (findRE $number $time) -}}
-      {{- warnf "%s: asciinema marker %q needs a numeric time before its label; skipping it" $.Position . -}}
+      {{- warnf "%s: asciinema marker %q needs a numeric time before its label; skipping it" $.Position $item -}}
       {{- continue -}}
     {{- end -}}
     {{- $label := strings.TrimSpace (delimit (after 1 $parts) ":") -}}

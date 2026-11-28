@@ -138,9 +138,9 @@
 
     var imagesBySource = new Map();
     document.querySelectorAll('main img').forEach(function (img) {
-      // A video-platform card's poster is not a diagram, and an Edit button
-      // would nest inside the card's link. Other linked images stay eligible.
-      if (img.closest && img.closest('a.td-media-card')) return;
+      // Video-card posters, social avatars, and map place thumbnails are not
+      // diagrams, and an Edit button would break their card layout or link.
+      if (img.closest && img.closest('a.td-media-card, img.td-social__avatar, img.td-map__thumb')) return;
       var src = img.currentSrc || img.src;
       if (!/\.(?:png|svg)(?:[?#].*)?$/i.test(src)) return;
       if (!imagesBySource.has(src)) imagesBySource.set(src, []);

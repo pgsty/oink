@@ -20,6 +20,7 @@ const ENGINES = {
 };
 
 function element(tag) {
+  const attrs = new Map();
   const node = {
     tag,
     className: '',
@@ -27,6 +28,12 @@ function element(tag) {
     hidden: false,
     children: [],
     parent: null,
+    setAttribute(name, value) {
+      attrs.set(name, String(value));
+    },
+    getAttribute(name) {
+      return attrs.has(name) ? attrs.get(name) : null;
+    },
     appendChild(child) {
       child.parent = node;
       node.children.push(child);
@@ -41,7 +48,7 @@ function element(tag) {
   return node;
 }
 
-function build({ observer = true, preloaded = false, themes = null, theme = null } = {}) {
+function build({ observer = true, preloaded = false, themes = null, theme = null, registerThemeError = null } = {}) {
   const requests = [];
   const mounted = [];
   const calls = [];
@@ -73,6 +80,7 @@ function build({ observer = true, preloaded = false, themes = null, theme = null
   const echarts = {
     registerTheme(name, value) {
       calls.push(['registerTheme', name, value]);
+      if (registerThemeError) throw registerThemeError;
     },
     init(target, chosen) {
       calls.push(['init', chosen]);
@@ -278,4 +286,18 @@ test('without site themes a chart draws with the colour scheme alone', async () 
   page.arrive();
   await page.settle();
   assert.deepEqual(page.calls, [['init', null]]);
+});
+
+test('a throwing site theme degrades into an alert fallback', async () => {
+  const page = build({
+    themes: { broken: { bad: true } },
+    theme: 'broken',
+    registerThemeError: new Error('bad theme'),
+  });
+  page.due(page.charts[0]);
+  page.arrive();
+  await page.settle();
+  assert.equal(page.charts[0].canvas.getAttribute('role'), 'alert');
+  assert.equal(page.charts[0].canvas.textContent, 'ECharts: bad theme');
+  assert.deepEqual(page.mounted, []);
 });

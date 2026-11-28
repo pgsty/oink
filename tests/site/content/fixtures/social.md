@@ -1,6 +1,6 @@
 ---
-title: Social posts
-description: Regression fixtures for the offline social post card, its platforms, a quoted post, and degraded forms.
+title: Social
+description: Regression fixtures for the offline social card, its platforms, a quoted post, and degraded forms.
 outputs: [HTML, print, markdown]
 weight: 62
 ---

@@ -83,8 +83,6 @@ ui_skip_to_content: Skip to content
 ui_page_actions: Actions
 ui_open_in_chatgpt: Open in ChatGPT
 ui_open_in_claude: Open in Claude
-ui_open_in_gemini: Open in Gemini
-ui_open_in_gemini_hint: Also copies the prompt to paste into Gemini
 ui_open_in_prompt: Read from %s so I can ask questions about it.
 ui_copy_markdown: Copy Markdown
 ui_copy_success: Markdown copied
@@ -105,7 +103,7 @@ ui_pricing_included: Included
 ui_pricing_excluded: Not included
 ui_marquee_pause: Pause motion
 ui_kbd_with: with
-ui_single_key_shortcuts: Single-key shortcuts
+ui_single_key_shortcuts: Enable shortcuts
 ui_keyboard_shortcuts: Shortcut help
 ui_shortcut_tree_move: Move through sidebar
 ui_shortcut_tree_toggle: Collapse or expand section
@@ -127,7 +125,6 @@ ui_shortcut_history: Browsing history
 ui_shortcut_home: Go to home page
 ui_shortcut_expand_all: Expand or collapse all
 ui_shortcut_page_width: Page width
-ui_shortcut_more: Click for all shortcuts
 ui_history_search: Search browsing history
 ui_history_empty: No browsing history yet
 ui_history_clear: Clear history

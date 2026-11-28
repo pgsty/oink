@@ -7,10 +7,9 @@
   if (typeof window !== 'undefined' && window.OinkComparePane) return;
 
   var html = document.documentElement;
-  // Typing this prefix, or pressing "`" (or "~") outside a field, restricts
-  // the palette to commands. "/" opens the full search surface.
+  // Typing this prefix, or pressing "\\" outside a field, restricts the
+  // palette to commands. "/" opens the full search surface.
   var COMMAND_PREFIX = '>';
-  var COMMAND_KEYS = { '`': true, '~': true };
   var TYPING_TAGS = { TEXTAREA: true, SELECT: true };
   var NON_TYPING_INPUT_TYPES = {
     button: true,
@@ -77,8 +76,31 @@
     })) return true;
     return Array.prototype.some.call(
       document.querySelectorAll('[role="dialog"]'),
-      function (dialog) { return dialog !== except && isRendered(dialog); },
+      function (dialog) {
+        if (except && (dialog === except || (typeof except.contains === 'function' && except.contains(dialog))))
+          return false;
+        return isRendered(dialog);
+      },
     );
+  }
+
+  // Match bare "/" and "\\" across ASCII and CJK IME layouts without
+  // overriding non-US Latin keys that reuse the physical Slash key (e.g.
+  // German QWERTZ sends "-" on code "Slash").
+  function paletteShortcut(event) {
+    var key = event.key;
+    var altGraph = event.getModifierState && event.getModifierState('AltGraph');
+    if (event.metaKey || ((event.ctrlKey || event.altKey) && !altGraph)) return '';
+    if ((event.shiftKey || altGraph) && !['/', '\\', '／', '＼'].includes(key)) return '';
+    if (key === '/' || key === '\\') return key;
+    if (key === '／') return '/';
+    if (key === '＼') return '\\';
+    if (key === '、' || key === 'Process' || key === 'Unidentified') {
+      if (event.code === 'Slash') return '/';
+      if (event.code === 'Backslash') return '\\';
+      if (key === '、' && !event.code) return '\\';
+    }
+    return '';
   }
 
   var FOCUSABLE =
@@ -325,6 +347,7 @@
       session += 1;
       var openSession = session;
       logicalOpen = true;
+      composing = false;
       var eventOpener = event && event.currentTarget;
       function canRestoreFocus(candidate) {
         return candidate && candidate !== document &&
@@ -355,6 +378,7 @@
       global.clearTimeout(hideTimer);
       delayedClose = false;
       root.hidden = false;
+      root.inert = false;
       html.setAttribute('data-td-shell-lock', '');
       openers.forEach(function (el) { el.setAttribute('aria-expanded', 'true'); });
       input.setAttribute('aria-expanded', 'true');
@@ -374,6 +398,9 @@
           /* selection is unsupported on some input types */
         }
       } else {
+        if (String(input.value || '').trim().charAt(0) === COMMAND_PREFIX) {
+          input.value = '';
+        }
         input.select();
       }
       render(input.value);
@@ -388,7 +415,9 @@
       delayedClose = true;
       session += 1;
       logicalOpen = false;
+      composing = false;
       root.classList.remove('td-is-open');
+      root.inert = true;
       html.removeAttribute('data-td-shell-lock');
       openers.forEach(function (el) { el.setAttribute('aria-expanded', 'false'); });
       input.setAttribute('aria-expanded', 'false');
@@ -859,6 +888,12 @@
       choiceState = null;
       render(input.value);
     });
+    input.addEventListener('compositioncancel', function () {
+      composing = false;
+    });
+    input.addEventListener('blur', function () {
+      composing = false;
+    });
     input.addEventListener('input', function () {
       if (composing) return;
       choiceState = null;
@@ -887,30 +922,32 @@
 
     document.addEventListener('keydown', tabTrap(panel, isOpen), true);
     document.addEventListener('keydown', function (event) {
-      if (event.isComposing || composing || event.keyCode === 229) return;
-      if ((event.metaKey || event.ctrlKey) && String(event.key).toLowerCase() === 'k') {
+      if ((event.key === 'Escape' || event.code === 'Escape') && isOpen()) {
+        if (event.isComposing || composing) return;
+        event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+        close();
+        return;
+      }
+      if (event.isComposing || composing) return;
+      var shortcut = !isOpen() && !isTypingTarget(event.target) ? paletteShortcut(event) : '';
+      if (event.keyCode === 229 && !shortcut) return;
+      if (!event.defaultPrevented && Boolean(event.metaKey) !== Boolean(event.ctrlKey) &&
+          !event.shiftKey && !event.altKey && String(event.key).toLowerCase() === 'k') {
         if (!isOpen() && hasOpenDialog(root)) return;
         event.preventDefault();
         if (isOpen()) close();
         else open();
       } else if (
-        (event.key === '/' || COMMAND_KEYS[event.key]) &&
+        shortcut &&
         !document.documentElement.hasAttribute('data-td-shortcuts-off') &&
-        !event.metaKey && !event.ctrlKey && !event.altKey &&
-        // "~" is Shift+"`" on most layouts; every other key stays unshifted.
-        (!event.shiftKey || event.key === '~') &&
-        !event.defaultPrevented && !isOpen() && !hasOpenDialog() &&
-        !isTypingTarget(event.target)
+        !event.defaultPrevented && !isOpen() && !hasOpenDialog(root)
       ) {
-        // Bare shortcuts, so they never steal a character from a field.
-        // Slash is full search; the backtick key (with or without Shift)
-        // opens the commands.
+        // Slash and backslash are bare shortcuts, so they never steal a
+        // character from a field. Slash is full search; backslash is commands.
         event.preventDefault();
-        if (COMMAND_KEYS[event.key]) open(event, COMMAND_PREFIX);
+        if (shortcut === '\\') open(event, COMMAND_PREFIX);
         else open(event);
-      } else if (event.key === 'Escape' && isOpen()) {
-        event.preventDefault();
-        close();
       }
     });
     openers.forEach(function (el) { el.addEventListener('click', open); });

@@ -1,5 +1,5 @@
-# Social posts
-> Regression fixtures for the offline social post card, its platforms, a quoted post, and degraded forms.
+# Social
+> Regression fixtures for the offline social card, its platforms, a quoted post, and degraded forms.
 ---
 LLMS index: [llms.txt](/llms.txt)
 ---

@@ -206,6 +206,8 @@ INVALID_SITE_CASES = [
     ("map: definitely", "params.map must be a boolean or a map"),
     ("map:\n  enable: true", "params.map.enable requires params.map.tiles"),
     ("map:\n  enable: true\n  tiles: http://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example", "params.map.tiles must be an https:// tile URL"),
+    ("map:\n  enable: true\n  tiles: https://z{z}.example.org/{x}/{y}.png\n  attribution: Example", "params.map.tiles allows only {s} in the tile host"),
+    ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  dark_tiles: https://{x}.dark.example.org/{z}/{y}.png\n  attribution: Example", "params.map.dark_tiles allows only {s} in the tile host"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/tiles.png\n  attribution: Example", "params.map.tiles must contain {z}, {x} and {y}"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: 40", "params.map.max_zoom must be a whole number from 1 to 22"),
     ("map:\n  enable: true\n  tiles: https://tile.example.org/{z}/{x}/{y}.png\n  attribution: Example\n  max_zoom: '09'", "params.map.max_zoom must be a whole number from 1 to 22"),
@@ -237,7 +239,7 @@ INVALID_SITE_CASES = [
     # A number is neither a hex nor the boolean opt-out; `default` must not
     # swallow it on the way to the warning.
     ("ui:\n  theme_color: 0", 'theme_color "0"'),
-    # Font roles are the seven the stylesheet defines; anything else would
+    # Font roles are the eight the stylesheet defines; anything else would
     # emit a custom property nothing reads.
     ("ui:\n  fonts:\n    main: Inter", "params.ui.fonts.main is not a typography role"),
     # Names only. The value reaches a <style> block, so the gate admits font

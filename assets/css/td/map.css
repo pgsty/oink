@@ -199,25 +199,46 @@
 
 .td-map .leaflet-popup-content {
   margin-block: 0.65rem;
-  margin-inline: 0.8rem 2rem;
+  margin-inline: 0.85rem 2rem;
+  max-inline-size: min(18rem, calc(100vw - 5.5rem));
+  overflow-wrap: break-word;
   font: inherit;
   font-size: 0.875rem;
   line-height: 1.45;
 }
 
+/* Block layout (not grid with min-inline-size: 0) keeps Leaflet's abspos
+   shrink-to-fit measurement able to read the popup's natural single-line width
+   when Leaflet temporarily sets white-space: nowrap in _updateLayout(). */
 .td-map__popup {
-  display: grid;
-  gap: 0.35rem;
-  max-inline-size: 15rem;
+  display: block;
+  max-inline-size: 18rem;
+}
+
+.td-map__popup:has(img) {
+  min-inline-size: min(14rem, calc(100vw - 5.5rem));
+}
+
+.td-map__popup > * + * {
+  margin-block-start: 0.35rem;
 }
 
 .td-map__popup img {
+  display: block;
   inline-size: 100%;
   border-radius: var(--td-map-radius);
 }
 
+.td-map__popup-name {
+  display: block;
+}
+
+/* Override .td-content's `text-wrap: pretty` (which resets text-wrap-mode to
+   wrap) so Leaflet's temporary `white-space: nowrap` measurement sees the
+   paragraph's natural single-line width instead of collapsing to minWidth. */
 .td-map .leaflet-popup-content .td-map__popup p {
   margin: 0;
+  text-wrap: inherit;
 }
 
 .td-map .leaflet-container a.td-map__popup-name {

@@ -34,13 +34,6 @@
     if (copyTimers) copyTimers.set(button, timer);
   }
 
-  function copyPrompt(id) {
-    var clipboard = window.OinkClipboard;
-    var prompt = window.OinkActions.assistantPrompt ? window.OinkActions.assistantPrompt(id) : '';
-    if (prompt && clipboard && typeof clipboard.copyNow === 'function')
-      clipboard.copyNow(prompt, document, window.navigator);
-  }
-
   function syncUrl(control, id) {
     var url = window.OinkActions.resolveUrl(id);
     if (url) control.setAttribute('href', url);
@@ -93,7 +86,7 @@
         window.OinkActions.run(id, { source: 'page' });
       });
     } else if (
-      (id === 'open_chatgpt' || id === 'open_claude' || id === 'open_gemini') &&
+      (id === 'open_chatgpt' || id === 'open_claude') &&
       action.kind === 'url' &&
       control.tagName === 'A'
     ) {
@@ -101,9 +94,6 @@
       ['pointerenter', 'focus', 'click'].forEach(function (eventName) {
         control.addEventListener(eventName, function () {
           syncUrl(control, id);
-          // Gemini cannot be handed a prompt in its URL; copy it while this
-          // page still has focus, then let the link open its tab as usual.
-          if (eventName === 'click' && id === 'open_gemini') copyPrompt(id);
         });
       });
     }

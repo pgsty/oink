@@ -1,11 +1,13 @@
 {{- /* Shortcut help. Accepts a Page (the bottom-bar hover menu) or a dict
        {page, mode} where mode is "menu" | "template" | "sheet".
 
-       "menu" renders the bottom-bar trigger with a short hover hint and, when
-       keyboard navigation is on, the full sheet as a template. Clicking the
-       trigger or pressing ' opens that sheet as a modal dialog.
-       "template" renders only the sheet template, for pages without a footer.
-       "sheet" is the template itself: thirty rows in three groups of ten
+       "menu" renders the bottom-bar trigger and full hover cheat sheet when
+       keyboard navigation is on (or the compact search/commands sheet when
+       only local search is on). Clicking the trigger or pressing ' opens the
+       full sheet as a centered modal dialog.
+       "template" renders the sheet inside a hidden template, for pages
+       without a footer.
+       "sheet" is the full sheet itself: twenty-nine rows in three groups
        (navigation, actions, view). It varies only by language, so it is
        cached per language; keyboard-nav.js dims the rows a page cannot run.
        Keycaps reuse the KBD component's .td-kbd-sequence markup. */ -}}
@@ -31,15 +33,14 @@
     (dict "id" "home" "keys" (slice "G") "label" (T "ui_shortcut_home"))))
   (dict "id" "actions" "title" (T "ui_shortcut_group_actions") "rows" (slice
     (dict "id" "search" "keys" (slice "/" "F") "label" (T "ui_shortcut_search"))
-    (dict "id" "commands" "keys" (slice "C" "`") "label" (T "ui_shortcut_commands"))
+    (dict "id" "commands" "keys" (slice "\\" "C") "label" (T "ui_shortcut_commands"))
     (dict "id" "edit" "keys" (slice "U") "label" (T "post_edit_this"))
     (dict "id" "new-page" "keys" (slice "N") "label" (T "post_create_child_page"))
     (dict "id" "issue" "keys" (slice "I") "label" (T "post_create_issue"))
     (dict "id" "expand-all" "keys" (slice "O") "label" (T "ui_shortcut_expand_all"))
     (dict "id" "print" "keys" (slice "P") "label" (T "ui_print_page"))
     (dict "id" "chatgpt" "keys" (slice "[") "label" (T "ui_open_in_chatgpt"))
-    (dict "id" "claude" "keys" (slice "]") "label" (T "ui_open_in_claude"))
-    (dict "id" "gemini" "keys" (slice "\\") "label" (T "ui_open_in_gemini"))))
+    (dict "id" "claude" "keys" (slice "]") "label" (T "ui_open_in_claude"))))
   (dict "id" "view" "title" (T "ui_shortcut_group_view") "rows" (slice
     (dict "id" "duo" "keys" (slice "B") "label" (T "ui_compare_view"))
     (dict "id" "zen" "keys" (slice "Z") "label" (T "ui_shortcut_reading_mode"))
@@ -52,16 +53,16 @@
     (dict "id" "page-width" "keys" (slice "-" "=") "label" (T "ui_shortcut_page_width"))
     (dict "id" "help" "keys" (slice "'") "label" (T "ui_keyboard_shortcuts"))))
 -}}
-<template data-td-keyboard-help-source>
-  <div class="td-shell-keyboard-help" role="group" aria-label="{{ T "ui_keyboard_shortcuts" }}"
-    data-td-close-label="{{ T "ui_search_close" }}" data-td-unavailable-label="{{ T "ui_action_unavailable" }}">
-    <div class="td-shell-keyboard-help__header">
-      {{- partialCached "shell/icon.html" "circle-question" "keyboard-help-title" -}}
-      <strong>{{ T "ui_keyboard_shortcuts" }}</strong>
-    </div>
+<div class="td-nav-hover-menu__pop td-shell-keyboard-help" role="group" aria-label="{{ T "ui_keyboard_shortcuts" }}"
+  data-td-close-label="{{ T "ui_search_close" }}" data-td-unavailable-label="{{ T "ui_action_unavailable" }}">
+  <div class="td-shell-keyboard-help__header">
+    {{- partialCached "shell/icon.html" "circle-question" "keyboard-help-title" -}}
+    <strong>{{ T "ui_keyboard_shortcuts" }}</strong>
+  </div>
+  <div class="td-shell-keyboard-help__body">
     {{- range $groups }}
     <section class="td-shell-keyboard-help__section" aria-labelledby="td-shell-shortcuts-{{ .id }}">
-      <h3 class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-{{ .id }}">{{ .title }}</h3>
+      <p class="td-shell-keyboard-help__section-title" id="td-shell-shortcuts-{{ .id }}">{{ .title }}</p>
       <dl>
         {{- range .rows }}
         <div class="td-shell-keyboard-help__row" data-td-shortcut="{{ .id }}">
@@ -73,12 +74,12 @@
     </section>
     {{- end }}
   </div>
-</template>
+</div>
 {{- else -}}
 {{- $keyboardNav := ne (partial "ui-param.html" (dict "page" . "key" "keyboard_nav")) false -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
 {{- if eq $mode "template" -}}
-{{- if $keyboardNav }}{{ partialCached "shell/keyboard-help.html" (dict "page" . "mode" "sheet") .Site.Language.Lang }}{{ end -}}
+{{- if $keyboardNav }}<template data-td-keyboard-help-source>{{ partialCached "shell/keyboard-help.html" (dict "page" . "mode" "sheet") .Site.Language.Lang }}</template>{{ end -}}
 {{- else if or $keyboardNav $localSearch -}}
 <div class="td-shell-keyboard td-nav-hover-menu" data-td-nav-hover>
   <button type="button" class="td-shell-iconbtn td-shell-keyboard__trigger"
@@ -88,40 +89,28 @@
     aria-expanded="false">
     {{- partialCached "shell/icon.html" "circle-question" "sidebar-keyboard-help" -}}
   </button>
-  {{- /* The hover hint names the shortcuts a reader reaches for first; the
-         sheet behind the click holds all of them. */}}
-  <div class="td-nav-hover-menu__pop td-shell-keyboard-hint" role="group" aria-label="{{ T "ui_keyboard_shortcuts" }}">
+  {{- if $keyboardNav }}
+  {{- partialCached "shell/keyboard-help.html" (dict "page" . "mode" "sheet") .Site.Language.Lang -}}
+  {{- else }}
+  <div class="td-nav-hover-menu__pop td-shell-keyboard-help td-shell-keyboard-help--compact" role="group" aria-label="{{ T "ui_keyboard_shortcuts" }}">
     <div class="td-shell-keyboard-help__header">
       {{- partialCached "shell/icon.html" "circle-question" "keyboard-help-title" -}}
       <strong>{{ T "ui_keyboard_shortcuts" }}</strong>
     </div>
-    <dl class="td-shell-keyboard-hint__list">
-      {{- if $localSearch }}
-      <div class="td-shell-keyboard-help__row">
-        <dt><span class="td-kbd-sequence"><kbd>/</kbd>{{ if $keyboardNav }}<kbd>F</kbd>{{ end }}</span></dt>
-        <dd>{{ T "ui_shortcut_search" }}</dd>
-      </div>
-      <div class="td-shell-keyboard-help__row">
-        <dt><span class="td-kbd-sequence">{{ if $keyboardNav }}<kbd>C</kbd>{{ end }}<kbd>`</kbd></span></dt>
-        <dd>{{ T "ui_shortcut_commands" }}</dd>
-      </div>
-      {{- end }}
-      {{- if $keyboardNav }}
-      <div class="td-shell-keyboard-help__row">
-        <dt><span class="td-kbd-sequence"><kbd>H</kbd></span></dt>
-        <dd>{{ T "ui_shortcut_history" }}</dd>
-      </div>
-      <div class="td-shell-keyboard-help__row">
-        <dt><span class="td-kbd-sequence"><kbd>'</kbd></span></dt>
-        <dd>{{ T "ui_keyboard_shortcuts" }}</dd>
-      </div>
-      {{- end }}
-    </dl>
-    {{- if $keyboardNav }}
-    <p class="td-shell-keyboard-hint__more">{{ T "ui_shortcut_more" }}</p>
-    {{- end }}
+    <div class="td-shell-keyboard-help__section">
+      <dl>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>/</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_search" }}</dd>
+        </div>
+        <div class="td-shell-keyboard-help__row">
+          <dt><span class="td-kbd-sequence"><kbd>\</kbd></span></dt>
+          <dd>{{ T "ui_shortcut_commands" }}</dd>
+        </div>
+      </dl>
+    </div>
   </div>
-  {{- if $keyboardNav }}{{ partialCached "shell/keyboard-help.html" (dict "page" . "mode" "sheet") .Site.Language.Lang }}{{ end }}
+  {{- end }}
 </div>
 {{- end -}}
 {{- end -}}

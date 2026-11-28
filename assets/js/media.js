@@ -1,6 +1,4 @@
-// Media runtime, loaded only on pages with an autoplay video, a video card
-// whose platform the site enabled in params.video_embeds, or two or more
-// audio/video players (for single-active playback).
+// Shared by pages with a local audio/video player or an enabled platform card.
 //
 // 1. A video marked data-td-media-autoplay is muted and looped by its markup
 //    but carries no autoplay attribute. It plays while at least half of it is
@@ -25,6 +23,33 @@
   var reduce = window.matchMedia
     ? window.matchMedia('(prefers-reduced-motion: reduce)')
     : null;
+
+  // Native controls own all input. Engines with a private timeline get a
+  // visual indicator below the player, with no extra focus stop or announcement.
+  var nativeTimeline = window.CSS && window.CSS.supports('selector(::-webkit-media-controls-timeline)');
+  document.querySelectorAll('.td-media > audio, .td-media > video').forEach(function (player) {
+    var figure = player.parentElement;
+    if (!nativeTimeline) {
+      var indicator = document.createElement('span');
+      indicator.className = 'td-media__progress';
+      indicator.setAttribute('aria-hidden', 'true');
+      player.after(indicator);
+    }
+    function updateProgress() {
+      var timed = Number.isFinite(player.duration) && player.duration > 0 && !player.error;
+      figure.classList.toggle('td-media--timed', timed);
+      if (timed) {
+        var fraction = Math.min(1, Math.max(0, player.currentTime / player.duration));
+        figure.style.setProperty('--td-media-played', (fraction * 100).toFixed(3) + '%');
+      } else {
+        figure.style.removeProperty('--td-media-played');
+      }
+    }
+    ['durationchange', 'timeupdate', 'seeking', 'seeked', 'ended', 'emptied', 'error'].forEach(function (type) {
+      player.addEventListener(type, updateProgress);
+    });
+    updateProgress();
+  });
 
   function motionAllowed() {
     return !(reduce && reduce.matches);

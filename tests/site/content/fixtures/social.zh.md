@@ -1,6 +1,6 @@
 ---
-title: 社交帖子
-description: 离线社交帖子卡片、各平台、引用帖与降级形态的回归样例。
+title: 帖子
+description: 离线帖子卡片、各平台、引用帖与降级形态的回归样例。
 outputs: [HTML, print, markdown]
 weight: 62
 ---

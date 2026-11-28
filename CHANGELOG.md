@@ -4,7 +4,12 @@ OINK uses [Semantic Versioning](https://semver.org/) for published tags, with
 one exception. Version 1.6.0 retires public interfaces in a minor release so
 existing sites can keep the `github.com/pgsty/oink` module path.
 
-## Unreleased
+## [1.7.0] — 2026-11-27
+
+OINK 1.7.0 expands the content and reading experience with six new components,
+typeset rich-text copy, a unified 29-key shortcut system with local
+browsing history and adjustable reading width, and refined presets with
+preset-specific CJK typography.
 
 ### Added
 
@@ -24,10 +29,10 @@ existing sites can keep the `github.com/pgsty/oink` module path.
     load their player in place after a click, from IDs the theme validated.
   - **Audio**: a block image whose destination is an audio file renders a titled
     native player with `caption`, `id` and `preload` (the first six players on
-    a page preload metadata, later ones nothing). A page with one player loads
-    no script; with two or more audio or video players, `js/chunks/media.js`
-    keeps one audible player at a time.
-  - **Social posts**: the `social` shortcode quotes a post (X by default;
+    a page preload metadata, later ones nothing). Local audio and video use the
+    page accent to show elapsed playback time. The shared `js/chunks/media.js`
+    also keeps one audible player at a time.
+  - **Social**: the `social` shortcode quotes a post (X by default;
     Bluesky, Mastodon, Threads, Weibo, Zhihu, Telegram, LinkedIn, or `none`,
     the default for a nested quote) entirely from the page, with a Markdown
     body that composes images, galleries and a nested quoted post. The quote
@@ -35,14 +40,14 @@ existing sites can keep the `github.com/pgsty/oink` module path.
     or attachment the author supplies. A static avatar missing from the
     project's `static/` warns with the suppressible ID `social:avatar-static`.
     Hugo's own `x` is untouched.
-  - **Map**: a `map` fence of places always renders a numbered place list with
-    OpenStreetMap links; with a complete new `params.map` (an HTTPS `tiles`
+  - **Map**: a `map` fence renders a numbered place list with OpenStreetMap links
+    in HTML, Print and RSS. Markdown and LLMS keep the source fence; with a complete new `params.map` (an HTTPS `tiles`
     template and its `attribution`), HTML adds an interactive map through
     vendored Leaflet 1.9.4. The theme names no tile service. Tile templates
     may also use `{s}`, `{r}` and `{-y}`; any other placeholder warns and the
     template is ignored. Optional `attribution_url` links the credit,
     `subdomains` chooses the `{s}` values, and `loading: click` waits for a
-    button that names every tile host before any request. Failing `dark_tiles`
+    button that names every tile host before any request. Only `{s}` may vary in the host. Failing `dark_tiles`
     fall back to the dimmed light tiles; failing light tiles or Leaflet hide
     the map and keep the list. A finger keeps scrolling the page; a mouse or
     pen drags the map, and a popup opened with Enter takes keyboard focus.
@@ -62,18 +67,19 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   `params.ui.rich_copy: false`, or the same key in front matter, keeps the
   browser's behavior. The runtime is `js/chunks/rich-copy.js`.
 
-- Thirty single-key shortcuts in three groups of ten, shown as a 3 x 10 sheet:
+- Twenty-nine single-key shortcuts in three groups (Navigation, Actions, View),
+  shown as a three-column sheet:
   - **Navigation**: `W`/`S` (and `↑`/`↓` in the tree) move through the
     sidebar, `A`/`D` collapse or expand a section, `Enter` or `Space` opens the
     focused page, `Q`/`E` page through the sidebar order, `K`/`J` jump between
     headings, `X` cycles languages, `R` cycles top-level sections, `V` cycles
     versions, `H` opens the browsing history and `G` goes to the language home
     page (on the home page it returns to the top).
-  - **Actions**: `F` or `/` searches, `C` or `` ` `` (also `~`) opens the
-    commands, `U` edits the page, `N` creates a child page, `I` files a docs
-    issue, `O` expands or collapses everything that folds, `P` prints, and
-    `[`, `]` and `\` hand the page to ChatGPT, Claude or Gemini. Each runs the
-    page's registry action and stays inert where the page does not offer it.
+  - **Actions**: `F` or `/` searches, `C` or `\` opens the commands, `U` edits
+    the page, `N` creates a child page, `I` files a docs issue, `O` expands or
+    collapses everything that folds, `P` prints, and `[` and `]` hand the page
+    to ChatGPT or Claude. Each runs the page's registry action and stays inert
+    where the page does not offer it.
   - **View**: `B` opens the duo view, `Z` toggles Zen Mode, `M` opens the
     Markdown source, `T` cycles the offered presets, `Y` cycles Light, Dark and
     System, `L` switches the index layout form on pages with
@@ -84,11 +90,14 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   suppress the shortcuts after a click.
 - The shortcut sheet opens in the browser top layer from `'` or a click on the
   bottom-bar `?` button, from anywhere on the page, including Zen Mode and
-  `footer_style: none` pages. Its three groups sit side by side where they fit
-  and stack on narrow screens. A shortcut the current page cannot run keeps its
-  row, dimmed and marked unavailable for screen readers. Hovering `?` shows a
-  short hint with search, commands, history and the sheet itself. The sheet is a
-  per-language template; it closes on a second `'`, `Escape`, the close
+  `footer_style: none` pages. Hovering or focusing `?` previews the same full
+  three-group sheet above the footer (three columns side by side on wide
+  screens, wrapping cleanly on narrower widths); clicking `?` or pressing `'`
+  opens it as a centered modal dialog with the **Enable shortcuts** toggle
+  (enabled by default). A shortcut the current page cannot run keeps its row,
+  dimmed and marked unavailable for screen readers on both hover and modal
+  views. The sheet is cached per language (reused in a `<template>` on
+  footerless pages); the modal closes on a second `'`, `Escape`, the close
   button or a backdrop click, and coordinates with other open surfaces.
 - Browsing history. `H`, or the Command Palette's new "Browsing history"
   command (`browse_history`), opens an overlay on the palette surface that lists
@@ -109,12 +118,13 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   `localStorage` (`td-shell-article-w`), is restored before paint, and
   overrides `page_width` and the Book measure on screen; a step that reaches
   the page's own width returns to it and forgets the choice.
-- An "Open in Gemini" page action (`open_gemini`) beside ChatGPT and Claude,
-  under the same `page_context_menu.assistant_links` opt-in. Gemini documents
-  no prompt parameter, so activating it also copies the prompt to paste.
-  The action manifest gains the language home (`home`) for `G`.
-- All 32 catalogs gained 19 labels for shortcuts, the reader preference,
-  history and Gemini, and six for the new content components.
+- The action manifest gains the language home (`home`) for `G`.
+- All 32 catalogs gained 16 labels for shortcuts, the reader preference, and
+  history, and six for the new content components (264 localized keys total).
+- Markmap replaces the boxed "Fit to window" button below the SVG with quiet,
+  borderless icon controls in the bottom-right corner for **Fit to window** and
+  **Download SVG** (exporting a self-contained SVG with resolved theme tokens
+  and background).
 - ECharts fences can use a site's own theme: define it on
   `window.OinkEchartsThemes` under the name the fence's `theme` gives, and each
   chart registers it before drawing. ECharts loads only when a chart comes on
@@ -123,12 +133,22 @@ existing sites can keep the `github.com/pgsty/oink` module path.
 
 ### Changed
 
+- Refreshed vendored browser libraries in `VENDOR.json`: Mermaid `12.4.0`
+  (including `THIRD_PARTY_NOTICES`), Swagger UI `5.36.0`, ReDoc `3.2.0`,
+  Asciinema `3.19.0`, `@plantuml/core` `1.2026.10`, and `@markmap/*` `1.1.1`.
+- Hardened Command Palette, Browsing History, and keyboard shortcuts for CJK
+  IME punctuation (`、` / `／` / `＼` / fullwidth quotes and brackets),
+  interrupted IME compositions (`blur` / `compositioncancel` / close),
+  reliable `Escape` dismissal, rapid reopen during the 240 ms close fade
+  (`inert` closing overlays), and clearing stale `>` command mode when
+  reopening search. The palette recognizes slash and backslash produced with
+  Shift or AltGraph. Escape during composition in a Duo View pane stays with the input method.
 - Shortcuts that moved since 1.6.0: Zen Mode is `Z` only (`H` is the
   browsing history), languages are `X` (`L` switches the index layout and `Y`
-  the color mode), `T` cycles presets instead of the color mode, the Command
-  Palette opens its commands on `` ` `` instead of `\` (now Open in Gemini),
-  `G` goes home instead of opening the focused tree item (`Enter` and `Space`
-  remain), and the homepage `N` section alias is gone (`J` remains).
+  the color mode), `T` cycles presets instead of the color mode, `G` goes home
+  instead of opening the focused tree item (`Enter` and `Space` remain), and
+  the homepage `N` section alias is gone (`J` remains). The Command Palette
+  keeps `\` (alongside `C`) for commands.
 - Paper is an ivory sheet with a clay accent. The canvas moves from the grey
   `#f7f6f3` to `#faf9f5`, with ink `#1f1e1c` and surfaces to match, and the
   preset now sets its own accent (`#9b4a28`, dark `#de8460`) for selected rows,
@@ -181,6 +201,10 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   punctuation shortcuts and persists across languages on the same site.
 - Sites served under different paths on one host now store browsing history
   separately, including sites with URL-encoded characters in their base path.
+  Restoring a page with Back updates its visit order. Clear history also
+  removes the current page when it is the only stored visit.
+- A table that occupies a whole tab panel reaches both panel edges. Wide
+  tables can still scroll within the panel.
 - RSS links from maps and quoted posts keep the source article address when
   the link consists of a query or fragment. Bilibili embed links keep a valid
   `cid` so a multi-part recording opens at the selected part.
@@ -188,11 +212,21 @@ existing sites can keep the `github.com/pgsty/oink` module path.
   an ordered list, including lists starting at zero or counting down.
 - Timeline diagnostics accept long Markdown fences and match the full
   `timeline` class name.
-
-- Asciinema `markers` reach the player as `[time, label]` pairs. The theme
-  spread them into one flat list, which asciinema-player 3.18 rejects, so a
-  recording with markers showed only its link. Labels are trimmed and keep
-  their colons.
+- Asciinema `markers` reach the player as `[time, label]` pairs and ignore
+  trailing whitespace after a comma. The theme spread them into one flat list,
+  which asciinema-player 3.18 rejects, so a recording with markers showed only
+  its link. Labels are trimmed and keep their colons.
+- Turning off single-key shortcuts (`data-td-shortcuts-off`) also suppresses
+  Duo View's `B` toggle and the shortcut sheet's `'` toggle (updating its close
+  hint to `Esc` only), and the `-`/`=` shortcut row dims on viewports too narrow
+  to resize.
+- Draw.io diagram detection skips `.td-social__avatar` and `.td-map__thumb`
+  images alongside video-card posters. Map tile configuration trims surrounding
+  whitespace, avoids recreating light tiles on theme changes after `dark_tiles`
+  fails, and uses `map fence` (and `image` on block images) in invalid-`id`
+  warnings. ECharts site-theme registration runs inside the chart error guard,
+  and `.td-blog-card__image` sets `height: auto` so intrinsic dimensions never
+  stretch cards.
 - The archived-version banner (`params.archived_version`) is styled: a tinted
   band with an archive icon and `role="note"`, covering dark mode, forced
   colors, print and right-to-left pages. The Print output's printable-section

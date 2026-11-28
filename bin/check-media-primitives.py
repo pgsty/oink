@@ -672,11 +672,11 @@ def check_audio_matrix(hugo: str) -> list[str]:
         require('<a class="td-media-link" href="/docs/audio-matrix/sample.wav#t=1,2">inline clip</a>' in html,
                 "inline audio link lost its local fragment or class", errors)
 
-        # Runtime gating: 1 audio loads 0 media JS; 2+ players load media chunk.
+        # A single player already uses the progress enhancement.
         single_html = (destination / "docs/single-audio/index.html").read_text()
         pair_html = (destination / "docs/pair-audio/index.html").read_text()
         av_html = (destination / "docs/audio-video/index.html").read_text()
-        require("/js/chunks/media" not in single_html, "single-audio page unexpectedly loaded media.js", errors)
+        require("/js/chunks/media" in single_html, "single audio omitted its progress runtime", errors)
         require("/js/chunks/media" in pair_html, "two-audio page did not load media.js for single-active playback", errors)
         require("/js/chunks/media" in av_html, "audio+video page did not load media.js for single-active playback", errors)
 

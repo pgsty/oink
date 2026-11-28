@@ -20,13 +20,13 @@ ACTIONS_SCRIPT = ROOT / "bin" / "check-actions.py"
 # Every key binds must appear in the runtime, and the runtime must not
 # grow keys the contract table does not document. ArrowLeft/ArrowRight bind through
 # the RTL swap ternary rather than a direct comparison. The three groups mirror
-# the 3 x 10 shortcut sheet; the Command Palette owns "/", "`" and "~".
+# the shortcut sheet; the Command Palette owns "/" and "\\".
 KEYMAP = [
     # Navigation
     "'w'", "'s'", "'a'", "'d'", "' '", "'q'", "'e'", "'k'", "'j'",
     "'x'", "'r'", "'v'", "'h'", "'g'",
     # Actions
-    "'f'", "'c'", "'u'", "'n'", "'i'", "'o'", "'p'", "'['", "']'", "'\\\\'",
+    "'f'", "'c'", "'u'", "'n'", "'i'", "'o'", "'p'", "'['", "']'",
     # View
     "'b'", "'z'", "'m'", "'t'", "'y'", "'l'", "';'", "','", "'<'", "'.'", "'>'",
     "'-'", "'='", "'+'", "\"'\"",
@@ -37,7 +37,7 @@ SHEET_ROWS = [
     "tree-move", "tree-toggle", "tree-open", "page-move", "heading-move",
     "language", "route", "version", "history", "home",
     "search", "commands", "edit", "new-page", "issue",
-    "expand-all", "print", "chatgpt", "claude", "gemini",
+    "expand-all", "print", "chatgpt", "claude",
     "duo", "zen", "markdown", "style", "theme",
     "layout", "gallery", "image-size", "page-width", "help",
 ]
@@ -169,10 +169,10 @@ def check_sources() -> None:
     sheet_rows = re.findall(r'\(dict "id" "([a-z-]+)" "keys"', help_source)
     require(
         sheet_rows == SHEET_ROWS,
-        f"the shortcut sheet is no longer the 3 x 10 grid in contract order: {sheet_rows}",
+        f"the shortcut sheet is no longer in contract order: {sheet_rows}",
     )
     for action in ("edit_page", "create_child_page", "create_issue", "print", "open_chatgpt",
-                   "open_claude", "open_gemini", "view_markdown", "switch_version"):
+                   "open_claude", "view_markdown", "switch_version"):
         require(f"'{action}'" in source, f"keyboard-nav no longer reaches the {action} action")
     require(
         "td-shell-article-w" in source and "WIDTH_STEP = 100" in source
@@ -410,8 +410,8 @@ def main() -> int:
             require('data-td-shortcut-preference="/"' in html,
                     "a footerless page must still let the reader turn single-key shortcuts back on")
             require(
-                html.count('class="td-shell-keyboard-help__row" data-td-shortcut=') == 30,
-                "the shortcut help template no longer carries thirty rows",
+                html.count('class="td-shell-keyboard-help__row" data-td-shortcut=') == 29,
+                "the shortcut help template no longer carries twenty-nine rows",
             )
             require(
                 'id="td-shell-history"' in html and "data-td-history-scope=" in html,

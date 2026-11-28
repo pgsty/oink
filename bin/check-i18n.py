@@ -421,6 +421,11 @@ def check() -> int:
     }
     failed = False
     paths = sorted(I18N.glob("*.yaml"))
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    summary = next((line for line in readme.splitlines() if line.startswith("| Locales |")), "")
+    if f"{len(paths)} locales" not in summary or f"{len(english)} keys" not in summary:
+        failed = True
+        print(f"README.md locale summary should describe {len(paths)} locales and {len(english)} keys per catalog")
     locales = {path.stem for path in paths}
     missing_locales = sorted(OINK_LOCALES - locales)
     extra_locales = sorted(locales - OINK_LOCALES)

@@ -466,10 +466,9 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
   assert.equal(external.opened.length, 1, 'external result opened more than once');
   assert.equal(external.controller.isOpen(), false, 'successful external result left Palette open');
 
-  // Slash opens the full search surface; the backtick key (or Shift+` = ~)
-  // opens straight into command mode. All are bare single-character
-  // shortcuts, so they must yield to any field the reader may be typing in.
-  // Backslash belongs to keyboard-nav.js (Open in Gemini) now.
+  // Slash opens the full search surface; backslash opens straight into command
+  // mode. Both are bare single-character shortcuts, so they must yield to any
+  // field the reader may be typing in.
   const slash = setup();
   function pressKey(harness, values) {
     const event = Object.assign(
@@ -501,28 +500,37 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
     'slash close did not restore focus to the pre-shortcut element',
   );
 
-  const backslash = pressKey(slash, { key: '\\' });
-  assert.equal(slash.controller.isOpen(), false, 'backslash still opens the Palette');
-  assert.notEqual(backslash.defaultPrevented, true, 'backslash was swallowed by the Palette');
-
   for (const [key, shiftKey] of [['`', false], ['~', true]]) {
-    const commandOpened = pressKey(slash, { key, shiftKey });
-    assert.equal(slash.controller.isOpen(), true, `${key} did not open the Palette`);
-    assert.equal(slash.input.value, '>', `${key} did not seed command mode`);
-    assert.equal(
-      commandOpened.defaultPrevented, true,
-      `${key} did not prevent the literal character`,
-    );
-    assert.ok(
-      slash.controller.rows().every((row) => row.type === 'command' || row.type === 'action'),
-      `${key} showed page results instead of commands`,
-    );
-    assert.equal(slash.input.selectionStart, 1, 'caret was not placed after the prefix');
-    slash.controller.close();
+    const ignoredBacktick = pressKey(slash, { key, shiftKey });
+    assert.equal(slash.controller.isOpen(), false, `${key} still opens the Palette`);
+    assert.notEqual(ignoredBacktick.defaultPrevented, true, `${key} was swallowed by the Palette`);
   }
 
+  for (const modifiers of [{ ctrlKey: true, shiftKey: true }, { metaKey: true, altKey: true },
+    { ctrlKey: true, metaKey: true }, { ctrlKey: true, defaultPrevented: true }]) {
+    pressKey(slash, { key: 'K', ...modifiers });
+    assert.equal(slash.controller.isOpen(), false);
+  }
+  pressKey(slash, { key: '\\', ctrlKey: true, altKey: true, getModifierState: name => name === 'AltGraph' });
+  assert.equal(slash.input.value, '>');
+  slash.controller.close();
+
+  const commandOpened = pressKey(slash, { key: '\\' });
+  assert.equal(slash.controller.isOpen(), true, '\\ did not open the Palette');
+  assert.equal(slash.input.value, '>', '\\ did not seed command mode');
+  assert.equal(
+    commandOpened.defaultPrevented, true,
+    '\\ did not prevent the literal character',
+  );
+  assert.ok(
+    slash.controller.rows().every((row) => row.type === 'command' || row.type === 'action'),
+    '\\ showed page results instead of commands',
+  );
+  assert.equal(slash.input.selectionStart, 1, 'caret was not placed after the prefix');
+  slash.controller.close();
+
   const field = new Element('input');
-  for (const key of ['/', '`']) {
+  for (const key of ['/', '\\']) {
     const ignoredField = pressKey(slash, { key, target: field });
     assert.equal(slash.controller.isOpen(), false, `${key} opened while typing in a field`);
     assert.notEqual(ignoredField.defaultPrevented, true, `${key} stole a literal character`);
@@ -531,9 +539,10 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
     assert.equal(slash.controller.isOpen(), false, `ctrl+${key} opened the Palette`);
     assert.notEqual(ignoredModifier.defaultPrevented, true, `ctrl+${key} was swallowed`);
 
-    const ignoredShift = pressKey(slash, { key, shiftKey: true });
-    assert.equal(slash.controller.isOpen(), false, `shift+${key} opened the Palette`);
-    assert.notEqual(ignoredShift.defaultPrevented, true, `shift+${key} was swallowed`);
+    const produced = pressKey(slash, { key, code: 'Digit7', shiftKey: true });
+    assert.equal(slash.controller.isOpen(), true, `layout-produced ${key} opens the Palette`);
+    assert.equal(produced.defaultPrevented, true);
+    slash.controller.close();
 
     const alreadyHandled = pressKey(slash, { key, defaultPrevented: true });
     assert.equal(slash.controller.isOpen(), false, `handled ${key} opened the Palette`);
@@ -588,20 +597,71 @@ function setup({ controlledAnimationFrame = false, dataset = {} } = {}) {
   }
   global.document.querySelectorAll = originalQuerySelectorAll;
 
-  // A fading Palette is itself an ARIA dialog. It must not block its own
-  // shortcut from reopening, and the shortcut must still close it normally.
+  // A fading Palette is itself an ARIA dialog (its child panel carries
+  // role="dialog"). It must not block its own shortcuts from reopening during
+  // the close fade, and shortcuts must still close it normally.
   global.document.querySelectorAll = (selector) => selector === '[role="dialog"]'
-    ? [slash.root] : originalQuerySelectorAll.call(global.document, selector);
+    ? [slash.panel] : originalQuerySelectorAll.call(global.document, selector);
   pressKey(slash, { key: 'k', ctrlKey: true });
   assert.equal(slash.controller.isOpen(), true);
+  assert.equal(slash.root.inert, false, 'opening clears inert');
   pressKey(slash, { key: 'k', ctrlKey: true });
   assert.equal(slash.controller.isOpen(), false);
+  assert.equal(slash.root.inert, true, 'closing marks the fading overlay inert');
+  pressKey(slash, { key: '\\' });
+  assert.equal(slash.controller.isOpen(), true, '\\ reopens immediately during the close fade');
+  assert.equal(slash.input.value, '>');
+  pressKey(slash, { key: 'Escape' });
+  assert.equal(slash.controller.isOpen(), false, 'Escape closes command mode');
+  pressKey(slash, { key: '/' });
+  assert.equal(slash.controller.isOpen(), true, '/ reopens immediately after closing command mode');
+  assert.equal(slash.input.value, '', 'opening search after command mode clears the > prefix');
+  pressKey(slash, { key: 'Escape' });
+  assert.equal(slash.controller.isOpen(), false);
   global.document.querySelectorAll = originalQuerySelectorAll;
+
+  // CJK IME punctuation and Process keyCode 229 outside typing fields open the
+  // expected mode without stealing non-US Latin keys on the Slash key.
+  const latinDash = pressKey(slash, { key: '-', code: 'Slash' });
+  assert.equal(slash.controller.isOpen(), false, 'German QWERTZ - on code Slash must not open search');
+  assert.notEqual(latinDash.defaultPrevented, true);
+  for (const [ev, expectedValue, label] of [
+    [{ key: '、', code: 'Backslash' }, '>', 'CJK Backslash punctuation opens commands'],
+    [{ key: '＼', code: 'Backslash' }, '>', 'Fullwidth backslash opens commands'],
+    [{ key: 'Process', code: 'Backslash', keyCode: 229 }, '>', 'IME Process Backslash opens commands'],
+    [{ key: '／', code: 'Slash' }, '', 'Fullwidth slash opens search'],
+    [{ key: '、', code: 'Slash' }, '', 'CJK Slash punctuation opens search'],
+    [{ key: 'Process', code: 'Slash', keyCode: 229 }, '', 'IME Process Slash opens search'],
+  ]) {
+    const res = pressKey(slash, ev);
+    assert.equal(slash.controller.isOpen(), true, label);
+    assert.equal(slash.input.value, expectedValue, label);
+    assert.equal(res.defaultPrevented, true, label);
+    pressKey(slash, { key: 'Escape', keyCode: 229, isComposing: false });
+    assert.equal(slash.controller.isOpen(), false, 'Escape closes when not composing even with keyCode 229');
+  }
+
+  // Closing or blurring during an interrupted IME composition must never leave
+  // composing stuck true and break /, \\, or Escape.
+  pressKey(slash, { key: '/' });
+  slash.input.dispatch('compositionstart');
+  slash.controller.close();
+  pressKey(slash, { key: '\\' });
+  assert.equal(slash.controller.isOpen(), true, '\\ still opens after interrupted composition + close');
+  slash.input.dispatch('compositionstart');
+  slash.input.dispatch('blur');
+  pressKey(slash, { key: 'Escape' });
+  assert.equal(slash.controller.isOpen(), false, 'Escape still closes after interrupted composition + blur');
+  pressKey(slash, { key: '/' });
+  slash.input.dispatch('compositionstart');
+  slash.input.dispatch('compositioncancel');
+  pressKey(slash, { key: 'Escape' });
+  assert.equal(slash.controller.isOpen(), false, 'Escape still closes after compositioncancel');
 
   slash.controller.open({ currentTarget: slash.opener });
   slash.input.value = 'already typing';
   pressKey(slash, { key: '/' });
-  pressKey(slash, { key: '`' });
+  pressKey(slash, { key: '\\' });
   assert.equal(
     slash.input.value, 'already typing',
     'shortcut reset a query while the Palette was already open',

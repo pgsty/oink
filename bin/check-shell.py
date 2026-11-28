@@ -250,21 +250,21 @@ def check_sources() -> list[str]:
             and 'slice "light" "sun"' in appearance and 'slice "dark" "moon"' in appearance
             and 'slice "auto" "contrast"' in appearance,
             "bottom-bar Appearance control lost its native three-mode group", errors)
-    # Hover shows a short hint; the click (or ') opens the 3 x 10 sheet, which
-    # lives in a per-language template and is dimmed per page at runtime.
+    # Hover previews the full 3-group sheet; clicking ? (or pressing ') opens
+    # it as a centered modal dialog. The sheet is cached per language, reused
+    # inside a hidden template on footerless pages, and dimmed per page at runtime.
     require('data-td-nav-hover-open' in keyboard_help
             and 'class="td-kbd-sequence"' in keyboard_help
             and 'data-td-close-label=' in keyboard_help
             and 'data-td-unavailable-label=' in keyboard_help
             and 'aria-keyshortcuts="\'"' in keyboard_help
-            and 'td-shell-keyboard-hint' in keyboard_help
-            and 'T "ui_shortcut_more"' in keyboard_help
+            and 'td-shell-keyboard-help__body' in keyboard_help
             and '<template data-td-keyboard-help-source>' in keyboard_help
             and 'partialCached "shell/keyboard-help.html" (dict "page" . "mode" "sheet") .Site.Language.Lang' in keyboard_help
             and all(f'(dict "id" "{group}" "title" (T "ui_shortcut_group_{group}")' in keyboard_help
                     for group in ("navigation", "actions", "view"))
             and 'data-td-shortcut="{{ .id }}"' in keyboard_help,
-            "bottom-bar shortcut help lost its hover hint or the cached three-group sheet", errors)
+            "bottom-bar shortcut help lost its full hover sheet or the cached three-group sheet", errors)
     require(".td-shell-keyboard-help__row.td-is-unavailable" in keyboard_styles
             and "repeat(auto-fit, minmax(16.5rem, 1fr))" in keyboard_styles
             and "td-shell-keyboard-dialog--split" not in keyboard_styles,

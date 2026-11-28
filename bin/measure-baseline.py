@@ -49,7 +49,7 @@ HUGO_BUILTIN_SHORTCODES = {
 # Fence languages whose *content is the component* (diagram / data): native.
 NATIVE_FENCE_LANGS = {
     "mermaid", "plantuml", "markmap", "math", "chem", "katex", "tex", "latex",
-    "echarts", "infographic", "checksums", "filetree", "gallery",
+    "echarts", "infographic", "checksums", "filetree", "gallery", "map",
 }
 
 # Generated corpus that must not count against the theme. Keyed by
@@ -59,7 +59,7 @@ DEFAULT_EXCLUDES: dict[str, list[str]] = {
     "pigsty.cc": ["content/ext/**"],
 }
 
-THEME_MARKER_RE = re.compile(r"\.(?:steps|cards|fields|matrix|full-width|wide|expand)\b")
+THEME_MARKER_RE = re.compile(r"\.(?:steps|cards|fields|matrix|full-width|wide|expand|timeline|update)\b")
 
 FRONT_MATTER_RE = re.compile(r"\A(---|\+\+\+)\s*\n.*?\n\1\s*\n", re.S)
 # One shortcode tag. Group 1: notation, 2: closing slash, 3: name, 4: rest.
@@ -395,6 +395,7 @@ THIRD_PARTY_MARKERS = {
     "infographic": "infographic",
     "docsearch": "docsearch",
     "pako": "pako",
+    "leaflet": "leaflet",
 }
 
 

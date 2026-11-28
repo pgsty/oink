@@ -14,7 +14,7 @@
       {{- $page.Store.Set "hasImageZoom" true -}}
     {{- end -}}
   {{- end -}}
-  {{- $drawioHTML := replaceRE `(?i)<img\b[^>]*\bclass=["'][^"']*\btd-media-card__poster\b[^"']*["'][^>]*>` "" $html -}}
+  {{- $drawioHTML := replaceRE `(?i)<img\b[^>]*\bclass=["'][^"']*\b(?:td-media-card__poster|td-social__avatar|td-map__thumb)\b[^"']*["'][^>]*>` "" $html -}}
   {{- if and
     (partial "config-enabled.html" (dict "value" $page.Site.Params.drawio "key" "params.drawio"))
     (findRE `(?i)<img\b[^>]*\bsrc=["'][^"']+[.](?:png|svg)(?:[?#][^"']*)?["']` $drawioHTML 1)
